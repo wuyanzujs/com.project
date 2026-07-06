@@ -1,0 +1,13 @@
+{
+  "name": "com.project",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "dev:app": "pnpm --filter com.deppon.app dev",
+    "dev:mini": "pnpm --filter com.deppon.mini dev",
+    "build:app": "pnpm --filter com.deppon.app build",
+    "build:mini": "pnpm --filter com.deppon.mini build"
+  }
+}
