@@ -8,6 +8,13 @@
     "dev:app": "pnpm --filter com.deppon.app dev",
     "dev:mini": "pnpm --filter com.deppon.mini dev",
     "build:app": "pnpm --filter com.deppon.app build",
-    "build:mini": "pnpm --filter com.deppon.mini build"
+    "build:mini": "pnpm --filter com.deppon.mini build",
+    "lint:app": "pnpm --filter com.deppon.app exec eslint \"src/**/*.{ts,tsx}\"",
+    "lint:app:fix": "pnpm --filter com.deppon.app exec eslint \"src/**/*.{ts,tsx}\" --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.9.4"
   }
 }

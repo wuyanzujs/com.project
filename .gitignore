@@ -25,7 +25,9 @@ coverage/
 .DS_Store
 Thumbs.db
 .idea/
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 
 # Temporary files
 *.tmp

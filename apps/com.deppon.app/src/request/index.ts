@@ -150,7 +150,10 @@ export async function request<TResult = unknown, TData = unknown>(
 export const http = {
   request,
 
-  get<TResult = unknown>(url: string, options?: RequestShortcutOptions<TResult>) {
+  get<TResult = unknown>(
+    url: string,
+    options?: RequestShortcutOptions<TResult>
+  ) {
     return request<TResult>({
       ...options,
       url,
@@ -197,7 +200,10 @@ export const http = {
     })
   },
 
-  delete<TResult = unknown>(url: string, options?: RequestShortcutOptions<TResult>) {
+  delete<TResult = unknown>(
+    url: string,
+    options?: RequestShortcutOptions<TResult>
+  ) {
     return request<TResult>({
       ...options,
       url,

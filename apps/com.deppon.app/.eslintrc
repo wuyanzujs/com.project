@@ -3,5 +3,26 @@
   "rules": {
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/**/*.{ts,tsx}"],
+      "rules": {
+        "semi": ["error", "never"],
+        "quotes": ["error", "single", { "avoidEscape": true }],
+        "jsx-quotes": ["error", "prefer-single"],
+        "comma-dangle": ["error", "never"],
+        "max-len": [
+          "warn",
+          {
+            "code": 80,
+            "ignoreComments": true,
+            "ignoreStrings": true,
+            "ignoreTemplateLiterals": true,
+            "ignoreUrls": true
+          }
+        ]
+      }
+    }
+  ]
 }
