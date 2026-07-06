@@ -1,5 +1,7 @@
 import Taro from '@tarojs/taro'
+
 import { RequestError } from './error'
+
 import type {
   HttpResponse,
   RequestHeaders,
