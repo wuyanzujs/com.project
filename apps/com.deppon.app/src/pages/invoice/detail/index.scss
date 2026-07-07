@@ -1,0 +1,244 @@
+.invoice-detail-page {
+  min-height: 100%;
+  padding-bottom: 48px;
+  background: #f5f7fb;
+}
+
+.invoice-detail-page--empty {
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.invoice-detail-header {
+  padding: 32px 24px 24px;
+  background: #ffffff;
+}
+
+.invoice-detail-header__label {
+  color: #1a5eff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.invoice-detail-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: #16181a;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.invoice-detail-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: #667085;
+  font-size: 25px;
+  line-height: 38px;
+}
+
+.invoice-detail-card,
+.invoice-detail-section,
+.invoice-detail-empty {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.invoice-detail-card__top,
+.invoice-detail-row,
+.invoice-detail-actions,
+.invoice-detail-section__head,
+.invoice-detail-waybill {
+  display: flex;
+  flex-direction: row;
+}
+
+.invoice-detail-card__top {
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  border-bottom-color: #eef2f6;
+  border-bottom-width: 1px;
+}
+
+.invoice-detail-card__title {
+  flex: 1;
+  color: #16181a;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.invoice-detail-status {
+  padding: 6px 14px;
+  color: #1a5eff;
+  background: #e8efff;
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.invoice-detail-status--success {
+  color: #047857;
+  background: #ecfdf3;
+}
+
+.invoice-detail-status--cancel {
+  color: #667085;
+  background: #f2f4f7;
+}
+
+.invoice-detail-status--error {
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+.invoice-detail-status--process {
+  color: #c2410c;
+  background: #fff7ed;
+}
+
+.invoice-detail-row {
+  justify-content: space-between;
+  padding-top: 20px;
+}
+
+.invoice-detail-row__label {
+  width: 170px;
+  color: #667085;
+  font-size: 24px;
+}
+
+.invoice-detail-row__value {
+  flex: 1;
+  color: #16181a;
+  font-size: 25px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.invoice-detail-row__amount {
+  color: #f97316;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.invoice-detail-actions {
+  justify-content: flex-end;
+  padding-top: 24px;
+}
+
+.invoice-detail-action {
+  align-items: center;
+  justify-content: center;
+  min-width: 190px;
+  height: 62px;
+  padding: 0 20px;
+  background: #1a5eff;
+  border-radius: 8px;
+}
+
+.invoice-detail-action--disabled {
+  background: #f2f4f7;
+}
+
+.invoice-detail-action__text {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.invoice-detail-action__text--disabled {
+  color: #667085;
+}
+
+.invoice-detail-section__head {
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 4px;
+}
+
+.invoice-detail-section__title {
+  color: #16181a;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.invoice-detail-section__summary {
+  color: #667085;
+  font-size: 23px;
+}
+
+.invoice-detail-waybill {
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-bottom-color: #eef2f6;
+  border-bottom-width: 1px;
+}
+
+.invoice-detail-waybill__index {
+  color: #667085;
+  font-size: 22px;
+}
+
+.invoice-detail-waybill__number {
+  display: flex;
+  margin-top: 6px;
+  color: #16181a;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.invoice-detail-waybill__amount {
+  color: #f97316;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.invoice-detail-empty,
+.invoice-detail-empty-block {
+  align-items: center;
+  justify-content: center;
+}
+
+.invoice-detail-empty__title,
+.invoice-detail-empty-block__title {
+  color: #16181a;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.invoice-detail-empty__summary {
+  display: flex;
+  margin-top: 12px;
+  color: #667085;
+  font-size: 24px;
+  line-height: 34px;
+  text-align: center;
+}
+
+.invoice-detail-empty__button {
+  align-items: center;
+  justify-content: center;
+  width: 220px;
+  height: 64px;
+  margin-top: 28px;
+  background: #1a5eff;
+  border-radius: 8px;
+}
+
+.invoice-detail-empty__button-text {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.invoice-detail-loading {
+  display: flex;
+  padding: 20px 0 36px;
+  color: #667085;
+  font-size: 24px;
+  text-align: center;
+}

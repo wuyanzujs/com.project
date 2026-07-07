@@ -12,6 +12,13 @@
         "quotes": ["error", "single", { "avoidEscape": true }],
         "jsx-quotes": ["error", "prefer-single"],
         "comma-dangle": ["error", "never"],
+        "react/jsx-closing-bracket-location": [
+          "error",
+          {
+            "nonEmpty": "line-aligned",
+            "selfClosing": "line-aligned"
+          }
+        ],
         "import/order": [
           "error",
           {

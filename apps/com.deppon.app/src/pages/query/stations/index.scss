@@ -1,0 +1,263 @@
+.query-stations-page {
+  min-height: 100%;
+  padding-bottom: 40px;
+  background: #f5f7fb;
+}
+
+.query-stations-header {
+  padding: 32px 24px 24px;
+  background: #ffffff;
+}
+
+.query-stations-header__label {
+  color: #1a5eff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.query-stations-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: #16181a;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.query-stations-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: #667085;
+  font-size: 25px;
+  line-height: 38px;
+}
+
+.query-stations-filter,
+.query-stations-section,
+.query-stations-results,
+.query-stations-message {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.query-stations-filter__label {
+  display: flex;
+  margin-bottom: 12px;
+  color: #667085;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.query-stations-chip-group,
+.query-stations-grid,
+.query-stations-section__head,
+.query-stations-result-head,
+.query-stations-card__actions {
+  display: flex;
+  flex-direction: row;
+}
+
+.query-stations-chip-group {
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.query-stations-chip {
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  height: 56px;
+  padding: 0 18px;
+  margin: 0 12px 12px 0;
+  background: #f8fafc;
+  border-color: #e4e7ec;
+  border-radius: 8px;
+  border-width: 1px;
+}
+
+.query-stations-chip--active {
+  background: #e8efff;
+  border-color: #1a5eff;
+}
+
+.query-stations-chip__text {
+  color: #475467;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.query-stations-chip__text--active {
+  color: #1a5eff;
+}
+
+.query-stations-section__head,
+.query-stations-result-head {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.query-stations-section__title,
+.query-stations-result-head__title {
+  color: #16181a;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.query-stations-link {
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  padding: 0 18px;
+  background: #eef2f6;
+  border-radius: 8px;
+}
+
+.query-stations-link__text {
+  color: #1a5eff;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.query-stations-input {
+  height: 72px;
+  margin-top: 18px;
+  padding: 0 20px;
+  color: #16181a;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 25px;
+}
+
+.query-stations-input--grid {
+  flex: 1;
+}
+
+.query-stations-input--right {
+  margin-left: 14px;
+}
+
+.query-stations-submit {
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  margin: 20px 24px 0;
+  background: #1a5eff;
+  border-radius: 8px;
+}
+
+.query-stations-submit__text {
+  color: #ffffff;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.query-stations-message {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  border-width: 1px;
+}
+
+.query-stations-message__text {
+  color: #c2410c;
+  font-size: 24px;
+  line-height: 34px;
+}
+
+.query-stations-result-head__summary {
+  display: flex;
+  margin-top: 8px;
+  color: #667085;
+  font-size: 23px;
+}
+
+.query-stations-result-head__tag {
+  padding: 8px 16px;
+  color: #1a5eff;
+  background: #e8efff;
+  border-radius: 8px;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.query-stations-card {
+  padding: 22px 0;
+  border-top-color: #eef2f6;
+  border-top-width: 1px;
+}
+
+.query-stations-card__title {
+  color: #16181a;
+  font-size: 29px;
+  font-weight: 700;
+}
+
+.query-stations-card__address,
+.query-stations-card__meta {
+  display: flex;
+  margin-top: 10px;
+  color: #667085;
+  font-size: 23px;
+  line-height: 34px;
+}
+
+.query-stations-card__actions {
+  justify-content: flex-end;
+  padding-top: 18px;
+}
+
+.query-stations-card__outline-button,
+.query-stations-card__primary-button {
+  align-items: center;
+  justify-content: center;
+  min-width: 128px;
+  height: 56px;
+  padding: 0 18px;
+  margin-left: 12px;
+  border-radius: 8px;
+}
+
+.query-stations-card__outline-button {
+  background: #f8fafc;
+  border-color: #d0d5dd;
+  border-width: 1px;
+}
+
+.query-stations-card__primary-button {
+  background: #1a5eff;
+}
+
+.query-stations-card__outline-button-text,
+.query-stations-card__primary-button-text {
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.query-stations-card__outline-button-text {
+  color: #344054;
+}
+
+.query-stations-card__primary-button-text {
+  color: #ffffff;
+}
+
+.query-stations-empty {
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+}
+
+.query-stations-empty__title {
+  color: #16181a;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.query-stations-empty__summary {
+  display: flex;
+  margin-top: 12px;
+  color: #667085;
+  font-size: 24px;
+  line-height: 34px;
+  text-align: center;
+}

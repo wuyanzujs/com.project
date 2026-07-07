@@ -1,0 +1,139 @@
+import { authApi } from './auth.api'
+import {
+  clearAppSession,
+  getCurrentUser,
+  saveCurrentUser
+} from './session'
+import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
+
+import type { AppUser } from './types'
+
+export interface AuthResult {
+  status: boolean
+  message: string
+  user: AppUser | null
+}
+
+function getSystemCode() {
+  return APP_RUNTIME_CONFIG.systemCode
+}
+
+export function isValidMobile(mobile: string) {
+  return /^1[3-9]\d{9}$/.test(mobile.trim())
+}
+
+export function isValidSmsCode(smsCode: string) {
+  return /^\d{6}$/.test(smsCode.trim())
+}
+
+export function maskMobile(mobile = '') {
+  const value = mobile.trim()
+
+  if (!/^1\d{10}$/.test(value)) {
+    return value
+  }
+
+  return `${value.slice(0, 3)}****${value.slice(7)}`
+}
+
+export function getUserDisplayName(user: AppUser | null) {
+  if (!user) {
+    return '未登录'
+  }
+
+  return (
+    user.nickName ||
+    user.userName ||
+    maskMobile(user.mobile) ||
+    user.customerCode ||
+    '德邦用户'
+  )
+}
+
+export const authService = {
+  getCachedUser() {
+    return getCurrentUser()
+  },
+
+  async bootstrapUser(): Promise<AppUser | null> {
+    const response = await authApi.queryUserInfo(false, false)
+
+    if (response.status && response.result) {
+      saveCurrentUser(response.result)
+      return response.result
+    }
+
+    return null
+  },
+
+  async sendLoginSms(mobile: string) {
+    if (!isValidMobile(mobile)) {
+      return Promise.resolve({
+        status: false,
+        message: '请填写正确的手机号',
+        result: null
+      })
+    }
+
+    return authApi.sendSmsMessage({
+      mobile,
+      sysCode: getSystemCode(),
+      messageType: 'login'
+    })
+  },
+
+  async loginWithSms(mobile: string, smsCode: string): Promise<AuthResult> {
+    if (!isValidMobile(mobile)) {
+      return {
+        status: false,
+        message: '请填写正确的手机号',
+        user: null
+      }
+    }
+
+    if (!isValidSmsCode(smsCode)) {
+      return {
+        status: false,
+        message: '请填写 6 位数字验证码',
+        user: null
+      }
+    }
+
+    const response = await authApi.login({
+      account: mobile.trim(),
+      verifyCode: smsCode.trim(),
+      loginType: APP_RUNTIME_CONFIG.mobileLoginType,
+      sysCode: getSystemCode()
+    })
+
+    if (response.status && response.result) {
+      saveCurrentUser(response.result)
+
+      return {
+        status: true,
+        message: '',
+        user: response.result
+      }
+    }
+
+    return {
+      status: false,
+      message: response.message || '登录失败，请稍后再试',
+      user: null
+    }
+  },
+
+  async logout() {
+    try {
+      await authApi.logout(getSystemCode())
+    } finally {
+      clearAppSession()
+    }
+  },
+
+  async generateTmpToken(source: string) {
+    const response = await authApi.generateTmpToken({ source }, false)
+
+    return response.status && response.result ? response.result : ''
+  }
+}

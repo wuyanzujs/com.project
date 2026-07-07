@@ -1,0 +1,239 @@
+.real-name-page {
+  min-height: 100%;
+  padding-bottom: 40px;
+  background: #f5f7fb;
+}
+
+.real-name-header {
+  padding: 32px 24px 24px;
+  background: #ffffff;
+}
+
+.real-name-header__label {
+  color: #1a5eff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.real-name-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: #16181a;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.real-name-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: #667085;
+  font-size: 25px;
+  line-height: 38px;
+}
+
+.real-name-status,
+.real-name-card,
+.real-name-form,
+.real-name-rules {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.real-name-status {
+  border-color: #fed7aa;
+  border-width: 1px;
+}
+
+.real-name-status--ok {
+  border-color: #bbf7d0;
+}
+
+.real-name-status__head,
+.real-name-card__actions,
+.real-name-native {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.real-name-status__label {
+  color: #667085;
+  font-size: 23px;
+}
+
+.real-name-status__title,
+.real-name-form__title,
+.real-name-rules__title,
+.real-name-native__title {
+  display: flex;
+  margin-top: 8px;
+  color: #16181a;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.real-name-status__badge {
+  padding: 8px 14px;
+  color: #b45309;
+  background: #fff3dc;
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.real-name-status__badge--ok {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.real-name-status__summary,
+.real-name-form__summary,
+.real-name-card__hint,
+.real-name-native__summary,
+.real-name-rules__text {
+  display: flex;
+  margin-top: 12px;
+  color: #667085;
+  font-size: 23px;
+  line-height: 34px;
+}
+
+.real-name-card {
+  background: #eef2f6;
+}
+
+.real-name-card__name {
+  color: #16181a;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.real-name-card__id {
+  display: flex;
+  margin-top: 12px;
+  color: #344054;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.real-name-card__actions {
+  margin-top: 22px;
+}
+
+.real-name-card__ghost-button,
+.real-name-card__danger-button {
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 68px;
+  border-radius: 8px;
+}
+
+.real-name-card__ghost-button {
+  margin-right: 14px;
+  background: #ffffff;
+  border-color: #d0d5dd;
+  border-width: 1px;
+}
+
+.real-name-card__danger-button {
+  background: #fee4e2;
+}
+
+.real-name-card__ghost-button-text,
+.real-name-card__danger-button-text {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.real-name-card__ghost-button-text {
+  color: #344054;
+}
+
+.real-name-card__danger-button-text {
+  color: #b42318;
+}
+
+.real-name-field {
+  margin-top: 22px;
+}
+
+.real-name-field__label {
+  color: #475467;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.real-name-input {
+  height: 72px;
+  margin-top: 12px;
+  padding: 0 20px;
+  color: #16181a;
+  background: #f8fafc;
+  border-color: #e4e7ec;
+  border-radius: 8px;
+  border-width: 1px;
+  font-size: 25px;
+}
+
+.real-name-form__protocol {
+  display: flex;
+  margin-top: 16px;
+  color: #667085;
+  font-size: 22px;
+  line-height: 32px;
+}
+
+.real-name-form__link {
+  color: #1a5eff;
+  font-weight: 700;
+}
+
+.real-name-submit {
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  margin-top: 22px;
+  background: #1a5eff;
+  border-radius: 8px;
+}
+
+.real-name-submit__text {
+  color: #ffffff;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.real-name-native {
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top-color: #eef2f6;
+  border-top-width: 1px;
+}
+
+.real-name-native__summary {
+  max-width: 430px;
+}
+
+.real-name-native__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 124px;
+  height: 58px;
+  padding: 0 18px;
+  background: #eef2f6;
+  border-radius: 8px;
+}
+
+.real-name-native__button-text {
+  color: #1a5eff;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.real-name-rules__title {
+  margin-top: 0;
+}

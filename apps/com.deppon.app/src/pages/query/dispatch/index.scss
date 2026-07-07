@@ -1,0 +1,233 @@
+.query-dispatch-page {
+  min-height: 100%;
+  padding-bottom: 40px;
+  background: #f5f7fb;
+}
+
+.query-dispatch-header {
+  padding: 32px 24px 24px;
+  background: #ffffff;
+}
+
+.query-dispatch-header__label {
+  color: #1a5eff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.query-dispatch-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: #16181a;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.query-dispatch-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: #667085;
+  font-size: 25px;
+  line-height: 38px;
+}
+
+.query-dispatch-tabs {
+  display: flex;
+  flex-direction: row;
+  padding: 20px 24px 0;
+}
+
+.query-dispatch-tab {
+  align-items: center;
+  justify-content: center;
+  height: 62px;
+  padding: 0 28px;
+  margin-right: 14px;
+  background: #ffffff;
+  border-color: #e4e7ec;
+  border-radius: 8px;
+  border-width: 1px;
+}
+
+.query-dispatch-tab--active {
+  background: #e8efff;
+  border-color: #1a5eff;
+}
+
+.query-dispatch-tab__text {
+  color: #475467;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.query-dispatch-tab__text--active {
+  color: #1a5eff;
+}
+
+.query-dispatch-section,
+.query-dispatch-results,
+.query-dispatch-message {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.query-dispatch-section__head,
+.query-dispatch-result-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.query-dispatch-section__title,
+.query-dispatch-result-head__title {
+  color: #16181a;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.query-dispatch-link {
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  padding: 0 18px;
+  background: #eef2f6;
+  border-radius: 8px;
+}
+
+.query-dispatch-link__text {
+  color: #1a5eff;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.query-dispatch-input {
+  height: 72px;
+  margin-top: 18px;
+  padding: 0 20px;
+  color: #16181a;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 25px;
+}
+
+.query-dispatch-grid {
+  display: flex;
+  flex-direction: row;
+}
+
+.query-dispatch-input--grid {
+  flex: 1;
+}
+
+.query-dispatch-input--right {
+  margin-left: 14px;
+}
+
+.query-dispatch-submit,
+.query-dispatch-express {
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  margin: 20px 24px 0;
+  background: #1a5eff;
+  border-radius: 8px;
+}
+
+.query-dispatch-submit__text,
+.query-dispatch-express__text {
+  color: #ffffff;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.query-dispatch-message {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  border-width: 1px;
+}
+
+.query-dispatch-message__text,
+.query-dispatch-hint__text {
+  color: #c2410c;
+  font-size: 24px;
+  line-height: 34px;
+}
+
+.query-dispatch-result-head__summary {
+  display: flex;
+  margin-top: 8px;
+  color: #667085;
+  font-size: 23px;
+}
+
+.query-dispatch-result-head__tag {
+  padding: 8px 16px;
+  color: #1a5eff;
+  background: #e8efff;
+  border-radius: 8px;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.query-dispatch-hint {
+  margin-top: 18px;
+  padding: 18px;
+  background: #fff7ed;
+  border-radius: 8px;
+}
+
+.query-dispatch-group {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top-color: #eef2f6;
+  border-top-width: 1px;
+}
+
+.query-dispatch-group__title {
+  color: #16181a;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.query-dispatch-streets {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.query-dispatch-street {
+  min-width: 30%;
+  padding: 14px 12px;
+  margin: 0 10px 10px 0;
+  background: #f8fafc;
+  border-color: #eef2f6;
+  border-radius: 8px;
+  border-width: 1px;
+}
+
+.query-dispatch-street--active {
+  background: #e8efff;
+  border-color: #1a5eff;
+}
+
+.query-dispatch-street__text {
+  color: #475467;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.query-dispatch-street__text--active {
+  color: #1a5eff;
+}
+
+.query-dispatch-street__hint {
+  display: flex;
+  margin-top: 6px;
+  color: #667085;
+  font-size: 20px;
+  line-height: 28px;
+}

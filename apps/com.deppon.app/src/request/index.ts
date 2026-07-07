@@ -215,6 +215,9 @@ export const http = {
 }
 
 export { RequestError }
+export * from './cookieJar'
+export * from './deppon'
+export * from './events'
 export type {
   HttpResponse,
   RequestHeaders,

@@ -1,0 +1,188 @@
+.invoice-taxpayer-page {
+  min-height: 100%;
+  padding-bottom: 40px;
+  background: #f5f7fb;
+}
+
+.invoice-taxpayer-header {
+  padding: 32px 24px 24px;
+  background: #ffffff;
+}
+
+.invoice-taxpayer-header__label {
+  color: #1a5eff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.invoice-taxpayer-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: #16181a;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.invoice-taxpayer-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: #667085;
+  font-size: 25px;
+  line-height: 38px;
+}
+
+.invoice-taxpayer-toolbar,
+.invoice-taxpayer-card__top,
+.invoice-taxpayer-card__actions {
+  display: flex;
+  flex-direction: row;
+}
+
+.invoice-taxpayer-toolbar {
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.invoice-taxpayer-toolbar__title {
+  color: #16181a;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.invoice-taxpayer-toolbar__summary {
+  display: flex;
+  margin-top: 8px;
+  color: #667085;
+  font-size: 23px;
+}
+
+.invoice-taxpayer-toolbar__button {
+  align-items: center;
+  justify-content: center;
+  width: 112px;
+  height: 58px;
+  background: #1a5eff;
+  border-radius: 8px;
+}
+
+.invoice-taxpayer-toolbar__button-text {
+  color: #ffffff;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.invoice-taxpayer-content {
+  padding: 20px 24px 40px;
+}
+
+.invoice-taxpayer-card {
+  padding: 24px;
+  margin-bottom: 16px;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.invoice-taxpayer-card__top {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.invoice-taxpayer-card__title {
+  flex: 1;
+  color: #16181a;
+  font-size: 29px;
+  font-weight: 700;
+}
+
+.invoice-taxpayer-card__tag {
+  padding: 6px 14px;
+  color: #047857;
+  background: #ecfdf3;
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.invoice-taxpayer-card__meta {
+  display: flex;
+  margin-top: 10px;
+  color: #667085;
+  font-size: 23px;
+  line-height: 34px;
+}
+
+.invoice-taxpayer-card__actions {
+  justify-content: flex-end;
+  padding-top: 18px;
+}
+
+.invoice-taxpayer-card__outline-button,
+.invoice-taxpayer-card__danger-button {
+  align-items: center;
+  justify-content: center;
+  min-width: 118px;
+  height: 56px;
+  padding: 0 16px;
+  margin-left: 12px;
+  border-radius: 8px;
+}
+
+.invoice-taxpayer-card__outline-button {
+  background: #f8fafc;
+  border-color: #d0d5dd;
+  border-width: 1px;
+}
+
+.invoice-taxpayer-card__danger-button {
+  background: #fef2f2;
+}
+
+.invoice-taxpayer-card__outline-button-text,
+.invoice-taxpayer-card__danger-button-text {
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.invoice-taxpayer-card__outline-button-text {
+  color: #344054;
+}
+
+.invoice-taxpayer-card__danger-button-text {
+  color: #dc2626;
+}
+
+.invoice-taxpayer-empty {
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  padding: 32px 24px;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.invoice-taxpayer-empty__title {
+  color: #16181a;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.invoice-taxpayer-empty__summary {
+  display: flex;
+  margin-top: 12px;
+  color: #667085;
+  font-size: 24px;
+  line-height: 34px;
+  text-align: center;
+}
+
+.invoice-taxpayer-loading {
+  display: flex;
+  padding: 20px 0 36px;
+  color: #667085;
+  font-size: 24px;
+  text-align: center;
+}

@@ -6,11 +6,16 @@
   "packageManager": "pnpm@11.9.0",
   "scripts": {
     "dev:app": "pnpm --filter com.deppon.app dev",
-    "dev:mini": "pnpm --filter com.deppon.mini dev",
     "build:app": "pnpm --filter com.deppon.app build",
-    "build:mini": "pnpm --filter com.deppon.mini build",
+    "android": "pnpm --filter com.deppon.app android",
+    "ios": "pnpm --filter com.deppon.app ios",
+    "start:app": "pnpm --filter com.deppon.app start",
+    "typecheck:app": "pnpm --filter com.deppon.app typecheck",
     "lint:app": "pnpm --filter com.deppon.app exec eslint \"src/**/*.{ts,tsx}\"",
     "lint:app:fix": "pnpm --filter com.deppon.app exec eslint \"src/**/*.{ts,tsx}\" --fix",
+    "check:app-boundaries": "pnpm --filter com.deppon.app check:rn-boundaries",
+    "check:app-native-env": "pnpm --filter com.deppon.app check:native-env",
+    "verify:app": "pnpm --filter com.deppon.app verify",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

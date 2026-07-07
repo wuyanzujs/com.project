@@ -1,0 +1,172 @@
+.account-cancel-page {
+  min-height: 100%;
+  padding-bottom: 40px;
+  background: #f5f7fb;
+}
+
+.account-cancel-header {
+  padding: 32px 24px 24px;
+  background: #ffffff;
+}
+
+.account-cancel-header__label {
+  color: #b42318;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.account-cancel-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: #16181a;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.account-cancel-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: #667085;
+  font-size: 25px;
+  line-height: 38px;
+}
+
+.account-cancel-card,
+.account-cancel-section,
+.account-cancel-agreement {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.account-cancel-card {
+  border-color: #fecdca;
+  border-width: 1px;
+}
+
+.account-cancel-card__title,
+.account-cancel-section__title {
+  color: #16181a;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.account-cancel-card__mobile {
+  display: flex;
+  margin-top: 10px;
+  color: #b42318;
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.account-cancel-section__head,
+.account-cancel-code,
+.account-cancel-agreement {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.account-cancel-section__head {
+  justify-content: space-between;
+}
+
+.account-cancel-section__hint {
+  color: #667085;
+  font-size: 23px;
+}
+
+.account-cancel-warning {
+  display: flex;
+  margin-top: 12px;
+  color: #667085;
+  font-size: 24px;
+  line-height: 36px;
+}
+
+.account-cancel-code {
+  margin-top: 18px;
+}
+
+.account-cancel-code__input {
+  flex: 1;
+  height: 72px;
+  padding: 0 20px;
+  color: #16181a;
+  background: #f8fafc;
+  border-color: #e4e7ec;
+  border-radius: 8px;
+  border-width: 1px;
+  font-size: 25px;
+}
+
+.account-cancel-code__button {
+  align-items: center;
+  justify-content: center;
+  width: 168px;
+  height: 72px;
+  margin-left: 14px;
+  background: #eef2f6;
+  border-radius: 8px;
+}
+
+.account-cancel-code__button-text {
+  color: #1a5eff;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.account-cancel-agreement {
+  align-items: flex-start;
+}
+
+.account-cancel-checkbox {
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-right: 14px;
+  border-color: #d0d5dd;
+  border-radius: 8px;
+  border-width: 1px;
+}
+
+.account-cancel-checkbox--checked {
+  background: #b42318;
+  border-color: #b42318;
+}
+
+.account-cancel-checkbox__text {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 36px;
+  text-align: center;
+}
+
+.account-cancel-agreement__text {
+  flex: 1;
+  color: #475467;
+  font-size: 24px;
+  line-height: 34px;
+}
+
+.account-cancel-submit {
+  align-items: center;
+  justify-content: center;
+  height: 84px;
+  margin: 20px 24px 0;
+  background: #b42318;
+  border-radius: 8px;
+}
+
+.account-cancel-submit--disabled {
+  background: #d0d5dd;
+}
+
+.account-cancel-submit__text {
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 700;
+}

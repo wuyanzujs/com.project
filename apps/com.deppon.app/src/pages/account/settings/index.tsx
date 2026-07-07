@@ -1,0 +1,238 @@
+import { ScrollView, Text, View } from '@tarojs/components'
+import Taro, { useDidShow } from '@tarojs/taro'
+
+import { useState } from 'react'
+
+import { accountService } from '../../../services/account'
+import { authService } from '../../../services/auth'
+import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
+import {
+  createLoginRedirectUrl,
+  hasValidSession
+} from '../../../shared/navigation/authGuard'
+import { APP_ROUTES } from '../../../shared/navigation/routes'
+
+import type { AccountOverviewView } from '../../../services/account'
+
+import './index.scss'
+
+interface AccountEntry {
+  title: string
+  summary: string
+  route?: string
+  login?: boolean
+}
+
+const ACCOUNT_ENTRIES: AccountEntry[] = [
+  {
+    title: '隐私设置',
+    summary: '查看协议、个人信息清单和权限调用清单',
+    route: APP_ROUTES.privacySettings,
+    login: true
+  },
+  {
+    title: '实名认证',
+    summary: '登记或核验实名收寄身份信息',
+    route: APP_ROUTES.realNameCenter,
+    login: true
+  },
+  {
+    title: '签收码',
+    summary: '管理实名签收姓名和签收授权',
+    route: APP_ROUTES.signCode,
+    login: true
+  },
+  {
+    title: '地址簿',
+    summary: '管理常用寄收件地址',
+    route: APP_ROUTES.contactList,
+    login: true
+  }
+]
+
+const AccountSettingsPage = () => {
+  const [overview, setOverview] = useState<AccountOverviewView>(() =>
+    accountService.getOverview()
+  )
+  const [refreshing, setRefreshing] = useState(false)
+  const [logouting, setLogouting] = useState(false)
+
+  const showToast = (title: string) => {
+    Taro.showToast({
+      title,
+      icon: 'none'
+    })
+  }
+
+  const refreshOverview = async () => {
+    if (!hasValidSession()) {
+      setOverview(accountService.getOverview())
+      return
+    }
+
+    setRefreshing(true)
+
+    try {
+      setOverview(await accountService.refreshOverview())
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
+  useDidShow(() => {
+    refreshOverview()
+  })
+
+  const handleLogin = () => {
+    navigateToAppRoute(createLoginRedirectUrl(APP_ROUTES.accountSettings))
+  }
+
+  const handleEntry = (entry: AccountEntry) => {
+    if (!entry.route) {
+      showToast('该能力后续接入')
+      return
+    }
+
+    navigateToAppRoute(entry.route, {
+      login: entry.login
+    })
+  }
+
+  const handleLogout = () => {
+    if (logouting) {
+      return
+    }
+
+    Taro.showModal({
+      title: '退出登录',
+      content: '退出后，本机将清除当前登录态，但不会注销账号。',
+      confirmText: '退出',
+      confirmColor: '#b42318',
+      success: async (res) => {
+        if (!res.confirm) {
+          return
+        }
+
+        setLogouting(true)
+
+        try {
+          await authService.logout()
+          setOverview(accountService.getOverview())
+          showToast('已退出登录')
+          navigateToAppRoute(APP_ROUTES.mine, {
+            replace: true
+          })
+        } finally {
+          setLogouting(false)
+        }
+      }
+    })
+  }
+
+  return (
+    <ScrollView className='account-settings-page' scrollY>
+      <View className='account-settings-header'>
+        <Text className='account-settings-header__label'>Account</Text>
+        <Text className='account-settings-header__title'>账号设置</Text>
+        <Text className='account-settings-header__summary'>
+          管理登录状态、账号资料、隐私协议和安全操作。
+        </Text>
+      </View>
+
+      <View className='account-settings-card'>
+        <View className='account-settings-profile'>
+          <View className='account-settings-profile__avatar'>
+            <Text className='account-settings-profile__avatar-text'>
+              {overview.loggedIn ? overview.displayName.slice(0, 1) : '德'}
+            </Text>
+          </View>
+          <View className='account-settings-profile__content'>
+            <Text className='account-settings-profile__name'>
+              {overview.displayName}
+            </Text>
+            <Text className='account-settings-profile__summary'>
+              {overview.loggedIn
+                ? overview.maskedMobile || '已登录'
+                : '登录后可管理账号与安全设置'}
+            </Text>
+          </View>
+          <Text className='account-settings-profile__status'>
+            {refreshing ? '同步中' : overview.loggedIn ? '已登录' : '未登录'}
+          </Text>
+        </View>
+
+        {!overview.loggedIn && (
+          <View className='account-settings-login' onClick={handleLogin}>
+            <Text className='account-settings-login__text'>去登录</Text>
+          </View>
+        )}
+      </View>
+
+      <View className='account-settings-section'>
+        <Text className='account-settings-section__title'>账号资料</Text>
+        <View className='account-settings-field'>
+          <Text className='account-settings-field__label'>绑定手机号</Text>
+          <Text className='account-settings-field__value'>
+            {overview.maskedMobile || '--'}
+          </Text>
+        </View>
+        <View className='account-settings-field'>
+          <Text className='account-settings-field__label'>客户编码</Text>
+          <Text className='account-settings-field__value'>
+            {overview.user?.customerCode || '--'}
+          </Text>
+        </View>
+      </View>
+
+      <View className='account-settings-section'>
+        <Text className='account-settings-section__title'>安全与隐私</Text>
+        {ACCOUNT_ENTRIES.map((entry) => (
+          <View
+            className='account-settings-entry'
+            key={entry.title}
+            onClick={() => handleEntry(entry)}
+          >
+            <View className='account-settings-entry__content'>
+              <Text className='account-settings-entry__title'>
+                {entry.title}
+              </Text>
+              <Text className='account-settings-entry__summary'>
+                {entry.summary}
+              </Text>
+            </View>
+            <Text className='account-settings-entry__arrow'>›</Text>
+          </View>
+        ))}
+      </View>
+
+      {overview.loggedIn && (
+        <View className='account-settings-section'>
+          <Text className='account-settings-section__title'>账号操作</Text>
+          <View className='account-settings-danger' onClick={handleLogout}>
+            <Text className='account-settings-danger__title'>
+              {logouting ? '退出中' : '退出登录'}
+            </Text>
+            <Text className='account-settings-danger__summary'>
+              清除当前设备登录态，账号和数据仍会保留。
+            </Text>
+          </View>
+          <View
+            className='account-settings-danger account-settings-danger--strong'
+            onClick={() =>
+              navigateToAppRoute(APP_ROUTES.accountCancel, {
+                login: true
+              })
+            }
+          >
+            <Text className='account-settings-danger__title'>注销账号</Text>
+            <Text className='account-settings-danger__summary'>
+              注销后账号信息将无法恢复，请谨慎操作。
+            </Text>
+          </View>
+        </View>
+      )}
+    </ScrollView>
+  )
+}
+
+export default AccountSettingsPage

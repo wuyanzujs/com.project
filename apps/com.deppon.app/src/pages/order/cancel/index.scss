@@ -1,0 +1,136 @@
+.order-cancel-page {
+  min-height: 100%;
+  background: #f5f7fb;
+}
+
+.order-cancel-header {
+  padding: 32px 24px 24px;
+  background: #ffffff;
+}
+
+.order-cancel-header__label {
+  color: #1a5eff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.order-cancel-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: #16181a;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.order-cancel-header__summary {
+  display: flex;
+  margin-top: 12px;
+  color: #667085;
+  font-size: 25px;
+  line-height: 36px;
+}
+
+.order-cancel-section {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.order-cancel-section__title {
+  color: #16181a;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.order-cancel-reasons {
+  padding-top: 20px;
+}
+
+.order-cancel-reason {
+  display: flex;
+  justify-content: center;
+  min-height: 72px;
+  padding: 0 20px;
+  margin-bottom: 14px;
+  background: #f8fafc;
+  border-color: #e4e7ec;
+  border-radius: 8px;
+  border-width: 1px;
+}
+
+.order-cancel-reason--active {
+  background: #e8efff;
+  border-color: #1a5eff;
+}
+
+.order-cancel-reason__text {
+  color: #475467;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 72px;
+}
+
+.order-cancel-reason__text--active {
+  color: #1a5eff;
+}
+
+.order-cancel-custom {
+  padding-top: 4px;
+}
+
+.order-cancel-custom__input {
+  height: 72px;
+  padding: 0 20px;
+  color: #16181a;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 25px;
+}
+
+.order-cancel-message {
+  display: flex;
+  margin-top: 16px;
+  color: #d92d20;
+  font-size: 23px;
+  line-height: 32px;
+}
+
+.order-cancel-actions {
+  display: flex;
+  flex-direction: row;
+  padding: 24px;
+}
+
+.order-cancel-primary,
+.order-cancel-secondary {
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  border-radius: 8px;
+}
+
+.order-cancel-secondary {
+  width: 190px;
+  background: #eef2f6;
+}
+
+.order-cancel-primary {
+  flex: 1;
+  margin-left: 14px;
+  background: #d92d20;
+}
+
+.order-cancel-primary__text,
+.order-cancel-secondary__text {
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.order-cancel-primary__text {
+  color: #ffffff;
+}
+
+.order-cancel-secondary__text {
+  color: #344054;
+}

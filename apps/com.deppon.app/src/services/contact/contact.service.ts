@@ -1,0 +1,256 @@
+import { contactApi } from './contact.api'
+import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
+
+import type {
+  Contact,
+  ContactAnalysis,
+  ContactAddressHint,
+  ContactListOptions,
+  ContactValidationResult
+} from './types'
+
+const DEFAULT_PAGE_SIZE = 20
+
+export function createEmptyContact(role: Contact['type'] = 0): Contact {
+  return {
+    name: '',
+    telephone: '',
+    province: '',
+    city: '',
+    county: '',
+    address: '',
+    company: '',
+    type: role,
+    defaultAddress: '0',
+    regionType: ''
+  }
+}
+
+function getChineseLength(value: string) {
+  return (value.match(/[\u4e00-\u9fa5]/g) ?? []).length
+}
+
+type ContactAddressParts = Pick<
+  Contact,
+  'province' | 'city' | 'county' | 'address' | 'town'
+>
+
+export function getContactFullAddress(contact: ContactAddressParts) {
+  return [
+    contact.province,
+    contact.city,
+    contact.county,
+    contact.town,
+    contact.address
+  ]
+    .filter(Boolean)
+    .join('')
+}
+
+export function parseAddressHint(raw: string): ContactAddressHint {
+  const [province = '', city = '', county = '', town = '', ...addressParts] =
+    raw.split(',')
+
+  return {
+    province,
+    city,
+    county,
+    town,
+    address: addressParts.join(','),
+    raw
+  }
+}
+
+function parseProCityName(value?: string | null) {
+  if (!value?.includes('-')) {
+    return {
+      province: '',
+      city: '',
+      county: ''
+    }
+  }
+
+  const [province = '', city = '', county = ''] = value.split('-')
+
+  return {
+    province,
+    city,
+    county
+  }
+}
+
+function normalizeAnalysisPhone(value?: string | null) {
+  return (value ?? '').replace(/[^\d]/g, '').slice(0, 11)
+}
+
+export function applyAnalysisToContact(
+  contact: Contact,
+  analysis: ContactAnalysis
+): Contact {
+  const region = parseProCityName(analysis.proCityName)
+  const telephone = normalizeAnalysisPhone(analysis.telephone)
+  const canFillRegion = !!(region.province || region.city || region.county)
+  const address = canFillRegion
+    ? analysis.address || contact.address
+    : `${analysis.proCityName || ''}${analysis.town || ''}${analysis.address || ''}`
+
+  return {
+    ...contact,
+    name: analysis.name || contact.name,
+    telephone: telephone || contact.telephone,
+    extension: analysis.extension || contact.extension,
+    province: region.province || contact.province,
+    city: region.city || contact.city,
+    county: region.county || contact.county,
+    town: analysis.town || contact.town,
+    address: address || contact.address
+  }
+}
+
+export function validateContact(contact: Contact): ContactValidationResult {
+  const messages: string[] = []
+  const name = contact.name.trim()
+  const telephone = contact.telephone.trim()
+  const address = contact.address.trim()
+
+  if (!name) {
+    messages.push('请填写联系人姓名')
+  } else if (name.length > 20) {
+    messages.push('联系人姓名不能超过20个字符')
+  }
+
+  if (!/^1[3-9]\d{9}$/.test(telephone)) {
+    messages.push('请填写正确的手机号')
+  }
+
+  if (contact.fixedPhone && !/^[0-9-]{6,20}$/.test(contact.fixedPhone)) {
+    messages.push('请填写正确的固定电话')
+  }
+
+  if (!contact.province || !contact.city || !contact.county) {
+    messages.push('请选择省市区')
+  }
+
+  if (!address) {
+    messages.push('请填写详细地址')
+  } else if (address.length < 4 || address.length > 100) {
+    messages.push('详细地址需为4到100个字符')
+  } else if (getChineseLength(address) < 4) {
+    messages.push('详细地址至少包含4个汉字')
+  }
+
+  return {
+    valid: messages.length === 0,
+    messages
+  }
+}
+
+export const contactService = {
+  queryList(options: ContactListOptions = {}) {
+    return contactApi.queryContact({
+      pageIndex: options.pageIndex ?? 1,
+      pageSize: options.pageSize ?? DEFAULT_PAGE_SIZE,
+      filterContent: options.keyword ?? '',
+      regionType: options.regionType ?? '',
+      sysCode: APP_RUNTIME_CONFIG.systemCode
+    })
+  },
+
+  save(contact: Contact) {
+    const validation = validateContact(contact)
+
+    if (!validation.valid) {
+      return Promise.resolve({
+        status: false,
+        message: validation.messages[0],
+        result: null
+      })
+    }
+
+    return contactApi.saveContact(contact)
+  },
+
+  remove(id: string) {
+    if (!id) {
+      return Promise.resolve({
+        status: false,
+        message: '缺少地址 ID，无法删除',
+        result: null
+      })
+    }
+
+    return contactApi.deleteContacts([id])
+  },
+
+  removeMany(ids: string[]) {
+    if (!ids.length) {
+      return Promise.resolve({
+        status: false,
+        message: '请选择需要删除的地址',
+        result: null
+      })
+    }
+
+    return contactApi.deleteContacts(ids)
+  },
+
+  setDefault(contact: Contact) {
+    if (!contact.id) {
+      return Promise.resolve({
+        status: false,
+        message: '缺少地址 ID，无法设置默认地址',
+        result: null
+      })
+    }
+
+    return contactApi.saveContact({
+      ...contact,
+      defaultAddress: '1'
+    })
+  },
+
+  queryDefault() {
+    return contactApi.queryDefaultContact()
+  },
+
+  analyze(address: string) {
+    return contactApi.analyzeAddress(address)
+  },
+
+  analyze4(detailAddress: string, contact?: Partial<Contact>) {
+    return contactApi.analyzeAddress4({
+      province: contact?.province,
+      city: contact?.city,
+      county: contact?.county,
+      detailAddress
+    })
+  },
+
+  queryAddressHints(contact: Pick<Contact, 'province' | 'city' | 'county' | 'address'>) {
+    return contactApi.queryAddressHints({
+      province: contact.province,
+      city: contact.city,
+      county: contact.county,
+      address: contact.address
+    })
+  },
+
+  queryTownList(contact: Pick<Contact, 'province' | 'city' | 'county'>) {
+    return contactApi.queryTownList({
+      provinceName: contact.province,
+      cityName: contact.city,
+      countyName: contact.county
+    })
+  },
+
+  checkAddressDetail(contact: Pick<Contact, 'province' | 'city' | 'county' | 'address'>) {
+    return contactApi.checkAddressDetail(contact)
+  },
+
+  queryCount() {
+    return contactApi.queryContactCount()
+  },
+
+  parseAddressHint,
+  applyAnalysisToContact
+}

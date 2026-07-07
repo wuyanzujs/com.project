@@ -1,0 +1,56 @@
+.home-menu {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 8px 16px 0;
+}
+
+.home-menu__item {
+  width: 50%;
+  padding: 8px;
+}
+
+.home-menu__mark--primary {
+  background: #e8efff;
+  color: #1a5eff;
+}
+
+.home-menu__mark--success {
+  background: #e8f7ef;
+  color: #15803d;
+}
+
+.home-menu__mark--warning {
+  background: #fff3dc;
+  color: #b45309;
+}
+
+.home-menu__mark--neutral {
+  background: #eef2f6;
+  color: #475467;
+}
+
+.home-menu__mark {
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  font-size: 26px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.home-menu__label {
+  margin-top: 14px;
+  color: #16181a;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.home-menu__desc {
+  margin-top: 6px;
+  color: #667085;
+  font-size: 22px;
+  line-height: 32px;
+}

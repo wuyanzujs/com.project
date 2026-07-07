@@ -1,0 +1,529 @@
+.express-page {
+  min-height: 100%;
+  padding: 24px 24px 148px;
+  background: #f5f7fb;
+}
+
+.express-header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 28px 0 18px;
+}
+
+.express-header__label {
+  color: #1a5eff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.express-header__title {
+  display: flex;
+  margin-top: 8px;
+  color: #16181a;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.express-header__price {
+  color: #f97316;
+  font-size: 38px;
+  font-weight: 700;
+}
+
+.express-contact-panel,
+.express-section {
+  margin-bottom: 18px;
+  padding: 22px;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.express-contact-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 118px;
+}
+
+.express-contact-card__mark {
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-right: 18px;
+  border-radius: 24px;
+}
+
+.express-contact-card__mark--sender {
+  background: #e8efff;
+}
+
+.express-contact-card__mark--consignee {
+  background: #dcfce7;
+}
+
+.express-contact-card__mark-text {
+  color: #16181a;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 48px;
+  text-align: center;
+}
+
+.express-contact-card__content {
+  flex: 1;
+}
+
+.express-contact-card__name {
+  color: #16181a;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.express-contact-card__address {
+  display: flex;
+  margin-top: 8px;
+  color: #667085;
+  font-size: 24px;
+  line-height: 34px;
+}
+
+.express-contact-card__actions {
+  align-items: flex-end;
+  margin-left: 18px;
+}
+
+.express-link {
+  color: #1a5eff;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 36px;
+}
+
+.express-link--quiet {
+  margin-top: 8px;
+  color: #667085;
+}
+
+.express-swap {
+  align-self: center;
+  justify-content: center;
+  min-width: 92px;
+  height: 48px;
+  margin: 0 0 0 66px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+}
+
+.express-swap__text {
+  color: #475467;
+  font-size: 23px;
+  font-weight: 700;
+  line-height: 48px;
+  text-align: center;
+}
+
+.express-section__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.express-section__title {
+  color: #16181a;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.express-section__hint {
+  flex-shrink: 1;
+  margin-left: 16px;
+  color: #f97316;
+  font-size: 22px;
+  line-height: 30px;
+  text-align: right;
+}
+
+.express-field {
+  min-height: 92px;
+  padding: 16px 0;
+  border-bottom-color: #eef2f6;
+  border-bottom-width: 1px;
+}
+
+.express-field-grid {
+  display: flex;
+  flex-direction: row;
+}
+
+.express-field--grid {
+  flex: 1;
+}
+
+.express-field--grid-right {
+  margin-left: 20px;
+}
+
+.express-field__label {
+  color: #475467;
+  font-size: 23px;
+  line-height: 30px;
+}
+
+.express-field__row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.express-field__actions {
+  display: flex;
+  flex-direction: row;
+}
+
+.express-field__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 92px;
+  height: 44px;
+  margin-left: 18px;
+  padding: 0 16px;
+  background: #e8efff;
+  border-radius: 8px;
+}
+
+.express-field__button--compact {
+  min-width: 78px;
+  height: 40px;
+  padding: 0 12px;
+}
+
+.express-field__button-text {
+  color: #1a5eff;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 44px;
+  text-align: center;
+}
+
+.express-input {
+  height: 46px;
+  margin-top: 8px;
+  color: #16181a;
+  font-size: 28px;
+  line-height: 46px;
+}
+
+.express-goods-suggestions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding-top: 12px;
+}
+
+.express-goods-suggestion {
+  max-width: 100%;
+  min-height: 66px;
+  padding: 10px 16px;
+  margin: 0 12px 12px 0;
+  background: #f8fafc;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+}
+
+.express-goods-suggestion__name {
+  color: #16181a;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+.express-goods-suggestion__desc {
+  display: flex;
+  margin-top: 2px;
+  color: #667085;
+  font-size: 20px;
+  line-height: 28px;
+}
+
+.express-goods-message {
+  display: flex;
+  margin-top: 10px;
+  color: #667085;
+  font-size: 22px;
+  line-height: 30px;
+}
+
+.express-insurance-message {
+  display: flex;
+  margin-top: 8px;
+  color: #15803d;
+  font-size: 21px;
+  line-height: 30px;
+}
+
+.express-insurance-message--error {
+  color: #d92d20;
+}
+
+.express-option-title {
+  display: flex;
+  margin: 18px 0 12px;
+  color: #475467;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.express-chip-group,
+.express-toggle-group,
+.express-actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.express-chip {
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  height: 62px;
+  padding: 0 18px;
+  margin: 0 14px 14px 0;
+  background: #f8fafc;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+}
+
+.express-chip--active {
+  background: #e8efff;
+  border-color: #1a5eff;
+}
+
+.express-chip__text {
+  color: #475467;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.express-chip__text--active {
+  color: #1a5eff;
+}
+
+.express-service-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+}
+
+.express-service-row--stack {
+  align-items: flex-start;
+  padding-top: 18px;
+}
+
+.express-service-row__content {
+  flex: 1;
+  padding-right: 18px;
+}
+
+.express-service-row__summary {
+  display: flex;
+  color: #667085;
+  font-size: 22px;
+  line-height: 32px;
+}
+
+.express-toggle {
+  align-items: center;
+  justify-content: center;
+  width: 86px;
+  height: 52px;
+  margin-left: 10px;
+  background: #f8fafc;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+}
+
+.express-toggle--active {
+  background: #ecfdf3;
+  border-color: #16a34a;
+}
+
+.express-toggle__text {
+  color: #475467;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.express-toggle__text--active {
+  color: #15803d;
+}
+
+.express-primary-button,
+.express-secondary-button {
+  align-items: center;
+  justify-content: center;
+  height: 72px;
+  border-radius: 8px;
+}
+
+.express-primary-button {
+  flex: 1;
+  margin-left: 14px;
+  background: #1a5eff;
+}
+
+.express-secondary-button {
+  flex: 1;
+  background: #eef2f6;
+}
+
+.express-primary-button__text,
+.express-secondary-button__text {
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.express-primary-button__text {
+  color: #ffffff;
+}
+
+.express-secondary-button__text {
+  color: #344054;
+}
+
+.express-pickup {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 18px 0 0;
+}
+
+.express-pickup__label {
+  color: #667085;
+  font-size: 24px;
+}
+
+.express-pickup__value {
+  color: #16181a;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.express-product-list {
+  margin-top: 18px;
+}
+
+.express-product {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  margin-bottom: 12px;
+  background: #f8fafc;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+}
+
+.express-product--active {
+  background: #fff7ed;
+  border-color: #f97316;
+}
+
+.express-product__name {
+  color: #16181a;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.express-product__desc {
+  display: flex;
+  margin-top: 8px;
+  color: #667085;
+  font-size: 22px;
+}
+
+.express-product__price {
+  color: #f97316;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.express-agreement {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 20px;
+}
+
+.express-checkbox {
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-right: 12px;
+  border: 1px solid #98a2b3;
+  border-radius: 6px;
+}
+
+.express-checkbox--checked {
+  background: #1a5eff;
+  border-color: #1a5eff;
+}
+
+.express-checkbox__text {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 34px;
+  text-align: center;
+}
+
+.express-agreement__text {
+  color: #475467;
+  font-size: 24px;
+}
+
+.express-validation {
+  margin-top: 18px;
+  padding: 16px;
+  background: #fff7ed;
+  border-radius: 8px;
+}
+
+.express-validation__message {
+  display: flex;
+  color: #c2410c;
+  font-size: 22px;
+  line-height: 32px;
+}
+
+.express-submit {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 92px;
+  padding: 0 24px;
+  background: #16181a;
+  border-radius: 8px;
+}
+
+.express-submit__fee {
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.express-submit__text {
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 700;
+}

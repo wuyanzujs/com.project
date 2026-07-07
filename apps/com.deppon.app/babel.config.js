@@ -7,5 +7,16 @@ module.exports = {
       ts: true,
       compiler: 'webpack5',
     }]
+  ],
+  plugins: [
+    [
+      'module-resolver',
+      {
+        root: ['./src'],
+        alias: {
+          '@': './src'
+        }
+      }
+    ]
   ]
 }

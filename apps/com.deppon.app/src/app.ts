@@ -1,9 +1,12 @@
 import { Component, PropsWithChildren } from 'react'
 
+import { bootstrapAppRuntime } from './app.bootstrap'
 import './app.scss'
 
 class App extends Component<PropsWithChildren> {
-  componentDidMount() {}
+  componentDidMount() {
+    bootstrapAppRuntime()
+  }
 
   componentDidShow() {}
 
