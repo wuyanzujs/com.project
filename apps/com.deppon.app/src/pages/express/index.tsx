@@ -1,17 +1,23 @@
 import { Input, ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { ExpressContactPanel } from './components/ExpressContactPanel'
+import { ExpressGoodsSection } from './components/ExpressGoodsSection'
+import { ExpressQuoteSection } from './components/ExpressQuoteSection'
+import { ExpressServiceSection } from './components/ExpressServiceSection'
 import { contactSelection } from '../../services/contact'
+import { customerService } from '../../services/customer'
 import {
+  createExpressMonthlyPayView,
   createExpressDraft,
   expressDraftBridge,
   expressDraftStorage,
   expressInsuranceRules,
   expressPrivacyStorage,
+  getExpressReturnBillOption,
   expressService,
-  getExpressContactFullAddress,
   mapContactToExpressContact,
   markExpressQuoteStale,
   setExpressContact,
@@ -25,62 +31,24 @@ import {
   hasValidSession
 } from '../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../shared/navigation/routes'
+import { createAppWebUrl } from '../../shared/webview/appWeb'
 
+import type { CustomerCenterView } from '../../services/customer'
 import type {
-  ExpressDeliveryMode,
   ExpressDraft,
   ExpressGoodsItem,
   ExpressInsuranceQuote,
+  ExpressMonthlyPayView,
   ExpressPaymentType,
   ExpressProductQuote
 } from '../../services/express'
 
 import './index.scss'
 
-const PAYMENT_OPTIONS: Array<{ label: string; value: ExpressPaymentType }> = [
-  {
-    label: '寄付现结',
-    value: 'MP'
-  },
-  {
-    label: '到付',
-    value: 'PAY_ARIIVE'
-  },
-  {
-    label: '月结',
-    value: 'MONTH_PAY'
-  }
-]
-
-const DELIVERY_OPTIONS: Array<{ label: string; value: ExpressDeliveryMode }> = [
-  {
-    label: '送货上门',
-    value: 'PICKNOTUPSTAIRS'
-  },
-  {
-    label: '自提',
-    value: 'PICKSELF'
-  },
-  {
-    label: '送货上楼',
-    value: 'PICKUPSTAIRS'
-  }
-]
-
 function createQuery(params: Record<string, string>) {
   return Object.entries(params)
     .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
     .join('&')
-}
-
-function parseNumber(value: string, fallback = 0) {
-  const parsed = Number(value)
-
-  return Number.isFinite(parsed) ? parsed : fallback
-}
-
-function getProductKey(product: ExpressProductQuote) {
-  return `${product.omsProductCode || product.productName}-${product.totalfee ?? ''}`
 }
 
 function getProductPriceText(product: ExpressProductQuote | null) {
@@ -89,18 +57,6 @@ function getProductPriceText(product: ExpressProductQuote | null) {
   }
 
   return `¥${product.totalfee}`
-}
-
-function getMoneyText(value: number) {
-  if (!Number.isFinite(value)) {
-    return '¥0'
-  }
-
-  return Number.isInteger(value) ? `¥${value}` : `¥${value.toFixed(2)}`
-}
-
-function getGoodsCategoryText(item: ExpressGoodsItem) {
-  return [item.firstCategory, item.secondCategory].filter(Boolean).join(' / ')
 }
 
 function createInitialDraft() {
@@ -122,9 +78,15 @@ const ExpressPage = () => {
   const [quoteStatus, setQuoteStatus] = useState<
     'idle' | 'loading' | 'done' | 'error'
   >('idle')
+  const [monthlyCustomer, setMonthlyCustomer] =
+    useState<CustomerCenterView | null>(null)
+  const [monthlyCustomerLoading, setMonthlyCustomerLoading] = useState(false)
+  const [monthlyCustomerChecked, setMonthlyCustomerChecked] = useState(false)
+  const [monthlyCustomerMessage, setMonthlyCustomerMessage] = useState('')
   const [submiting, setSubmiting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
   const goodsQueryVersion = useRef(0)
+  const monthlyCustomerVersion = useRef(0)
   const validation = useMemo(
     () =>
       validateExpressDraft(draft, {
@@ -133,11 +95,77 @@ const ExpressPage = () => {
       }),
     [draft]
   )
+  const monthlyPayView = useMemo(
+    () =>
+      createExpressMonthlyPayView({
+        paymentType: draft.service.paymentType,
+        customer: monthlyCustomer,
+        loading: monthlyCustomerLoading,
+        checked: monthlyCustomerChecked,
+        errorMessage: monthlyCustomerMessage
+      }),
+    [
+      draft.service.paymentType,
+      monthlyCustomer,
+      monthlyCustomerChecked,
+      monthlyCustomerLoading,
+      monthlyCustomerMessage
+    ]
+  )
+  const selectedReturnBillOption = useMemo(
+    () => getExpressReturnBillOption(draft.service.returnBillType),
+    [draft.service.returnBillType]
+  )
 
   useEffect(() => {
     expressDraftStorage.save(draft)
     setSubmitMessage('')
   }, [draft])
+
+  const loadMonthlyCustomer = useCallback(async () => {
+    const requestVersion = monthlyCustomerVersion.current + 1
+
+    monthlyCustomerVersion.current = requestVersion
+    setMonthlyCustomerChecked(true)
+
+    if (!hasValidSession()) {
+      setMonthlyCustomer(null)
+      setMonthlyCustomerLoading(false)
+      setMonthlyCustomerMessage('请先登录后确认客户编码')
+      return
+    }
+
+    setMonthlyCustomerLoading(true)
+    setMonthlyCustomerMessage('')
+
+    try {
+      const response = await customerService.queryCustomerCenter()
+
+      if (monthlyCustomerVersion.current !== requestVersion) {
+        return
+      }
+
+      if (!response.status || !response.result) {
+        setMonthlyCustomer(null)
+        setMonthlyCustomerMessage(response.message || '暂未获取到客户信息')
+        return
+      }
+
+      setMonthlyCustomer(response.result)
+    } finally {
+      if (monthlyCustomerVersion.current === requestVersion) {
+        setMonthlyCustomerLoading(false)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (draft.service.paymentType !== 'MONTH_PAY') {
+      return
+    }
+
+    void loadMonthlyCustomer()
+  }, [draft.service.paymentType, loadMonthlyCustomer])
 
   useDidShow(() => {
     const carriedDraft = expressDraftBridge.consume()
@@ -161,6 +189,10 @@ const ExpressPage = () => {
     }
 
     const selection = contactSelection.consumeSelection()
+
+    if (draft.service.paymentType === 'MONTH_PAY') {
+      void loadMonthlyCustomer()
+    }
 
     if (!selection) {
       return
@@ -315,6 +347,21 @@ const ExpressPage = () => {
         '服务方式变化，请重新获取价格'
       )
     )
+  }
+
+  const handlePaymentTypeSelect = (paymentType: ExpressPaymentType) => {
+    updateService({ paymentType })
+
+    if (paymentType === 'MONTH_PAY') {
+      void loadMonthlyCustomer()
+    }
+  }
+
+  const handleOpenMonthlyPayAction = (view: ExpressMonthlyPayView) => {
+    navigateToAppRoute(createAppWebUrl({ source: view.actionSource }), {
+      login: true,
+      message: '请先登录后处理客户编码'
+    })
   }
 
   const setPrivacyProtection = (
@@ -560,419 +607,50 @@ const ExpressPage = () => {
           </Text>
         </View>
 
-        <View className='express-contact-panel'>
-          <View className='express-contact-card'>
-            <View className='express-contact-card__mark express-contact-card__mark--sender'>
-              <Text className='express-contact-card__mark-text'>寄</Text>
-            </View>
-            <View className='express-contact-card__content'>
-              {draft.sender ? (
-                <>
-                  <Text className='express-contact-card__name'>
-                    {draft.sender.name} {draft.sender.mobile}
-                  </Text>
-                  <Text className='express-contact-card__address'>
-                    {getExpressContactFullAddress(draft.sender)}
-                  </Text>
-                </>
-              ) : (
-                <>
-                  <Text className='express-contact-card__name'>寄件人</Text>
-                  <Text className='express-contact-card__address'>
-                    请选择寄件地址
-                  </Text>
-                </>
-              )}
-            </View>
-            <View className='express-contact-card__actions'>
-              <Text
-                className='express-link'
-                onClick={() => handleContactSelect('sender')}
-              >
-                地址簿
-              </Text>
-              <Text
-                className='express-link express-link--quiet'
-                onClick={() => handleContactCreate('sender')}
-              >
-                新增
-              </Text>
-            </View>
-          </View>
+        <ExpressContactPanel
+          draft={draft}
+          onCreateContact={handleContactCreate}
+          onSelectContact={handleContactSelect}
+          onSwapContacts={handleSwapContacts}
+        />
 
-          <View className='express-swap' onClick={handleSwapContacts}>
-            <Text className='express-swap__text'>互换</Text>
-          </View>
+        <ExpressGoodsSection
+          goods={draft.goods}
+          goodsLoading={goodsLoading}
+          goodsMessage={goodsMessage}
+          goodsSuggestions={goodsSuggestions}
+          insuranceLoading={insuranceLoading}
+          insuranceMessage={insuranceMessage}
+          insuranceQuote={insuranceQuote}
+          onGoodsChange={updateGoods}
+          onGoodsNameInput={handleGoodsNameInput}
+          onInsuranceGoodsChange={handleInsuranceGoodsChange}
+          onOpenInsuranceRules={handleOpenInsuranceRules}
+          onQueryGoodsNames={handleQueryGoodsNames}
+          onQueryInsurancePrice={handleQueryInsurancePrice}
+          onSelectGoodsName={handleSelectGoodsName}
+        />
 
-          <View className='express-contact-card'>
-            <View className='express-contact-card__mark express-contact-card__mark--consignee'>
-              <Text className='express-contact-card__mark-text'>收</Text>
-            </View>
-            <View className='express-contact-card__content'>
-              {draft.consignee ? (
-                <>
-                  <Text className='express-contact-card__name'>
-                    {draft.consignee.name} {draft.consignee.mobile}
-                  </Text>
-                  <Text className='express-contact-card__address'>
-                    {getExpressContactFullAddress(draft.consignee)}
-                  </Text>
-                </>
-              ) : (
-                <>
-                  <Text className='express-contact-card__name'>收件人</Text>
-                  <Text className='express-contact-card__address'>
-                    请选择收件地址
-                  </Text>
-                </>
-              )}
-            </View>
-            <View className='express-contact-card__actions'>
-              <Text
-                className='express-link'
-                onClick={() => handleContactSelect('consignee')}
-              >
-                地址簿
-              </Text>
-              <Text
-                className='express-link express-link--quiet'
-                onClick={() => handleContactCreate('consignee')}
-              >
-                新增
-              </Text>
-            </View>
-          </View>
-        </View>
+        <ExpressServiceSection
+          monthlyPayView={monthlyPayView}
+          selectedReturnBillOption={selectedReturnBillOption}
+          service={draft.service}
+          onMonthlyPayAction={handleOpenMonthlyPayAction}
+          onPaymentTypeSelect={handlePaymentTypeSelect}
+          onPrivacyProtectionChange={handlePrivacyProtectionChange}
+          onServiceChange={updateService}
+        />
 
-        <View className='express-section'>
-          <View className='express-section__head'>
-            <Text className='express-section__title'>物品信息</Text>
-            <Text className='express-section__hint'>必填</Text>
-          </View>
-
-          <View className='express-field'>
-            <View className='express-field__row'>
-              <Text className='express-field__label'>货物名称</Text>
-              <View
-                className='express-field__button'
-                onClick={handleQueryGoodsNames}
-              >
-                <Text className='express-field__button-text'>
-                  {goodsLoading ? '查询中' : '推荐'}
-                </Text>
-              </View>
-            </View>
-            <Input
-              className='express-input'
-              placeholder='如文件、服饰、配件'
-              value={draft.goods.name}
-              onInput={event => handleGoodsNameInput(event.detail.value)}
-            />
-            {goodsSuggestions.length > 0 && (
-              <View className='express-goods-suggestions'>
-                {goodsSuggestions.map((item, index) => (
-                  <View
-                    className='express-goods-suggestion'
-                    key={`${item.productKeyWord}-${item.secondCategory}-${index}`}
-                    onClick={() => handleSelectGoodsName(item)}
-                  >
-                    <Text className='express-goods-suggestion__name'>
-                      {item.productKeyWord}
-                    </Text>
-                    <Text className='express-goods-suggestion__desc'>
-                      {getGoodsCategoryText(item) || '常用品名'}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            )}
-            {goodsMessage && (
-              <Text className='express-goods-message'>{goodsMessage}</Text>
-            )}
-          </View>
-
-          <View className='express-field-grid'>
-            <View className='express-field express-field--grid'>
-              <Text className='express-field__label'>重量 kg</Text>
-              <Input
-                className='express-input'
-                placeholder='1'
-                type='digit'
-                value={String(draft.goods.weight)}
-                onInput={event =>
-                  handleInsuranceGoodsChange({
-                    weight: parseNumber(event.detail.value, 0)
-                  })
-                }
-              />
-            </View>
-            <View className='express-field express-field--grid express-field--grid-right'>
-              <Text className='express-field__label'>件数</Text>
-              <Input
-                className='express-input'
-                placeholder='1'
-                type='number'
-                value={String(draft.goods.count)}
-                onInput={event =>
-                  updateGoods({ count: parseNumber(event.detail.value, 1) })
-                }
-              />
-            </View>
-          </View>
-
-          <View className='express-field-grid'>
-            <View className='express-field express-field--grid express-field--grid-right'>
-              <Text className='express-field__label'>体积 m³</Text>
-              <Input
-                className='express-input'
-                placeholder='选填'
-                type='digit'
-                value={String(draft.goods.volume || '')}
-                onInput={event =>
-                  handleInsuranceGoodsChange({
-                    volume: parseNumber(event.detail.value, 0)
-                  })
-                }
-              />
-            </View>
-            <View className='express-field express-field--grid'>
-              <View className='express-field__row'>
-                <Text className='express-field__label'>保价金额</Text>
-                <View className='express-field__actions'>
-                  <View
-                    className='express-field__button express-field__button--compact'
-                    onClick={handleOpenInsuranceRules}
-                  >
-                    <Text className='express-field__button-text'>规则</Text>
-                  </View>
-                  <View
-                    className='express-field__button express-field__button--compact'
-                    onClick={handleQueryInsurancePrice}
-                  >
-                    <Text className='express-field__button-text'>
-                      {insuranceLoading ? '试算中' : '试算'}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-              <Input
-                className='express-input'
-                placeholder='0'
-                type='digit'
-                value={String(draft.goods.insuredAmount || '')}
-                onInput={event =>
-                  handleInsuranceGoodsChange({
-                    insuredAmount: parseNumber(event.detail.value, 0)
-                  })
-                }
-              />
-              {insuranceQuote && (
-                <Text className='express-insurance-message'>
-                  {insuranceQuote.name || '保价费'}约
-                  {getMoneyText(insuranceQuote.price)}
-                </Text>
-              )}
-              {insuranceMessage && (
-                <Text className='express-insurance-message express-insurance-message--error'>
-                  {insuranceMessage}
-                </Text>
-              )}
-            </View>
-          </View>
-        </View>
-
-        <View className='express-section'>
-          <View className='express-section__head'>
-            <Text className='express-section__title'>服务方式</Text>
-          </View>
-
-          <Text className='express-option-title'>付款方式</Text>
-          <View className='express-chip-group'>
-            {PAYMENT_OPTIONS.map(option => (
-              <View
-                className={
-                  option.value === draft.service.paymentType
-                    ? 'express-chip express-chip--active'
-                    : 'express-chip'
-                }
-                key={option.value}
-                onClick={() => updateService({ paymentType: option.value })}
-              >
-                <Text
-                  className={
-                    option.value === draft.service.paymentType
-                      ? 'express-chip__text express-chip__text--active'
-                      : 'express-chip__text'
-                  }
-                >
-                  {option.label}
-                </Text>
-              </View>
-            ))}
-          </View>
-
-          <Text className='express-option-title'>送货方式</Text>
-          <View className='express-chip-group'>
-            {DELIVERY_OPTIONS.map(option => (
-              <View
-                className={
-                  option.value === draft.service.deliveryMode
-                    ? 'express-chip express-chip--active'
-                    : 'express-chip'
-                }
-                key={option.value}
-                onClick={() => updateService({ deliveryMode: option.value })}
-              >
-                <Text
-                  className={
-                    option.value === draft.service.deliveryMode
-                      ? 'express-chip__text express-chip__text--active'
-                      : 'express-chip__text'
-                  }
-                >
-                  {option.label}
-                </Text>
-              </View>
-            ))}
-          </View>
-
-          <View className='express-service-row'>
-            <Text className='express-option-title'>取件前电话联系</Text>
-            <View className='express-toggle-group'>
-              {(['Y', 'N'] as const).map(value => (
-                <View
-                  className={
-                    value === draft.service.needContact
-                      ? 'express-toggle express-toggle--active'
-                      : 'express-toggle'
-                  }
-                  key={value}
-                  onClick={() =>
-                    setDraft(current => ({
-                      ...current,
-                      service: {
-                        ...current.service,
-                        needContact: value
-                      }
-                    }))
-                  }
-                >
-                  <Text
-                    className={
-                      value === draft.service.needContact
-                        ? 'express-toggle__text express-toggle__text--active'
-                        : 'express-toggle__text'
-                    }
-                  >
-                    {value === 'Y' ? '联系' : '不联系'}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-
-          <View className='express-service-row express-service-row--stack'>
-            <View className='express-service-row__content'>
-              <Text className='express-option-title'>隐私面单</Text>
-              <Text className='express-service-row__summary'>
-                隐藏收寄件敏感号码，保护寄递隐私
-              </Text>
-            </View>
-            <View className='express-toggle-group'>
-              {(['Y', 'N'] as const).map(value => (
-                <View
-                  className={
-                    value === draft.service.privacyProtection
-                      ? 'express-toggle express-toggle--active'
-                      : 'express-toggle'
-                  }
-                  key={value}
-                  onClick={() => handlePrivacyProtectionChange(value)}
-                >
-                  <Text
-                    className={
-                      value === draft.service.privacyProtection
-                        ? 'express-toggle__text express-toggle__text--active'
-                        : 'express-toggle__text'
-                    }
-                  >
-                    {value === 'Y' ? '开启' : '关闭'}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        </View>
-
-        <View className='express-section'>
-          <View className='express-section__head'>
-            <Text className='express-section__title'>产品价格</Text>
-            {draft.quoteStaleReason && (
-              <Text className='express-section__hint'>
-                {draft.quoteStaleReason}
-              </Text>
-            )}
-          </View>
-
-          <View className='express-actions'>
-            <View
-              className='express-secondary-button'
-              onClick={handleQueryPickupTime}
-            >
-              <Text className='express-secondary-button__text'>
-                {draft.pickup.time ? '更新取件时间' : '获取取件时间'}
-              </Text>
-            </View>
-            <View className='express-primary-button' onClick={handleQuote}>
-              <Text className='express-primary-button__text'>
-                {quoteStatus === 'loading' ? '获取中' : '获取价格'}
-              </Text>
-            </View>
-          </View>
-
-          {draft.pickup.time && (
-            <View className='express-pickup'>
-              <Text className='express-pickup__label'>预计取件</Text>
-              <Text className='express-pickup__value'>
-                {draft.pickup.timeSlot || draft.pickup.time}
-              </Text>
-            </View>
-          )}
-
-          {quotes.length > 0 && (
-            <View className='express-product-list'>
-              {quotes.map(product => (
-                <View
-                  className={
-                    draft.selectedProduct?.omsProductCode ===
-                    product.omsProductCode
-                      ? 'express-product express-product--active'
-                      : 'express-product'
-                  }
-                  key={getProductKey(product)}
-                  onClick={() => handleSelectProduct(product)}
-                >
-                  <View>
-                    <Text className='express-product__name'>
-                      {product.productName ||
-                        product.omsProductCode ||
-                        '德邦快递'}
-                    </Text>
-                    <Text className='express-product__desc'>
-                      {product.daysFormat ||
-                        product.days ||
-                        product.arriveDate ||
-                        '时效待确认'}
-                    </Text>
-                  </View>
-                  <Text className='express-product__price'>
-                    {getProductPriceText(product)}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          )}
-        </View>
+        <ExpressQuoteSection
+          pickup={draft.pickup}
+          quoteStaleReason={draft.quoteStaleReason}
+          quoteStatus={quoteStatus}
+          quotes={quotes}
+          selectedProduct={draft.selectedProduct}
+          onQueryPickupTime={handleQueryPickupTime}
+          onQuote={handleQuote}
+          onSelectProduct={handleSelectProduct}
+        />
 
         <View className='express-section'>
           <View className='express-field'>

@@ -1,7 +1,10 @@
 import Taro from '@tarojs/taro'
 
 import { ensureAuthenticated } from './authGuard'
+import { APP_LOGIN_ROUTE_PATHS } from './routeRegistry'
 import { APP_MAIN_NAVIGATION, APP_ROUTES } from './routes'
+
+import type { AppRoutePath } from './routes'
 
 export interface NavigateToAppRouteOptions {
   login?: boolean
@@ -40,25 +43,7 @@ function shouldRequireLogin(url: string, options: NavigateToAppRouteOptions) {
 
   return (
     options.login ||
-    pathname === APP_ROUTES.orderList ||
-    pathname === APP_ROUTES.orderStub ||
-    pathname === APP_ROUTES.paymentList ||
-    pathname === APP_ROUTES.couponList ||
-    pathname === APP_ROUTES.couponDetail ||
-    pathname === APP_ROUTES.accountSettings ||
-    pathname === APP_ROUTES.accountCancel ||
-    pathname === APP_ROUTES.realNameCenter ||
-    pathname === APP_ROUTES.memberCenter ||
-    pathname === APP_ROUTES.customerCenter ||
-    pathname === APP_ROUTES.signCode ||
-    pathname === APP_ROUTES.ecardCenter ||
-    pathname === APP_ROUTES.invoiceCenter ||
-    pathname === APP_ROUTES.invoiceApply ||
-    pathname === APP_ROUTES.invoiceDetail ||
-    pathname === APP_ROUTES.invoicePreview ||
-    pathname === APP_ROUTES.invoiceTaxpayerList ||
-    pathname === APP_ROUTES.invoiceTaxpayerEdit ||
-    pathname === APP_ROUTES.privacySettings
+    APP_LOGIN_ROUTE_PATHS.includes(pathname as AppRoutePath)
   )
 }
 

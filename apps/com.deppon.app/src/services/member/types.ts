@@ -1,3 +1,6 @@
+export type MemberBenefitAction = 'COUPON_LIST' | 'WELFARE_CENTER'
+export type MemberBenefitStatus = 'ready' | 'web' | 'pending'
+
 export interface MemberLevelRaw {
   levelName?: string
   levelCode?: number
@@ -16,7 +19,9 @@ export interface MemberSvipRaw {
 export interface MemberBenefitView {
   title: string
   summary: string
-  status: 'ready' | 'pending'
+  status: MemberBenefitStatus
+  action: MemberBenefitAction
+  badgeText: string
 }
 
 export interface MemberOverviewView {

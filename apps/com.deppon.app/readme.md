@@ -1,151 +1,132 @@
-React Native Template for Taro
-====
+# 德邦快递 RN App
 
-## requirement
+这是当前工作区的 Taro React Native App，目标运行端是 Android/iOS App，不再构建微信、支付宝或其他小程序端。旧项目 `D:\10531845\Desktop\CZH-DEV\mp-taro3` 只作为业务语义和接口契约参考，迁移时必须重构为 RN App 的分层实现。
 
-0. taro: `@tarojs/cli@^3.5.0`
-1. framework: 'react'
-## quick start
+## 环境要求
 
-### install react native library
-> install peerDependencies of `@tarojs/taro-rn` `@tarojs/components-rn` and `@tarojs/router-rn`, it will also run `post-install`. please modify and run `upgradePeerdeps` script when you change taro version.
-> 
-> **run this script after project inited.**
+- Node.js: `24.13.0`
+- pnpm: `11.9.0`
+- Android: JDK、Android SDK、Gradle 环境按 `pnpm check:app-native-env` 输出补齐
+- iOS: 需要 macOS、Xcode、CocoaPods
 
-`pnpm upgradePeerdeps`
+根目录已声明 `packageManager`、`engines` 和 `.node-version`。团队本地、CI、打包机应使用同一套 Node/pnpm 版本。
 
-### pod install
-> run this script when you add new react native library or update react native library version.
-> 
-> see [pod-install](https://www.npmjs.com/package/pod-install) for more infomation.
+## 常用命令
 
-`pnpm podInstall`
+在仓库根目录执行：
 
-### start ios app
-
-`pnpm ios`
-
-### start android app
-
-`pnpm android`
-
-### start bundler
-
-`pnpm start`
-
-### more infomations
-
-0. [development process of taro react native](https://docs.taro.zone/docs/next/react-native)
-1. [github](https://github.com/NervJS/taro)
-
-## release
-
-### build ios bundle
-
-`pnpm build:rn --platform ios`
-
-### build Android bundle
-
-`pnpm build:rn --platform android`
-
-### release ios APP
-
-see [publishing-to-app-store](https://reactnative.cn/docs/publishing-to-app-store) for details.
-
-### release android apk
-
-see [signed-apk-android](https://reactnative.cn/docs/signed-apk-android) for details.
-
-## github workflows
-> use github actions to build your apps. this template include basic github action config.
-
-see [.github/workflows](.github/workflows) for details.
-
-### events
-
-we assemble debug and release product for both android and ios when you push or pull request on master branch by default. design your own workflows by modify [.github/workflows](.github/workflows) files.
-
-see [events-that-trigger-workflows](https://docs.github.com/en/actions/reference/events-that-trigger-workflows) 
-### ios
-
-#### configuration
-
-Modify the following configuration items for package and publish your app.
-
-> [.github/workflows/assemble_ios_debug.yml](.github/workflows/assemble_ios_debug.yml)
-> [.github/workflows/assemble_ios_release.yml](.github/workflows/assemble_ios_release.yml)
-
-```yml
-env:
-  APP_ID: com.taro.demo # Application Product Bundle Identifier
-  APP_NAME: Taro Demo # The Display Name of your app
-  VERSION_NUMBER: 1.0.0 # Application version number
-  BUILD_NUMBER: 1.0.0.0 # Application build number, used by release only.
-  TEAM_ID: XXXXXXXXXX # Team ID, is used when upgrading project
-  PROVISIONING_PROFILE_SPECIFIER: Product_profile # Provisioning profile name to use for code signing
-  CODE_SIGN_IDENTITY: iPhone Distribution # Code signing identity type (iPhone Developer, iPhone Distribution)
-  SIGNING_CERTIFICATE_P12_DATA: ${{secrets.RELEASE_SIGNING_CERTIFICATE_P12_DATA}}
-  SIGNING_CERTIFICATE_PASSWORD: ${{secrets.RELEASE_SIGNING_CERTIFICATE_PASSWORD}}
-  PROVISIONING_PROFILE_DATA: ${{secrets.RELEASE_PROVISIONING_PROFILE_DATA}}
-  APP_STORE_CONNECT_USERNAME: ${{secrets.APP_STORE_CONNECT_USERNAME}} # This secret should be set to the Apple ID of your developer account, used by release only.
-  APP_STORE_CONNECT_PASSWORD: ${{secrets.APP_STORE_CONNECT_PASSWORD}} # used by release only.
+```bash
+pnpm install
+pnpm dev:app
+pnpm build:app
+pnpm verify:app
+pnpm check:app-boundaries
+pnpm check:app-routes
+pnpm check:app-module-size
+pnpm check:app-native-env
 ```
 
-values like ${{secrets.xxxxx}} are manually generated and store in your github encrypted secrets.
+在 App 包内执行：
 
-##### SIGNING_CERTIFICATE_P12_DATA
-
-`cat Certificates.p12 | base64 | pbcopy`
-
-##### SIGNING_CERTIFICATE_PASSWORD
-
-encryption password of your Personal Information Exchange (.p12)
-
-##### PROVISIONING_PROFILE_DATA
-
-`cat profile.mobileprovision | base64 | pbcopy`
-
-##### APP_STORE_CONNECT_PASSWORD
-
-This secret should be set to an application-specific password for your Apple ID account. Follow [these instructions](https://support.apple.com/en-us/HT204397) to create an application-specific password.
-
-#### Read more
-
-1. [deploy an ios app to testflight or the app store using github actions](https://betterprogramming.pub/deploy-an-ios-app-to-testflight-or-the-app-store-using-github-actions-c4d7082b1430)
-2. [encrypted-secrets](https://docs.github.com/en/actions/reference/encrypted-secrets)
-3. [fastlane](https://docs.fastlane.tools/)
-
-### android
-
-#### configuration
-
-Modify the following configuration items for package and publish your app.
-
-> [.github/workflows/assemble_android_debug.yml](.github/workflows/assemble_android_debug.yml)
-> [.github/workflows/assemble_android_release.yml](.github/workflows/assemble_android_release.yml)
-
-```yml
-env:
-  APP_ID: com.taro.demo  # Application Product Bundle Identifier
-  APP_NAME: Taro Demo  # The Display Name of your app
-  APP_ICON: ic_launcher  # The Application icon of your app
-  APP_ROUND_ICON: ic_launcher_round  # The Application round icon of your app
-  APP_ABI_FILTERS: armeabi-v7a, arm64-v8a # App abi filters
-  VERSION_NAME: 1.0.0 # version name
-  VERSION_CODE: 10 # version code
-  KEYSTORE_FILE: debug.keystore # key store file
-  KEYSTORE_PASSWORD: android # key store password
-  KEYSTORE_KEY_ALIAS: androiddebugkey # key store key alias
-  KEYSTORE_KEY_PASSWORD: android # key store key password
+```bash
+pnpm --filter com.deppon.app run typecheck
+pnpm --filter com.deppon.app run lint
+pnpm --filter com.deppon.app run check:rn-boundaries
+pnpm --filter com.deppon.app run check:routes
+pnpm --filter com.deppon.app run check:module-size
+pnpm --filter com.deppon.app run build
 ```
 
-For the security of your app, please regenerate the .keystore file and store the password in your github encrypted secrets.
-#### Read more
+`pnpm verify:app` 是本地和 CI 的统一质量入口，会串行执行类型检查、ESLint、RN 边界检查、路由注册表检查、页面/service 体量检查和 RN bundle 构建。
 
-1. [app signing](https://developer.android.com/studio/publish/app-signing)
-2. [encrypted-secrets](https://docs.github.com/en/actions/reference/encrypted-secrets)
+## RN-only 边界
 
-## links
+业务代码不能直接使用小程序或 H5 平台能力，包括：
 
-0. [template source code](https://github.com/NervJS/taro-project-templates/tree/v4.0/react-native)
-1. [sample project](https://github.com/wuba/taro-playground)
+- `wx.*`
+- `my.*`
+- `Taro.scanCode`
+- `Taro.getLocation`
+- `Taro.openLocation`
+- `Taro.makePhoneCall`
+- `Taro.uploadFile`
+- `Taro.downloadFile`
+- `Taro.requestSubscribeMessage`
+- `Taro.navigateToMiniProgram`
+- `Taro.chooseImage/chooseMedia/chooseVideo`
+- `Taro.getUserProfile/authorize/getSetting/openSetting`
+- `Taro.saveImageToPhotosAlbum`
+
+这些能力必须先进入 `src/shared/platform/*` facade，再由页面或 service 消费。`pnpm check:app-boundaries` 会阻止常见小程序 API 回流。
+
+## 目录分层
+
+```text
+src/
+  app.config.ts
+  cache/
+  request/
+  services/
+  shared/
+    navigation/
+    platform/
+    webview/
+  pages/
+```
+
+分层规则：
+
+- `request` 只处理 HTTP、cookie、响应归一和请求事件，不直接跳页面。
+- `cache` 统一封装本地缓存 key、过期策略和 storage adapter。
+- `services/<domain>/*.api.ts` 只描述接口调用。
+- `services/<domain>/*.service.ts` 做业务编排，不直接写页面 UI。
+- 复杂领域继续拆 `mapper.ts`、`rules.ts`、`useCases.ts`、`viewModel.ts`，避免主 service 巨石化。
+- 页面只负责页面级状态、事件编排和渲染；复杂弹层、列表项、表单段落放入当前页面 `components/`。
+- 平台能力只通过 `shared/platform` facade 使用。
+- WebView 承接统一走 `shared/webview/appWeb.ts`，不要在页面散落 H5 URL 拼接。
+
+## 路由规则
+
+路由单源在 `src/shared/navigation/routeRegistry.ts`。
+
+新增页面时先在注册表声明：
+
+- `name`
+- `path`
+- `title`
+- `main`
+- `loginRequired`
+
+然后由注册表自动派生：
+
+- `app.config.ts` 的 Taro 页面列表
+- `APP_ROUTES`
+- `APP_MAIN_NAVIGATION`
+- `navigateToAppRoute` 的登录守卫判断
+
+页面跳转统一使用 `navigateToAppRoute` 和 `APP_ROUTES`，不要直接维护另一份路径白名单。
+
+`pnpm check:app-routes` 会检查注册表 name/path 唯一性、页面文件存在性、主导航顺序、登录路由和派生消费关系，防止新增页面时漏改或绕过单源路由。
+
+## 体量门禁
+
+`pnpm check:app-module-size` 会检查 `src/pages` 和 `src/services` 下的 TypeScript 文件体量。新页面默认不超过 420 行，新 service 默认不超过 450 行；已存在的超大文件按当前预算冻结，后续只能拆小，不能继续膨胀。
+
+## 迁移旧项目业务的规则
+
+- 不能复制旧小程序页面和 Redux 状态机。
+- 先识别旧项目里的业务语义、接口 path、字段含义和边界条件。
+- 按 `api -> service/useCase -> 页面 VM -> 页面组件` 重构。
+- 遇到扫码、定位、电话、文件、支付、实名、推送等平台能力，先接 `shared/platform` facade。
+- 遇到支付、纸票、下载、上传、地图等原生能力未 ready 的功能，要明确降级或 H5 承接，不伪造成功。
+- 每个业务切片完成后至少执行 `typecheck`、`lint`、`check:rn-boundaries`、`check:routes` 和 `check:module-size`；较大改动执行 `pnpm verify:app`。
+
+## 当前重点
+
+项目已经从空架子进入业务迁移阶段。后续优先级：
+
+1. 稳定 Node/pnpm/CI/原生构建环境。
+2. 保持路由、登录守卫、平台能力和 WebView 承接单源化。
+3. 持续拆分订单、寄件、发票等核心模块，控制 service 和页面体量。
+4. 补充请求、缓存、路由、登录守卫、订单状态、发票转换等业务规则测试。
+5. 建立 `src/styles` token 和通用样式/组件，减少页面 SCSS 重复。

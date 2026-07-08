@@ -1,15 +1,23 @@
 import { Input, ScrollView, Text, View } from '@tarojs/components'
-import Taro, { useDidShow } from '@tarojs/taro'
+import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
-import { invoiceService } from '../../../services/invoice'
+import { OrderAuthDialog } from './components/OrderAuthDialog'
+import { CACHE_KEYS, DPCacheExpireType, dpCache } from '../../../cache'
+import {
+  invoiceOrderSearchService,
+  invoiceService
+} from '../../../services/invoice'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 
+import type { DepponResponse } from '../../../request/deppon'
 import type {
   InvoiceHistoryView,
+  InvoiceOrderAuthChallenge,
+  InvoiceOrderSearchView,
   InvoiceOrderView,
   InvoiceTab,
   InvoiceTaxpayerView
@@ -18,6 +26,12 @@ import type {
 import './index.scss'
 
 const PAGE_SIZE = 10
+const ORDER_AUTH_CODE_SECONDS = 60
+
+interface CachedInvoiceOrderAuth {
+  id: string
+  value: string
+}
 
 const INVOICE_TABS: Array<{ label: string; value: InvoiceTab }> = [
   {
@@ -33,6 +47,10 @@ const INVOICE_TABS: Array<{ label: string; value: InvoiceTab }> = [
     value: 'taxpayers'
   }
 ]
+
+function parseInvoiceTab(value?: string): InvoiceTab {
+  return value === 'history' || value === 'taxpayers' ? value : 'orders'
+}
 
 function getMoneyText(value: number) {
   if (!Number.isFinite(value)) {
@@ -68,12 +86,77 @@ function createInvoiceDetailUrl(item: InvoiceHistoryView) {
   )}`
 }
 
+function getCachedInvoiceOrderAuth(waybillNumber: string) {
+  const list =
+    dpCache.get<CachedInvoiceOrderAuth[]>(CACHE_KEYS.invoiceOrderAuth) ?? []
+
+  return (
+    list.find((item) => item.id === waybillNumber.trim())?.value.trim() ?? ''
+  )
+}
+
+function cacheInvoiceOrderAuth(waybillNumber: string, value: string) {
+  const normalizedWaybill = waybillNumber.trim()
+  const normalizedValue = value.trim()
+  const list =
+    dpCache.get<CachedInvoiceOrderAuth[]>(CACHE_KEYS.invoiceOrderAuth) ?? []
+  const nextList = list.filter((item) => item.id !== normalizedWaybill)
+
+  nextList.push({
+    id: normalizedWaybill,
+    value: normalizedValue
+  })
+
+  dpCache.set(CACHE_KEYS.invoiceOrderAuth, {
+    data: nextList,
+    expire: {
+      type: DPCacheExpireType.TODAY
+    }
+  })
+}
+
+function getOrderAuthValidationMessage(
+  auth: InvoiceOrderAuthChallenge,
+  value: string
+) {
+  const normalizedValue = value.trim()
+
+  if (!normalizedValue) {
+    return '请按提示输入验证信息'
+  }
+
+  if (auth.authType === '02' && !/^\d{4}$/.test(normalizedValue)) {
+    return '请输入付款人手机号后四位'
+  }
+
+  if (auth.authType === '03' && normalizedValue.length <= 6) {
+    return '请输入付款人完整的联系方式'
+  }
+
+  if (auth.authType === '04' && !/^\d{6}$/.test(normalizedValue)) {
+    return '请输入正确的短信验证码'
+  }
+
+  return ''
+}
+
 const InvoiceCenterPage = () => {
-  const [tab, setTab] = useState<InvoiceTab>('orders')
+  const router = useRouter()
+  const [tab, setTab] = useState<InvoiceTab>(() =>
+    parseInvoiceTab(router.params.tab)
+  )
   const [orders, setOrders] = useState<InvoiceOrderView[]>([])
   const [orderPageIndex, setOrderPageIndex] = useState(1)
   const [orderTotalPage, setOrderTotalPage] = useState(1)
   const [orderTotalRows, setOrderTotalRows] = useState(0)
+  const [orderKeyword, setOrderKeyword] = useState('')
+  const [orderAuth, setOrderAuth] =
+    useState<InvoiceOrderAuthChallenge | null>(null)
+  const [orderAuthValue, setOrderAuthValue] = useState('')
+  const [orderAuthMessage, setOrderAuthMessage] = useState('')
+  const [orderAuthCountdown, setOrderAuthCountdown] = useState(0)
+  const [orderAuthSending, setOrderAuthSending] = useState(false)
+  const [orderAuthSubmitting, setOrderAuthSubmitting] = useState(false)
   const [history, setHistory] = useState<InvoiceHistoryView[]>([])
   const [historyPageIndex, setHistoryPageIndex] = useState(1)
   const [historyTotalPage, setHistoryTotalPage] = useState(1)
@@ -89,6 +172,75 @@ const InvoiceCenterPage = () => {
         redirectUrl: APP_ROUTES.invoiceCenter,
         replace: true
       }),
+    []
+  )
+
+  useEffect(() => {
+    if (!orderAuth || orderAuth.authType !== '04') {
+      setOrderAuthCountdown(0)
+      return
+    }
+
+    const sendTime = dpCache.get<number>(CACHE_KEYS.invoiceOrderAuthCodeSend)
+
+    if (!sendTime) {
+      setOrderAuthCountdown(0)
+      return
+    }
+
+    const nextSeconds = Math.ceil(
+      ORDER_AUTH_CODE_SECONDS - (Date.now() - sendTime) / 1000
+    )
+
+    setOrderAuthCountdown(nextSeconds > 0 ? nextSeconds : 0)
+  }, [orderAuth])
+
+  useEffect(() => {
+    if (orderAuthCountdown <= 0) {
+      return undefined
+    }
+
+    const timer = setTimeout(() => {
+      setOrderAuthCountdown((current) => Math.max(0, current - 1))
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [orderAuthCountdown])
+
+  const applyOrderSearchResponse = useCallback(
+    (response: DepponResponse<InvoiceOrderSearchView>) => {
+      if (!response.status || !response.result) {
+        setOrderAuth(null)
+        setOrders([])
+        setOrderPageIndex(1)
+        setOrderTotalPage(1)
+        setOrderTotalRows(0)
+        setErrorMessage(response.message || '未查询到可开票运单')
+        return false
+      }
+
+      if (response.result.auth) {
+        setOrderAuth(response.result.auth)
+        setOrderAuthValue('')
+        setOrderAuthMessage('')
+        setOrders([])
+        setOrderPageIndex(1)
+        setOrderTotalPage(1)
+        setOrderTotalRows(0)
+        setErrorMessage('')
+        return false
+      }
+
+      setOrderAuth(null)
+      setOrderAuthValue('')
+      setOrderAuthMessage('')
+      setOrders(response.result.list)
+      setOrderPageIndex(1)
+      setOrderTotalPage(1)
+      setOrderTotalRows(response.result.list.length)
+      setErrorMessage('')
+      return true
+    },
     []
   )
 
@@ -126,6 +278,43 @@ const InvoiceCenterPage = () => {
       }
     },
     [loading]
+  )
+
+  const loadOrderSearch = useCallback(
+    async (keyword = orderKeyword) => {
+      const normalizedKeyword = keyword.trim()
+
+      if (loading || !normalizedKeyword) {
+        return
+      }
+
+      setLoading(true)
+      setErrorMessage('')
+
+      try {
+        const cachedValue = getCachedInvoiceOrderAuth(normalizedKeyword)
+
+        if (cachedValue) {
+          const cachedResponse = await invoiceOrderSearchService.verifyPhone(
+            normalizedKeyword,
+            cachedValue
+          )
+
+          if (cachedResponse.status && cachedResponse.result?.list.length) {
+            applyOrderSearchResponse(cachedResponse)
+            return
+          }
+        }
+
+        const response =
+          await invoiceOrderSearchService.queryByWaybill(normalizedKeyword)
+
+        applyOrderSearchResponse(response)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [applyOrderSearchResponse, loading, orderKeyword]
   )
 
   const loadHistory = useCallback(
@@ -194,6 +383,11 @@ const InvoiceCenterPage = () => {
   const loadActiveTab = useCallback(
     (nextTab = tab) => {
       if (nextTab === 'orders') {
+        if (orderKeyword.trim()) {
+          loadOrderSearch(orderKeyword)
+          return
+        }
+
         loadOrders(1)
         return
       }
@@ -205,7 +399,7 @@ const InvoiceCenterPage = () => {
 
       loadTaxpayers()
     },
-    [loadHistory, loadOrders, loadTaxpayers, tab]
+    [loadHistory, loadOrderSearch, loadOrders, loadTaxpayers, orderKeyword, tab]
   )
 
   useDidShow(() => {
@@ -229,7 +423,11 @@ const InvoiceCenterPage = () => {
       return
     }
 
-    if (tab === 'orders' && orderPageIndex < orderTotalPage) {
+    if (
+      tab === 'orders' &&
+      !orderKeyword.trim() &&
+      orderPageIndex < orderTotalPage
+    ) {
       loadOrders(orderPageIndex + 1)
       return
     }
@@ -240,6 +438,134 @@ const InvoiceCenterPage = () => {
       historyPageIndex < historyTotalPage
     ) {
       loadHistory(historyPageIndex + 1)
+    }
+  }
+
+  const handleSearchOrder = () => {
+    if (!ensureInvoiceAccess()) {
+      return
+    }
+
+    const keyword = orderKeyword.trim()
+
+    if (!keyword) {
+      showPendingToast('请输入运单号')
+      return
+    }
+
+    setOrders([])
+    loadOrderSearch(keyword)
+  }
+
+  const handleClearOrder = () => {
+    setOrderKeyword('')
+    setOrders([])
+    setOrderAuth(null)
+    setOrderAuthValue('')
+    setOrderAuthMessage('')
+    loadOrders(1)
+  }
+
+  const handleCloseOrderAuth = () => {
+    setOrderAuth(null)
+    setOrderAuthValue('')
+    setOrderAuthMessage('')
+  }
+
+  const handleSendOrderAuthCode = async () => {
+    if (
+      !orderAuth ||
+      orderAuth.authType !== '04' ||
+      orderAuthCountdown > 0 ||
+      orderAuthSending
+    ) {
+      return
+    }
+
+    setOrderAuthSending(true)
+    setOrderAuthMessage('')
+
+    try {
+      const response = await invoiceOrderSearchService.sendAuthCode(
+        orderAuth.waybillNumber
+      )
+
+      if (!response.status) {
+        setOrderAuthMessage(response.message || '发送失败，请稍后再试')
+        return
+      }
+
+      dpCache.set(CACHE_KEYS.invoiceOrderAuthCodeSend, {
+        data: Date.now(),
+        expire: {
+          type: DPCacheExpireType.MINUTES,
+          value: 1
+        }
+      })
+      setOrderAuthCountdown(ORDER_AUTH_CODE_SECONDS)
+      showPendingToast('验证码已发送')
+    } finally {
+      setOrderAuthSending(false)
+    }
+  }
+
+  const handleConfirmOrderAuth = async () => {
+    if (!orderAuth || orderAuthSubmitting) {
+      return
+    }
+
+    const normalizedValue = orderAuthValue.trim()
+    const validationMessage = getOrderAuthValidationMessage(
+      orderAuth,
+      normalizedValue
+    )
+
+    if (validationMessage) {
+      showPendingToast(validationMessage)
+      return
+    }
+
+    setOrderAuthSubmitting(true)
+    setOrderAuthMessage('')
+
+    try {
+      if (orderAuth.authType === '04') {
+        const verifyResponse = await invoiceOrderSearchService.verifyAuthCode(
+          orderAuth.waybillNumber,
+          normalizedValue
+        )
+
+        if (!verifyResponse.status) {
+          setOrderAuthMessage(verifyResponse.message || '验证失败，请稍后再试')
+          return
+        }
+
+        const response = await invoiceOrderSearchService.queryByWaybill(
+          orderAuth.waybillNumber
+        )
+
+        if (applyOrderSearchResponse(response)) {
+          showPendingToast('验证通过')
+        }
+        return
+      }
+
+      const response = await invoiceOrderSearchService.verifyPhone(
+        orderAuth.waybillNumber,
+        normalizedValue
+      )
+
+      if (!response.status) {
+        setOrderAuthMessage(response.message || '验证失败，请重新确认信息')
+        return
+      }
+
+      if (applyOrderSearchResponse(response)) {
+        cacheInvoiceOrderAuth(orderAuth.waybillNumber, normalizedValue)
+        showPendingToast('验证通过')
+      }
+    } finally {
+      setOrderAuthSubmitting(false)
     }
   }
 
@@ -275,7 +601,7 @@ const InvoiceCenterPage = () => {
         <Text className='invoice-header__label'>Invoice</Text>
         <Text className='invoice-header__title'>发票中心</Text>
         <Text className='invoice-header__summary'>
-          首期承接可开票运单、开票历史、发票预览和发票抬头查询。
+          支持可开票运单、运单号搜索、开票历史、发票预览和抬头管理。
         </Text>
       </View>
 
@@ -303,14 +629,35 @@ const InvoiceCenterPage = () => {
 
       {tab === 'orders' && (
         <>
+          <View className='invoice-search'>
+            <Input
+              className='invoice-search__input'
+              placeholder='输入运单号搜索可开票记录'
+              value={orderKeyword}
+              onInput={(event) => setOrderKeyword(event.detail.value)}
+            />
+            <View className='invoice-search__button' onClick={handleSearchOrder}>
+              <Text className='invoice-search__button-text'>搜索</Text>
+            </View>
+            {orderKeyword && (
+              <View className='invoice-search__clear' onClick={handleClearOrder}>
+                <Text className='invoice-search__clear-text'>清除</Text>
+              </View>
+            )}
+          </View>
+
           <View className='invoice-summary'>
             <View>
-              <Text className='invoice-summary__title'>近三个月运单</Text>
+              <Text className='invoice-summary__title'>
+                {orderKeyword.trim() ? '运单搜索结果' : '近三个月运单'}
+              </Text>
               <Text className='invoice-summary__count'>
                 共 {orderTotalRows} 条可查询记录
               </Text>
             </View>
-            <Text className='invoice-summary__hint'>仅展示首期可读信息</Text>
+            <Text className='invoice-summary__hint'>
+              {orderKeyword.trim() ? '搜索结果' : '支持分页加载'}
+            </Text>
           </View>
 
           <View className='invoice-content'>
@@ -384,7 +731,7 @@ const InvoiceCenterPage = () => {
                   {errorMessage || '暂无可开票运单'}
                 </Text>
                 <Text className='invoice-empty__summary'>
-                  后续会继续接入运单号搜索、身份验证和发票申请提交。
+                  可按运单号搜索可开票记录，需身份校验的运单会按后端规则拦截。
                 </Text>
               </View>
             )}
@@ -569,6 +916,21 @@ const InvoiceCenterPage = () => {
             </View>
           )}
         </View>
+      )}
+
+      {orderAuth && (
+        <OrderAuthDialog
+          auth={orderAuth}
+          countdown={orderAuthCountdown}
+          message={orderAuthMessage}
+          sending={orderAuthSending}
+          submitting={orderAuthSubmitting}
+          value={orderAuthValue}
+          onChange={setOrderAuthValue}
+          onClose={handleCloseOrderAuth}
+          onConfirm={handleConfirmOrderAuth}
+          onSendCode={handleSendOrderAuthCode}
+        />
       )}
 
       {loading && (

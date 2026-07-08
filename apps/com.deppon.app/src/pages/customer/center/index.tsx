@@ -1,7 +1,7 @@
 import { ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { customerService } from '../../../services/customer'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
@@ -16,11 +16,6 @@ import './index.scss'
 
 const CUSTOMER_WEB_ACTIONS = [
   {
-    title: '绑定/管理客户',
-    summary: '管理客户编码和联系人关系',
-    source: 'CUSTOMER_CENTER'
-  },
-  {
     title: '月结中心',
     summary: '查看月结客户和代收货款能力',
     source: 'CUSTOMER_MONTHLY_CENTER'
@@ -32,10 +27,30 @@ const CUSTOMER_WEB_ACTIONS = [
   }
 ]
 
+function getPrimaryCustomerAction(customer: CustomerCenterView | null) {
+  if (customer?.hasBoundCustomer) {
+    return {
+      title: '管理客户',
+      summary: '管理客户编码和联系人关系',
+      source: 'CUSTOMER_CENTER'
+    }
+  }
+
+  return {
+    title: '绑定客户编码',
+    summary: '绑定月结客户编码和联系人关系',
+    source: 'CUSTOMER_BIND'
+  }
+}
+
 const CustomerCenterPage = () => {
   const [customer, setCustomer] = useState<CustomerCenterView | null>(null)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const customerWebActions = useMemo(
+    () => [getPrimaryCustomerAction(customer), ...CUSTOMER_WEB_ACTIONS],
+    [customer]
+  )
 
   const ensureCustomerAccess = useCallback(
     () =>
@@ -110,7 +125,7 @@ const CustomerCenterPage = () => {
         <Text className='customer-header__label'>Customer</Text>
         <Text className='customer-header__title'>客户中心</Text>
         <Text className='customer-header__summary'>
-          首期同步客户编码和绑定状态，月结、合同客户和绑定变更继续由受控 WebView 承接。
+          查看当前账号的客户编码、月结入口和号码保护设置。
         </Text>
       </View>
 
@@ -180,7 +195,7 @@ const CustomerCenterPage = () => {
 
       <View className='customer-section'>
         <Text className='customer-section__title'>客户服务</Text>
-        {CUSTOMER_WEB_ACTIONS.map((item) => (
+        {customerWebActions.map((item) => (
           <View
             className='customer-link'
             key={item.source}

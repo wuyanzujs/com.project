@@ -3,6 +3,8 @@ export const CACHE_KEYS = {
   expressDraft: 'DEPPON_EXPRESS_DRAFT',
   expressPrivacyConfirm: 'DEPPON_EXPRESS_PRIVACY_CONFIRM',
   goodsQueryHistory: 'DEPPON_GOODS_QUERY_HISTORY',
+  invoiceOrderAuth: 'DEPPON_INVOICE_ORDER_AUTH',
+  invoiceOrderAuthCodeSend: 'DEPPON_INVOICE_ORDER_AUTH_CODE_SEND',
   invoiceEmail: 'DEPPON_INVOICE_EMAIL',
   userSession: 'DEPPON_USER_SESSION',
   userInfo: 'DEPPON_USER_INFO'

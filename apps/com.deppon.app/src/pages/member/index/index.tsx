@@ -1,5 +1,5 @@
 import { ScrollView, Text, View } from '@tarojs/components'
-import Taro, { useDidShow } from '@tarojs/taro'
+import { useDidShow } from '@tarojs/taro'
 
 import { useState } from 'react'
 
@@ -9,7 +9,10 @@ import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
-import type { MemberOverviewView } from '../../../services/member'
+import type {
+  MemberBenefitView,
+  MemberOverviewView
+} from '../../../services/member'
 
 import './index.scss'
 
@@ -70,11 +73,15 @@ const MemberCenterPage = () => {
     )
   }
 
-  const handlePending = (title: string) => {
-    Taro.showToast({
-      title,
-      icon: 'none'
-    })
+  const handleBenefit = (item: MemberBenefitView) => {
+    if (item.action === 'COUPON_LIST') {
+      navigateToAppRoute(APP_ROUTES.couponList)
+      return
+    }
+
+    if (item.action === 'WELFARE_CENTER') {
+      handleOpenWelfare()
+    }
   }
 
   return (
@@ -83,7 +90,7 @@ const MemberCenterPage = () => {
         <Text className='member-header__label'>Member</Text>
         <Text className='member-header__title'>会员权益</Text>
         <Text className='member-header__summary'>
-          首期同步会员等级、成长值和 SVIP 摘要，福利活动由 App WebView 承接。
+          查看会员等级、成长值、积分和福利活动。
         </Text>
       </View>
 
@@ -146,11 +153,7 @@ const MemberCenterPage = () => {
           <View
             className='member-benefit'
             key={item.title}
-            onClick={() =>
-              item.status === 'ready'
-                ? navigateToAppRoute(APP_ROUTES.couponList)
-                : handlePending('该权益后续由福利中心承接')
-            }
+            onClick={() => handleBenefit(item)}
           >
             <View>
               <Text className='member-benefit__title'>{item.title}</Text>
@@ -160,10 +163,10 @@ const MemberCenterPage = () => {
               className={
                 item.status === 'ready'
                   ? 'member-benefit__tag'
-                  : 'member-benefit__tag member-benefit__tag--pending'
+                  : `member-benefit__tag member-benefit__tag--${item.status}`
               }
             >
-              {item.status === 'ready' ? '已接入' : '承接中'}
+              {item.badgeText}
             </Text>
           </View>
         ))}

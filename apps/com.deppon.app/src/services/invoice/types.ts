@@ -5,6 +5,11 @@ export type InvoicePath =
   | 'deleteTaxpayerInfo'
   | 'queryCustomerTaxName'
   | 'tradeQueryByCustomerCode'
+  | 'tradeQueryBySourceBillNo'
+  | 'checkSourcePaymentNumber'
+  | 'sendCheckCode'
+  | 'checkVerificationCode'
+  | 'addTaskInfoByEle'
   | 'queryInvoiceHistory'
   | 'queryApplyByWayBillNo'
   | 'lookInvoice'
@@ -101,6 +106,27 @@ export interface InvoiceOrderListRequest {
   endDate: string
 }
 
+export interface InvoiceOrderQueryRequest {
+  sourceBillNo: string
+}
+
+export interface InvoiceOrderAuthPhoneRequest {
+  sourceBillNo: string
+  inspectPhone: string
+}
+
+export interface InvoiceOrderAuthCodeRequest {
+  sourceBillNo: string
+}
+
+export interface InvoiceOrderAuthCodeCheckRequest {
+  sourceBillNo: string
+  checkTestCode: string
+}
+
+export type InvoiceOrderAuthType = '01' | '02' | '03' | '04'
+export type InvoiceOrderAuthInputType = 'number' | 'text'
+
 export interface InvoiceOrderRaw {
   orderNo: string
   sourceBillNo: string
@@ -119,6 +145,8 @@ export interface InvoiceOrderRaw {
   crossBorder?: 'Y' | 'N'
   ifCanOpenInvoiceMark?: '0' | '1' | '2'
   electricSpecialTicketAuth?: boolean
+  option?: InvoiceOrderAuthType
+  paymentPhone?: string
 }
 
 export interface InvoiceOrderListResponse {
@@ -143,6 +171,22 @@ export interface InvoiceOrderView {
   canApply: boolean
   pendingPayment: boolean
   electronSupported: boolean
+}
+
+export interface InvoiceOrderAuthChallenge {
+  waybillNumber: string
+  phone: string
+  paymentType: string
+  authType: Exclude<InvoiceOrderAuthType, '01'>
+  summary: string
+  placeholder: string
+  maxLength: number
+  inputType: InvoiceOrderAuthInputType
+}
+
+export interface InvoiceOrderSearchView {
+  list: InvoiceOrderView[]
+  auth: InvoiceOrderAuthChallenge | null
 }
 
 export interface InvoiceHistoryListRequest {
@@ -232,6 +276,61 @@ export interface InvoiceApplyPreview {
   remark: string
   canSubmit: boolean
   message: string
+}
+
+export interface InvoiceApplyTaskDetail {
+  payNo: string
+  payFlag: boolean
+  orderNo: string
+  sourceBillNo: string
+  amount: number
+  unverAmount: number
+  paymentType: string
+  electricSpecialTicketAuth: boolean
+}
+
+export interface InvoiceApplyTaskInfo {
+  payNo: string
+  status: '0'
+  isAllOpen: '1'
+  isDomestic: ''
+  sendCustomer: 11
+  phoneNo: string
+  acceptPhone: string
+  acceptArea: string
+  acceptAddress: string
+  acceptCustomer: string
+  applyType: '241'
+  sourceType: '24'
+  SourceSystem: 'XCX'
+  taxNo: string
+  taxName: string
+  customerType: InvoiceTaxpayerType
+  taxTelephone: string
+  taxAddress: string
+  taxBankName: string
+  taxBankNumber: string
+  openAmount: number
+  totalAmount: number
+  open_amount: number
+  unit: string
+  email: string
+  taxEmail: string
+  billCategory: InvoiceApplyBillCategory
+  isPrintSaleList: 'N'
+  remark: string
+  invoiceContent: ''
+}
+
+export interface InvoiceApplySubmitRequest {
+  TaskDetailList: InvoiceApplyTaskDetail[]
+  TaskInfo: InvoiceApplyTaskInfo
+}
+
+export interface InvoiceApplySubmitResult {
+  applyNo?: string
+  taskNo?: string
+  [key: string]: unknown
 }
 
 export interface InvoicePreviewRequest {

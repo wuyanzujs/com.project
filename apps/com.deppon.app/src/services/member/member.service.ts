@@ -14,17 +14,23 @@ const DEFAULT_BENEFITS: MemberBenefitView[] = [
   {
     title: '优惠券权益',
     summary: '可在优惠券列表查看并带入寄件草稿使用',
-    status: 'ready'
+    status: 'ready',
+    action: 'COUPON_LIST',
+    badgeText: 'App'
   },
   {
     title: '积分中心',
     summary: '积分明细和兑换活动由 MAS 福利中心承接',
-    status: 'pending'
+    status: 'web',
+    action: 'WELFARE_CENTER',
+    badgeText: '福利中心'
   },
   {
     title: 'SVIP 专属券',
     summary: 'SVIP 购买、续费和发券链路后续接入支付能力',
-    status: 'pending'
+    status: 'web',
+    action: 'WELFARE_CENTER',
+    badgeText: '福利中心'
   }
 ]
 

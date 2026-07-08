@@ -314,6 +314,67 @@
   color: #1a5eff;
 }
 
+.express-monthly-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 14px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+}
+
+.express-monthly-card--success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.express-monthly-card--warning {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.express-monthly-card__content {
+  flex: 1;
+  padding-right: 16px;
+}
+
+.express-monthly-card__title {
+  color: #16181a;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+.express-monthly-card__summary {
+  display: flex;
+  margin-top: 4px;
+  color: #667085;
+  font-size: 21px;
+  line-height: 30px;
+}
+
+.express-monthly-card__action {
+  align-items: center;
+  justify-content: center;
+  min-width: 116px;
+  height: 48px;
+  padding: 0 14px;
+  background: #ffffff;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+}
+
+.express-monthly-card__action-text {
+  color: #1a5eff;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 48px;
+  text-align: center;
+}
+
 .express-service-row {
   display: flex;
   flex-direction: row;
@@ -325,6 +386,12 @@
 .express-service-row--stack {
   align-items: flex-start;
   padding-top: 18px;
+}
+
+.express-service-row--divided {
+  margin-top: 14px;
+  border-top-color: #eef2f6;
+  border-top-width: 1px;
 }
 
 .express-service-row__content {
@@ -363,6 +430,31 @@
 
 .express-toggle__text--active {
   color: #15803d;
+}
+
+.express-value-added {
+  padding-top: 16px;
+}
+
+.express-value-added__summary {
+  display: flex;
+  color: #667085;
+  font-size: 22px;
+  line-height: 32px;
+}
+
+.express-service-note {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.express-service-note__text {
+  display: flex;
+  color: #667085;
+  font-size: 21px;
+  line-height: 30px;
 }
 
 .express-primary-button,

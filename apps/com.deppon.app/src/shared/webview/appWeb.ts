@@ -96,6 +96,10 @@ const KNOWN_WEB_TARGETS: Record<string, KnownWebTarget> = {
     title: '客户中心',
     url: '/depponmobile/mow/customer'
   },
+  CUSTOMER_BIND: {
+    title: '绑定客户编码',
+    url: '/depponmobile/mow/customer/bind'
+  },
   CUSTOMER_MONTHLY_CENTER: {
     title: '月结中心',
     url: '/depponmobile/mow/customer/dshkCenter'

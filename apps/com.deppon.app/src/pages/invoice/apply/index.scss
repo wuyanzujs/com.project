@@ -213,6 +213,10 @@
   border-radius: 8px;
 }
 
+.invoice-apply-submit--disabled {
+  background: #98a2b3;
+}
+
 .invoice-apply-submit__amount,
 .invoice-apply-submit__text {
   color: #ffffff;

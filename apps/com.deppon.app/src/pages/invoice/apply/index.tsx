@@ -3,6 +3,7 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useMemo, useState } from 'react'
 
+import { CACHE_KEYS, dpCache } from '../../../cache'
 import { invoiceService } from '../../../services/invoice'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
@@ -63,10 +64,13 @@ const InvoiceApplyPage = () => {
     useState<number | null>(null)
   const [billCategory, setBillCategory] =
     useState<InvoiceApplyBillCategory>('06')
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(
+    () => dpCache.get<string>(CACHE_KEYS.invoiceEmail) || ''
+  )
   const [unit, setUnit] = useState('')
   const [remark, setRemark] = useState('')
   const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState('')
 
   const selectedTaxpayer =
@@ -121,7 +125,15 @@ const InvoiceApplyPage = () => {
     }
   })
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (submitting) {
+      return
+    }
+
+    if (!order) {
+      return
+    }
+
     if (!preview?.canSubmit) {
       const nextMessage = preview?.message || '缺少开票信息'
 
@@ -133,10 +145,45 @@ const InvoiceApplyPage = () => {
       return
     }
 
-    Taro.showToast({
-      title: '发票提交接口后续接入',
-      icon: 'none'
-    })
+    setSubmitting(true)
+    setMessage('')
+
+    try {
+      const response = await invoiceService.submitApplyDraft({
+        order,
+        taxpayer: selectedTaxpayer,
+        billCategory,
+        email,
+        unit,
+        remark
+      })
+
+      if (!response.status) {
+        const nextMessage = response.message || '提交失败，请稍后再试'
+
+        setMessage(nextMessage)
+        Taro.showToast({
+          title: nextMessage,
+          icon: 'none'
+        })
+        return
+      }
+
+      dpCache.set(CACHE_KEYS.invoiceEmail, {
+        data: email.trim()
+      })
+      Taro.showToast({
+        title: '提交成功，请在开票历史查看进度',
+        icon: 'none'
+      })
+      navigateToAppRoute(`${APP_ROUTES.invoiceCenter}?tab=history`, {
+        login: true,
+        replace: true,
+        message: false
+      })
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   if (!order) {
@@ -164,7 +211,7 @@ const InvoiceApplyPage = () => {
         <Text className='invoice-apply-header__label'>Apply</Text>
         <Text className='invoice-apply-header__title'>申请发票</Text>
         <Text className='invoice-apply-header__summary'>
-          首期先完成申请信息编排和预览校验，最终提交接口后续接入。
+          核对运单、抬头和接收邮箱后提交，开具进展可在发票历史查看。
         </Text>
       </View>
 
@@ -332,11 +379,20 @@ const InvoiceApplyPage = () => {
         )}
       </View>
 
-      <View className='invoice-apply-submit' onClick={handleSubmit}>
+      <View
+        className={
+          submitting
+            ? 'invoice-apply-submit invoice-apply-submit--disabled'
+            : 'invoice-apply-submit'
+        }
+        onClick={handleSubmit}
+      >
         <Text className='invoice-apply-submit__amount'>
           {getMoneyText(order.amount)}
         </Text>
-        <Text className='invoice-apply-submit__text'>提交申请</Text>
+        <Text className='invoice-apply-submit__text'>
+          {submitting ? '提交中...' : '提交申请'}
+        </Text>
       </View>
     </ScrollView>
   )

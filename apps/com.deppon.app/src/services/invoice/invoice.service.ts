@@ -1,4 +1,5 @@
 import { invoiceApi } from './invoice.api'
+import { normalizeInvoiceOrder } from './order.mapper'
 
 import type {
   InvoiceHistoryListRequest,
@@ -12,10 +13,11 @@ import type {
   InvoiceHistoryWaybillView,
   InvoiceApplyDraft,
   InvoiceApplyPreview,
+  InvoiceApplySubmitRequest,
+  InvoiceApplySubmitResult,
   InvoiceListResult,
   InvoiceOrderListRequest,
   InvoiceOrderListResponse,
-  InvoiceOrderRaw,
   InvoiceOrderView,
   InvoicePreviewRaw,
   InvoicePreviewRequest,
@@ -36,6 +38,11 @@ import type { DepponResponse } from '../../request/deppon'
 const DEFAULT_ORDER_RANGE_MONTHS = 3
 const DEFAULT_HISTORY_RANGE_MONTHS = 12
 const DEFAULT_PAGE_SIZE = 10
+const EXPRESS_APPLY_SYSTEM = {
+  applyType: '241',
+  sourceType: '24',
+  SourceSystem: 'XCX'
+} as const
 
 function createFailure<TResult>(message: string): DepponResponse<TResult> {
   return {
@@ -179,62 +186,6 @@ function getBillCategoryName(category?: string) {
       return '电子专票'
     default:
       return '增值税专用发票'
-  }
-}
-
-function normalizeOrderStatus(item: InvoiceOrderRaw) {
-  const pendingPayment = item.unverifyAmount === '1'
-  const delay = item.ifCanOpenInvoiceMark === '2'
-  const inTransit = item.ifCanOpenInvoiceMark === '1'
-  const canApply = item.ifCanOpenInvoiceMark === '0' && !pendingPayment
-
-  if (pendingPayment) {
-    return {
-      statusText: '待支付',
-      statusClass: 'Process' as const,
-      canApply,
-      pendingPayment
-    }
-  }
-
-  if (!canApply) {
-    return {
-      statusText: delay ? '折扣中' : inTransit ? '未签收' : '不可开票',
-      statusClass: 'Cancel' as const,
-      canApply,
-      pendingPayment
-    }
-  }
-
-  return {
-    statusText: '可开票',
-    statusClass: 'Success' as const,
-    canApply,
-    pendingPayment
-  }
-}
-
-function normalizeOrder(item: InvoiceOrderRaw): InvoiceOrderView {
-  const status = normalizeOrderStatus(item)
-
-  return {
-    id: item.orderNo,
-    waybillNumber: item.sourceBillNo,
-    businessTime: formatTimestamp(item.businessDate),
-    senderText: [
-      truncateText(normalizeText(item.departurecity), 6),
-      truncateText(normalizeText(item.consignorContacts), 8)
-    ].filter(Boolean).join(' '),
-    consigneeText: [
-      truncateText(normalizeText(item.arrivalcity), 6),
-      truncateText(normalizeText(item.consignee), 8)
-    ].filter(Boolean).join(' '),
-    amount: toFiniteNumber(item.unbilledAmount ?? item.unbillAmount),
-    unverAmount: toFiniteNumber(item.unverAmount),
-    unpaidAmount: toFiniteNumber(item.unPayAmount),
-    paymentType: normalizeText(item.paymentType),
-    electronSupported: Boolean(item.electricSpecialTicketAuth),
-    ...status
   }
 }
 
@@ -388,10 +339,14 @@ function createApplyPreview(draft: InvoiceApplyDraft): InvoiceApplyPreview {
 
   if (!draft.order.canApply) {
     message = draft.order.statusText || '当前运单暂不可开票'
+  } else if (!draft.order.id || !draft.order.waybillNumber) {
+    message = '缺少开票运单号'
   } else if (!draft.taxpayer) {
     message = '请选择发票抬头'
   } else if (draft.billCategory === '13' && draft.taxpayer.customerType !== '1') {
     message = '电子专票需要选择单位抬头'
+  } else if (draft.billCategory === '13' && !draft.order.electronSupported) {
+    message = '当前运单暂未开通电子专票'
   } else if (draft.order.amount <= 0) {
     message = '当前运单暂无可开票金额'
   } else if (emailMessage) {
@@ -408,6 +363,60 @@ function createApplyPreview(draft: InvoiceApplyDraft): InvoiceApplyPreview {
     remark: draft.remark.trim(),
     canSubmit: !message,
     message
+  }
+}
+
+function createApplySubmitPayload(
+  draft: InvoiceApplyDraft
+): InvoiceApplySubmitRequest {
+  const taxpayer = draft.taxpayer
+  const amount = toFiniteNumber(draft.order.amount)
+  const openAmount = draft.billCategory === '06' ? 0 : amount
+  const includeCompanyInfo = taxpayer?.customerType === '1'
+
+  return {
+    TaskDetailList: [
+      {
+        payNo: '',
+        payFlag: true,
+        orderNo: draft.order.id,
+        sourceBillNo: draft.order.waybillNumber,
+        amount,
+        unverAmount: toFiniteNumber(draft.order.unverAmount),
+        paymentType: draft.order.paymentType,
+        electricSpecialTicketAuth: draft.order.electronSupported
+      }
+    ],
+    TaskInfo: {
+      payNo: '',
+      status: '0',
+      isAllOpen: '1',
+      isDomestic: '',
+      sendCustomer: 11,
+      phoneNo: '',
+      acceptPhone: '',
+      acceptArea: '',
+      acceptAddress: '',
+      acceptCustomer: '',
+      ...EXPRESS_APPLY_SYSTEM,
+      taxNo: taxpayer?.taxNumber ?? '',
+      taxName: taxpayer?.name ?? '',
+      customerType: taxpayer?.customerType ?? '0',
+      taxTelephone: includeCompanyInfo ? taxpayer?.phone ?? '' : '',
+      taxAddress: includeCompanyInfo ? taxpayer?.address ?? '' : '',
+      taxBankName: includeCompanyInfo ? taxpayer?.bank ?? '' : '',
+      taxBankNumber: includeCompanyInfo ? taxpayer?.bankAccount ?? '' : '',
+      openAmount,
+      totalAmount: openAmount,
+      open_amount: openAmount,
+      unit: draft.unit.trim(),
+      email: draft.email.trim(),
+      taxEmail: draft.email.trim(),
+      billCategory: draft.billCategory,
+      isPrintSaleList: 'N',
+      remark: draft.remark.trim(),
+      invoiceContent: ''
+    }
   }
 }
 
@@ -482,6 +491,30 @@ export const invoiceService = {
   validateEmail,
 
   createApplyPreview,
+
+  async submitApplyDraft(
+    draft: InvoiceApplyDraft
+  ): Promise<DepponResponse<InvoiceApplySubmitResult | null>> {
+    const preview = createApplyPreview(draft)
+
+    if (!preview.canSubmit) {
+      return createFailure(preview.message || '缺少开票信息')
+    }
+
+    const response = await invoiceApi.request<
+      InvoiceApplySubmitResult | null,
+      InvoiceApplySubmitRequest
+    >('addTaskInfoByEle', createApplySubmitPayload(draft), true, 30000)
+
+    if (!response.status) {
+      return createFailure(response.message || '提交失败，请稍后再试')
+    }
+
+    return {
+      ...response,
+      result: response.result ?? null
+    }
+  },
 
   async queryPreview(
     applyNo: string,
@@ -608,7 +641,7 @@ export const invoiceService = {
       return createFailure(response.message || '暂未获取到可开票运单')
     }
 
-    const list = (response.result.list ?? []).map(normalizeOrder)
+    const list = (response.result.list ?? []).map(normalizeInvoiceOrder)
 
     return {
       ...response,

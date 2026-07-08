@@ -1,11 +1,21 @@
 import { orderApi } from './order.api'
+import {
+  createOrderDetailActions,
+  createOrderUrgeContext,
+  createUrgeProgressWebUri
+} from './order.detailActions'
+import {
+  asNumber,
+  getOrderClassLabel,
+  normalizeConsigneeOrder,
+  normalizeSenderOrder,
+  normalizeWaybillDetail
+} from './order.mapper'
 import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 import { APP_ROUTES } from '../../shared/navigation/routes'
-import { getCurrentEcoToken, getCurrentUser } from '../auth'
-import { createExpressDraft } from '../express'
+import { getCurrentEcoToken } from '../auth'
 
 import type {
-  ConsigneeOrderItem,
   OrderDetail,
   OrderDetailActionOptions,
   OrderDetailActionView,
@@ -14,7 +24,6 @@ import type {
   OrderDetailUrgeActionView,
   OrderDetailUrgePanelView,
   OrderInvalidWaybillResult,
-  OrderListItem,
   OrderListOptions,
   OrderListResult,
   OrderRole,
@@ -34,98 +43,31 @@ import type {
   OrderStubSectionView,
   OrderStubView,
   OrderUrgeButtonRaw,
-  SenderOrderItem,
-  WaybillDetailRaw,
   WaybillTrackListResponse
 } from './types'
 import type { DepponResponse } from '../../request/deppon'
-import type {
-  ExpressCollectionType,
-  ExpressContact,
-  ExpressDeliveryMode,
-  ExpressDraft,
-  ExpressPaymentType,
-  ExpressProductCode
-} from '../express'
+
+export {
+  createExpressDraftFromOrderDetail,
+  getOrderClassLabel
+} from './order.mapper'
+
+export type { OrderResendMode } from './order.mapper'
 
 interface OrderTrackQueryOptions {
   loading?: boolean
   login?: boolean
 }
 
-export type OrderResendMode = 'repeat' | 'return'
-
 const DEFAULT_PAGE_SIZE = 10
 const DEFAULT_RANGE_DAYS = 30
 
-const ORDER_CLASS_LABELS: Record<number, string> = {
-  [-1]: '异常',
-  0: '待揽件',
-  1: '运输中',
-  2: '已签收',
-  3: '已退回',
-  4: '已撤销',
-  5: '已作废',
-  6: '派送中',
-  99: '已失效'
-}
-
-const CONSIGNEE_STATUS_TO_CLASS: Record<string, number> = {
-  待揽收: 0,
-  运输中: 1,
-  已签收: 2,
-  已退回: 3,
-  已取消: 4,
-  已作废: 5
-}
-
 const DELETABLE_ORDER_CLASSES = new Set([2, 3, 4, 5, 99])
-const COMPLAINT_ORDER_CLASSES = new Set([1, 2, 6])
-const EVALUATE_ORDER_CLASSES = new Set([1, 2, 6])
-const COMPLAINT_WINDOW_DAYS = 90
 const ORDER_DETAIL_WEB_PARAM_SOURCE = 'APP_ORDER_DETAIL'
-const URGE_PROGRESS_WEB_PATH = '/depponmobile/mow/order/urgeProgress'
-const EVALUATE_WEB_PATH = '/depponmobile/survey/land'
 const WAYBILL_MODIFY_WEB_PATH = '/depponmobile/mow/order/modifyNew/index'
-const DELIVERY_PREFERENCE_WEB_PATH = '/depponmobile/orderStayTmp'
 const INVALID_TO_MODIFY_MESSAGE =
   '货物已经出发，不可作废，可在运单修改中操作拦截'
 const DEFAULT_SERVICE_PHONE = '95353'
-const EXPRESS_PRODUCT_CODES = new Set<ExpressProductCode>([
-  '',
-  'PACKAGE',
-  'DEAP',
-  'RCP',
-  'PCP',
-  'DCZP',
-  'DJBK',
-  'DJTK',
-  'XJBK',
-  'XJTK',
-  'XJTH',
-  'DJTH',
-  'YTY'
-])
-
-const EXPRESS_PAYMENT_TYPES = new Set<ExpressPaymentType>([
-  'MP',
-  'PAY_ARIIVE',
-  'MONTH_PAY'
-])
-
-const EXPRESS_DELIVERY_MODES = new Set<ExpressDeliveryMode>([
-  '',
-  'PICKNOTUPSTAIRS',
-  'PICKSELF',
-  'PICKUPSTAIRS',
-  'BIGUPSTAIRS'
-])
-
-const EXPRESS_COLLECTION_TYPES = new Set<ExpressCollectionType>([
-  '',
-  'NORMAL',
-  'INTRADAY'
-])
 
 const EXPRESS_SERVICE_IMAGE_SCENES: Record<OrderServiceImageScene, string> = {
   1: 'RETURNBILLTYPE_FAX',
@@ -162,22 +104,6 @@ function pad(value: number) {
   return String(value).padStart(2, '0')
 }
 
-function formatDateTime(value: string | number | Date | null | undefined) {
-  if (!value) {
-    return ''
-  }
-
-  const date = value instanceof Date ? value : new Date(value)
-
-  if (Number.isNaN(date.getTime())) {
-    return String(value)
-  }
-
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )} ${pad(date.getHours())}:${pad(date.getMinutes())}`
-}
-
 function formatRequestDateTime(date: Date) {
   return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(
     date.getDate()
@@ -206,67 +132,12 @@ function getDefaultDateRange() {
   return getOrderDateRange()
 }
 
-function getOrderClassLabel(orderClass: number, fallback?: string) {
-  return ORDER_CLASS_LABELS[orderClass] || fallback || '未知状态'
-}
-
-function getConsigneeOrderClass(statusName: string) {
-  return CONSIGNEE_STATUS_TO_CLASS[statusName] ?? 1
-}
-
 function createFailure<TResult>(message: string): DepponResponse<TResult> {
   return {
     status: false,
     message,
     result: null
   }
-}
-
-function asExpressProductCode(value: unknown): ExpressProductCode {
-  return typeof value === 'string' &&
-    EXPRESS_PRODUCT_CODES.has(value as ExpressProductCode)
-    ? (value as ExpressProductCode)
-    : ''
-}
-
-function asExpressPaymentType(
-  value: unknown,
-  fallback: ExpressPaymentType
-): ExpressPaymentType {
-  return typeof value === 'string' &&
-    EXPRESS_PAYMENT_TYPES.has(value as ExpressPaymentType)
-    ? (value as ExpressPaymentType)
-    : fallback
-}
-
-function asExpressDeliveryMode(
-  value: unknown,
-  fallback: ExpressDeliveryMode
-): ExpressDeliveryMode {
-  return typeof value === 'string' &&
-    EXPRESS_DELIVERY_MODES.has(value as ExpressDeliveryMode)
-    ? (value as ExpressDeliveryMode)
-    : fallback
-}
-
-function asExpressCollectionType(
-  value: unknown,
-  fallback: ExpressCollectionType
-): ExpressCollectionType {
-  return typeof value === 'string' &&
-    EXPRESS_COLLECTION_TYPES.has(value as ExpressCollectionType)
-    ? (value as ExpressCollectionType)
-    : fallback
-}
-
-function asNumber(value: unknown, fallback = 0) {
-  const numberValue = Number(value)
-
-  return Number.isFinite(numberValue) ? numberValue : fallback
-}
-
-function asText(value: unknown) {
-  return typeof value === 'string' ? value : ''
 }
 
 function hasText(value: unknown) {
@@ -412,19 +283,6 @@ function createRouteUrl(route: string, params: Record<string, string>) {
   return query ? `${route}?${query}` : route
 }
 
-function createEvaluateRowData(order: OrderDetail) {
-  return JSON.stringify([
-    {
-      field: 'orderNumber',
-      data: order.orderNumber || ''
-    },
-    {
-      field: 'waybillNumber',
-      data: order.waybillNumber || ''
-    }
-  ])
-}
-
 function getOrderClass(order: OrderDetail) {
   const orderClass = Number(order.orderClassification)
 
@@ -437,52 +295,8 @@ function getOrderStatusText(order: OrderDetail) {
     .join('')
 }
 
-function isComplaintStatus(order: OrderDetail) {
-  const orderClass = getOrderClass(order)
-  const statusText = getOrderStatusText(order)
-
-  if (orderClass === null) {
-    return (
-      statusText.includes('运输') ||
-      statusText.includes('派送') ||
-      statusText.includes('签收')
-    )
-  }
-
-  return COMPLAINT_ORDER_CLASSES.has(orderClass)
-}
-
 function isSignedOrder(order: OrderDetail) {
   return getOrderClass(order) === 2 || getOrderStatusText(order).includes('签收')
-}
-
-function isEvaluateStatus(order: OrderDetail) {
-  const orderClass = getOrderClass(order)
-  const statusText = getOrderStatusText(order)
-
-  if (orderClass === null) {
-    return (
-      statusText.includes('运输') ||
-      statusText.includes('派送') ||
-      statusText.includes('签收')
-    )
-  }
-
-  return EVALUATE_ORDER_CLASSES.has(orderClass)
-}
-
-function isWithinDays(value: string | null | undefined, days: number) {
-  if (!value) {
-    return true
-  }
-
-  const timestamp = new Date(value).getTime()
-
-  if (Number.isNaN(timestamp)) {
-    return true
-  }
-
-  return Date.now() - timestamp <= days * 24 * 60 * 60 * 1000
 }
 
 function getDetailWaybillNumber(order: OrderDetail) {
@@ -493,45 +307,6 @@ function getOrderTableType(order: OrderDetail) {
   return getOrderTextField(order, ['orderTableType', 'tableType'])
 }
 
-function getOrderChannelType(order: OrderDetail) {
-  return getOrderTextField(order, ['orderChannelType', 'channelType'])
-}
-
-function getOrderSlaveFlag(order: OrderDetail) {
-  return getOrderTextField(order, ['isSlave', 'isMasterSlave'])
-}
-
-function getOrderContactPhone(order: OrderDetail) {
-  return (
-    getOrderTextField(order, [
-      'postmanPhone',
-      'courierMobile',
-      'exDepartureCourierPhone',
-      'stationPhone',
-      'departmentPhone'
-    ]) || DEFAULT_SERVICE_PHONE
-  )
-}
-
-function getOrderStationCode(order: OrderDetail) {
-  return getOrderTextField(order, [
-    'stationCode',
-    'acceptDeptCode',
-    'departmentCode',
-    'deptCode',
-    'senderStation',
-    'consigneeStation'
-  ])
-}
-
-function getOrderStationPhone(order: OrderDetail) {
-  return getOrderTextField(order, [
-    'stationPhone',
-    'acceptPhone',
-    'departmentPhone'
-  ])
-}
-
 function isWaitAllotOrder(order: OrderDetail) {
   return getOrderClass(order) === 0
 }
@@ -540,74 +315,10 @@ function isTransitOrder(order: OrderDetail) {
   return getOrderClass(order) === 1
 }
 
-function isInvalidOrder(order: OrderDetail) {
-  return getOrderClass(order) === 5
-}
-
-function isMasterOrder(order: OrderDetail) {
-  return getOrderSlaveFlag(order) !== '1'
-}
-
 function isExpressOrder(order: OrderDetail) {
   const tableType = getOrderTableType(order)
 
   return !tableType || tableType === '2' || tableType === 'EXPRESS'
-}
-
-function isServicePointOrder(order: OrderDetail) {
-  return getOrderChannelType(order) === 'ServicePoint'
-}
-
-function isSenderDetail(order: OrderDetail, role?: OrderRole) {
-  return role === 'sender' || (role !== 'receive' && order.isSender === 'Y')
-}
-
-function isReceiverDetail(order: OrderDetail, role?: OrderRole) {
-  return role === 'receive' || (role !== 'sender' && order.isReceiver === 'Y')
-}
-
-function createOrderUrgeContext(
-  order: OrderDetail,
-  options: OrderDetailActionOptions
-): OrderDetailUrgeActionView | null {
-  if (!canShowSecureDetailActions(order, options)) {
-    return null
-  }
-
-  if (
-    isSenderDetail(order, options.role) &&
-    isWaitAllotOrder(order) &&
-    order.orderNumber &&
-    !isServicePointOrder(order) &&
-    isExpressOrder(order)
-  ) {
-    return {
-      voucherNumber: order.orderNumber,
-      voucherType: '0',
-      urgeType: 'URGE_ORDER_NO',
-      buttonCode: '',
-      contactPhone: getOrderContactPhone(order)
-    }
-  }
-
-  if (isMasterOrder(order) && isTransitOrder(order) && order.waybillNumber) {
-    return {
-      voucherNumber: order.waybillNumber,
-      voucherType: '1',
-      urgeType: 'URGE_BILL_NO',
-      buttonCode: '',
-      contactPhone: getOrderContactPhone(order)
-    }
-  }
-
-  return null
-}
-
-function createUrgeProgressWebUri(urge: OrderDetailUrgeActionView) {
-  return createOrderDetailWebUri(URGE_PROGRESS_WEB_PATH, {
-    voucherType: urge.voucherType,
-    voucherNumber: urge.voucherNumber
-  })
 }
 
 function createUrgePanel(
@@ -625,243 +336,6 @@ function createUrgePanel(
           }
         ]
   }
-}
-
-function canShowSecureDetailActions(
-  order: OrderDetail,
-  options: OrderDetailActionOptions
-) {
-  return (
-    !options.publicTrackMode &&
-    (!!order.orderNumber || !!order.waybillNumber)
-  )
-}
-
-function canCreateComplaint(order: OrderDetail) {
-  return (
-    !!getDetailWaybillNumber(order) &&
-    isComplaintStatus(order) &&
-    isWithinDays(order.orderTime, COMPLAINT_WINDOW_DAYS)
-  )
-}
-
-function canModifyWaybill(order: OrderDetail, role?: OrderRole) {
-  return (
-    role !== 'receive' &&
-    !!getDetailWaybillNumber(order) &&
-    order.modifyFlag !== false
-  )
-}
-
-function canNotifyDeliver(order: OrderDetail, role?: OrderRole) {
-  return (
-    isSenderDetail(order, role) &&
-    isTransitOrder(order) &&
-    !!getDetailWaybillNumber(order) &&
-    order.isDlyNotified === 'N'
-  )
-}
-
-function canEvaluateOrder(order: OrderDetail) {
-  return (
-    (!!order.orderNumber || !!order.waybillNumber) &&
-    isEvaluateStatus(order)
-  )
-}
-
-function canInvalidWaybill(order: OrderDetail, role?: OrderRole) {
-  return (
-    isSenderDetail(order, role) &&
-    isTransitOrder(order) &&
-    !!getDetailWaybillNumber(order) &&
-    order.canBeVoided === 'Y'
-  )
-}
-
-function canEditDeliveryPreference(order: OrderDetail, role?: OrderRole) {
-  return (
-    isReceiverDetail(order, role) &&
-    isTransitOrder(order) &&
-    !!getDetailWaybillNumber(order)
-  )
-}
-
-function canContactDepartment(order: OrderDetail) {
-  return isInvalidOrder(order) && !!getOrderStationCode(order)
-}
-
-function createEvaluateWebUri(order: OrderDetail, role?: OrderRole) {
-  const user = getCurrentUser()
-  const scene = isSenderDetail(order, role) ? 'S0505' : 'S0907'
-
-  return createOrderDetailWebUri(EVALUATE_WEB_PATH, {
-    scene,
-    channel: 'APP',
-    mobile: user?.mobile || '',
-    rowData: createEvaluateRowData(order)
-  })
-}
-
-function createOrderDetailActions(
-  order: OrderDetail,
-  options: OrderDetailActionOptions = {}
-): OrderDetailActionView[] {
-  if (!canShowSecureDetailActions(order, options)) {
-    return []
-  }
-
-  const actions: OrderDetailActionView[] = [
-    {
-      kind: 'service',
-      title: '在线客服',
-      summary: '咨询订单、配送和费用问题',
-      target: 'web',
-      tone: 'primary',
-      badgeText: '客服',
-      webSource: 'ORDER_DETAIL_SERVICE',
-      loginRequired: true
-    }
-  ]
-  const waybillNumber = getDetailWaybillNumber(order)
-
-  if (canNotifyDeliver(order, options.role)) {
-    actions.push({
-      kind: 'notifyDeliver',
-      title: '通知派送',
-      summary: '通知营业部为当前快件安排派送',
-      target: 'notifyDeliver',
-      tone: 'warning',
-      badgeText: '待确认',
-      loginRequired: true
-    })
-  }
-
-  if (canInvalidWaybill(order, options.role)) {
-    actions.push({
-      kind: 'invalidWaybill',
-      title: '拦截作废',
-      summary: '提交后由我司核实，已支付运费将按规则退回',
-      target: 'invalidWaybill',
-      tone: 'danger',
-      badgeText: '高风险',
-      loginRequired: true
-    })
-  }
-
-  if (canEditDeliveryPreference(order, options.role)) {
-    actions.push({
-      kind: 'deliveryPreference',
-      title: '收件方式',
-      summary: '调整当前运单的派送偏好',
-      target: 'web',
-      tone: 'neutral',
-      badgeText: 'H5',
-      webSource: 'ORDER_DETAIL_DELIVERY',
-      webUri: createOrderDetailWebUri(DELIVERY_PREFERENCE_WEB_PATH, {
-        waybillNumber
-      }),
-      loginRequired: true
-    })
-  }
-
-  if (canContactDepartment(order)) {
-    actions.push({
-      kind: 'departmentPhone',
-      title: '联系营业部',
-      summary: '联系处理当前运单的营业部',
-      target: 'departmentPhone',
-      tone: 'primary',
-      badgeText: '电话',
-      departmentPhone: {
-        stationCode: getOrderStationCode(order),
-        phoneNumber: getOrderStationPhone(order)
-      },
-      loginRequired: true
-    })
-  }
-
-  if (canEvaluateOrder(order)) {
-    actions.push({
-      kind: 'evaluate',
-      title: '服务评价',
-      summary: '对当前订单服务体验进行评价',
-      target: 'web',
-      tone: 'neutral',
-      badgeText: 'H5',
-      webSource: 'ORDER_DETAIL_EVALUATE',
-      webUri: createEvaluateWebUri(order, options.role),
-      loginRequired: true
-    })
-  }
-
-  if (canCreateComplaint(order)) {
-    actions.push({
-      kind: 'complaint',
-      title: '投诉',
-      summary: '对当前运单提交服务投诉',
-      target: 'web',
-      tone: 'warning',
-      badgeText: 'H5',
-      webSource: 'ORDER_DETAIL_COMPLAINT',
-      webUri: createOrderDetailWebUri('/depponmobile/complaint/apply/index', {
-        waybillNumber
-      }),
-      loginRequired: true
-    })
-  }
-
-  if (waybillNumber) {
-    actions.push({
-      kind: 'claim',
-      title: '在线理赔',
-      summary: '货损货差等理赔申请由 H5 承接',
-      target: 'web',
-      tone: 'neutral',
-      badgeText: 'H5',
-      webSource: 'ORDER_DETAIL_CLAIM',
-      webUri: createOrderDetailWebUri(
-        '/depponmobile/h5/index#/claimPackagePages/index',
-        {
-          waybillNumber
-        }
-      ),
-      loginRequired: true
-    })
-  }
-
-  if (waybillNumber && isSignedOrder(order)) {
-    actions.push({
-      kind: 'invoice',
-      title: '去开票',
-      summary: '进入 App 发票中心查询可开票运单',
-      target: 'route',
-      tone: 'primary',
-      badgeText: 'App',
-      route: createRouteUrl(APP_ROUTES.invoiceCenter, {
-        source: 'ORDER_DETAIL',
-        waybillNumber
-      }),
-      loginRequired: true
-    })
-  }
-
-  if (canModifyWaybill(order, options.role)) {
-    actions.push({
-      kind: 'modifyWaybill',
-      title: '修改运单',
-      summary: '修改收寄件或货物信息，首期由 H5 承接',
-      target: 'web',
-      tone: 'neutral',
-      badgeText: 'H5',
-      webSource: 'ORDER_DETAIL_WAYBILL_MODIFY',
-      webUri: createOrderDetailWebUri(WAYBILL_MODIFY_WEB_PATH, {
-        waybillNumber
-      }),
-      loginRequired: true
-    })
-  }
-
-  return actions
 }
 
 async function queryOrderUrgeAction(
@@ -1024,74 +498,6 @@ async function resolveDepartmentPhone(
     status: true,
     message: response.message || '暂未查询到营业部电话，已转服务热线',
     result: DEFAULT_SERVICE_PHONE
-  }
-}
-
-function normalizeSenderOrder(item: SenderOrderItem): OrderListItem {
-  const orderClass = Number(item.orderClassification)
-
-  return {
-    role: 'sender',
-    senderCity: item.contactCity,
-    senderName: item.contactName,
-    consigneeCity: item.receiverCustCity,
-    consigneeName: item.receiveName,
-    waybillNumber: item.waybillNumber,
-    orderNumber: item.orderNumber,
-    orderStatus: item.orderStatus,
-    orderClass,
-    orderClassName: getOrderClassLabel(orderClass),
-    orderTime: formatDateTime(item.newOrderTime || item.orderTime),
-    orderPrice: item.totalFee ?? 0,
-    isExpress: item.tableType === 'EXPRESS' || item.tableType === '2',
-    isDispatch: item.dispatchFlag === 'Y',
-    isAllowCancel: !!item.modifyFlag
-  }
-}
-
-function normalizeConsigneeOrder(item: ConsigneeOrderItem): OrderListItem {
-  const orderClass = getConsigneeOrderClass(item.statustype)
-
-  return {
-    role: 'receive',
-    senderCity: item.sendcity,
-    senderName: item.sender,
-    consigneeCity: item.consigncity,
-    consigneeName: item.consignee,
-    waybillNumber: item.billno,
-    orderNumber: item.orderNo || '',
-    orderStatus: item.currentStatus,
-    orderClass,
-    orderClassName: getOrderClassLabel(orderClass, item.currentStatus),
-    orderTime: formatDateTime(item.newStatusTime || item.statusTime),
-    orderPrice: 0,
-    isExpress: true,
-    isDispatch: true,
-    isAllowCancel: false
-  }
-}
-
-function normalizeWaybillDetail(detail: WaybillDetailRaw): OrderDetail {
-  return {
-    ...detail,
-    paymentType: detail.payment,
-    goodsNumber: detail.pieces,
-    totalVolume: detail.cubage,
-    transportMode: detail.transportMode,
-    contactProvince: detail.senderProvinceName,
-    contactArea: detail.senderDistrictName,
-    contactTown: detail.senderTownName,
-    contactAddress: detail.contactAddressWechat,
-    receiverName: detail.receiverCustName,
-    receiverMobile: detail.receiveMobile,
-    receiverProvince: detail.consigneeProvinceName,
-    receiverCity: detail.receiveCity,
-    receiverArea: detail.consigneeDistrictName,
-    receiverTown: detail.receiverTownName,
-    receiverAddress: detail.receiveAddressWechat,
-    courierName: detail.exDepartureCourierName,
-    courierMobile: detail.exDepartureCourierPhone,
-    modifyFlag: detail.productCodeFlag
   }
 }
 
@@ -2070,75 +1476,6 @@ async function queryOrderStubImages(
       message,
       groups
     }
-  }
-}
-
-function createOrderSenderContact(order: OrderDetail): ExpressContact {
-  return {
-    name: asText(order.contactName),
-    mobile: asText(order.contactMobile),
-    province: asText(order.contactProvince),
-    city: asText(order.contactCity),
-    county: asText(order.contactArea),
-    town: asText(order.contactTown),
-    address: asText(order.contactAddress)
-  }
-}
-
-function createOrderReceiverContact(order: OrderDetail): ExpressContact {
-  return {
-    name: asText(order.receiverName),
-    mobile: asText(order.receiverMobile),
-    province: asText(order.receiverProvince),
-    city: asText(order.receiverCity),
-    county: asText(order.receiverArea),
-    town: asText(order.receiverTown),
-    address: asText(order.receiverAddress)
-  }
-}
-
-export function createExpressDraftFromOrderDetail(
-  order: OrderDetail,
-  mode: OrderResendMode = 'repeat'
-): ExpressDraft {
-  const draft = createExpressDraft()
-  const productCode = asExpressProductCode(order.transportMode)
-  const sender = createOrderSenderContact(order)
-  const consignee = createOrderReceiverContact(order)
-  const isReturn = mode === 'return'
-
-  return {
-    ...draft,
-    sender: isReturn ? consignee : sender,
-    consignee: isReturn ? sender : consignee,
-    goods: {
-      ...draft.goods,
-      name: asText(order.goodsName),
-      count: Math.max(1, asNumber(order.goodsNumber, draft.goods.count)),
-      weight: Math.max(1, asNumber(order.totalWeight, draft.goods.weight)),
-      volume: Math.max(0, asNumber(order.totalVolume, draft.goods.volume)),
-      insuredAmount: Math.max(0, asNumber(order.insuredAmount)),
-      reviceMoneyAmount: Math.max(0, asNumber(order.reviceMoneyAmount))
-    },
-    service: {
-      ...draft.service,
-      transportMode: productCode,
-      deliveryMode: asExpressDeliveryMode(
-        order.deliveryType,
-        draft.service.deliveryMode
-      ),
-      paymentType: asExpressPaymentType(
-        order.paymentType,
-        draft.service.paymentType
-      ),
-      reciveLoanType: asExpressCollectionType(
-        order.reciveLoanType,
-        draft.service.reciveLoanType
-      )
-    },
-    quoteStaleReason: isReturn
-      ? '一键回寄，请重新获取价格'
-      : '再来一单，请重新获取价格'
   }
 }
 
