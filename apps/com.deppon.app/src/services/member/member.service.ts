@@ -1,4 +1,5 @@
 import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
+import { appendRouteQuery } from '../../shared/navigation/routeUrl'
 import { authService } from '../auth'
 import { memberApi } from './member.api'
 
@@ -42,19 +43,6 @@ function toFiniteNumber(value: unknown) {
 
 function normalizeText(value?: string | number | null) {
   return String(value ?? '').trim()
-}
-
-function appendQuery(url: string, params: Record<string, string>) {
-  const query = Object.entries(params)
-    .filter(([, value]) => !!value)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
-
-  if (!query) {
-    return url
-  }
-
-  return url.includes('?') ? `${url}&${query}` : `${url}?${query}`
 }
 
 function getSvipStatusText(status: number) {
@@ -127,12 +115,12 @@ export const memberService = {
     try {
       const token = await authService.generateTmpToken(source)
 
-      return appendQuery(APP_RUNTIME_CONFIG.memberWebURL, {
+      return appendRouteQuery(APP_RUNTIME_CONFIG.memberWebURL, {
         code: token,
         source
       })
     } catch {
-      return appendQuery(APP_RUNTIME_CONFIG.memberWebURL, {
+      return appendRouteQuery(APP_RUNTIME_CONFIG.memberWebURL, {
         source
       })
     }

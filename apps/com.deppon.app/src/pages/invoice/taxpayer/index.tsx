@@ -7,6 +7,7 @@ import { invoiceService } from '../../../services/invoice'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type { InvoiceTaxpayerView } from '../../../services/invoice'
 
@@ -62,8 +63,9 @@ const InvoiceTaxpayerListPage = () => {
   }
 
   const handleEdit = (item: InvoiceTaxpayerView) => {
-    const data = encodeURIComponent(JSON.stringify(item))
-    const url = `${APP_ROUTES.invoiceTaxpayerEdit}?data=${data}`
+    const url = createAppRouteUrl(APP_ROUTES.invoiceTaxpayerEdit, {
+      data: JSON.stringify(item)
+    })
 
     navigateToAppRoute(url, {
       login: true

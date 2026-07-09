@@ -1,4 +1,4 @@
-package com.tarodemo
+package com.deppon.app
 import expo.modules.ReactActivityDelegateWrapper
 
 import com.facebook.react.ReactActivity

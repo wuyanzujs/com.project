@@ -1,4 +1,5 @@
 import { APP_ROUTES } from '../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
 
 import type {
   ExpressInsuranceRuleType,
@@ -158,15 +159,6 @@ function normalizeRuleType(value?: string): ExpressInsuranceRuleType {
   return 'NORMAL'
 }
 
-function createQuery(params: Record<string, string>) {
-  const query = Object.entries(params)
-    .filter(([, value]) => value)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
-
-  return query ? `?${query}` : ''
-}
-
 export const expressInsuranceRules = {
   getRuleTypes() {
     return Object.values(RULES).map((item) => ({
@@ -181,8 +173,8 @@ export const expressInsuranceRules = {
   },
 
   createRuleRoute(type: ExpressInsuranceRuleType = 'NORMAL') {
-    return `${APP_ROUTES.expressInsurance}${createQuery({
+    return createAppRouteUrl(APP_ROUTES.expressInsurance, {
       type
-    })}`
+    })
   }
 }

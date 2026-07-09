@@ -1,5 +1,6 @@
 import { paymentApi } from './payment.api'
 import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
+import { createServiceFailure } from '../serviceResponse'
 
 import type {
   PaymentItem,
@@ -40,14 +41,6 @@ function getPaymentDateRange(days = DEFAULT_PAYMENT_RANGE_DAYS) {
   return {
     startTime: formatPaymentDateTime(startDate),
     endTime: formatPaymentDateTime(endDate)
-  }
-}
-
-function createFailure<TResult>(message: string): DepponResponse<TResult> {
-  return {
-    status: false,
-    message,
-    result: null
   }
 }
 
@@ -121,7 +114,7 @@ export const paymentService = {
     )
 
     if (!response.status || !response.result) {
-      return createFailure(response.message || '暂未获取到待支付运单')
+      return createServiceFailure(response.message || '暂未获取到待支付运单')
     }
 
     const list = filterUnsupportedPayments(response.result.list ?? [])
@@ -148,7 +141,7 @@ export const paymentService = {
     const waybillNumber = options.waybillNumber?.trim()
 
     if (!waybillNumber) {
-      return createFailure('缺少运单号，暂无法查询待支付费用')
+      return createServiceFailure('缺少运单号，暂无法查询待支付费用')
     }
 
     const dateRange = getPaymentDateRange()
@@ -167,7 +160,7 @@ export const paymentService = {
     )
 
     if (!response.status || !response.result) {
-      return createFailure(response.message || '暂未获取到待支付费用')
+      return createServiceFailure(response.message || '暂未获取到待支付费用')
     }
 
     const rawItems = response.result.list ?? []

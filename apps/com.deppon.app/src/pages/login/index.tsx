@@ -8,6 +8,8 @@ import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../shared/navigation/routes'
 import { createAppWebUrl } from '../../shared/webview/appWeb'
 
+import type { AppWebSource } from '../../shared/webview/appWeb'
+
 import './index.scss'
 
 const SMS_COUNTDOWN_SECONDS = 60
@@ -139,7 +141,7 @@ const LoginPage = () => {
     }
   }
 
-  const handlePolicyPress = (source: string) => {
+  const handlePolicyPress = (source: AppWebSource) => {
     Taro.navigateTo({
       url: createAppWebUrl({ source })
     })

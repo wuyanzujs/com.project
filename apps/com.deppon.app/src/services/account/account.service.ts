@@ -7,17 +7,10 @@ import {
   isValidSmsCode,
   maskMobile
 } from '../auth'
+import { createServiceFailure } from '../serviceResponse'
 
 import type { AccountOverviewView } from './types'
 import type { DepponResponse } from '../../request/deppon'
-
-function createFailure<TResult>(message: string): DepponResponse<TResult> {
-  return {
-    status: false,
-    message,
-    result: null
-  }
-}
 
 function getSystemCode() {
   return APP_RUNTIME_CONFIG.systemCode
@@ -51,7 +44,7 @@ export const accountService = {
     const mobile = getUserMobile()
 
     if (!mobile) {
-      return createFailure('请先登录后再注销账号')
+      return createServiceFailure('请先登录后再注销账号')
     }
 
     return accountApi.sendCancelSms({
@@ -66,11 +59,11 @@ export const accountService = {
     const verifyCode = code.trim()
 
     if (!mobile) {
-      return createFailure('请先登录后再注销账号')
+      return createServiceFailure('请先登录后再注销账号')
     }
 
     if (!isValidSmsCode(verifyCode)) {
-      return createFailure('请输入 6 位数字验证码')
+      return createServiceFailure('请输入 6 位数字验证码')
     }
 
     const response = await accountApi.cancelAccount({

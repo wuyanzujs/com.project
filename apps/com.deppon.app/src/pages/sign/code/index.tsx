@@ -4,6 +4,7 @@ import Taro, { useDidShow } from '@tarojs/taro'
 import { useCallback, useState } from 'react'
 
 import { signService } from '../../../services/sign'
+import QRCodeMatrix from '../../../shared/components/QRCodeMatrix'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -135,7 +136,7 @@ const SignCodePage = () => {
         <Text className='sign-code-header__label'>Sign</Text>
         <Text className='sign-code-header__title'>签收码</Text>
         <Text className='sign-code-header__summary'>
-          首期承接实名签收码查询与实名登记，二维码渲染后续由 App 端组件接入。
+          首期承接实名签收码查询、实名登记和 App 端二维码展示。
         </Text>
       </View>
 
@@ -195,7 +196,10 @@ const SignCodePage = () => {
 
       {hasSignCode && (
         <View className='sign-code-panel'>
-          <Text className='sign-code-panel__title'>给快递员核验签收码</Text>
+          <Text className='sign-code-panel__title'>给快递员扫描签收码</Text>
+          <View className='sign-code-qrcode'>
+            <QRCodeMatrix value={signInfo?.qrPayload || ''} size={320} />
+          </View>
           <View className='sign-code-value'>
             <Text className='sign-code-value__text' selectable>
               {signInfo?.signCode}
@@ -249,7 +253,7 @@ const SignCodePage = () => {
           2、如发现货物异常，请拒绝签收并立即向派送人员反馈。
         </Text>
         <Text className='sign-rules__text'>
-          3、二维码图形展示会在 App 端二维码组件确认后接入，当前可使用文本码核验。
+          3、二维码短时有效，如页面停留时间较长，请点击刷新后再出示。
         </Text>
       </View>
     </ScrollView>

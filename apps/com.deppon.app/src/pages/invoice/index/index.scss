@@ -135,6 +135,7 @@
 }
 
 .invoice-search__button,
+.invoice-search__scan,
 .invoice-search__clear {
   align-items: center;
   justify-content: center;
@@ -152,7 +153,12 @@
   background: #eef2f6;
 }
 
+.invoice-search__scan {
+  background: #e8efff;
+}
+
 .invoice-search__button-text,
+.invoice-search__scan-text,
 .invoice-search__clear-text {
   font-size: 24px;
   font-weight: 700;
@@ -160,6 +166,10 @@
 
 .invoice-search__button-text {
   color: #ffffff;
+}
+
+.invoice-search__scan-text {
+  color: #1a5eff;
 }
 
 .invoice-search__clear-text {

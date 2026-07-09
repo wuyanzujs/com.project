@@ -9,6 +9,7 @@ export type NativeCapability =
   | 'upload'
   | 'download'
   | 'documentPreview'
+  | 'print'
   | 'notification'
   | 'externalApp'
   | 'realName'
@@ -31,6 +32,7 @@ export const APP_NATIVE_CAPABILITIES: Record<
   upload: 'pending',
   download: 'pending',
   documentPreview: 'pending',
+  print: 'pending',
   notification: 'pending',
   externalApp: 'pending',
   realName: 'pending',
@@ -49,6 +51,7 @@ const NATIVE_CAPABILITY_LABELS: Record<NativeCapability, string> = {
   upload: '上传',
   download: '下载',
   documentPreview: '文件预览',
+  print: '打印',
   notification: '通知',
   externalApp: '外部应用',
   realName: '实名核验',

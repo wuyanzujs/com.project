@@ -6,6 +6,13 @@ const appRoot = process.cwd()
 const srcRoot = path.join(appRoot, 'src')
 const packageJsonPath = path.join(appRoot, 'package.json')
 const sourceExtensions = new Set(['.ts', '.tsx'])
+const forbiddenMiniProgramConfigFiles = [
+  'project.config.json',
+  'project.tt.json',
+  'project.swan.json',
+  'project.qq.json',
+  'project.jd.json'
+]
 const forbiddenPlatformPackages = new Set([
   '@tarojs/plugin-platform-alipay',
   '@tarojs/plugin-platform-h5',
@@ -22,9 +29,34 @@ const nativeIdentityChecks = [
     message: 'Taro RN appName 必须与原生 moduleName 保持一致。'
   },
   {
+    filePath: packageJsonPath,
+    expected: '"expo":',
+    message: 'Taro RN 原生 autolinking 需要显式声明 expo 依赖。'
+  },
+  {
     filePath: path.join(appRoot, 'android/gradle.properties'),
     expected: 'app_id=com.deppon.app',
     message: 'Android applicationId 应使用 App 包名 com.deppon.app。'
+  },
+  {
+    filePath: path.join(appRoot, 'android/settings.gradle'),
+    expected: "@tarojs/taro-rn/package.json",
+    message: 'Android Expo autolinking 应兼容 pnpm workspace 依赖解析。'
+  },
+  {
+    filePath: path.join(appRoot, 'android/app/build.gradle'),
+    expected: 'namespace "com.deppon.app"',
+    message: 'Android namespace 应使用 App 包名 com.deppon.app。'
+  },
+  {
+    filePath: path.join(appRoot, 'android/gradle/wrapper/gradle-wrapper.properties'),
+    expected: 'networkTimeout=60000',
+    message: 'Gradle wrapper 首次下载超时不应保持模板默认 10 秒。'
+  },
+  {
+    filePath: path.join(appRoot, 'android/fastlane/Appfile'),
+    expected: 'package_name("com.deppon.app")',
+    message: 'Android fastlane 包名应使用 com.deppon.app。'
   },
   {
     filePath: path.join(appRoot, 'android/app/src/main/res/values/strings.xml'),
@@ -34,10 +66,26 @@ const nativeIdentityChecks = [
   {
     filePath: path.join(
       appRoot,
-      'android/app/src/main/java/com/tarodemo/MainActivity.kt'
+      'android/app/src/main/java/com/deppon/app/MainActivity.kt'
+    ),
+    expected: 'package com.deppon.app',
+    message: 'Android MainActivity 包名必须与 App 包名保持一致。'
+  },
+  {
+    filePath: path.join(
+      appRoot,
+      'android/app/src/main/java/com/deppon/app/MainActivity.kt'
     ),
     expected: 'getMainComponentName(): String = "DepponApp"',
     message: 'Android RN moduleName 必须与 Taro RN appName 保持一致。'
+  },
+  {
+    filePath: path.join(
+      appRoot,
+      'android/app/src/main/java/com/deppon/app/MainApplication.kt'
+    ),
+    expected: 'package com.deppon.app',
+    message: 'Android MainApplication 包名必须与 App 包名保持一致。'
   },
   {
     filePath: path.join(appRoot, 'ios/taroDemo/AppDelegate.mm'),
@@ -45,15 +93,29 @@ const nativeIdentityChecks = [
     message: 'iOS RN moduleName 必须与 Taro RN appName 保持一致。'
   },
   {
+    filePath: path.join(appRoot, 'ios/Podfile'),
+    expected: "@tarojs/taro-rn/package.json",
+    message: 'iOS Expo autolinking 应兼容 pnpm workspace 依赖解析。'
+  },
+  {
     filePath: path.join(appRoot, 'ios/taroDemo/Info.plist'),
     expected: '<string>德邦快递</string>',
     message: 'iOS 展示名应使用德邦快递。'
+  },
+  {
+    filePath: path.join(appRoot, 'ios/taroDemo/LaunchScreen.storyboard'),
+    expected: 'text="德邦快递"',
+    message: 'iOS 启动屏不应保留 taroDemo 模板文案。'
   },
   {
     filePath: path.join(appRoot, 'ios/taroDemo.xcodeproj/project.pbxproj'),
     expected: 'PRODUCT_BUNDLE_IDENTIFIER = com.deppon.app;',
     message: 'iOS Bundle ID 应使用 com.deppon.app。'
   }
+]
+const nativeFacadeRelativePathPrefixes = [
+  'src/shared/platform/',
+  'src/shared/native/'
 ]
 
 const forbiddenPatterns = [
@@ -64,6 +126,39 @@ const forbiddenPatterns = [
   {
     pattern: /\bmy\./g,
     message: '不要直接使用支付宝小程序 my.*，请通过 shared/platform facade 或 service 层重构。'
+  },
+  {
+    pattern: /\bprocess\.env\.TARO_ENV\b/g,
+    message: 'RN-only App 不应保留小程序多端运行时分支，请使用 runtime 配置或 capability 矩阵。'
+  },
+  {
+    pattern: /\bTaro\.getEnv\b/g,
+    message: 'RN-only App 不应做 Taro 多端运行时探测，请使用 runtime 配置或 capability 矩阵。'
+  },
+  {
+    pattern: /\bNativeModules\b/g,
+    message: 'RN NativeModules 只能在 shared/platform 或 shared/native 中封装。',
+    allowRelativePathPrefixes: nativeFacadeRelativePathPrefixes
+  },
+  {
+    pattern: /\bPermissionsAndroid\b/g,
+    message: 'RN 权限请求只能在 shared/platform 或 shared/native 中封装。',
+    allowRelativePathPrefixes: nativeFacadeRelativePathPrefixes
+  },
+  {
+    pattern: /\bLinking\b/g,
+    message: 'RN Linking 只能在 shared/platform 或 shared/native 中封装。',
+    allowRelativePathPrefixes: nativeFacadeRelativePathPrefixes
+  },
+  {
+    pattern: /\bShare\.share\b/g,
+    message: 'RN 系统分享只能在 shared/platform 或 shared/native 中封装。',
+    allowRelativePathPrefixes: nativeFacadeRelativePathPrefixes
+  },
+  {
+    pattern: /\bAlert\.alert\b/g,
+    message: 'RN 原生弹窗只能在 shared/platform 或 shared/native 中封装。',
+    allowRelativePathPrefixes: nativeFacadeRelativePathPrefixes
   },
   {
     pattern: /\bTaro\.scanCode\b/g,
@@ -98,6 +193,22 @@ const forbiddenPatterns = [
     message: '订阅消息请使用 shared/platform/notifications。'
   },
   {
+    pattern: /\buseShareAppMessage\b/g,
+    message: '小程序分享钩子不能进入 RN App，分享能力请使用 shared/platform/share。'
+  },
+  {
+    pattern: /\buseShareTimeline\b/g,
+    message: '小程序朋友圈分享钩子不能进入 RN App，分享能力请使用 shared/platform/share。'
+  },
+  {
+    pattern: /\bonShareAppMessage\b/g,
+    message: '小程序分享生命周期不能进入 RN App，分享能力请使用 shared/platform/share。'
+  },
+  {
+    pattern: /\bopenType\s*=/g,
+    message: '小程序开放能力按钮不能进入 RN App，请改为对应 shared/platform facade。'
+  },
+  {
     pattern: /\bTaro\.navigateToMiniProgram\b/g,
     message: '外跳小程序请使用 shared/platform/externalApp。'
   },
@@ -112,6 +223,44 @@ const forbiddenPatterns = [
   {
     pattern: /\bTaro\.saveImageToPhotosAlbum\b/g,
     message: '保存相册请通过 App 文件/媒体 facade 重新建模。'
+  },
+  {
+    pattern: /\bTaro\.(setClipboardData|getClipboardData)\b/g,
+    message: '剪贴板能力请使用 shared/platform/clipboard。',
+    allowRelativePathPrefixes: nativeFacadeRelativePathPrefixes
+  },
+  {
+    pattern: /\bTaro\.previewImage\b/g,
+    message: '图片预览请通过 App 文件/媒体 facade 重新建模。',
+    allowRelativePathPrefixes: nativeFacadeRelativePathPrefixes
+  },
+  {
+    pattern: /\bTaro\.openDocument\b/g,
+    message: '文档打开请使用 shared/platform/files。',
+    allowRelativePathPrefixes: nativeFacadeRelativePathPrefixes
+  },
+  {
+    pattern: /\bAPP_ROUTES\.web\b/g,
+    message: 'WebView 入口请使用 shared/webview/createAppWebUrl 统一承接。',
+    allowRelativePaths: ['src/shared/webview/appWeb.ts']
+  },
+  {
+    pattern: /\$\{\s*APP_ROUTES\.[A-Za-z0-9_]+\s*\}\?/g,
+    message:
+      '动态 App 路由 query 请使用 shared/navigation/routeUrl.ts 统一生成。'
+  },
+  {
+    pattern: /\bAPP_ROUTES\.[A-Za-z0-9_]+\s*\+\s*['"`]\?/g,
+    message:
+      '动态 App 路由 query 请使用 shared/navigation/routeUrl.ts 统一生成。'
+  },
+  {
+    pattern: /\bEVENT_TRACK\b/g,
+    message: '旧小程序埋点入口不能直接迁入 RN App，请使用 shared/platform/analytics。'
+  },
+  {
+    pattern: /from\s+['"`][^'"`]*sensors[^'"`]*['"`]/g,
+    message: '小程序神策 SDK 不能直接迁入 RN App，请使用 shared/platform/analytics。'
   }
 ]
 
@@ -134,6 +283,22 @@ function walkFiles(directory) {
 
 function getLineNumber(content, index) {
   return content.slice(0, index).split(/\r?\n/).length
+}
+
+function toPosixPath(filePath) {
+  return filePath.split(path.sep).join('/')
+}
+
+function isAllowedByRule(rule, relativePath) {
+  if (rule.allowRelativePaths?.includes(relativePath)) {
+    return true
+  }
+
+  return (
+    rule.allowRelativePathPrefixes?.some((prefix) =>
+      relativePath.startsWith(prefix)
+    ) ?? false
+  )
 }
 
 const violations = []
@@ -164,6 +329,23 @@ function checkPackageDependencies() {
 
 checkPackageDependencies()
 
+function checkMiniProgramConfigFiles() {
+  for (const fileName of forbiddenMiniProgramConfigFiles) {
+    const filePath = path.join(appRoot, fileName)
+
+    if (existsSync(filePath)) {
+      violations.push({
+        filePath,
+        line: 1,
+        token: fileName,
+        message: 'RN-only App 不应保留小程序 IDE 项目配置。'
+      })
+    }
+  }
+}
+
+checkMiniProgramConfigFiles()
+
 function checkNativeIdentity() {
   for (const item of nativeIdentityChecks) {
     if (!existsSync(item.filePath)) {
@@ -193,8 +375,13 @@ checkNativeIdentity()
 
 for (const filePath of walkFiles(srcRoot)) {
   const content = readFileSync(filePath, 'utf8')
+  const relativePath = toPosixPath(path.relative(appRoot, filePath))
 
   for (const rule of forbiddenPatterns) {
+    if (isAllowedByRule(rule, relativePath)) {
+      continue
+    }
+
     rule.pattern.lastIndex = 0
 
     for (const match of content.matchAll(rule.pattern)) {
@@ -209,7 +396,7 @@ for (const filePath of walkFiles(srcRoot)) {
 }
 
 if (violations.length) {
-  console.error('RN boundary check failed. Found mini-program-only APIs:\n')
+  console.error('RN boundary check failed. Found boundary violations:\n')
 
   for (const violation of violations) {
     const relativePath = path.relative(appRoot, violation.filePath)

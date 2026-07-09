@@ -1,7 +1,7 @@
 import { ScrollView, Text, View } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 
 import { supportService } from '../../../services/support'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
@@ -27,7 +27,25 @@ function getEntryMarkClassName(entry: SupportEntryView) {
 }
 
 const SupportCenterPage = () => {
-  const sections = useMemo(() => supportService.getSections(), [])
+  const [sections, setSections] = useState(() => supportService.getSections())
+
+  useEffect(() => {
+    let mounted = true
+
+    async function loadSurveyEntries() {
+      const surveyEntries = await supportService.querySurveyEntries()
+
+      if (mounted && surveyEntries.length) {
+        setSections(supportService.getSections(surveyEntries))
+      }
+    }
+
+    loadSurveyEntries()
+
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   const showToast = (title: string) => {
     Taro.showToast({
@@ -41,6 +59,11 @@ const SupportCenterPage = () => {
       return
     }
 
+    if (!entry.webSource) {
+      showToast('当前入口暂未配置承接来源')
+      return
+    }
+
     const uri = entry.webPath
       ? supportService.createSecureWebUri(
           entry.webPath,
@@ -50,7 +73,7 @@ const SupportCenterPage = () => {
 
     navigateToAppRoute(
       createAppWebUrl({
-        source: entry.webSource || entry.id,
+        source: entry.webSource,
         uri,
         title: entry.title,
         auth: entry.loginRequired !== false

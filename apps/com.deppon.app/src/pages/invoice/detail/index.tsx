@@ -7,6 +7,7 @@ import { invoiceService } from '../../../services/invoice'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type {
   InvoiceHistoryView,
@@ -40,13 +41,11 @@ function getStatusClassName(statusClass: string) {
 }
 
 function createPreviewUrl(invoice: InvoiceHistoryView) {
-  const params = [
-    `id=${encodeURIComponent(invoice.id)}`,
-    `title=${encodeURIComponent(invoice.title)}`,
-    `email=${encodeURIComponent(invoice.email)}`
-  ]
-
-  return `${APP_ROUTES.invoicePreview}?${params.join('&')}`
+  return createAppRouteUrl(APP_ROUTES.invoicePreview, {
+    id: invoice.id,
+    title: invoice.title,
+    email: invoice.email
+  })
 }
 
 const InvoiceDetailPage = () => {

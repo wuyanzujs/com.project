@@ -1,32 +1,47 @@
-import { ScrollView, Text, View } from '@tarojs/components'
+import { ScrollView } from '@tarojs/components'
 import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useMemo, useState } from 'react'
 
+import {
+  OrderDetailFooterActions,
+  OrderServiceActions,
+  OrderUrgePanel
+} from './components/OrderDetailActionSections'
+import {
+  OrderAddressSection,
+  OrderDetailEmpty,
+  OrderDetailHeader,
+  OrderDetailLoading,
+  OrderPaymentAlert,
+  OrderPublicTrackActions,
+  OrderStubEntryCard,
+  OrderTrackSection,
+  OrderTransportSection
+} from './components/OrderDetailSections'
 import { expressDraftBridge } from '../../../services/express'
 import {
   canDeleteOrder,
   createExpressDraftFromOrderDetail,
   getOrderCopyNumber,
   getOrderIdentityText,
-  getOrderReceiverAddress,
-  getOrderSenderAddress,
   orderService
 } from '../../../services/order'
 import { paymentService } from '../../../services/payment'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 import { getNativeCapabilityErrorMessage } from '../../../shared/platform/capabilities'
 import { copyTextToClipboard } from '../../../shared/platform/clipboard'
 import { payWithApp } from '../../../shared/platform/payment'
 import { PhoneNumberError, dialPhone } from '../../../shared/platform/phone'
 import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
+import type { OrderDetailUrgePanelState } from './components/OrderDetailActionSections'
 import type {
   OrderDetail,
   OrderDetailActionView,
-  OrderDetailUrgePanelView,
   OrderUrgeButtonRaw,
   OrderResendMode,
   OrderRole,
@@ -45,17 +60,6 @@ interface OrderDetailRouteParams {
   role: string
   source: string
   view: OrderDetailViewMode
-}
-
-interface OrderUrgePanelState extends OrderDetailUrgePanelView {
-  action: OrderDetailActionView
-}
-
-function createQuery(params: Record<string, string>) {
-  return Object.entries(params)
-    .filter(([, value]) => !!value)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
 }
 
 function getViewMode(value?: string): OrderDetailViewMode {
@@ -126,26 +130,13 @@ function getOrderDetailUrl(
   params: OrderDetailRouteParams,
   view: OrderDetailViewMode = params.view
 ) {
-  return `${APP_ROUTES.orderDetail}?${createQuery({
+  return createAppRouteUrl(APP_ROUTES.orderDetail, {
     orderNumber: params.orderNumber,
     waybillNumber: params.waybillNumber,
     role: params.role,
     source: params.source,
     view
-  })}`
-}
-
-function getDetailActionClassName(
-  action: OrderDetailActionView,
-  isFirst: boolean
-) {
-  return `order-service-action order-service-action--${action.tone}${
-    isFirst ? ' order-service-action--first' : ''
-  }`
-}
-
-function getDetailActionMarkClassName(action: OrderDetailActionView) {
-  return `order-service-action__mark order-service-action__mark--${action.tone}`
+  })
 }
 
 const OrderDetailPage = () => {
@@ -169,7 +160,8 @@ const OrderDetailPage = () => {
   const [urgeAction, setUrgeAction] = useState<OrderDetailActionView | null>(
     null
   )
-  const [urgePanel, setUrgePanel] = useState<OrderUrgePanelState | null>(null)
+  const [urgePanel, setUrgePanel] =
+    useState<OrderDetailUrgePanelState | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
   const publicTrackMode = useMemo(() => isPublicTrackMode(routeParams), [
     routeParams
@@ -372,10 +364,10 @@ const OrderDetailPage = () => {
     }
 
     Taro.navigateTo({
-      url: `${APP_ROUTES.orderCancel}?${createQuery({
+      url: createAppRouteUrl(APP_ROUTES.orderCancel, {
         orderNumber: detail.orderNumber,
         source: 'detail'
-      })}`
+      })
     })
   }
 
@@ -573,25 +565,43 @@ const OrderDetailPage = () => {
       return
     }
 
-    if (menu.buttonCode === 'CONFIRM') {
+    const menuAction = orderService.resolveUrgeMenuAction(menu, action)
+
+    if (menuAction.kind === 'close') {
       setUrgePanel(null)
       return
     }
 
-    if (menu.buttonCode === 'FOLLOW_UP') {
+    if (menuAction.kind === 'submit') {
       handleSubmitUrge(action)
       return
     }
 
-    if (menu.buttonCode === 'CONTACT_EMPLOYEE') {
+    if (menuAction.kind === 'dial') {
       setUrgePanel(null)
-      handleDial(action.urge?.contactPhone || '95353')
+      handleDial(menuAction.phoneNumber)
+      return
+    }
+
+    if (menuAction.kind === 'progress') {
+      setUrgePanel(null)
+      navigateToAppRoute(
+        createAppWebUrl({
+          source: menuAction.webSource,
+          uri: menuAction.webUri,
+          title: menuAction.title,
+          auth: true
+        }),
+        {
+          login: true
+        }
+      )
       return
     }
 
     setUrgePanel(null)
     Taro.showToast({
-      title: menu.buttonName || '该催单操作后续接入',
+      title: menuAction.message,
       icon: 'none'
     })
   }
@@ -776,408 +786,92 @@ const OrderDetailPage = () => {
 
   return (
     <ScrollView className='order-detail-page' scrollY>
-      <View className='order-detail-header'>
-        <Text className='order-detail-header__label'>Order</Text>
-        <Text className='order-detail-header__title'>
-          {detail?.orderClassName ||
-            trackState ||
-            (publicTrackMode ? '物流轨迹' : '订单详情')}
-        </Text>
-        <View className='order-detail-header__summary-row'>
-          <Text className='order-detail-header__summary'>
-            {detail
-              ? getOrderIdentityText(detail)
-              : getOrderIdentityText(routeParams)}
-          </Text>
-          <View className='order-detail-header__copy' onClick={handleCopyNumber}>
-            <Text className='order-detail-header__copy-text'>复制</Text>
-          </View>
-        </View>
-      </View>
+      <OrderDetailHeader
+        title={
+          detail?.orderClassName ||
+          trackState ||
+          (publicTrackMode ? '物流轨迹' : '订单详情')
+        }
+        identityText={
+          detail
+            ? getOrderIdentityText(detail)
+            : getOrderIdentityText(routeParams)
+        }
+        onCopy={handleCopyNumber}
+      />
 
       {!detail && !publicTrackMode && !loading && (
-        <View className='order-detail-empty'>
-          <Text className='order-detail-empty__title'>
-            {errorMessage || '未查询到订单'}
-          </Text>
-          <View className='order-detail-empty__button' onClick={handleBackToList}>
-            <Text className='order-detail-empty__button-text'>返回订单列表</Text>
-          </View>
-        </View>
+        <OrderDetailEmpty
+          title={errorMessage || '未查询到订单'}
+          buttonText='返回订单列表'
+          onClick={handleBackToList}
+        />
       )}
 
       {!detail && publicTrackMode && !loading && !tracks.length && (
-        <View className='order-detail-empty'>
-          <Text className='order-detail-empty__title'>
-            {errorMessage || '未查询到物流轨迹'}
-          </Text>
-          <View className='order-detail-empty__button' onClick={handleBackToList}>
-            <Text className='order-detail-empty__button-text'>返回首页</Text>
-          </View>
-        </View>
+        <OrderDetailEmpty
+          title={errorMessage || '未查询到物流轨迹'}
+          buttonText='返回首页'
+          onClick={handleBackToList}
+        />
       )}
 
       {loading && !detail && (
-        <Text className='order-detail-loading'>
-          {publicTrackMode ? '正在加载物流轨迹...' : '正在加载订单详情...'}
-        </Text>
+        <OrderDetailLoading publicTrackMode={publicTrackMode} />
       )}
 
       {!detail && publicTrackMode && tracks.length > 0 && (
         <>
-          <View className='order-detail-section'>
-            <View className='order-detail-section__head'>
-              <Text className='order-detail-section__title'>物流轨迹</Text>
-              <Text className='order-detail-section__hint'>
-                {trackState || '公开查询'}
-              </Text>
-            </View>
-
-            {tracks.map((track) => (
-              <View
-                className='order-track'
-                key={`${track.operateTime}-${track.trackIndex}`}
-              >
-                <View
-                  className={
-                    track.trackFirst
-                      ? 'order-track__dot order-track__dot--active'
-                      : 'order-track__dot'
-                  }
-                />
-                <View className='order-track__content'>
-                  <Text className='order-track__text'>
-                    {track.contentNoLinkLabel ||
-                      track.contentOrig ||
-                      track.content}
-                  </Text>
-                  <Text className='order-track__time'>
-                    {track.date} {track.time}
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </View>
-
-          <View className='order-detail-actions'>
-            <View className='order-detail-secondary' onClick={handleRefresh}>
-              <Text className='order-detail-secondary__text'>刷新</Text>
-            </View>
-            <View className='order-detail-primary' onClick={handleOpenSecureDetail}>
-              <Text className='order-detail-primary__text'>查看完整详情</Text>
-            </View>
-          </View>
+          <OrderTrackSection
+            tracks={tracks}
+            hintText={trackState || '公开查询'}
+          />
+          <OrderPublicTrackActions
+            onRefresh={handleRefresh}
+            onOpenSecureDetail={handleOpenSecureDetail}
+          />
         </>
       )}
 
       {detail && (
         <>
-          {paymentSummary && (
-            <View className='order-payment-alert'>
-              <View className='order-payment-alert__content'>
-                <Text className='order-payment-alert__title'>
-                  订单存在待支付费用
-                </Text>
-                <Text className='order-payment-alert__summary'>
-                  共 {paymentSummary.count} 笔，合计 ¥
-                  {paymentSummary.amount.toFixed(2)}
-                </Text>
-                {paymentSummary.disabledReason && (
-                  <Text className='order-payment-alert__hint'>
-                    {paymentSummary.disabledReason}
-                  </Text>
-                )}
-              </View>
-              <View
-                className={
-                  paymentSummary.canPay
-                    ? 'order-payment-alert__button'
-                    : 'order-payment-alert__button order-payment-alert__button--disabled'
-                }
-                onClick={handlePayOrder}
-              >
-                <Text className='order-payment-alert__button-text'>
-                  {paying
-                    ? '处理中'
-                    : paymentSummary.canPay
-                      ? '去支付'
-                      : '暂不可付'}
-                </Text>
-              </View>
-            </View>
-          )}
-
-          {stubEntry?.available && (
-            <View className='order-detail-stub-entry' onClick={handleOpenStub}>
-              <View className='order-detail-stub-entry__mark'>
-                <Text className='order-detail-stub-entry__mark-text'>存</Text>
-              </View>
-              <View className='order-detail-stub-entry__content'>
-                <Text className='order-detail-stub-entry__title'>
-                  {stubEntry.title}
-                </Text>
-                <Text className='order-detail-stub-entry__summary'>
-                  {stubEntry.summary}
-                </Text>
-              </View>
-              <Text className='order-detail-stub-entry__arrow'>›</Text>
-            </View>
-          )}
-
-          <View className='order-detail-section'>
-            <View className='order-detail-section__head'>
-              <Text className='order-detail-section__title'>运输信息</Text>
-              <Text className='order-detail-section__hint'>
-                {detail.orderTime || ''}
-              </Text>
-            </View>
-
-            <View className='order-detail-route'>
-              <View className='order-detail-route__block'>
-                <Text className='order-detail-route__city'>
-                  {detail.contactCity || '--'}
-                </Text>
-                <Text className='order-detail-route__name'>
-                  {detail.contactName || '--'}
-                </Text>
-              </View>
-              <Text className='order-detail-route__arrow'>→</Text>
-              <View className='order-detail-route__block order-detail-route__block--right'>
-                <Text className='order-detail-route__city'>
-                  {detail.receiverCity || '--'}
-                </Text>
-                <Text className='order-detail-route__name'>
-                  {detail.receiverName || '--'}
-                </Text>
-              </View>
-            </View>
-
-            <View className='order-detail-meta-row'>
-              <Text className='order-detail-meta-row__label'>货物</Text>
-              <Text className='order-detail-meta-row__value'>
-                {detail.goodsName || '--'}
-              </Text>
-            </View>
-            <View className='order-detail-meta-row'>
-              <Text className='order-detail-meta-row__label'>产品</Text>
-              <Text className='order-detail-meta-row__value'>
-                {detail.transportMode || '--'}
-              </Text>
-            </View>
-            <View className='order-detail-meta-row'>
-              <Text className='order-detail-meta-row__label'>付款方式</Text>
-              <Text className='order-detail-meta-row__value'>
-                {detail.paymentType || '--'}
-              </Text>
-            </View>
-            {(detail.courierName || detail.courierMobile) && (
-              <View className='order-detail-meta-row'>
-                <Text className='order-detail-meta-row__label'>快递员</Text>
-                <View className='order-detail-meta-row__content'>
-                  <Text className='order-detail-meta-row__value'>
-                    {detail.courierName || '--'} {detail.courierMobile || ''}
-                  </Text>
-                  {detail.courierMobile && (
-                    <View
-                      className='order-detail-call'
-                      onClick={() => handleDial(detail.courierMobile)}
-                    >
-                      <Text className='order-detail-call__text'>拨打</Text>
-                    </View>
-                  )}
-                </View>
-              </View>
-            )}
-          </View>
-
-          <View className='order-detail-section'>
-            <Text className='order-detail-section__title'>寄收信息</Text>
-            <View className='order-address-card'>
-              <Text className='order-address-card__tag'>寄</Text>
-              <View className='order-address-card__content'>
-                <View className='order-address-card__head'>
-                  <Text className='order-address-card__name'>
-                    {detail.contactName || '--'} {detail.contactMobile || ''}
-                  </Text>
-                  {detail.contactMobile && (
-                    <Text
-                      className='order-address-card__call'
-                      onClick={() => handleDial(detail.contactMobile)}
-                    >
-                      拨打
-                    </Text>
-                  )}
-                </View>
-                <Text className='order-address-card__address'>
-                  {getOrderSenderAddress(detail) || '--'}
-                </Text>
-              </View>
-            </View>
-            <View className='order-address-card'>
-              <Text className='order-address-card__tag order-address-card__tag--receive'>
-                收
-              </Text>
-              <View className='order-address-card__content'>
-                <View className='order-address-card__head'>
-                  <Text className='order-address-card__name'>
-                    {detail.receiverName || '--'} {detail.receiverMobile || ''}
-                  </Text>
-                  {detail.receiverMobile && (
-                    <Text
-                      className='order-address-card__call'
-                      onClick={() => handleDial(detail.receiverMobile)}
-                    >
-                      拨打
-                    </Text>
-                  )}
-                </View>
-                <Text className='order-address-card__address'>
-                  {getOrderReceiverAddress(detail) || '--'}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          {detailActions.length > 0 && (
-            <View className='order-detail-section'>
-              <View className='order-detail-section__head'>
-                <Text className='order-detail-section__title'>售后服务</Text>
-                <Text className='order-detail-section__hint'>订单相关</Text>
-              </View>
-
-              {detailActions.map((action, index) => (
-                <View
-                  className={getDetailActionClassName(action, index === 0)}
-                  key={action.kind}
-                  onClick={() => handleDetailAction(action)}
-                >
-                  <Text className={getDetailActionMarkClassName(action)}>
-                    {action.title.slice(0, 1)}
-                  </Text>
-                  <View className='order-service-action__content'>
-                    <View className='order-service-action__top'>
-                      <Text className='order-service-action__title'>
-                        {action.title}
-                      </Text>
-                      {!!action.badgeText && (
-                        <Text className='order-service-action__badge'>
-                          {action.badgeText}
-                        </Text>
-                      )}
-                    </View>
-                    <Text className='order-service-action__summary'>
-                      {action.summary}
-                    </Text>
-                  </View>
-                  <Text className='order-service-action__arrow'>›</Text>
-                </View>
-              ))}
-            </View>
-          )}
-
-          <View className='order-detail-section'>
-            <View className='order-detail-section__head'>
-              <Text className='order-detail-section__title'>物流轨迹</Text>
-              <Text className='order-detail-section__hint'>
-                {trackState || '基础轨迹'}
-              </Text>
-            </View>
-
-            {tracks.length ? (
-              tracks.map((track) => (
-                <View className='order-track' key={`${track.operateTime}-${track.trackIndex}`}>
-                  <View
-                    className={
-                      track.trackFirst
-                        ? 'order-track__dot order-track__dot--active'
-                        : 'order-track__dot'
-                    }
-                  />
-                  <View className='order-track__content'>
-                    <Text className='order-track__text'>
-                      {track.contentNoLinkLabel ||
-                        track.contentOrig ||
-                        track.content}
-                    </Text>
-                    <Text className='order-track__time'>
-                      {track.date} {track.time}
-                    </Text>
-                  </View>
-                </View>
-              ))
-            ) : (
-              <Text className='order-detail-section__empty'>
-                暂无轨迹，实时地图和快递员位置后续接入。
-              </Text>
-            )}
-          </View>
-
-          <View className='order-detail-actions'>
-            <View className='order-detail-secondary' onClick={handleRefresh}>
-              <Text className='order-detail-secondary__text'>刷新</Text>
-            </View>
-            <View className='order-detail-secondary' onClick={handleResendOrder}>
-              <Text className='order-detail-secondary__text'>
-                {resendActionText}
-              </Text>
-            </View>
-            {cancelable && (
-              <View className='order-detail-danger' onClick={handleCancelOrder}>
-                <Text className='order-detail-danger__text'>取消订单</Text>
-              </View>
-            )}
-            {deletable && (
-              <View className='order-detail-danger' onClick={handleDeleteOrder}>
-                <Text className='order-detail-danger__text'>
-                  {deleting ? '删除中' : '删除'}
-                </Text>
-              </View>
-            )}
-            <View className='order-detail-primary' onClick={handleBackToList}>
-              <Text className='order-detail-primary__text'>查看订单列表</Text>
-            </View>
-          </View>
+          <OrderPaymentAlert
+            summary={paymentSummary}
+            paying={paying}
+            onPay={handlePayOrder}
+          />
+          <OrderStubEntryCard entry={stubEntry} onOpen={handleOpenStub} />
+          <OrderTransportSection detail={detail} onDial={handleDial} />
+          <OrderAddressSection detail={detail} onDial={handleDial} />
+          <OrderServiceActions
+            actions={detailActions}
+            onAction={handleDetailAction}
+          />
+          <OrderTrackSection
+            tracks={tracks}
+            hintText={trackState || '基础轨迹'}
+            emptyText='暂无轨迹，实时地图和快递员位置后续接入。'
+          />
+          <OrderDetailFooterActions
+            resendActionText={resendActionText}
+            cancelable={cancelable}
+            deletable={deletable}
+            deleting={deleting}
+            onRefresh={handleRefresh}
+            onResend={handleResendOrder}
+            onCancel={handleCancelOrder}
+            onDelete={handleDeleteOrder}
+            onBackToList={handleBackToList}
+          />
         </>
       )}
 
-      {urgePanel && (
-        <View className='order-urge-mask'>
-          <View className='order-urge-card'>
-            <Text className='order-urge-card__title'>催单提醒</Text>
-            <Text className='order-urge-card__content'>
-              {urgePanel.content}
-            </Text>
-            <View className='order-urge-card__actions'>
-              {urgePanel.menus.map((menu) => (
-                <View
-                  className={
-                    menu.buttonCode === 'FOLLOW_UP'
-                      ? 'order-urge-card__button order-urge-card__button--primary'
-                      : 'order-urge-card__button'
-                  }
-                  key={`${menu.buttonCode}-${menu.buttonName}`}
-                  onClick={() => handleSelectUrgeMenu(menu)}
-                >
-                  <Text
-                    className={
-                      menu.buttonCode === 'FOLLOW_UP'
-                        ? 'order-urge-card__button-text order-urge-card__button-text--primary'
-                        : 'order-urge-card__button-text'
-                    }
-                  >
-                    {urging && menu.buttonCode === 'FOLLOW_UP'
-                      ? '提交中'
-                      : menu.buttonName}
-                  </Text>
-                </View>
-              ))}
-            </View>
-            <View className='order-urge-card__cancel' onClick={handleCloseUrgePanel}>
-              <Text className='order-urge-card__cancel-text'>取消</Text>
-            </View>
-          </View>
-        </View>
-      )}
+      <OrderUrgePanel
+        panel={urgePanel}
+        urging={urging}
+        onSelect={handleSelectUrgeMenu}
+        onClose={handleCloseUrgePanel}
+      />
     </ScrollView>
   )
 }

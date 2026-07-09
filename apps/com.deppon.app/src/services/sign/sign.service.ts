@@ -1,15 +1,8 @@
 import { signApi } from './sign.api'
+import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type { SignCodeView, UserSignCodeRaw } from './types'
 import type { DepponResponse } from '../../request/deppon'
-
-function createFailure<TResult>(message: string): DepponResponse<TResult> {
-  return {
-    status: false,
-    message,
-    result: null
-  }
-}
 
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
@@ -41,6 +34,14 @@ function validateRealName(realName: string) {
   }
 }
 
+export function createSignCodePayload(signCode: string) {
+  const normalizedCode = normalizeText(signCode)
+
+  return normalizedCode
+    ? `https://www.deppon.com/user/sign?code=${encodeURIComponent(normalizedCode)}`
+    : ''
+}
+
 function toSignCodeView(
   raw?: UserSignCodeRaw | null,
   hasRealName = true
@@ -51,6 +52,7 @@ function toSignCodeView(
   return {
     hasRealName,
     signCode,
+    qrPayload: createSignCodePayload(signCode),
     realName,
     statusText: signCode ? '已生成签收码' : '待生成签收码',
     summary: signCode

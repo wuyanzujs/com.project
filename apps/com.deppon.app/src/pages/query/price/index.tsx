@@ -17,6 +17,7 @@ import {
 } from '../../../services/express'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type {
   ExpressContact,
@@ -42,12 +43,6 @@ const DELIVERY_OPTIONS: Array<{ label: string; value: ExpressDeliveryMode }> = [
     value: 'PICKUPSTAIRS'
   }
 ]
-
-function createQuery(params: Record<string, string>) {
-  return Object.entries(params)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
-}
 
 function parseNumber(value: string, fallback = 0) {
   const parsed = Number(value)
@@ -163,7 +158,7 @@ const QueryPricePage = () => {
       'select',
       'QUERY_PRICE'
     )
-    const url = `${APP_ROUTES.contactList}?${createQuery(params)}`
+    const url = createAppRouteUrl(APP_ROUTES.contactList, params)
 
     navigateToAppRoute(url, {
       login: true
@@ -204,7 +199,11 @@ const QueryPricePage = () => {
   const handleExpress = (product: ExpressProductQuote) => {
     expressDraftBridge.carryFromQueryPrice(draft, product)
 
-    navigateToAppRoute(`${APP_ROUTES.express}?source=QUERY_PRICE_PRODUCT`)
+    navigateToAppRoute(
+      createAppRouteUrl(APP_ROUTES.express, {
+        source: 'QUERY_PRICE_PRODUCT'
+      })
+    )
   }
 
   const renderContactForm = (

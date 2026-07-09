@@ -1,4 +1,14 @@
-import { clearSessionCookie, getSessionCookie, saveSessionCookieFromResponse } from './cookieJar'
+import {
+  clearSessionCookie,
+  getSessionCookie,
+  saveSessionCookieFromResponse
+} from './cookieJar'
+import {
+  isDepponSuccessStatus,
+  shouldAcceptDepponHttpStatus,
+  shouldEmitAuthExpiredEvent,
+  shouldEmitRateLimitedEvent
+} from './deppon.rules'
 import { emitRequestEvent } from './events'
 import { http } from './index'
 
@@ -8,16 +18,6 @@ import type {
   RequestMethod,
   RequestShortcutOptions
 } from './types'
-
-const HTTP_STATUS = {
-  unauthorized: 401,
-  tooManyRequests: 429
-} as const
-
-const OWS_STATUS = {
-  logout: '901',
-  success: 'success'
-} as const
 
 export interface DepponResponse<TResult = unknown> {
   status: boolean
@@ -31,8 +31,10 @@ export interface DepponResponse<TResult = unknown> {
   locations?: Array<{ lng: number; lat: number }>
 }
 
-export interface DepponRequestOptions<TData = unknown, TResult = unknown>
-  extends RequestShortcutOptions<DepponResponse<TResult>> {
+export interface DepponRequestOptions<
+  TData = unknown,
+  TResult = unknown
+> extends RequestShortcutOptions<DepponResponse<TResult>> {
   url: string
   method?: RequestMethod
   data?: TData
@@ -43,10 +45,6 @@ export interface DepponRequestOptions<TData = unknown, TResult = unknown>
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value)
-}
-
-function isSuccessStatus(status: unknown) {
-  return status === true || status === '1' || status === 0 || status === OWS_STATUS.success
 }
 
 function createRequestHeaders<TData, TResult>(
@@ -90,13 +88,10 @@ function normalizeOwsResponse<TResult>(
   const rawStatus = data.status
   const normalized: DepponResponse<TResult> = {
     ...(data as unknown as DepponResponse<TResult>),
-    status: isSuccessStatus(rawStatus)
+    status: isDepponSuccessStatus(rawStatus)
   }
 
-  if (
-    response.statusCode === HTTP_STATUS.tooManyRequests ||
-    data.status === HTTP_STATUS.tooManyRequests
-  ) {
+  if (shouldEmitRateLimitedEvent(response.statusCode, data.status)) {
     emitRequestEvent('rateLimited', {
       url: response.url,
       statusCode: response.statusCode,
@@ -105,9 +100,7 @@ function normalizeOwsResponse<TResult>(
   }
 
   if (
-    loginRequired &&
-    response.statusCode === HTTP_STATUS.unauthorized &&
-    data.status === OWS_STATUS.logout
+    shouldEmitAuthExpiredEvent(loginRequired, response.statusCode, data.status)
   ) {
     clearSessionCookie()
     emitRequestEvent('authExpired', {
@@ -121,11 +114,7 @@ function normalizeOwsResponse<TResult>(
 }
 
 function validateDepponStatus(statusCode: number) {
-  return (
-    (statusCode >= 200 && statusCode < 300) ||
-    statusCode === HTTP_STATUS.unauthorized ||
-    statusCode === HTTP_STATUS.tooManyRequests
-  )
+  return shouldAcceptDepponHttpStatus(statusCode)
 }
 
 export function depponRequest<TResult = unknown, TData = unknown>(
@@ -135,7 +124,7 @@ export function depponRequest<TResult = unknown, TData = unknown>(
     ...options,
     headers: createRequestHeaders(options),
     validateStatus: options.validateStatus ?? validateDepponStatus,
-    transformResponse: (response) =>
+    transformResponse: response =>
       normalizeOwsResponse<TResult>(response, options.login !== false)
   })
 }
@@ -157,7 +146,10 @@ export const depponHttp = {
   post<TResult = unknown, TData = unknown>(
     url: string,
     data?: TData,
-    options?: Omit<DepponRequestOptions<TData, TResult>, 'url' | 'method' | 'data'>
+    options?: Omit<
+      DepponRequestOptions<TData, TResult>,
+      'url' | 'method' | 'data'
+    >
   ) {
     return depponRequest<TResult, TData>({
       ...options,

@@ -12,6 +12,7 @@ import {
 import { goodsQueryService } from '../../../services/goods'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type {
   GoodsCheckResult,
@@ -193,7 +194,11 @@ const QueryGoodsPage = () => {
     )
 
     expressDraftBridge.carryFromGoodsQuery(nextDraft)
-    navigateToAppRoute(`${APP_ROUTES.express}?source=GOODS_QUERY`)
+    navigateToAppRoute(
+      createAppRouteUrl(APP_ROUTES.express, {
+        source: 'GOODS_QUERY'
+      })
+    )
   }
 
   return (

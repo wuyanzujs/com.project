@@ -4,7 +4,7 @@ export interface HomeQuickAction {
   key: string
   label: string
   description: string
-  route: AppRoutePath | string
+  route: AppRoutePath
   tone: 'primary' | 'success' | 'warning' | 'neutral'
 }
 
@@ -12,7 +12,7 @@ export interface HomeServiceCard {
   key: string
   title: string
   summary: string
-  route?: AppRoutePath | string
+  route: AppRoutePath
 }
 
 export const HOME_QUICK_ACTIONS: HomeQuickAction[] = [
@@ -36,6 +36,13 @@ export const HOME_QUICK_ACTIONS: HomeQuickAction[] = [
     description: '时效、价格和产品预估',
     route: APP_ROUTES.priceQuery,
     tone: 'warning'
+  },
+  {
+    key: 'batch',
+    label: '批量寄',
+    description: '多收件人寄件入口',
+    route: APP_ROUTES.batchExpress,
+    tone: 'primary'
   },
   {
     key: 'dispatch',
@@ -64,7 +71,8 @@ export const HOME_SERVICE_CARDS: HomeServiceCard[] = [
   {
     key: 'order',
     title: '订单中心',
-    summary: '首期承接订单列表、基础详情和物流轨迹。'
+    summary: '首期承接订单列表、基础详情和物流轨迹。',
+    route: APP_ROUTES.orderList
   },
   {
     key: 'member',

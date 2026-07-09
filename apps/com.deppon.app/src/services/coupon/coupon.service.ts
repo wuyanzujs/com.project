@@ -1,4 +1,5 @@
 import { couponApi } from './coupon.api'
+import { createServiceFailure } from '../serviceResponse'
 
 import type {
   CouponCardView,
@@ -18,14 +19,6 @@ const WEEKDAY_TEXT: Record<string, string> = {
   Thursday: '四',
   Friday: '五',
   Saturday: '六'
-}
-
-function createFailure<TResult>(message: string): DepponResponse<TResult> {
-  return {
-    status: false,
-    message,
-    result: null
-  }
 }
 
 function toFiniteNumber(value: unknown, fallback = 0) {
@@ -299,7 +292,7 @@ export const couponService = {
     )
 
     if (!response.status) {
-      return createFailure(response.message || '暂未获取到优惠券')
+      return createServiceFailure(response.message || '暂未获取到优惠券')
     }
 
     const list = Array.isArray(response.result) ? response.result : []
@@ -320,13 +313,13 @@ export const couponService = {
     const exchangeCouponCode = code.trim()
 
     if (!exchangeCouponCode) {
-      return createFailure('请输入兑换码')
+      return createServiceFailure('请输入兑换码')
     }
 
     const response = await couponApi.exchangeCoupon(exchangeCouponCode)
 
     if (!response.status || !response.result?.data) {
-      return createFailure(
+      return createServiceFailure(
         response.result?.msg || response.message || '兑换失败，请稍后再试'
       )
     }
@@ -340,13 +333,13 @@ export const couponService = {
     const code = couponCode.trim()
 
     if (!code) {
-      return createFailure('缺少优惠券券码')
+      return createServiceFailure('缺少优惠券券码')
     }
 
     const response = await couponApi.queryCouponDetail(code)
 
     if (!response.status || !response.result) {
-      return createFailure(response.message || '查询优惠券详情失败')
+      return createServiceFailure(response.message || '查询优惠券详情失败')
     }
 
     return {

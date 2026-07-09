@@ -1,24 +1,46 @@
+import { supportApi } from './support.api'
 import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 import { APP_ROUTES } from '../../shared/navigation/routes'
+import { appendRouteQuery } from '../../shared/navigation/routeUrl'
 import { getCurrentEcoToken } from '../auth'
 
-import type { SupportSectionView } from './types'
+import type {
+  SupportEntryView,
+  SupportSectionView,
+  SupportSurveyConfig
+} from './types'
 
-function createQuery(params: Record<string, string>) {
-  return Object.entries(params)
-    .filter(([, value]) => value !== '')
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
-}
+type SurveyConfigList = SupportSurveyConfig[]
 
 function createSecureWebPath(path: string, source: string) {
-  const query = createQuery({
+  return appendRouteQuery(path, {
     sonSource: source,
     ecoToken: getCurrentEcoToken(),
     pageSource: APP_RUNTIME_CONFIG.systemCode
   })
+}
 
-  return query ? `${path}?${query}` : path
+function isValidSurveyConfig(
+  item: SupportSurveyConfig
+): item is Required<Pick<SupportSurveyConfig, 'url'>> & SupportSurveyConfig {
+  return typeof item.url === 'string' && item.url.trim().startsWith('https://')
+}
+
+function mapSurveyConfigToEntry(
+  item: SupportSurveyConfig,
+  index: number
+): SupportEntryView {
+  return {
+    id: `survey-${index}`,
+    title: index === 0 ? '体验调研' : `体验调研 ${index + 1}`,
+    summary: item.image ? '参与服务体验问卷，帮助我们优化 App 服务。' : '参与服务体验问卷。',
+    kind: 'web',
+    tone: 'primary',
+    badgeText: index === 0 ? 'HOT' : '问卷',
+    webSource: 'SUPPORT_SURVEY',
+    webUri: item.url,
+    loginRequired: false
+  }
 }
 
 export const supportService = {
@@ -26,7 +48,26 @@ export const supportService = {
     return createSecureWebPath(path, source)
   },
 
-  getSections(): SupportSectionView[] {
+  async querySurveyEntries(): Promise<SupportEntryView[]> {
+    try {
+      const response = await supportApi.fetchSwitchConfig<SurveyConfigList>(
+        APP_RUNTIME_CONFIG.supportSurveyConfigKey,
+        false
+      )
+
+      if (!response.status || !response.result?.length) {
+        return []
+      }
+
+      return response.result
+        .filter(isValidSurveyConfig)
+        .map(mapSurveyConfigToEntry)
+    } catch {
+      return []
+    }
+  },
+
+  getSections(surveyEntries: SupportEntryView[] = []): SupportSectionView[] {
     return [
       {
         title: '即时服务',
@@ -52,6 +93,15 @@ export const supportService = {
           }
         ]
       },
+      ...(surveyEntries.length
+        ? [
+            {
+              title: '体验反馈',
+              summary: '问卷由配置中心控制，App 只负责受控 WebView 承接。',
+              entries: surveyEntries
+            }
+          ]
+        : []),
       {
         title: '售后处理',
         summary: '投诉、理赔先以 H5 承接，状态机后续再拆原生页。',

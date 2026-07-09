@@ -1,3 +1,5 @@
+import type { AppWebSource } from '../../shared/webview/appWeb'
+
 export type OrderRole = 'sender' | 'receive'
 export type OrderPaymentFilter = '' | 'MP' | 'FC' | 'CT'
 export type OrderStatusFilter =
@@ -134,7 +136,7 @@ export interface OrderDetailActionView {
   tone: OrderDetailActionTone
   badgeText?: string
   route?: string
-  webSource?: string
+  webSource?: AppWebSource
   webUri?: string
   urge?: OrderDetailUrgeActionView
   departmentPhone?: OrderDepartmentPhoneActionView

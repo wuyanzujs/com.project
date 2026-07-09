@@ -31,6 +31,7 @@ import {
   hasValidSession
 } from '../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
 import { createAppWebUrl } from '../../shared/webview/appWeb'
 
 import type { CustomerCenterView } from '../../services/customer'
@@ -44,12 +45,6 @@ import type {
 } from '../../services/express'
 
 import './index.scss'
-
-function createQuery(params: Record<string, string>) {
-  return Object.entries(params)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
-}
 
 function getProductPriceText(product: ExpressProductQuote | null) {
   if (!product || product.totalfee === null || product.totalfee === undefined) {
@@ -182,7 +177,9 @@ const ExpressPage = () => {
               ? '已带入优惠券'
               : carriedDraft.source === 'GOODS_QUERY'
                 ? '已带入货物名称'
-                : '已带入查价结果',
+                : carriedDraft.source === 'BATCH_RECOGNITION'
+                  ? '已带入批量识别结果'
+                  : '已带入查价结果',
         icon: 'none'
       })
       return
@@ -419,7 +416,7 @@ const ExpressPage = () => {
 
   const handleContactSelect = (target: 'sender' | 'consignee') => {
     const params = contactSelection.createParams(target)
-    const url = `${APP_ROUTES.contactList}?${createQuery(params)}`
+    const url = createAppRouteUrl(APP_ROUTES.contactList, params)
 
     if (!ensureAuthenticated({ redirectUrl: url })) {
       return
@@ -434,7 +431,7 @@ const ExpressPage = () => {
     const params = contactSelection.createParams(target, 'select', 'EXPRESS', {
       returnDelta: '1'
     })
-    const url = `${APP_ROUTES.contactEdit}?${createQuery(params)}`
+    const url = createAppRouteUrl(APP_ROUTES.contactEdit, params)
 
     if (!ensureAuthenticated({ redirectUrl: url })) {
       return
@@ -584,10 +581,10 @@ const ExpressPage = () => {
       expressDraftStorage.clear()
 
       Taro.navigateTo({
-        url: `${APP_ROUTES.expressSuccess}?${createQuery({
+        url: createAppRouteUrl(APP_ROUTES.expressSuccess, {
           orderNumber,
           waybillNumber
-        })}`
+        })
       })
     } finally {
       setSubmiting(false)

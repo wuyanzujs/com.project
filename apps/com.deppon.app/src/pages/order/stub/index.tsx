@@ -7,6 +7,7 @@ import { orderService } from '../../../services/order'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 import { copyTextToClipboard } from '../../../shared/platform/clipboard'
 
 import type {
@@ -34,13 +35,6 @@ const BARCODE_PATTERN = [
   1, 3, 1, 2, 4, 1, 2, 2, 1, 3, 3, 1, 4, 2, 1, 1, 3, 2, 2, 4, 1, 3, 1, 2
 ]
 
-function createQuery(params: Record<string, string>) {
-  return Object.entries(params)
-    .filter(([, value]) => !!value)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
-}
-
 function getRouteParams(
   params: Record<string, string | undefined>
 ): OrderStubRouteParams {
@@ -53,22 +47,22 @@ function getRouteParams(
 }
 
 function getOrderStubUrl(params: OrderStubRouteParams) {
-  return `${APP_ROUTES.orderStub}?${createQuery({
+  return createAppRouteUrl(APP_ROUTES.orderStub, {
     orderNumber: params.orderNumber,
     waybillNumber: params.waybillNumber,
     role: params.role,
     source: params.source
-  })}`
+  })
 }
 
 function getOrderDetailUrl(params: OrderStubRouteParams) {
-  return `${APP_ROUTES.orderDetail}?${createQuery({
+  return createAppRouteUrl(APP_ROUTES.orderDetail, {
     orderNumber: params.orderNumber,
     waybillNumber: params.waybillNumber,
     role: params.role,
     source: params.source,
     view: 'secure'
-  })}`
+  })
 }
 
 function getBarcodeBarClassName(value: number) {

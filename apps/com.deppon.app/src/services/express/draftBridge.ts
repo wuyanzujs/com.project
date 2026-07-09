@@ -5,6 +5,7 @@ export type ExpressDraftBridgeSource =
   | 'ORDER_RESEND'
   | 'COUPON_LIST'
   | 'GOODS_QUERY'
+  | 'BATCH_RECOGNITION'
 
 export interface ExpressDraftBridgePayload {
   source: ExpressDraftBridgeSource
@@ -86,6 +87,22 @@ export const expressDraftBridge = {
 
     pendingDraft = {
       source: 'GOODS_QUERY',
+      draft: nextDraft,
+      quotes: [],
+      carriedAt: Date.now()
+    }
+  },
+
+  carryFromBatchRecognition(draft: ExpressDraft) {
+    const nextDraft = cloneDraft({
+      ...draft,
+      selectedProduct: null,
+      agreementAccepted: false,
+      quoteStaleReason: draft.quoteStaleReason || '批量识别带入，请重新获取价格'
+    })
+
+    pendingDraft = {
+      source: 'BATCH_RECOGNITION',
       draft: nextDraft,
       quotes: [],
       carriedAt: Date.now()

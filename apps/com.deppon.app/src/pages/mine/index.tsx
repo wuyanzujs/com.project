@@ -1,5 +1,5 @@
 import { ScrollView, Text, View } from '@tarojs/components'
-import Taro, { useDidShow } from '@tarojs/taro'
+import { useDidShow } from '@tarojs/taro'
 
 import { useState } from 'react'
 
@@ -16,12 +16,20 @@ import {
   hasValidSession
 } from '../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
 
 import type { AppUser } from '../../services/auth'
+import type { AppRoutePath } from '../../shared/navigation/routes'
 
 import './index.scss'
 
-const QUICK_ENTRIES = [
+interface MineEntry {
+  title: string
+  summary: string
+  route: AppRoutePath
+}
+
+const QUICK_ENTRIES: MineEntry[] = [
   {
     title: '寄快递',
     summary: '预约上门取件',
@@ -38,6 +46,11 @@ const QUICK_ENTRIES = [
     route: APP_ROUTES.paymentList
   },
   {
+    title: '面单打印',
+    summary: '打印入口与设备能力边界',
+    route: APP_ROUTES.printCenter
+  },
+  {
     title: '优惠券',
     summary: '查看可用权益',
     route: APP_ROUTES.couponList
@@ -49,7 +62,7 @@ const QUICK_ENTRIES = [
   }
 ]
 
-const SERVICE_ENTRIES = [
+const SERVICE_ENTRIES: MineEntry[] = [
   {
     title: '账号设置',
     summary: '登录状态、账号安全和注销',
@@ -145,15 +158,7 @@ const MinePage = () => {
     })
   }
 
-  const handleEntry = (route: string) => {
-    if (!route) {
-      Taro.showToast({
-        title: '该能力后续接入',
-        icon: 'none'
-      })
-      return
-    }
-
+  const handleEntry = (route: AppRoutePath) => {
     if (route === APP_ROUTES.contactList) {
       handleManageContacts()
       return
@@ -164,7 +169,7 @@ const MinePage = () => {
 
   const handleManageContacts = () => {
     const params = contactSelection.createParams('sender', 'manage')
-    const url = `${APP_ROUTES.contactList}?mode=${params.mode}&target=${params.target}&source=${params.source}`
+    const url = createAppRouteUrl(APP_ROUTES.contactList, params)
 
     navigateToAppRoute(url, {
       login: true

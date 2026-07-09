@@ -7,6 +7,7 @@ import { paymentService } from '../../../services/payment'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 import { getNativeCapabilityErrorMessage } from '../../../shared/platform/capabilities'
 import { payWithApp } from '../../../shared/platform/payment'
 
@@ -29,13 +30,6 @@ const PAYMENT_ROLE_TABS: Array<{ label: string; value: PaymentRole }> = [
     value: 'receive'
   }
 ]
-
-function createQuery(params: Record<string, string>) {
-  return Object.entries(params)
-    .filter(([, value]) => !!value)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
-}
 
 function getPaymentItemKey(item: PaymentItem) {
   return item.accountStatementDetailNo || item.waybillNum
@@ -171,11 +165,11 @@ const PaymentListPage = () => {
   }
 
   const handleOpenOrder = (item: PaymentItem) => {
-    const url = `${APP_ROUTES.orderDetail}?${createQuery({
+    const url = createAppRouteUrl(APP_ROUTES.orderDetail, {
       waybillNumber: item.waybillNum,
       role,
       view: 'secure'
-    })}`
+    })
 
     navigateToAppRoute(url, {
       login: true

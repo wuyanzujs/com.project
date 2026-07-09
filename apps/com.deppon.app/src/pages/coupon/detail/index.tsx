@@ -13,6 +13,7 @@ import {
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type { CouponDetailView, CouponStatus } from '../../../services/coupon'
 
@@ -71,14 +72,10 @@ function normalizeStatus(value: string): CouponStatus {
 }
 
 function createCouponDetailRoute(code: string, status: CouponStatus) {
-  const params = [
-    code ? `code=${encodeURIComponent(code)}` : '',
-    `status=${encodeURIComponent(status)}`
-  ].filter(Boolean)
-
-  return params.length
-    ? `${APP_ROUTES.couponDetail}?${params.join('&')}`
-    : APP_ROUTES.couponDetail
+  return createAppRouteUrl(APP_ROUTES.couponDetail, {
+    code,
+    status
+  })
 }
 
 function getStatusClassName(status: CouponStatus) {

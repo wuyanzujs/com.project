@@ -1,8 +1,16 @@
-import { Input, ScrollView, Text, View } from '@tarojs/components'
+import { ScrollView } from '@tarojs/components'
 import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useCallback, useEffect, useState } from 'react'
 
+import {
+  InvoiceHeader,
+  InvoiceHistoryPanel,
+  InvoiceLoading,
+  InvoiceOrdersPanel,
+  InvoiceTabs,
+  InvoiceTaxpayersPanel
+} from './components/InvoiceCenterSections'
 import { OrderAuthDialog } from './components/OrderAuthDialog'
 import { CACHE_KEYS, DPCacheExpireType, dpCache } from '../../../cache'
 import {
@@ -12,7 +20,11 @@ import {
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
+import { getNativeCapabilityErrorMessage } from '../../../shared/platform/capabilities'
+import { scanAppCode } from '../../../shared/platform/scan'
 
+import type { InvoiceTabItem } from './components/InvoiceCenterSections'
 import type { DepponResponse } from '../../../request/deppon'
 import type {
   InvoiceHistoryView,
@@ -33,7 +45,7 @@ interface CachedInvoiceOrderAuth {
   value: string
 }
 
-const INVOICE_TABS: Array<{ label: string; value: InvoiceTab }> = [
+const INVOICE_TABS: InvoiceTabItem[] = [
   {
     label: '可开票',
     value: 'orders'
@@ -52,38 +64,24 @@ function parseInvoiceTab(value?: string): InvoiceTab {
   return value === 'history' || value === 'taxpayers' ? value : 'orders'
 }
 
-function getMoneyText(value: number) {
-  if (!Number.isFinite(value)) {
-    return '¥0'
-  }
-
-  return Number.isInteger(value) ? `¥${value}` : `¥${value.toFixed(2)}`
-}
-
-function getStatusClassName(base: string, statusClass: string) {
-  return `${base} ${base}--${statusClass.toLowerCase()}`
-}
-
 function createInvoiceApplyUrl(order: InvoiceOrderView) {
-  return `${APP_ROUTES.invoiceApply}?order=${encodeURIComponent(
-    JSON.stringify(order)
-  )}`
+  return createAppRouteUrl(APP_ROUTES.invoiceApply, {
+    order: JSON.stringify(order)
+  })
 }
 
 function createInvoicePreviewUrl(item: InvoiceHistoryView) {
-  const params = [
-    `id=${encodeURIComponent(item.id)}`,
-    `title=${encodeURIComponent(item.title)}`,
-    `email=${encodeURIComponent(item.email)}`
-  ]
-
-  return `${APP_ROUTES.invoicePreview}?${params.join('&')}`
+  return createAppRouteUrl(APP_ROUTES.invoicePreview, {
+    id: item.id,
+    title: item.title,
+    email: item.email
+  })
 }
 
 function createInvoiceDetailUrl(item: InvoiceHistoryView) {
-  return `${APP_ROUTES.invoiceDetail}?data=${encodeURIComponent(
-    JSON.stringify(item)
-  )}`
+  return createAppRouteUrl(APP_ROUTES.invoiceDetail, {
+    data: JSON.stringify(item)
+  })
 }
 
 function getCachedInvoiceOrderAuth(waybillNumber: string) {
@@ -457,6 +455,31 @@ const InvoiceCenterPage = () => {
     loadOrderSearch(keyword)
   }
 
+  const handleScanOrder = async () => {
+    if (!ensureInvoiceAccess()) {
+      return
+    }
+
+    try {
+      const result = await scanAppCode('INVOICE_ORDER_SEARCH')
+
+      if (result.kind !== 'waybill') {
+        showPendingToast(
+          result.kind === 'unsupported'
+            ? result.message
+            : '云打印码不能用于发票查询'
+        )
+        return
+      }
+
+      setOrderKeyword(result.waybillNumber)
+      setOrders([])
+      loadOrderSearch(result.waybillNumber)
+    } catch (error) {
+      showPendingToast(getNativeCapabilityErrorMessage(error))
+    }
+  }
+
   const handleClearOrder = () => {
     setOrderKeyword('')
     setOrders([])
@@ -578,6 +601,31 @@ const InvoiceCenterPage = () => {
     loadHistory(1, historyKeyword)
   }
 
+  const handleScanHistory = async () => {
+    if (!ensureInvoiceAccess()) {
+      return
+    }
+
+    try {
+      const result = await scanAppCode('INVOICE_HISTORY_SEARCH')
+
+      if (result.kind !== 'waybill') {
+        showPendingToast(
+          result.kind === 'unsupported'
+            ? result.message
+            : '云打印码不能用于开票历史查询'
+        )
+        return
+      }
+
+      setHistoryKeyword(result.waybillNumber)
+      setHistory([])
+      loadHistory(1, result.waybillNumber)
+    } catch (error) {
+      showPendingToast(getNativeCapabilityErrorMessage(error))
+    }
+  }
+
   const handleClearHistory = () => {
     setHistoryKeyword('')
     setHistory([])
@@ -591,331 +639,91 @@ const InvoiceCenterPage = () => {
     })
   }
 
+  const handleApplyOrder = (order: InvoiceOrderView) => {
+    if (!order.canApply) {
+      showPendingToast(order.statusText)
+      return
+    }
+
+    navigateToAppRoute(createInvoiceApplyUrl(order), {
+      login: true
+    })
+  }
+
+  const handleOpenHistoryDetail = (item: InvoiceHistoryView) => {
+    navigateToAppRoute(createInvoiceDetailUrl(item), {
+      login: true
+    })
+  }
+
+  const handlePreviewHistory = (item: InvoiceHistoryView) => {
+    if (!item.canPreview) {
+      showPendingToast('暂无预览信息')
+      return
+    }
+
+    navigateToAppRoute(createInvoicePreviewUrl(item), {
+      login: true
+    })
+  }
+
+  const handleManageTaxpayers = () => {
+    navigateToAppRoute(APP_ROUTES.invoiceTaxpayerList, {
+      login: true
+    })
+  }
+
   return (
     <ScrollView
       className='invoice-page'
       scrollY
       onScrollToLower={handleLoadMore}
     >
-      <View className='invoice-header'>
-        <Text className='invoice-header__label'>Invoice</Text>
-        <Text className='invoice-header__title'>发票中心</Text>
-        <Text className='invoice-header__summary'>
-          支持可开票运单、运单号搜索、开票历史、发票预览和抬头管理。
-        </Text>
-      </View>
-
-      <View className='invoice-tabs'>
-        {INVOICE_TABS.map((item) => (
-          <View
-            className={
-              item.value === tab ? 'invoice-tab invoice-tab--active' : 'invoice-tab'
-            }
-            key={item.value}
-            onClick={() => handleChangeTab(item.value)}
-          >
-            <Text
-              className={
-                item.value === tab
-                  ? 'invoice-tab__text invoice-tab__text--active'
-                  : 'invoice-tab__text'
-              }
-            >
-              {item.label}
-            </Text>
-          </View>
-        ))}
-      </View>
+      <InvoiceHeader />
+      <InvoiceTabs
+        tabs={INVOICE_TABS}
+        activeTab={tab}
+        onChange={handleChangeTab}
+      />
 
       {tab === 'orders' && (
-        <>
-          <View className='invoice-search'>
-            <Input
-              className='invoice-search__input'
-              placeholder='输入运单号搜索可开票记录'
-              value={orderKeyword}
-              onInput={(event) => setOrderKeyword(event.detail.value)}
-            />
-            <View className='invoice-search__button' onClick={handleSearchOrder}>
-              <Text className='invoice-search__button-text'>搜索</Text>
-            </View>
-            {orderKeyword && (
-              <View className='invoice-search__clear' onClick={handleClearOrder}>
-                <Text className='invoice-search__clear-text'>清除</Text>
-              </View>
-            )}
-          </View>
-
-          <View className='invoice-summary'>
-            <View>
-              <Text className='invoice-summary__title'>
-                {orderKeyword.trim() ? '运单搜索结果' : '近三个月运单'}
-              </Text>
-              <Text className='invoice-summary__count'>
-                共 {orderTotalRows} 条可查询记录
-              </Text>
-            </View>
-            <Text className='invoice-summary__hint'>
-              {orderKeyword.trim() ? '搜索结果' : '支持分页加载'}
-            </Text>
-          </View>
-
-          <View className='invoice-content'>
-            {orders.map((item) => (
-              <View className='invoice-card' key={item.id || item.waybillNumber}>
-                <View className='invoice-card__top'>
-                  <Text className='invoice-card__number'>
-                    运单 {item.waybillNumber || '--'}
-                  </Text>
-                  <Text
-                    className={getStatusClassName(
-                      'invoice-card__status',
-                      item.statusClass
-                    )}
-                  >
-                    {item.statusText}
-                  </Text>
-                </View>
-                <View className='invoice-route'>
-                  <Text className='invoice-route__text'>
-                    {item.senderText || '--'}
-                  </Text>
-                  <Text className='invoice-route__arrow'>→</Text>
-                  <Text className='invoice-route__text invoice-route__text--right'>
-                    {item.consigneeText || '--'}
-                  </Text>
-                </View>
-                <View className='invoice-card__meta'>
-                  <Text className='invoice-card__time'>{item.businessTime}</Text>
-                  <Text className='invoice-card__amount'>
-                    {getMoneyText(item.amount)}
-                  </Text>
-                </View>
-                {item.pendingPayment && (
-                  <Text className='invoice-card__warning'>
-                    仍有待支付金额 {getMoneyText(item.unpaidAmount)}
-                  </Text>
-                )}
-                <View className='invoice-card__actions'>
-                  <View
-                    className={
-                      item.canApply
-                        ? 'invoice-card__button'
-                        : 'invoice-card__button invoice-card__button--disabled'
-                    }
-                    onClick={() =>
-                      item.canApply
-                        ? navigateToAppRoute(createInvoiceApplyUrl(item), {
-                            login: true
-                          })
-                        : showPendingToast(item.statusText)
-                    }
-                  >
-                    <Text
-                      className={
-                        item.canApply
-                          ? 'invoice-card__button-text'
-                          : 'invoice-card__button-text invoice-card__button-text--disabled'
-                      }
-                    >
-                      {item.canApply ? '申请发票' : item.statusText}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            ))}
-
-            {!orders.length && !loading && (
-              <View className='invoice-empty'>
-                <Text className='invoice-empty__title'>
-                  {errorMessage || '暂无可开票运单'}
-                </Text>
-                <Text className='invoice-empty__summary'>
-                  可按运单号搜索可开票记录，需身份校验的运单会按后端规则拦截。
-                </Text>
-              </View>
-            )}
-          </View>
-        </>
+        <InvoiceOrdersPanel
+          orders={orders}
+          totalRows={orderTotalRows}
+          keyword={orderKeyword}
+          loading={loading}
+          errorMessage={errorMessage}
+          onKeywordChange={setOrderKeyword}
+          onSearch={handleSearchOrder}
+          onClear={handleClearOrder}
+          onScan={handleScanOrder}
+          onApply={handleApplyOrder}
+        />
       )}
 
       {tab === 'history' && (
-        <>
-          <View className='invoice-search'>
-            <Input
-              className='invoice-search__input'
-              placeholder='输入运单号搜索开票历史'
-              value={historyKeyword}
-              onInput={(event) => setHistoryKeyword(event.detail.value)}
-            />
-            <View className='invoice-search__button' onClick={handleSearchHistory}>
-              <Text className='invoice-search__button-text'>搜索</Text>
-            </View>
-            {historyKeyword && (
-              <View
-                className='invoice-search__clear'
-                onClick={handleClearHistory}
-              >
-                <Text className='invoice-search__clear-text'>清除</Text>
-              </View>
-            )}
-          </View>
-
-          <View className='invoice-summary'>
-            <View>
-              <Text className='invoice-summary__title'>近一年历史</Text>
-              <Text className='invoice-summary__count'>
-                共 {historyTotalRows} 条开票记录
-              </Text>
-            </View>
-            <Text className='invoice-summary__hint'>
-              {historyKeyword ? '搜索结果' : '支持分页加载'}
-            </Text>
-          </View>
-
-          <View className='invoice-content'>
-            {history.map((item) => (
-              <View className='invoice-card' key={item.id}>
-                <View className='invoice-card__top'>
-                  <Text className='invoice-card__number'>{item.title}</Text>
-                  <Text
-                    className={getStatusClassName(
-                      'invoice-card__status',
-                      item.statusClass
-                    )}
-                  >
-                    {item.statusText}
-                  </Text>
-                </View>
-                <Text className='invoice-card__desc'>
-                  {item.typeText} · {item.applyTime}
-                </Text>
-                <Text className='invoice-card__desc'>
-                  邮箱 {item.email || '--'}
-                </Text>
-                <View className='invoice-card__meta'>
-                  <Text className='invoice-card__time'>
-                    {item.taxNumber || '无税号'}
-                  </Text>
-                  <Text className='invoice-card__amount'>
-                    {getMoneyText(item.amount)}
-                  </Text>
-                </View>
-                <View className='invoice-card__actions'>
-                  <View
-                    className='invoice-card__button invoice-card__button--ghost'
-                    onClick={() =>
-                      navigateToAppRoute(createInvoiceDetailUrl(item), {
-                        login: true
-                      })
-                    }
-                  >
-                    <Text className='invoice-card__button-text invoice-card__button-text--ghost'>
-                      查看详情
-                    </Text>
-                  </View>
-                  <View
-                    className={
-                      item.canPreview
-                        ? 'invoice-card__button'
-                        : 'invoice-card__button invoice-card__button--disabled'
-                    }
-                    onClick={() =>
-                      item.canPreview
-                        ? navigateToAppRoute(createInvoicePreviewUrl(item), {
-                            login: true
-                          })
-                        : showPendingToast('暂无预览信息')
-                    }
-                  >
-                    <Text
-                      className={
-                        item.canPreview
-                          ? 'invoice-card__button-text'
-                          : 'invoice-card__button-text invoice-card__button-text--disabled'
-                      }
-                    >
-                      {item.canPreview ? '预览发票' : '暂无预览'}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            ))}
-
-            {!history.length && !loading && (
-              <View className='invoice-empty'>
-                <Text className='invoice-empty__title'>
-                  {errorMessage || '暂无开票历史'}
-                </Text>
-                <Text className='invoice-empty__summary'>
-                  可按运单号搜索历史开票记录，扫码查询后续接入 App 扫码能力。
-                </Text>
-              </View>
-            )}
-          </View>
-        </>
+        <InvoiceHistoryPanel
+          history={history}
+          totalRows={historyTotalRows}
+          keyword={historyKeyword}
+          loading={loading}
+          errorMessage={errorMessage}
+          onKeywordChange={setHistoryKeyword}
+          onSearch={handleSearchHistory}
+          onClear={handleClearHistory}
+          onScan={handleScanHistory}
+          onOpenDetail={handleOpenHistoryDetail}
+          onPreview={handlePreviewHistory}
+        />
       )}
 
       {tab === 'taxpayers' && (
-        <View className='invoice-content'>
-          <View className='invoice-summary invoice-summary--inside'>
-            <View>
-              <Text className='invoice-summary__title'>发票抬头</Text>
-              <Text className='invoice-summary__count'>
-                共 {taxpayers.length} 条抬头
-              </Text>
-            </View>
-            <View
-              className='invoice-summary__button'
-              onClick={() =>
-                navigateToAppRoute(APP_ROUTES.invoiceTaxpayerList, {
-                  login: true
-                })
-              }
-            >
-              <Text className='invoice-summary__button-text'>管理</Text>
-            </View>
-          </View>
-
-          {taxpayers.map((item) => (
-            <View className='invoice-card' key={item.id}>
-              <View className='invoice-card__top'>
-                <Text className='invoice-card__number'>{item.name || '--'}</Text>
-                {item.isDefault && (
-                  <Text className='invoice-card__status invoice-card__status--success'>
-                    默认
-                  </Text>
-                )}
-              </View>
-              <Text className='invoice-card__desc'>{item.typeText}</Text>
-              <Text className='invoice-card__desc'>
-                税号 {item.taxNumber || '--'}
-              </Text>
-              <Text className='invoice-card__desc'>
-                电话 {item.phone || '--'}
-              </Text>
-              <Text className='invoice-card__desc'>
-                地址 {item.address || '--'}
-              </Text>
-              {(item.bank || item.bankAccount) && (
-                <Text className='invoice-card__desc'>
-                  银行 {item.bank || '--'} {item.bankAccount || ''}
-                </Text>
-              )}
-            </View>
-          ))}
-
-          {!taxpayers.length && !loading && (
-            <View className='invoice-empty'>
-              <Text className='invoice-empty__title'>
-                {errorMessage || '暂无发票抬头'}
-              </Text>
-              <Text className='invoice-empty__summary'>
-                合同客户和抬头新增/编辑规则较多，后续单独迁移抬头管理页。
-              </Text>
-            </View>
-          )}
-        </View>
+        <InvoiceTaxpayersPanel
+          taxpayers={taxpayers}
+          loading={loading}
+          errorMessage={errorMessage}
+          onManage={handleManageTaxpayers}
+        />
       )}
 
       {orderAuth && (
@@ -933,15 +741,7 @@ const InvoiceCenterPage = () => {
         />
       )}
 
-      {loading && (
-        <Text className='invoice-loading'>
-          {tab === 'orders'
-            ? '正在加载可开票运单...'
-            : tab === 'history'
-              ? '正在加载开票历史...'
-              : '正在加载发票抬头...'}
-        </Text>
-      )}
+      {loading && <InvoiceLoading tab={tab} />}
     </ScrollView>
   )
 }

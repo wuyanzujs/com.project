@@ -3,5 +3,16 @@ apply from: file("../node_modules/@react-native-community/cli-platform-android/n
 include ':app'
 includeBuild(file('../node_modules/@react-native/gradle-plugin').toPath().toRealPath().toAbsolutePath().toString())
 
-apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
+def expoPackageJson = [
+  "node",
+  "--print",
+  "require.resolve('expo/package.json', { paths: [require('path').dirname(require.resolve('@tarojs/taro-rn/package.json'))] })"
+].execute(null, rootDir).text.trim()
+def expoAutolinking = new File(expoPackageJson)
+  .getParentFile()
+  .toPath()
+  .resolve("scripts/autolinking.gradle")
+  .toFile()
+
+apply from: expoAutolinking
 useExpoModules()

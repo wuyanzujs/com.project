@@ -15,3 +15,11 @@ export interface PrivacyStatusView {
   statusText: string
   summary: string
 }
+
+export interface PrivacyHomePromptView {
+  key: string
+  title: string
+  content: string
+  confirmText: string
+  cancelText: string
+}

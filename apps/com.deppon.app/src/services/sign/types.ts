@@ -15,6 +15,7 @@ export interface SaveRealNameRequest {
 export interface SignCodeView {
   hasRealName: boolean
   signCode: string
+  qrPayload: string
   realName: string
   statusText: string
   summary: string

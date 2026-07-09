@@ -1,5 +1,6 @@
 import { CACHE_KEYS, DPCacheExpireType, dpCache } from '../../cache'
 import { expressService } from '../express'
+import { createServiceFailure } from '../serviceResponse'
 
 import type { DepponResponse } from '../../request/deppon'
 import type { ExpressGoodsItem } from '../express'
@@ -79,14 +80,6 @@ const DEFAULT_HOT_GOODS: GoodsSuggestionView[] = [
     source: 'hot'
   }
 ]
-
-function createFailure<TResult>(message: string): DepponResponse<TResult> {
-  return {
-    status: false,
-    message,
-    result: null
-  }
-}
 
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
@@ -175,13 +168,13 @@ export const goodsQueryService = {
     const keyWord = normalizeText(keyword)
 
     if (!keyWord) {
-      return createFailure('请输入货物名称关键词')
+      return createServiceFailure('请输入货物名称关键词')
     }
 
     const response = await expressService.queryGoodsNames(keyWord, 1, pageSize)
 
     if (!response.status) {
-      return createFailure(response.message || '暂未获取到品名推荐')
+      return createServiceFailure(response.message || '暂未获取到品名推荐')
     }
 
     const list = dedupeSuggestions(
@@ -200,7 +193,7 @@ export const goodsQueryService = {
     const goodsName = normalizeText(input.goodsName)
 
     if (!goodsName) {
-      return createFailure('请输入货物名称')
+      return createServiceFailure('请输入货物名称')
     }
 
     const response = await expressService.checkGoodsByName({
@@ -209,7 +202,7 @@ export const goodsQueryService = {
     })
 
     if (!response.status || !response.result) {
-      return createFailure(response.message || '暂未完成货物校验')
+      return createServiceFailure(response.message || '暂未完成货物校验')
     }
 
     const result: GoodsCheckResult = {

@@ -11,10 +11,17 @@ import { copyTextToClipboard } from '../../../shared/platform/clipboard'
 import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
 import type { CustomerCenterView } from '../../../services/customer'
+import type { AppWebSource } from '../../../shared/webview/appWeb'
 
 import './index.scss'
 
-const CUSTOMER_WEB_ACTIONS = [
+interface CustomerWebAction {
+  title: string
+  summary: string
+  source: AppWebSource
+}
+
+const CUSTOMER_WEB_ACTIONS: CustomerWebAction[] = [
   {
     title: '月结中心',
     summary: '查看月结客户和代收货款能力',
@@ -27,7 +34,9 @@ const CUSTOMER_WEB_ACTIONS = [
   }
 ]
 
-function getPrimaryCustomerAction(customer: CustomerCenterView | null) {
+function getPrimaryCustomerAction(
+  customer: CustomerCenterView | null
+): CustomerWebAction {
   if (customer?.hasBoundCustomer) {
     return {
       title: '管理客户',
@@ -90,7 +99,7 @@ const CustomerCenterPage = () => {
     }
   })
 
-  const handleOpenWeb = (source: string) => {
+  const handleOpenWeb = (source: AppWebSource) => {
     if (!ensureCustomerAccess()) {
       return
     }

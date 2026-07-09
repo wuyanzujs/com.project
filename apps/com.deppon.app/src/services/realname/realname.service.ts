@@ -1,5 +1,6 @@
 import { realNameApi } from './realname.api'
 import { verifyRealName } from '../../shared/platform/realName'
+import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type {
   RealNameAuthRaw,
@@ -10,14 +11,6 @@ import type { DepponResponse } from '../../request/deppon'
 
 const ID_CARD_WEIGHTS = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
 const ID_CARD_CHECK_CODES = ['1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2']
-
-function createFailure<TResult>(message: string): DepponResponse<TResult> {
-  return {
-    status: false,
-    message,
-    result: null
-  }
-}
 
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()

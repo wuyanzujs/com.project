@@ -6,17 +6,11 @@ import { useMemo, useState } from 'react'
 import { getOrderIdentityText, orderService } from '../../../services/order'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type { OrderDetail } from '../../../services/order'
 
 import './index.scss'
-
-function createQuery(params: Record<string, string>) {
-  return Object.entries(params)
-    .filter(([, value]) => !!value)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
-}
 
 function parseParams(params: Record<string, string | undefined>) {
   return {
@@ -46,7 +40,7 @@ const ExpressSuccessPage = () => {
   })
 
   const handleViewDetail = () => {
-    navigateToAppRoute(`${APP_ROUTES.orderDetail}?${createQuery(routeParams)}`)
+    navigateToAppRoute(createAppRouteUrl(APP_ROUTES.orderDetail, routeParams))
   }
 
   const handleContinue = () => {

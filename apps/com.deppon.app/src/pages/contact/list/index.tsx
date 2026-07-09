@@ -10,18 +10,13 @@ import {
 } from '../../../services/contact'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type { Contact } from '../../../services/contact'
 
 import './index.scss'
 
 const PAGE_SIZE = 20
-
-function createQuery(params: Record<string, string>) {
-  return Object.entries(params)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
-}
 
 function getRoleLabel(contact: Contact) {
   return contact.type === 0 ? '寄件人' : '收件人'
@@ -44,7 +39,7 @@ const ContactListPage = () => {
   const [errorMessage, setErrorMessage] = useState('')
   const [processingContactId, setProcessingContactId] = useState('')
   const contactListUrl = useMemo(
-    () => `${APP_ROUTES.contactList}?${createQuery(selectionParams)}`,
+    () => createAppRouteUrl(APP_ROUTES.contactList, selectionParams),
     [selectionParams]
   )
   const ensureContactAccess = useCallback(
@@ -136,7 +131,7 @@ const ContactListPage = () => {
     }
 
     Taro.navigateTo({
-      url: `${APP_ROUTES.contactEdit}?${createQuery(selectionParams)}`
+      url: createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams)
     })
   }
 
@@ -147,7 +142,7 @@ const ContactListPage = () => {
 
     contactSelection.setEditingContact(contact)
     Taro.navigateTo({
-      url: `${APP_ROUTES.contactEdit}?${createQuery(selectionParams)}`
+      url: createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams)
     })
   }
 

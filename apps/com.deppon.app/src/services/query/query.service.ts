@@ -1,6 +1,8 @@
 import { queryApi } from './query.api'
 import { APP_ROUTES } from '../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
 import { contactService } from '../contact'
+import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type {
   AddressStationRawItem,
@@ -46,23 +48,6 @@ const PICKUP_ONLY_RANGE_CODES = new Set([
 
 const UNSERVICEABLE_RANGE_CODES = new Set(['DELIVERY_NATURE_ZTBPS'])
 const DEFAULT_STATION_PAGE_SIZE = 100
-
-function createRouteUrl(route: string, params: Record<string, string>) {
-  const query = Object.entries(params)
-    .filter(([, value]) => value)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
-
-  return query ? `${route}?${query}` : route
-}
-
-function createFailure<TResult>(message: string): DepponResponse<TResult> {
-  return {
-    status: false,
-    message,
-    result: null
-  }
-}
 
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
@@ -403,7 +388,7 @@ export const queryService = {
       return ''
     }
 
-    return createRouteUrl(APP_ROUTES.stationDetail, {
+    return createAppRouteUrl(APP_ROUTES.stationDetail, {
       code,
       distance: item.distance,
       source

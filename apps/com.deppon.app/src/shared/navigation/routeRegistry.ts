@@ -22,6 +22,12 @@ export const APP_ROUTE_DEFINITIONS = [
     path: 'pages/express/success/index'
   },
   {
+    name: 'batchExpress',
+    title: '批量寄',
+    path: 'pages/batch/index',
+    loginRequired: true
+  },
+  {
     name: 'expressInsurance',
     title: '保价说明',
     path: 'pages/express/insurance/index'
@@ -106,6 +112,12 @@ export const APP_ROUTE_DEFINITIONS = [
     name: 'paymentList',
     title: '待支付',
     path: 'pages/payment/list/index',
+    loginRequired: true
+  },
+  {
+    name: 'printCenter',
+    title: '面单打印',
+    path: 'pages/print/index',
     loginRequired: true
   },
   {

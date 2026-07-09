@@ -13,6 +13,7 @@ import {
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type { CouponCardView, CouponStatus } from '../../../services/coupon'
 
@@ -38,12 +39,10 @@ function getCouponKey(item: CouponCardView, index: number) {
 }
 
 function createCouponDetailUrl(coupon: CouponCardView, status: CouponStatus) {
-  const params = [
-    coupon.code ? `code=${encodeURIComponent(coupon.code)}` : '',
-    `status=${encodeURIComponent(status)}`
-  ].filter(Boolean)
-
-  return `${APP_ROUTES.couponDetail}?${params.join('&')}`
+  return createAppRouteUrl(APP_ROUTES.couponDetail, {
+    code: coupon.code,
+    status
+  })
 }
 
 const CouponListPage = () => {

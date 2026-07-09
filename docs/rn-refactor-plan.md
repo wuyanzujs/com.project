@@ -63,20 +63,26 @@
 - `app.config.ts` 的页面列表已改为从 `shared/navigation/routeRegistry.ts` 派生；`APP_ROUTES`、主导航和登录守卫也从同一份注册表生成，新增页面不再多处手写路径。
 - `metro.config.js` 已补 pnpm workspace 的 `watchFolders`、`nodeModulesPaths` 和 symlink 支持。
 - Taro RN 所需 native peer 依赖已显式放入 `com.deppon.app`，包括 `@tarojs/router-rn`、React Navigation、gesture handler、screens、safe area、svg、webview、pager view 等。
-- 原生身份已做首轮同步：Taro RN `appName`、Android `getMainComponentName` 和 iOS `moduleName` 统一为 `DepponApp`；Android `applicationId` 为 `com.deppon.app`；iOS Bundle ID 为 `com.deppon.app`；Android/iOS 展示名为“德邦快递”。
+- 原生身份已做同步：Taro RN `appName`、Android `namespace/applicationId/fastlane packageName/MainActivity/MainApplication` 和 iOS `moduleName/Bundle ID/LaunchScreen` 已对齐 App 身份；Android/iOS 展示名为“德邦快递”。
+- 已删除 App 包内 `project.config.json`、`project.tt.json` 等小程序 IDE 配置，并将 `types/global.d.ts` 的 `TARO_ENV` 收窄为 `rn`，避免 RN-only 工程继续暗示小程序构建入口。
+- Taro RN 依赖链中的 `expo` 已显式声明为 App 依赖，Android `settings.gradle` 和 iOS `Podfile` 的 Expo autolinking 通过 `@tarojs/taro-rn` 定位依赖，兼容 pnpm workspace 布局。
 - 已建立 `src/app.bootstrap.ts`、`src/shared/config/runtime.ts`、`src/shared/navigation/routes.ts`、`src/shared/platform/capabilities.ts`。
 - 已建立 `src/shared/platform/scan.ts`，首页和后续查件/寄件扫码入口统一依赖扫码 facade，不直接调用小程序 `Taro.scanCode`。
 - 已建立 `src/shared/platform/phone.ts`，App 端通过 RN `Linking` 承接拨打电话能力，页面不再直接调用小程序 `Taro.makePhoneCall`。
-- 首页和预约寄件页已从模板占位变成可继续承接业务的 App 页面骨架。
+- 首页和预约寄件页已从模板占位变成可继续承接业务的 App 页面骨架；首页订单中心服务卡已接入 `APP_ROUTES.orderList`，不再是静态展示。
 - 已新增 `src/cache`、`src/request/deppon.ts`、`src/request/cookieJar.ts`、`src/request/events.ts` 和 `src/services/auth`，承接 OWS cookie 会话、响应归一、登录失效事件和 App 登录服务骨架。
 - 已新增 `src/shared/components/AppTabBar`，RN 首期先采用页面内共享底部导航，不依赖小程序 `tabBar` 配置；首页、寄件、查快递、我的四个主入口已接入同一导航数据源。
 - 已新增 `src/shared/navigation/appNavigation.ts`，集中处理 App 内路由安全兜底、主入口 `redirectTo`、普通页面 `navigateTo` 和受保护入口登录守卫，避免页面各自判断跳转形态。
 - 已新增 `src/shared/navigation/routeRegistry.ts`，统一声明页面 `name/path/title/main/loginRequired`；`app.config.ts`、`routes.ts`、`appNavigation.ts` 不再分别维护页面列表、主入口和登录守卫。
+- 首页、我的页、账号设置和客服中心的静态入口数据已收紧为 `AppRoutePath`，新增入口必须引用 `APP_ROUTES`；需要 query 的详情/搜索/WebView 路由统一通过 `shared/navigation/routeUrl.ts` 的 `createAppRouteUrl`、`appendRouteQuery` 或 `createRouteQuery` 生成，不在页面里复制 `createQuery`。
 - 已新增 `scripts/check-route-registry.mjs` 和 `check:routes` 门禁，校验路由注册表唯一性、页面文件存在性、主导航顺序、登录路由和派生消费关系。
+- 已新增 `src/styles` 样式基础层，集中维护颜色、字号、行高、间距、圆角 token，以及页面、卡片、按钮、空态等通用类；既有页面不做一次性大面积替换，后续业务切片逐步迁移。
 - 已补齐 `shared/platform` 首期 facade：定位、地图、文件选择/上传/下载/预览、支付、通知、外部 App/小程序、实名核验、电话和扫码都通过统一能力矩阵暴露，默认 pending 的能力会明确降级为“待接入 App 原生模块”。
-- 已新增工程验证脚本：根目录 `typecheck:app`、`lint:app`、`check:app-boundaries`、`check:app-routes`、`check:app-module-size`、`verify:app`，App 包内 `typecheck`、`lint`、`check:rn-boundaries`、`check:routes`、`check:module-size`、`verify`，后续每轮可用一条命令执行类型检查、ESLint、RN 边界检查、路由注册表检查、页面/service 体量检查和 RN build。
-- 已新增 `scripts/check-module-size.mjs` 和 `check:module-size` 门禁，新页面默认不超过 420 行，新 service 默认不超过 450 行；当前已存在的超大页面/service 使用冻结预算，后续只允许拆小，不允许继续增长。
+- 已新增工程验证脚本：根目录 `typecheck:app`、`lint:app`、`check:app-boundaries`、`check:app-routes`、`check:app-module-size`、`check:app-business-rules`、`verify:app`，App 包内 `typecheck`、`lint`、`check:rn-boundaries`、`check:routes`、`check:module-size`、`check:business-rules`、`verify`，后续每轮可用一条命令执行类型检查、ESLint、RN 边界检查、路由注册表检查、页面/service 体量检查、业务规则检查和 RN build。
+- 已新增 `scripts/check-module-size.mjs` 和 `check:module-size` 门禁，新页面默认不超过 420 行，新 service 默认不超过 450 行；已存在或自然复杂的页面/service 使用带原因的冻结预算，目标是阻止无意识膨胀，而不是为了行数机械拆分。
+- 已新增 `scripts/check-business-rules.cjs` 和 `check:business-rules`，首批覆盖 service 失败响应形态、OWS 状态归一、`ECO_TOKEN` cookie 提取、路由 query、扫码分类、寄件草稿校验、批量寄入口/校验规则、打印中心入口/打印前置规则、发票申请校验/抬头校验/提交 payload、订单金额/重量/手机号展示和订单详情动作 VM 等纯函数规则，后续拆 mapper/rules/useCases 时继续补用例。
 - 已新增原生环境检查脚本：根目录 `check:app-native-env`，App 包内 `check:native-env`，用于检查 JDK、Android SDK、Gradle wrapper、iOS 构建宿主等 Android/iOS 编译前置条件。
+- 已新增 `.github/workflows/app-quality.yml`，push 和 pull request 统一执行 `pnpm install --frozen-lockfile`、`pnpm verify:app` 和 `pnpm check:app-native-env`，把 RN-only 边界、路由、体量、运行时配置和 RN bundle 构建固化到协作入口。
 
 ## 高风险平台能力
 
@@ -101,8 +107,10 @@
 
 扫码能力当前边界：
 
-- `shared/platform/scan.ts` 暴露 `scanCode`、`scanWaybillCode` 和 `extractWaybillNumberFromScanValue`。
-- `scanWaybillCode` 负责统一处理二维码/条码结果中的 `waybillNumber`、`waybillNo`、`waybillNum`、`billNo`。
+- `shared/platform/scan.ts` 暴露 `scanCode`、`scanAppCode`、`scanWaybillCode`、`parseAppScanValue` 和 `extractWaybillNumberFromScanValue`。
+- `parseAppScanValue` 负责统一处理二维码/条码结果中的 raw 运单号、`waybillNumber`、`waybillNo`、`waybillNum`、`billNo`、`ltlWaybillNumber`、`skiingWaybillNumber` 和 `printId`。
+- 首页和发票中心扫码使用 `scanAppCode` 分类分流：普通运单进入订单详情或发票运单搜索，`printId` 云打印码进入面单打印中心，寄件业务二维码、短链和非德邦二维码不进入普通查件链路。
+- 当前不复制旧小程序里的 `p.url.cn` 短链网络解析、云打印小程序外跳和寄件二维码状态机；这些能力后续按 App 原生扫码、打印和寄件 service 独立接入。
 - 当前 `APP_NATIVE_CAPABILITIES.scan` 仍是 `pending`，页面会展示统一“扫码能力待接入 App 原生模块”提示。
 - 后续只需要在 `scanCode` 内部接入 RN 原生相机/扫码模块，业务页面不再改调用形态。
 
@@ -115,6 +123,7 @@
 | 支付 | 微信支付 7 处，支付宝支付 5 处 | 微信/支付宝 App SDK bridge，统一 `pay({ channel, payload })`。 |
 | `Taro.navigateToMiniProgram` | 17 处 | 微信小程序拉起、支付宝 scheme 或 H5/App 内兜底。 |
 | `Taro.requestSubscribeMessage` | 6 处 | App push、站内信、短信或服务通知替代。 |
+| 小程序分享/开放能力按钮 | 多处 `useShareAppMessage`、`openType=share/getPhoneNumber` | App 分享、登录、客服等 SDK facade，不能直接迁小程序组件开放能力。 |
 | `Taro.uploadFile/downloadFile` | 上传 13 处，下载 5 处 | FormData 上传本地 URI，下载到 cache/document，再预览或系统打开。 |
 | `Taro.makePhoneCall` | 24 处 | `Linking.openURL('tel:...')` 封装。 |
 | `wx.*` / `my.*` | 业务直接 `wx.*` 2 处，`my.*` 14 处 | 按能力替换，实名、授权、地址、文件选择和支付需单独确认。 |
@@ -122,11 +131,20 @@
 
 当前 App 已新增 `scripts/check-rn-boundaries.mjs` 作为自动门禁：
 
-- 扫描范围：`apps/com.deppon.app/package.json` 和 `apps/com.deppon.app/src/**/*.ts(x)`。
+- 扫描范围：`apps/com.deppon.app/package.json`、`apps/com.deppon.app/src/**/*.ts(x)`、关键 Android/iOS 原生身份文件和小程序 IDE 项目配置文件。
 - 禁止 App 包直接依赖小程序/H5 平台插件：`@tarojs/plugin-platform-weapp`、`@tarojs/plugin-platform-alipay`、`@tarojs/plugin-platform-h5`、`@tarojs/plugin-platform-jd`、`@tarojs/plugin-platform-qq`、`@tarojs/plugin-platform-swan`、`@tarojs/plugin-platform-tt`。
-- 校验关键 native 身份：Taro RN `appName`、Android `app_id/app_name/MainActivity`、iOS `moduleName/DisplayName/Bundle ID`，防止 `taroDemo` 这类模板运行时身份回流。
+- 校验关键 native 身份：Taro RN `appName`、Android `namespace/app_id/app_name/fastlane packageName/MainActivity/MainApplication`、iOS `moduleName/DisplayName/Bundle ID/LaunchScreen`，防止 `taroDemo` 这类模板运行时身份回流。
+- 校验 Taro RN 原生 autolinking：`expo` 必须作为 App 显式依赖，Android `settings.gradle` 和 iOS `Podfile` 必须使用兼容 pnpm workspace 的依赖解析方式。
+- 禁止保留 `project.config.json`、`project.tt.json`、`project.swan.json`、`project.qq.json`、`project.jd.json` 等小程序 IDE 配置文件。
+- 禁止业务代码直接拼 `APP_ROUTES.web`；所有 WebView 承接必须通过 `shared/webview/appWeb.ts` 的 `createAppWebUrl` 统一生成，便于来源、标题、登录态和白名单治理。
+- 禁止业务代码直接写 `` `${APP_ROUTES.xxx}?` `` 或 `APP_ROUTES.xxx + '?'` 拼动态 query；App 内动态 URL 必须通过 `shared/navigation/routeUrl.ts` 生成。
+- `shared/webview/appWeb.ts` 已将 H5 来源收敛为 `APP_WEB_TARGETS` / `AppWebSource`，客服、订单售后、客户中心、E 卡、会员和隐私协议等静态入口都必须引用受控来源；新增 H5 入口先登记来源，再在页面或 service 中使用。
 - 禁止直接使用 `wx.*`、`my.*`。
-- 禁止直接使用 `Taro.scanCode`、`Taro.getLocation`、`Taro.chooseLocation`、`Taro.openLocation`、`Taro.makePhoneCall`、`Taro.uploadFile`、`Taro.downloadFile`、`Taro.requestSubscribeMessage`、`Taro.navigateToMiniProgram`、`Taro.chooseImage/chooseMedia/chooseVideo`、`Taro.getUserProfile/authorize/getSetting/openSetting`、`Taro.saveImageToPhotosAlbum`。
+- 禁止保留 `process.env.TARO_ENV` 或 `Taro.getEnv` 多端运行时分支；App 端差异使用 `shared/config/runtime.ts` 和 capability 矩阵表达。
+- 禁止直接使用 `Taro.scanCode`、`Taro.getLocation`、`Taro.chooseLocation`、`Taro.openLocation`、`Taro.makePhoneCall`、`Taro.uploadFile`、`Taro.downloadFile`、`Taro.requestSubscribeMessage`、`Taro.navigateToMiniProgram`、`Taro.chooseImage/chooseMedia/chooseVideo`、`Taro.getUserProfile/authorize/getSetting/openSetting`、`Taro.saveImageToPhotosAlbum`、`Taro.setClipboardData/getClipboardData`、`Taro.previewImage`、`Taro.openDocument`。
+- 禁止直接使用 `useShareAppMessage`、`useShareTimeline`、`onShareAppMessage` 和小程序组件 `openType`；分享、登录、客服等开放能力必须先走对应 `shared/platform` facade，当前按能力矩阵降级。
+- 禁止直接迁入旧项目 `EVENT_TRACK` 或 `sensors` 小程序埋点入口；埋点统一通过 `shared/platform/analytics.ts` 预留 App SDK facade。
+- 禁止业务代码直接调用 RN `NativeModules`、`PermissionsAndroid`、`Linking`、`Share.share`、`Alert.alert`；这些 API 只能在 `shared/platform` 或后续 `shared/native` 中封装。
 - 这些能力必须先落到 `shared/platform` facade 或独立领域 service，再由页面消费。
 - 当前 App 源码扫描通过；参考项目扫描命中大量文件，说明后续迁移不能复制旧页面调用形态。
 
@@ -134,7 +152,9 @@
 
 ```text
 shared/platform/
+  analytics.ts
   capabilities.ts
+  clipboard.ts
   scan.ts
   phone.ts
   location.ts
@@ -144,13 +164,14 @@ shared/platform/
   notifications.ts
   externalApp.ts
   realName.ts
+  share.ts
   index.ts
 ```
 
 分层职责：
 
-- 能力矩阵层维护 `scan/location/payment/phone/filePicker/documentPreview/notification/externalMiniProgram/realName` 等状态。
-- facade 层向业务暴露 `scanCode()`、`dialPhone()`、`getCurrentAppLocation()`、`openMapLocation()`、`chooseAppFile()`、`uploadAppFile()`、`downloadAppFile()`、`payWithApp()`、`requestAppNotificationPermission()`、`openExternalApp()`、`verifyRealName()` 等稳定方法。
+- 能力矩阵层维护 `scan/location/payment/phone/filePicker/documentPreview/notification/externalMiniProgram/realName/share/analytics` 等状态。
+- facade 层向业务暴露 `scanCode()`、`dialPhone()`、`getCurrentAppLocation()`、`openMapLocation()`、`chooseAppFile()`、`uploadAppFile()`、`downloadAppFile()`、`payWithApp()`、`requestAppNotificationPermission()`、`openExternalApp()`、`verifyRealName()`、`shareWithApp()`、`trackAppEvent()` 等稳定方法。
 - 当前除电话外默认都标记为 `pending`，业务可以先接统一调用和降级提示，真实 native bridge 后续只需要替换 facade 内部实现。
 - 后续接入原生时再新增 `native/modules.ts`、`native/permissions.ts` 等桥接层，只包装 `NativeModules`、`Linking`、权限请求和 Android/iOS 差异。
 - 业务渠道码、地图 key、登录类型、OMS/CRM code 放到 `shared/config` 或领域模块，不放入 native bridge。
@@ -197,7 +218,7 @@ shared/platform/
 
 - 登录接口沿用旧项目真实契约：`account`、`verifyCode`、`loginType`、`sysCode`。页面和 service 不再混发 `mobile`、`smsCode`、`code` 等非登录接口字段。
 - App 端首期只承接手机号短信登录；微信/支付宝小程序静默登录、绑定授权、实名核验和营销注册记录先不迁入页面主流程。
-- 协议首期做前端强校验和 Web 承接入口，隐私版本查询/保存/撤销已由隐私设置页承接；首页隐私弹窗仍后置。
+- 协议首期做前端强校验和 Web 承接入口；隐私版本查询、首页轻提示、保存确认和撤销确认都由 `privacyService` 收口。
 - 我的页只消费 `authService` 和路由入口，不直接读 cookie 或请求层事件。
 - WebView 默认只允许 `https` 和 `APP_RUNTIME_CONFIG.webAllowedHosts` 中的域名；H5 客服 URL、Web baseURL 和白名单都通过 runtime/env 管理。
 
@@ -273,13 +294,14 @@ shared/platform/
 
 ## Privacy Settings 首期切片
 
-隐私设置已从旧项目 `pages/common/protocol/list` 中拆出 App 可用能力，不迁小程序分享、Redux 多账号回退和首页弹窗状态机。
+隐私设置已从旧项目 `pages/common/protocol/list` 中拆出 App 可用能力，不迁小程序分享、Redux 多账号回退和复杂首页弹窗状态机。
 
 已落地边界：
 
 - `services/privacy/privacy.api.ts`：封装隐私版本查询、保存确认和撤销确认接口。
-- `services/privacy/privacy.service.ts`：归一最新版本、已同意版本、是否已确认最新版本和状态文案。
+- `services/privacy/privacy.service.ts`：归一最新版本、已同意版本、是否已确认最新版本、状态文案和首页提示 VM；同一版本在单次 App 运行内不会重复弹出。
 - `pages/privacy/settings`：提供协议清单入口、版本状态卡片、同步状态、同意最新条款和撤销同意条款。
+- `pages/home/index`：已登录账号进入首页时轻量检查隐私版本；若未确认最新版本，仅提示前往隐私设置阅读和确认，不在首页替用户保存同意。
 - `shared/webview/appWeb.ts`：补充隐私政策、个人信息清单、电子运单服务协议、合作方清单、权限调用清单和免赔协议的 WebView 来源映射。
 - `pages/mine` 和统一路由已接入 `APP_ROUTES.privacySettings`，入口受登录守卫保护。
 
@@ -287,7 +309,8 @@ shared/platform/
 
 - 撤销同意条款成功后清理 App 会话并返回我的页，不复用旧项目 Redux 登出和小程序多账号回退分支。
 - WebView 仍走 HTTPS 白名单和来源映射，不在页面直接拼接 H5 域名。
-- 首页安装/更新隐私弹窗后置，后续应复用 `privacyService`，不在首页复制接口逻辑。
+- 首页隐私提示只在已登录且未确认最新版本时出现；接口失败或未登录时不打扰首页使用。
+- 首页只负责弹窗和跳转，版本判断、弹出文案和单次运行去重都保留在 `privacyService`。
 
 首期接入端点：
 
@@ -352,7 +375,9 @@ type ContactSelectMode = 'select' | 'manage'
 
 - `services/express/types.ts`：定义 `ExpressDraft`、`ExpressContact`、`ExpressGoods`、产品报价、取件时间、下单请求/响应等首期契约。
 - `services/express/express.api.ts`：只封装 OWS 端点，包含价格时效、取件时间、货物品名/标签、保价、筛单、下单拦截、创建订单、订单详情、取消订单。
-- `services/express/express.service.ts`：负责 draft 默认值、联系人映射、收寄地址互换、依赖失效、校验、报价请求组装、取件时间请求组装和下单请求组装。
+- `services/express/express.draft.ts`：拆出 draft 默认值、联系人映射、地址展示、收寄地址互换、依赖失效和下单/查价基础校验。
+- `services/express/express.payload.ts`：拆出价格时效、取件时间、保价试算、筛单和创建订单 payload 组装，页面不直接拼 OWS 字段。
+- `services/express/express.service.ts`：保留货物品名、报价、取件时间、保价、筛单、下单拦截、创建订单、订单详情和取消订单等 API 编排。
 - `services/express/draftBridge.ts`：提供一次性跨页草稿桥，当前用于价格时效查询结果带入寄件页，不引入 Redux 巨石状态。
 - `pages/express/index`：升级为 RN App 表单壳，包含收寄地址、货物信息、付款/送货方式、取件时间、产品价格、备注、协议和提交入口。
 - `pages/express/components/ExpressContactPanel.tsx`、`ExpressGoodsSection.tsx`、`ExpressServiceSection.tsx` 和 `ExpressQuoteSection.tsx`：拆出收寄地址、货物信息、服务方式和产品价格面板，页面继续负责草稿状态、报价失效、登录守卫和提交编排，避免寄件页继续膨胀。
@@ -410,11 +435,12 @@ type ContactSelectMode = 'select' | 'manage'
 App 端渠道码已从小程序环境分支中解耦到 runtime：
 
 ```ts
+APP_RUNTIME_CONFIG.env
 APP_RUNTIME_CONFIG.appClientChannel
 APP_RUNTIME_CONFIG.omsChannel
 ```
 
-当前默认值是 `APP`，真实后端渠道码需要后续和接口方确认后通过环境变量调整。
+当前非生产默认值用于本地和测试联调；真实生产后端域名、H5 入口、WebView 白名单、系统码和渠道码必须通过环境变量提供。`scripts/check-runtime-config.mjs` 已接入 `verify`，会阻止 `runtime.ts` 硬编码 token，并在 `APP_ENV=production` 时校验关键变量、https URL、WebView host 白名单和固定 token 参数。
 
 ## Query Price 首期切片
 
@@ -512,14 +538,53 @@ APP_RUNTIME_CONFIG.omsChannel
 
 - `pages/home/components/search`：支持输入运单号，前端做空格清理、转大写和基础格式校验。
 - 查询成功后跳转 `APP_ROUTES.orderDetail`，传入 `waybillNumber` 和 `source=HOME_SEARCH`，复用订单详情页已有运单详情和轨迹查询能力。
-- 扫码入口走 `shared/platform/scan.scanWaybillCode`，当前因原生扫码能力未接入而统一降级提示。
+- 扫码入口走 `shared/platform/scan.scanAppCode`，当前因原生扫码能力未接入而统一降级提示；原生接入后会先分类运单、云打印码和暂不支持的业务二维码。
 
 关键约束：
 
 - 首页搜索不新增独立查件 API，不绕过 `services/order`；订单详情仍是运单详情和轨迹的唯一页面 VM。
 - 首页搜索进入订单详情时走公开轨迹模式，只调用非 secure 的 `/gwapi/trackService/eco/track/queryNewTrack`，不要求登录，也不展示寄收件隐私信息。
-- App 端扫码后续应在 `shared/platform/scan` 内接入 native bridge，页面只消费统一返回的码值。
+- App 端扫码后续应在 `shared/platform/scan` 内接入 native bridge，页面只消费统一分类后的扫码结果。
 - 旧项目的小程序扫码、订阅、支付入口、营销追踪和 H5 轨迹页外跳不进入首期。
+
+## Batch Express 首期切片
+
+批量寄从旧项目 `pages/batch` 和 `utils/batch.ts` 中先抽取 App 可安全承接的入口和校验规则，不复制旧小程序批量寄页面、Redux 状态机、Excel 弹层、批量识别列表和打印流程。
+
+已落地边界：
+
+- `services/batch/types.ts`：定义批量寄联系人、收货人草稿、入口动作 VM 和校验结果。
+- `services/batch/batch.service.ts`：沉淀批量寄入口 VM、官网 Excel 批量寄 URL、批量地址文本识别、收货人数量上限、手机号、收寄地址一致、货物名、运单号和港澳台互寄校验。
+- `pages/batch/index`：新增 RN 原生批量寄入口页，展示 App 可用入口、批量文本识别预览、待接入能力和批量规则；识别出的首条可用收货人可通过 `expressDraftBridge` 带入单票寄件，Excel 批量寄复制官网地址。
+- 首页快捷入口新增“批量寄”，通过路由注册表 `batchExpress` 进入。
+- `check-business-rules` 新增批量寄入口和校验规则用例，防止后续把旧项目规则散回页面。
+
+首期保留规则：
+
+- 批量寄首期不伪造完整下单能力；完整批量创建订单需要继续复用 `services/express` 的 payload 和后端筛单/货物校验后再接。
+- 批量识别首期只支持本地文本格式识别和首条带入单票寄件，后续应复用地址解析 service，并把多收货人列表建成独立 VM，不搬旧 Redux。
+- Excel 文件导入依赖 App 文件选择、上传和模板解析能力，首期只提供官网电脑端兜底入口。
+- 批量打印依赖 App 原生打印 facade，不直接迁小程序蓝牙打印和云打印二维码逻辑。
+
+## Print 首期切片
+
+面单打印从旧项目 `pages/print`、`pages/common/print` 和 `api/order.ts` 中先抽取入口、端点清单和打印前置规则，不复制小程序蓝牙 API、GBK 指令、设备缓存和模板写入流程。
+
+已落地边界：
+
+- `shared/platform/capabilities.ts`：新增 `print` 原生能力，当前状态为 `pending`。
+- `services/print/types.ts`：定义打印中心动作 VM、打印前置状态和选择校验结果。
+- `services/print/print.service.ts`：记录待打印列表、蓝牙模板、打印配置、配置提交和状态回写端点；沉淀打印前必须连接设备、有待打印订单且选中运单的规则，并为扫码带入的 `printId` 生成云打印码提示 VM。
+- `pages/print/index`：新增 RN 原生打印中心入口页，展示订单回退入口、待打印列表、打印机管理、打印设置和云打印码的接入状态；从首页扫码带入的 `printId` 只展示受控待接入提示。
+- 我的页新增“面单打印”入口，通过 `printCenter` 路由进入。
+- `check-business-rules` 新增打印中心入口和打印前置规则用例。
+
+首期保留规则：
+
+- 当前不请求打印列表和模板，不执行真实打印，不调用小程序蓝牙 API。
+- 后续真实打印必须先落 `shared/platform/print` 或 `shared/native/print`，只在 facade 内封装蓝牙扫描、连接、模板写入和平台差异。
+- 打印状态回写必须跟真实打印成功链路绑定，不能在页面里提前伪造成功。
+- 云打印码已经在 `shared/platform/scan` 中识别为 `printCode` 并分流到面单打印中心；打印中心只展示待接入提示，真实云打印下单仍需后续单独建模，不混入普通寄件扫码。
 
 ## Order 首期切片
 
@@ -529,37 +594,43 @@ APP_RUNTIME_CONFIG.omsChannel
 
 - `services/order/types.ts`：定义寄件/收件列表原始响应、列表 VM、订单详情 VM、运单详情原始响应和轨迹响应。
 - `services/order/order.api.ts`：封装寄件订单列表、收件订单列表、订单详情、运单详情、轨迹列表、取消订单和删除订单端点。
+- `services/order/order.display.ts`：沉淀订单展示格式化能力，包含空值展示、金额、尺寸、手机号脱敏、加密判断和地址拼接。
 - `services/order/order.mapper.ts`：拆出寄件/收件列表归一、运单详情字段归一和再来一单/一键回寄草稿转换，不继续膨胀主 service。
 - `services/order/order.detailRules.ts`：拆出订单详情状态、角色、运单号、受控 H5 URL 和通用取值规则，供动作 VM 和 service 复用。
 - `services/order/order.detailActions.ts`：拆出订单详情售后动作 VM，统一生成在线客服、催单、通知派送、拦截作废、收件方式、联系营业部、评价、投诉、在线理赔、去开票和修改运单入口。
+- `services/order/order.detailUseCases.ts`：拆出催单按钮/话术/提交、通知派送、拦截作废和营业部电话兜底等详情动作 API 编排。
+- `services/order/order.stubView.ts`：拆出电子存根入口、复制单号、寄收地址、身份文案、货物/费用/订单分区、尺寸明细和后置能力提示 VM，不继续堆进主 service。
+- `services/order/order.stubFiles.ts`：拆出电子存根包装费用明细、电子合同状态、合同预览路由和单据票证 VM。
+- `services/order/order.stubImages.ts`：拆出取货、复磅、签收、返单、增值服务和木包装等照片凭证查询与图片分组归一。
 - `services/order/order.service.ts`：统一最近一个月默认查询范围、订单接口编排、轨迹查询、取消订单、终态订单删除和删除权限判断。
-- `services/order/order.service.ts`：提供 `getOrderCopyNumber`，统一确定详情页复制运单号或订单号的优先级。
-- `services/order/order.service.ts`：新增催单 VM，按待揽件寄件人订单或运输中主单生成催单动作，点击后再查询后端话术和按钮；查看进度走受控 H5，提交催单走 `orderUrgent` 接口。
-- `services/order/order.service.ts`：新增通知派送动作，仅在安全详情、寄件角色、运输中、有运单号且后端 `isDlyNotified=N` 时展示，提交统一调用 `modifyNotifyDeliver`。
-- `services/order/order.service.ts`：新增拦截作废高风险动作，仅在安全详情、寄件角色、运输中、有运单号且后端 `canBeVoided=Y` 时展示；提交统一调用 `invalidWaybill`，并把“货物已出发需去运单修改拦截”的后端文案归一为页面可消费的结果 VM。
-- `services/order/order.service.ts`：新增收件方式 H5 动作，仅在安全详情、收件角色、运输中且有运单号时展示，页面不直接拼 `/depponmobile/orderStayTmp`。
-- `services/order/order.service.ts`：新增联系营业部动作，仅在作废订单且有营业部编码时展示；优先使用详情电话，否则通过 `deptTelephone` 查询，最终兜底 95353。
-- `services/order/order.service.ts`：新增评价 H5 动作，按寄件/收件角色生成问卷场景码和结构化 `rowData`，页面不拼评价 H5 参数。
+- `services/order/order.detailActions.ts`：新增催单、通知派送、拦截作废、收件方式 H5、联系营业部和评价 H5 的动作 VM，页面不散落状态判断或 H5 参数。
+- `services/order/order.detailUseCases.ts`：催单点击后查询后端话术和按钮；查看进度走受控 H5，提交催单走 `orderUrgent` 接口。
+- `services/order/order.detailUseCases.ts`：通知派送统一调用 `modifyNotifyDeliver`；拦截作废统一调用 `invalidWaybill`，并把“货物已出发需去运单修改拦截”的后端文案归一为页面可消费的结果 VM。
+- `services/order/order.detailUseCases.ts`：联系营业部优先使用详情电话，否则通过 `deptTelephone` 查询，最终兜底 95353。
 - `services/payment`：封装待支付费用查询、详情页汇总和待支付列表分页，不复用旧项目合并支付和小程序收银台状态机。
 - `pages/order/list`：支持我寄的/我收的切换、时间范围、状态、付款方式筛选、关键字搜索、分页加载和跳详情；寄件待揽件订单在后端允许修改时展示“取消订单”，并跳转取消原因页处理；已签收、已退回、已取消、已作废、已失效等终态订单展示“删除”，成功后从当前列表移除。
 - `pages/order/list`：终态寄件订单支持“再来一单”，终态收件订单支持“一键回寄”；列表项会先读取订单详情，再生成寄件草稿，不从列表摘要字段拼凑下单数据。
+- `pages/order/list/components/OrderListSections.tsx`：拆出列表页头、寄/收件 tab、搜索、时间/状态/付款筛选和汇总条等纯展示区块，页面主文件不再承载筛选 JSX。
+- `pages/order/list/components/OrderListCards.tsx`：拆出订单卡片、列表空态和 loading 展示；页面主文件保留登录守卫、查询、删除、取消和再来一单流程编排。
 - `pages/order/detail`：按 `orderNumber` / `waybillNumber` 读取详情，展示状态、寄收信息、货物/付款/产品和轨迹列表。
 - `pages/order/detail`：已拆分公开轨迹模式和安全详情模式。仅有运单号、无订单上下文时只查公开轨迹；带订单号、角色或 `view=secure` 时才要求登录并读取安全详情。
 - `pages/order/detail`：安全详情模式下已接入取消订单动作。首期只在待揽件、有订单号且后端详情未显式禁止修改时展示“取消订单”，并跳转取消原因页处理。
 - `pages/order/detail`：安全详情模式下已接入终态订单删除动作，成功后回到订单列表；公开轨迹模式不展示删除，避免未登录轨迹页操作安全订单。
 - `pages/order/detail`：安全详情模式下已接入“再来一单/一键回寄”，由 `orderService.createExpressDraftFromOrderDetail` 将订单详情归一为新的寄件草稿，再通过 `expressDraftBridge` 带入寄件页；不会复用旧项目 Redux 重放状态。
 - `pages/order/detail`：安全详情模式下会按运单号查询最近一个月未核销费用，展示待支付金额提示；点击“去支付”先走 `shared/platform/payment.payWithApp`，当前因 App 原生支付能力未接入而统一降级提示。
+- `pages/order/detail/components/OrderDetailSections.tsx`：拆出头部、空态、轨迹、待支付提示、电子存根入口、运输信息和寄收信息等纯展示区块。
+- `pages/order/detail/components/OrderDetailActionSections.tsx`：拆出售后动作、底部动作和催单弹层展示；页面主文件保留动作处理和状态编排。
 - `pages/order/stub`：新增电子存根首期只读页，入口由订单详情的 `orderService.getStubEntry` 生成，页面通过 `orderService.queryDetail` 重新读取详情并消费 `OrderStubView`，展示寄收信息、货物明细、费用、订单编号和照片凭证分组。
-- `services/order/order.service.ts`：新增电子存根 VM，统一处理存根标题、单号、寄收件信息、号码脱敏、费用字段、结构化分区和后置能力提示；页面不直接拼旧项目 `orderService/doc` 巨石字段。
-- `services/order/order.service.ts`：新增货物补充 VM，解析 `goodsSize` 为尺寸详情，补充计费重量/计费方式，并按包装费查询 `packagingFee` 生成木包装/非木包装费用明细；包装费接口失败不会影响存根正文展示。
+- `services/order/order.stubView.ts`：统一处理存根标题、单号、寄收件信息、号码脱敏、基础费用字段、结构化分区和后置能力提示；页面不直接拼旧项目 `orderService/doc` 巨石字段。
+- `services/order/order.stubView.ts`：新增货物补充 VM，解析 `goodsSize` 为尺寸详情，补充计费重量/计费方式；包装费查询由 `order.stubFiles.ts` 承接，接口失败不会影响存根正文展示。
 - `pages/order/stub`：新增货物补充分区，展示尺寸详情和包装费用明细，不迁旧项目尺寸/包装底部弹窗状态机。
-- `services/order/order.service.ts`：新增照片凭证 VM，按运输中/已签收且有运单号的订单并发查询取货照片、复磅照片、送达照片、拍照签收照片、签回单、国补信息采集、拆包装、清点码货、贴码、家装完工、通电验机、双人派送、木包装、送新取旧和揽收拍照；单个图片接口失败不会影响存根正文展示。
-- `services/order/order.service.ts`：统一封装快递/零担增值服务图片 `imageScene` 映射，页面不需要知道 `queryWayBillImages`、`queryLtlWayBillImages` 或各业务 scene 常量。
+- `services/order/order.stubImages.ts`：新增照片凭证 VM，按运输中/已签收且有运单号的订单并发查询取货照片、复磅照片、送达照片、拍照签收照片、签回单、国补信息采集、拆包装、清点码货、贴码、家装完工、通电验机、双人派送、木包装、送新取旧和揽收拍照；单个图片接口失败不会影响存根正文展示。
+- `services/order/order.stubImages.ts`：统一封装快递/零担增值服务图片 `imageScene` 映射，页面不需要知道 `queryWayBillImages`、`queryLtlWayBillImages` 或各业务 scene 常量。
 - `pages/order/stub`：新增照片凭证分区，首期只展示远程缩略图和页面内大图预览，不调用小程序 `Taro.previewImage`、下载或保存相册能力。
-- `services/order/order.service.ts`：新增单据票证 VM，抽取详情中的 `fileCode/returnFileId`，查询电子合同状态并生成完成态合同 WebView 预览入口；状态文案和预览 URL 都收敛在订单 service。
+- `services/order/order.stubFiles.ts`：新增单据票证 VM，抽取详情中的 `fileCode/returnFileId`，查询电子合同状态并生成完成态合同 WebView 预览入口；状态文案和预览 URL 都收敛在存根文件模块。
 - `pages/order/stub`：新增单据票证分区，展示电子合同状态；合同完成时通过 `ORDER_STUB_CONTRACT_PREVIEW` 进入受控 RN WebView，不调用 `Taro.downloadFile` 或 `Taro.openDocument`。
 - `pages/order/detail`：安全详情模式下已接入在线客服，统一走 `shared/webview/appWeb.ts` 的 `ORDER_DETAIL_SERVICE` 来源和 RN WebView 白名单，不在页面散落 H5 URL。
-- `services/order/order.service.ts`：新增订单详情售后动作 VM，统一生成在线客服、投诉、在线理赔、去开票和修改运单入口，页面只按 `OrderDetailActionView` 渲染，不直接拼 H5 URL 或散落状态判断。
+- `services/order/order.detailActions.ts`：新增订单详情售后动作 VM，统一生成在线客服、投诉、在线理赔、去开票和修改运单入口，页面只按 `OrderDetailActionView` 渲染，不直接拼 H5 URL 或散落状态判断。
 - `pages/order/detail`：新增“售后服务”分区。催单在 App 内展示后端话术弹层，通知派送和拦截作废在 App 内二次确认后提交，联系营业部统一走 App 电话 facade，收件方式、评价、投诉、在线理赔和修改运单首期通过 RN WebView 承接受控 H5；去开票优先进入 App 原生发票中心；公开轨迹模式不展示售后动作。
 - `pages/order/cancel`：提供 App 原生取消原因选择和其他原因输入，提交时复用 `orderService.cancelOrder(orderNumber, reason)`，成功返回后列表/详情通过 `useDidShow` 刷新。
 - `pages/payment/list`：提供独立待支付运单页，支持我寄的/我收的切换、运单号搜索、分页、金额汇总、跳订单详情和支付入口降级；入口已接入我的页和订单列表。
@@ -653,9 +724,10 @@ APP_RUNTIME_CONFIG.omsChannel
 
 已落地边界：
 
-- `services/support/support.service.ts`：归一客服中心分组、入口类型、登录要求、WebView 来源、热线号码和 App 内路由，页面只消费 `SupportSectionView` / `SupportEntryView`。
-- `pages/support/center`：提供在线客服、95353 热线、投诉、在线理赔、收派范围、网点查询、价格时效和订单列表入口。
-- `shared/webview/appWeb.ts`：新增 `SUPPORT_ONLINE_SERVICE`、`SUPPORT_COMPLAINT`、`SUPPORT_CLAIM` 来源，继续走 HTTPS 白名单和统一 WebView 页面。
+- `services/support/support.api.ts`：封装配置中心 `graySwitch` 查询，当前用于体验调研配置。
+- `services/support/support.service.ts`：归一客服中心分组、入口类型、登录要求、WebView 来源、热线号码、体验调研配置和 App 内路由，页面只消费 `SupportSectionView` / `SupportEntryView`。
+- `pages/support/center`：提供在线客服、95353 热线、体验调研、投诉、在线理赔、收派范围、网点查询、价格时效和订单列表入口。
+- `shared/webview/appWeb.ts`：新增 `SUPPORT_ONLINE_SERVICE`、`SUPPORT_SURVEY`、`SUPPORT_COMPLAINT`、`SUPPORT_CLAIM` 来源，继续走 HTTPS 白名单和统一 WebView 页面。
 - 投诉/理赔点击时先做登录守卫，再按当前 `ECO_TOKEN`、`systemCode` 生成 H5 URL，避免未登录回跳携带空 token。
 - 热线拨打统一走 `shared/platform/phone.dialPhone`，不在页面直接调用小程序 `Taro.makePhoneCall`。
 - 首页“客服中心”和我的页“客服中心”已接入 `APP_ROUTES.supportCenter`；订单详情在线客服继续保留独立上下文入口。
@@ -663,6 +735,7 @@ APP_RUNTIME_CONFIG.omsChannel
 关键约束：
 
 - 客服中心页面本身不强制登录，热线和自助查询可直接访问；投诉、理赔和订单列表等敏感入口按动作单独触发登录守卫。
+- 体验调研入口由 `APP_SURVEY_CONFIG_KEY` 指向的配置中心 key 控制，默认 `app_survey_config`；配置缺失或网络失败时不展示入口，不影响客服中心基础能力。
 - 投诉/理赔首期仍由 H5 承接，不复制旧页面的自动登录、分享和埋点状态机。
 - 后续若接入 App 原生 IM、投诉进度或理赔进度，应继续从 `services/support` 扩展 VM，不在首页/我的页散落 H5 URL。
 
@@ -671,6 +744,7 @@ APP_RUNTIME_CONFIG.omsChannel
 | 能力 | 承接方式 |
 | --- | --- |
 | 在线客服 | `APP_RUNTIME_CONFIG.serviceWebURL` + RN WebView |
+| 体验调研 | `APP_SURVEY_CONFIG_KEY` 配置 URL + RN WebView |
 | 投诉 | `/depponmobile/complaint/list` + RN WebView |
 | 在线理赔 | `/depponmobile/h5/index#/claimPackagePages/index` + RN WebView |
 | 95353 热线 | `shared/platform/phone.dialPhone` |
@@ -723,19 +797,20 @@ APP_RUNTIME_CONFIG.omsChannel
 
 ## SignCode 首期切片
 
-签收码首期从旧项目 `pages/user/sign/index`、`pages/user/sign/auth` 和 `api/user.ts` 中抽取 App 可用能力，不迁小程序分享、`taro3-code` 小程序二维码生成；身份证实名核验已拆到 `pages/realname/center`。
+签收码首期从旧项目 `pages/user/sign/index`、`pages/user/sign/auth` 和 `api/user.ts` 中抽取 App 可用能力，不迁小程序分享和 `taro3-code` 小程序二维码生成；身份证实名核验已拆到 `pages/realname/center`。
 
 已落地边界：
 
 - `services/sign/sign.api.ts`：封装实名姓名是否存在、保存实名姓名和查询签收码三个接口。
-- `services/sign/sign.service.ts`：归一实名状态、签收码、签收人姓名、有效期文案和页面状态，页面只消费 `SignCodeView`。
+- `services/sign/sign.service.ts`：归一实名状态、签收码、签收二维码 payload、签收人姓名、有效期文案和页面状态，页面只消费 `SignCodeView`。
 - `pages/sign/code`：支持进入后自动校验实名状态；未登记实名时可填写 2-20 字符真实姓名并保存；已实名时可查询、刷新和复制签收码。
-- `pages/sign/code`：首期展示可复制文本签收码和风险提示，二维码图形展示后续由 App 端二维码组件接入。
+- `shared/components/QRCodeMatrix`：使用 App 显式依赖 `qrcode` 生成 QR 矩阵，再用 Taro `View` 渲染，不复用小程序 canvas/image 生成工具。
+- `pages/sign/code`：首期展示二维码、可复制文本签收码和风险提示。
 - `pages/mine` 和统一路由已接入 `APP_ROUTES.signCode`，签收码入口受登录守卫保护。
 
 关键约束：
 
-- 旧项目 `taro3-code/lib/weapp/utils/qrcode` 不进入 RN App；当前不引入小程序二维码依赖。
+- 旧项目 `taro3-code/lib/weapp/utils/qrcode` 不进入 RN App；二维码展示由 App 共享组件和显式依赖 `qrcode` 承接。
 - 签收码页面只处理实名签收姓名登记，不直接承接身份证实名核验。
 - 签收码复制走 `shared/platform/clipboard.copyTextToClipboard`，不在页面直接使用小程序专属 API。
 - 出示签收码属于确认收货授权动作，页面保留异常拒签风险提示。
@@ -750,7 +825,7 @@ APP_RUNTIME_CONFIG.omsChannel
 
 后置能力：
 
-- RN 二维码渲染、亮屏、防截屏等签收展示体验。
+- 亮屏、防截屏等签收展示体验。
 - 与身份证实名中心的前置状态提示联动。
 - 签收码分享、扫码签收结果回调和签收异常申诉。
 
@@ -846,14 +921,19 @@ APP_RUNTIME_CONFIG.omsChannel
 
 ## Invoice 首期切片
 
-发票模块首期从旧项目 `pages/invoice/index`、`pages/invoice/taxpayer`、`pages/invoice/apply`、`pages/invoice/preview` 和 `utils/invoice.ts` 中抽取 App 可用能力，普通运单电子票提交已按 RN service 分层接入，不迁旧页面里的支付、电子票下载、纸票邮寄地址修改和小程序扫码查询。
+发票模块首期从旧项目 `pages/invoice/index`、`pages/invoice/taxpayer`、`pages/invoice/apply`、`pages/invoice/preview` 和 `utils/invoice.ts` 中抽取 App 可用能力，普通运单电子票提交已按 RN service 分层接入，不迁旧页面里的支付、电子票下载、纸票邮寄地址修改和小程序扫码查询状态机。
 
 已落地边界：
 
 - `services/invoice/invoice.api.ts`：封装统一发票网关 `invoiceCommonService`，由业务 path 区分可开票运单、开票历史、抬头查询和抬头维护。
-- `services/invoice/invoice.service.ts`：归一可开票运单状态、发票历史状态、发票类型、金额、时间、抬头展示、包含运单和电子票预览 VM，并承接抬头校验、保存、删除、企业抬头联想和发送邮箱。
+- `services/invoice/invoice.history.ts`：拆出开票历史状态、发票类型、时间、包含运单和电子票预览 VM 归一。
+- `services/invoice/invoice.taxpayer.ts`：拆出抬头展示归一、抬头表单默认值、保存 payload 和抬头校验规则。
+- `services/invoice/invoice.apply.ts`：拆出普通运单电子票申请预览、邮箱校验和提交 payload 组装。
+- `services/invoice/invoice.shared.ts`：沉淀发票域通用文本、金额、长度和时间格式化工具。
+- `services/invoice/invoice.service.ts`：保留发票网关 API 编排、分页查询、提交、预览、发送邮箱、抬头匹配、保存和删除。
 - `services/invoice/order.mapper.ts` 和 `orderSearch.service.ts`：拆出可开票运单映射、运单号搜索、手机号/短信身份校验，不继续膨胀主 `invoice.service.ts`。
-- `pages/invoice/index`：提供“可开票 / 开票历史 / 发票抬头”三个 tab，支持可开票运单分页、按运单号搜索可开票记录、手机号/短信身份校验、近一年开票历史分页、按运单号查询历史和抬头列表查看。
+- `pages/invoice/index`：提供“可开票 / 开票历史 / 发票抬头”三个 tab，支持可开票运单分页、按运单号搜索可开票记录、扫码填入运单号、手机号/短信身份校验、近一年开票历史分页、按运单号查询历史和抬头列表查看。
+- `pages/invoice/index/components/InvoiceCenterSections.tsx`：拆出页头、tab、搜索条、可开票列表、历史列表、抬头列表、空态和加载态展示；页面主文件保留请求、鉴权、身份校验和跳转编排。
 - `pages/invoice/taxpayer/index`：支持抬头列表管理、新增、编辑、删除和默认抬头设置。
 - `pages/invoice/taxpayer/edit`：支持个人/单位抬头表单、单位抬头联想补全、税号格式校验和保存。
 - `pages/invoice/apply`：从单个可开票运单进入，支持电子普票/电子专票选择、抬头选择、接收邮箱、货物单位和备注，生成前端申请预览并调用 `addTaskInfoByEle` 提交普通运单电子票申请。
@@ -865,6 +945,7 @@ APP_RUNTIME_CONFIG.omsChannel
 
 - 发票首期只承接普通运单电子票提交，提交 payload 由 `services/invoice` 统一组装，页面不直接拼发票网关字段。
 - 可开票运单号搜索复用 `services/invoice` 的订单 VM；后端要求身份校验时在 RN 内弹层承接手机后四位、完整电话或短信验证码，不在页面直接解析发票网关字段。
+- 发票中心扫码只复用 `shared/platform/scan` 分类后的运单号；云打印码、寄件业务二维码、短链和非德邦二维码不会进入发票查询。
 - 新增发票能力需按 `rule.md` 的拆分建议放入 mapper/service/component，不把接口编排、字段映射和弹层 UI 继续堆进单个页面或主 service。
 - 申请页登录回跳保留当前运单参数；抬头列表每次 `useDidShow` 刷新，便于从抬头管理返回后继续申请。
 - 申请链路后续需要继续接入支付单、E 卡开票、纸票邮寄地址和电子票下载能力，不复用旧页面巨石状态机。
@@ -909,19 +990,21 @@ APP_RUNTIME_CONFIG.omsChannel
 - `pnpm --filter com.deppon.app run check:rn-boundaries`
 - `pnpm --filter com.deppon.app run check:routes`
 - `pnpm --filter com.deppon.app run check:module-size`
+- `pnpm --filter com.deppon.app run check:runtime-config`
+- `pnpm --filter com.deppon.app run check:business-rules`
 - `pnpm --filter com.deppon.app build`
-- `pnpm verify:app` 可作为后续同等验证入口，会串行执行 `typecheck`、`lint`、`check:rn-boundaries`、`check:routes`、`check:module-size` 和 `build`。
+- `pnpm verify:app` 可作为后续同等验证入口，会串行执行 `typecheck`、`lint`、`check:rn-boundaries`、`check:routes`、`check:module-size`、`check:runtime-config`、`check:business-rules` 和 `build`。
 
 RN build 仍会输出 Sass legacy API、stylelint CommonJS API、React Native CLI 缓存版本和 Node `DEP0190` 提醒，当前均不是阻塞错误。
 
 原生编译环境记录：
 
-- 已尝试执行 Android `./gradlew.bat :app:assembleDebug`。
 - 已新增 `pnpm check:app-native-env` 检查原生编译前置条件。
-- 当前机器未设置 `JAVA_HOME`，PATH 中也没有 `java/javac`，因此 Android 原生编译尚未完成验证。
-- 当前 `D:\Android\Sdk` 存在，且 `platforms/android-34`、`build-tools/34.0.0`、`platform-tools/adb.exe`、`cmdline-tools/latest/bin/sdkmanager.bat` 均可找到。
+- 当前机器 `JAVA_HOME=D:\Android\jdk-17`，`java`、Android SDK、`platforms/android-34`、`build-tools/34.0.0`、`platform-tools/adb.exe`、`cmdline-tools/latest/bin/sdkmanager.bat` 和 Gradle wrapper 均已通过 `check:native-env`。
+- Android `gradle :app:assembleDebug --dry-run --console=plain --no-daemon` 已通过，Gradle 配置阶段能识别 Taro RN/Expo 原生模块和 Android 任务图。
+- 完整 Android `assembleDebug` 在当前工具时限内未获得完成结果，后续仍需在本机或 CI 打包机执行完整 debug/release 构建。
 - 当前系统是 Windows，iOS 构建需要 macOS/Xcode/CocoaPods 环境，因此本机只记录为跳过。
-- 后续补齐 JDK 后，需要继续执行 Android debug/release 构建；iOS 构建也需要在 macOS/Xcode/CocoaPods 环境下验证。
+- iOS 构建仍需在 macOS/Xcode/CocoaPods 环境下验证。
 
 建议目录边界：
 
@@ -987,7 +1070,7 @@ src/
 首页 -> 登录/用户态 -> 寄件下单 MVP -> 下单成功 -> 查件/订单列表 -> 订单详情基础 -> 我的
 ```
 
-- 首页：按 App 信息架构重建常用服务、寄件入口、查件入口、会员入口。
+- 首页：按 App 信息架构重建常用服务、寄件入口、查件入口、订单中心、会员入口。
 - 登录：确认 App 登录方式后重写登录服务和用户状态；优先接 `queryUserInfo`、`checkEcoToken`、`logout`、短信发送和登录接口。
 - 寄件：拆解参考项目中的寄件大页面，按表单步骤和领域服务重构；优先接联系人、地址解析、价格时效、产品推荐、接货时间、货物名称、保价和寄件协议。
 - 查件/订单：先迁订单列表、运单详情和轨迹，再迁取消、删除、修改、售后和评价。
@@ -1089,7 +1172,8 @@ pages: [
 - `pnpm build:app` 能产出 RN bundle。
 - `pnpm check:app-boundaries` 不允许 App 源码直接引用小程序专属 API。
 - `pnpm check:app-routes` 不允许路由注册表和 Taro 页面列表、主导航、登录守卫脱节。
-- `pnpm check:app-module-size` 不允许新增页面/service 巨石，也不允许既有超大模块继续膨胀。
+- `pnpm check:app-module-size` 不允许新增页面/service 无理由膨胀；自然复杂的页面可以保留页面级编排，但必须记录冻结预算和原因。
 - Android/iOS 工程能按目标包名编译。
 - 页面不依赖小程序专属运行时。
 - 每个迁移模块都有清晰的 API、状态、页面、原生能力边界。
+- 新增页面样式优先复用 `src/styles` token 和通用类，既有页面按业务切片逐步迁移。

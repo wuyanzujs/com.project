@@ -1,4 +1,8 @@
 import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
+import {
+  appendRouteQuery,
+  createRouteQuery
+} from '../../shared/navigation/routeUrl'
 import { getCurrentEcoToken } from '../auth'
 
 import type { OrderDetail, OrderRole } from './types'
@@ -8,27 +12,14 @@ const ORDER_DETAIL_WEB_PARAM_SOURCE = 'APP_ORDER_DETAIL'
 export const DEFAULT_SERVICE_PHONE = '95353'
 
 export function createQuery(params: Record<string, string>) {
-  return Object.entries(params)
-    .filter(([, value]) => value !== '')
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
-}
-
-function appendQuery(path: string, params: Record<string, string>) {
-  const query = createQuery(params)
-
-  if (!query) {
-    return path
-  }
-
-  return `${path}${path.includes('?') ? '&' : '?'}${query}`
+  return createRouteQuery(params)
 }
 
 export function createOrderDetailWebUri(
   path: string,
   params: Record<string, string> = {}
 ) {
-  return appendQuery(path, {
+  return appendRouteQuery(path, {
     sonSource: ORDER_DETAIL_WEB_PARAM_SOURCE,
     ecoToken: getCurrentEcoToken(),
     pageSource: APP_RUNTIME_CONFIG.systemCode,
@@ -37,9 +28,7 @@ export function createOrderDetailWebUri(
 }
 
 export function createRouteUrl(route: string, params: Record<string, string>) {
-  const query = createQuery(params)
-
-  return query ? `${route}?${query}` : route
+  return appendRouteQuery(route, params)
 }
 
 export function getOrderTextField(order: OrderDetail, keys: string[]) {

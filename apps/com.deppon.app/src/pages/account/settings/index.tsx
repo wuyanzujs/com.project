@@ -13,13 +13,14 @@ import {
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 
 import type { AccountOverviewView } from '../../../services/account'
+import type { AppRoutePath } from '../../../shared/navigation/routes'
 
 import './index.scss'
 
 interface AccountEntry {
   title: string
   summary: string
-  route?: string
+  route: AppRoutePath
   login?: boolean
 }
 
@@ -88,11 +89,6 @@ const AccountSettingsPage = () => {
   }
 
   const handleEntry = (entry: AccountEntry) => {
-    if (!entry.route) {
-      showToast('该能力后续接入')
-      return
-    }
-
     navigateToAppRoute(entry.route, {
       login: entry.login
     })

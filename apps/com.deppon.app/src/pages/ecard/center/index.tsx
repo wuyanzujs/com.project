@@ -13,15 +13,18 @@ import type {
   ECardOverviewView,
   ECardTargetPage
 } from '../../../services/ecard'
+import type { AppWebSource } from '../../../shared/webview/appWeb'
 
 import './index.scss'
 
-const ECARD_ACTIONS: Array<{
+interface ECardAction {
   title: string
   summary: string
   targetPage: ECardTargetPage
-  source: string
-}> = [
+  source: AppWebSource
+}
+
+const ECARD_ACTIONS: ECardAction[] = [
   {
     title: '进入 E 卡',
     summary: '开通、管理和查看储值卡',
@@ -88,7 +91,7 @@ const ECardCenterPage = () => {
 
   const handleOpenECard = async (
     targetPage: ECardTargetPage,
-    source: string,
+    source: AppWebSource,
     title: string
   ) => {
     if (!ensureECardAccess() || opening) {

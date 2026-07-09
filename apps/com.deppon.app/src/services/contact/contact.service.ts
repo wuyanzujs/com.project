@@ -35,6 +35,22 @@ type ContactAddressParts = Pick<
   'province' | 'city' | 'county' | 'address' | 'town'
 >
 
+function normalizeAddressPart(value?: string | null) {
+  const text = (value ?? '').trim()
+
+  return text && text !== 'null' ? text : ''
+}
+
+function removeRepeatedPrefix(value: string, prefix: string) {
+  let nextValue = value
+
+  while (prefix && nextValue.startsWith(prefix)) {
+    nextValue = nextValue.slice(prefix.length)
+  }
+
+  return nextValue
+}
+
 export function getContactFullAddress(contact: ContactAddressParts) {
   return [
     contact.province,
@@ -52,11 +68,11 @@ export function parseAddressHint(raw: string): ContactAddressHint {
     raw.split(',')
 
   return {
-    province,
-    city,
-    county,
-    town,
-    address: addressParts.join(','),
+    province: normalizeAddressPart(province),
+    city: normalizeAddressPart(city),
+    county: normalizeAddressPart(county),
+    town: normalizeAddressPart(town),
+    address: normalizeAddressPart(addressParts.join(',')),
     raw
   }
 }
@@ -73,9 +89,9 @@ function parseProCityName(value?: string | null) {
   const [province = '', city = '', county = ''] = value.split('-')
 
   return {
-    province,
-    city,
-    county
+    province: normalizeAddressPart(province),
+    city: normalizeAddressPart(city),
+    county: normalizeAddressPart(county)
   }
 }
 
@@ -89,20 +105,25 @@ export function applyAnalysisToContact(
 ): Contact {
   const region = parseProCityName(analysis.proCityName)
   const telephone = normalizeAnalysisPhone(analysis.telephone)
+  const town = normalizeAddressPart(analysis.town)
+  const detailAddress = removeRepeatedPrefix(
+    normalizeAddressPart(analysis.address),
+    town
+  )
   const canFillRegion = !!(region.province || region.city || region.county)
   const address = canFillRegion
-    ? analysis.address || contact.address
-    : `${analysis.proCityName || ''}${analysis.town || ''}${analysis.address || ''}`
+    ? detailAddress || contact.address
+    : `${normalizeAddressPart(analysis.proCityName)}${town}${detailAddress}`
 
   return {
     ...contact,
-    name: analysis.name || contact.name,
+    name: normalizeAddressPart(analysis.name) || contact.name,
     telephone: telephone || contact.telephone,
-    extension: analysis.extension || contact.extension,
+    extension: normalizeAddressPart(analysis.extension) || contact.extension,
     province: region.province || contact.province,
     city: region.city || contact.city,
     county: region.county || contact.county,
-    town: analysis.town || contact.town,
+    town: town || contact.town,
     address: address || contact.address
   }
 }

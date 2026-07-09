@@ -8,6 +8,7 @@ import { invoiceService } from '../../../services/invoice'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type {
   InvoiceApplyBillCategory,
@@ -176,11 +177,16 @@ const InvoiceApplyPage = () => {
         title: '提交成功，请在开票历史查看进度',
         icon: 'none'
       })
-      navigateToAppRoute(`${APP_ROUTES.invoiceCenter}?tab=history`, {
-        login: true,
-        replace: true,
-        message: false
-      })
+      navigateToAppRoute(
+        createAppRouteUrl(APP_ROUTES.invoiceCenter, {
+          tab: 'history'
+        }),
+        {
+          login: true,
+          replace: true,
+          message: false
+        }
+      )
     } finally {
       setSubmitting(false)
     }

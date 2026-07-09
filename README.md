@@ -19,8 +19,21 @@ pnpm verify:app
 pnpm check:app-boundaries
 pnpm check:app-routes
 pnpm check:app-module-size
+pnpm check:app-runtime-config
 pnpm check:app-native-env
 ```
+
+## CI
+
+`.github/workflows/app-quality.yml` 会在 push 和 pull request 时执行：
+
+- `pnpm install --frozen-lockfile`
+- `pnpm verify:app`
+- `pnpm check:app-native-env`
+
+后续业务迁移必须保持这条质量入口通过，再继续接入 Android/iOS 打包发布。
+
+RN-only 边界由 `pnpm check:app-boundaries` 守住：业务代码不能直接回引小程序 API、H5 平台插件、`APP_ROUTES.web` 或 RN `NativeModules/Linking/PermissionsAndroid` 等原生能力，相关能力先进入 `apps/com.deppon.app/src/shared/platform` 或后续 `shared/native`。
 
 ## 目录
 

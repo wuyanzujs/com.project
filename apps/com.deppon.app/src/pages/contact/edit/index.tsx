@@ -11,6 +11,7 @@ import {
 } from '../../../services/contact'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type { Contact } from '../../../services/contact'
 
@@ -18,12 +19,6 @@ import './index.scss'
 
 function getRoleByTarget(target: 'sender' | 'consignee'): Contact['type'] {
   return target === 'sender' ? 0 : 1
-}
-
-function createQuery(params: Record<string, string>) {
-  return Object.entries(params)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
 }
 
 const ContactEditPage = () => {
@@ -43,7 +38,7 @@ const ContactEditPage = () => {
   const [saving, setSaving] = useState(false)
   const validation = useMemo(() => validateContact(contact), [contact])
   const contactEditUrl = useMemo(
-    () => `${APP_ROUTES.contactEdit}?${createQuery(selectionParams)}`,
+    () => createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams),
     [selectionParams]
   )
   const ensureContactEditAccess = () =>

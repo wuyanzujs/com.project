@@ -1,5 +1,6 @@
 import { ecardApi } from './ecard.api'
 import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
+import { createServiceFailure } from '../serviceResponse'
 
 import type {
   ECardLinkRequest,
@@ -9,14 +10,6 @@ import type {
   ECardType
 } from './types'
 import type { DepponResponse } from '../../request/deppon'
-
-function createFailure<TResult>(message: string): DepponResponse<TResult> {
-  return {
-    status: false,
-    message,
-    result: null
-  }
-}
 
 function toFiniteNumber(value: unknown) {
   const numberValue = Number(value)
@@ -109,7 +102,9 @@ export const ecardService = {
     )
 
     if (!response.status || !response.result?.form) {
-      return createFailure<string>(response.message || '暂未获取到 E 卡页面')
+      return createServiceFailure<string>(
+        response.message || '暂未获取到 E 卡页面'
+      )
     }
 
     return {
@@ -124,7 +119,9 @@ export const ecardService = {
     })
 
     if (!response.status || !response.result?.form) {
-      return createFailure<string>(response.message || '暂未获取到 E 卡页面')
+      return createServiceFailure<string>(
+        response.message || '暂未获取到 E 卡页面'
+      )
     }
 
     return {

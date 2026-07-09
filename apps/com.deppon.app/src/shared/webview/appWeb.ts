@@ -1,8 +1,9 @@
 import { APP_RUNTIME_CONFIG } from '../config/runtime'
 import { APP_ROUTES } from '../navigation/routes'
+import { createAppRouteUrl } from '../navigation/routeUrl'
 
 export interface AppWebRouteOptions {
-  source: string
+  source: AppWebSource
   uri?: string
   title?: string
   auth?: boolean
@@ -23,7 +24,7 @@ interface KnownWebTarget {
   auth?: boolean
 }
 
-const KNOWN_WEB_TARGETS: Record<string, KnownWebTarget> = {
+export const APP_WEB_TARGETS = {
   AUTH_LOGIN_SERVICE_PROTOCOL: {
     title: '服务协议',
     url: '/depponmobile/protocol/service',
@@ -83,6 +84,11 @@ const KNOWN_WEB_TARGETS: Record<string, KnownWebTarget> = {
   SUPPORT_ONLINE_SERVICE: {
     title: '在线客服',
     url: APP_RUNTIME_CONFIG.serviceWebURL
+  },
+  SUPPORT_SURVEY: {
+    title: '体验调研',
+    url: '',
+    auth: false
   },
   SUPPORT_COMPLAINT: {
     title: '投诉',
@@ -153,13 +159,12 @@ const KNOWN_WEB_TARGETS: Record<string, KnownWebTarget> = {
     title: '已签署免赔协议',
     url: '/depponmobile/protocol/deductibleAgreementList'
   }
-}
+} as const satisfies Record<string, KnownWebTarget>
 
-function createQuery(params: Record<string, string>) {
-  return Object.entries(params)
-    .filter(([, value]) => value !== '')
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
+export type AppWebSource = keyof typeof APP_WEB_TARGETS
+
+export function isAppWebSource(source: string): source is AppWebSource {
+  return source in APP_WEB_TARGETS
 }
 
 function decodeRouteValue(value?: string) {
@@ -204,7 +209,7 @@ export function isAllowedAppWebUrl(url: string) {
 }
 
 export function createAppWebUrl(options: AppWebRouteOptions) {
-  const knownTarget = KNOWN_WEB_TARGETS[options.source]
+  const knownTarget: KnownWebTarget = APP_WEB_TARGETS[options.source]
   const uri = options.uri || knownTarget?.url || ''
   const title = options.title || knownTarget?.title || ''
   const auth =
@@ -212,21 +217,21 @@ export function createAppWebUrl(options: AppWebRouteOptions) {
       ? knownTarget?.auth !== false
       : Boolean(options.auth)
 
-  const query = createQuery({
+  return createAppRouteUrl(APP_ROUTES.web, {
     source: options.source,
     uri,
     title,
     auth: auth ? 'Y' : 'N'
   })
-
-  return query ? `${APP_ROUTES.web}?${query}` : APP_ROUTES.web
 }
 
 export function resolveAppWebTarget(
   params: Partial<Record<string, string>>
 ): AppWebTarget {
   const source = decodeRouteValue(params.source) || 'UNKNOWN'
-  const knownTarget = KNOWN_WEB_TARGETS[source]
+  const knownTarget: KnownWebTarget | null = isAppWebSource(source)
+    ? APP_WEB_TARGETS[source]
+    : null
   const routeUri = decodeRouteValue(params.uri || params.url)
   const rawUrl = routeUri || knownTarget?.url || ''
   const url = toAbsoluteWebUrl(rawUrl)

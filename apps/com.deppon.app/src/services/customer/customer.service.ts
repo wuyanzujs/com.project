@@ -1,15 +1,8 @@
 import { customerApi } from './customer.api'
+import { createServiceFailure } from '../serviceResponse'
 
 import type { CustomerCenterView, CustomerInfoRaw } from './types'
 import type { DepponResponse } from '../../request/deppon'
-
-function createFailure<TResult>(message: string): DepponResponse<TResult> {
-  return {
-    status: false,
-    message,
-    result: null
-  }
-}
 
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
@@ -72,7 +65,7 @@ export const customerService = {
     const response = await customerApi.queryCustomerInfo(false)
 
     if (!response.status) {
-      return createFailure(response.message || '暂未获取到客户信息')
+      return createServiceFailure(response.message || '暂未获取到客户信息')
     }
 
     return {

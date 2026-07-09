@@ -1,12 +1,13 @@
 import { Text, View } from '@tarojs/components'
 
+import type { AppRoutePath } from '../../../../shared/navigation/routes'
 import type { HomeQuickAction } from '../../home.data'
 
 import './index.scss'
 
 interface MenuProps {
   actions: HomeQuickAction[]
-  onSelect: (url: string) => void
+  onSelect: (url: AppRoutePath) => void
 }
 
 const Menu = ({ actions, onSelect }: MenuProps) => {

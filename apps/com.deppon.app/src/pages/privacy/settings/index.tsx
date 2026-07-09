@@ -11,10 +11,17 @@ import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
 import type { PrivacyStatusView } from '../../../services/privacy'
+import type { AppWebSource } from '../../../shared/webview/appWeb'
 
 import './index.scss'
 
-const PRIVACY_LINKS = [
+interface PrivacyLink {
+  title: string
+  summary: string
+  source: AppWebSource
+}
+
+const PRIVACY_LINKS: PrivacyLink[] = [
   {
     title: '隐私政策',
     summary: '查看德邦快递隐私政策全文',
@@ -92,7 +99,7 @@ const PrivacySettingsPage = () => {
     }
   })
 
-  const handleOpenLink = (source: string) => {
+  const handleOpenLink = (source: AppWebSource) => {
     navigateToAppRoute(createAppWebUrl({ source }))
   }
 

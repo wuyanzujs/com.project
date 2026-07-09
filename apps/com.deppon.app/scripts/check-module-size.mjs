@@ -14,16 +14,50 @@ const defaultBudgets = {
 }
 
 const legacyBudgets = new Map([
-  ['src/pages/express/index.tsx', 750],
-  ['src/pages/order/detail/index.tsx', 1190],
-  ['src/pages/invoice/index/index.tsx', 950],
-  ['src/pages/order/list/index.tsx', 685],
-  ['src/pages/order/stub/index.tsx', 565],
-  ['src/pages/query/price/index.tsx', 465],
-  ['src/services/order/order.service.ts', 1675],
-  ['src/services/express/express.service.ts', 930],
-  ['src/services/invoice/invoice.service.ts', 810],
-  ['src/services/query/query.service.ts', 585]
+  [
+    'src/pages/express/index.tsx',
+    {
+      max: 750,
+      reason: '寄件页承载页面级表单编排，当前冻结体量，避免为了行数机械拆分。'
+    }
+  ],
+  [
+    'src/pages/order/detail/index.tsx',
+    {
+      max: 900,
+      reason:
+        '订单详情页同时承接安全详情、公开轨迹、催单弹层和动作承接流程，当前冻结体量，避免为了行数机械拆分。'
+    }
+  ],
+  [
+    'src/pages/invoice/index/index.tsx',
+    {
+      max: 780,
+      reason:
+        '发票中心页承接三个 tab、运单搜索、身份校验弹层和扫码搜索的页面级流程，当前冻结体量。'
+    }
+  ],
+  [
+    'src/pages/order/stub/index.tsx',
+    {
+      max: 565,
+      reason: '电子存根页以只读分区展示为主，当前冻结体量。'
+    }
+  ],
+  [
+    'src/pages/query/price/index.tsx',
+    {
+      max: 465,
+      reason: '价格时效页包含查询表单和结果承接，当前冻结体量。'
+    }
+  ],
+  [
+    'src/services/query/query.service.ts',
+    {
+      max: 585,
+      reason: '查询域 service 覆盖多个工具型查询入口，当前冻结体量。'
+    }
+  ]
 ])
 
 function toPosixPath(filePath) {
@@ -96,11 +130,12 @@ const violations = []
 for (const filePath of checkedRoots.flatMap(walkFiles)) {
   const relativePath = toPosixPath(path.relative(appRoot, filePath))
   const lineCount = countLines(readFileSync(filePath, 'utf8'))
-  const legacyMax = legacyBudgets.get(relativePath)
-  const budget = legacyMax
+  const legacyBudget = legacyBudgets.get(relativePath)
+  const budget = legacyBudget
     ? {
-        max: legacyMax,
-        kind: 'legacy'
+        max: legacyBudget.max,
+        kind: 'documented',
+        reason: legacyBudget.reason
       }
     : getDefaultBudget(relativePath)
 
@@ -109,7 +144,8 @@ for (const filePath of checkedRoots.flatMap(walkFiles)) {
       relativePath,
       lineCount,
       max: budget.max,
-      kind: budget.kind
+      kind: budget.kind,
+      reason: budget.reason
     })
   }
 }
@@ -120,8 +156,13 @@ if (violations.length) {
   for (const item of violations.sort((a, b) => b.lineCount - a.lineCount)) {
     console.error(
       `- ${item.relativePath}: ${item.lineCount} lines > ${item.max} (${item.kind}). ` +
-        '请拆到 components、mapper、rules、useCases 或独立 service 后再继续。'
+        '请优先抽离有明确职责边界的 components、mapper、rules、useCases 或独立 service；' +
+        '如果页面确属自然复杂，请先记录冻结预算和原因。'
     )
+
+    if (item.reason) {
+      console.error(`  当前冻结原因：${item.reason}`)
+    }
   }
 
   process.exit(1)

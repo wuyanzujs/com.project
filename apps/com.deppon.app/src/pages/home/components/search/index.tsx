@@ -3,20 +3,13 @@ import Taro from '@tarojs/taro'
 
 import { useState } from 'react'
 
+import { navigateToAppRoute } from '../../../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../../shared/navigation/routeUrl'
 import { getNativeCapabilityErrorMessage } from '../../../../shared/platform/capabilities'
-import {
-  ScanCodeParseError,
-  scanWaybillCode
-} from '../../../../shared/platform/scan'
+import { scanAppCode } from '../../../../shared/platform/scan'
 
 import './index.scss'
-
-function createQuery(params: Record<string, string>) {
-  return Object.entries(params)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&')
-}
 
 function normalizeWaybillNumber(value: string) {
   return value.replace(/\s/g, '').toUpperCase()
@@ -40,12 +33,12 @@ const Search = () => {
       return
     }
 
-    Taro.navigateTo({
-      url: `${APP_ROUTES.orderDetail}?${createQuery({
+    navigateToAppRoute(
+      createAppRouteUrl(APP_ROUTES.orderDetail, {
         waybillNumber,
         source
-      })}`
-    })
+      })
+    )
   }
 
   const handleSearch = () => {
@@ -54,16 +47,34 @@ const Search = () => {
 
   const handleScan = async () => {
     try {
-      const result = await scanWaybillCode('HOME_SEARCH')
+      const result = await scanAppCode('HOME_SEARCH')
 
-      setKeyword(result.waybillNumber)
-      navigateToWaybillDetail(result.waybillNumber, 'HOME_SCAN')
+      if (result.kind === 'waybill') {
+        setKeyword(result.waybillNumber)
+        navigateToWaybillDetail(result.waybillNumber, 'HOME_SCAN')
+        return
+      }
+
+      if (result.kind === 'printCode') {
+        navigateToAppRoute(
+          createAppRouteUrl(APP_ROUTES.printCenter, {
+            source: 'HOME_SCAN',
+            printId: result.printId
+          }),
+          {
+            message: '请先登录后使用面单打印'
+          }
+        )
+        return
+      }
+
+      Taro.showToast({
+        title: result.message,
+        icon: 'none'
+      })
     } catch (error) {
       Taro.showToast({
-        title:
-          error instanceof ScanCodeParseError
-            ? error.message
-            : getNativeCapabilityErrorMessage(error),
+        title: getNativeCapabilityErrorMessage(error),
         icon: 'none'
       })
     }
