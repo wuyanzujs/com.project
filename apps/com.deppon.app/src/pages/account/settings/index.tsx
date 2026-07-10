@@ -11,20 +11,29 @@ import {
   hasValidSession
 } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
 import type { AccountOverviewView } from '../../../services/account'
 import type { AppRoutePath } from '../../../shared/navigation/routes'
+import type { AppWebSource } from '../../../shared/webview/appWeb'
 
 import './index.scss'
 
 interface AccountEntry {
   title: string
   summary: string
-  route: AppRoutePath
+  route?: AppRoutePath
+  webSource?: AppWebSource
   login?: boolean
 }
 
 const ACCOUNT_ENTRIES: AccountEntry[] = [
+  {
+    title: '偏好设置',
+    summary: '收件偏好、账号偏好和中心设置由 H5 承接',
+    webSource: 'ACCOUNT_PREFERENCES',
+    login: true
+  },
   {
     title: '隐私设置',
     summary: '查看协议、个人信息清单和权限调用清单',
@@ -89,6 +98,17 @@ const AccountSettingsPage = () => {
   }
 
   const handleEntry = (entry: AccountEntry) => {
+    if (entry.webSource) {
+      navigateToAppRoute(createAppWebUrl({ source: entry.webSource }), {
+        login: entry.login
+      })
+      return
+    }
+
+    if (!entry.route) {
+      return
+    }
+
     navigateToAppRoute(entry.route, {
       login: entry.login
     })

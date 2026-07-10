@@ -2,7 +2,8 @@ import type { Contact } from './types'
 
 export type ContactSelectionTarget = 'sender' | 'consignee'
 export type ContactSelectionMode = 'select' | 'manage'
-export type ContactSelectionSource = 'EXPRESS' | 'QUERY_PRICE'
+export type ContactSelectionSource =
+  'EXPRESS' | 'QUERY_PRICE' | 'INVOICE_DETAIL'
 export type ContactSelectionReturnDelta = '1' | '2'
 
 export interface ContactSelectionParams {
@@ -15,6 +16,7 @@ export interface ContactSelectionParams {
 
 export interface ContactSelectionResult {
   target: ContactSelectionTarget
+  source: ContactSelectionSource
   contact: Contact
   selectedAt: number
 }
@@ -35,7 +37,9 @@ function isContactSelectionMode(value: unknown): value is ContactSelectionMode {
 function isContactSelectionSource(
   value: unknown
 ): value is ContactSelectionSource {
-  return value === 'EXPRESS' || value === 'QUERY_PRICE'
+  return (
+    value === 'EXPRESS' || value === 'QUERY_PRICE' || value === 'INVOICE_DETAIL'
+  )
 }
 
 function isContactSelectionReturnDelta(
@@ -67,27 +71,41 @@ export const contactSelection = {
       target: isContactSelectionTarget(params.target)
         ? params.target
         : 'sender',
-      source: isContactSelectionSource(params.source) ? params.source : 'EXPRESS',
+      source: isContactSelectionSource(params.source)
+        ? params.source
+        : 'EXPRESS',
       returnDelta: isContactSelectionReturnDelta(params.returnDelta)
         ? params.returnDelta
         : '2'
     }
   },
 
-  select(target: ContactSelectionTarget, contact: Contact) {
+  select(
+    target: ContactSelectionTarget,
+    contact: Contact,
+    source: ContactSelectionSource = 'EXPRESS'
+  ) {
     pendingSelection = {
       target,
+      source,
       contact,
       selectedAt: Date.now()
     }
   },
 
-  consumeSelection(target?: ContactSelectionTarget) {
+  consumeSelection(
+    target?: ContactSelectionTarget,
+    source?: ContactSelectionSource
+  ) {
     if (!pendingSelection) {
       return null
     }
 
     if (target && pendingSelection.target !== target) {
+      return null
+    }
+
+    if (source && pendingSelection.source !== source) {
       return null
     }
 

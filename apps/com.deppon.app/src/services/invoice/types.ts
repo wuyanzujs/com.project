@@ -10,15 +10,21 @@ export type InvoicePath =
   | 'sendCheckCode'
   | 'checkVerificationCode'
   | 'addTaskInfoByEle'
+  | 'prepayCardQueryByCustomerCode'
+  | 'addPrepayCardTask'
   | 'queryInvoiceHistory'
   | 'queryApplyByWayBillNo'
   | 'lookInvoice'
   | 'sendEmail'
   | 'queryContainWaybill'
+  | 'toRedRush'
+  | 'cancelInvoiceApply'
+  | 'alterSendAdress'
 
-export type InvoiceTab = 'orders' | 'history' | 'taxpayers'
+export type InvoiceTab = 'orders' | 'ecards' | 'history' | 'taxpayers'
 export type InvoiceStatusClass = 'Process' | 'Cancel' | 'Error' | 'Success'
-export type InvoiceBillCategory = '01' | '02' | '06' | '07' | '13' | '14' | string
+export type InvoiceBillCategory =
+  '01' | '02' | '06' | '07' | '13' | '14' | string
 export type InvoiceApplyBillCategory = '06' | '13'
 export type InvoiceTaxpayerType = '0' | '1'
 
@@ -204,6 +210,9 @@ export interface InvoiceHistoryRaw {
   id: number
   acceptTinName?: string
   acceptTinCode?: string
+  acceptCustomer?: string
+  acceptPhone?: string
+  acceptAddress?: string
   applyNo?: string
   applyTime?: number
   billAmount?: number
@@ -228,6 +237,8 @@ export interface InvoiceHistoryView {
   title: string
   taxNumber: string
   amount: number
+  statusCode: number
+  billCategory: InvoiceBillCategory | ''
   typeText: string
   statusText: string
   statusClass: InvoiceStatusClass
@@ -236,6 +247,16 @@ export interface InvoiceHistoryView {
   remark: string
   previewUrl: string
   canPreview: boolean
+  canSendEmail: boolean
+  canCancel: boolean
+  canReverse: boolean
+  canModifyAddress: boolean
+  contactName: string
+  contactPhone: string
+  contactProvince: string
+  contactCity: string
+  contactCounty: string
+  contactAddress: string
 }
 
 export interface InvoiceHistoryWaybillRequest {
@@ -257,10 +278,45 @@ export interface InvoiceListResult<TItem> {
   totalPage: number
 }
 
+export interface InvoiceECardRaw {
+  id?: number
+  payNo?: string
+  orderNo?: string
+  modifTime?: number
+  unbillAmount?: number
+  cashAmount?: number
+  cashAmountTime?: number
+  chargeAmount?: number
+  chargeAmountTime?: number
+}
+
+export interface InvoiceECardListResponse {
+  total: number
+  pageSize: number
+  pageIndex: number
+  list: InvoiceECardRaw[]
+}
+
+export interface InvoiceECardView {
+  id: string
+  amount: number
+  businessTime: string
+  timestamp: number
+}
+
 export interface InvoiceApplyDraft {
   order: InvoiceOrderView
   taxpayer: InvoiceTaxpayerView | null
   billCategory: InvoiceApplyBillCategory
+  email: string
+  unit: string
+  remark: string
+}
+
+export interface InvoiceECardApplyDraft {
+  ecards: InvoiceECardView[]
+  taxpayer: InvoiceTaxpayerView | null
+  billCategory: '06'
   email: string
   unit: string
   remark: string
@@ -276,6 +332,33 @@ export interface InvoiceApplyPreview {
   remark: string
   canSubmit: boolean
   message: string
+}
+
+export interface InvoiceECardApplyTaskDetail {
+  orderNo: string
+  sourceBillNo: string
+  amount: number
+  payFlag: boolean
+}
+
+export interface InvoiceECardApplyTaskInfo extends Omit<
+  InvoiceApplyTaskInfo,
+  | 'applyType'
+  | 'sourceType'
+  | 'SourceSystem'
+  | 'billCategory'
+  | 'invoiceContent'
+> {
+  applyType: '171'
+  sourceType: '17'
+  SourceSystem: 'WX'
+  billCategory: '06'
+  invoiceContent: '预存卡销售和充值'
+}
+
+export interface InvoiceECardApplySubmitRequest {
+  TaskDetailList: InvoiceECardApplyTaskDetail[]
+  TaskInfo: InvoiceECardApplyTaskInfo
 }
 
 export interface InvoiceApplyTaskDetail {
@@ -340,6 +423,16 @@ export interface InvoicePreviewRequest {
 export interface InvoiceSendEmailRequest {
   applyNo: string
   email: string
+}
+
+export interface InvoiceBasicRequest {
+  applyNo: string
+}
+
+export interface InvoiceModifyAddressRequest extends InvoiceBasicRequest {
+  acceptCustomer: string
+  acceptPhone: string
+  acceptAddress: string
 }
 
 export interface InvoicePreviewRaw {

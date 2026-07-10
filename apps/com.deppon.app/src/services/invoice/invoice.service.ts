@@ -1,9 +1,19 @@
+import {
+  cancelInvoiceApply,
+  modifyInvoiceAddress,
+  reverseInvoice as reverseInvoiceAction
+} from './invoice.actions'
 import { invoiceApi } from './invoice.api'
 import {
   createApplyPreview,
   createApplySubmitPayload,
   validateEmail
 } from './invoice.apply'
+import {
+  createECardApplyPreview,
+  createECardApplySubmitPayload,
+  normalizeInvoiceECard
+} from './invoice.ecard'
 import {
   normalizeHistory,
   normalizeHistoryWaybills,
@@ -28,6 +38,10 @@ import type {
   InvoiceHistoryWaybillRequest,
   InvoiceHistoryWaybillView,
   InvoiceApplyDraft,
+  InvoiceECardApplyDraft,
+  InvoiceECardApplySubmitRequest,
+  InvoiceECardListResponse,
+  InvoiceECardView,
   InvoiceApplySubmitRequest,
   InvoiceApplySubmitResult,
   InvoiceListResult,
@@ -49,6 +63,7 @@ import type {
   InvoicePreviewRaw
 } from './types'
 import type { DepponResponse } from '../../request/deppon'
+import type { Contact } from '../contact'
 
 const DEFAULT_ORDER_RANGE_MONTHS = 3
 const DEFAULT_HISTORY_RANGE_MONTHS = 12
@@ -95,6 +110,8 @@ export const invoiceService = {
 
   createApplyPreview,
 
+  createECardApplyPreview,
+
   async submitApplyDraft(
     draft: InvoiceApplyDraft
   ): Promise<DepponResponse<InvoiceApplySubmitResult | null>> {
@@ -108,6 +125,30 @@ export const invoiceService = {
       InvoiceApplySubmitResult | null,
       InvoiceApplySubmitRequest
     >('addTaskInfoByEle', createApplySubmitPayload(draft), true, 30000)
+
+    if (!response.status) {
+      return createFailure(response.message || '提交失败，请稍后再试')
+    }
+
+    return {
+      ...response,
+      result: response.result ?? null
+    }
+  },
+
+  async submitECardApplyDraft(
+    draft: InvoiceECardApplyDraft
+  ): Promise<DepponResponse<InvoiceApplySubmitResult | null>> {
+    const preview = createECardApplyPreview(draft)
+
+    if (!preview.canSubmit) {
+      return createFailure(preview.message || '缺少储值卡开票信息')
+    }
+
+    const response = await invoiceApi.request<
+      InvoiceApplySubmitResult | null,
+      InvoiceECardApplySubmitRequest
+    >('addPrepayCardTask', createECardApplySubmitPayload(draft), true, 30000)
 
     if (!response.status) {
       return createFailure(response.message || '提交失败，请稍后再试')
@@ -190,6 +231,24 @@ export const invoiceService = {
     }
   },
 
+  async cancelApply(applyNo: string): Promise<DepponResponse<null>> {
+    return cancelInvoiceApply(applyNo)
+  },
+
+  async reverseInvoice(applyNo: string): Promise<DepponResponse<null>> {
+    return reverseInvoiceAction(applyNo)
+  },
+
+  async modifyAddress(
+    applyNo: string,
+    contact: Pick<
+      Contact,
+      'name' | 'telephone' | 'province' | 'city' | 'county' | 'town' | 'address'
+    >
+  ): Promise<DepponResponse<null>> {
+    return modifyInvoiceAddress(applyNo, contact)
+  },
+
   async queryHistoryWaybills(
     applyNo: string
   ): Promise<DepponResponse<InvoiceHistoryWaybillView[]>> {
@@ -254,6 +313,33 @@ export const invoiceService = {
         response.result.pageSize ?? pageSize,
         response.result.total
       )
+    }
+  },
+
+  async queryECards(
+    pageIndex = 1,
+    pageSize = DEFAULT_PAGE_SIZE
+  ): Promise<DepponResponse<InvoiceListResult<InvoiceECardView>>> {
+    const response = await invoiceApi.request<InvoiceECardListResponse>(
+      'prepayCardQueryByCustomerCode',
+      undefined,
+      false,
+      30000
+    )
+
+    if (!response.status || !response.result) {
+      return createFailure(response.message || '暂未获取到储值卡开票记录')
+    }
+
+    const allItems = (response.result.list ?? [])
+      .map(normalizeInvoiceECard)
+      .filter(item => item.id && item.amount > 0)
+    const startIndex = (pageIndex - 1) * pageSize
+    const list = allItems.slice(startIndex, startIndex + pageSize)
+
+    return {
+      ...response,
+      result: createListResult(list, pageIndex, pageSize, allItems.length)
     }
   },
 

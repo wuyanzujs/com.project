@@ -1,4 +1,9 @@
-export type MemberBenefitAction = 'COUPON_LIST' | 'WELFARE_CENTER'
+export type MemberWebAction =
+  | 'MEMBER_CENTER'
+  | 'MEMBER_POINTS'
+  | 'MEMBER_SVIP'
+  | 'MEMBER_STUDENTS'
+export type MemberBenefitAction = 'COUPON_LIST' | MemberWebAction
 export type MemberBenefitStatus = 'ready' | 'web' | 'pending'
 
 export interface MemberLevelRaw {

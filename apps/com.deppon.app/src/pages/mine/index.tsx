@@ -17,16 +17,20 @@ import {
 } from '../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
+import { createAppWebUrl } from '../../shared/webview/appWeb'
 
 import type { AppUser } from '../../services/auth'
 import type { AppRoutePath } from '../../shared/navigation/routes'
+import type { AppWebSource } from '../../shared/webview/appWeb'
 
 import './index.scss'
 
 interface MineEntry {
   title: string
   summary: string
-  route: AppRoutePath
+  route?: AppRoutePath
+  webSource?: AppWebSource
+  login?: boolean
 }
 
 const QUICK_ENTRIES: MineEntry[] = [
@@ -117,6 +121,12 @@ const SERVICE_ENTRIES: MineEntry[] = [
     title: '隐私设置',
     summary: '协议与权限清单',
     route: APP_ROUTES.privacySettings
+  },
+  {
+    title: '关于德邦',
+    summary: '公司介绍与品牌信息',
+    webSource: 'MINE_ABOUT_US',
+    login: false
   }
 ]
 
@@ -158,13 +168,26 @@ const MinePage = () => {
     })
   }
 
-  const handleEntry = (route: AppRoutePath) => {
-    if (route === APP_ROUTES.contactList) {
+  const handleEntry = (entry: MineEntry) => {
+    if (entry.webSource) {
+      navigateToAppRoute(createAppWebUrl({ source: entry.webSource }), {
+        login: entry.login
+      })
+      return
+    }
+
+    if (!entry.route) {
+      return
+    }
+
+    if (entry.route === APP_ROUTES.contactList) {
       handleManageContacts()
       return
     }
 
-    navigateToAppRoute(route)
+    navigateToAppRoute(entry.route, {
+      login: entry.login
+    })
   }
 
   const handleManageContacts = () => {
@@ -230,11 +253,7 @@ const MinePage = () => {
             <View
               className='mine-entry'
               key={entry.title}
-              onClick={() =>
-                entry.route === APP_ROUTES.contactList
-                  ? handleManageContacts()
-                  : handleEntry(entry.route)
-              }
+              onClick={() => handleEntry(entry)}
             >
               <View>
                 <Text className='mine-entry__title'>{entry.title}</Text>
@@ -251,7 +270,7 @@ const MinePage = () => {
             <View
               className='mine-entry'
               key={entry.title}
-              onClick={() => handleEntry(entry.route)}
+              onClick={() => handleEntry(entry)}
             >
               <View>
                 <Text className='mine-entry__title'>{entry.title}</Text>

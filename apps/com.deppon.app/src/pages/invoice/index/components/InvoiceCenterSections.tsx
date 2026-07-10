@@ -30,7 +30,7 @@ export function InvoiceHeader() {
       <Text className='invoice-header__label'>Invoice</Text>
       <Text className='invoice-header__title'>发票中心</Text>
       <Text className='invoice-header__summary'>
-        支持可开票运单、运单号搜索、开票历史、发票预览和抬头管理。
+        支持可开票运单、储值卡开票、开票历史、发票预览和抬头管理。
       </Text>
     </View>
   )
@@ -399,6 +399,8 @@ export function InvoiceLoading(props: { tab: InvoiceTab }) {
     <Text className='invoice-loading'>
       {props.tab === 'orders'
         ? '正在加载可开票运单...'
+        : props.tab === 'ecards'
+          ? '正在加载储值卡开票记录...'
         : props.tab === 'history'
           ? '正在加载开票历史...'
           : '正在加载发票抬头...'}

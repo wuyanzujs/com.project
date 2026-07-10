@@ -28,6 +28,11 @@ const CUSTOMER_WEB_ACTIONS: CustomerWebAction[] = [
     source: 'CUSTOMER_MONTHLY_CENTER'
   },
   {
+    title: '隐私面单',
+    summary: '查看和设置客户隐私面单服务',
+    source: 'CUSTOMER_PRIVATE_BILL'
+  },
+  {
     title: '号码保护',
     summary: '查看客户资料与号码保护设置',
     source: 'CUSTOMER_PHONE_PROTECT'

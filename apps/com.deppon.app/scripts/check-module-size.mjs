@@ -32,9 +32,25 @@ const legacyBudgets = new Map([
   [
     'src/pages/invoice/index/index.tsx',
     {
-      max: 780,
+      max: 880,
       reason:
-        '发票中心页承接三个 tab、运单搜索、身份校验弹层和扫码搜索的页面级流程，当前冻结体量。'
+        '发票中心页承接可开票、储值卡、历史、抬头四个 tab，以及运单搜索、储值卡多选合并开票、身份校验弹层和扫码搜索的页面级流程，当前冻结体量。'
+    }
+  ],
+  [
+    'src/pages/invoice/apply/index.tsx',
+    {
+      max: 500,
+      reason:
+        '发票申请页复用同一套抬头、邮箱和提交流程承接运单开票与储值卡开票，当前冻结体量。'
+    }
+  ],
+  [
+    'src/pages/invoice/detail/index.tsx',
+    {
+      max: 620,
+      reason:
+        '发票详情页承接历史记录展示、纸质发票收票地址修改、邮箱发送、包含运单加载以及撤销/作废动作，当前冻结体量，避免为了行数机械拆分。'
     }
   ],
   [
@@ -42,6 +58,14 @@ const legacyBudgets = new Map([
     {
       max: 565,
       reason: '电子存根页以只读分区展示为主，当前冻结体量。'
+    }
+  ],
+  [
+    'src/pages/payment/list/index.tsx',
+    {
+      max: 480,
+      reason:
+        '支付列表页承接待支付/已支付状态、寄收角色、分页搜索、支付动作和评价入口，当前冻结体量，避免为了行数机械拆分。'
     }
   ],
   [
@@ -57,6 +81,14 @@ const legacyBudgets = new Map([
       max: 585,
       reason: '查询域 service 覆盖多个工具型查询入口，当前冻结体量。'
     }
+  ],
+  [
+    'src/services/invoice/invoice.service.ts',
+    {
+      max: 500,
+      reason:
+        '发票 service 作为发票域统一门面，保留请求编排；历史、抬头、运单映射、储值卡规则已拆到独立模块。'
+    }
   ]
 ])
 
@@ -69,7 +101,7 @@ function walkFiles(directory) {
     return []
   }
 
-  return readdirSync(directory).flatMap((entry) => {
+  return readdirSync(directory).flatMap(entry => {
     const fullPath = path.join(directory, entry)
     const stats = statSync(fullPath)
 
@@ -108,7 +140,10 @@ function getDefaultBudget(relativePath) {
     }
   }
 
-  if (relativePath.endsWith('/types.ts') || relativePath.endsWith('.types.ts')) {
+  if (
+    relativePath.endsWith('/types.ts') ||
+    relativePath.endsWith('.types.ts')
+  ) {
     return {
       max: defaultBudgets.types,
       kind: 'types'

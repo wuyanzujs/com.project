@@ -6,6 +6,7 @@ import {
 } from './invoice.shared'
 
 import type {
+  InvoiceBillCategory,
   InvoiceHistoryRaw,
   InvoiceHistoryView,
   InvoiceHistoryWaybillRaw,
@@ -104,26 +105,81 @@ function getBillCategoryName(category?: string) {
   }
 }
 
-export function normalizeHistory(
-  item: InvoiceHistoryRaw
-): InvoiceHistoryView {
+function normalizeAddressPiece(value?: string | null) {
+  const text = normalizeText(value)
+
+  return text && text !== 'null' ? text : ''
+}
+
+export function parseInvoiceAcceptAddress(value?: string | null) {
+  const [province = '', city = '', county = '', ...addressParts] =
+    normalizeText(value).split('|')
+
+  return {
+    province: normalizeAddressPiece(province),
+    city: normalizeAddressPiece(city),
+    county: normalizeAddressPiece(county),
+    address: normalizeAddressPiece(addressParts.join(''))
+  }
+}
+
+export function canSendInvoiceEmail(status: number) {
+  return status === 4 || status === 7 || status === 27
+}
+
+export function canCancelInvoiceApply(
+  status: number,
+  category?: InvoiceBillCategory | ''
+) {
+  return category === '01' && (status === 1 || status === 3 || status === 28)
+}
+
+export function canReverseInvoice(
+  status: number,
+  category?: InvoiceBillCategory | ''
+) {
+  return category !== '01' && (status === 4 || status === 47)
+}
+
+export function canModifyInvoiceAddress(
+  status: number,
+  category?: InvoiceBillCategory | ''
+) {
+  return category === '01' && (status === 3 || status === 4)
+}
+
+export function normalizeHistory(item: InvoiceHistoryRaw): InvoiceHistoryView {
   const status = Number.parseInt(normalizeText(item.status), 10)
   const normalizedStatus = Number.isFinite(status) ? status : 0
   const title = normalizeText(item.acceptTinName)
+  const billCategory = item.billCategory || ''
+  const contactAddress = parseInvoiceAcceptAddress(item.acceptAddress)
 
   return {
     id: normalizeText(item.applyNo || item.id),
     title: truncateText(title || '发票抬头', 18),
     taxNumber: normalizeText(item.acceptTinCode),
     amount: toFiniteNumber(item.billAmount),
-    typeText: getBillCategoryName(item.billCategory),
+    statusCode: normalizedStatus,
+    billCategory,
+    typeText: getBillCategoryName(billCategory),
     statusText: getHistoryStatusName(normalizedStatus),
     statusClass: getHistoryStatusClass(normalizedStatus),
     applyTime: formatTimestamp(item.applyTime),
     email: normalizeText(item.email),
     remark: normalizeText(item.remark),
     previewUrl: normalizeText(item.elecLinkAdress),
-    canPreview: Boolean(item.elecLinkAdress)
+    canPreview: Boolean(item.elecLinkAdress),
+    canSendEmail: canSendInvoiceEmail(normalizedStatus),
+    canCancel: canCancelInvoiceApply(normalizedStatus, billCategory),
+    canReverse: canReverseInvoice(normalizedStatus, billCategory),
+    canModifyAddress: canModifyInvoiceAddress(normalizedStatus, billCategory),
+    contactName: normalizeText(item.acceptCustomer),
+    contactPhone: normalizeText(item.acceptPhone),
+    contactProvince: contactAddress.province,
+    contactCity: contactAddress.city,
+    contactCounty: contactAddress.county,
+    contactAddress: contactAddress.address
   }
 }
 
@@ -135,7 +191,7 @@ export function normalizeHistoryWaybills(
       waybillNumber: normalizeText(waybillNumber),
       amount: toFiniteNumber(amount)
     }))
-    .filter((item) => item.waybillNumber && item.amount > 0)
+    .filter(item => item.waybillNumber && item.amount > 0)
 }
 
 function createPreviewFile(title: string, pdfUrl?: string, imageUrl?: string) {
@@ -179,4 +235,3 @@ export function normalizePreview(
     message: hasPreview ? '' : '暂无发票预览信息'
   }
 }
-

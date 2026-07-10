@@ -49,6 +49,15 @@ export const APP_WEB_TARGETS = {
     title: '在线客服',
     url: APP_RUNTIME_CONFIG.serviceWebURL
   },
+  MINE_ABOUT_US: {
+    title: '关于德邦',
+    url: '/depponmobile/h5/index#/homePackagePages/companyOverview/index',
+    auth: false
+  },
+  ACCOUNT_PREFERENCES: {
+    title: '偏好设置',
+    url: '/depponmobile/mow/center/accountSet'
+  },
   ORDER_DETAIL_SERVICE: {
     title: '在线客服',
     url: APP_RUNTIME_CONFIG.serviceWebURL
@@ -73,6 +82,10 @@ export const APP_WEB_TARGETS = {
     title: '服务评价',
     url: '/depponmobile/survey/land'
   },
+  PAYMENT_EVALUATE: {
+    title: '服务评价',
+    url: '/depponmobile/survey/land'
+  },
   ORDER_DETAIL_DELIVERY: {
     title: '收件方式',
     url: '/depponmobile/orderStayTmp'
@@ -84,6 +97,10 @@ export const APP_WEB_TARGETS = {
   SUPPORT_ONLINE_SERVICE: {
     title: '在线客服',
     url: APP_RUNTIME_CONFIG.serviceWebURL
+  },
+  SUPPORT_CHAT_LIST: {
+    title: '服务消息',
+    url: '/depponmobile/h5/index#/chatPackagePages/chatList/index'
   },
   SUPPORT_SURVEY: {
     title: '体验调研',
@@ -110,6 +127,10 @@ export const APP_WEB_TARGETS = {
     title: '月结中心',
     url: '/depponmobile/mow/customer/dshkCenter'
   },
+  CUSTOMER_PRIVATE_BILL: {
+    title: '隐私面单',
+    url: '/depponmobile/mow/customer/privateSetting'
+  },
   CUSTOMER_PHONE_PROTECT: {
     title: '号码保护',
     url: '/depponmobile/h5/index#/partsPackagePages/customer/phoneProtect'
@@ -129,6 +150,22 @@ export const APP_WEB_TARGETS = {
   MEMBER_WELFARE_CENTER: {
     title: '会员权益',
     url: APP_RUNTIME_CONFIG.memberWebURL
+  },
+  MEMBER_CENTER_HOME: {
+    title: '会员中心',
+    url: ''
+  },
+  MEMBER_POINTS_CENTER: {
+    title: '积分中心',
+    url: ''
+  },
+  MEMBER_SVIP_CENTER: {
+    title: 'SVIP 权益',
+    url: ''
+  },
+  MEMBER_STUDENT_CENTER: {
+    title: '学生专区',
+    url: ''
   },
   PRIVACY_SETTINGS_POLICY: {
     title: '隐私政策',

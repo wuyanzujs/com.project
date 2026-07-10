@@ -83,6 +83,18 @@ export const supportService = {
             webSource: 'SUPPORT_ONLINE_SERVICE'
           },
           {
+            id: 'chat-list',
+            title: '服务消息',
+            summary: '查看历史客服会话和服务消息',
+            kind: 'web',
+            tone: 'neutral',
+            badgeText: '需登录',
+            webSource: 'SUPPORT_CHAT_LIST',
+            webPath: '/depponmobile/h5/index#/chatPackagePages/chatList/index',
+            webParamSource: 'APP_SUPPORT_CENTER',
+            loginRequired: true
+          },
+          {
             id: 'service-hotline',
             title: '95353 热线',
             summary: '通过系统电话发起呼叫',

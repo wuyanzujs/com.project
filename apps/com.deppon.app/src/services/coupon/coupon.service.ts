@@ -210,6 +210,24 @@ function splitDescription(value?: string | null) {
     .filter(Boolean)
 }
 
+export function validateCouponExchangeCode(code: string) {
+  const exchangeCouponCode = code.trim()
+
+  if (!exchangeCouponCode) {
+    return '请输入兑换码'
+  }
+
+  if (exchangeCouponCode.length < 10) {
+    return '请输入正确的兑换码'
+  }
+
+  if (exchangeCouponCode.length > 20) {
+    return '兑换码不能超过20个字符'
+  }
+
+  return ''
+}
+
 function normalizeCouponDetail(raw: {
   couponCode?: string
   fitProduct?: string | null
@@ -311,9 +329,10 @@ export const couponService = {
     code: string
   ): Promise<DepponResponse<CouponExchangeResponse>> {
     const exchangeCouponCode = code.trim()
+    const validationMessage = validateCouponExchangeCode(exchangeCouponCode)
 
-    if (!exchangeCouponCode) {
-      return createServiceFailure('请输入兑换码')
+    if (validationMessage) {
+      return createServiceFailure(validationMessage)
     }
 
     const response = await couponApi.exchangeCoupon(exchangeCouponCode)

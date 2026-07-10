@@ -4,6 +4,7 @@ import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 import type {
   Contact,
   ContactAnalysis,
+  ContactAnalysis4,
   ContactAddressHint,
   ContactListOptions,
   ContactValidationResult
@@ -77,6 +78,42 @@ export function parseAddressHint(raw: string): ContactAddressHint {
   }
 }
 
+export function getAddressHintLabel(hint: ContactAddressHint) {
+  const town = normalizeAddressPart(hint.town)
+
+  return (
+    [
+      hint.province,
+      hint.city,
+      hint.county,
+      town,
+      removeRepeatedPrefix(normalizeAddressPart(hint.address), town)
+    ]
+      .filter(Boolean)
+      .join('') || hint.raw
+  )
+}
+
+export function applyAddressHintToContact(
+  contact: Contact,
+  hint: ContactAddressHint
+): Contact {
+  const town = normalizeAddressPart(hint.town)
+  const detailAddress = removeRepeatedPrefix(
+    normalizeAddressPart(hint.address),
+    town
+  )
+
+  return {
+    ...contact,
+    province: hint.province || contact.province,
+    city: hint.city || contact.city,
+    county: hint.county || contact.county,
+    town: town || contact.town,
+    address: detailAddress || contact.address
+  }
+}
+
 function parseProCityName(value?: string | null) {
   if (!value?.includes('-')) {
     return {
@@ -125,6 +162,26 @@ export function applyAnalysisToContact(
     county: region.county || contact.county,
     town: town || contact.town,
     address: address || contact.address
+  }
+}
+
+export function applyAnalysis4ToContact(
+  contact: Contact,
+  analysis: ContactAnalysis4
+): Contact {
+  const town = normalizeAddressPart(analysis.town)
+  const detailAddress = removeRepeatedPrefix(
+    normalizeAddressPart(analysis.detailAddress),
+    town
+  )
+
+  return {
+    ...contact,
+    province: normalizeAddressPart(analysis.province) || contact.province,
+    city: normalizeAddressPart(analysis.city) || contact.city,
+    county: normalizeAddressPart(analysis.county) || contact.county,
+    town: town || contact.town,
+    address: detailAddress || contact.address
   }
 }
 
@@ -273,5 +330,8 @@ export const contactService = {
   },
 
   parseAddressHint,
-  applyAnalysisToContact
+  getAddressHintLabel,
+  applyAddressHintToContact,
+  applyAnalysisToContact,
+  applyAnalysis4ToContact
 }

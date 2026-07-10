@@ -109,6 +109,7 @@
 
 - `shared/platform/scan.ts` 暴露 `scanCode`、`scanAppCode`、`scanWaybillCode`、`parseAppScanValue` 和 `extractWaybillNumberFromScanValue`。
 - `parseAppScanValue` 负责统一处理二维码/条码结果中的 raw 运单号、`waybillNumber`、`waybillNo`、`waybillNum`、`billNo`、`ltlWaybillNumber`、`skiingWaybillNumber` 和 `printId`。
+- 旧寄件二维码里的 `pickupManId`、`courierNo`、`driverId`、`acceptDept`、`businessCode`、`shipperNumber` 会被识别为寄件业务二维码并保留 `role/value`；`sceneId` 和 `partner=Y` 也会进入解析结果，后续寄件页接入时不再回挖旧小程序工具函数。
 - 首页和发票中心扫码使用 `scanAppCode` 分类分流：普通运单进入订单详情或发票运单搜索，`printId` 云打印码进入面单打印中心，寄件业务二维码、短链和非德邦二维码不进入普通查件链路。
 - 当前不复制旧小程序里的 `p.url.cn` 短链网络解析、云打印小程序外跳和寄件二维码状态机；这些能力后续按 App 原生扫码、打印和寄件 service 独立接入。
 - 当前 `APP_NATIVE_CAPABILITIES.scan` 仍是 `pending`，页面会展示统一“扫码能力待接入 App 原生模块”提示。

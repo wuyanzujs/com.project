@@ -35,6 +35,7 @@ const ContactEditPage = () => {
   )
   const [analysisText, setAnalysisText] = useState('')
   const [analyzing, setAnalyzing] = useState(false)
+  const [refiningAddress, setRefiningAddress] = useState(false)
   const [saving, setSaving] = useState(false)
   const validation = useMemo(() => validateContact(contact), [contact])
   const contactEditUrl = useMemo(
@@ -63,7 +64,7 @@ const ContactEditPage = () => {
   })
 
   const updateContact = (patch: Partial<Contact>) => {
-    setContact((current) => ({
+    setContact(current => ({
       ...current,
       ...patch
     }))
@@ -99,7 +100,7 @@ const ContactEditPage = () => {
 
       const analysis = response.result
 
-      setContact((current) =>
+      setContact(current =>
         contactService.applyAnalysisToContact(current, analysis)
       )
       Taro.showToast({
@@ -108,6 +109,77 @@ const ContactEditPage = () => {
       })
     } finally {
       setAnalyzing(false)
+    }
+  }
+
+  const handleRefineAddress = async () => {
+    if (!ensureContactEditAccess() || refiningAddress) {
+      return
+    }
+
+    if (!contact.address.trim()) {
+      Taro.showToast({
+        title: '请先填写详细地址',
+        icon: 'none'
+      })
+      return
+    }
+
+    setRefiningAddress(true)
+
+    try {
+      if (contact.province && contact.city && contact.county) {
+        const hintResponse = await contactService.queryAddressHints(contact)
+        const hints = (hintResponse.result || [])
+          .map(contactService.parseAddressHint)
+          .filter(item => item.address)
+          .slice(0, 6)
+
+        if (hintResponse.status && hints.length) {
+          const selected = await Taro.showActionSheet({
+            itemList: hints.map(contactService.getAddressHintLabel)
+          }).catch(() => null)
+
+          if (!selected) {
+            return
+          }
+
+          const hint = hints[selected.tapIndex]
+
+          if (hint) {
+            setContact(current =>
+              contactService.applyAddressHintToContact(current, hint)
+            )
+            Taro.showToast({
+              title: '已应用地址候选，请核对',
+              icon: 'none'
+            })
+          }
+          return
+        }
+      }
+
+      const response = await contactService.analyze4(contact.address, contact)
+
+      if (!response.status || !response.result) {
+        Taro.showToast({
+          title: response.message || '暂未识别到更准确地址',
+          icon: 'none'
+        })
+        return
+      }
+
+      const analysis = response.result
+
+      setContact(current =>
+        contactService.applyAnalysis4ToContact(current, analysis)
+      )
+      Taro.showToast({
+        title: '地址已补全，请核对',
+        icon: 'none'
+      })
+    } finally {
+      setRefiningAddress(false)
     }
   }
 
@@ -140,7 +212,11 @@ const ContactEditPage = () => {
       const savedContact = response.result ?? contact
 
       if (selectionParams.mode === 'select') {
-        contactSelection.select(selectionParams.target, savedContact)
+        contactSelection.select(
+          selectionParams.target,
+          savedContact,
+          selectionParams.source
+        )
         Taro.navigateBack({ delta: Number(selectionParams.returnDelta) })
         return
       }
@@ -166,7 +242,10 @@ const ContactEditPage = () => {
       <View className='contact-edit-analysis'>
         <View className='contact-edit-analysis__head'>
           <Text className='contact-edit-analysis__title'>智能识别</Text>
-          <View className='contact-edit-analysis__button' onClick={handleAnalyze}>
+          <View
+            className='contact-edit-analysis__button'
+            onClick={handleAnalyze}
+          >
             <Text className='contact-edit-analysis__button-text'>
               {analyzing ? '识别中' : '识别'}
             </Text>
@@ -177,7 +256,7 @@ const ContactEditPage = () => {
           maxlength={240}
           placeholder='姓名 手机号 省市区 详细地址'
           value={analysisText}
-          onInput={(event) => setAnalysisText(event.detail.value)}
+          onInput={event => setAnalysisText(event.detail.value)}
         />
       </View>
 
@@ -188,7 +267,7 @@ const ContactEditPage = () => {
             className='contact-edit-input'
             placeholder='请输入姓名'
             value={contact.name}
-            onInput={(event) => updateContact({ name: event.detail.value })}
+            onInput={event => updateContact({ name: event.detail.value })}
           />
         </View>
 
@@ -199,9 +278,7 @@ const ContactEditPage = () => {
             placeholder='请输入手机号'
             type='number'
             value={contact.telephone}
-            onInput={(event) =>
-              updateContact({ telephone: event.detail.value })
-            }
+            onInput={event => updateContact({ telephone: event.detail.value })}
           />
         </View>
 
@@ -212,9 +289,7 @@ const ContactEditPage = () => {
               className='contact-edit-input'
               placeholder='省份'
               value={contact.province}
-              onInput={(event) =>
-                updateContact({ province: event.detail.value })
-              }
+              onInput={event => updateContact({ province: event.detail.value })}
             />
           </View>
           <View className='contact-edit-grid__item contact-edit-grid__item--right'>
@@ -223,7 +298,7 @@ const ContactEditPage = () => {
               className='contact-edit-input'
               placeholder='城市'
               value={contact.city}
-              onInput={(event) => updateContact({ city: event.detail.value })}
+              onInput={event => updateContact({ city: event.detail.value })}
             />
           </View>
         </View>
@@ -235,7 +310,7 @@ const ContactEditPage = () => {
               className='contact-edit-input'
               placeholder='区县'
               value={contact.county}
-              onInput={(event) => updateContact({ county: event.detail.value })}
+              onInput={event => updateContact({ county: event.detail.value })}
             />
           </View>
           <View className='contact-edit-grid__item contact-edit-grid__item--right'>
@@ -244,7 +319,7 @@ const ContactEditPage = () => {
               className='contact-edit-input'
               placeholder='选填'
               value={contact.town || ''}
-              onInput={(event) => updateContact({ town: event.detail.value })}
+              onInput={event => updateContact({ town: event.detail.value })}
             />
           </View>
         </View>
@@ -255,8 +330,22 @@ const ContactEditPage = () => {
             className='contact-edit-input'
             placeholder='街道、门牌号等'
             value={contact.address}
-            onInput={(event) => updateContact({ address: event.detail.value })}
+            onInput={event => updateContact({ address: event.detail.value })}
           />
+        </View>
+
+        <View className='contact-edit-address-tools'>
+          <Text className='contact-edit-address-tools__hint'>
+            已填写详细地址时，可尝试补全省市区和乡镇街道。
+          </Text>
+          <View
+            className='contact-edit-address-tools__button'
+            onClick={handleRefineAddress}
+          >
+            <Text className='contact-edit-address-tools__button-text'>
+              {refiningAddress ? '补全中' : '补全地址'}
+            </Text>
+          </View>
         </View>
 
         <View className='contact-edit-row'>
@@ -265,14 +354,14 @@ const ContactEditPage = () => {
             className='contact-edit-input'
             placeholder='选填'
             value={contact.company || ''}
-            onInput={(event) => updateContact({ company: event.detail.value })}
+            onInput={event => updateContact({ company: event.detail.value })}
           />
         </View>
 
         <View className='contact-edit-switch-row'>
           <Text className='contact-edit-row__label'>地址类型</Text>
           <View className='contact-edit-switch'>
-            {([0, 1] as const).map((type) => (
+            {([0, 1] as const).map(type => (
               <View
                 className={
                   contact.type === type
@@ -300,7 +389,7 @@ const ContactEditPage = () => {
       {!validation.valid && (
         <View className='contact-edit-check'>
           <Text className='contact-edit-check__title'>待完善</Text>
-          {validation.messages.slice(0, 3).map((message) => (
+          {validation.messages.slice(0, 3).map(message => (
             <Text className='contact-edit-check__message' key={message}>
               {message}
             </Text>

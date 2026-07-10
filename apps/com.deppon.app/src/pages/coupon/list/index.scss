@@ -334,6 +334,25 @@
   text-align: center;
 }
 
+.coupon-empty__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 216px;
+  height: 60px;
+  margin-top: 28px;
+  padding: 0 24px;
+  background: #e8efff;
+  border-color: #b2c7ff;
+  border-radius: 8px;
+  border-width: 1px;
+}
+
+.coupon-empty__button-text {
+  color: #1a5eff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
 .coupon-loading {
   display: flex;
   padding: 20px 0 36px;

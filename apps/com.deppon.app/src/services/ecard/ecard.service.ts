@@ -3,11 +3,11 @@ import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 import { createServiceFailure } from '../serviceResponse'
 
 import type {
+  ECardCenterUrlOptions,
   ECardLinkRequest,
   ECardOverviewView,
   ECardPromotionRaw,
-  ECardTargetPage,
-  ECardType
+  ECardTargetPage
 } from './types'
 import type { DepponResponse } from '../../request/deppon'
 
@@ -42,23 +42,39 @@ function normalizePromotions(raw?: ECardPromotionRaw | null) {
     .slice(0, 3) as ECardOverviewView['promotions']
 }
 
-function createLinkRequest(
-  targetPage: ECardTargetPage,
-  options: {
-    type?: ECardType
-    source?: string
-    postmanId?: string
-    activityCode?: string
-  } = {}
+function normalizeOptionalText(value?: string | null) {
+  const text = normalizeText(value)
+
+  return text || undefined
+}
+
+export function createECardLinkRequest(
+  targetPage: ECardTargetPage = 'HOME',
+  options: ECardCenterUrlOptions = {}
 ): ECardLinkRequest {
-  return {
+  const request: ECardLinkRequest = {
     sysCode: APP_RUNTIME_CONFIG.ecardPmcSystemCode,
-    targetPage,
-    type: options.type,
-    source: options.source,
-    postmanId: options.postmanId,
-    activityCode: options.activityCode
+    targetPage
   }
+  const type = normalizeOptionalText(options.type) as ECardLinkRequest['type']
+  const postmanId = normalizeOptionalText(options.postmanId)
+  const activityCode = normalizeOptionalText(options.activityCode)
+
+  request.source = normalizeOptionalText(options.targetSource) || 'APP_ECARD_CENTER'
+
+  if (type) {
+    request.type = type
+  }
+
+  if (postmanId) {
+    request.postmanId = postmanId
+  }
+
+  if (activityCode) {
+    request.activityCode = activityCode
+  }
+
+  return request
 }
 
 export const ecardService = {
@@ -93,11 +109,12 @@ export const ecardService = {
     }
   },
 
-  async createCenterUrl(targetPage: ECardTargetPage = 'HOME') {
+  async createCenterUrl(
+    targetPage: ECardTargetPage = 'HOME',
+    options: ECardCenterUrlOptions = {}
+  ) {
     const response = await ecardApi.createECardLink(
-      createLinkRequest(targetPage, {
-        source: 'APP_ECARD_CENTER'
-      }),
+      createECardLinkRequest(targetPage, options),
       false
     )
 

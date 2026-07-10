@@ -12,6 +12,7 @@ import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type {
   InvoiceApplyBillCategory,
+  InvoiceECardView,
   InvoiceOrderView,
   InvoiceTaxpayerView
 } from '../../../services/invoice'
@@ -47,6 +48,20 @@ function parseOrder(value?: string): InvoiceOrderView | null {
   }
 }
 
+function parseECards(value?: string): InvoiceECardView[] {
+  if (!value) {
+    return []
+  }
+
+  try {
+    const list = JSON.parse(decodeURIComponent(value)) as InvoiceECardView[]
+
+    return Array.isArray(list) ? list : []
+  } catch {
+    return []
+  }
+}
+
 function getMoneyText(value: number) {
   if (!Number.isFinite(value)) {
     return '¥0'
@@ -60,6 +75,10 @@ const InvoiceApplyPage = () => {
   const order = useMemo(() => parseOrder(router.params.order), [
     router.params.order
   ])
+  const ecards = useMemo(() => parseECards(router.params.ecards), [
+    router.params.ecards
+  ])
+  const applyMode = order ? 'order' : ecards.length ? 'ecard' : 'empty'
   const [taxpayers, setTaxpayers] = useState<InvoiceTaxpayerView[]>([])
   const [selectedTaxpayerId, setSelectedTaxpayerId] =
     useState<number | null>(null)
@@ -76,16 +95,31 @@ const InvoiceApplyPage = () => {
 
   const selectedTaxpayer =
     taxpayers.find((item) => item.id === selectedTaxpayerId) ?? null
-  const preview = order
-    ? invoiceService.createApplyPreview({
-        order,
-        taxpayer: selectedTaxpayer,
-        billCategory,
-        email,
-        unit,
-        remark
-      })
-    : null
+  const preview =
+    applyMode === 'order' && order
+      ? invoiceService.createApplyPreview({
+          order,
+          taxpayer: selectedTaxpayer,
+          billCategory,
+          email,
+          unit,
+          remark
+        })
+      : applyMode === 'ecard'
+        ? invoiceService.createECardApplyPreview({
+            ecards,
+            taxpayer: selectedTaxpayer,
+            billCategory: '06',
+            email,
+            unit,
+            remark
+          })
+        : null
+  const applyAmount = preview?.amount ?? order?.amount ?? 0
+  const billCategoryOptions =
+    applyMode === 'ecard'
+      ? BILL_CATEGORY_OPTIONS.filter((item) => item.value === '06')
+      : BILL_CATEGORY_OPTIONS
 
   const loadTaxpayers = async () => {
     if (loading) {
@@ -131,7 +165,7 @@ const InvoiceApplyPage = () => {
       return
     }
 
-    if (!order) {
+    if (applyMode === 'empty') {
       return
     }
 
@@ -150,14 +184,24 @@ const InvoiceApplyPage = () => {
     setMessage('')
 
     try {
-      const response = await invoiceService.submitApplyDraft({
-        order,
-        taxpayer: selectedTaxpayer,
-        billCategory,
-        email,
-        unit,
-        remark
-      })
+      const response =
+        applyMode === 'ecard'
+          ? await invoiceService.submitECardApplyDraft({
+              ecards,
+              taxpayer: selectedTaxpayer,
+              billCategory: '06',
+              email,
+              unit,
+              remark
+            })
+          : await invoiceService.submitApplyDraft({
+              order: order as InvoiceOrderView,
+              taxpayer: selectedTaxpayer,
+              billCategory,
+              email,
+              unit,
+              remark
+            })
 
       if (!response.status) {
         const nextMessage = response.message || '提交失败，请稍后再试'
@@ -192,13 +236,13 @@ const InvoiceApplyPage = () => {
     }
   }
 
-  if (!order) {
+  if (applyMode === 'empty') {
     return (
       <View className='invoice-apply-page invoice-apply-page--empty'>
         <View className='invoice-apply-empty'>
-          <Text className='invoice-apply-empty__title'>缺少开票运单</Text>
+          <Text className='invoice-apply-empty__title'>缺少开票记录</Text>
           <Text className='invoice-apply-empty__summary'>
-            请从发票中心选择可开票运单后再申请。
+            请从发票中心选择可开票运单或储值卡记录后再申请。
           </Text>
           <View
             className='invoice-apply-empty__button'
@@ -217,30 +261,42 @@ const InvoiceApplyPage = () => {
         <Text className='invoice-apply-header__label'>Apply</Text>
         <Text className='invoice-apply-header__title'>申请发票</Text>
         <Text className='invoice-apply-header__summary'>
-          核对运单、抬头和接收邮箱后提交，开具进展可在发票历史查看。
+          核对开票记录、抬头和接收邮箱后提交，开具进展可在发票历史查看。
         </Text>
       </View>
 
       <View className='invoice-apply-card'>
         <View className='invoice-apply-card__top'>
           <Text className='invoice-apply-card__title'>
-            运单 {order.waybillNumber || '--'}
+            {applyMode === 'ecard'
+              ? `储值卡 ${ecards[0]?.id || '--'}`
+              : `运单 ${order?.waybillNumber || '--'}`}
           </Text>
           <Text className='invoice-apply-card__amount'>
-            {getMoneyText(order.amount)}
+            {getMoneyText(applyAmount)}
           </Text>
         </View>
-        <Text className='invoice-apply-card__meta'>
-          {order.senderText || '--'} → {order.consigneeText || '--'}
-        </Text>
-        <Text className='invoice-apply-card__meta'>{order.businessTime}</Text>
+        {applyMode === 'ecard' ? (
+          <Text className='invoice-apply-card__meta'>
+            储值卡（预存卡）充值时间 {ecards[0]?.businessTime || '--'}
+          </Text>
+        ) : (
+          <>
+            <Text className='invoice-apply-card__meta'>
+              {order?.senderText || '--'} → {order?.consigneeText || '--'}
+            </Text>
+            <Text className='invoice-apply-card__meta'>
+              {order?.businessTime || '--'}
+            </Text>
+          </>
+        )}
       </View>
 
       <View className='invoice-apply-section'>
         <View className='invoice-apply-section__head'>
           <Text className='invoice-apply-section__title'>发票类型</Text>
         </View>
-        {BILL_CATEGORY_OPTIONS.map((item) => (
+        {billCategoryOptions.map((item) => (
           <View
             className={
               item.value === billCategory
@@ -248,7 +304,11 @@ const InvoiceApplyPage = () => {
                 : 'invoice-apply-option'
             }
             key={item.value}
-            onClick={() => setBillCategory(item.value)}
+            onClick={() =>
+              applyMode === 'ecard'
+                ? setBillCategory('06')
+                : setBillCategory(item.value)
+            }
           >
             <View>
               <Text className='invoice-apply-option__title'>{item.label}</Text>
@@ -394,7 +454,7 @@ const InvoiceApplyPage = () => {
         onClick={handleSubmit}
       >
         <Text className='invoice-apply-submit__amount'>
-          {getMoneyText(order.amount)}
+          {getMoneyText(applyAmount)}
         </Text>
         <Text className='invoice-apply-submit__text'>
           {submitting ? '提交中...' : '提交申请'}

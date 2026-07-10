@@ -20,10 +20,14 @@ require('ts-node').register({
 })
 
 const {
+  applyAddressHintToContact,
+  applyAnalysis4ToContact,
   applyAnalysisToContact,
   createEmptyContact,
+  getAddressHintLabel,
   parseAddressHint
 } = require('../src/services/contact')
+const { validateCouponExchangeCode } = require('../src/services/coupon')
 const {
   BATCH_MAX_CONSIGNEE_COUNT,
   batchService,
@@ -34,19 +38,38 @@ const {
   validateExpressDraft,
   validateExpressPriceTimeDraft
 } = require('../src/services/express/express.draft')
-const {
-  expressDraftBridge
-} = require('../src/services/express/draftBridge')
+const { expressDraftBridge } = require('../src/services/express/draftBridge')
 const {
   createApplyPreview,
   createApplySubmitPayload,
   validateEmail
 } = require('../src/services/invoice/invoice.apply')
 const {
+  createInvoiceModifyAddressPayload
+} = require('../src/services/invoice/invoice.actions')
+const {
+  createECardApplyPreview,
+  createECardApplySubmitPayload,
+  normalizeInvoiceECard
+} = require('../src/services/invoice/invoice.ecard')
+const {
+  canCancelInvoiceApply,
+  canModifyInvoiceAddress,
+  canReverseInvoice,
+  canSendInvoiceEmail,
+  normalizeHistory,
+  parseInvoiceAcceptAddress
+} = require('../src/services/invoice/invoice.history')
+const {
   createTaxpayerPayload,
   normalizeTaxpayer,
   validateTaxpayer
 } = require('../src/services/invoice/invoice.taxpayer')
+const {
+  createMemberMasUrl,
+  createMemberWelfareUrl
+} = require('../src/services/member/member.service')
+const { createECardLinkRequest } = require('../src/services/ecard')
 const {
   createOrderDetailActions,
   createOrderUrgeContext
@@ -66,17 +89,22 @@ const {
   validatePrintSelection
 } = require('../src/services/print')
 const {
-  createSignCodePayload,
-  signService
-} = require('../src/services/sign')
+  createPaymentEvaluateWebUri,
+  getPaymentItemAmount,
+  getPaymentEvaluateScene,
+  getPaymentRangeDays,
+  getPaymentWriteOffStatus,
+  createPaymentWaybillQuery
+} = require('../src/services/payment/payment.service')
+const { supportService } = require('../src/services/support')
+const { createSignCodePayload, signService } = require('../src/services/sign')
 const {
   appendRouteQuery,
   createAppRouteUrl,
   createRouteQuery
 } = require('../src/shared/navigation/routeUrl')
-const {
-  parseAppScanValue
-} = require('../src/shared/platform/scan')
+const { APP_WEB_TARGETS } = require('../src/shared/webview/appWeb')
+const { parseAppScanValue } = require('../src/shared/platform/scan')
 const {
   isDepponSuccessStatus,
   shouldAcceptDepponHttpStatus,
@@ -89,9 +117,7 @@ const {
   getSetCookieFromHeaders,
   normalizeCookieList
 } = require('../src/request/cookie.rules')
-const {
-  createServiceFailure
-} = require('../src/services/serviceResponse')
+const { createServiceFailure } = require('../src/services/serviceResponse')
 
 const senderContact = {
   name: '张三',
@@ -184,6 +210,25 @@ function createInvoiceDraft(patch = {}) {
   }
 }
 
+function createECardInvoiceDraft(patch = {}) {
+  return {
+    ecards: [
+      {
+        id: 'PAY_001',
+        amount: 88.8,
+        businessTime: '2026-07-09 10:00:00',
+        timestamp: 1783562400000
+      }
+    ],
+    taxpayer: companyTaxpayer,
+    billCategory: '06',
+    email: 'ecard@example.com',
+    unit: '次',
+    remark: '',
+    ...patch
+  }
+}
+
 function createBatchContact(patch = {}) {
   return {
     name: '张三',
@@ -237,7 +282,7 @@ function createOrderDetail(patch = {}) {
 }
 
 function getActionKinds(actions) {
-  return actions.map((item) => item.kind)
+  return actions.map(item => item.kind)
 }
 
 const tests = [
@@ -254,7 +299,10 @@ const tests = [
   {
     name: 'cookie rules extract ECO_TOKEN from response headers and cookie lists',
     run() {
-      assert.equal(extractEcoToken('foo=bar; ECO_TOKEN=token-123; path=/'), 'token-123')
+      assert.equal(
+        extractEcoToken('foo=bar; ECO_TOKEN=token-123; path=/'),
+        'token-123'
+      )
       assert.equal(extractEcoToken('foo=bar;'), '')
       assert.equal(
         createEcoSessionCookie('foo=bar; ECO_TOKEN=token-123; path=/'),
@@ -333,6 +381,124 @@ const tests = [
     }
   },
   {
+    name: 'member welfare url appends token and source without losing hash route',
+    run() {
+      assert.equal(
+        createMemberWelfareUrl(
+          'https://mastest.deppon.com.cn/cms-h5/h5.html#/welfare-center',
+          'COUPON_LIST',
+          'tmp-token'
+        ),
+        'https://mastest.deppon.com.cn/cms-h5/h5.html#/welfare-center?code=tmp-token&source=COUPON_LIST'
+      )
+      assert.equal(
+        createMemberWelfareUrl(
+          'https://mas.deppon.com/svip-member/entry',
+          'MEMBER_INDEX',
+          'svip-token'
+        ),
+        'https://mas.deppon.com/svip-member/entry?code=svip-token&source=MEMBER_INDEX'
+      )
+    }
+  },
+  {
+    name: 'member mas urls keep configured environment and append auth context',
+    run() {
+      assert.equal(
+        createMemberMasUrl(
+          'MEMBER_POINTS',
+          'MEMBER_POINTS',
+          'points-token',
+          'https://mastest.deppon.com.cn/cms-h5/h5.html#/welfare-center'
+        ),
+        'https://mastest.deppon.com.cn/points-center/home?code=points-token&source=MEMBER_POINTS'
+      )
+      assert.equal(
+        createMemberMasUrl(
+          'MEMBER_STUDENTS',
+          'MEMBER_STUDENTS',
+          '',
+          'https://mas.deppon.com/member/home'
+        ),
+        'https://mas.deppon.com/student-member/entry?source=MEMBER_STUDENTS'
+      )
+      assert.equal(APP_WEB_TARGETS.MEMBER_POINTS_CENTER.url, '')
+      assert.equal(APP_WEB_TARGETS.MEMBER_STUDENT_CENTER.title, '学生专区')
+    }
+  },
+  {
+    name: 'ecard link request preserves legacy target params without mini-program shell',
+    run() {
+      assert.deepEqual(
+        createECardLinkRequest('RECHARGE', {
+          type: 'YC',
+          targetSource: 'HOME_ECARD',
+          postmanId: 'PM001',
+          activityCode: 'ACT001'
+        }),
+        {
+          sysCode: 'APP',
+          targetPage: 'RECHARGE',
+          source: 'HOME_ECARD',
+          type: 'YC',
+          postmanId: 'PM001',
+          activityCode: 'ACT001'
+        }
+      )
+      assert.deepEqual(
+        createECardLinkRequest('BILL', {
+          targetSource: '  ',
+          type: ''
+        }),
+        {
+          sysCode: 'APP',
+          targetPage: 'BILL',
+          source: 'APP_ECARD_CENTER'
+        }
+      )
+    }
+  },
+  {
+    name: 'customer private bill web target points to controlled OWS page',
+    run() {
+      assert.equal(
+        APP_WEB_TARGETS.CUSTOMER_PRIVATE_BILL.url,
+        '/depponmobile/mow/customer/privateSetting'
+      )
+    }
+  },
+  {
+    name: 'mine about us web target is public and controlled',
+    run() {
+      assert.equal(
+        APP_WEB_TARGETS.MINE_ABOUT_US.url,
+        '/depponmobile/h5/index#/homePackagePages/companyOverview/index'
+      )
+      assert.equal(APP_WEB_TARGETS.MINE_ABOUT_US.auth, false)
+    }
+  },
+  {
+    name: 'account preferences web target uses controlled OWS settings page',
+    run() {
+      assert.equal(
+        APP_WEB_TARGETS.ACCOUNT_PREFERENCES.url,
+        '/depponmobile/mow/center/accountSet'
+      )
+    }
+  },
+  {
+    name: 'support chat list keeps hash route query under controlled web target',
+    run() {
+      const chatPath = '/depponmobile/h5/index#/chatPackagePages/chatList/index'
+
+      assert.equal(APP_WEB_TARGETS.SUPPORT_CHAT_LIST.url, chatPath)
+      assert.equal(
+        supportService.createSecureWebUri(chatPath, 'APP_SUPPORT_CENTER'),
+        '/depponmobile/h5/index#/chatPackagePages/chatList/index?sonSource=APP_SUPPORT_CENTER&pageSource=APP'
+      )
+    }
+  },
+  {
     name: 'contact address analysis keeps town separate and ignores null hint parts',
     run() {
       const contact = createEmptyContact(1)
@@ -353,6 +519,21 @@ const tests = [
       assert.equal(nextContact.county, '青浦区')
       assert.equal(nextContact.town, '徐泾镇')
       assert.equal(nextContact.address, '明珠路100号')
+      assert.equal(
+        applyAnalysis4ToContact(contact, {
+          province: '上海市',
+          provinceCode: '310000',
+          city: '上海市',
+          cityCode: '310100',
+          county: '青浦区',
+          countyCode: '310118',
+          town: '徐泾镇',
+          townCode: '310118109',
+          detailAddress: '徐泾镇明珠路100号',
+          addressType: '0000'
+        }).address,
+        '明珠路100号'
+      )
       assert.deepEqual(
         parseAddressHint('上海市,上海市,青浦区,null,明珠路100号'),
         {
@@ -363,6 +544,18 @@ const tests = [
           address: '明珠路100号',
           raw: '上海市,上海市,青浦区,null,明珠路100号'
         }
+      )
+      const hint = parseAddressHint(
+        '上海市,上海市,青浦区,徐泾镇,徐泾镇明珠路100号'
+      )
+
+      assert.equal(
+        getAddressHintLabel(hint),
+        '上海市上海市青浦区徐泾镇明珠路100号'
+      )
+      assert.equal(
+        applyAddressHintToContact(contact, hint).address,
+        '明珠路100号'
       )
     }
   },
@@ -382,6 +575,15 @@ const tests = [
       const printCode = parseAppScanValue(
         'https://www.deppon.com/path?printId=PRINT_001'
       )
+      const postmanQrCode = parseAppScanValue(
+        'https://www.deppon.com/path?courierNo=PM001&sceneId=SCENE_001&partner=Y'
+      )
+      const customerQrCode = parseAppScanValue(
+        'https://www.deppon.com/path?shipperNumber=CUS001'
+      )
+      const invalidBusinessQrCode = parseAppScanValue(
+        'https://www.deppon.com/path?driverId=null'
+      )
       const invalidHost = parseAppScanValue(
         'https://example.com/path?waybillNumber=DPK123456789'
       )
@@ -397,10 +599,35 @@ const tests = [
       assert.equal(ltlWaybill.role, 'ltlWaybillNumber')
       assert.equal(printCode.kind, 'printCode')
       assert.equal(printCode.printId, 'PRINT_001')
+      assert.equal(postmanQrCode.kind, 'unsupported')
+      assert.equal(postmanQrCode.reason, 'sendQrCode')
+      assert.equal(postmanQrCode.role, 'pickupManId')
+      assert.equal(postmanQrCode.value, 'PM001')
+      assert.equal(postmanQrCode.sceneId, 'SCENE_001')
+      assert.equal(postmanQrCode.expressRole, 'PARTNER')
+      assert.equal(customerQrCode.kind, 'unsupported')
+      assert.equal(customerQrCode.reason, 'sendQrCode')
+      assert.equal(customerQrCode.role, 'shipperNumber')
+      assert.equal(customerQrCode.value, 'CUS001')
+      assert.equal(invalidBusinessQrCode.kind, 'unsupported')
+      assert.equal(invalidBusinessQrCode.reason, 'invalidParams')
+      assert.equal(invalidBusinessQrCode.role, 'driverId')
       assert.equal(invalidHost.kind, 'unsupported')
       assert.equal(invalidHost.reason, 'invalidHost')
       assert.equal(unsupported.kind, 'unsupported')
       assert.equal(unsupported.reason, 'unknown')
+    }
+  },
+  {
+    name: 'coupon exchange code validation follows legacy length guard',
+    run() {
+      assert.equal(validateCouponExchangeCode(''), '请输入兑换码')
+      assert.equal(validateCouponExchangeCode('ABC123'), '请输入正确的兑换码')
+      assert.equal(validateCouponExchangeCode(' ABCDE12345 '), '')
+      assert.equal(
+        validateCouponExchangeCode('123456789012345678901'),
+        '兑换码不能超过20个字符'
+      )
     }
   },
   {
@@ -444,7 +671,7 @@ const tests = [
     run() {
       const view = batchService.getEntryView()
       const actionStatuses = Object.fromEntries(
-        view.actions.map((item) => [item.key, item.status])
+        view.actions.map(item => [item.key, item.status])
       )
 
       assert.equal(view.maxConsigneeCount, BATCH_MAX_CONSIGNEE_COUNT)
@@ -548,8 +775,10 @@ const tests = [
         ].join('\n')
       )
       const overflow = batchService.recognizeAddressText(
-        Array.from({ length: BATCH_MAX_CONSIGNEE_COUNT + 2 }, (_, index) =>
-          `客户${index} 13900139000 广东省 深圳市 南山区 科技园${index}号 文件`
+        Array.from(
+          { length: BATCH_MAX_CONSIGNEE_COUNT + 2 },
+          (_, index) =>
+            `客户${index} 13900139000 广东省 深圳市 南山区 科技园${index}号 文件`
         ).join('\n')
       )
 
@@ -593,7 +822,10 @@ const tests = [
       assert.equal(carried.draft.goods.name, '文件')
       assert.equal(carried.draft.selectedProduct, null)
       assert.equal(carried.draft.agreementAccepted, false)
-      assert.equal(carried.draft.quoteStaleReason, '批量识别带入，请重新获取价格')
+      assert.equal(
+        carried.draft.quoteStaleReason,
+        '批量识别带入，请重新获取价格'
+      )
       assert.deepEqual(carried.quotes, [])
     }
   },
@@ -605,7 +837,7 @@ const tests = [
         source: 'HOME_SCAN'
       })
       const actionStatuses = Object.fromEntries(
-        view.actions.map((item) => [item.key, item.status])
+        view.actions.map(item => [item.key, item.status])
       )
 
       assert.equal(actionStatuses.orderList, 'ready')
@@ -682,8 +914,97 @@ const tests = [
         message: '',
         value: '张三'
       })
-      assert.equal(signService.validateRealName('A').message, '请输入 2-20 个字符的签收人姓名')
-      assert.equal(signService.validateRealName('张<三').message, '签收人姓名包含非法字符')
+      assert.equal(
+        signService.validateRealName('A').message,
+        '请输入 2-20 个字符的签收人姓名'
+      )
+      assert.equal(
+        signService.validateRealName('张<三').message,
+        '签收人姓名包含非法字符'
+      )
+    }
+  },
+  {
+    name: 'payment list status maps to backend status, range and amount rules',
+    run() {
+      assert.equal(getPaymentWriteOffStatus('UNPAID'), 0)
+      assert.equal(getPaymentWriteOffStatus('PAID'), 1)
+      assert.equal(getPaymentRangeDays('UNPAID'), 30)
+      assert.equal(getPaymentRangeDays('PAID'), 180)
+      assert.equal(
+        getPaymentItemAmount(
+          {
+            unWriteoffAmount: 18.5,
+            totalAmount: 20,
+            writeoffAmount: 0
+          },
+          'UNPAID'
+        ),
+        18.5
+      )
+      assert.equal(
+        getPaymentItemAmount(
+          {
+            unWriteoffAmount: 0,
+            totalAmount: 20,
+            writeoffAmount: 19.8
+          },
+          'PAID'
+        ),
+        19.8
+      )
+      assert.equal(
+        getPaymentEvaluateScene({
+          paymentMethod: 'FC'
+        }),
+        'S0705'
+      )
+      assert.equal(
+        getPaymentEvaluateScene({
+          paymentMethod: 'DT'
+        }),
+        'S0405'
+      )
+      const evaluateUri = createPaymentEvaluateWebUri(
+        {
+          waybillNum: 'DPK123456789',
+          paymentMethod: 'FC'
+        },
+        '13800138000'
+      )
+      const evaluateParams = new URL(evaluateUri, 'https://owstest.deppon.com')
+        .searchParams
+
+      assert.equal(evaluateParams.get('channel'), 'APP')
+      assert.equal(evaluateParams.get('mobile'), '13800138000')
+      assert.equal(evaluateParams.get('scene'), 'S0705')
+      assert.deepEqual(JSON.parse(evaluateParams.get('rowData')), [
+        {
+          field: 'waybillNumber',
+          data: 'DPK123456789'
+        }
+      ])
+    }
+  },
+  {
+    name: 'payment waybill query supports single and batched values',
+    run() {
+      assert.deepEqual(createPaymentWaybillQuery(''), {})
+      assert.deepEqual(createPaymentWaybillQuery(' DPK123456789 '), {
+        waybillNo: 'DPK123456789'
+      })
+      assert.deepEqual(
+        createPaymentWaybillQuery('DPK123456789, DPL987654321，DPK111111111'),
+        {
+          waybillNos: ['DPK123456789', 'DPL987654321', 'DPK111111111']
+        }
+      )
+      assert.deepEqual(
+        createPaymentWaybillQuery('DPK123456789\nDPL987654321'),
+        {
+          waybillNos: ['DPK123456789', 'DPL987654321']
+        }
+      )
     }
   },
   {
@@ -737,6 +1058,169 @@ const tests = [
       assert.equal(payload.TaskInfo.openAmount, 128.5)
       assert.equal(payload.TaskInfo.taxEmail, 'finance@example.com')
       assert.equal(payload.TaskInfo.taxBankNumber, '6222000000000000')
+    }
+  },
+  {
+    name: 'invoice paper address payload folds town into legacy address field',
+    run() {
+      const payload = createInvoiceModifyAddressPayload(' APPLY_001 ', {
+        name: ' 王五 ',
+        telephone: '13800138000',
+        province: ' 上海市 ',
+        city: '上海市',
+        county: '青浦区',
+        town: '徐泾镇',
+        address: '明珠路100号'
+      })
+
+      assert.deepEqual(payload, {
+        applyNo: 'APPLY_001',
+        acceptCustomer: '王五',
+        acceptPhone: '13800138000',
+        acceptAddress: '上海市|上海市|青浦区|徐泾镇明珠路100号'
+      })
+      assert.deepEqual(
+        parseInvoiceAcceptAddress('上海市|上海市|青浦区|徐泾镇明珠路100号'),
+        {
+          province: '上海市',
+          city: '上海市',
+          county: '青浦区',
+          address: '徐泾镇明珠路100号'
+        }
+      )
+    }
+  },
+  {
+    name: 'invoice history exposes email sending eligibility from legacy statuses',
+    run() {
+      assert.equal(canSendInvoiceEmail(4), true)
+      assert.equal(canSendInvoiceEmail(7), true)
+      assert.equal(canSendInvoiceEmail(27), true)
+      assert.equal(canSendInvoiceEmail(3), false)
+      assert.equal(canCancelInvoiceApply(1, '01'), true)
+      assert.equal(canCancelInvoiceApply(3, '01'), true)
+      assert.equal(canCancelInvoiceApply(28, '01'), true)
+      assert.equal(canCancelInvoiceApply(4, '06'), false)
+      assert.equal(canReverseInvoice(4, '06'), true)
+      assert.equal(canReverseInvoice(47, '13'), true)
+      assert.equal(canReverseInvoice(4, '01'), false)
+      assert.equal(canModifyInvoiceAddress(3, '01'), true)
+      assert.equal(canModifyInvoiceAddress(4, '01'), true)
+      assert.equal(canModifyInvoiceAddress(1, '01'), false)
+      assert.equal(canModifyInvoiceAddress(4, '06'), false)
+      assert.equal(
+        normalizeHistory({
+          id: 1,
+          applyNo: 'APPLY_001',
+          acceptTinName: '德邦测试有限公司',
+          acceptTinCode: '91310000123456789X',
+          billAmount: 100,
+          billCategory: '06',
+          applyTime: 1783562400000,
+          email: 'finance@example.com',
+          elecLinkAdress: 'https://example.com/invoice.pdf',
+          status: '4'
+        }).canSendEmail,
+        true
+      )
+      const paperPending = normalizeHistory({
+        id: 3,
+        applyNo: 'APPLY_003',
+        billAmount: 50,
+        billCategory: '01',
+        acceptCustomer: '王五',
+        acceptPhone: '13800138000',
+        acceptAddress: '上海市|上海市|青浦区|徐泾镇明珠路100号',
+        status: '3'
+      })
+      const electronicOpened = normalizeHistory({
+        id: 4,
+        applyNo: 'APPLY_004',
+        billAmount: 50,
+        billCategory: '06',
+        status: '4'
+      })
+
+      assert.equal(paperPending.canCancel, true)
+      assert.equal(paperPending.canReverse, false)
+      assert.equal(paperPending.canModifyAddress, true)
+      assert.equal(paperPending.contactName, '王五')
+      assert.equal(paperPending.contactAddress, '徐泾镇明珠路100号')
+      assert.equal(electronicOpened.canCancel, false)
+      assert.equal(electronicOpened.canReverse, true)
+      assert.equal(
+        normalizeHistory({
+          id: 2,
+          applyNo: 'APPLY_002',
+          billAmount: 50,
+          status: '3'
+        }).canSendEmail,
+        false
+      )
+    }
+  },
+  {
+    name: 'invoice ecard rules normalize recharge records and create prepay payload',
+    run() {
+      const item = normalizeInvoiceECard({
+        payNo: ' PAY_001 ',
+        unbillAmount: 88.8,
+        chargeAmountTime: 1783562400000
+      })
+      const preview = createECardApplyPreview(createECardInvoiceDraft())
+      const payload = createECardApplySubmitPayload(createECardInvoiceDraft())
+
+      assert.deepEqual(item, {
+        id: 'PAY_001',
+        amount: 88.8,
+        timestamp: 1783562400000,
+        businessTime: '2026-07-09 10:00:00'
+      })
+      assert.equal(preview.canSubmit, true)
+      assert.equal(preview.billCategoryText, '电子普票')
+      assert.equal(preview.amount, 88.8)
+      assert.equal(
+        createECardApplyPreview(
+          createECardInvoiceDraft({
+            ecards: []
+          })
+        ).message,
+        '请选择储值卡开票记录'
+      )
+      assert.deepEqual(payload.TaskDetailList[0], {
+        orderNo: 'PAY_001',
+        sourceBillNo: 'PAY_001',
+        amount: 88.8,
+        payFlag: true
+      })
+      const batchPayload = createECardApplySubmitPayload(
+        createECardInvoiceDraft({
+          ecards: [
+            {
+              id: 'PAY_001',
+              amount: 88.8,
+              businessTime: '2026-07-09 10:00:00',
+              timestamp: 1783562400000
+            },
+            {
+              id: 'PAY_002',
+              amount: 11.2,
+              businessTime: '2026-07-09 11:00:00',
+              timestamp: 1783566000000
+            }
+          ]
+        })
+      )
+
+      assert.equal(batchPayload.TaskDetailList.length, 2)
+      assert.equal(batchPayload.TaskInfo.openAmount, 100)
+      assert.equal(batchPayload.TaskInfo.totalAmount, 100)
+      assert.equal(payload.TaskInfo.applyType, '171')
+      assert.equal(payload.TaskInfo.sourceType, '17')
+      assert.equal(payload.TaskInfo.SourceSystem, 'WX')
+      assert.equal(payload.TaskInfo.invoiceContent, '预存卡销售和充值')
+      assert.equal(payload.TaskInfo.remark, '收派服务费')
+      assert.equal(payload.TaskInfo.billCategory, '06')
     }
   },
   {
@@ -876,7 +1360,7 @@ const tests = [
           role: 'sender'
         }
       )
-      const invoiceAction = signedActions.find((item) => item.kind === 'invoice')
+      const invoiceAction = signedActions.find(item => item.kind === 'invoice')
       const departmentAction = createOrderDetailActions(
         createOrderDetail({
           orderClassification: '5',
@@ -888,7 +1372,7 @@ const tests = [
         {
           role: 'sender'
         }
-      ).find((item) => item.kind === 'departmentPhone')
+      ).find(item => item.kind === 'departmentPhone')
 
       assert.ok(invoiceAction)
       assert.equal(invoiceAction.target, 'route')

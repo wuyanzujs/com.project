@@ -10,10 +10,12 @@ import {
   expressDraftStorage,
   markExpressQuoteStale
 } from '../../../services/express'
+import { memberService } from '../../../services/member'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
+import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
 import type { CouponCardView, CouponStatus } from '../../../services/coupon'
 
@@ -52,6 +54,7 @@ const CouponListPage = () => {
   const [errorMessage, setErrorMessage] = useState('')
   const [exchangeCode, setExchangeCode] = useState('')
   const [exchanging, setExchanging] = useState(false)
+  const [openingWelfare, setOpeningWelfare] = useState(false)
 
   const activeTabText = useMemo(
     () => COUPON_TABS.find((item) => item.value === status)?.label || '未使用',
@@ -194,6 +197,31 @@ const CouponListPage = () => {
     })
   }
 
+  const handleOpenWelfare = async () => {
+    if (!ensureCouponAccess() || openingWelfare) {
+      return
+    }
+
+    setOpeningWelfare(true)
+
+    try {
+      const uri = await memberService.createWelfareCenterUrl('COUPON_LIST')
+
+      navigateToAppRoute(
+        createAppWebUrl({
+          source: 'MEMBER_WELFARE_CENTER',
+          uri,
+          title: '福利中心'
+        }),
+        {
+          login: true
+        }
+      )
+    } finally {
+      setOpeningWelfare(false)
+    }
+  }
+
   return (
     <ScrollView className='coupon-list-page' scrollY>
       <View className='coupon-list-header'>
@@ -207,8 +235,10 @@ const CouponListPage = () => {
       <View className='coupon-exchange'>
         <Input
           className='coupon-exchange__input'
+          maxlength={20}
           placeholder='输入兑换码'
           value={exchangeCode}
+          onBlur={(event) => setExchangeCode(event.detail.value.trim())}
           onInput={(event) => setExchangeCode(event.detail.value)}
         />
         <View className='coupon-exchange__button' onClick={handleExchange}>
@@ -340,6 +370,11 @@ const CouponListPage = () => {
             <Text className='coupon-empty__summary'>
               可通过兑换码领取优惠券，更多会员权益后续由 App WebView 或原生页承接。
             </Text>
+            <View className='coupon-empty__button' onClick={handleOpenWelfare}>
+              <Text className='coupon-empty__button-text'>
+                {openingWelfare ? '打开中' : '去福利中心领券'}
+              </Text>
+            </View>
           </View>
         )}
 

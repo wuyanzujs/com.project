@@ -11,10 +11,19 @@ import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
 import type {
   MemberBenefitView,
-  MemberOverviewView
+  MemberOverviewView,
+  MemberWebAction
 } from '../../../services/member'
+import type { AppWebSource } from '../../../shared/webview/appWeb'
 
 import './index.scss'
+
+const MEMBER_WEB_SOURCES: Record<MemberWebAction, AppWebSource> = {
+  MEMBER_CENTER: 'MEMBER_CENTER_HOME',
+  MEMBER_POINTS: 'MEMBER_POINTS_CENTER',
+  MEMBER_SVIP: 'MEMBER_SVIP_CENTER',
+  MEMBER_STUDENTS: 'MEMBER_STUDENT_CENTER'
+}
 
 const MemberCenterPage = () => {
   const [overview, setOverview] = useState<MemberOverviewView | null>(null)
@@ -31,20 +40,22 @@ const MemberCenterPage = () => {
     setMessage('')
 
     try {
-      const [overviewResponse, nextWelfareUrl] = await Promise.all([
-        memberService.queryOverview(),
-        memberService.createWelfareCenterUrl()
-      ])
-
-      setWelfareUrl(nextWelfareUrl)
+      const overviewResponse = await memberService.queryOverview()
+      const overviewResult = overviewResponse.result ?? null
+      const nextWelfareUrl = await memberService.createWelfareCenterUrl(
+        'MEMBER_INDEX',
+        overviewResult?.svipUrl
+      )
 
       if (!overviewResponse.status || !overviewResponse.result) {
         setOverview(null)
+        setWelfareUrl(nextWelfareUrl)
         setMessage(overviewResponse.message || '暂未获取到会员权益')
         return
       }
 
-      setOverview(overviewResponse.result)
+      setOverview(overviewResult)
+      setWelfareUrl(nextWelfareUrl)
     } finally {
       setLoading(false)
     }
@@ -60,12 +71,33 @@ const MemberCenterPage = () => {
     }
   })
 
-  const handleOpenWelfare = () => {
+  const handleOpenWelfare = (
+    source: AppWebSource = 'MEMBER_WELFARE_CENTER',
+    title = '会员权益'
+  ) => {
     navigateToAppRoute(
       createAppWebUrl({
-        source: 'MEMBER_WELFARE_CENTER',
+        source,
         uri: welfareUrl,
-        title: '会员权益'
+        title
+      }),
+      {
+        login: true
+      }
+    )
+  }
+
+  const handleOpenMemberWeb = async (
+    action: MemberWebAction,
+    title: string
+  ) => {
+    const uri = await memberService.createMasUrl(action, action)
+
+    navigateToAppRoute(
+      createAppWebUrl({
+        source: MEMBER_WEB_SOURCES[action],
+        uri,
+        title
       }),
       {
         login: true
@@ -79,9 +111,12 @@ const MemberCenterPage = () => {
       return
     }
 
-    if (item.action === 'WELFARE_CENTER') {
-      handleOpenWelfare()
+    if (item.action === 'MEMBER_SVIP') {
+      handleOpenWelfare(MEMBER_WEB_SOURCES.MEMBER_SVIP, item.title)
+      return
     }
+
+    handleOpenMemberWeb(item.action, item.title)
   }
 
   return (
@@ -131,7 +166,10 @@ const MemberCenterPage = () => {
           {overview?.svipMessage || '更多权益由福利中心承接'}
         </Text>
         <View className='member-actions'>
-          <View className='member-action' onClick={handleOpenWelfare}>
+          <View
+            className='member-action'
+            onClick={() => handleOpenWelfare()}
+          >
             <Text className='member-action__text'>
               {overview?.svipButtonText || '查看权益'}
             </Text>

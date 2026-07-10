@@ -7,9 +7,17 @@ import type {
   MemberBenefitView,
   MemberLevelRaw,
   MemberOverviewView,
-  MemberSvipRaw
+  MemberSvipRaw,
+  MemberWebAction
 } from './types'
 import type { DepponResponse } from '../../request/deppon'
+
+const MEMBER_MAS_PATHS: Record<MemberWebAction, string> = {
+  MEMBER_CENTER: '/member/home',
+  MEMBER_POINTS: '/points-center/home',
+  MEMBER_SVIP: '/svip-member/entry',
+  MEMBER_STUDENTS: '/student-member/entry'
+}
 
 const DEFAULT_BENEFITS: MemberBenefitView[] = [
   {
@@ -21,17 +29,31 @@ const DEFAULT_BENEFITS: MemberBenefitView[] = [
   },
   {
     title: '积分中心',
-    summary: '积分明细和兑换活动由 MAS 福利中心承接',
+    summary: '积分明细和兑换活动由 MAS 积分中心承接',
     status: 'web',
-    action: 'WELFARE_CENTER',
-    badgeText: '福利中心'
+    action: 'MEMBER_POINTS',
+    badgeText: 'MAS'
   },
   {
-    title: 'SVIP 专属券',
-    summary: 'SVIP 购买、续费和发券链路后续接入支付能力',
+    title: '会员中心',
+    summary: '查看会员等级权益和成长任务',
     status: 'web',
-    action: 'WELFARE_CENTER',
-    badgeText: '福利中心'
+    action: 'MEMBER_CENTER',
+    badgeText: 'MAS'
+  },
+  {
+    title: 'SVIP 专属权益',
+    summary: 'SVIP 购买、续费和发券链路由 MAS 承接',
+    status: 'web',
+    action: 'MEMBER_SVIP',
+    badgeText: 'MAS'
+  },
+  {
+    title: '学生专区',
+    summary: '学生会员认证与专属活动由 MAS 承接',
+    status: 'web',
+    action: 'MEMBER_STUDENTS',
+    badgeText: 'MAS'
   }
 ]
 
@@ -95,6 +117,45 @@ function createSuccessResponse<TResult>(
   }
 }
 
+export function createMemberWelfareUrl(
+  baseUrl: string,
+  source: string,
+  code = ''
+) {
+  return appendRouteQuery(baseUrl, {
+    code,
+    source
+  })
+}
+
+function createMemberMasBaseUrl(
+  path: string,
+  baseUrl = APP_RUNTIME_CONFIG.memberWebURL
+) {
+  try {
+    const parsed = new URL(baseUrl || APP_RUNTIME_CONFIG.memberWebURL)
+
+    return `${parsed.origin}${path}`
+  } catch {
+    return path
+  }
+}
+
+export function createMemberMasUrl(
+  action: MemberWebAction,
+  source: string,
+  code = '',
+  baseUrl = APP_RUNTIME_CONFIG.memberWebURL
+) {
+  return appendRouteQuery(
+    createMemberMasBaseUrl(MEMBER_MAS_PATHS[action], baseUrl),
+    {
+      code,
+      source
+    }
+  )
+}
+
 export const memberService = {
   async queryOverview(): Promise<DepponResponse<MemberOverviewView>> {
     const [levelResponse, svipResponse] = await Promise.all([
@@ -111,18 +172,37 @@ export const memberService = {
     return createSuccessResponse(overview, message)
   },
 
-  async createWelfareCenterUrl(source = 'MEMBER_INDEX') {
+  async createWelfareCenterUrl(
+    source = 'MEMBER_INDEX',
+    baseUrl = APP_RUNTIME_CONFIG.memberWebURL
+  ) {
     try {
       const token = await authService.generateTmpToken(source)
 
-      return appendRouteQuery(APP_RUNTIME_CONFIG.memberWebURL, {
-        code: token,
-        source
-      })
+      return createMemberWelfareUrl(
+        baseUrl || APP_RUNTIME_CONFIG.memberWebURL,
+        source,
+        token
+      )
     } catch {
-      return appendRouteQuery(APP_RUNTIME_CONFIG.memberWebURL, {
+      return createMemberWelfareUrl(
+        baseUrl || APP_RUNTIME_CONFIG.memberWebURL,
         source
-      })
+      )
+    }
+  },
+
+  async createMasUrl(
+    action: MemberWebAction,
+    source = 'MEMBER_INDEX',
+    baseUrl = APP_RUNTIME_CONFIG.memberWebURL
+  ) {
+    try {
+      const token = await authService.generateTmpToken(source)
+
+      return createMemberMasUrl(action, source, token, baseUrl)
+    } catch {
+      return createMemberMasUrl(action, source, '', baseUrl)
     }
   }
 }

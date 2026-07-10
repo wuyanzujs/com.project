@@ -143,6 +143,10 @@
   background: #f2f4f7;
 }
 
+.invoice-detail-action--danger {
+  background: #b42318;
+}
+
 .invoice-detail-action__text {
   color: #ffffff;
   font-size: 24px;
@@ -167,6 +171,84 @@
 
 .invoice-detail-section__summary {
   color: #667085;
+  font-size: 23px;
+}
+
+.invoice-detail-section__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 108px;
+  height: 58px;
+  padding: 0 18px;
+  background: #eef4ff;
+  border-radius: 8px;
+}
+
+.invoice-detail-section__button--disabled {
+  background: #f2f4f7;
+}
+
+.invoice-detail-section__button-text {
+  color: #1a5eff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.invoice-detail-section__summary--block {
+  display: flex;
+  margin-top: 10px;
+  line-height: 34px;
+}
+
+.invoice-detail-row--address {
+  align-items: flex-start;
+}
+
+.invoice-detail-row__value--address {
+  line-height: 36px;
+}
+
+.invoice-detail-mail {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 18px;
+}
+
+.invoice-detail-mail__input {
+  flex: 1;
+  height: 68px;
+  padding: 0 20px;
+  color: #16181a;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 25px;
+}
+
+.invoice-detail-mail__button {
+  align-items: center;
+  justify-content: center;
+  width: 118px;
+  height: 68px;
+  margin-left: 12px;
+  background: #16181a;
+  border-radius: 8px;
+}
+
+.invoice-detail-mail__button--disabled {
+  background: #98a2b3;
+}
+
+.invoice-detail-mail__button-text {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.invoice-detail-mail__hint {
+  display: flex;
+  margin-top: 12px;
+  color: #c2410c;
   font-size: 23px;
 }
 

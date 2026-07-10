@@ -11,6 +11,7 @@ import {
   InvoiceTabs,
   InvoiceTaxpayersPanel
 } from './components/InvoiceCenterSections'
+import { InvoiceECardPanel } from './components/InvoiceECardPanel'
 import { OrderAuthDialog } from './components/OrderAuthDialog'
 import { CACHE_KEYS, DPCacheExpireType, dpCache } from '../../../cache'
 import {
@@ -28,6 +29,7 @@ import type { InvoiceTabItem } from './components/InvoiceCenterSections'
 import type { DepponResponse } from '../../../request/deppon'
 import type {
   InvoiceHistoryView,
+  InvoiceECardView,
   InvoiceOrderAuthChallenge,
   InvoiceOrderSearchView,
   InvoiceOrderView,
@@ -51,6 +53,10 @@ const INVOICE_TABS: InvoiceTabItem[] = [
     value: 'orders'
   },
   {
+    label: '储值卡',
+    value: 'ecards'
+  },
+  {
     label: '开票历史',
     value: 'history'
   },
@@ -61,12 +67,20 @@ const INVOICE_TABS: InvoiceTabItem[] = [
 ]
 
 function parseInvoiceTab(value?: string): InvoiceTab {
-  return value === 'history' || value === 'taxpayers' ? value : 'orders'
+  return value === 'ecards' || value === 'history' || value === 'taxpayers'
+    ? value
+    : 'orders'
 }
 
 function createInvoiceApplyUrl(order: InvoiceOrderView) {
   return createAppRouteUrl(APP_ROUTES.invoiceApply, {
     order: JSON.stringify(order)
+  })
+}
+
+function createInvoiceECardApplyUrl(items: InvoiceECardView[]) {
+  return createAppRouteUrl(APP_ROUTES.invoiceApply, {
+    ecards: JSON.stringify(items)
   })
 }
 
@@ -155,6 +169,11 @@ const InvoiceCenterPage = () => {
   const [orderAuthCountdown, setOrderAuthCountdown] = useState(0)
   const [orderAuthSending, setOrderAuthSending] = useState(false)
   const [orderAuthSubmitting, setOrderAuthSubmitting] = useState(false)
+  const [ecards, setECards] = useState<InvoiceECardView[]>([])
+  const [selectedECardIds, setSelectedECardIds] = useState<string[]>([])
+  const [ecardPageIndex, setECardPageIndex] = useState(1)
+  const [ecardTotalPage, setECardTotalPage] = useState(1)
+  const [ecardTotalRows, setECardTotalRows] = useState(0)
   const [history, setHistory] = useState<InvoiceHistoryView[]>([])
   const [historyPageIndex, setHistoryPageIndex] = useState(1)
   const [historyTotalPage, setHistoryTotalPage] = useState(1)
@@ -355,6 +374,46 @@ const InvoiceCenterPage = () => {
     [historyKeyword, loading]
   )
 
+  const loadECards = useCallback(
+    async (nextPage = 1) => {
+      if (loading) {
+        return
+      }
+
+      setLoading(true)
+      setErrorMessage('')
+
+      try {
+        const response = await invoiceService.queryECards(nextPage, PAGE_SIZE)
+
+        if (!response.status || !response.result) {
+          setErrorMessage(response.message || '暂未获取到储值卡开票记录')
+          if (nextPage === 1) {
+            setECards([])
+            setSelectedECardIds([])
+            setECardTotalRows(0)
+          }
+          return
+        }
+
+        if (nextPage === 1) {
+          setSelectedECardIds([])
+        }
+        setECards((current) =>
+          nextPage === 1
+            ? response.result?.list ?? []
+            : [...current, ...(response.result?.list ?? [])]
+        )
+        setECardPageIndex(response.result.pageIndex)
+        setECardTotalPage(response.result.totalPage)
+        setECardTotalRows(response.result.totalRows)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [loading]
+  )
+
   const loadTaxpayers = useCallback(async () => {
     if (loading) {
       return
@@ -395,9 +454,22 @@ const InvoiceCenterPage = () => {
         return
       }
 
+      if (nextTab === 'ecards') {
+        loadECards(1)
+        return
+      }
+
       loadTaxpayers()
     },
-    [loadHistory, loadOrderSearch, loadOrders, loadTaxpayers, orderKeyword, tab]
+    [
+      loadECards,
+      loadHistory,
+      loadOrderSearch,
+      loadOrders,
+      loadTaxpayers,
+      orderKeyword,
+      tab
+    ]
   )
 
   useDidShow(() => {
@@ -436,6 +508,11 @@ const InvoiceCenterPage = () => {
       historyPageIndex < historyTotalPage
     ) {
       loadHistory(historyPageIndex + 1)
+      return
+    }
+
+    if (tab === 'ecards' && ecardPageIndex < ecardTotalPage) {
+      loadECards(ecardPageIndex + 1)
     }
   }
 
@@ -650,6 +727,33 @@ const InvoiceCenterPage = () => {
     })
   }
 
+  const handleToggleECard = (item: InvoiceECardView) => {
+    setSelectedECardIds((current) =>
+      current.includes(item.id)
+        ? current.filter((id) => id !== item.id)
+        : [...current, item.id]
+    )
+  }
+
+  const handleApplySelectedECards = () => {
+    const selectedItems = ecards.filter((item) =>
+      selectedECardIds.includes(item.id)
+    )
+
+    if (!selectedItems.length) {
+      showPendingToast('请选择储值卡开票记录')
+      return
+    }
+
+    navigateToAppRoute(createInvoiceECardApplyUrl(selectedItems), {
+      login: true
+    })
+  }
+
+  const selectedECardAmount = ecards
+    .filter((item) => selectedECardIds.includes(item.id))
+    .reduce((total, item) => total + item.amount, 0)
+
   const handleOpenHistoryDetail = (item: InvoiceHistoryView) => {
     navigateToAppRoute(createInvoiceDetailUrl(item), {
       login: true
@@ -714,6 +818,19 @@ const InvoiceCenterPage = () => {
           onScan={handleScanHistory}
           onOpenDetail={handleOpenHistoryDetail}
           onPreview={handlePreviewHistory}
+        />
+      )}
+
+      {tab === 'ecards' && (
+        <InvoiceECardPanel
+          ecards={ecards}
+          selectedIds={selectedECardIds}
+          selectedAmount={selectedECardAmount}
+          totalRows={ecardTotalRows}
+          loading={loading}
+          errorMessage={errorMessage}
+          onApplySelected={handleApplySelectedECards}
+          onToggle={handleToggleECard}
         />
       )}
 

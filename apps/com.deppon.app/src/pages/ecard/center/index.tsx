@@ -10,6 +10,7 @@ import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
 import type {
+  ECardCenterUrlOptions,
   ECardOverviewView,
   ECardTargetPage
 } from '../../../services/ecard'
@@ -22,6 +23,7 @@ interface ECardAction {
   summary: string
   targetPage: ECardTargetPage
   source: AppWebSource
+  linkOptions: ECardCenterUrlOptions
 }
 
 const ECARD_ACTIONS: ECardAction[] = [
@@ -29,19 +31,29 @@ const ECARD_ACTIONS: ECardAction[] = [
     title: '进入 E 卡',
     summary: '开通、管理和查看储值卡',
     targetPage: 'HOME',
-    source: 'ECARD_CENTER'
+    source: 'ECARD_CENTER',
+    linkOptions: {
+      type: 'YC',
+      targetSource: 'APP_ECARD_CENTER_HOME'
+    }
   },
   {
     title: '充值',
     summary: '充值优惠和支付由 E 卡页面承接',
     targetPage: 'RECHARGE',
-    source: 'ECARD_RECHARGE'
+    source: 'ECARD_RECHARGE',
+    linkOptions: {
+      targetSource: 'APP_ECARD_CENTER_RECHARGE'
+    }
   },
   {
     title: '账单',
     summary: '查看充值和消费明细',
     targetPage: 'BILL',
-    source: 'ECARD_BILL'
+    source: 'ECARD_BILL',
+    linkOptions: {
+      targetSource: 'APP_ECARD_CENTER_BILL'
+    }
   }
 ]
 
@@ -92,7 +104,8 @@ const ECardCenterPage = () => {
   const handleOpenECard = async (
     targetPage: ECardTargetPage,
     source: AppWebSource,
-    title: string
+    title: string,
+    linkOptions: ECardCenterUrlOptions
   ) => {
     if (!ensureECardAccess() || opening) {
       return
@@ -101,7 +114,10 @@ const ECardCenterPage = () => {
     setOpening(source)
 
     try {
-      const response = await ecardService.createCenterUrl(targetPage)
+      const response = await ecardService.createCenterUrl(
+        targetPage,
+        linkOptions
+      )
 
       if (!response.status || !response.result) {
         Taro.showToast({
@@ -183,7 +199,12 @@ const ECardCenterPage = () => {
             className='ecard-action-row'
             key={item.source}
             onClick={() =>
-              handleOpenECard(item.targetPage, item.source, item.title)
+              handleOpenECard(
+                item.targetPage,
+                item.source,
+                item.title,
+                item.linkOptions
+              )
             }
           >
             <View>

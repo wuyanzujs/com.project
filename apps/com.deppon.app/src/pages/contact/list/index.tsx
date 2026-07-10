@@ -51,9 +51,11 @@ const ContactListPage = () => {
     [contactListUrl]
   )
   const selectSummary =
-    selectionParams.source === 'QUERY_PRICE'
-      ? '选择后会回填到价格时效页，并触发对应报价依赖清理。'
-      : '选择后会回填到寄件页，并触发对应报价和取件依赖清理。'
+    selectionParams.source === 'INVOICE_DETAIL'
+      ? '选择后会回填为纸质发票收票地址，请在发票详情页确认后提交。'
+      : selectionParams.source === 'QUERY_PRICE'
+        ? '选择后会回填到价格时效页，并触发对应报价依赖清理。'
+        : '选择后会回填到寄件页，并触发对应报价和取件依赖清理。'
 
   const loadContacts = useCallback(
     async (nextPage = 1, nextKeyword = keyword) => {
@@ -81,7 +83,7 @@ const ContactListPage = () => {
 
         const nextList = response.result.list ?? []
 
-        setContacts((current) =>
+        setContacts(current =>
           nextPage === 1 ? nextList : [...current, ...nextList]
         )
         setPageIndex(response.result.pageNum || nextPage)
@@ -172,8 +174,8 @@ const ContactListPage = () => {
         return
       }
 
-      setContacts((current) =>
-        current.map((item) => ({
+      setContacts(current =>
+        current.map(item => ({
           ...item,
           defaultAddress: item.id === contact.id ? '1' : '0'
         }))
@@ -216,9 +218,7 @@ const ContactListPage = () => {
         return
       }
 
-      setContacts((current) =>
-        current.filter((item) => item.id !== contact.id)
-      )
+      setContacts(current => current.filter(item => item.id !== contact.id))
       Taro.showToast({
         title: '已删除地址',
         icon: 'none'
@@ -234,7 +234,11 @@ const ContactListPage = () => {
       return
     }
 
-    contactSelection.select(selectionParams.target, contact)
+    contactSelection.select(
+      selectionParams.target,
+      contact,
+      selectionParams.source
+    )
     Taro.navigateBack()
   }
 
@@ -261,7 +265,7 @@ const ContactListPage = () => {
           className='contact-list-search__input'
           placeholder='姓名、手机号、地址'
           value={keyword}
-          onInput={(event) => setKeyword(event.detail.value)}
+          onInput={event => setKeyword(event.detail.value)}
         />
         <View className='contact-list-search__button' onClick={handleSearch}>
           <Text className='contact-list-search__button-text'>搜索</Text>
@@ -276,9 +280,12 @@ const ContactListPage = () => {
       </View>
 
       <View className='contact-list-content'>
-        {contacts.map((contact) => (
+        {contacts.map(contact => (
           <View className='contact-card' key={contact.id || contact.telephone}>
-            <View className='contact-card__body' onClick={() => handleSelect(contact)}>
+            <View
+              className='contact-card__body'
+              onClick={() => handleSelect(contact)}
+            >
               <View className='contact-card__top'>
                 <Text className='contact-card__name'>{contact.name}</Text>
                 <Text className='contact-card__phone'>{contact.telephone}</Text>
@@ -287,7 +294,9 @@ const ContactListPage = () => {
                 {getContactFullAddress(contact)}
               </Text>
               <View className='contact-card__meta'>
-                <Text className='contact-card__tag'>{getRoleLabel(contact)}</Text>
+                <Text className='contact-card__tag'>
+                  {getRoleLabel(contact)}
+                </Text>
                 {contact.defaultAddress === '1' && (
                   <Text className='contact-card__tag contact-card__tag--primary'>
                     默认

@@ -3,22 +3,40 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
-import { paymentService } from '../../../services/payment'
+import {
+  createPaymentEvaluateWebUri,
+  getPaymentItemAmount,
+  paymentService
+} from '../../../services/payment'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 import { getNativeCapabilityErrorMessage } from '../../../shared/platform/capabilities'
 import { payWithApp } from '../../../shared/platform/payment'
+import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
 import type {
   PaymentItem,
+  PaymentListStatus,
   PaymentRole
 } from '../../../services/payment'
 
 import './index.scss'
 
 const PAGE_SIZE = 10
+
+const PAYMENT_STATUS_TABS: Array<{ label: string; value: PaymentListStatus }> =
+  [
+    {
+      label: '待支付',
+      value: 'UNPAID'
+    },
+    {
+      label: '已支付',
+      value: 'PAID'
+    }
+  ]
 
 const PAYMENT_ROLE_TABS: Array<{ label: string; value: PaymentRole }> = [
   {
@@ -47,13 +65,8 @@ function getPaymentTypeLabel(item: PaymentItem) {
   return '运费'
 }
 
-function getPaymentAmount(item: PaymentItem) {
-  const amount = Number(item.unWriteoffAmount || item.totalAmount || 0)
-
-  return Number.isFinite(amount) ? amount : 0
-}
-
 const PaymentListPage = () => {
+  const [status, setStatus] = useState<PaymentListStatus>('UNPAID')
   const [role, setRole] = useState<PaymentRole>('sender')
   const [keyword, setKeyword] = useState('')
   const [payments, setPayments] = useState<PaymentItem[]>([])
@@ -78,7 +91,8 @@ const PaymentListPage = () => {
     async (
       nextPage = 1,
       nextRole = role,
-      nextKeyword = keyword
+      nextKeyword = keyword,
+      nextStatus = status
     ) => {
       if (loading) {
         return
@@ -88,7 +102,8 @@ const PaymentListPage = () => {
       setErrorMessage('')
 
       try {
-        const response = await paymentService.queryUnpaidList({
+        const response = await paymentService.queryPaymentList({
+          status: nextStatus,
           role: nextRole,
           pageIndex: nextPage,
           pageSize: PAGE_SIZE,
@@ -96,7 +111,12 @@ const PaymentListPage = () => {
         })
 
         if (!response.status || !response.result) {
-          setErrorMessage(response.message || '暂未获取到待支付运单')
+          setErrorMessage(
+            response.message ||
+              (nextStatus === 'PAID'
+                ? '暂未获取到支付记录'
+                : '暂未获取到待支付运单')
+          )
           if (nextPage === 1) {
             setPayments([])
             setTotalRows(0)
@@ -122,7 +142,7 @@ const PaymentListPage = () => {
         setLoading(false)
       }
     },
-    [keyword, loading, role]
+    [keyword, loading, role, status]
   )
 
   useDidShow(() => {
@@ -139,7 +159,25 @@ const PaymentListPage = () => {
     setRole(nextRole)
     setPayments([])
     setPageIndex(1)
-    loadPayments(1, nextRole, keyword)
+    loadPayments(1, nextRole, keyword, status)
+  }
+
+  const handleChangeStatus = (nextStatus: PaymentListStatus) => {
+    if (!ensurePaymentListAccess()) {
+      return
+    }
+
+    if (nextStatus === status) {
+      return
+    }
+
+    setStatus(nextStatus)
+    setPayments([])
+    setPageIndex(1)
+    setTotalRows(0)
+    setLoadedAmount(0)
+    setErrorMessage('')
+    loadPayments(1, role, keyword, nextStatus)
   }
 
   const handleSearch = () => {
@@ -149,7 +187,7 @@ const PaymentListPage = () => {
 
     setPayments([])
     setPageIndex(1)
-    loadPayments(1, role, keyword)
+    loadPayments(1, role, keyword, status)
   }
 
   const handleLoadMore = () => {
@@ -192,7 +230,7 @@ const PaymentListPage = () => {
         orderNumber: item.waybillNum,
         payload: {
           role,
-          amount: getPaymentAmount(item),
+          amount: getPaymentItemAmount(item, 'UNPAID'),
           item
         }
       })
@@ -212,6 +250,23 @@ const PaymentListPage = () => {
     }
   }
 
+  const handleEvaluate = (item: PaymentItem) => {
+    if (!ensurePaymentListAccess()) {
+      return
+    }
+
+    navigateToAppRoute(
+      createAppWebUrl({
+        source: 'PAYMENT_EVALUATE',
+        uri: createPaymentEvaluateWebUri(item),
+        title: '服务评价'
+      }),
+      {
+        login: true
+      }
+    )
+  }
+
   return (
     <ScrollView
       className='payment-list-page'
@@ -220,10 +275,34 @@ const PaymentListPage = () => {
     >
       <View className='payment-list-header'>
         <Text className='payment-list-header__label'>Payment</Text>
-        <Text className='payment-list-header__title'>待支付运单</Text>
+        <Text className='payment-list-header__title'>运单支付</Text>
         <Text className='payment-list-header__summary'>
-          先承接未核销费用查询和 App 支付入口，真实收银台由原生支付能力接入。
+          查询待支付与已支付运单，App 支付统一通过原生支付能力接入。
         </Text>
+      </View>
+
+      <View className='payment-status-tabs'>
+        {PAYMENT_STATUS_TABS.map((tab) => (
+          <View
+            className={
+              tab.value === status
+                ? 'payment-status-tab payment-status-tab--active'
+                : 'payment-status-tab'
+            }
+            key={tab.value}
+            onClick={() => handleChangeStatus(tab.value)}
+          >
+            <Text
+              className={
+                tab.value === status
+                  ? 'payment-status-tab__text payment-status-tab__text--active'
+                  : 'payment-status-tab__text'
+              }
+            >
+              {tab.label}
+            </Text>
+          </View>
+        ))}
       </View>
 
       <View className='payment-tabs'>
@@ -253,7 +332,7 @@ const PaymentListPage = () => {
       <View className='payment-search'>
         <Input
           className='payment-search__input'
-          placeholder='输入运单号搜索'
+          placeholder='输入运单号，多个用逗号分隔'
           value={keyword}
           onInput={(event) => setKeyword(event.detail.value)}
         />
@@ -264,7 +343,9 @@ const PaymentListPage = () => {
 
       <View className='payment-summary'>
         <View>
-          <Text className='payment-summary__title'>最近一个月</Text>
+          <Text className='payment-summary__title'>
+            {status === 'PAID' ? '最近180天' : '最近一个月'}
+          </Text>
           <Text className='payment-summary__count'>共 {totalRows} 笔费用</Text>
         </View>
         <View className='payment-summary__side'>
@@ -280,7 +361,14 @@ const PaymentListPage = () => {
           <View className='payment-card' key={getPaymentItemKey(item)}>
             <View className='payment-card__top'>
               <Text className='payment-card__number'>运单 {item.waybillNum}</Text>
-              <Text className='payment-card__tag'>{getPaymentTypeLabel(item)}</Text>
+              <View className='payment-card__tags'>
+                <Text className='payment-card__tag'>
+                  {getPaymentTypeLabel(item)}
+                </Text>
+                {status === 'PAID' && (
+                  <Text className='payment-card__status'>已支付</Text>
+                )}
+              </View>
             </View>
 
             <View className='payment-card__route'>
@@ -306,7 +394,7 @@ const PaymentListPage = () => {
                 开单时间 {item.businessDate || '--'}
               </Text>
               <Text className='payment-card__amount'>
-                ¥{getPaymentAmount(item).toFixed(2)}
+                ¥{getPaymentItemAmount(item, status).toFixed(2)}
               </Text>
             </View>
 
@@ -319,14 +407,28 @@ const PaymentListPage = () => {
                   查看订单
                 </Text>
               </View>
-              <View
-                className='payment-card__primary-button'
-                onClick={() => handlePay(item)}
-              >
-                <Text className='payment-card__primary-button-text'>
-                  {payingKey === getPaymentItemKey(item) ? '处理中' : '去支付'}
-                </Text>
-              </View>
+              {status === 'PAID' && (
+                <View
+                  className='payment-card__primary-button'
+                  onClick={() => handleEvaluate(item)}
+                >
+                  <Text className='payment-card__primary-button-text'>
+                    服务评价
+                  </Text>
+                </View>
+              )}
+              {status === 'UNPAID' && (
+                <View
+                  className='payment-card__primary-button'
+                  onClick={() => handlePay(item)}
+                >
+                  <Text className='payment-card__primary-button-text'>
+                    {payingKey === getPaymentItemKey(item)
+                      ? '处理中'
+                      : '去支付'}
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
         ))}
@@ -334,17 +436,24 @@ const PaymentListPage = () => {
         {!payments.length && !loading && (
           <View className='payment-empty'>
             <Text className='payment-empty__title'>
-              {errorMessage || '暂无待支付运单'}
+              {errorMessage ||
+                (status === 'PAID' ? '暂无支付记录' : '暂无待支付运单')}
             </Text>
             <Text className='payment-empty__summary'>
-              可切换寄件/收件，或按运单号搜索最近一个月费用。
+              {status === 'PAID'
+                ? '可切换寄件/收件，或按运单号搜索最近180天支付记录。'
+                : '可切换寄件/收件，或按运单号搜索最近一个月费用。'}
             </Text>
           </View>
         )}
 
         {loading && (
           <Text className='payment-loading'>
-            {payments.length ? '加载更多费用...' : '正在加载待支付运单...'}
+            {payments.length
+              ? '加载更多费用...'
+              : status === 'PAID'
+                ? '正在加载支付记录...'
+                : '正在加载待支付运单...'}
           </Text>
         )}
       </View>

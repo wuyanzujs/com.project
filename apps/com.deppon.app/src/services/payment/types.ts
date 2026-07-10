@@ -1,5 +1,6 @@
 export type PaymentOrderType = 'OR' | 'DR' | 'CR' | 'PFCR' | 'DVAR'
 export type PaymentWriteOffStatus = 0 | 1
+export type PaymentListStatus = 'UNPAID' | 'PAID'
 export type PaymentRole = 'sender' | 'receive'
 
 export interface PaymentListRequest {
@@ -10,6 +11,7 @@ export interface PaymentListRequest {
   pageSize: number
   writeOffStatus: PaymentWriteOffStatus
   waybillNo?: string
+  waybillNos?: string[]
   customerProperty?: PaymentOrderType
 }
 
@@ -81,6 +83,10 @@ export interface QueryUnpaidPaymentListOptions {
   pageIndex?: number
   pageSize?: number
   loading?: boolean
+}
+
+export interface QueryPaymentListOptions extends QueryUnpaidPaymentListOptions {
+  status?: PaymentListStatus
 }
 
 export interface PaymentListResult {

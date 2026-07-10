@@ -30,6 +30,39 @@
   line-height: 38px;
 }
 
+.payment-status-tabs {
+  display: flex;
+  flex-direction: row;
+  padding: 20px 24px 0;
+  background: #ffffff;
+}
+
+.payment-status-tab {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  height: 72px;
+  background: #f5f7fb;
+  border-bottom-color: #d0d5dd;
+  border-bottom-width: 1px;
+}
+
+.payment-status-tab--active {
+  background: #ffffff;
+  border-bottom-color: #1a5eff;
+  border-bottom-width: 4px;
+}
+
+.payment-status-tab__text {
+  color: #475467;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.payment-status-tab__text--active {
+  color: #1a5eff;
+}
+
 .payment-tabs {
   display: flex;
   flex-direction: row;
@@ -163,10 +196,27 @@
   font-weight: 700;
 }
 
+.payment-card__tags {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 12px;
+}
+
 .payment-card__tag {
   padding: 6px 14px;
   color: #9a3412;
   background: #fff7ed;
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.payment-card__status {
+  margin-left: 8px;
+  padding: 6px 14px;
+  color: #166534;
+  background: #ecfdf3;
   border-radius: 8px;
   font-size: 22px;
   font-weight: 700;
