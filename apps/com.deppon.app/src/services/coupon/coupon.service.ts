@@ -228,7 +228,7 @@ export function validateCouponExchangeCode(code: string) {
   return ''
 }
 
-function normalizeCouponDetail(raw: {
+export function createCouponDetailView(raw: {
   couponCode?: string
   fitProduct?: string | null
   limit?: string[] | null
@@ -257,9 +257,10 @@ function normalizeCouponDetail(raw: {
     .filter(Boolean)
   const descriptions = splitDescription(raw.couponDescribe)
   const fitProduct = (raw.fitProduct ?? '').trim()
+  const couponCode = (raw.couponCode ?? '').trim()
 
   return {
-    code: raw.couponCode ?? '',
+    code: couponCode,
     fitProduct,
     limits,
     descriptions,
@@ -363,7 +364,7 @@ export const couponService = {
 
     return {
       ...response,
-      result: normalizeCouponDetail(response.result)
+      result: createCouponDetailView(response.result)
     }
   }
 }

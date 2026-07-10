@@ -240,7 +240,9 @@ const AccountSettingsPage = () => {
               })
             }
           >
-            <Text className='account-settings-danger__title'>注销账号</Text>
+            <Text className='account-settings-danger__title account-settings-danger__title--strong'>
+              注销账号
+            </Text>
             <Text className='account-settings-danger__summary'>
               注销后账号信息将无法恢复，请谨慎操作。
             </Text>

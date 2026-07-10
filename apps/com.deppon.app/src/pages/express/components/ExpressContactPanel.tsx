@@ -8,6 +8,8 @@ import type {
   ExpressDraft
 } from '../../../services/express'
 
+import '../index.scss'
+
 interface ExpressContactCardProps {
   contact: ExpressContact | null
   mark: '寄' | '收'

@@ -1,56 +1,97 @@
 .home-menu {
+  margin: 16px 24px 0;
+  padding-top: 16px;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 24px;
+}
+
+.home-menu__swiper,
+.home-menu__page,
+.home-menu__grid {
+  width: 100%;
+  height: 432px;
+}
+
+.home-menu__grid {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  padding: 8px 16px 0;
+  align-content: flex-start;
 }
 
 .home-menu__item {
-  width: 50%;
-  padding: 8px;
-}
-
-.home-menu__mark--primary {
-  background: #e8efff;
-  color: #1a5eff;
-}
-
-.home-menu__mark--success {
-  background: #e8f7ef;
-  color: #15803d;
-}
-
-.home-menu__mark--warning {
-  background: #fff3dc;
-  color: #b45309;
-}
-
-.home-menu__mark--neutral {
-  background: #eef2f6;
-  color: #475467;
-}
-
-.home-menu__mark {
-  width: 48px;
-  height: 48px;
+  position: relative;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 24px;
-  font-size: 26px;
-  font-weight: 700;
-  text-align: center;
+  width: 25%;
+  height: 144px;
+  padding-top: 24px;
+}
+
+.home-menu__image {
+  width: 56px;
+  height: 56px;
+}
+
+.home-menu__image--large {
+  width: 80px;
+  height: 80px;
+  margin-top: -12px;
 }
 
 .home-menu__label {
-  margin-top: 14px;
+  margin-top: 12px;
   color: #16181a;
-  font-size: 30px;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 36px;
+  text-align: center;
+}
+
+.home-menu__label--large {
+  margin-top: 0;
+}
+
+.home-menu__badge {
+  position: absolute;
+  top: 2px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 84px;
+  height: 36px;
+  padding: 0 8px;
+  background: #f0484e;
+  border-color: #ffffff;
+  border-radius: 16px;
+  border-width: 2px;
+}
+
+.home-menu__badge-text {
+  color: #ffffff;
+  font-size: 18px;
   font-weight: 700;
 }
 
-.home-menu__desc {
-  margin-top: 6px;
-  color: #667085;
-  font-size: 22px;
-  line-height: 32px;
+.home-menu__pagination {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+}
+
+.home-menu__dot {
+  width: 16px;
+  height: 6px;
+  margin-left: 8px;
+  background: #e2e2e2;
+  border-radius: 3px;
+}
+
+.home-menu__dot--active {
+  width: 32px;
+  background: #111111;
 }

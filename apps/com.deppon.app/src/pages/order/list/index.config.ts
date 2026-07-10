@@ -1,3 +1,4 @@
 export default definePageConfig({
-  navigationBarTitleText: '查快递'
+  navigationBarTitleText: '查快递',
+  navigationStyle: 'custom'
 })

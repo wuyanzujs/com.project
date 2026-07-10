@@ -7,6 +7,8 @@ import type {
   InvoiceTaxpayerView
 } from '../../../../services/invoice'
 
+import '../index.scss'
+
 export interface InvoiceTabItem {
   label: string
   value: InvoiceTab

@@ -24,7 +24,6 @@ export function clearCurrentUser() {
   return removeStorageValue(CACHE_KEYS.userInfo)
 }
 
-export function clearAppSession() {
-  clearSessionCookie()
-  clearCurrentUser()
+export async function clearAppSession() {
+  await Promise.all([clearSessionCookie(), clearCurrentUser()])
 }

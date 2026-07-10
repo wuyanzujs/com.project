@@ -103,17 +103,17 @@
   text-align: center;
 }
 
-.batch-action--ready .batch-action__status {
+.batch-action__status--ready {
   color: #15803d;
   background: #dcfce7;
 }
 
-.batch-action--copy .batch-action__status {
+.batch-action__status--copy {
   color: #1a5eff;
   background: #e8efff;
 }
 
-.batch-action--pending .batch-action__status {
+.batch-action__status--pending {
   color: #475467;
   background: #eef2f6;
 }

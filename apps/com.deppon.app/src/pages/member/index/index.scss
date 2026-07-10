@@ -1,6 +1,6 @@
 .member-page {
   min-height: 100%;
-  padding-bottom: 48px;
+  padding-bottom: 128px;
   background: #f5f7fb;
 }
 
@@ -69,7 +69,7 @@
   font-weight: 700;
 }
 
-.member-card--hero .member-card__title {
+.member-card__title--hero {
   color: #ffffff;
 }
 
@@ -95,7 +95,7 @@
   line-height: 36px;
 }
 
-.member-card--hero .member-card__summary {
+.member-card__summary--hero {
   color: #d0d5dd;
 }
 

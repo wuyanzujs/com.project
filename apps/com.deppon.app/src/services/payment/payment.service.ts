@@ -81,6 +81,18 @@ export function getPaymentEvaluateScene(item: PaymentItem) {
   return item.paymentMethod === 'FC' ? 'S0705' : 'S0405'
 }
 
+export function getPaymentOrderTypeLabel(type?: PaymentOrderType | null) {
+  if (type === 'CR') {
+    return '货款'
+  }
+
+  if (type === 'DVAR') {
+    return '保管费'
+  }
+
+  return '运费'
+}
+
 function createPaymentEvaluateRowData(item: PaymentItem) {
   return JSON.stringify([
     {

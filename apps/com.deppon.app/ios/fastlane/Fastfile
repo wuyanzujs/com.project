@@ -16,6 +16,12 @@
 default_platform(:ios)
 
 platform :ios do
+  before_all do
+    ENV["SKIP_BUNDLING"] = "1"
+    sh("pnpm --dir .. install --frozen-lockfile")
+    sh("pnpm --dir .. run podInstall")
+  end
+
   desc "Description of what the lane does"
   lane :custom_lane do
     # add actions here: https://docs.fastlane.tools/actions
@@ -23,6 +29,7 @@ platform :ios do
 
   desc "development"
 	lane :build_dev do |options|
+		sh("pnpm --dir .. run bundle:ios")
 		update_info_plist
 		update_code_signing_settings
 		increment_version_number
@@ -42,6 +49,7 @@ platform :ios do
 
 	desc "release"
 	lane :build_release do |options|
+		sh("pnpm --dir .. run bundle:ios")
 		update_info_plist
 		update_code_signing_settings
 		increment_version_number

@@ -75,7 +75,7 @@ export const accountService = {
     })
 
     if (response.status) {
-      clearAppSession()
+      await clearAppSession()
     }
 
     return response

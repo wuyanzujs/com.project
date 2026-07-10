@@ -5,9 +5,12 @@ import { useState } from 'react'
 
 import { queryService } from '../../../services/query'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
+import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 import { getNativeCapabilityErrorMessage } from '../../../shared/platform/capabilities'
 import { openMapLocation } from '../../../shared/platform/map'
 import { PhoneNumberError, dialPhone } from '../../../shared/platform/phone'
+import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
 import type {
   DispatchAddress,
@@ -169,6 +172,25 @@ const QueryStationsPage = () => {
     }
 
     navigateToAppRoute(route)
+  }
+
+  const handleGoExpress = () => {
+    navigateToAppRoute(
+      createAppRouteUrl(APP_ROUTES.express, {
+        source: 'QUERY_STATION_EMPTY'
+      })
+    )
+  }
+
+  const handleFeedback = (item?: StationItem) => {
+    navigateToAppRoute(
+      createAppWebUrl({
+        source: 'STATION_FEEDBACK',
+        uri: queryService.createStationFeedbackWebUri(item, result?.address),
+        title: '网点反馈',
+        auth: false
+      })
+    )
   }
 
   const handleOpenMap = async (item: StationItem) => {
@@ -356,6 +378,14 @@ const QueryStationsPage = () => {
                 <View className='query-stations-card__actions'>
                   <View
                     className='query-stations-card__outline-button'
+                    onClick={() => handleFeedback(item)}
+                  >
+                    <Text className='query-stations-card__outline-button-text'>
+                      反馈
+                    </Text>
+                  </View>
+                  <View
+                    className='query-stations-card__outline-button'
                     onClick={() => handleOpenMap(item)}
                   >
                     <Text className='query-stations-card__outline-button-text'>
@@ -385,8 +415,22 @@ const QueryStationsPage = () => {
             <View className='query-stations-empty'>
               <Text className='query-stations-empty__title'>暂无网点</Text>
               <Text className='query-stations-empty__summary'>
-                可尝试补充详细地址，或切换网点类型后重新查询。
+                可先预约寄件，等待快递员联系。
               </Text>
+              <View
+                className='query-stations-empty__button'
+                onClick={handleGoExpress}
+              >
+                <Text className='query-stations-empty__button-text'>去寄件</Text>
+              </View>
+              <View
+                className='query-stations-empty__feedback'
+                onClick={() => handleFeedback()}
+              >
+                <Text className='query-stations-empty__feedback-text'>
+                  找不到网点？
+                </Text>
+              </View>
             </View>
           )}
         </View>

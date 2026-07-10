@@ -42,13 +42,45 @@ export interface PaymentItem {
   dshk?: number
   totalCharge?: number
   publishCharge?: number
+  chargingType?: string
+  cubage?: number
+  chargedWeight?: number
+  favorFee?: number
   transferFee?: number
   insurance?: number
+  releasePriceFee?: number
   refundFee?: number
   pickCharge?: number
   consignCharge?: number
   deliveryCharge?: number
+  signBackCharge?: number
+  appointmentDeliverFee?: number
+  storageFee?: number
   totalWeight?: number
+  basicFeeDetail?: PaymentChargeItem[]
+  incrementFeeDetail?: PaymentChargeItem[]
+}
+
+export interface PaymentChargeItem {
+  feeAttribute: string
+  feeMoney: number
+  feeName: string
+}
+
+export interface PaymentFeeRow {
+  key: string
+  label: string
+  amount: number
+  tone?: 'discount' | 'paid'
+}
+
+export interface PaymentFeeSummary {
+  baseAmount: number
+  serviceAmount: number
+  discountAmount: number
+  paidAmount: number
+  rows: PaymentFeeRow[]
+  serviceRows: PaymentFeeRow[]
 }
 
 export interface PaymentListResponse {

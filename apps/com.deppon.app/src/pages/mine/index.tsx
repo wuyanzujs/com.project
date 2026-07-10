@@ -1,15 +1,15 @@
-import { ScrollView, Text, View } from '@tarojs/components'
+import { Image, ScrollView, Text, View } from '@tarojs/components'
 import { useDidShow } from '@tarojs/taro'
 
 import { useState } from 'react'
 
-import {
-  authService,
-  getUserDisplayName,
-  maskMobile
-} from '../../services/auth'
+import { authService, maskMobile } from '../../services/auth'
 import { contactSelection } from '../../services/contact'
+import { memberService } from '../../services/member'
+import { orderService } from '../../services/order'
+import { paymentService } from '../../services/payment'
 import AppTabBar from '../../shared/components/AppTabBar'
+import { AppSafeAreaView, AppStatusBar } from '../../shared/native'
 import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
 import {
   createLoginRedirectUrl,
@@ -20,142 +20,251 @@ import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
 import { createAppWebUrl } from '../../shared/webview/appWeb'
 
 import type { AppUser } from '../../services/auth'
+import type { MemberOverviewView } from '../../services/member'
 import type { AppRoutePath } from '../../shared/navigation/routes'
 import type { AppWebSource } from '../../shared/webview/appWeb'
 
 import './index.scss'
 
+type MineOrderCountKey = 'all' | 'pickup' | 'payment' | 'transit' | 'signed'
+
+type MineOrderCounts = Record<MineOrderCountKey, number | null>
+
 interface MineEntry {
   title: string
-  summary: string
+  image: string
   route?: AppRoutePath
   webSource?: AppWebSource
   login?: boolean
+  badge?: string
 }
+
+interface MineOrderShortcut {
+  title: string
+  countKey: MineOrderCountKey
+  route: AppRoutePath
+}
+
+const EMPTY_ORDER_COUNTS: MineOrderCounts = {
+  all: null,
+  pickup: null,
+  payment: null,
+  transit: null,
+  signed: null
+}
+
+const ORDER_SHORTCUTS: MineOrderShortcut[] = [
+  { title: '全部订单', countKey: 'all', route: APP_ROUTES.orderList },
+  { title: '待揽收', countKey: 'pickup', route: APP_ROUTES.orderList },
+  { title: '待支付', countKey: 'payment', route: APP_ROUTES.paymentList },
+  { title: '运输中', countKey: 'transit', route: APP_ROUTES.orderList },
+  { title: '已签收', countKey: 'signed', route: APP_ROUTES.orderList }
+]
 
 const QUICK_ENTRIES: MineEntry[] = [
   {
-    title: '寄快递',
-    summary: '预约上门取件',
-    route: APP_ROUTES.express
-  },
-  {
-    title: '订单列表',
-    summary: '查看寄件和收件',
-    route: APP_ROUTES.orderList
-  },
-  {
-    title: '待支付',
-    summary: '查看未支付运费',
-    route: APP_ROUTES.paymentList
-  },
-  {
-    title: '面单打印',
-    summary: '打印入口与设备能力边界',
-    route: APP_ROUTES.printCenter
-  },
-  {
-    title: '优惠券',
-    summary: '查看可用权益',
-    route: APP_ROUTES.couponList
-  },
-  {
     title: '地址簿',
-    summary: '管理常用地址',
+    image: 'https://ca.deppon.com.cn/ows/assets/center2412/17.png',
     route: APP_ROUTES.contactList
+  },
+  {
+    title: '偏好设置',
+    image: 'https://ca.deppon.com.cn/ows/assets/center2412/18.png',
+    webSource: 'ACCOUNT_PREFERENCES',
+    login: true
+  },
+  {
+    title: '专属快递员',
+    image: 'https://ca.deppon.com.cn/ows/assets/center2412/19.png',
+    route: APP_ROUTES.courierList
+  },
+  {
+    title: '隐私设置',
+    image: 'https://ca.deppon.com.cn/ows/assets/center2412/20.png',
+    route: APP_ROUTES.privacySettings
+  },
+  {
+    title: '发票申请',
+    image: 'https://ca.deppon.com.cn/ows/assets/center2412/21.png',
+    route: APP_ROUTES.invoiceCenter
   }
 ]
 
 const SERVICE_ENTRIES: MineEntry[] = [
   {
-    title: '账号设置',
-    summary: '登录状态、账号安全和注销',
-    route: APP_ROUTES.accountSettings
-  },
-  {
-    title: '收派范围',
-    summary: '查询快递与零担覆盖',
-    route: APP_ROUTES.dispatchQuery
-  },
-  {
-    title: '网点查询',
-    summary: '查找营业部电话和地址',
-    route: APP_ROUTES.stationQuery
-  },
-  {
-    title: '客服中心',
-    summary: '在线客服、热线和售后',
-    route: APP_ROUTES.supportCenter
-  },
-  {
     title: '客户中心',
-    summary: '客户编码与月结入口',
+    image: 'https://ca.deppon.com.cn/ows/center/1.png',
     route: APP_ROUTES.customerCenter
   },
   {
-    title: '实名认证',
-    summary: '实名收寄身份核验',
-    route: APP_ROUTES.realNameCenter
+    title: '服务查询',
+    image: 'https://ca.deppon.com.cn/ows/center/2.png',
+    route: APP_ROUTES.dispatchQuery
+  },
+  {
+    title: '客服中心',
+    image: 'https://ca.deppon.com.cn/ows/center/3.png',
+    route: APP_ROUTES.supportCenter
+  },
+  {
+    title: '投诉',
+    image: 'https://ca.deppon.com.cn/ows/center/4.png',
+    webSource: 'SUPPORT_COMPLAINT',
+    login: true
+  },
+  {
+    title: '在线理赔',
+    image: 'https://ca.deppon.com.cn/ows/center/5.png',
+    webSource: 'SUPPORT_CLAIM',
+    login: true
+  },
+  {
+    title: '月结中心',
+    image: 'https://ca.deppon.com.cn/ows/center/6.png',
+    webSource: 'CUSTOMER_MONTHLY_CENTER',
+    login: true
+  },
+  {
+    title: '代收货款',
+    image: 'https://ca.deppon.com.cn/ows/center/7.png',
+    route: APP_ROUTES.customerCenter
+  },
+  {
+    title: '面单打印',
+    image: 'https://ca.deppon.com.cn/ows/center/8.png',
+    route: APP_ROUTES.printCenter
   },
   {
     title: '签收码',
-    summary: '实名签收与签收授权',
+    image: 'https://ca.deppon.com.cn/ows/center/9.png',
     route: APP_ROUTES.signCode
   },
   {
-    title: '德邦 E 卡',
-    summary: '余额、充值和账单',
-    route: APP_ROUTES.ecardCenter
-  },
-  {
-    title: '会员权益',
-    summary: '等级、积分和福利中心',
-    route: APP_ROUTES.memberCenter
-  },
-  {
-    title: '发票',
-    summary: '开票记录与抬头',
-    route: APP_ROUTES.invoiceCenter
-  },
-  {
-    title: '隐私设置',
-    summary: '协议与权限清单',
+    title: '协议说明',
+    image: 'https://ca.deppon.com.cn/ows/center/11.png',
     route: APP_ROUTES.privacySettings
   },
   {
-    title: '关于德邦',
-    summary: '公司介绍与品牌信息',
-    webSource: 'MINE_ABOUT_US',
-    login: false
+    title: '优待证优惠',
+    image: 'https://ca.deppon.com.cn/ows/center/12.png',
+    route: APP_ROUTES.memberCenter
+  },
+  {
+    title: '体验调研',
+    image: 'https://ca.deppon.com.cn/ows/center/13.png',
+    route: APP_ROUTES.supportCenter,
+    badge: 'HOT'
+  },
+  {
+    title: '企业福利',
+    image: 'https://ca.deppon.com.cn/ows/center/14.png',
+    route: APP_ROUTES.memberCenter
+  },
+  {
+    title: '实名认证',
+    image: 'https://ca.deppon.com.cn/ows/center/15.png',
+    route: APP_ROUTES.realNameCenter
+  },
+  {
+    title: '学生专区',
+    image: 'https://ca.deppon.com.cn/ows/center/16.png',
+    route: APP_ROUTES.memberCenter
+  },
+  {
+    title: '号码保护',
+    image: 'https://ca.deppon.com.cn/ows/center/19.png',
+    webSource: 'CUSTOMER_PHONE_PROTECT',
+    login: true,
+    badge: '上新'
+  },
+  {
+    title: '入群有礼',
+    image: 'https://ca.deppon.com.cn/ows/center/22.png',
+    route: APP_ROUTES.memberCenter,
+    badge: '福利'
   }
 ]
+
+function getTotalRows(
+  response: { status: boolean; result?: { totalRows: number } | null } | null
+) {
+  return response?.status && response.result ? response.result.totalRows : null
+}
+
+async function queryMineOrderCounts(): Promise<MineOrderCounts> {
+  const dateRange = orderService.getDateRange(90)
+  const commonOptions = {
+    role: 'sender' as const,
+    pageIndex: 1,
+    pageSize: 1,
+    startTime: dateRange.startTime,
+    endTime: dateRange.endTime
+  }
+  const [all, pickup, payment, transit, signed] = await Promise.all([
+    orderService.queryList(commonOptions).catch(() => null),
+    orderService
+      .queryList({ ...commonOptions, orderStatus: 'RECEIPTING' })
+      .catch(() => null),
+    paymentService
+      .queryPaymentList({ pageIndex: 1, pageSize: 1, status: 'UNPAID' })
+      .catch(() => null),
+    orderService
+      .queryList({ ...commonOptions, orderStatus: 'IN_TRANSIT' })
+      .catch(() => null),
+    orderService
+      .queryList({ ...commonOptions, orderStatus: 'SIGN' })
+      .catch(() => null)
+  ])
+
+  return {
+    all: getTotalRows(all),
+    pickup: getTotalRows(pickup),
+    payment: getTotalRows(payment),
+    transit: getTotalRows(transit),
+    signed: getTotalRows(signed)
+  }
+}
+
+function getMemberLevelAsset(levelCode = 0) {
+  const level = Math.max(1, Math.min(5, Math.round(levelCode)))
+
+  return `https://ca.deppon.com.cn/ows/assets/center2412/${level}.png`
+}
+
+function getMemberRightsCount(levelCode = 0) {
+  return [2, 2, 4, 6, 7, 9][Math.max(0, Math.min(5, levelCode))] ?? 2
+}
 
 const MinePage = () => {
   const [user, setUser] = useState<AppUser | null>(() =>
     authService.getCachedUser()
   )
-  const [refreshing, setRefreshing] = useState(false)
+  const [member, setMember] = useState<MemberOverviewView | null>(null)
+  const [orderCounts, setOrderCounts] =
+    useState<MineOrderCounts>(EMPTY_ORDER_COUNTS)
 
   const refreshUser = async () => {
     if (!hasValidSession()) {
       setUser(null)
+      setMember(null)
+      setOrderCounts(EMPTY_ORDER_COUNTS)
       return
     }
 
-    setRefreshing(true)
+    const [nextUser, memberResponse, nextOrderCounts] = await Promise.all([
+      authService.bootstrapUser(),
+      memberService.queryOverview(),
+      queryMineOrderCounts()
+    ])
 
-    try {
-      const nextUser = await authService.bootstrapUser()
-
-      setUser(nextUser ?? authService.getCachedUser())
-    } finally {
-      setRefreshing(false)
-    }
+    setUser(nextUser ?? authService.getCachedUser())
+    setMember(memberResponse.result ?? null)
+    setOrderCounts(nextOrderCounts)
   }
 
   useDidShow(() => {
     setUser(authService.getCachedUser())
-    refreshUser()
+    void refreshUser()
   })
 
   const handleLogin = () => {
@@ -164,6 +273,15 @@ const MinePage = () => {
 
   const handleAccountSettings = () => {
     navigateToAppRoute(APP_ROUTES.accountSettings, {
+      login: true
+    })
+  }
+
+  const handleManageContacts = () => {
+    const params = contactSelection.createParams('sender', 'manage')
+    const url = createAppRouteUrl(APP_ROUTES.contactList, params)
+
+    navigateToAppRoute(url, {
       login: true
     })
   }
@@ -190,99 +308,185 @@ const MinePage = () => {
     })
   }
 
-  const handleManageContacts = () => {
-    const params = contactSelection.createParams('sender', 'manage')
-    const url = createAppRouteUrl(APP_ROUTES.contactList, params)
-
-    navigateToAppRoute(url, {
-      login: true
-    })
-  }
+  const profileName = user?.mobile ? maskMobile(user.mobile) : '点击注册/登录'
+  const levelCode = member?.levelCode ?? 0
 
   return (
-    <>
+    <AppSafeAreaView backgroundColor='#f4f6f8' edges={[]}>
+      <AppStatusBar />
       <ScrollView className='mine-page' scrollY>
-        <View className='mine-profile'>
-          <View className='mine-profile__avatar'>
-            <Text className='mine-profile__avatar-text'>
-              {user ? getUserDisplayName(user).slice(0, 1) : '德'}
-            </Text>
-          </View>
-          <View className='mine-profile__content'>
-            <Text className='mine-profile__name'>{getUserDisplayName(user)}</Text>
-            <Text className='mine-profile__summary'>
-              {user?.mobile ? maskMobile(user.mobile) : '登录后同步订单和地址簿'}
-            </Text>
-          </View>
-          <View
-            className={
-              user
-                ? 'mine-profile__button mine-profile__button--quiet'
-                : 'mine-profile__button'
-            }
-            onClick={user ? handleAccountSettings : handleLogin}
-          >
-            <Text
-              className={
-                user
-                  ? 'mine-profile__button-text mine-profile__button-text--quiet'
-                  : 'mine-profile__button-text'
-              }
-            >
-              {user ? '设置' : '登录'}
-            </Text>
-          </View>
-        </View>
-
-        <View className='mine-stats'>
-          <View className='mine-stat mine-stat--right'>
-            <Text className='mine-stat__value'>{user ? '已登录' : '未登录'}</Text>
-            <Text className='mine-stat__label'>会话状态</Text>
-          </View>
-          <View className='mine-stat'>
-            <Text className='mine-stat__value'>
-              {refreshing ? '同步中' : '已就绪'}
-            </Text>
-            <Text className='mine-stat__label'>用户信息</Text>
-          </View>
-        </View>
-
-        <View className='mine-section'>
-          <Text className='mine-section__title'>常用服务</Text>
-          {QUICK_ENTRIES.map((entry) => (
+        <AppSafeAreaView
+          backgroundColor='#eef6ff'
+          edges={['top']}
+          fill={false}
+        >
+          <View className='mine-hero'>
+            <Image
+              className='mine-hero__background'
+              mode='scaleToFill'
+              src='https://ca.deppon.com.cn/ows/assets/center2412/14.png'
+            />
             <View
-              className='mine-entry'
-              key={entry.title}
-              onClick={() => handleEntry(entry)}
+              className='mine-profile'
+              onClick={user ? handleAccountSettings : handleLogin}
             >
-              <View>
-                <Text className='mine-entry__title'>{entry.title}</Text>
-                <Text className='mine-entry__summary'>{entry.summary}</Text>
+              <Image
+                className='mine-profile__avatar'
+                mode='aspectFit'
+                src={
+                  user
+                    ? 'https://ca.deppon.com.cn/ows/assets/center2412/38.png'
+                    : 'https://ca.deppon.com.cn/ows/assets/center2412/37.png'
+                }
+              />
+              <View className='mine-profile__content'>
+                <Text className='mine-profile__name'>{profileName}</Text>
+                <Text className='mine-profile__summary'>个人设置 ›</Text>
               </View>
-              <Text className='mine-entry__arrow'>›</Text>
+            </View>
+            <View
+              className='mine-hero__message'
+              onClick={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
+            >
+              <Image
+                className='mine-hero__message-image'
+                mode='aspectFit'
+                src='https://ca.deppon.com.cn/ows/assets/center/23.png'
+              />
+            </View>
+          </View>
+        </AppSafeAreaView>
+
+        <View
+          className='mine-member-card'
+          onClick={() => navigateToAppRoute(APP_ROUTES.memberCenter)}
+        >
+          <View className='mine-member-card__body'>
+            <Image
+              className='mine-member-card__background'
+              mode='scaleToFill'
+              src={getMemberLevelAsset(levelCode)}
+            />
+            <View className='mine-member-card__top'>
+              <View>
+                <View className='mine-member-card__level-row'>
+                  <Text className='mine-member-card__level'>
+                    {member?.levelName || '普通会员'}
+                  </Text>
+                  <Text className='mine-member-card__rights'>
+                    {getMemberRightsCount(levelCode)}项权益 ›
+                  </Text>
+                </View>
+                <Text className='mine-member-card__growth'>
+                  当前成长值 {member?.growthValue ?? 0}/
+                  {member?.maxGrowthValue || '--'}
+                </Text>
+              </View>
+            </View>
+            <View className='mine-member-card__benefits'>
+              <View className='mine-member-card__benefit'>
+                <Image
+                  className='mine-member-card__benefit-icon'
+                  mode='aspectFit'
+                  src='https://ca.deppon.com.cn/ows/assets/center2412/40.png'
+                />
+                <Text className='mine-member-card__benefit-text'>优惠券</Text>
+              </View>
+              <View className='mine-member-card__benefit'>
+                <Image
+                  className='mine-member-card__benefit-icon'
+                  mode='aspectFit'
+                  src='https://ca.deppon.com.cn/ows/assets/center2412/39.png'
+                />
+                <Text className='mine-member-card__benefit-text'>储值卡</Text>
+              </View>
+              <View className='mine-member-card__benefit'>
+                <Text className='mine-member-card__benefit-text'>
+                  我的积分 {member?.points ?? 0}
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View className='mine-member-card__svip'>
+            <Image
+              className='mine-member-card__svip-background'
+              mode='scaleToFill'
+              src='https://ca.deppon.com.cn/ows/assets/center2412/6.png'
+            />
+            <Image
+              className='mine-member-card__svip-logo'
+              mode='aspectFit'
+              src='https://ca.deppon.com.cn/ows/assets/center2412/50.png'
+            />
+            <Text className='mine-member-card__svip-text'>
+              {member?.svipMessage || 'SVIP 专属权益'}
+            </Text>
+            <View className='mine-member-card__svip-button'>
+              <Text className='mine-member-card__svip-button-text'>
+                {member?.svipButtonText || '立即开通'}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View className='mine-shortcuts'>
+          {ORDER_SHORTCUTS.map(entry => (
+            <View
+              className='mine-shortcut'
+              key={entry.title}
+              onClick={() => navigateToAppRoute(entry.route)}
+            >
+              <Text className='mine-shortcut__count'>
+                {user ? (orderCounts[entry.countKey] ?? '--') : '--'}
+              </Text>
+              <Text className='mine-shortcut__title'>{entry.title}</Text>
             </View>
           ))}
         </View>
 
-        <View className='mine-section'>
-          <Text className='mine-section__title'>更多能力</Text>
-          {SERVICE_ENTRIES.map((entry) => (
+        <View className='mine-quick-grid'>
+          {QUICK_ENTRIES.map(entry => (
             <View
-              className='mine-entry'
+              className='mine-quick-grid__item'
               key={entry.title}
               onClick={() => handleEntry(entry)}
             >
-              <View>
-                <Text className='mine-entry__title'>{entry.title}</Text>
-                <Text className='mine-entry__summary'>{entry.summary}</Text>
-              </View>
-              <Text className='mine-entry__arrow'>›</Text>
+              <Image
+                className='mine-quick-grid__image'
+                mode='aspectFit'
+                src={entry.image}
+              />
+              <Text className='mine-quick-grid__title'>{entry.title}</Text>
+            </View>
+          ))}
+        </View>
+
+        <View className='mine-service-grid'>
+          {SERVICE_ENTRIES.map(entry => (
+            <View
+              className='mine-service-grid__item'
+              key={entry.title}
+              onClick={() => handleEntry(entry)}
+            >
+              <Image
+                className='mine-service-grid__image'
+                mode='aspectFit'
+                src={entry.image}
+              />
+              <Text className='mine-service-grid__title'>{entry.title}</Text>
+              {entry.badge && (
+                <View className='mine-service-grid__badge'>
+                  <Text className='mine-service-grid__badge-text'>
+                    {entry.badge}
+                  </Text>
+                </View>
+              )}
             </View>
           ))}
         </View>
       </ScrollView>
       <AppTabBar active='mine' />
-    </>
+    </AppSafeAreaView>
   )
 }
 

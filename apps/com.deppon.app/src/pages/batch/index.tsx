@@ -24,6 +24,10 @@ function getActionClassName(action: BatchEntryActionView) {
   return `batch-action batch-action--${action.status}`
 }
 
+function getActionStatusClassName(action: BatchEntryActionView) {
+  return `batch-action__status batch-action__status--${action.status}`
+}
+
 function createDraftFromRecognizedItem(item: BatchRecognizedConsignee) {
   const baseDraft = expressDraftStorage.restore() ?? createExpressDraft()
 
@@ -128,7 +132,9 @@ const BatchPage = () => {
               <Text className='batch-action__title'>{action.title}</Text>
               <Text className='batch-action__summary'>{action.summary}</Text>
             </View>
-            <Text className='batch-action__status'>{action.statusText}</Text>
+            <Text className={getActionStatusClassName(action)}>
+              {action.statusText}
+            </Text>
           </View>
         ))}
       </View>

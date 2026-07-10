@@ -12,6 +12,8 @@ import type {
 } from '../../../../services/order'
 import type { PaymentSummary } from '../../../../services/payment'
 
+import '../index.scss'
+
 export function OrderDetailHeader(props: {
   title: string
   identityText: string

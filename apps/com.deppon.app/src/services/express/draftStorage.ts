@@ -14,7 +14,10 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
     goods: { ...draft.goods },
     service: { ...draft.service },
     pickup: { ...draft.pickup },
-    selectedProduct: draft.selectedProduct ? { ...draft.selectedProduct } : null
+    selectedProduct: draft.selectedProduct
+      ? { ...draft.selectedProduct }
+      : null,
+    scanContext: draft.scanContext ? { ...draft.scanContext } : undefined
   }
 }
 
@@ -38,7 +41,10 @@ function normalizeDraft(draft: ExpressDraft): ExpressDraft {
       ...defaultDraft.pickup,
       ...draft.pickup
     },
-    selectedProduct: draft.selectedProduct ? { ...draft.selectedProduct } : null
+    selectedProduct: draft.selectedProduct
+      ? { ...draft.selectedProduct }
+      : null,
+    scanContext: draft.scanContext ? { ...draft.scanContext } : undefined
   }
 }
 
@@ -66,7 +72,8 @@ function hasMeaningfulDraft(draft: ExpressDraft) {
     !!draft.pickup.time ||
     !!draft.couponNumber ||
     !!draft.remark ||
-    draft.agreementAccepted
+    draft.agreementAccepted ||
+    !!draft.scanContext
   )
 }
 

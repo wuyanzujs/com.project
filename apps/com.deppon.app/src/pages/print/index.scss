@@ -156,12 +156,12 @@
   text-align: center;
 }
 
-.print-action--ready .print-action__status {
+.print-action__status--ready {
   color: #15803d;
   background: #dcfce7;
 }
 
-.print-action--pending .print-action__status {
+.print-action__status--pending {
   color: #475467;
   background: #eef2f6;
 }

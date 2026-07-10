@@ -5,7 +5,7 @@ import process from 'node:process'
 const appRoot = process.cwd()
 const srcRoot = path.join(appRoot, 'src')
 const packageJsonPath = path.join(appRoot, 'package.json')
-const sourceExtensions = new Set(['.ts', '.tsx'])
+const sourceExtensions = new Set(['.ts', '.tsx', '.scss'])
 const forbiddenMiniProgramConfigFiles = [
   'project.config.json',
   'project.tt.json',
@@ -40,7 +40,7 @@ const nativeIdentityChecks = [
   },
   {
     filePath: path.join(appRoot, 'android/settings.gradle'),
-    expected: "@tarojs/taro-rn/package.json",
+    expected: '@tarojs/taro-rn/package.json',
     message: 'Android Expo autolinking 应兼容 pnpm workspace 依赖解析。'
   },
   {
@@ -49,7 +49,10 @@ const nativeIdentityChecks = [
     message: 'Android namespace 应使用 App 包名 com.deppon.app。'
   },
   {
-    filePath: path.join(appRoot, 'android/gradle/wrapper/gradle-wrapper.properties'),
+    filePath: path.join(
+      appRoot,
+      'android/gradle/wrapper/gradle-wrapper.properties'
+    ),
     expected: 'networkTimeout=60000',
     message: 'Gradle wrapper 首次下载超时不应保持模板默认 10 秒。'
   },
@@ -94,7 +97,7 @@ const nativeIdentityChecks = [
   },
   {
     filePath: path.join(appRoot, 'ios/Podfile'),
-    expected: "@tarojs/taro-rn/package.json",
+    expected: '@tarojs/taro-rn/package.json',
     message: 'iOS Expo autolinking 应兼容 pnpm workspace 依赖解析。'
   },
   {
@@ -117,27 +120,174 @@ const nativeFacadeRelativePathPrefixes = [
   'src/shared/platform/',
   'src/shared/native/'
 ]
+const cacheFacadeRelativePathPrefixes = ['src/cache/']
+const nativeOrCacheFacadeRelativePathPrefixes = [
+  ...nativeFacadeRelativePathPrefixes,
+  ...cacheFacadeRelativePathPrefixes
+]
 
 const forbiddenPatterns = [
   {
     pattern: /\bwx\./g,
-    message: '不要直接使用微信小程序 wx.*，请通过 shared/platform facade 或 service 层重构。'
+    message:
+      '不要直接使用微信小程序 wx.*，请通过 shared/platform facade 或 service 层重构。'
   },
   {
     pattern: /\bmy\./g,
-    message: '不要直接使用支付宝小程序 my.*，请通过 shared/platform facade 或 service 层重构。'
+    message:
+      '不要直接使用支付宝小程序 my.*，请通过 shared/platform facade 或 service 层重构。'
+  },
+  {
+    pattern:
+      /\b(?:getStorageSync|setStorageSync|getStorageInfoSync|removeStorageSync|clearStorageSync)\b/g,
+    message:
+      'Taro RN 不支持同步缓存 API，请通过 src/cache facade 使用异步持久化缓存。'
+  },
+  {
+    pattern:
+      /\bTaro\.(?:getStorage|setStorage|removeStorage|clearStorage|getStorageInfo)\b/g,
+    message: 'Taro 缓存 API 只能在 src/cache facade 中封装。',
+    allowRelativePathPrefixes: cacheFacadeRelativePathPrefixes
+  },
+  {
+    pattern: /(?:from\s+|require\(\s*)['"`]react-native(?:\/[^'"`]*)?['"`]/g,
+    message:
+      '业务代码不能直接依赖 react-native，请通过 shared/platform 或 shared/native facade。',
+    allowRelativePathPrefixes: nativeFacadeRelativePathPrefixes
+  },
+  {
+    pattern: /(?:from\s+|require\(\s*)['"`]react-native-webview['"`]/g,
+    message: 'WebView 原生组件只能在 shared/native 中封装。',
+    allowRelativePathPrefixes: ['src/shared/native/']
+  },
+  {
+    pattern: /(?:from\s+|require\(\s*)['"`]@react-native(?:\/|-)[^'"`]+['"`]/g,
+    message:
+      '业务代码不能直接依赖 RN 原生包，请通过 shared/platform、shared/native 或 cache facade。',
+    allowRelativePathPrefixes: nativeOrCacheFacadeRelativePathPrefixes
+  },
+  {
+    pattern:
+      /\bwindow\.(?:document|location|history|navigator|localStorage|sessionStorage|addEventListener|removeEventListener|open|close|postMessage)\b/g,
+    message: 'RN App 业务代码不能调用 window DOM/H5 API。'
+  },
+  {
+    pattern:
+      /\bdocument\.(?:querySelector|querySelectorAll|getElementById|getElementsByClassName|createElement|body|head|cookie|addEventListener|removeEventListener)\b/g,
+    message: 'RN App 业务代码不能调用 document DOM API。'
+  },
+  {
+    pattern:
+      /\b(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem|clear|key)\b/g,
+    message: 'RN App 不支持 Web Storage，请通过 src/cache facade。'
+  },
+  {
+    pattern: /\bnavigator\.(?:geolocation|clipboard|share|userAgent)\b/g,
+    message: 'RN App 不能直接调用 navigator API，请通过对应端能力 facade。'
+  },
+  {
+    pattern:
+      /\bTaro\.(?:getSystemInfoSync|getMenuButtonBoundingClientRect|createSelectorQuery|getFileSystemManager|onUserCaptureScreen|offUserCaptureScreen|pageScrollTo|setTabBarBadge|removeTabBarBadge|showShareMenu|hideShareMenu|chooseAddress|chooseInvoiceTitle|login|checkSession|requestPayment|createCanvasContext|canvasToTempFilePath)\b/g,
+    message:
+      '该 Taro API 不属于 RN App 可直接使用能力，请通过 shared/platform、shared/native 或业务 facade 重构。'
+  },
+  {
+    pattern: /\bposition\s*:\s*(?:fixed|sticky)\b/g,
+    message:
+      'React Native 不支持 fixed/sticky 定位，请使用可控容器内的 absolute 布局。',
+    fileExtensions: ['.scss']
+  },
+  {
+    pattern: /(^|[;{]\s*)inset\s*:/gm,
+    message:
+      'React Native 不支持 inset 简写，请显式设置 top/right/bottom/left。',
+    fileExtensions: ['.scss']
+  },
+  {
+    pattern: /\bborder-(?:top|right|bottom|left)-style\s*:/g,
+    message:
+      'Taro RN 不支持单边 border style，请使用 RN 支持的边框或独立分隔 View。',
+    fileExtensions: ['.scss']
+  },
+  {
+    pattern:
+      /^\s*(?:[.#]?[A-Za-z_][\w-]*)(?:\s*[+>~]\s*|\s+)(?:[.#]?[A-Za-z_][\w-]*)(?=[^,{\r\n]*\{)/gm,
+    message:
+      'Taro RN 会忽略后代/子级/兄弟组合选择器，请给目标元素添加独立 modifier class。',
+    fileExtensions: ['.scss']
+  },
+  {
+    pattern: /\.[A-Za-z_][\w-]*\.[A-Za-z_][\w-]*/g,
+    message:
+      'Taro RN 不支持复合类选择器，请给目标元素添加单一语义类或 modifier class。',
+    fileExtensions: ['.scss']
+  },
+  {
+    pattern: /\bbackground-image\s*:/g,
+    message:
+      'Taro RN 不支持 background-image，请使用 Image 组件配合 flex/absolute 布局。',
+    fileExtensions: ['.scss']
+  },
+  {
+    pattern: /\bbox-shadow\s*:/g,
+    message:
+      'box-shadow 不是可靠的 RN 跨端阴影方案，请通过共享样式封装平台阴影。',
+    fileExtensions: ['.scss']
+  },
+  {
+    pattern: /\bfloat\s*:/g,
+    message: 'React Native 不支持 float，请使用 flex 布局。',
+    fileExtensions: ['.scss']
+  },
+  {
+    pattern: /\b(?:display\s*:\s*(?:inline-)?grid|grid(?:-[\w-]+)?\s*:)/g,
+    message:
+      'React Native 不支持 CSS Grid，请使用 flexDirection、alignItems 和 justifyContent。',
+    fileExtensions: ['.scss']
+  },
+  {
+    pattern: /\bbackgroundImage\s*:/g,
+    message:
+      'Taro RN 不支持内联 backgroundImage，请使用 Image 组件配合 flex/absolute 布局。',
+    fileExtensions: ['.ts', '.tsx']
+  },
+  {
+    pattern: /\bboxShadow\s*:/g,
+    message:
+      '内联 boxShadow 不是可靠的 RN 跨端阴影方案，请通过共享样式封装平台阴影。',
+    fileExtensions: ['.ts', '.tsx']
+  },
+  {
+    pattern: /\bposition\s*:\s*['"](?:fixed|sticky)['"]/g,
+    message:
+      'React Native 不支持内联 fixed/sticky 定位，请使用可控容器内的 absolute 布局。',
+    fileExtensions: ['.ts', '.tsx']
+  },
+  {
+    pattern:
+      /\b(?:float|gridTemplate(?:Areas|Columns|Rows)|gridColumn|gridRow)\s*:/g,
+    message: 'RN 内联样式不能使用 float/CSS Grid，请使用 Flex 布局属性。',
+    fileExtensions: ['.ts', '.tsx']
+  },
+  {
+    pattern: /\bdisplay\s*:\s*['"](?:grid|inline-grid)['"]/g,
+    message: 'React Native 不支持内联 CSS Grid，请使用 Flex 布局属性。',
+    fileExtensions: ['.ts', '.tsx']
   },
   {
     pattern: /\bprocess\.env\.TARO_ENV\b/g,
-    message: 'RN-only App 不应保留小程序多端运行时分支，请使用 runtime 配置或 capability 矩阵。'
+    message:
+      'RN-only App 不应保留小程序多端运行时分支，请使用 runtime 配置或 capability 矩阵。'
   },
   {
     pattern: /\bTaro\.getEnv\b/g,
-    message: 'RN-only App 不应做 Taro 多端运行时探测，请使用 runtime 配置或 capability 矩阵。'
+    message:
+      'RN-only App 不应做 Taro 多端运行时探测，请使用 runtime 配置或 capability 矩阵。'
   },
   {
     pattern: /\bNativeModules\b/g,
-    message: 'RN NativeModules 只能在 shared/platform 或 shared/native 中封装。',
+    message:
+      'RN NativeModules 只能在 shared/platform 或 shared/native 中封装。',
     allowRelativePathPrefixes: nativeFacadeRelativePathPrefixes
   },
   {
@@ -194,19 +344,23 @@ const forbiddenPatterns = [
   },
   {
     pattern: /\buseShareAppMessage\b/g,
-    message: '小程序分享钩子不能进入 RN App，分享能力请使用 shared/platform/share。'
+    message:
+      '小程序分享钩子不能进入 RN App，分享能力请使用 shared/platform/share。'
   },
   {
     pattern: /\buseShareTimeline\b/g,
-    message: '小程序朋友圈分享钩子不能进入 RN App，分享能力请使用 shared/platform/share。'
+    message:
+      '小程序朋友圈分享钩子不能进入 RN App，分享能力请使用 shared/platform/share。'
   },
   {
     pattern: /\bonShareAppMessage\b/g,
-    message: '小程序分享生命周期不能进入 RN App，分享能力请使用 shared/platform/share。'
+    message:
+      '小程序分享生命周期不能进入 RN App，分享能力请使用 shared/platform/share。'
   },
   {
     pattern: /\bopenType\s*=/g,
-    message: '小程序开放能力按钮不能进入 RN App，请改为对应 shared/platform facade。'
+    message:
+      '小程序开放能力按钮不能进入 RN App，请改为对应 shared/platform facade。'
   },
   {
     pattern: /\bTaro\.navigateToMiniProgram\b/g,
@@ -256,16 +410,18 @@ const forbiddenPatterns = [
   },
   {
     pattern: /\bEVENT_TRACK\b/g,
-    message: '旧小程序埋点入口不能直接迁入 RN App，请使用 shared/platform/analytics。'
+    message:
+      '旧小程序埋点入口不能直接迁入 RN App，请使用 shared/platform/analytics。'
   },
   {
     pattern: /from\s+['"`][^'"`]*sensors[^'"`]*['"`]/g,
-    message: '小程序神策 SDK 不能直接迁入 RN App，请使用 shared/platform/analytics。'
+    message:
+      '小程序神策 SDK 不能直接迁入 RN App，请使用 shared/platform/analytics。'
   }
 ]
 
 function walkFiles(directory) {
-  return readdirSync(directory).flatMap((entry) => {
+  return readdirSync(directory).flatMap(entry => {
     const fullPath = path.join(directory, entry)
     const stats = statSync(fullPath)
 
@@ -295,7 +451,7 @@ function isAllowedByRule(rule, relativePath) {
   }
 
   return (
-    rule.allowRelativePathPrefixes?.some((prefix) =>
+    rule.allowRelativePathPrefixes?.some(prefix =>
       relativePath.startsWith(prefix)
     ) ?? false
   )
@@ -309,7 +465,11 @@ function checkPackageDependencies() {
   }
 
   const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
-  const dependencyGroups = ['dependencies', 'devDependencies', 'peerDependencies']
+  const dependencyGroups = [
+    'dependencies',
+    'devDependencies',
+    'peerDependencies'
+  ]
 
   for (const group of dependencyGroups) {
     const dependencies = packageJson[group] ?? {}
@@ -377,7 +537,30 @@ for (const filePath of walkFiles(srcRoot)) {
   const content = readFileSync(filePath, 'utf8')
   const relativePath = toPosixPath(path.relative(appRoot, filePath))
 
+  if (
+    path.extname(filePath) === '.tsx' &&
+    /\bclassName\s*=/.test(content) &&
+    !/\bimport\b[^\r\n]*['"][^'"]+\.(?:css|scss)['"]/.test(content)
+  ) {
+    const classNameIndex = content.search(/\bclassName\s*=/)
+
+    violations.push({
+      filePath,
+      line: getLineNumber(content, classNameIndex),
+      token: 'className=',
+      message:
+        'Taro RN 组件使用 className 时必须在当前 TSX 显式导入样式文件，否则子组件样式不会生成映射。'
+    })
+  }
+
   for (const rule of forbiddenPatterns) {
+    if (
+      rule.fileExtensions &&
+      !rule.fileExtensions.includes(path.extname(filePath))
+    ) {
+      continue
+    }
+
     if (isAllowedByRule(rule, relativePath)) {
       continue
     }

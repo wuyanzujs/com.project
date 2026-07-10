@@ -1,15 +1,19 @@
-import { Text, View } from '@tarojs/components'
+import { Image, View } from '@tarojs/components'
 
 import './index.scss'
 
-const Banner = () => {
+interface BannerProps {
+  onClick: () => void
+}
+
+const Banner = ({ onClick }: BannerProps) => {
   return (
-    <View className='home-banner'>
-      <Text className='home-banner__eyebrow'>App 端重构首屏</Text>
-      <Text className='home-banner__title'>寄件、查件和会员服务会在这里重新组织</Text>
-      <Text className='home-banner__desc'>
-        保留参考项目的业务能力，按 RN App 的交互和原生能力重新落地。
-      </Text>
+    <View className='home-banner' onClick={onClick}>
+      <Image
+        className='home-banner__image'
+        mode='aspectFill'
+        src='https://mascdn.deppon.com/h5/img/2025/other/banner-532-050317.jpg'
+      />
     </View>
   )
 }

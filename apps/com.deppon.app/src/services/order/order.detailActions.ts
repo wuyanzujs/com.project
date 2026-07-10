@@ -7,6 +7,7 @@ import {
   getOrderStationCode,
   getOrderStationPhone,
   getOrderStatusText,
+  getOrderTextField,
   isExpressOrder,
   isInvalidOrder,
   isMasterOrder,
@@ -17,6 +18,7 @@ import {
   isTransitOrder,
   isWaitAllotOrder
 } from './order.detailRules'
+import { canScheduleOrderPickup } from './order.dispatch'
 import { APP_ROUTES } from '../../shared/navigation/routes'
 import { getCurrentUser } from '../auth'
 
@@ -98,8 +100,7 @@ function canShowSecureDetailActions(
   options: OrderDetailActionOptions
 ) {
   return (
-    !options.publicTrackMode &&
-    (!!order.orderNumber || !!order.waybillNumber)
+    !options.publicTrackMode && (!!order.orderNumber || !!order.waybillNumber)
   )
 }
 
@@ -114,7 +115,17 @@ function canCreateComplaint(order: OrderDetail) {
 function canModifyWaybill(order: OrderDetail, role?: OrderRole) {
   return (
     role !== 'receive' &&
+    isTransitOrder(order) &&
     !!getDetailWaybillNumber(order) &&
+    order.modifyFlag !== false
+  )
+}
+
+function canModifyOrder(order: OrderDetail, role?: OrderRole) {
+  return (
+    role !== 'receive' &&
+    isWaitAllotOrder(order) &&
+    !!order.orderNumber &&
     order.modifyFlag !== false
   )
 }
@@ -130,8 +141,7 @@ function canNotifyDeliver(order: OrderDetail, role?: OrderRole) {
 
 function canEvaluateOrder(order: OrderDetail) {
   return (
-    (!!order.orderNumber || !!order.waybillNumber) &&
-    isEvaluateStatus(order)
+    (!!order.orderNumber || !!order.waybillNumber) && isEvaluateStatus(order)
   )
 }
 
@@ -233,6 +243,36 @@ export function createOrderDetailActions(
     }
   ]
   const waybillNumber = getDetailWaybillNumber(order)
+
+  if (canModifyOrder(order, options.role)) {
+    actions.push({
+      kind: 'modifyOrder',
+      title: '修改订单',
+      summary: '修改收寄件、货物和备注信息',
+      target: 'route',
+      tone: 'neutral',
+      badgeText: 'App',
+      route: createRouteUrl(APP_ROUTES.orderEdit, {
+        orderNumber: order.orderNumber,
+        source: 'ORDER_DETAIL'
+      }),
+      loginRequired: true
+    })
+  }
+
+  if (canScheduleOrderPickup(order, options)) {
+    const currentPickupTime = getOrderTextField(order, ['beginAcceptTime'])
+
+    actions.push({
+      kind: 'pickupSchedule',
+      title: currentPickupTime ? '修改上门时间' : '预约上门时间',
+      summary: currentPickupTime || '选择期望的上门取件时间',
+      target: 'pickupSchedule',
+      tone: 'primary',
+      badgeText: '预约',
+      loginRequired: true
+    })
+  }
 
   if (canNotifyDeliver(order, options.role)) {
     actions.push({
@@ -359,7 +399,7 @@ export function createOrderDetailActions(
     actions.push({
       kind: 'modifyWaybill',
       title: '修改运单',
-      summary: '修改收寄件或货物信息，首期由 H5 承接',
+      summary: '运输中运单修改由 H5 承接',
       target: 'web',
       tone: 'neutral',
       badgeText: 'H5',

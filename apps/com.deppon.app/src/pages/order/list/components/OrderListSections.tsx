@@ -1,10 +1,14 @@
 import { Input, Text, View } from '@tarojs/components'
 
+import { AppIcon } from '../../../../shared/components/AppIcon'
+
 import type {
   OrderPaymentFilter,
   OrderRole,
   OrderStatusFilter
 } from '../../../../services/order'
+
+import '../index.scss'
 
 export type OrderDateRangeDays = 7 | 30 | 90
 
@@ -70,9 +74,7 @@ const ORDER_PAYMENT_OPTIONS: Array<OrderFilterOption<OrderPaymentFilter>> = [
   }
 ]
 
-const ORDER_DATE_RANGE_OPTIONS: Array<
-  OrderFilterOption<OrderDateRangeDays>
-> = [
+const ORDER_DATE_RANGE_OPTIONS: Array<OrderFilterOption<OrderDateRangeDays>> = [
   {
     label: '近7天',
     value: 7
@@ -119,7 +121,7 @@ function OrderFilterGroup<TValue extends string | number>(props: {
 }) {
   return (
     <View className='order-filter'>
-      {props.options.map((option) => {
+      {props.options.map(option => {
         const active = option.value === props.value
 
         return (
@@ -140,28 +142,20 @@ function OrderFilterGroup<TValue extends string | number>(props: {
   )
 }
 
-export function OrderListHeader() {
-  return (
-    <View className='order-list-header'>
-      <Text className='order-list-header__label'>Order</Text>
-      <Text className='order-list-header__title'>查快递</Text>
-      <Text className='order-list-header__summary'>
-        先承接寄件和收件订单的基础查询、搜索和详情跳转，支付、订阅和售后动作后置。
-      </Text>
-    </View>
-  )
-}
-
 export function OrderRoleTabs(props: {
   role: OrderRole
   onChange: (role: OrderRole) => void
+  onOpenPayment: () => void
+  onOpenSubscriptions: () => void
 }) {
   return (
     <View className='order-tabs'>
-      {ORDER_TABS.map((tab) => (
+      {ORDER_TABS.map(tab => (
         <View
           className={
-            tab.value === props.role ? 'order-tab order-tab--active' : 'order-tab'
+            tab.value === props.role
+              ? 'order-tab order-tab--active'
+              : 'order-tab'
           }
           key={tab.value}
           onClick={() => props.onChange(tab.value)}
@@ -177,25 +171,45 @@ export function OrderRoleTabs(props: {
           </Text>
         </View>
       ))}
+      <View className='order-tab' onClick={props.onOpenPayment}>
+        <Text className='order-tab__text'>待支付</Text>
+      </View>
+      <View className='order-tab' onClick={props.onOpenSubscriptions}>
+        <Text className='order-tab__text'>关注</Text>
+      </View>
     </View>
   )
 }
 
 export function OrderSearchBar(props: {
   keyword: string
+  filterVisible: boolean
   onKeywordChange: (keyword: string) => void
   onSearch: () => void
+  onToggleFilter: () => void
 }) {
   return (
     <View className='order-search'>
-      <Input
-        className='order-search__input'
-        placeholder='订单号、运单号、姓名'
-        value={props.keyword}
-        onInput={(event) => props.onKeywordChange(event.detail.value)}
-      />
-      <View className='order-search__button' onClick={props.onSearch}>
-        <Text className='order-search__button-text'>搜索</Text>
+      <View className='order-search__field'>
+        <AppIcon color='#98a2b3' name='search' size={25} />
+        <Input
+          className='order-search__input'
+          placeholder='运单号/姓名/手机/城市查询'
+          value={props.keyword}
+          onConfirm={props.onSearch}
+          onInput={event => props.onKeywordChange(event.detail.value)}
+        />
+        <View className='order-search__submit' onClick={props.onSearch}>
+          <AppIcon color='#667085' name='scan' size={24} />
+        </View>
+      </View>
+      <View className='order-search__filter' onClick={props.onToggleFilter}>
+        <Text className='order-search__filter-text'>筛选</Text>
+        <AppIcon
+          color={props.filterVisible ? '#1a5eff' : '#344054'}
+          name='filter'
+          size={25}
+        />
       </View>
     </View>
   )
@@ -222,7 +236,7 @@ export function OrderFilterPanel(props: {
       <OrderFilterGroup
         options={ORDER_STATUS_OPTIONS}
         value={props.orderStatus}
-        getKey={(value) => value || 'all'}
+        getKey={value => value || 'all'}
         onChange={props.onStatusChange}
       />
 
@@ -230,7 +244,7 @@ export function OrderFilterPanel(props: {
       <OrderFilterGroup
         options={ORDER_PAYMENT_OPTIONS}
         value={props.paymentType}
-        getKey={(value) => value || 'all'}
+        getKey={value => value || 'all'}
         onChange={props.onPaymentChange}
       />
     </View>
@@ -241,6 +255,7 @@ export function OrderListSummary(props: {
   rangeDays: OrderDateRangeDays
   totalRows: number
   onOpenPaymentList: () => void
+  onOpenSubscriptions: () => void
 }) {
   return (
     <View className='order-list-summary'>
@@ -248,7 +263,15 @@ export function OrderListSummary(props: {
         {getDateRangeTitle(props.rangeDays)}
       </Text>
       <View className='order-list-summary__side'>
-        <Text className='order-list-summary__count'>共 {props.totalRows} 单</Text>
+        <Text className='order-list-summary__count'>
+          共 {props.totalRows} 单
+        </Text>
+        <View
+          className='order-list-summary__subscribe'
+          onClick={props.onOpenSubscriptions}
+        >
+          <Text className='order-list-summary__subscribe-text'>关注运单</Text>
+        </View>
         <View
           className='order-list-summary__pay'
           onClick={props.onOpenPaymentList}

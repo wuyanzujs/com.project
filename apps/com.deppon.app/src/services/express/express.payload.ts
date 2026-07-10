@@ -60,12 +60,23 @@ export function getDraftProductCode(draft: ExpressDraft) {
   return draft.selectedProduct?.omsProductCode || draft.service.transportMode
 }
 
+function getScanContextCustomerCode(scanContext: ExpressDraft['scanContext']) {
+  if (scanContext?.role !== 'shipperNumber') {
+    return ''
+  }
+
+  return trimText(scanContext.value)
+}
+
 export function buildFreightRequest(
   draft: ExpressDraft
 ): ExpressFreightRequest {
   if (!draft.sender || !draft.consignee) {
     throw new Error('缺少收寄件联系人')
   }
+
+  const scanCustomerCode = getScanContextCustomerCode(draft.scanContext)
+  const couponNumber = trimText(draft.couponNumber)
 
   return {
     channel: APP_RUNTIME_CONFIG.omsChannel,
@@ -84,10 +95,14 @@ export function buildFreightRequest(
     client: true,
     detail: true,
     sendDateTime: draft.pickup.time || getNowText(),
-    promotionsCode: trimText(draft.couponNumber) || undefined,
+    promotionsCode: couponNumber || undefined,
+    customerMobile: couponNumber ? trimText(draft.sender.mobile) : undefined,
     pickUpToDoor: draft.pickup.dispatch === 'Y',
     passwordSigning: draft.service.passwordSigning,
-    passProductCode: draft.service.transportMode
+    passProductCode: draft.service.transportMode,
+    customerCode: scanCustomerCode || undefined,
+    customerMonthly: scanCustomerCode ? '1' : undefined,
+    customerContract: scanCustomerCode ? '1' : undefined
   }
 }
 
@@ -149,6 +164,8 @@ export function buildFilterOrderRequest(
     throw new Error('缺少收寄件联系人')
   }
 
+  const scanCustomerCode = getScanContextCustomerCode(draft.scanContext)
+
   return {
     contactAddress: `${getExpressContactRegion(draft.sender)},${draft.sender.address}`,
     contactMobile: draft.sender.mobile,
@@ -161,8 +178,44 @@ export function buildFilterOrderRequest(
     transportMode:
       draft.selectedProduct?.omsProductCode || draft.service.transportMode,
     deliveryMode: draft.service.deliveryMode,
-    limitCust: draft.service.paymentType === 'MONTH_PAY' ? 1 : 0
+    customerCode: scanCustomerCode || undefined,
+    limitCust:
+      !!scanCustomerCode || draft.service.paymentType === 'MONTH_PAY' ? 1 : 0
   }
+}
+
+function getScanContextOrderFields(scanContext: ExpressDraft['scanContext']) {
+  const fields = {
+    acceptDept: '',
+    shipperNumber: '',
+    pickupManId: ''
+  }
+
+  if (!scanContext) {
+    return fields
+  }
+
+  const value = trimText(scanContext.value)
+
+  if (!value) {
+    return fields
+  }
+
+  switch (scanContext.role) {
+    case 'pickupManId':
+    case 'driverId':
+      fields.pickupManId = value
+      break
+    case 'shipperNumber':
+      fields.shipperNumber = value
+      break
+    case 'acceptDept':
+    case 'businessCode':
+      fields.acceptDept = value
+      break
+  }
+
+  return fields
 }
 
 export function buildCreateOrderRequest(
@@ -174,6 +227,7 @@ export function buildCreateOrderRequest(
 
   const selectedProductCode =
     draft.selectedProduct?.omsProductCode || draft.service.transportMode
+  const scanOrderFields = getScanContextOrderFields(draft.scanContext)
 
   return {
     contactIdList: [draft.sender.id, draft.consignee.id].filter(
@@ -191,9 +245,9 @@ export function buildCreateOrderRequest(
     contactAddressDetail: draft.sender.address,
     startStation: draft.pickup.stationCode,
     startStationName: draft.pickup.stationName,
-    acceptDept: '',
-    shipperNumber: '',
-    pickupManId: '',
+    acceptDept: scanOrderFields.acceptDept,
+    shipperNumber: scanOrderFields.shipperNumber,
+    pickupManId: scanOrderFields.pickupManId,
     dispatchFlag: draft.pickup.dispatch,
     passwordSigning: draft.service.passwordSigning,
     receive: [

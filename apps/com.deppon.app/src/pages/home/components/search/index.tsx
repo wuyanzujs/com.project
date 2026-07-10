@@ -1,8 +1,14 @@
-import { Input, Text, View } from '@tarojs/components'
+import { Input, View } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 
 import { useState } from 'react'
 
+import {
+  applyExpressScanContext,
+  createExpressDraft,
+  expressDraftBridge
+} from '../../../../services/express'
+import { AppIcon } from '../../../../shared/components/AppIcon'
 import { navigateToAppRoute } from '../../../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../../shared/navigation/routeUrl'
@@ -68,6 +74,26 @@ const Search = () => {
         return
       }
 
+      if (
+        result.kind === 'unsupported' &&
+        result.reason === 'sendQrCode' &&
+        result.role &&
+        result.value
+      ) {
+        expressDraftBridge.carryFromScanQrCode(
+          applyExpressScanContext(createExpressDraft(), {
+            role: result.role,
+            value: result.value,
+            sceneId: result.sceneId,
+            expressRole: result.expressRole
+          })
+        )
+        navigateToAppRoute(APP_ROUTES.express, {
+          message: '请先登录后继续寄件'
+        })
+        return
+      }
+
       Taro.showToast({
         title: result.message,
         icon: 'none'
@@ -83,23 +109,23 @@ const Search = () => {
   return (
     <View className='home-search'>
       <View className='home-search__input-wrap'>
-        <Text className='home-search__label'>运单查询</Text>
+        <AppIcon color='#667085' name='search' size={24} />
         <Input
           className='home-search__input'
           confirmType='search'
-          placeholder='输入运单号'
+          placeholder='输入运单号查询物流'
           value={keyword}
           onConfirm={handleSearch}
-          onInput={(event) =>
+          onInput={event =>
             setKeyword(normalizeWaybillNumber(event.detail.value))
           }
         />
       </View>
       <View className='home-search__scan' onClick={handleScan}>
-        <Text className='home-search__scan-text'>扫码</Text>
+        <AppIcon color='#344054' name='scan' size={25} />
       </View>
       <View className='home-search__button' onClick={handleSearch}>
-        <Text className='home-search__button-text'>查询</Text>
+        <AppIcon color='#ffffff' name='search' size={24} strokeWidth={2.5} />
       </View>
     </View>
   )

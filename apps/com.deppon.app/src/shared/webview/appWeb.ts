@@ -115,6 +115,10 @@ export const APP_WEB_TARGETS = {
     title: '在线理赔',
     url: '/depponmobile/h5/index#/claimPackagePages/index'
   },
+  STATION_FEEDBACK: {
+    title: '网点反馈',
+    url: '/depponmobile/survey/noStarEvaluate'
+  },
   CUSTOMER_CENTER: {
     title: '客户中心',
     url: '/depponmobile/mow/customer'

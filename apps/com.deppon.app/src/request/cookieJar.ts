@@ -27,7 +27,7 @@ export function getEcoToken() {
   return extractEcoToken(getSessionCookie())
 }
 
-export function setSessionCookie(cookie: string) {
+export async function setSessionCookie(cookie: string) {
   const sessionCookie = createEcoSessionCookie(cookie)
 
   if (!sessionCookie) {
@@ -50,6 +50,6 @@ export function saveSessionCookieFromResponse(response: HttpResponse) {
     return ''
   }
 
-  setSessionCookie(cookie)
-  return getSessionCookie()
+  void setSessionCookie(cookie)
+  return createEcoSessionCookie(cookie)
 }

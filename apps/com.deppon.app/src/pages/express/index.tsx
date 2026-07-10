@@ -11,7 +11,9 @@ import { contactSelection } from '../../services/contact'
 import { customerService } from '../../services/customer'
 import {
   createExpressMonthlyPayView,
+  createExpressScanContextView,
   createExpressDraft,
+  clearExpressScanContext,
   expressDraftBridge,
   expressDraftStorage,
   expressInsuranceRules,
@@ -24,7 +26,8 @@ import {
   swapExpressContacts,
   validateExpressDraft
 } from '../../services/express'
-import AppTabBar from '../../shared/components/AppTabBar'
+import { templateService } from '../../services/template'
+import { AppIcon } from '../../shared/components/AppIcon'
 import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
 import {
   ensureAuthenticated,
@@ -179,7 +182,15 @@ const ExpressPage = () => {
                 ? '已带入货物名称'
                 : carriedDraft.source === 'BATCH_RECOGNITION'
                   ? '已带入批量识别结果'
-                  : '已带入查价结果',
+                  : carriedDraft.source === 'SCAN_QR_CODE'
+                    ? '已带入扫码寄件信息'
+                    : carriedDraft.source === 'DISPATCH_QUERY'
+                      ? '已带入收派范围地址'
+                      : carriedDraft.source === 'COURIER'
+                        ? '已带入专属快递员'
+                        : carriedDraft.source === 'TEMPLATE'
+                          ? '已带入寄件模板'
+                          : '已带入查价结果',
         icon: 'none'
       })
       return
@@ -446,6 +457,36 @@ const ExpressPage = () => {
     setDraft(current => swapExpressContacts(current))
   }
 
+  const handleOpenTemplates = () => {
+    navigateToAppRoute(APP_ROUTES.expressTemplateList, {
+      login: true
+    })
+  }
+
+  const handleSaveTemplate = () => {
+    if (!hasValidSession()) {
+      ensureAuthenticated({
+        redirectUrl: APP_ROUTES.express,
+        message: '请先登录后保存寄件模板'
+      })
+      return
+    }
+
+    const message = templateService.stageDraft(draft)
+
+    if (message) {
+      Taro.showToast({
+        title: message,
+        icon: 'none'
+      })
+      return
+    }
+
+    navigateToAppRoute(APP_ROUTES.expressTemplateCreate, {
+      login: true
+    })
+  }
+
   const handleQueryPickupTime = async () => {
     const response = await expressService.queryPickupTime(draft)
 
@@ -596,12 +637,27 @@ const ExpressPage = () => {
       <ScrollView className='express-page' scrollY>
         <View className='express-header'>
           <View>
-            <Text className='express-header__label'>Express</Text>
-            <Text className='express-header__title'>预约寄件</Text>
+            <Text className='express-header__title'>填写寄件信息</Text>
+            <Text className='express-header__label'>上门取件 · 全程可查</Text>
           </View>
-          <Text className='express-header__price'>
-            {getProductPriceText(draft.selectedProduct)}
-          </Text>
+          <View className='express-header__tools'>
+            <View
+              className='express-header__tool'
+              onClick={handleOpenTemplates}
+            >
+              <AppIcon color='#344054' name='fileCheck' size={20} />
+              <Text className='express-header__tool-text'>模板</Text>
+            </View>
+            <View className='express-header__tool' onClick={handleSaveTemplate}>
+              <AppIcon color='#344054' name='save' size={20} />
+              <Text className='express-header__tool-text'>保存</Text>
+            </View>
+            {!!draft.selectedProduct && (
+              <Text className='express-header__price'>
+                {getProductPriceText(draft.selectedProduct)}
+              </Text>
+            )}
+          </View>
         </View>
 
         <ExpressContactPanel
@@ -630,8 +686,10 @@ const ExpressPage = () => {
 
         <ExpressServiceSection
           monthlyPayView={monthlyPayView}
+          scanContextView={createExpressScanContextView(draft.scanContext)}
           selectedReturnBillOption={selectedReturnBillOption}
           service={draft.service}
+          onClearScanContext={() => setDraft(clearExpressScanContext)}
           onMonthlyPayAction={handleOpenMonthlyPayAction}
           onPaymentTypeSelect={handlePaymentTypeSelect}
           onPrivacyProtectionChange={handlePrivacyProtectionChange}
@@ -735,7 +793,6 @@ const ExpressPage = () => {
           </Text>
         </View>
       </ScrollView>
-      <AppTabBar active='express' />
     </>
   )
 }

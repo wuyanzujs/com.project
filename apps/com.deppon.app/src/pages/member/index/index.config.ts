@@ -1,3 +1,4 @@
 export default definePageConfig({
-  navigationBarTitleText: '会员权益'
+  navigationBarTitleText: '福利',
+  navigationStyle: 'custom'
 })

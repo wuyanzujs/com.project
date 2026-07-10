@@ -1,3 +1,7 @@
 export * from './order.api'
+export * from './order.dispatch'
+export * from './order.dispatch.types'
+export * from './order.edit'
 export * from './order.service'
+export * from './order.subscription'
 export * from './types'

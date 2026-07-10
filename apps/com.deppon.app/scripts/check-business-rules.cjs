@@ -27,18 +27,50 @@ const {
   getAddressHintLabel,
   parseAddressHint
 } = require('../src/services/contact')
-const { validateCouponExchangeCode } = require('../src/services/coupon')
+const {
+  couponService,
+  createCouponDetailView,
+  validateCouponExchangeCode
+} = require('../src/services/coupon')
+const {
+  isAlreadyBoundCourierMessage,
+  normalizeCourier
+} = require('../src/services/courier/courier.mapper')
+const {
+  createCourierExpressDraft
+} = require('../src/services/courier/courier.rules')
 const {
   BATCH_MAX_CONSIGNEE_COUNT,
   batchService,
   validateBatchDraft
 } = require('../src/services/batch')
 const {
+  applyExpressScanContext,
+  clearExpressScanContext,
+  createAddressOnlyExpressContact,
   createExpressDraft,
+  markExpressQuoteStale,
   validateExpressDraft,
   validateExpressPriceTimeDraft
 } = require('../src/services/express/express.draft')
 const { expressDraftBridge } = require('../src/services/express/draftBridge')
+const {
+  buildTemplateSaveRequest,
+  mapTemplateToExpressDraft,
+  validateTemplateDraft,
+  validateTemplateMeta
+} = require('../src/services/template/template.mapper')
+const {
+  buildCreateOrderRequest,
+  buildFilterOrderRequest,
+  buildFreightRequest
+} = require('../src/services/express/express.payload')
+const {
+  createExpressScanContextView
+} = require('../src/services/express/scanContext')
+const {
+  createExpressProductQuoteView
+} = require('../src/services/express/express.quoteView')
 const {
   createApplyPreview,
   createApplySubmitPayload,
@@ -75,8 +107,17 @@ const {
   createOrderUrgeContext
 } = require('../src/services/order/order.detailActions')
 const {
+  buildOrderModifyRequest,
+  createOrderEditDraft,
+  validateOrderEditDraft
+} = require('../src/services/order/order.edit')
+const {
   resolveOrderUrgeMenuAction
 } = require('../src/services/order/order.detailUseCases')
+const {
+  createOrderSubscriptionAction,
+  normalizeWaybillSubscription
+} = require('../src/services/order/order.subscription')
 const {
   formatAmount,
   formatMeasure,
@@ -92,10 +133,15 @@ const {
   createPaymentEvaluateWebUri,
   getPaymentItemAmount,
   getPaymentEvaluateScene,
+  getPaymentOrderTypeLabel,
   getPaymentRangeDays,
   getPaymentWriteOffStatus,
   createPaymentWaybillQuery
 } = require('../src/services/payment/payment.service')
+const {
+  createPaymentFeeSummary
+} = require('../src/services/payment/payment.fees')
+const { queryService } = require('../src/services/query')
 const { supportService } = require('../src/services/support')
 const { createSignCodePayload, signService } = require('../src/services/sign')
 const {
@@ -198,6 +244,62 @@ function createValidExpressDraft() {
   }
 }
 
+function createExpressTemplateRaw(patch = {}) {
+  return {
+    id: 'TEMPLATE_001',
+    defaultFlag: 1,
+    templateName: '常用寄件',
+    template: {
+      sender: {
+        name: ' 张三 ',
+        telephone: '13800138000',
+        province: '上海市',
+        city: '上海市',
+        county: '青浦区',
+        address: '徐泾镇明珠路100号'
+      },
+      receiver: {
+        name: '李四',
+        telephone: '13900139000',
+        province: '广东省',
+        city: '深圳市',
+        county: '南山区',
+        address: '科技园科苑路200号'
+      },
+      isContact: 'N',
+      goodInfo: {
+        weight: 2.5,
+        goodsName: ' 文件 ',
+        isExtra: false
+      },
+      pickupTime: {
+        dispatchFlag: 'Y',
+        beginAcceptTime: '现在发货',
+        beginAcceptTimeText: '现在发货',
+        serviceTime: ''
+      },
+      payment: {
+        paymentType: 'PAY_ARIIVE',
+        paymentName: '到付'
+      },
+      product: {
+        omsProductCode: 'PACKAGE',
+        productCode: 'PACKAGE'
+      },
+      insurance: {
+        insuranceAmount: '100'
+      },
+      addedService: {
+        returnBillType: 'CUSTOMER_SIGNED_FAX',
+        returnBillName: '电子签回单',
+        returnRequirement: '',
+        customReturnRequirement: ''
+      }
+    },
+    ...patch
+  }
+}
+
 function createInvoiceDraft(patch = {}) {
   return {
     order: invoiceOrder,
@@ -294,6 +396,131 @@ const tests = [
         message: '业务失败',
         result: null
       })
+    }
+  },
+  {
+    name: 'courier rules normalize profile labels and binding responses',
+    run() {
+      assert.deepEqual(
+        normalizeCourier({
+          avgStart: 5.8,
+          courierMobile: ' 13800138000 ',
+          courierName: ' 王师傅 ',
+          courierNo: ' DPK001 ',
+          deptName: ' 上海青浦营业部 ',
+          deptCode: ' 021A001 ',
+          signedCount: 120,
+          rewardTimes: -1,
+          labels: [
+            { labelName: '服务热情', labelCount: 8 },
+            { labelName: '上门及时', labelCount: 18 }
+          ]
+        }),
+        {
+          id: 'DPK001',
+          name: '王师傅',
+          mobile: '13800138000',
+          departmentName: '上海青浦营业部',
+          departmentCode: '021A001',
+          rating: 5,
+          ratingText: '5.0',
+          signedCount: 120,
+          rewardTimes: 0,
+          labels: [
+            { name: '上门及时', count: 18 },
+            { name: '服务热情', count: 8 }
+          ]
+        }
+      )
+      assert.equal(isAlreadyBoundCourierMessage('当前账号已绑定该快递员'), true)
+      assert.equal(isAlreadyBoundCourierMessage('绑定失败'), false)
+    }
+  },
+  {
+    name: 'courier express entry maps employee code to pickup scan context',
+    run() {
+      const draft = createCourierExpressDraft('  DPK001  ')
+
+      assert.ok(draft)
+      assert.deepEqual(draft.scanContext, {
+        role: 'pickupManId',
+        value: 'DPK001',
+        sceneId: undefined,
+        expressRole: undefined
+      })
+      assert.equal(draft.selectedProduct, null)
+      assert.equal(draft.agreementAccepted, false)
+      assert.equal(createCourierExpressDraft(''), null)
+    }
+  },
+  {
+    name: 'template mapper normalizes saved fields into a fresh express draft',
+    run() {
+      const draft = mapTemplateToExpressDraft(createExpressTemplateRaw())
+
+      assert.equal(draft.sender.name, '张三')
+      assert.equal(draft.consignee.city, '深圳市')
+      assert.equal(draft.goods.name, '文件')
+      assert.equal(draft.goods.weight, 2.5)
+      assert.equal(draft.goods.insuredAmount, 100)
+      assert.equal(draft.service.paymentType, 'PAY_ARIIVE')
+      assert.equal(draft.service.transportMode, 'PACKAGE')
+      assert.equal(draft.service.returnBillType, 'CUSTOMER_SIGNED_FAX')
+      assert.equal(draft.service.needContact, 'N')
+      assert.equal(draft.pickup.time, '')
+      assert.equal(draft.selectedProduct, null)
+      assert.equal(draft.agreementAccepted, false)
+      assert.equal(draft.quoteStaleReason, '模板信息已带入，请重新获取价格')
+    }
+  },
+  {
+    name: 'template save rules validate metadata and build the backend payload',
+    run() {
+      const draft = createValidExpressDraft()
+      const request = buildTemplateSaveRequest(
+        draft,
+        { name: ' 常用件 ', defaultFlag: 1 },
+        'APP'
+      )
+
+      assert.equal(validateTemplateDraft(draft), '')
+      assert.equal(
+        validateTemplateMeta({ name: '', defaultFlag: 2 }),
+        '请输入模板名称'
+      )
+      assert.equal(
+        validateTemplateMeta({ name: '超过五个字模板', defaultFlag: 2 }),
+        '模板名称不能超过5个字'
+      )
+      assert.equal(request.templateName, '常用件')
+      assert.equal(request.defaultFlag, 1)
+      assert.equal(request.sysCode, 'APP')
+      assert.equal(request.template.sender.telephone, '13800138000')
+      assert.equal(request.template.receiver.telephone, '13900139000')
+      assert.equal(request.template.goodInfo.goodsName, '文件')
+      assert.equal(request.template.payment.paymentType, 'MP')
+    }
+  },
+  {
+    name: 'template bridge always clears stale quote and agreement state',
+    run() {
+      const templateDraft = {
+        ...createValidExpressDraft(),
+        quoteStaleReason: ''
+      }
+
+      expressDraftBridge.carryFromTemplate(templateDraft)
+
+      const carried = expressDraftBridge.consume()
+
+      assert.equal(carried.source, 'TEMPLATE')
+      assert.deepEqual(carried.quotes, [])
+      assert.equal(carried.draft.selectedProduct, null)
+      assert.equal(carried.draft.agreementAccepted, false)
+      assert.equal(
+        carried.draft.quoteStaleReason,
+        '模板信息已带入，请重新获取价格'
+      )
     }
   },
   {
@@ -499,6 +726,55 @@ const tests = [
     }
   },
   {
+    name: 'station feedback web target preserves legacy scene and row data',
+    run() {
+      assert.equal(
+        APP_WEB_TARGETS.STATION_FEEDBACK.url,
+        '/depponmobile/survey/noStarEvaluate'
+      )
+
+      const stationUri = queryService.createStationFeedbackWebUri(
+        {
+          code: '021A001'
+        },
+        {
+          province: '上海市',
+          provinceCode: '310000',
+          city: '上海市',
+          cityCode: '310100',
+          county: '青浦区',
+          countyCode: '310118',
+          town: '徐泾镇',
+          townCode: '310118109',
+          address: '明珠路100号',
+          fullAddress: '上海市上海市青浦区徐泾镇明珠路100号'
+        }
+      )
+      const stationParams = new URL(stationUri, 'https://owstest.deppon.com')
+        .searchParams
+
+      assert.equal(stationParams.get('scene'), 'P0101')
+      assert.equal(stationParams.get('channel'), 'APP')
+      assert.deepEqual(JSON.parse(stationParams.get('rowData')), [
+        {
+          field: 'deptCode',
+          data: '021A001'
+        },
+        {
+          field: 'queryAddress',
+          data: '上海市上海市青浦区徐泾镇明珠路100号'
+        }
+      ])
+
+      const emptyParams = new URL(
+        queryService.createStationFeedbackWebUri(),
+        'https://owstest.deppon.com'
+      ).searchParams
+
+      assert.equal(emptyParams.get('scene'), 'P0102')
+    }
+  },
+  {
     name: 'contact address analysis keeps town separate and ignores null hint parts',
     run() {
       const contact = createEmptyContact(1)
@@ -631,6 +907,127 @@ const tests = [
     }
   },
   {
+    name: 'coupon card rules normalize amount, tags and use status',
+    run() {
+      const discountCard = couponService.toCouponCard(
+        {
+          couponCode: 'CPN001',
+          discountType: '4',
+          discountFee: 85,
+          useFee: 0,
+          subFee: 0,
+          limitDiscountFee: 1500,
+          subTitle: '寄件折扣券',
+          startTime: '2026-07-01 00:00:00',
+          endTime: '2026-07-31 23:59:59',
+          fitWeek: 'Sunday, Monday, BadDay',
+          couponLabel: 'EXPIRE',
+          businessStatus: '0',
+          fitCouponTagList: ['快递', 'App专享', '超出展示上限']
+        },
+        'USABLE'
+      )
+      const disabledCard = couponService.toCouponCard(
+        {
+          couponCode: 'CPN002',
+          discountType: '2',
+          discountFee: 0,
+          useFee: 2000,
+          subFee: 500,
+          limitDiscountFee: 0,
+          subtitle: '满减优惠',
+          startTime: '2026/07/01',
+          endTime: '2026/08/01',
+          businessStatus: '1'
+        },
+        'USABLE'
+      )
+      const transferredCard = couponService.toCouponCard(
+        {
+          couponCode: 'CPN003',
+          discountType: '1',
+          discountFee: 300,
+          useFee: 0,
+          subFee: 0,
+          limitDiscountFee: 0,
+          startTime: '',
+          endTime: '2026-09-01',
+          businessStatus: '2'
+        },
+        'EXPIRED'
+      )
+
+      assert.equal(discountCard.typeName, '折扣券')
+      assert.equal(discountCard.amountValue, '8.5')
+      assert.equal(discountCard.amountUnit, '折')
+      assert.equal(discountCard.thresholdText, '最高减免15元')
+      assert.equal(discountCard.validityText, '2026.07.01-2026.07.31 有效')
+      assert.equal(discountCard.usageTimeText, '限周日一使用')
+      assert.equal(discountCard.labelText, '即将到期')
+      assert.deepEqual(discountCard.tags, [
+        '即将到期',
+        '限周日一使用',
+        '快递',
+        'App专享'
+      ])
+      assert.equal(discountCard.canUse, true)
+      assert.equal(disabledCard.amountValue, '5')
+      assert.equal(disabledCard.thresholdText, '满20元可用')
+      assert.equal(disabledCard.canUse, false)
+      assert.equal(transferredCard.statusText, '已转赠')
+      assert.equal(transferredCard.canUse, false)
+    }
+  },
+  {
+    name: 'coupon detail rules split addresses and descriptions',
+    run() {
+      const detail = createCouponDetailView({
+        couponCode: ' CPN001 ',
+        fitProduct: ' 精准卡航 ',
+        limit: [' 满50元可用 ', '', '不可与其他券同享'],
+        couponDescribe: '使用说明一\n\n 使用说明二 ',
+        addressList: [
+          {
+            type: '1',
+            address: ' 上海市 '
+          },
+          {
+            type: '2',
+            address: ' 深圳市 '
+          },
+          {
+            type: '3',
+            address: '忽略地址'
+          },
+          {
+            type: '1',
+            address: '  '
+          }
+        ]
+      })
+      const emptyDetail = createCouponDetailView({
+        couponCode: 'CPN_EMPTY',
+        fitProduct: ' ',
+        limit: null,
+        couponDescribe: null,
+        addressList: []
+      })
+
+      assert.deepEqual(detail, {
+        code: 'CPN001',
+        fitProduct: '精准卡航',
+        limits: ['满50元可用', '不可与其他券同享'],
+        descriptions: ['使用说明一', '使用说明二'],
+        senderAddresses: ['上海市'],
+        consigneeAddresses: ['深圳市'],
+        hasDetail: true
+      })
+      assert.equal(emptyDetail.hasDetail, false)
+      assert.deepEqual(emptyDetail.senderAddresses, [])
+      assert.deepEqual(emptyDetail.descriptions, [])
+    }
+  },
+  {
     name: 'express draft validation accepts complete draft',
     run() {
       const result = validateExpressDraft(createValidExpressDraft(), {
@@ -664,6 +1061,184 @@ const tests = [
       assert.ok(result.messages.includes('寄件地址和收件地址不能完全一致'))
       assert.ok(result.messages.includes('请先获取并选择产品价格'))
       assert.ok(result.messages.includes('请先勾选电子运单协议'))
+    }
+  },
+  {
+    name: 'express coupon payload sends promotion code and sender mobile',
+    run() {
+      const draft = {
+        ...createValidExpressDraft(),
+        couponNumber: ' CPN001 '
+      }
+      const freightRequest = buildFreightRequest(draft)
+      const orderRequest = buildCreateOrderRequest(draft)
+      const noCouponFreightRequest = buildFreightRequest(
+        createValidExpressDraft()
+      )
+
+      assert.equal(freightRequest.promotionsCode, 'CPN001')
+      assert.equal(freightRequest.customerMobile, '13800138000')
+      assert.equal(orderRequest.receive[0].couponNumber, 'CPN001')
+      assert.equal(noCouponFreightRequest.promotionsCode, undefined)
+      assert.equal(noCouponFreightRequest.customerMobile, undefined)
+    }
+  },
+  {
+    name: 'express scan context clears stale quote and maps courier payload fields',
+    run() {
+      const draft = applyExpressScanContext(createValidExpressDraft(), {
+        role: 'driverId',
+        value: ' DRIVER_001 ',
+        sceneId: ' SCENE_001 ',
+        expressRole: 'PARTNER'
+      })
+      const request = buildCreateOrderRequest(draft)
+
+      assert.equal(draft.scanContext.role, 'driverId')
+      assert.equal(draft.scanContext.value, 'DRIVER_001')
+      assert.equal(draft.scanContext.sceneId, 'SCENE_001')
+      assert.equal(draft.scanContext.expressRole, 'PARTNER')
+      assert.equal(draft.selectedProduct, null)
+      assert.equal(draft.agreementAccepted, false)
+      assert.equal(draft.quoteStaleReason, '扫码寄件信息变化，请重新获取价格')
+      assert.equal(request.pickupManId, 'DRIVER_001')
+      assert.equal(request.shipperNumber, '')
+      assert.equal(request.acceptDept, '')
+    }
+  },
+  {
+    name: 'express scan context maps customer and department payload fields',
+    run() {
+      const customerRequest = buildCreateOrderRequest(
+        applyExpressScanContext(createValidExpressDraft(), {
+          role: 'shipperNumber',
+          value: 'CUS_001'
+        })
+      )
+      const businessRequest = buildCreateOrderRequest(
+        applyExpressScanContext(createValidExpressDraft(), {
+          role: 'businessCode',
+          value: 'DEPT_001'
+        })
+      )
+      const departmentRequest = buildCreateOrderRequest(
+        applyExpressScanContext(createValidExpressDraft(), {
+          role: 'acceptDept',
+          value: 'DEPT_002'
+        })
+      )
+
+      assert.equal(customerRequest.shipperNumber, 'CUS_001')
+      assert.equal(customerRequest.acceptDept, '')
+      assert.equal(customerRequest.pickupManId, '')
+      assert.equal(businessRequest.acceptDept, 'DEPT_001')
+      assert.equal(departmentRequest.acceptDept, 'DEPT_002')
+    }
+  },
+  {
+    name: 'customer scan context flows into freight and filter requests',
+    run() {
+      const draft = applyExpressScanContext(createValidExpressDraft(), {
+        role: 'shipperNumber',
+        value: 'CUS_001'
+      })
+      const freightRequest = buildFreightRequest(draft)
+      const filterRequest = buildFilterOrderRequest(draft)
+
+      assert.equal(freightRequest.customerCode, 'CUS_001')
+      assert.equal(freightRequest.customerMonthly, '1')
+      assert.equal(freightRequest.customerContract, '1')
+      assert.equal(filterRequest.customerCode, 'CUS_001')
+      assert.equal(filterRequest.limitCust, 1)
+    }
+  },
+  {
+    name: 'non-customer scan context does not affect freight customer fields',
+    run() {
+      const draft = applyExpressScanContext(createValidExpressDraft(), {
+        role: 'pickupManId',
+        value: 'PM_001'
+      })
+      const freightRequest = buildFreightRequest(draft)
+      const filterRequest = buildFilterOrderRequest(draft)
+
+      assert.equal(freightRequest.customerCode, undefined)
+      assert.equal(freightRequest.customerMonthly, undefined)
+      assert.equal(freightRequest.customerContract, undefined)
+      assert.equal(filterRequest.customerCode, undefined)
+      assert.equal(filterRequest.limitCust, 0)
+    }
+  },
+  {
+    name: 'express scan context view explains customer code and backend guard',
+    run() {
+      const view = createExpressScanContextView({
+        role: 'shipperNumber',
+        value: 'CUS_001',
+        sceneId: 'SCENE_001',
+        expressRole: 'PARTNER'
+      })
+      const emptyView = createExpressScanContextView()
+
+      assert.equal(view.title, '扫码寄件信息')
+      assert.equal(view.tag, '客户编码二维码')
+      assert.equal(view.actionText, '移除')
+      assert.equal(view.tone, 'success')
+      assert.ok(view.summary.includes('客户编码 CUS_001'))
+      assert.ok(view.summary.includes('场景 SCENE_001'))
+      assert.ok(view.summary.includes('合作伙伴'))
+      assert.ok(view.summary.includes('以后端校验为准'))
+      assert.equal(emptyView, null)
+    }
+  },
+  {
+    name: 'express scan context view labels courier and department roles',
+    run() {
+      const courierView = createExpressScanContextView({
+        role: 'pickupManId',
+        value: 'PM_001'
+      })
+      const departmentView = createExpressScanContextView({
+        role: 'businessCode',
+        value: 'DEPT_001'
+      })
+
+      assert.equal(courierView.tag, '快递员二维码')
+      assert.ok(courierView.summary.includes('pickupManId'))
+      assert.equal(departmentView.tag, '服务点二维码')
+      assert.ok(departmentView.summary.includes('acceptDept'))
+    }
+  },
+  {
+    name: 'clearing express scan context removes payload fields and stale quote',
+    run() {
+      const scannedDraft = applyExpressScanContext(createValidExpressDraft(), {
+        role: 'pickupManId',
+        value: 'PM_001'
+      })
+      const quotedDraft = {
+        ...scannedDraft,
+        selectedProduct: expressProduct,
+        agreementAccepted: true,
+        quoteStaleReason: ''
+      }
+      const clearedDraft = clearExpressScanContext(quotedDraft)
+      const request = buildCreateOrderRequest(clearedDraft)
+
+      assert.equal(clearedDraft.scanContext, undefined)
+      assert.equal(clearedDraft.selectedProduct, null)
+      assert.equal(clearedDraft.agreementAccepted, false)
+      assert.equal(
+        clearedDraft.quoteStaleReason,
+        '扫码寄件信息已移除，请重新获取价格'
+      )
+      assert.equal(request.pickupManId, '')
+      assert.equal(request.shipperNumber, '')
+      assert.equal(request.acceptDept, '')
+      assert.equal(
+        clearExpressScanContext(createValidExpressDraft()).scanContext,
+        undefined
+      )
     }
   },
   {
@@ -830,6 +1405,95 @@ const tests = [
     }
   },
   {
+    name: 'goods query draft bridge carries goods name and marks quote stale',
+    run() {
+      const draft = markExpressQuoteStale(
+        {
+          ...createValidExpressDraft(),
+          goods: {
+            ...createValidExpressDraft().goods,
+            name: '电子配件'
+          },
+          selectedProduct: expressProduct,
+          agreementAccepted: true,
+          quoteStaleReason: ''
+        },
+        '货物名称来自违禁品查询，请重新获取价格'
+      )
+
+      expressDraftBridge.carryFromGoodsQuery(draft)
+      const carried = expressDraftBridge.consume()
+
+      assert.equal(carried.source, 'GOODS_QUERY')
+      assert.equal(carried.draft.goods.name, '电子配件')
+      assert.equal(carried.draft.selectedProduct, null)
+      assert.equal(carried.draft.agreementAccepted, false)
+      assert.equal(
+        carried.draft.quoteStaleReason,
+        '货物名称来自违禁品查询，请重新获取价格'
+      )
+      assert.deepEqual(carried.quotes, [])
+    }
+  },
+  {
+    name: 'scan qr draft bridge carries scan context without quotes',
+    run() {
+      const draft = applyExpressScanContext(createValidExpressDraft(), {
+        role: 'shipperNumber',
+        value: 'CUS_002'
+      })
+
+      expressDraftBridge.carryFromScanQrCode(draft)
+      const carried = expressDraftBridge.consume()
+
+      assert.equal(carried.source, 'SCAN_QR_CODE')
+      assert.equal(carried.draft.scanContext.role, 'shipperNumber')
+      assert.equal(carried.draft.scanContext.value, 'CUS_002')
+      assert.equal(carried.draft.selectedProduct, null)
+      assert.equal(carried.draft.agreementAccepted, false)
+      assert.equal(
+        carried.draft.quoteStaleReason,
+        '扫码寄件信息变化，请重新获取价格'
+      )
+      assert.deepEqual(carried.quotes, [])
+    }
+  },
+  {
+    name: 'dispatch query draft bridge carries address-only consignee',
+    run() {
+      const draft = {
+        ...createExpressDraft(),
+        consignee: createAddressOnlyExpressContact({
+          province: '上海市',
+          city: '上海市',
+          county: '青浦区',
+          town: '徐泾镇',
+          address: '明珠路100号'
+        }),
+        selectedProduct: expressProduct,
+        agreementAccepted: true,
+        quoteStaleReason: ''
+      }
+
+      expressDraftBridge.carryFromDispatchQuery(draft)
+      const carried = expressDraftBridge.consume()
+
+      assert.equal(carried.source, 'DISPATCH_QUERY')
+      assert.equal(carried.draft.consignee.name, '')
+      assert.equal(carried.draft.consignee.mobile, '')
+      assert.equal(carried.draft.consignee.province, '上海市')
+      assert.equal(carried.draft.consignee.town, '徐泾镇')
+      assert.equal(carried.draft.consignee.address, '明珠路100号')
+      assert.equal(carried.draft.selectedProduct, null)
+      assert.equal(carried.draft.agreementAccepted, false)
+      assert.equal(
+        carried.draft.quoteStaleReason,
+        '收派范围查询带入，请重新获取价格'
+      )
+      assert.deepEqual(carried.quotes, [])
+    }
+  },
+  {
     name: 'print center view exposes order fallback and pending native print actions',
     run() {
       const view = printService.getCenterView({
@@ -965,6 +1629,56 @@ const tests = [
         }),
         'S0405'
       )
+      assert.equal(getPaymentOrderTypeLabel('CR'), '货款')
+      assert.equal(getPaymentOrderTypeLabel('DVAR'), '保管费')
+      assert.equal(getPaymentOrderTypeLabel('OR'), '运费')
+      assert.equal(getPaymentOrderTypeLabel('DR'), '运费')
+      assert.equal(getPaymentOrderTypeLabel('PFCR'), '运费')
+      assert.equal(getPaymentOrderTypeLabel(), '运费')
+      const feeSummary = createPaymentFeeSummary({
+        publishCharge: 12,
+        transferFee: 1.2,
+        insurance: 2,
+        writeoffAmount: 5,
+        basicFeeDetail: [
+          {
+            feeAttribute: 'favorFee',
+            feeMoney: 1.5,
+            feeName: '优惠'
+          }
+        ],
+        incrementFeeDetail: [
+          {
+            feeAttribute: 'interceptFee',
+            feeMoney: 3.3,
+            feeName: '拦截费'
+          },
+          {
+            feeAttribute: 'returnFee',
+            feeMoney: 9,
+            feeName: '返款'
+          },
+          {
+            feeAttribute: 'customFee',
+            feeMoney: 4,
+            feeName: '上楼费'
+          }
+        ]
+      })
+
+      assert.equal(feeSummary.baseAmount, 12)
+      assert.equal(feeSummary.serviceAmount, 10.5)
+      assert.deepEqual(
+        feeSummary.rows.map(item => [item.label, item.amount, item.tone]),
+        [
+          ['基础运费', 12, undefined],
+          ['转寄/拦截费', 4.5, undefined],
+          ['保价服务费', 2, undefined],
+          ['上楼费', 4, undefined],
+          ['减免费用', 1.5, 'discount'],
+          ['已支付费用', 5, 'paid']
+        ]
+      )
       const evaluateUri = createPaymentEvaluateWebUri(
         {
           waybillNum: 'DPK123456789',
@@ -1010,6 +1724,40 @@ const tests = [
   {
     name: 'price-time validation only requires address and goods metrics',
     run() {
+      const quoteView = createExpressProductQuoteView({
+        productName: '精准卡航',
+        omsProductCode: 'PACKAGE',
+        days: null,
+        daysFormat: null,
+        arriveDate: '明日达',
+        message: null,
+        label: '',
+        totalfee: 28,
+        billWeight: 3.5,
+        detail: [
+          {
+            priceEntryCode: 'FRT',
+            priceEntryName: '基础运费',
+            caculateFee: 20
+          },
+          {
+            priceEntryCode: 'BF',
+            priceEntryName: '保价费',
+            caculateFee: 0
+          }
+        ]
+      })
+      const emptyPriceView = createExpressProductQuoteView({
+        productName: '',
+        omsProductCode: '',
+        days: null,
+        arriveDate: null,
+        message: null,
+        label: '',
+        totalfee: null,
+        detail: null,
+        billWeight: null
+      })
       const draft = {
         ...createValidExpressDraft(),
         goods: {
@@ -1023,6 +1771,21 @@ const tests = [
       assert.equal(result.valid, false)
       assert.ok(result.messages.includes('请填写正确的货物重量'))
       assert.ok(result.messages.includes('货物件数至少为1件'))
+      assert.equal(quoteView.name, '精准卡航')
+      assert.equal(quoteView.priceText, '¥28')
+      assert.equal(quoteView.priceWithSuffixText, '¥28起')
+      assert.equal(quoteView.timeText, '明日达')
+      assert.equal(quoteView.billWeightText, '计费重量 3.5kg')
+      assert.deepEqual(quoteView.feeRows, [
+        {
+          key: 'FRT',
+          name: '基础运费',
+          amount: 20
+        }
+      ])
+      assert.equal(emptyPriceView.name, '德邦快递')
+      assert.equal(emptyPriceView.priceText, '--')
+      assert.equal(emptyPriceView.timeText, '时效待确认')
     }
   },
   {
@@ -1285,6 +2048,189 @@ const tests = [
     }
   },
   {
+    name: 'order edit mapper creates a normalized draft from secure detail',
+    run() {
+      const draft = createOrderEditDraft(
+        createOrderDetail({
+          contactName: ' 张三 ',
+          contactMobile: '13800138000',
+          contactProvince: '上海市',
+          contactCity: '上海市',
+          contactArea: '青浦区',
+          contactTown: '徐泾镇',
+          contactAddress: '明珠路100号',
+          receiverName: ' 李四 ',
+          receiverMobile: '13900139000',
+          receiverProvince: '广东省',
+          receiverCity: '深圳市',
+          receiverArea: '南山区',
+          receiverTown: '粤海街道',
+          receiverAddress: '科苑路200号',
+          goodsName: ' 文件 ',
+          goodsNumber: 2,
+          totalWeight: 3.5,
+          totalVolume: 0.12,
+          remark: ' 小心轻放 '
+        })
+      )
+
+      assert.equal(draft.orderNumber, 'ORDER_001')
+      assert.equal(draft.sender.name, '张三')
+      assert.equal(draft.sender.town, '徐泾镇')
+      assert.equal(draft.receiver.name, '李四')
+      assert.equal(draft.goodsName, '文件')
+      assert.equal(draft.goodsNumber, 2)
+      assert.equal(draft.totalWeight, 3.5)
+      assert.equal(draft.totalVolume, 0.12)
+      assert.equal(draft.remark, '小心轻放')
+    }
+  },
+  {
+    name: 'order edit request sends only changed fields and grouped regions',
+    run() {
+      const origin = createOrderEditDraft(
+        createOrderDetail({
+          contactName: '张三',
+          contactMobile: '13800138000',
+          contactProvince: '上海市',
+          contactCity: '上海市',
+          contactArea: '青浦区',
+          contactAddress: '明珠路100号',
+          receiverName: '李四',
+          receiverMobile: '13900139000',
+          receiverProvince: '广东省',
+          receiverCity: '深圳市',
+          receiverArea: '南山区',
+          receiverAddress: '科苑路200号',
+          goodsName: '文件',
+          goodsNumber: 1,
+          totalWeight: 1,
+          totalVolume: 0,
+          remark: ''
+        })
+      )
+      const preview = buildOrderModifyRequest(
+        {
+          ...origin,
+          sender: {
+            ...origin.sender,
+            province: '江苏省',
+            city: '苏州市',
+            county: '工业园区'
+          },
+          goodsName: '电子配件',
+          totalWeight: 2.5,
+          remark: ' 加急 '
+        },
+        origin
+      )
+
+      assert.equal(preview.changed, true)
+      assert.deepEqual(preview.changedFields, [
+        '寄件地区',
+        '货物名称',
+        '货物重量',
+        '备注'
+      ])
+      assert.deepEqual(preview.request, {
+        orderNumber: 'ORDER_001',
+        contactProvince: '江苏省',
+        contactCity: '苏州市',
+        contactArea: '工业园区',
+        goodsName: '电子配件',
+        totalWeight: 2.5,
+        remark: '加急'
+      })
+      assert.deepEqual(buildOrderModifyRequest(origin, origin), {
+        changed: false,
+        changedFields: [],
+        request: {
+          orderNumber: 'ORDER_001'
+        }
+      })
+    }
+  },
+  {
+    name: 'order edit validation blocks identical addresses and invalid metrics',
+    run() {
+      const draft = createOrderEditDraft(
+        createOrderDetail({
+          contactName: '张三',
+          contactMobile: '13800138000',
+          contactProvince: '上海市',
+          contactCity: '上海市',
+          contactArea: '青浦区',
+          contactAddress: '明珠路100号',
+          receiverName: '李四',
+          receiverMobile: '13900139000',
+          receiverProvince: '上海市',
+          receiverCity: '上海市',
+          receiverArea: '青浦区',
+          receiverAddress: '明珠路100号',
+          goodsName: '文件',
+          goodsNumber: 0,
+          totalWeight: 0,
+          totalVolume: -1
+        })
+      )
+      const invalidDraft = {
+        ...draft,
+        goodsNumber: 0,
+        totalWeight: 0,
+        totalVolume: -1
+      }
+      const validation = validateOrderEditDraft(invalidDraft)
+
+      assert.equal(validation.valid, false)
+      assert.ok(validation.messages.includes('寄件和收件地址不能相同'))
+      assert.ok(validation.messages.includes('货物件数至少为1件'))
+      assert.ok(validation.messages.includes('请填写正确的货物重量'))
+      assert.ok(validation.messages.includes('请填写正确的货物体积'))
+    }
+  },
+  {
+    name: 'order subscription mapper normalizes role, status and waybill fields',
+    run() {
+      const subscription = normalizeWaybillSubscription({
+        sender: ' 张三 ',
+        sendCity: ' 上海 ',
+        consignee: ' 李四 ',
+        consignCity: ' 深圳 ',
+        wayBillNo: ' DPK123456789 ',
+        tableType: 'EXPRESS',
+        statusType: '派送中',
+        orderClassification: '6',
+        createWaybillTime: 'invalid-time',
+        isSender: 'N',
+        isReceiver: 'Y'
+      })
+
+      assert.deepEqual(subscription, {
+        id: 'DPK123456789',
+        role: 'receive',
+        senderName: '张三',
+        senderCity: '上海',
+        consigneeName: '李四',
+        consigneeCity: '深圳',
+        waybillNumber: 'DPK123456789',
+        statusText: '派送中',
+        createdAt: 'invalid-time',
+        isExpress: true
+      })
+      assert.equal(normalizeWaybillSubscription({ wayBillNo: ' ' }), null)
+    }
+  },
+  {
+    name: 'order subscription action reflects loading and followed state',
+    run() {
+      assert.equal(createOrderSubscriptionAction(null), null)
+      assert.equal(createOrderSubscriptionAction(false).title, '关注运单')
+      assert.equal(createOrderSubscriptionAction(true).title, '取消关注')
+      assert.equal(createOrderSubscriptionAction(true, true).title, '处理中')
+      assert.equal(createOrderSubscriptionAction(false).target, 'subscription')
+    }
+  },
+  {
     name: 'order detail actions hide secure actions in public track mode',
     run() {
       assert.deepEqual(
@@ -1294,6 +2240,41 @@ const tests = [
         }),
         []
       )
+    }
+  },
+  {
+    name: 'order detail routes wait-allot edits to App and transit edits to H5',
+    run() {
+      const waitActions = createOrderDetailActions(
+        createOrderDetail({
+          orderClassification: '0',
+          orderClassName: '待揽件',
+          orderStatus: '待揽件',
+          waybillNumber: '',
+          modifyFlag: true
+        }),
+        {
+          role: 'sender'
+        }
+      )
+      const transitActions = createOrderDetailActions(createOrderDetail(), {
+        role: 'sender'
+      })
+      const modifyOrder = waitActions.find(item => item.kind === 'modifyOrder')
+      const modifyWaybill = transitActions.find(
+        item => item.kind === 'modifyWaybill'
+      )
+
+      assert.ok(modifyOrder)
+      assert.equal(modifyOrder.target, 'route')
+      assert.ok(modifyOrder.route.includes('/pages/order/edit/index'))
+      assert.ok(modifyOrder.route.includes('orderNumber=ORDER_001'))
+      assert.equal(
+        waitActions.some(item => item.kind === 'modifyWaybill'),
+        false
+      )
+      assert.ok(modifyWaybill)
+      assert.equal(modifyWaybill.target, 'web')
     }
   },
   {

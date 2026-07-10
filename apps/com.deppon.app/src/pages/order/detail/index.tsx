@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 
 import {
   OrderDetailFooterActions,
+  OrderPickupSchedulePanel,
   OrderServiceActions,
   OrderUrgePanel
 } from './components/OrderDetailActionSections'
@@ -19,6 +20,8 @@ import {
   OrderTrackSection,
   OrderTransportSection
 } from './components/OrderDetailSections'
+import { useOrderPickupSchedule } from './hooks/useOrderPickupSchedule'
+import { useOrderSubscription } from './hooks/useOrderSubscription'
 import { expressDraftBridge } from '../../../services/express'
 import {
   canDeleteOrder,
@@ -101,10 +104,7 @@ function canDeleteDetail(detail: OrderDetail | null, publicTrackMode: boolean) {
   return !publicTrackMode && !!detail && canDeleteOrder(detail)
 }
 
-function getDetailRole(
-  detail: OrderDetail,
-  routeRole: string
-): OrderRole {
+function getDetailRole(detail: OrderDetail, routeRole: string): OrderRole {
   if (routeRole === 'receive') {
     return 'receive'
   }
@@ -148,8 +148,9 @@ const OrderDetailPage = () => {
   const [detail, setDetail] = useState<OrderDetail | null>(null)
   const [tracks, setTracks] = useState<WaybillTrackItem[]>([])
   const [trackState, setTrackState] = useState('')
-  const [paymentSummary, setPaymentSummary] =
-    useState<PaymentSummary | null>(null)
+  const [paymentSummary, setPaymentSummary] = useState<PaymentSummary | null>(
+    null
+  )
   const [loading, setLoading] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [paying, setPaying] = useState(false)
@@ -160,12 +161,21 @@ const OrderDetailPage = () => {
   const [urgeAction, setUrgeAction] = useState<OrderDetailActionView | null>(
     null
   )
-  const [urgePanel, setUrgePanel] =
-    useState<OrderDetailUrgePanelState | null>(null)
+  const [urgePanel, setUrgePanel] = useState<OrderDetailUrgePanelState | null>(
+    null
+  )
   const [errorMessage, setErrorMessage] = useState('')
-  const publicTrackMode = useMemo(() => isPublicTrackMode(routeParams), [
-    routeParams
-  ])
+  const {
+    action: subscriptionAction,
+    loadStatus: loadSubscriptionStatus,
+    reset: resetSubscription,
+    toggle: toggleSubscription
+  } = useOrderSubscription()
+  const pickupSchedule = useOrderPickupSchedule()
+  const publicTrackMode = useMemo(
+    () => isPublicTrackMode(routeParams),
+    [routeParams]
+  )
   const cancelable = canCancelOrder(detail, publicTrackMode)
   const deletable = canDeleteDetail(detail, publicTrackMode)
   const detailRole = detail ? getDetailRole(detail, routeParams.role) : 'sender'
@@ -189,17 +199,38 @@ const OrderDetailPage = () => {
       publicTrackMode,
       role: detailRole
     })
+    const orderActions = pickupSchedule.loading
+      ? actions.map(action =>
+          action.target === 'pickupSchedule'
+            ? {
+                ...action,
+                title: '正在获取时间',
+                summary: '正在查询当前地址可预约的上门时段'
+              }
+            : action
+        )
+      : actions
+    const visibleActions = subscriptionAction
+      ? [subscriptionAction, ...orderActions]
+      : orderActions
 
     if (!urgeAction) {
-      return actions
+      return visibleActions
     }
 
-    const [firstAction, ...restActions] = actions
+    const [firstAction, ...restActions] = visibleActions
 
     return firstAction
       ? [firstAction, urgeAction, ...restActions]
       : [urgeAction]
-  }, [detail, detailRole, publicTrackMode, urgeAction])
+  }, [
+    detail,
+    detailRole,
+    pickupSchedule.loading,
+    publicTrackMode,
+    subscriptionAction,
+    urgeAction
+  ])
 
   const loadDetail = async () => {
     if (!publicTrackMode) {
@@ -213,6 +244,8 @@ const OrderDetailPage = () => {
     setLoading(true)
     setErrorMessage('')
     setPaymentSummary(null)
+    resetSubscription()
+    pickupSchedule.reset()
     setUrgeAction(null)
     setUrgePanel(null)
 
@@ -268,7 +301,8 @@ const OrderDetailPage = () => {
           orderService.queryUrgeAction(nextDetail, {
             publicTrackMode: false,
             role: nextRole
-          })
+          }),
+          loadSubscriptionStatus(waybillNumber)
         ])
 
       if (trackResponse.status && trackResponse.result) {
@@ -701,9 +735,7 @@ const OrderDetailPage = () => {
       await Taro.showModal({
         title: '拦截作废',
         content:
-          result?.message ||
-          response.message ||
-          '拦截作废失败，请稍后再试',
+          result?.message || response.message || '拦截作废失败，请稍后再试',
         showCancel: false,
         confirmText: '知道了'
       })
@@ -735,9 +767,63 @@ const OrderDetailPage = () => {
     await handleDial(response.result || '95353')
   }
 
+  const handlePickupSchedule = async () => {
+    if (!detail || pickupSchedule.loading) {
+      return
+    }
+
+    const response = await pickupSchedule.open(detail, {
+      publicTrackMode,
+      role: detailRole
+    })
+
+    if (response && (!response.status || !response.result)) {
+      Taro.showToast({
+        title: response.message || '暂未获取到可预约时间',
+        icon: 'none'
+      })
+    }
+  }
+
+  const handleConfirmPickupSchedule = async () => {
+    if (!pickupSchedule.selectedTime || pickupSchedule.submitting) {
+      return
+    }
+
+    const response = await pickupSchedule.submit()
+
+    if (!response) {
+      return
+    }
+
+    if (!response.status) {
+      Taro.showToast({
+        title: response.message || '修改上门时间失败',
+        icon: 'none'
+      })
+      return
+    }
+
+    Taro.showToast({
+      title: '修改上门时间成功',
+      icon: 'none'
+    })
+    await loadDetail()
+  }
+
   const handleDetailAction = (action: OrderDetailActionView) => {
+    if (action.target === 'subscription') {
+      toggleSubscription(detail?.waybillNumber)
+      return
+    }
+
     if (action.target === 'urge') {
       handleUrgeAction(action)
+      return
+    }
+
+    if (action.target === 'pickupSchedule') {
+      handlePickupSchedule()
       return
     }
 
@@ -871,6 +957,16 @@ const OrderDetailPage = () => {
         urging={urging}
         onSelect={handleSelectUrgeMenu}
         onClose={handleCloseUrgePanel}
+      />
+      <OrderPickupSchedulePanel
+        schedule={pickupSchedule.schedule}
+        selectedDate={pickupSchedule.selectedDate}
+        selectedTime={pickupSchedule.selectedTime}
+        submitting={pickupSchedule.submitting}
+        onClose={pickupSchedule.close}
+        onConfirm={handleConfirmPickupSchedule}
+        onSelectDate={pickupSchedule.selectDate}
+        onSelectTime={pickupSchedule.selectTime}
       />
     </ScrollView>
   )

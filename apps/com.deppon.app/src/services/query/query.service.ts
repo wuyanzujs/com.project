@@ -1,6 +1,11 @@
 import { queryApi } from './query.api'
+import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 import { APP_ROUTES } from '../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
+import {
+  appendRouteQuery,
+  createAppRouteUrl
+} from '../../shared/navigation/routeUrl'
+import { getCurrentUser } from '../auth'
 import { contactService } from '../contact'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
@@ -48,6 +53,7 @@ const PICKUP_ONLY_RANGE_CODES = new Set([
 
 const UNSERVICEABLE_RANGE_CODES = new Set(['DELIVERY_NATURE_ZTBPS'])
 const DEFAULT_STATION_PAGE_SIZE = 100
+const STATION_FEEDBACK_WEB_PATH = '/depponmobile/survey/noStarEvaluate'
 
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
@@ -281,6 +287,22 @@ function getStationPrimaryPhone(value?: string | null) {
   )
 }
 
+function createStationFeedbackRowData(
+  station: Pick<StationItem, 'code'> | null,
+  address: DispatchAddress | null
+) {
+  return JSON.stringify([
+    {
+      field: 'deptCode',
+      data: normalizeText(station?.code)
+    },
+    {
+      field: 'queryAddress',
+      data: normalizeText(address?.fullAddress)
+    }
+  ])
+}
+
 function normalizeAddressStation(item: AddressStationRawItem): StationItem {
   return {
     id: item.deptNo,
@@ -396,6 +418,21 @@ export const queryService = {
   },
 
   getStationPrimaryPhone,
+
+  createStationFeedbackWebUri(
+    station?: Pick<StationItem, 'code'> | null,
+    address?: DispatchAddress | null
+  ) {
+    const deptCode = normalizeText(station?.code)
+    const user = getCurrentUser()
+
+    return appendRouteQuery(STATION_FEEDBACK_WEB_PATH, {
+      scene: deptCode ? 'P0101' : 'P0102',
+      channel: APP_RUNTIME_CONFIG.systemCode,
+      mobile: user?.mobile || '',
+      rowData: createStationFeedbackRowData(station ?? null, address ?? null)
+    })
+  },
 
   async queryDispatchRange(
     productType: DispatchProductType,

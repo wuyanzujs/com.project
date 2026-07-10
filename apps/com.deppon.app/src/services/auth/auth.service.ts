@@ -59,7 +59,7 @@ export const authService = {
     const response = await authApi.queryUserInfo(false, false)
 
     if (response.status && response.result) {
-      saveCurrentUser(response.result)
+      await saveCurrentUser(response.result)
       return response.result
     }
 
@@ -107,7 +107,7 @@ export const authService = {
     })
 
     if (response.status && response.result) {
-      saveCurrentUser(response.result)
+      await saveCurrentUser(response.result)
 
       return {
         status: true,
@@ -127,7 +127,7 @@ export const authService = {
     try {
       await authApi.logout(getSystemCode())
     } finally {
-      clearAppSession()
+      await clearAppSession()
     }
   },
 

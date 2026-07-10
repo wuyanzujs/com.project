@@ -3,6 +3,11 @@ import Taro from '@tarojs/taro'
 
 import { useState } from 'react'
 
+import {
+  createAddressOnlyExpressContact,
+  createExpressDraft,
+  expressDraftBridge
+} from '../../../services/express'
 import { queryService } from '../../../services/query'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -120,6 +125,13 @@ const QueryDispatchPage = () => {
   }
 
   const handleGoExpress = () => {
+    if (result?.address) {
+      expressDraftBridge.carryFromDispatchQuery({
+        ...createExpressDraft(),
+        consignee: createAddressOnlyExpressContact(result.address)
+      })
+    }
+
     navigateToAppRoute(APP_ROUTES.express)
   }
 

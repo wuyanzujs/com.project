@@ -97,6 +97,22 @@ export interface ExpressProductQuote {
   billWeight: number | null
 }
 
+export type ExpressScanRole =
+  | 'pickupManId'
+  | 'driverId'
+  | 'acceptDept'
+  | 'businessCode'
+  | 'shipperNumber'
+
+export type ExpressScanExpressRole = 'PARTNER'
+
+export interface ExpressScanContext {
+  role: ExpressScanRole
+  value: string
+  sceneId?: string
+  expressRole?: ExpressScanExpressRole
+}
+
 export interface ExpressDraft {
   sender: ExpressContact | null
   consignee: ExpressContact | null
@@ -108,6 +124,7 @@ export interface ExpressDraft {
   remark: string
   agreementAccepted: boolean
   quoteStaleReason: string
+  scanContext?: ExpressScanContext
 }
 
 export interface ExpressInsuranceRuleTableRow {
@@ -222,9 +239,13 @@ export interface ExpressFreightRequest {
   detail: boolean
   sendDateTime: string
   promotionsCode?: string
+  customerMobile?: string
   pickUpToDoor: boolean
   passwordSigning: ExpressFlag
   passProductCode: ExpressProductCode
+  customerCode?: string
+  customerMonthly?: '0' | '1'
+  customerContract?: '0' | '1'
 }
 
 export interface ExpressPickupTimeRequest {

@@ -1,41 +1,69 @@
 .express-page {
   min-height: 100%;
-  padding: 24px 24px 148px;
-  background: #f5f7fb;
+  padding: 12px 24px 48px;
+  background: #f4f6f8;
 }
 
 .express-header {
   display: flex;
   flex-direction: row;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
-  padding: 28px 0 18px;
+  padding: 14px 0 18px;
 }
 
 .express-header__label {
-  color: #1a5eff;
-  font-size: 24px;
-  font-weight: 700;
+  display: flex;
+  margin-top: 4px;
+  color: #667085;
+  font-size: 20px;
 }
 
 .express-header__title {
   display: flex;
-  margin-top: 8px;
   color: #16181a;
-  font-size: 42px;
+  font-size: 31px;
   font-weight: 700;
+  line-height: 42px;
 }
 
 .express-header__price {
+  margin-left: 10px;
   color: #f97316;
-  font-size: 38px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.express-header__tools {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.express-header__tool {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  min-width: 82px;
+  height: 52px;
+  margin-left: 8px;
+  padding: 0 12px;
+  background: #eef2f6;
+  border-radius: 8px;
+}
+
+.express-header__tool-text {
+  margin-left: 6px;
+  color: #344054;
+  font-size: 20px;
   font-weight: 700;
 }
 
 .express-contact-panel,
 .express-section {
-  margin-bottom: 18px;
-  padding: 22px;
+  margin-bottom: 14px;
+  padding: 20px;
   background: #ffffff;
   border-radius: 8px;
 }
@@ -280,11 +308,16 @@
 }
 
 .express-chip-group,
-.express-toggle-group,
 .express-actions {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+}
+
+.express-toggle-group {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: row;
 }
 
 .express-chip {
@@ -312,6 +345,60 @@
 
 .express-chip__text--active {
   color: #1a5eff;
+}
+
+.express-scan-context {
+  margin: 0 0 18px;
+  padding: 16px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+}
+
+.express-scan-context--success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.express-scan-context__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.express-scan-context__title {
+  color: #16181a;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+.express-scan-context__tag {
+  color: #1a5eff;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 30px;
+}
+
+.express-scan-context__summary {
+  display: flex;
+  margin-top: 6px;
+  color: #475467;
+  font-size: 21px;
+  line-height: 30px;
+}
+
+.express-scan-context__action {
+  align-self: flex-end;
+  margin-top: 10px;
+}
+
+.express-scan-context__action-text {
+  color: #1a5eff;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 32px;
 }
 
 .express-monthly-card {
@@ -383,6 +470,37 @@
   padding-top: 8px;
 }
 
+.express-service-more {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 82px;
+  margin-top: 8px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.express-service-more__content {
+  flex: 1;
+  padding-right: 12px;
+}
+
+.express-service-more__title {
+  color: #344054;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.express-service-more__summary {
+  display: flex;
+  margin-top: 4px;
+  color: #667085;
+  font-size: 20px;
+  line-height: 28px;
+}
+
 .express-service-row--stack {
   align-items: flex-start;
   padding-top: 18px;
@@ -411,7 +529,7 @@
   justify-content: center;
   width: 86px;
   height: 52px;
-  margin-left: 10px;
+  margin-left: 8px;
   background: #f8fafc;
   border: 1px solid #e4e7ec;
   border-radius: 8px;
@@ -529,6 +647,11 @@
   border-color: #f97316;
 }
 
+.express-product__main {
+  flex: 1;
+  padding-right: 16px;
+}
+
 .express-product__name {
   color: #16181a;
   font-size: 27px;
@@ -540,6 +663,14 @@
   margin-top: 8px;
   color: #667085;
   font-size: 22px;
+}
+
+.express-product__meta {
+  display: flex;
+  margin-top: 6px;
+  color: #98a2b3;
+  font-size: 21px;
+  line-height: 30px;
 }
 
 .express-product__price {

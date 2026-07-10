@@ -11,3 +11,16 @@ export const CACHE_KEYS = {
 } as const
 
 export type CacheKey = (typeof CACHE_KEYS)[keyof typeof CACHE_KEYS]
+
+export const CACHE_PREFIX = 'DP_CACHE_'
+
+export function createCacheStorageKey(key: string) {
+  return `${CACHE_PREFIX}${key}`
+}
+
+export const APP_STORAGE_KEYS = Array.from(
+  new Set([
+    ...Object.values(CACHE_KEYS),
+    ...Object.values(CACHE_KEYS).map(createCacheStorageKey)
+  ])
+)

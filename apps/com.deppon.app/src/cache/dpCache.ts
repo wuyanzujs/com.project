@@ -1,3 +1,4 @@
+import { createCacheStorageKey } from './keys'
 import {
   getJsonStorageValue,
   removeStorageValue,
@@ -24,7 +25,6 @@ interface DPCachePayload<T> {
   expire: DPCacheExpireConfig
 }
 
-const CACHE_PREFIX = 'DP_CACHE_'
 const MINUTE = 60000
 const HOUR = 60 * MINUTE
 const DAY = 24 * HOUR
@@ -63,16 +63,12 @@ function isExpired(payload: DPCachePayload<unknown>) {
   }
 }
 
-function createKey(key: string) {
-  return `${CACHE_PREFIX}${key}`
-}
-
 export const dpCache = {
   set<T>(
     key: string,
     value?: { data?: T; expire?: DPCacheExpireConfig }
-  ): boolean {
-    return setJsonStorageValue<DPCachePayload<T>>(createKey(key), {
+  ): Promise<boolean> {
+    return setJsonStorageValue<DPCachePayload<T>>(createCacheStorageKey(key), {
       time: Date.now(),
       data: value?.data,
       expire: value?.expire ?? { type: DPCacheExpireType.INFINITY }
@@ -80,7 +76,9 @@ export const dpCache = {
   },
 
   get<T>(key: string): T | null {
-    const payload = getJsonStorageValue<DPCachePayload<T>>(createKey(key))
+    const payload = getJsonStorageValue<DPCachePayload<T>>(
+      createCacheStorageKey(key)
+    )
 
     if (!payload || isExpired(payload)) {
       return null
@@ -90,12 +88,14 @@ export const dpCache = {
   },
 
   has(key: string): boolean {
-    const payload = getJsonStorageValue<DPCachePayload<unknown>>(createKey(key))
+    const payload = getJsonStorageValue<DPCachePayload<unknown>>(
+      createCacheStorageKey(key)
+    )
 
     return !!payload && !isExpired(payload)
   },
 
-  remove(key: string): boolean {
-    return removeStorageValue(createKey(key))
+  remove(key: string): Promise<boolean> {
+    return removeStorageValue(createCacheStorageKey(key))
   }
 }

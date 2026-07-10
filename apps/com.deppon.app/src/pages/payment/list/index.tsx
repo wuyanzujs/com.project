@@ -3,9 +3,11 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
+import PaymentFeeRows from './components/PaymentFeeRows'
 import {
   createPaymentEvaluateWebUri,
   getPaymentItemAmount,
+  getPaymentOrderTypeLabel,
   paymentService
 } from '../../../services/payment'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
@@ -51,18 +53,6 @@ const PAYMENT_ROLE_TABS: Array<{ label: string; value: PaymentRole }> = [
 
 function getPaymentItemKey(item: PaymentItem) {
   return item.accountStatementDetailNo || item.waybillNum
-}
-
-function getPaymentTypeLabel(item: PaymentItem) {
-  if (item.orderSubType === 'CR') {
-    return '货款'
-  }
-
-  if (item.orderSubType === 'DVAR') {
-    return '保管费'
-  }
-
-  return '运费'
 }
 
 const PaymentListPage = () => {
@@ -363,7 +353,7 @@ const PaymentListPage = () => {
               <Text className='payment-card__number'>运单 {item.waybillNum}</Text>
               <View className='payment-card__tags'>
                 <Text className='payment-card__tag'>
-                  {getPaymentTypeLabel(item)}
+                  {getPaymentOrderTypeLabel(item.orderSubType)}
                 </Text>
                 {status === 'PAID' && (
                   <Text className='payment-card__status'>已支付</Text>
@@ -397,6 +387,8 @@ const PaymentListPage = () => {
                 ¥{getPaymentItemAmount(item, status).toFixed(2)}
               </Text>
             </View>
+
+            <PaymentFeeRows item={item} />
 
             <View className='payment-card__actions'>
               <View

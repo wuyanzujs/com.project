@@ -236,13 +236,11 @@ const OrderStubPage = () => {
     </View>
   )
 
-  const renderField = (field: OrderStubFieldView) => (
+  const renderField = (field: OrderStubFieldView, index: number) => (
     <View
-      className={
-        field.important
-          ? 'order-stub-field order-stub-field--important'
-          : 'order-stub-field'
-      }
+      className={`order-stub-field${
+        index === 0 ? ' order-stub-field--first' : ''
+      }${field.important ? ' order-stub-field--important' : ''}`}
       key={`${field.label}-${field.value}`}
     >
       <Text className='order-stub-field__label'>{field.label}</Text>
@@ -260,8 +258,14 @@ const OrderStubPage = () => {
     </View>
   )
 
-  const renderImageGroup = (group: OrderStubImageGroupView) => (
-    <View className='order-stub-image-group' key={group.kind}>
+  const renderImageGroup = (
+    group: OrderStubImageGroupView,
+    groupIndex: number
+  ) => (
+    <View
+      className={groupIndex === 0 ? 'order-stub-image-group order-stub-image-group--first' : 'order-stub-image-group'}
+      key={group.kind}
+    >
       <View className='order-stub-image-group__head'>
         <View className='order-stub-image-group__content'>
           <Text className='order-stub-image-group__title'>{group.title}</Text>
@@ -301,11 +305,13 @@ const OrderStubPage = () => {
     <View className='order-stub-package-group' key={group.title}>
       <Text className='order-stub-package-group__title'>{group.title}</Text>
       <View className='order-stub-package-row order-stub-package-row--head'>
-        <Text className='order-stub-package-row__name'>{group.nameTitle}</Text>
-        <Text className='order-stub-package-row__count'>
+        <Text className='order-stub-package-row__name order-stub-package-row__name--head'>
+          {group.nameTitle}
+        </Text>
+        <Text className='order-stub-package-row__count order-stub-package-row__count--head'>
           {group.countTitle}
         </Text>
-        <Text className='order-stub-package-row__amount'>
+        <Text className='order-stub-package-row__amount order-stub-package-row__amount--head'>
           {group.amountTitle}
         </Text>
       </View>
@@ -443,7 +449,7 @@ const OrderStubPage = () => {
               </Text>
             )}
             {!imagesLoading &&
-              images?.groups.map((group) => renderImageGroup(group))}
+              images?.groups.map(renderImageGroup)}
             {!imagesLoading && images && !images.groups.length && (
               <Text className='order-stub-section__empty'>
                 {images.message || '暂未查询到揽收/签收照片'}

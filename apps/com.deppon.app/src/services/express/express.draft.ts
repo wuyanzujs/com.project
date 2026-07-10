@@ -3,11 +3,14 @@ import type {
   ExpressContact,
   ExpressContactTarget,
   ExpressDraft,
+  ExpressScanContext,
   ExpressValidationResult
 } from './types'
 
 const DEFAULT_GOODS_COUNT = 1
 const DEFAULT_GOODS_WEIGHT = 1
+const SCAN_CONTEXT_STALE_REASON = '扫码寄件信息变化，请重新获取价格'
+const SCAN_CONTEXT_CLEAR_REASON = '扫码寄件信息已移除，请重新获取价格'
 
 export function toFiniteNumber(value: number, fallback = 0) {
   return Number.isFinite(value) ? value : fallback
@@ -77,6 +80,24 @@ export function mapContactToExpressContact(contact: Contact): ExpressContact {
     address: contact.address,
     company: contact.company,
     regionType: contact.regionType
+  }
+}
+
+export function createAddressOnlyExpressContact(address: {
+  province?: string
+  city?: string
+  county?: string
+  town?: string
+  address?: string
+}): ExpressContact {
+  return {
+    name: '',
+    mobile: '',
+    province: trimText(address.province),
+    city: trimText(address.city),
+    county: trimText(address.county),
+    town: trimText(address.town) || undefined,
+    address: trimText(address.address)
   }
 }
 
@@ -289,6 +310,64 @@ export function markExpressQuoteStale(
   }
 }
 
+function normalizeExpressScanContext(
+  context: ExpressScanContext
+): ExpressScanContext | null {
+  const value = trimText(context.value)
+  const sceneId = trimText(context.sceneId)
+
+  if (
+    !value ||
+    value.toLowerCase() === 'null' ||
+    value.toLowerCase() === 'undefined'
+  ) {
+    return null
+  }
+
+  return {
+    role: context.role,
+    value,
+    sceneId: sceneId || undefined,
+    expressRole: context.expressRole
+  }
+}
+
+export function applyExpressScanContext(
+  draft: ExpressDraft,
+  context: ExpressScanContext
+): ExpressDraft {
+  const scanContext = normalizeExpressScanContext(context)
+
+  if (!scanContext) {
+    return {
+      ...draft,
+      scanContext: undefined
+    }
+  }
+
+  return {
+    ...draft,
+    scanContext,
+    selectedProduct: null,
+    agreementAccepted: false,
+    quoteStaleReason: SCAN_CONTEXT_STALE_REASON
+  }
+}
+
+export function clearExpressScanContext(draft: ExpressDraft): ExpressDraft {
+  if (!draft.scanContext) {
+    return draft
+  }
+
+  return {
+    ...draft,
+    scanContext: undefined,
+    selectedProduct: null,
+    agreementAccepted: false,
+    quoteStaleReason: SCAN_CONTEXT_CLEAR_REASON
+  }
+}
+
 export function setExpressContact(
   draft: ExpressDraft,
   target: ExpressContactTarget,
@@ -330,4 +409,3 @@ export function swapExpressContacts(draft: ExpressDraft): ExpressDraft {
 
   return nextDraft
 }
-

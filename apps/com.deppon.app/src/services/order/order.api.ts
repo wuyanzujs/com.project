@@ -1,6 +1,11 @@
 import { depponHttp } from '../../request/deppon'
 
 import type {
+  OrderDispatchRequest,
+  OrderPickupTimeRequest,
+  OrderPickupTimeResponse
+} from './order.dispatch.types'
+import type {
   ConsigneeOrderListRequest,
   ConsigneeOrderListResponse,
   OrderContractDetailRequest,
@@ -10,6 +15,7 @@ import type {
   OrderDetail,
   OrderDetailRequest,
   OrderInvalidWaybillRequest,
+  OrderModifyRequest,
   OrderNotifyDeliverRequest,
   OrderHomeImagesRequest,
   OrderOpenBoxImagesRequest,
@@ -32,6 +38,8 @@ import type {
   SenderOrderListResponse,
   WaybillDetailRequest,
   WaybillDetailResponse,
+  WaybillSubscriptionRaw,
+  WaybillSubscriptionRequest,
   WaybillTrackListResponse
 } from './types'
 
@@ -55,13 +63,9 @@ export const orderApi = {
     return depponHttp.post<
       ConsigneeOrderListResponse,
       ConsigneeOrderListRequest
-    >(
-      '/gwapi/waybillService/eco/wayBill/secure/receiveOrderList',
-      data,
-      {
-        loading
-      }
-    )
+    >('/gwapi/waybillService/eco/wayBill/secure/receiveOrderList', data, {
+      loading
+    })
   },
 
   queryOrderDetail(data: OrderDetailRequest, loading = true) {
@@ -84,10 +88,7 @@ export const orderApi = {
     )
   },
 
-  queryTrackList(
-    waybillNumber: string,
-    options: QueryTrackListOptions = {}
-  ) {
+  queryTrackList(waybillNumber: string, options: QueryTrackListOptions = {}) {
     return depponHttp.post<WaybillTrackListResponse, { waybillNumber: string }>(
       '/gwapi/trackService/eco/track/queryNewTrack',
       {
@@ -110,6 +111,65 @@ export const orderApi = {
   deleteOrder(data: OrderDeleteRequest) {
     return depponHttp.post<boolean, OrderDeleteRequest>(
       '/gwapi/orderService/eco/order/secure/removeOrder',
+      data
+    )
+  },
+
+  modifyOrder(data: OrderModifyRequest) {
+    return depponHttp.post<boolean, OrderModifyRequest>(
+      '/gwapi/orderService/eco/order/secure/modifyOrder',
+      data
+    )
+  },
+
+  queryPickupTimes(data: OrderPickupTimeRequest, loading = true) {
+    return depponHttp.post<OrderPickupTimeResponse, OrderPickupTimeRequest>(
+      '/gwapi/orderService/eco/order/dispatchTime/dispatchTimeNew',
+      data,
+      {
+        loading,
+        timeout: 3000
+      }
+    )
+  },
+
+  dispatchOrder(data: OrderDispatchRequest) {
+    return depponHttp.post<boolean, OrderDispatchRequest>(
+      '/gwapi/orderService/eco/order/secure/orderDispatchFlag',
+      data
+    )
+  },
+
+  querySubscriptions(loading = false) {
+    return depponHttp.get<Array<WaybillSubscriptionRaw | null>>(
+      '/gwapi/waybillService/eco/wayBill/subscribe/list/records',
+      {
+        loading
+      }
+    )
+  },
+
+  querySubscriptionStatus(wayBillNo: string, loading = false) {
+    return depponHttp.get<boolean>(
+      `/gwapi/waybillService/eco/wayBill/subscribe/exist?wayBillNo=${encodeURIComponent(
+        wayBillNo
+      )}`,
+      {
+        loading
+      }
+    )
+  },
+
+  subscribeWaybill(data: WaybillSubscriptionRequest) {
+    return depponHttp.post<boolean, WaybillSubscriptionRequest>(
+      '/gwapi/waybillService/eco/wayBill/subscribe/submit',
+      data
+    )
+  },
+
+  cancelWaybillSubscription(data: WaybillSubscriptionRequest) {
+    return depponHttp.post<boolean, WaybillSubscriptionRequest>(
+      '/gwapi/waybillService/eco/wayBill/subscribe/cancel',
       data
     )
   },
@@ -196,10 +256,7 @@ export const orderApi = {
     )
   },
 
-  queryReturnBillImages(
-    data: OrderReturnBillImagesRequest,
-    loading = false
-  ) {
+  queryReturnBillImages(data: OrderReturnBillImagesRequest, loading = false) {
     return depponHttp.post<string[], OrderReturnBillImagesRequest>(
       '/gwapi/waybillService/eco/wayBill/secure/queryNewSignImages',
       data,

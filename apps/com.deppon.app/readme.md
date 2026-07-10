@@ -25,6 +25,7 @@ pnpm check:app-routes
 pnpm check:app-module-size
 pnpm check:app-runtime-config
 pnpm check:app-business-rules
+pnpm check:app-platform-build
 pnpm check:app-native-env
 ```
 
@@ -38,12 +39,35 @@ pnpm --filter com.deppon.app run check:routes
 pnpm --filter com.deppon.app run check:module-size
 pnpm --filter com.deppon.app run check:runtime-config
 pnpm --filter com.deppon.app run check:business-rules
-pnpm --filter com.deppon.app run build
+pnpm --filter com.deppon.app run check:platform-build
+pnpm --filter com.deppon.app run bundle:android
+pnpm --filter com.deppon.app run bundle:ios
 ```
 
-`pnpm verify:app` 是本地和 CI 的统一质量入口，会串行执行类型检查、ESLint、RN 边界检查、路由注册表检查、页面/service 体量检查、运行时配置检查、业务规则检查和 RN bundle 构建。
+`pnpm verify:app` 是本地和 CI 的统一质量入口，会串行执行类型检查、ESLint、RN 边界检查、路由注册表检查、页面/service 体量检查、运行时配置检查、业务规则检查、平台发布契约检查和 Android RN bundle 构建。
+
+Metro 默认限制为 2 个 worker，避免 Windows 本地构建一次拉起过多子进程；构建机可通过 `METRO_MAX_WORKERS` 设置正整数覆盖。
 
 根目录已新增 `.github/workflows/app-quality.yml`，push 和 pull request 会执行 `pnpm verify:app` 与 `pnpm check:app-native-env`。后续业务迁移不应绕过这条质量入口。
+
+## 原生发布门禁
+
+Android/iOS 原生包不能依赖 Xcode 或 Gradle 临时生成 JS bundle。发布前必须分别执行：
+
+```bash
+pnpm --filter com.deppon.app run bundle:android
+pnpm --filter com.deppon.app run bundle:ios
+```
+
+Android/iOS Fastlane 已在打包 lane 内按锁文件安装依赖并调用对应 bundle 脚本；iOS 还会重新安装 Pods，并设置 `SKIP_BUNDLING=1`，避免 RN 原生 bundling 再次查找不存在的 `index.js`。iOS 工程只能通过 `ios/taroDemo.xcworkspace` 打开和构建，不能直接使用 `.xcodeproj`。
+
+修改 `src/app.config.ts` 后若 Metro 仍保留旧路由，执行：
+
+```bash
+pnpm --filter com.deppon.app run dev:rn:reset-cache
+```
+
+新增或升级 RN 原生依赖后，必须提交 `package.json` 和 `pnpm-lock.yaml`，执行 `pnpm install --frozen-lockfile`；iOS 还要执行 `pnpm --filter com.deppon.app run podInstall` 并重新构建原生包。`check:platform-build` 会动态比较 Taro `appName`、Android/iOS `moduleName`，校验 Fastlane bundle/workspace/Pods 契约，并从 pnpm 依赖树阻止直接使用的 RN 原生库出现多个版本。
 
 ## 环境变量
 
@@ -93,11 +117,18 @@ Taro RN 依赖的 Expo autolinking 需要 `expo` 作为 App 显式依赖。Andro
 - `Taro.setClipboardData/getClipboardData`
 - `Taro.previewImage`
 - `Taro.openDocument`
+- `Taro.getStorageSync/setStorageSync/getStorageInfoSync/removeStorageSync/clearStorageSync`
+- `Taro.onUserCaptureScreen/offUserCaptureScreen`
+- `Taro.getFileSystemManager/createSelectorQuery`
+- `window` / `document` / `localStorage` / `sessionStorage` / `navigator` DOM/H5 API
 - 蓝牙打印、云打印码和外部设备直连逻辑
 - 旧项目 `EVENT_TRACK` / `sensors` 小程序埋点入口
 - RN `NativeModules`、`PermissionsAndroid`、`Linking`、`Share.share`、`Alert.alert`
+- SCSS `float`、`display: grid/inline-grid`、`grid-*`、`position: fixed/sticky`、`inset`、单边 `border-*-style`、`background-image`、`box-shadow`、复合类和父子/兄弟组合选择器
 
-这些能力必须先进入 `src/shared/platform/*` facade，必要时再由 `src/shared/native/*` 包装 Android/iOS 差异，最后由页面或 service 消费。`pnpm check:app-boundaries` 会阻止常见小程序 API、RN 原生能力直调、模板原生身份和小程序项目配置回流。
+这些能力必须先进入 `src/shared/platform/*` facade，必要时再由 `src/shared/native/*` 包装 Android/iOS 差异，最后由页面或 service 消费。缓存只允许通过 `src/cache/*` facade：底层使用异步 `Taro.getStorage/setStorage/removeStorage`，App 启动时先 hydrate 到内存镜像，业务侧不直接调用任何 Taro 存储 API。`react-native`、`react-native-webview` 和其他 RN 原生包只能在 `shared/platform`、`shared/native` 或 `cache` facade 内 import。页面布局优先使用 Flex，通过 `flexDirection`、`alignItems`、`justifyContent` 等 RN 支持属性表达；样式状态必须直接落到目标元素的 BEM modifier class，不能依赖 RN 会忽略的父子/兄弟选择器。`pnpm check:app-boundaries` 会阻止常见小程序 API、同步缓存 API、DOM/H5 API、RN 原生能力直调、不兼容 SCSS、模板原生身份和小程序项目配置回流。
+
+当前工程不启用 Harmony。`check:platform-build` 只有在检测到 `@tarojs/plugin-platform-harmony-cpp` 或 `config.harmony` 时才启动 Harmony 门禁，并要求 Taro `>=4.1.0`、Vite 编译器、`projectPath/hapName`、CPP 类型引用和 `__taroNotSupport` 监听；同时禁止 `inline-block`、直接 `z-index`、内联颜色名称，并要求 `Text` 显式挂载样式，避免依赖 Harmony 不支持的文本继承。
 
 ## 目录分层
 
@@ -109,6 +140,7 @@ src/
   services/
   shared/
     navigation/
+    native/
     platform/
     webview/
   styles/
@@ -118,12 +150,13 @@ src/
 分层规则：
 
 - `request` 只处理 HTTP、cookie、响应归一和请求事件，不直接跳页面。
-- `cache` 统一封装本地缓存 key、过期策略和 storage adapter。
+- `cache` 统一封装本地缓存 key、过期策略和异步 storage adapter；业务读取的是 App 启动时 hydrate 的内存镜像，业务代码不直接调用 Taro 缓存 API。
 - `services/<domain>/*.api.ts` 只描述接口调用。
 - `services/<domain>/*.service.ts` 做业务编排，不直接写页面 UI。
 - 复杂领域继续拆 `mapper.ts`、`rules.ts`、`useCases.ts`、`viewModel.ts`，避免主 service 巨石化。
 - 页面只负责页面级状态、事件编排和渲染；复杂弹层、列表项、表单段落放入当前页面 `components/`。
 - 平台能力只通过 `shared/platform` facade 使用。
+- RN 原生组件和桥接只通过 `shared/native` 或 `shared/platform` 使用，页面不直接 import `react-native` / `react-native-webview`。
 - WebView 承接统一走 `shared/webview/appWeb.ts` 的 `createAppWebUrl`，业务代码不要直接拼 `APP_ROUTES.web` 或散落 H5 URL。
 - 新增 H5 承接入口必须先登记到 `shared/webview/appWeb.ts` 的 `APP_WEB_TARGETS`，页面和 service 使用 `AppWebSource` 类型引用来源，不在静态入口数据里写任意字符串。
 - 运行时域名、H5 入口、渠道码和系统码统一从 `shared/config/runtime.ts` 读取；生产值走环境变量，不在代码里写固定 token。
@@ -173,13 +206,61 @@ src/
 
 ## 业务规则检查
 
-`pnpm check:app-business-rules` 会运行 `scripts/check-business-rules.cjs`，当前覆盖 service 失败响应形态、OWS 状态归一、`ECO_TOKEN` cookie 提取、路由 query、扫码分类、寄件草稿校验、批量寄入口/校验规则、打印中心入口/打印前置规则、发票申请校验/抬头校验/提交 payload、订单金额/重量/手机号展示和订单详情动作 VM 等纯函数规则。后续拆核心 service 时，优先把稳定的 mapper、rules、view model 用例补到这里。
+`pnpm check:app-business-rules` 会运行 `scripts/check-business-rules.cjs`，当前覆盖 service 失败响应形态、OWS 状态归一、`ECO_TOKEN` cookie 提取、路由 query、扫码分类、专属快递员归一和寄件上下文、寄件模板映射/保存 payload/草稿桥、寄件草稿校验、寄件扫码上下文到下单字段映射、关注运单映射和详情动作、订单修改草稿/差异请求/校验、网点反馈 H5 参数、批量寄入口/校验规则、打印中心入口/打印前置规则、支付费用类型/金额/评价参数、发票申请校验/抬头校验/提交 payload、订单金额/重量/手机号展示和订单详情动作 VM 等纯函数规则。后续拆核心 service 时，优先把稳定的 mapper、rules、view model 用例补到这里。
 
 ## 扫码规则
 
 首页和发票中心扫码入口统一走 `shared/platform/scan`。`scanAppCode` 会先把扫码值分类为运单、云打印码或暂不支持的业务二维码；普通运单进入订单详情或发票运单搜索，`printId` 云打印码进入面单打印中心，寄件业务二维码、短链和非德邦二维码不会被误当成普通运单。旧寄件二维码中的快递员、司机、部门、服务点和客户编码参数会保留为 `role/value`，`sceneId` 和 `partner=Y` 也会保留，后续接寄件二维码时继续从 facade 消费，不回到页面里解析 URL。
 
+首页扫码遇到寄件业务二维码时，会把上下文带入寄件草稿并通过登录守卫进入寄件页；发票中心扫码仍只消费运单号。寄件 service 已承接可证明的扫码上下文：`pickupManId/driverId` 会进入下单 `pickupManId`，`shipperNumber` 会进入报价和筛单客户编码字段，并在下单时进入 `shipperNumber`，`acceptDept/businessCode` 会进入 `acceptDept`。带入或移除扫码上下文会清空旧报价和协议勾选，要求用户重新获取价格，并在寄件页展示扫码来源说明和移除入口。客户编码二维码不在前端硬编码账号月结/合同权限，是否可用月结和合同费用仍以后端校验为准；完整寄件二维码状态机和原生扫码入口仍按后续独立切片接入。
+
 当前不复制旧小程序里的短链网络解析、云打印小程序外跳和寄件二维码状态机。后续接入原生扫码模块时，只替换 `scanCode` 的 native bridge，页面分流规则保持在 facade 内。
+
+## 查询工具边界
+
+收派范围查询页点击“去寄件”时，会通过 `expressDraftBridge` 把查询地址带入寄件页作为收件地址；联系人姓名和手机号仍需用户在寄件页补全，且需要重新获取价格。查询页不直接创建订单，也不绕过寄件页的报价、筛单和协议校验。
+
+网点查询页的空结果“去寄件”只保留旧项目的兜底导航语义，通过 `source=QUERY_STATION_EMPTY` 标记来源；不会把网点地址或查询地址写入寄件草稿。
+
+网点查询列表和详情反馈统一登记为 `STATION_FEEDBACK` WebView 来源，由 `queryService.createStationFeedbackWebUri` 生成旧问卷需要的 `scene` 和 `rowData` 参数。页面不复制旧小程序的拖动浮层、分享按钮、定位授权和埋点状态机。
+
+## 专属快递员边界
+
+`pages/courier/list` 和 `pages/courier/detail` 承接旧项目专属快递员的 App 原生主流程：查询已关注快递员、查看评分和服务标签、关注/取消关注、拨打电话、查看所属网点以及指定快递员寄件。
+
+- API 统一放在 `services/courier/courier.api.ts`，页面不直接访问 courier 网关。
+- 后端评分、服务次数和标签由 `courier.mapper.ts` 归一；重复关注提示由 service 兼容为幂等成功。
+- “找他寄件”通过 `courier.rules.ts` 和 `expressDraftBridge` 把工号映射为 `pickupManId` 扫码上下文，寄件页重新报价后才允许提交。
+- 营业部详情复用 `queryService` 和现有网点详情页，电话复用 `shared/platform/phone`。
+- 扫码关注只消费 `shared/platform/scan` 的分类结果；当前扫码能力仍为 `pending`，页面会统一降级。旧项目的小程序分享、企业微信二维码、实时位置和快递员评价弹层不直接迁入，后续分别按 App share/externalApp/map facade 或评价领域 service 接入。
+
+## 寄件模板边界
+
+`pages/express/template/list` 和 `pages/express/template/create` 承接寄件模板首期 App 流程：从当前寄件草稿保存模板、查看列表、设置/取消默认、删除以及带入寄件页继续下单。
+
+- API 统一放在 `services/template/template.api.ts`，接入查询、保存和删除 3 个 secure 端点；页面不直接访问 orderTemplate 网关。
+- `template.mapper.ts` 负责旧模板字段与 `ExpressDraft` 的双向转换，并校验模板名称最多 5 个字、模板总数最多 5 个。
+- 模板保存页只消费内存草稿桥或 `expressDraftStorage` facade，不直接调用 Taro Storage、RN Native 或小程序缓存 API。
+- 使用模板时通过 `expressDraftBridge` 带入寄件页，强制清空历史报价和电子运单协议勾选，用户重新报价后才能提交。
+- 首期不复制旧项目的模板详情巨石编辑页。模板名称/默认状态修改、收寄件/货物/服务全量编辑后续按独立编辑 use case 接入；当前可删除后从寄件页重新保存。
+
+## 关注运单边界
+
+`pages/order/subscriptions` 承接已关注运单列表，订单详情页承接关注状态查询和关注/取消动作。查询、存在性判断、关注和取消 4 个端点统一收口在 `services/order`，页面不直接请求网关。
+
+- `order.subscription.ts` 归一寄收角色、快递/零担、状态和时间字段，并生成详情页关注动作 VM。
+- 订单列表通过“关注运单”进入独立列表；关注列表支持刷新、查看安全详情和取消关注。
+- 订单详情只在 secure 模式且状态查询成功后展示关注动作；确认取消、提交和反馈状态由 `useOrderSubscription` 管理。
+- 关注能力不依赖小程序订阅消息。App Push、短信和站内信属于独立通知能力，后续通过 notification facade 接入。
+
+## 订单修改边界
+
+待揽件“修改订单”和运输中“修改运单”是两条不同链路。待揽件订单通过 `pages/order/edit` 在 App 内修改并调用 `/modifyOrder`；运输中运单继续由受控 H5 承接，不混用请求结构。
+
+- `services/order/order.edit.ts` 负责详情转编辑草稿、表单校验、差异字段计算和提交编排，接口只发送实际变化字段。
+- 首期 App 原生页支持收寄件姓名、手机号、省市区、详细地址、货物名称、件数、重量、体积和备注。
+- 产品、价格、付款、保价、代收货款、取件时间和复杂增值服务不能脱离报价、合同和扩展字段规则单独修改，当前保留原值，后续按独立 use case 接入。
+- 页面加载和提交前都校验订单号、待揽件状态、后端修改标记、联系人、地址差异和货物数值；无变化时不会请求接口。
 
 ## 迁移旧项目业务的规则
 

@@ -1,10 +1,9 @@
 .app-tab-bar {
-  position: fixed;
+  position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
   z-index: 20;
-  padding: 12px 18px 18px;
   background: #ffffff;
   border-top-color: #e4e7ec;
   border-top-width: 1px;
@@ -13,7 +12,8 @@
 .app-tab-bar__inner {
   display: flex;
   flex-direction: row;
-  min-height: 92px;
+  min-height: 104px;
+  padding: 8px 18px 4px;
 }
 
 .app-tab-bar__item {
@@ -22,49 +22,20 @@
   justify-content: center;
 }
 
-.app-tab-bar__item--active {
-  background: #f8fbff;
-  border-radius: 8px;
-}
-
 .app-tab-bar__icon {
-  width: 36px;
-  height: 36px;
-  margin-bottom: 8px;
-  background: #98a2b3;
-  border-radius: 8px;
-}
-
-.app-tab-bar__icon--home {
-  border-radius: 12px 12px 8px 8px;
-}
-
-.app-tab-bar__icon--express {
-  border-radius: 18px;
-}
-
-.app-tab-bar__icon--orderList {
-  width: 40px;
-  height: 30px;
-  margin-top: 3px;
-  margin-bottom: 11px;
-  border-radius: 6px;
-}
-
-.app-tab-bar__icon--mine {
-  width: 34px;
-  border-radius: 17px;
-}
-
-.app-tab-bar__icon--active {
-  background: #1a5eff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 1px;
 }
 
 .app-tab-bar__text {
-  color: #667085;
+  color: #16181a;
   font-size: 22px;
-  font-weight: 700;
-  line-height: 30px;
+  font-weight: 400;
+  line-height: 32px;
 }
 
 .app-tab-bar__text--active {

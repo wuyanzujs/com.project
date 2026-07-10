@@ -268,12 +268,17 @@
 }
 
 .query-price-product__time,
-.query-price-product__weight {
+.query-price-product__weight,
+.query-price-product__fees {
   display: flex;
   margin-top: 8px;
   color: #667085;
   font-size: 22px;
   line-height: 30px;
+}
+
+.query-price-product__fees {
+  color: #475467;
 }
 
 .query-price-product__price {

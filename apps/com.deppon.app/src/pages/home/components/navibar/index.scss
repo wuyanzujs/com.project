@@ -3,28 +3,29 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 28px 24px 12px;
+  padding: 22px 24px 12px;
   background: #ffffff;
 }
 
 .home-navibar__title {
   color: #16181a;
-  font-size: 40px;
+  font-size: 36px;
   font-weight: 700;
 }
 
 .home-navibar__subtitle {
   display: flex;
-  margin-top: 6px;
+  margin-top: 4px;
   color: #667085;
-  font-size: 22px;
+  font-size: 21px;
 }
 
-.home-navibar__status {
-  padding: 8px 14px;
-  color: #1a5eff;
-  background: #e8efff;
+.home-navibar__support {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  background: #f2f4f7;
   border-radius: 8px;
-  font-size: 22px;
-  font-weight: 700;
 }

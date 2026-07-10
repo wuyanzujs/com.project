@@ -22,6 +22,7 @@
     "check:app-module-size": "pnpm --filter com.deppon.app check:module-size",
     "check:app-runtime-config": "pnpm --filter com.deppon.app check:runtime-config",
     "check:app-business-rules": "pnpm --filter com.deppon.app check:business-rules",
+    "check:app-platform-build": "pnpm --filter com.deppon.app check:platform-build",
     "check:app-native-env": "pnpm --filter com.deppon.app check:native-env",
     "verify:app": "pnpm --filter com.deppon.app verify",
     "format": "prettier --write .",

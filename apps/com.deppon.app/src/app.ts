@@ -3,9 +3,19 @@ import { Component, PropsWithChildren } from 'react'
 import { bootstrapAppRuntime } from './app.bootstrap'
 import './app.scss'
 
-class App extends Component<PropsWithChildren> {
+interface AppState {
+  ready: boolean
+}
+
+class App extends Component<PropsWithChildren, AppState> {
+  state: AppState = {
+    ready: false
+  }
+
   componentDidMount() {
-    bootstrapAppRuntime()
+    void bootstrapAppRuntime().finally(() => {
+      this.setState({ ready: true })
+    })
   }
 
   componentDidShow() {}
@@ -14,6 +24,10 @@ class App extends Component<PropsWithChildren> {
 
   // this.props.children 是将要会渲染的页面
   render() {
+    if (!this.state.ready) {
+      return null
+    }
+
     return this.props.children
   }
 }

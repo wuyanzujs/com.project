@@ -17,16 +17,17 @@ const legacyBudgets = new Map([
   [
     'src/pages/express/index.tsx',
     {
-      max: 750,
-      reason: '寄件页承载页面级表单编排，当前冻结体量，避免为了行数机械拆分。'
+      max: 820,
+      reason:
+        '寄件页承载页面级表单、报价、扫码上下文与模板入口编排；展示区已按职责拆为 components，当前冻结体量，避免为了行数机械拆分。'
     }
   ],
   [
     'src/pages/order/detail/index.tsx',
     {
-      max: 900,
+      max: 1000,
       reason:
-        '订单详情页同时承接安全详情、公开轨迹、催单弹层和动作承接流程，当前冻结体量，避免为了行数机械拆分。'
+        '订单详情页同时承接安全详情、公开轨迹、催单与预约上门面板，以及动作承接流程；领域规则和面板状态已拆出，当前冻结体量，避免为了行数机械拆分。'
     }
   ],
   [
@@ -76,10 +77,19 @@ const legacyBudgets = new Map([
     }
   ],
   [
+    'src/pages/query/stations/index.tsx',
+    {
+      max: 455,
+      reason:
+        '网点查询页承接查询表单、列表操作、空结果寄件兜底和反馈 H5 入口，当前冻结体量，避免为了行数机械拆分。'
+    }
+  ],
+  [
     'src/services/query/query.service.ts',
     {
-      max: 585,
-      reason: '查询域 service 覆盖多个工具型查询入口，当前冻结体量。'
+      max: 620,
+      reason:
+        '查询域 service 覆盖收派范围、网点列表/详情和反馈 H5 参数归一，当前冻结体量。'
     }
   ],
   [

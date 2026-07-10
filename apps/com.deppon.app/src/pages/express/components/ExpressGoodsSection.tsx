@@ -6,6 +6,8 @@ import type {
   ExpressInsuranceQuote
 } from '../../../services/express'
 
+import '../index.scss'
+
 interface ExpressGoodsSectionProps {
   goods: ExpressDraft['goods']
   goodsLoading: boolean

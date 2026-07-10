@@ -137,9 +137,7 @@
 .order-stub-divider {
   height: 1px;
   margin: 26px 0 8px;
-  border-top-color: #d0d5dd;
-  border-top-style: dashed;
-  border-top-width: 1px;
+  background: #d0d5dd;
 }
 
 .order-stub-party {
@@ -251,7 +249,7 @@
   border-top-width: 1px;
 }
 
-.order-stub-section__title + .order-stub-field {
+.order-stub-field--first {
   margin-top: 16px;
 }
 
@@ -384,9 +382,9 @@
   text-align: right;
 }
 
-.order-stub-package-row--head .order-stub-package-row__name,
-.order-stub-package-row--head .order-stub-package-row__count,
-.order-stub-package-row--head .order-stub-package-row__amount {
+.order-stub-package-row__name--head,
+.order-stub-package-row__count--head,
+.order-stub-package-row__amount--head {
   color: #98a2b3;
   font-size: 21px;
   font-weight: 700;
@@ -398,7 +396,7 @@
   border-top-width: 1px;
 }
 
-.order-stub-section__head + .order-stub-image-group {
+.order-stub-image-group--first {
   margin-top: 16px;
 }
 
@@ -456,7 +454,7 @@
 }
 
 .order-stub-preview-mask {
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
   bottom: 0;

@@ -1,6 +1,10 @@
 import { Text, View } from '@tarojs/components'
 
+import { createExpressProductQuoteView } from '../../../services/express'
+
 import type { ExpressDraft, ExpressProductQuote } from '../../../services/express'
+
+import '../index.scss'
 
 interface ExpressQuoteSectionProps {
   pickup: ExpressDraft['pickup']
@@ -11,18 +15,6 @@ interface ExpressQuoteSectionProps {
   onQueryPickupTime: () => void
   onQuote: () => void
   onSelectProduct: (product: ExpressProductQuote) => void
-}
-
-function getProductKey(product: ExpressProductQuote) {
-  return `${product.omsProductCode || product.productName}-${product.totalfee ?? ''}`
-}
-
-function getProductPriceText(product: ExpressProductQuote | null) {
-  if (!product || product.totalfee === null || product.totalfee === undefined) {
-    return '--'
-  }
-
-  return `¥${product.totalfee}`
 }
 
 export function ExpressQuoteSection({
@@ -68,32 +60,42 @@ export function ExpressQuoteSection({
 
       {quotes.length > 0 && (
         <View className='express-product-list'>
-          {quotes.map(product => (
-            <View
-              className={
-                selectedProduct?.omsProductCode === product.omsProductCode
-                  ? 'express-product express-product--active'
-                  : 'express-product'
-              }
-              key={getProductKey(product)}
-              onClick={() => onSelectProduct(product)}
-            >
-              <View>
-                <Text className='express-product__name'>
-                  {product.productName || product.omsProductCode || '德邦快递'}
-                </Text>
-                <Text className='express-product__desc'>
-                  {product.daysFormat ||
-                    product.days ||
-                    product.arriveDate ||
-                    '时效待确认'}
+          {quotes.map(product => {
+            const view = createExpressProductQuoteView(product)
+
+            return (
+              <View
+                className={
+                  selectedProduct?.omsProductCode === product.omsProductCode
+                    ? 'express-product express-product--active'
+                    : 'express-product'
+                }
+                key={view.key}
+                onClick={() => onSelectProduct(product)}
+              >
+                <View className='express-product__main'>
+                  <Text className='express-product__name'>{view.name}</Text>
+                  <Text className='express-product__desc'>{view.timeText}</Text>
+                  {view.billWeightText && (
+                    <Text className='express-product__meta'>
+                      {view.billWeightText}
+                    </Text>
+                  )}
+                  {view.feeRows.length > 0 && (
+                    <Text className='express-product__meta'>
+                      {view.feeRows
+                        .slice(0, 3)
+                        .map(row => `${row.name} ¥${row.amount}`)
+                        .join(' · ')}
+                    </Text>
+                  )}
+                </View>
+                <Text className='express-product__price'>
+                  {view.priceText}
                 </Text>
               </View>
-              <Text className='express-product__price'>
-                {getProductPriceText(product)}
-              </Text>
-            </View>
-          ))}
+            )
+          })}
         </View>
       )}
     </View>

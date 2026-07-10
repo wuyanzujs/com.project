@@ -3,11 +3,13 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useMemo, useState } from 'react'
 
+import { QueryPriceProductCard } from './components/QueryPriceProductCard'
 import { contactSelection } from '../../../services/contact'
 import {
   createExpressDraft,
   expressDraftBridge,
   expressService,
+  getExpressQuoteKey,
   getExpressContactFullAddress,
   mapContactToExpressContact,
   markExpressQuoteStale,
@@ -60,26 +62,6 @@ function createEmptyPriceContact(target: ExpressContactTarget): ExpressContact {
     address: '',
     company: ''
   }
-}
-
-function getProductKey(product: ExpressProductQuote) {
-  return `${product.omsProductCode || product.productName}-${product.totalfee ?? ''}`
-}
-
-function getProductPriceText(product: ExpressProductQuote) {
-  if (product.totalfee === null || product.totalfee === undefined) {
-    return '待确认'
-  }
-
-  return `¥${product.totalfee}起`
-}
-
-function getProductTimeText(product: ExpressProductQuote) {
-  return product.daysFormat || product.days || product.arriveDate || '时效待确认'
-}
-
-function hasBillWeight(product: ExpressProductQuote) {
-  return product.billWeight !== null && product.billWeight !== undefined
 }
 
 function createPriceDraft(): ExpressDraft {
@@ -414,34 +396,11 @@ const QueryPricePage = () => {
         <View className='query-price-results'>
           <Text className='query-price-results__title'>可选产品</Text>
           {quotes.map((product) => (
-            <View className='query-price-product' key={getProductKey(product)}>
-              <View className='query-price-product__main'>
-                <Text className='query-price-product__name'>
-                  {product.productName || product.omsProductCode || '德邦快递'}
-                </Text>
-                <Text className='query-price-product__time'>
-                  {getProductTimeText(product)}
-                </Text>
-                {hasBillWeight(product) && (
-                  <Text className='query-price-product__weight'>
-                    计费重量 {product.billWeight}kg
-                  </Text>
-                )}
-              </View>
-              <View className='query-price-product__side'>
-                <Text className='query-price-product__price'>
-                  {getProductPriceText(product)}
-                </Text>
-                <View
-                  className='query-price-product__button'
-                  onClick={() => handleExpress(product)}
-                >
-                  <Text className='query-price-product__button-text'>
-                    去寄件
-                  </Text>
-                </View>
-              </View>
-            </View>
+            <QueryPriceProductCard
+              key={getExpressQuoteKey(product)}
+              product={product}
+              onExpress={handleExpress}
+            />
           ))}
         </View>
       )}

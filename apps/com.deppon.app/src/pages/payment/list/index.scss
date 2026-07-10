@@ -272,6 +272,41 @@
   font-weight: 700;
 }
 
+.payment-fees {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.payment-fees__title {
+  color: #344054;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.payment-fee-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.payment-fee-row__label,
+.payment-fee-row__amount {
+  color: #667085;
+  font-size: 22px;
+}
+
+.payment-fee-row__amount {
+  color: #344054;
+  font-weight: 700;
+}
+
+.payment-fee-row__amount--discount {
+  color: #dc2626;
+}
+
 .payment-card__actions {
   justify-content: flex-end;
   padding-top: 18px;

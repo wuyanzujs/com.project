@@ -1,10 +1,13 @@
-import { Text, View } from '@tarojs/components'
+import { ScrollView, Text, View } from '@tarojs/components'
 
 import type {
   OrderDetailActionView,
+  OrderPickupScheduleView,
   OrderDetailUrgePanelView,
   OrderUrgeButtonRaw
 } from '../../../../services/order'
+
+import '../index.scss'
 
 export interface OrderDetailUrgePanelState extends OrderDetailUrgePanelView {
   action: OrderDetailActionView
@@ -149,6 +152,117 @@ export function OrderUrgePanel(props: {
         </View>
         <View className='order-urge-card__cancel' onClick={props.onClose}>
           <Text className='order-urge-card__cancel-text'>取消</Text>
+        </View>
+      </View>
+    </View>
+  )
+}
+
+export function OrderPickupSchedulePanel(props: {
+  schedule: OrderPickupScheduleView | null
+  selectedDate: string
+  selectedTime: string
+  submitting: boolean
+  onSelectDate: (date: string) => void
+  onSelectTime: (time: string) => void
+  onConfirm: () => void
+  onClose: () => void
+}) {
+  if (!props.schedule) {
+    return null
+  }
+
+  const selectedDate = props.schedule.dates.find(
+    item => item.date === props.selectedDate
+  )
+
+  return (
+    <View className='order-pickup-mask'>
+      <View className='order-pickup-card'>
+        <View className='order-pickup-card__head'>
+          <View className='order-pickup-card__heading'>
+            <Text className='order-pickup-card__title'>期望上门时间</Text>
+            <Text className='order-pickup-card__summary'>
+              {props.schedule.message}
+            </Text>
+          </View>
+          <View className='order-pickup-card__close' onClick={props.onClose}>
+            <Text className='order-pickup-card__close-text'>×</Text>
+          </View>
+        </View>
+
+        {!!props.schedule.currentTime && (
+          <View className='order-pickup-card__current'>
+            <Text className='order-pickup-card__current-label'>当前预约</Text>
+            <Text className='order-pickup-card__current-value'>
+              {props.schedule.currentTime}
+            </Text>
+          </View>
+        )}
+
+        <ScrollView className='order-pickup-card__body' scrollY>
+          <Text className='order-pickup-card__section-title'>选择日期</Text>
+          <View className='order-pickup-card__dates'>
+            {props.schedule.dates.map(date => (
+              <View
+                className={
+                  date.date === props.selectedDate
+                    ? 'order-pickup-date order-pickup-date--active'
+                    : 'order-pickup-date'
+                }
+                key={date.date}
+                onClick={() => props.onSelectDate(date.date)}
+              >
+                <Text
+                  className={
+                    date.date === props.selectedDate
+                      ? 'order-pickup-date__text order-pickup-date__text--active'
+                      : 'order-pickup-date__text'
+                  }
+                >
+                  {date.label}
+                </Text>
+              </View>
+            ))}
+          </View>
+
+          <Text className='order-pickup-card__section-title'>选择时段</Text>
+          <View className='order-pickup-card__slots'>
+            {(selectedDate?.slots ?? []).map(slot => (
+              <View
+                className={
+                  slot.time === props.selectedTime
+                    ? 'order-pickup-slot order-pickup-slot--active'
+                    : 'order-pickup-slot'
+                }
+                key={`${slot.type}-${slot.time}`}
+                onClick={() => props.onSelectTime(slot.time)}
+              >
+                <Text
+                  className={
+                    slot.time === props.selectedTime
+                      ? 'order-pickup-slot__text order-pickup-slot__text--active'
+                      : 'order-pickup-slot__text'
+                  }
+                >
+                  {slot.text}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+
+        <View
+          className={
+            props.selectedTime
+              ? 'order-pickup-card__confirm'
+              : 'order-pickup-card__confirm order-pickup-card__confirm--disabled'
+          }
+          onClick={props.onConfirm}
+        >
+          <Text className='order-pickup-card__confirm-text'>
+            {props.submitting ? '提交中' : '确认预约'}
+          </Text>
         </View>
       </View>
     </View>

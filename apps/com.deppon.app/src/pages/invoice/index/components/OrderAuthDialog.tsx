@@ -2,6 +2,8 @@ import { Input, Text, View } from '@tarojs/components'
 
 import type { InvoiceOrderAuthChallenge } from '../../../../services/invoice'
 
+import '../index.scss'
+
 interface OrderAuthDialogProps {
   auth: InvoiceOrderAuthChallenge
   value: string

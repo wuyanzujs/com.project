@@ -3,15 +3,13 @@ import type { AppWebSource } from '../../shared/webview/appWeb'
 export type OrderRole = 'sender' | 'receive'
 export type OrderPaymentFilter = '' | 'MP' | 'FC' | 'CT'
 export type OrderStatusFilter =
-  | ''
-  | 'RECEIPTING'
-  | 'IN_TRANSIT'
-  | 'SIGN'
-  | 'CANCEL'
-  | 'INVALID'
+  '' | 'RECEIPTING' | 'IN_TRANSIT' | 'SIGN' | 'CANCEL' | 'INVALID'
 
 export type OrderDetailActionKind =
   | 'service'
+  | 'subscribe'
+  | 'modifyOrder'
+  | 'pickupSchedule'
   | 'urge'
   | 'notifyDeliver'
   | 'evaluate'
@@ -59,6 +57,8 @@ export type OrderDetailActionTone = 'primary' | 'neutral' | 'warning' | 'danger'
 export type OrderDetailActionTarget =
   | 'route'
   | 'web'
+  | 'subscription'
+  | 'pickupSchedule'
   | 'urge'
   | 'notifyDeliver'
   | 'invalidWaybill'
@@ -452,6 +452,38 @@ export interface OrderListResult {
   totalRows: number
 }
 
+export interface WaybillSubscriptionRaw {
+  sender?: string | null
+  sendCity?: string | null
+  consignee?: string | null
+  consignCity?: string | null
+  wayBillNo?: string | null
+  tableType?: string | null
+  statusType?: string | null
+  orderStatus?: string | number | null
+  orderClassification?: string | number | null
+  createWaybillTime?: string | number | null
+  isSender?: 'Y' | 'N' | null
+  isReceiver?: 'Y' | 'N' | null
+}
+
+export interface WaybillSubscriptionView {
+  id: string
+  role: OrderRole
+  senderName: string
+  senderCity: string
+  consigneeName: string
+  consigneeCity: string
+  waybillNumber: string
+  statusText: string
+  createdAt: string
+  isExpress: boolean
+}
+
+export interface WaybillSubscriptionRequest {
+  wayBillNo: string
+}
+
 export interface OrderDetailRequest {
   orderNumber: string
   sysCode: string
@@ -497,6 +529,8 @@ export interface OrderDetail {
   courierMobile?: string | null
   remark?: string | null
   modifyFlag?: boolean
+  beginAcceptTime?: string | null
+  isPickupGoods?: boolean | 'Y' | 'N' | '1' | '0'
   [key: string]: unknown
 }
 
@@ -554,6 +588,59 @@ export interface OrderDeleteRequest {
   waybillNumber?: string | null
   orderNumber?: string | null
   sysCode: string
+}
+
+export interface OrderEditContact {
+  name: string
+  mobile: string
+  province: string
+  city: string
+  county: string
+  town: string
+  address: string
+}
+
+export interface OrderEditDraft {
+  orderNumber: string
+  sender: OrderEditContact
+  receiver: OrderEditContact
+  goodsName: string
+  goodsNumber: number
+  totalWeight: number
+  totalVolume: number
+  remark: string
+}
+
+export interface OrderModifyRequest {
+  orderNumber: string
+  contactName?: string
+  contactMobile?: string
+  contactProvince?: string
+  contactCity?: string
+  contactArea?: string
+  contactAddress?: string
+  receiverCustName?: string
+  receiverCustMobile?: string
+  receiverCustProvince?: string
+  receiverCustCity?: string
+  receiverCustArea?: string
+  receiverCustAddress?: string
+  goodsName?: string
+  goodsNumber?: number
+  totalWeight?: number
+  totalVolume?: number
+  remark?: string
+}
+
+export interface OrderEditValidationResult {
+  valid: boolean
+  messages: string[]
+}
+
+export interface OrderModifyPreview {
+  changed: boolean
+  changedFields: string[]
+  request: OrderModifyRequest
 }
 
 export interface WaybillTrackItem {

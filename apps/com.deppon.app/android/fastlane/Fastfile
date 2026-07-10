@@ -19,6 +19,8 @@ platform :android do
 
   desc "assemble"
   lane :assemble do
+    sh("pnpm --dir .. install --frozen-lockfile")
+    sh("pnpm --dir .. run bundle:android")
     update_android_strings(
       xml_path: 'app/src/main/res/values/strings.xml',
       block: lambda { |strings|

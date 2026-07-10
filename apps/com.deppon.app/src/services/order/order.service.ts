@@ -10,6 +10,10 @@ import {
   submitOrderUrge
 } from './order.detailUseCases'
 import {
+  dispatchOrderPickup,
+  queryOrderPickupSchedule
+} from './order.dispatch'
+import {
   getOrderClassLabel,
   normalizeConsigneeOrder,
   normalizeSenderOrder,
@@ -108,6 +112,8 @@ export const orderService = {
   getDetailActions: createOrderDetailActions,
   getStubEntry: createOrderStubEntry,
   getStubView: createOrderStubView,
+  queryPickupSchedule: queryOrderPickupSchedule,
+  dispatchPickup: dispatchOrderPickup,
   queryStubDocument: queryOrderStubDocument,
   queryStubImages: queryOrderStubImages,
   queryStubPackageFee: queryOrderStubPackageFee,

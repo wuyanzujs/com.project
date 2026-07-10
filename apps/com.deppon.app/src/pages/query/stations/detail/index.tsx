@@ -4,9 +4,11 @@ import Taro, { useRouter } from '@tarojs/taro'
 import { useEffect, useState } from 'react'
 
 import { queryService } from '../../../../services/query'
+import { navigateToAppRoute } from '../../../../shared/navigation/appNavigation'
 import { getNativeCapabilityErrorMessage } from '../../../../shared/platform/capabilities'
 import { openMapLocation } from '../../../../shared/platform/map'
 import { PhoneNumberError, dialPhone } from '../../../../shared/platform/phone'
+import { createAppWebUrl } from '../../../../shared/webview/appWeb'
 
 import type { StationDetailView } from '../../../../services/query'
 
@@ -145,6 +147,21 @@ const QueryStationDetailPage = () => {
     }
   }
 
+  const handleFeedback = () => {
+    if (!detail) {
+      return
+    }
+
+    navigateToAppRoute(
+      createAppWebUrl({
+        source: 'STATION_FEEDBACK',
+        uri: queryService.createStationFeedbackWebUri(detail),
+        title: '网点反馈',
+        auth: false
+      })
+    )
+  }
+
   return (
     <ScrollView className='station-detail-page' scrollY>
       <View className='station-detail-header'>
@@ -189,6 +206,12 @@ const QueryStationDetailPage = () => {
           </View>
 
           <View className='station-detail-actions'>
+            <View
+              className='station-detail-action station-detail-action--outline'
+              onClick={handleFeedback}
+            >
+              <Text className='station-detail-action__outline-text'>反馈</Text>
+            </View>
             <View
               className='station-detail-action station-detail-action--outline'
               onClick={handleOpenMap}

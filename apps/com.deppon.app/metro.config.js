@@ -4,6 +4,11 @@ const path = require('path')
 
 const appRoot = __dirname
 const workspaceRoot = path.resolve(appRoot, '../..')
+const configuredMaxWorkers = Number(process.env.METRO_MAX_WORKERS)
+const maxWorkers =
+  Number.isInteger(configuredMaxWorkers) && configuredMaxWorkers > 0
+    ? configuredMaxWorkers
+    : 2
 
 /**
  * Metro configuration
@@ -12,6 +17,7 @@ const workspaceRoot = path.resolve(appRoot, '../..')
  * @type {import('metro-config').MetroConfig}
  */
 const config = {
+  maxWorkers,
   projectRoot: appRoot,
   watchFolders: [workspaceRoot],
   resolver: {

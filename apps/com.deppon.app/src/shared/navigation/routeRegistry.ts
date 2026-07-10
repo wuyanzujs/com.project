@@ -1,7 +1,7 @@
 export const APP_ROUTE_DEFINITIONS = [
   {
     name: 'home',
-    title: '首页',
+    title: '寄件',
     path: 'pages/home/index',
     main: true
   },
@@ -13,8 +13,7 @@ export const APP_ROUTE_DEFINITIONS = [
   {
     name: 'express',
     title: '寄快递',
-    path: 'pages/express/index',
-    main: true
+    path: 'pages/express/index'
   },
   {
     name: 'expressSuccess',
@@ -25,6 +24,18 @@ export const APP_ROUTE_DEFINITIONS = [
     name: 'batchExpress',
     title: '批量寄',
     path: 'pages/batch/index',
+    loginRequired: true
+  },
+  {
+    name: 'expressTemplateList',
+    title: '寄件模板',
+    path: 'pages/express/template/list/index',
+    loginRequired: true
+  },
+  {
+    name: 'expressTemplateCreate',
+    title: '保存寄件模板',
+    path: 'pages/express/template/create/index',
     loginRequired: true
   },
   {
@@ -86,6 +97,18 @@ export const APP_ROUTE_DEFINITIONS = [
     path: 'pages/contact/edit/index'
   },
   {
+    name: 'courierList',
+    title: '专属快递员',
+    path: 'pages/courier/list/index',
+    loginRequired: true
+  },
+  {
+    name: 'courierDetail',
+    title: '快递员详情',
+    path: 'pages/courier/detail/index',
+    loginRequired: true
+  },
+  {
     name: 'orderList',
     title: '查快递',
     path: 'pages/order/list/index',
@@ -96,6 +119,18 @@ export const APP_ROUTE_DEFINITIONS = [
     name: 'orderDetail',
     title: '订单详情',
     path: 'pages/order/detail/index'
+  },
+  {
+    name: 'orderEdit',
+    title: '修改订单',
+    path: 'pages/order/edit/index',
+    loginRequired: true
+  },
+  {
+    name: 'orderSubscriptions',
+    title: '关注运单',
+    path: 'pages/order/subscriptions/index',
+    loginRequired: true
   },
   {
     name: 'orderCancel',
@@ -157,8 +192,9 @@ export const APP_ROUTE_DEFINITIONS = [
   },
   {
     name: 'memberCenter',
-    title: '会员权益',
+    title: '福利',
     path: 'pages/member/index/index',
+    main: true,
     loginRequired: true
   },
   {
@@ -224,8 +260,8 @@ export type AppMainRouteName = Extract<
   { main: true }
 >['name']
 
-export const APP_PAGE_PATHS = APP_ROUTE_DEFINITIONS.map((item) => item.path)
+export const APP_PAGE_PATHS = APP_ROUTE_DEFINITIONS.map(item => item.path)
 
 export const APP_LOGIN_ROUTE_PATHS = APP_ROUTE_DEFINITIONS.filter(
-  (item) => 'loginRequired' in item && item.loginRequired
-).map((item) => `/${item.path}` as AppRoutePath)
+  item => 'loginRequired' in item && item.loginRequired
+).map(item => `/${item.path}` as AppRoutePath)

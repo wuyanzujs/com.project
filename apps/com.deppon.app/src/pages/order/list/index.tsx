@@ -1,4 +1,4 @@
-import { ScrollView } from '@tarojs/components'
+import { ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
@@ -6,18 +6,19 @@ import { useCallback, useState } from 'react'
 import { OrderListContent } from './components/OrderListCards'
 import {
   OrderFilterPanel,
-  OrderListHeader,
   OrderListSummary,
   OrderRoleTabs,
   OrderSearchBar
 } from './components/OrderListSections'
 import { expressDraftBridge } from '../../../services/express'
+import { AppIcon } from '../../../shared/components/AppIcon'
 import {
   canDeleteOrder,
   createExpressDraftFromOrderDetail,
   orderService
 } from '../../../services/order'
 import AppTabBar from '../../../shared/components/AppTabBar'
+import { AppSafeAreaView, AppStatusBar } from '../../../shared/native'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -35,7 +36,6 @@ import type {
 import './index.scss'
 
 const PAGE_SIZE = 10
-
 function getRouteToDetail(order: OrderListItem) {
   return createAppRouteUrl(APP_ROUTES.orderDetail, {
     orderNumber: order.orderNumber,
@@ -45,6 +45,15 @@ function getRouteToDetail(order: OrderListItem) {
 }
 
 function canCancelOrder(order: OrderListItem) {
+  return (
+    order.role === 'sender' &&
+    order.orderClass === 0 &&
+    order.isAllowCancel &&
+    !!order.orderNumber
+  )
+}
+
+function canModifyOrder(order: OrderListItem) {
   return (
     order.role === 'sender' &&
     order.orderClass === 0 &&
@@ -71,10 +80,11 @@ function getResendActionText(order: OrderListItem) {
 
 const OrderListPage = () => {
   const [role, setRole] = useState<OrderRole>('sender')
-  const [rangeDays, setRangeDays] = useState<OrderDateRangeDays>(30)
+  const [rangeDays, setRangeDays] = useState<OrderDateRangeDays>(90)
   const [orderStatus, setOrderStatus] = useState<OrderStatusFilter>('')
   const [paymentType, setPaymentType] = useState<OrderPaymentFilter>('')
   const [keyword, setKeyword] = useState('')
+  const [filterVisible, setFilterVisible] = useState(false)
   const [orders, setOrders] = useState<OrderListItem[]>([])
   const [pageIndex, setPageIndex] = useState(1)
   const [totalPage, setTotalPage] = useState(1)
@@ -129,9 +139,9 @@ const OrderListPage = () => {
           return
         }
 
-        setOrders((current) =>
+        setOrders(current =>
           nextPage === 1
-            ? response.result?.list ?? []
+            ? (response.result?.list ?? [])
             : [...current, ...(response.result?.list ?? [])]
         )
         setPageIndex(response.result.pageIndex)
@@ -208,6 +218,12 @@ const OrderListPage = () => {
     })
   }
 
+  const handleOpenSubscriptions = () => {
+    navigateToAppRoute(APP_ROUTES.orderSubscriptions, {
+      login: true
+    })
+  }
+
   const handleLoadMore = () => {
     if (!ensureOrderListAccess()) {
       return
@@ -237,6 +253,22 @@ const OrderListPage = () => {
         source: 'list'
       })
     })
+  }
+
+  const handleModifyOrder = (order: OrderListItem) => {
+    if (!canModifyOrder(order)) {
+      return
+    }
+
+    navigateToAppRoute(
+      createAppRouteUrl(APP_ROUTES.orderEdit, {
+        orderNumber: order.orderNumber,
+        source: 'ORDER_LIST'
+      }),
+      {
+        login: true
+      }
+    )
   }
 
   const handleDeleteOrder = async (order: OrderListItem) => {
@@ -274,10 +306,10 @@ const OrderListPage = () => {
       })
 
       if (response.status) {
-        setOrders((current) =>
-          current.filter((item) => getOrderActionKey(item) !== orderKey)
+        setOrders(current =>
+          current.filter(item => getOrderActionKey(item) !== orderKey)
         )
-        setTotalRows((current) => Math.max(0, current - 1))
+        setTotalRows(current => Math.max(0, current - 1))
       }
     } finally {
       setDeletingOrderKey('')
@@ -308,10 +340,7 @@ const OrderListPage = () => {
       }
 
       expressDraftBridge.carryFromOrderResend(
-        createExpressDraftFromOrderDetail(
-          response.result,
-          getResendMode(order)
-        )
+        createExpressDraftFromOrderDetail(response.result, getResendMode(order))
       )
       navigateToAppRoute(APP_ROUTES.express, {
         replace: true
@@ -322,19 +351,28 @@ const OrderListPage = () => {
   }
 
   return (
-    <>
-      <ScrollView
-        className='order-list-page'
-        onScrollToLower={handleLoadMore}
-        scrollY
+    <AppSafeAreaView backgroundColor='#f4f7fb' edges={[]}>
+      <AppStatusBar />
+      <AppSafeAreaView
+        backgroundColor='#eef6ff'
+        edges={['top']}
+        fill={false}
       >
-        <OrderListHeader />
-        <OrderRoleTabs role={role} onChange={handleChangeRole} />
+        <OrderRoleTabs
+          role={role}
+          onChange={handleChangeRole}
+          onOpenPayment={handleOpenPaymentList}
+          onOpenSubscriptions={handleOpenSubscriptions}
+        />
         <OrderSearchBar
+          filterVisible={filterVisible}
           keyword={keyword}
           onKeywordChange={setKeyword}
           onSearch={handleSearch}
+          onToggleFilter={() => setFilterVisible(current => !current)}
         />
+      </AppSafeAreaView>
+      {filterVisible && (
         <OrderFilterPanel
           orderStatus={orderStatus}
           paymentType={paymentType}
@@ -343,16 +381,31 @@ const OrderListPage = () => {
           onRangeChange={handleChangeRange}
           onStatusChange={handleChangeStatus}
         />
-        <OrderListSummary
-          rangeDays={rangeDays}
-          totalRows={totalRows}
-          onOpenPaymentList={handleOpenPaymentList}
-        />
+      )}
+      <ScrollView
+        className='order-list-page'
+        onScrollToLower={handleLoadMore}
+        scrollY
+      >
+        {(orders.length > 0 || loading) && (
+          <OrderListSummary
+            rangeDays={rangeDays}
+            totalRows={totalRows}
+            onOpenPaymentList={handleOpenPaymentList}
+            onOpenSubscriptions={handleOpenSubscriptions}
+          />
+        )}
         <OrderListContent
           canCancelOrder={canCancelOrder}
           canDeleteOrder={canDeleteOrder}
+          canModifyOrder={canModifyOrder}
           canResendOrder={canResendOrder}
           deletingOrderKey={deletingOrderKey}
+          emptyTitle={
+            role === 'sender'
+              ? '近三个月没有我寄的快递'
+              : '近三个月没有我收的快递'
+          }
           errorMessage={errorMessage}
           getOrderActionKey={getOrderActionKey}
           getResendActionText={getResendActionText}
@@ -361,12 +414,20 @@ const OrderListPage = () => {
           resendingOrderKey={resendingOrderKey}
           onCancelOrder={handleCancelOrder}
           onDeleteOrder={handleDeleteOrder}
+          onModifyOrder={handleModifyOrder}
           onOpenDetail={handleOpenDetail}
           onResendOrder={handleResendOrder}
         />
       </ScrollView>
+      <View
+        className='order-support-float'
+        onClick={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
+      >
+        <AppIcon color='#16181a' name='headphones' size={34} strokeWidth={2.1} />
+        <Text className='order-support-float__text'>客服中心</Text>
+      </View>
       <AppTabBar active='orderList' />
-    </>
+    </AppSafeAreaView>
   )
 }
 

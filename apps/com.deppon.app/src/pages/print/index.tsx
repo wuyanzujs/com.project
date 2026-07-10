@@ -14,6 +14,10 @@ function getActionClassName(action: PrintCenterActionView) {
   return `print-action print-action--${action.status}`
 }
 
+function getActionStatusClassName(action: PrintCenterActionView) {
+  return `print-action__status print-action__status--${action.status}`
+}
+
 function getRouteParam(value: unknown) {
   const rawValue = Array.isArray(value) ? value[0] : value
 
@@ -119,7 +123,9 @@ const PrintCenterPage = () => {
               <Text className='print-action__title'>{action.title}</Text>
               <Text className='print-action__summary'>{action.summary}</Text>
             </View>
-            <Text className='print-action__status'>{action.statusText}</Text>
+            <Text className={getActionStatusClassName(action)}>
+              {action.statusText}
+            </Text>
           </View>
         ))}
       </View>

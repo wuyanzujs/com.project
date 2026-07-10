@@ -87,7 +87,7 @@ function checkRouteDefinitions(routes) {
   }
 
   const mainRouteNames = routes.filter((item) => item.main).map((item) => item.name)
-  const expectedMainRoutes = ['home', 'express', 'orderList', 'mine']
+  const expectedMainRoutes = ['home', 'orderList', 'memberCenter', 'mine']
 
   if (mainRouteNames.join(',') !== expectedMainRoutes.join(',')) {
     addViolation(

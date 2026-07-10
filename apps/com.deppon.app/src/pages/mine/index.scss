@@ -1,144 +1,314 @@
 .mine-page {
   min-height: 100%;
-  padding: 28px 24px 148px;
-  background: #f5f7fb;
+  padding-bottom: 128px;
+  background: #f4f6f8;
 }
 
-.mine-profile {
+.mine-hero {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 28px 24px;
-  background: #ffffff;
-  border-radius: 8px;
+  min-height: 192px;
+  padding: 84px 28px 4px;
+  overflow: hidden;
+}
+
+.mine-hero__background {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mine-profile {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  min-width: 0;
+  height: 104px;
 }
 
 .mine-profile__avatar {
-  align-items: center;
-  justify-content: center;
-  width: 88px;
-  height: 88px;
-  margin-right: 18px;
-  background: #e8efff;
-  border-radius: 44px;
-}
-
-.mine-profile__avatar-text {
-  color: #1a5eff;
-  font-size: 36px;
-  font-weight: 700;
-  line-height: 88px;
-  text-align: center;
+  width: 98px;
+  height: 98px;
+  margin-right: 28px;
 }
 
 .mine-profile__content {
   flex: 1;
+  min-width: 0;
 }
 
 .mine-profile__name {
   color: #16181a;
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 700;
+  line-height: 46px;
 }
 
 .mine-profile__summary {
   display: flex;
-  margin-top: 8px;
-  color: #667085;
+  margin-top: 4px;
+  color: #9b9b9b;
   font-size: 24px;
+  line-height: 36px;
 }
 
-.mine-profile__button {
+.mine-hero__message {
+  position: relative;
+  display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 96px;
-  height: 56px;
-  padding: 0 18px;
-  background: #1a5eff;
-  border-radius: 8px;
+  width: 76px;
+  height: 76px;
 }
 
-.mine-profile__button--quiet {
-  background: #eef2f6;
+.mine-hero__message-image {
+  width: 48px;
+  height: 48px;
 }
 
-.mine-profile__button-text {
-  color: #ffffff;
+.mine-member-card {
+  margin: 8px 24px 0;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.mine-member-card__body {
+  position: relative;
+  height: 224px;
+  overflow: hidden;
+}
+
+.mine-member-card__background,
+.mine-member-card__svip-background {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mine-member-card__top {
+  position: relative;
+  min-height: 144px;
+  padding: 36px 24px 12px;
+}
+
+.mine-member-card__level-row,
+.mine-member-card__benefits,
+.mine-member-card__benefit,
+.mine-member-card__svip {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.mine-member-card__level {
+  color: #7c482d;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 52px;
+}
+
+.mine-member-card__rights {
+  margin-left: 18px;
+  color: #968372;
+  font-size: 24px;
+}
+
+.mine-member-card__growth {
+  display: flex;
+  margin-top: 4px;
+  color: #7c482d;
+  font-size: 24px;
+}
+
+.mine-member-card__benefits {
+  position: relative;
+  height: 80px;
+  padding: 0 24px;
+  border-top-color: rgba(124, 72, 45, 0.12);
+  border-top-width: 1px;
+}
+
+.mine-member-card__benefit {
+  flex: 1;
+  min-width: 0;
+}
+
+.mine-member-card__benefit-icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 4px;
+}
+
+.mine-member-card__benefit-text {
+  color: #7c482d;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.mine-member-card__svip {
+  position: relative;
+  height: 88px;
+  padding: 0 24px;
+  overflow: hidden;
+}
+
+.mine-member-card__svip-logo {
+  position: relative;
+  width: 100px;
+  height: 48px;
+}
+
+.mine-member-card__svip-text {
+  position: relative;
+  flex: 1;
+  margin-left: 8px;
+  color: #f8dbb2;
   font-size: 24px;
   font-weight: 700;
 }
 
-.mine-profile__button-text--quiet {
-  color: #475467;
-}
-
-.mine-stats {
+.mine-member-card__svip-button {
+  position: relative;
   display: flex;
-  flex-direction: row;
-  margin-top: 18px;
-}
-
-.mine-stat {
-  flex: 1;
-  padding: 22px;
-  background: #ffffff;
-  border-radius: 8px;
-}
-
-.mine-stat--right {
-  margin-left: 14px;
-}
-
-.mine-stat__value {
-  color: #16181a;
-  font-size: 30px;
-  font-weight: 700;
-}
-
-.mine-stat__label {
-  display: flex;
-  margin-top: 8px;
-  color: #667085;
-  font-size: 23px;
-}
-
-.mine-section {
-  margin-top: 18px;
-  padding: 22px 24px 4px;
-  background: #ffffff;
-  border-radius: 8px;
-}
-
-.mine-section__title {
-  color: #16181a;
-  font-size: 32px;
-  font-weight: 700;
-}
-
-.mine-entry {
-  display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  min-height: 92px;
-  border-bottom-color: #eef2f6;
-  border-bottom-width: 1px;
+  justify-content: center;
+  min-width: 116px;
+  height: 48px;
+  padding: 0 16px;
+  background: #fde5cd;
+  border-radius: 24px;
 }
 
-.mine-entry__title {
-  color: #16181a;
-  font-size: 27px;
+.mine-member-card__svip-button-text {
+  color: #262638;
+  font-size: 22px;
   font-weight: 700;
 }
 
-.mine-entry__summary {
+.mine-shortcuts {
   display: flex;
-  margin-top: 6px;
-  color: #667085;
-  font-size: 22px;
+  flex-direction: row;
+  height: 146px;
+  margin: 16px 24px 0;
+  background: #ffffff;
+  border-radius: 24px;
 }
 
-.mine-entry__arrow {
-  color: #98a2b3;
-  font-size: 38px;
+.mine-shortcut {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.mine-shortcut__count {
+  color: #16181a;
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 56px;
+}
+
+.mine-shortcut__title {
+  margin-top: 6px;
+  color: #16181a;
+  font-size: 24px;
+  line-height: 36px;
+  text-align: center;
+}
+
+.mine-quick-grid {
+  display: flex;
+  flex-direction: row;
+  height: 136px;
+  margin: 16px 24px 0;
+  background: #ffffff;
+  border-radius: 24px;
+}
+
+.mine-quick-grid__item {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.mine-quick-grid__image {
+  width: 56px;
+  height: 56px;
+}
+
+.mine-quick-grid__title {
+  margin-top: 12px;
+  color: #5b5b5b;
+  font-size: 23px;
+  line-height: 32px;
+  text-align: center;
+}
+
+.mine-service-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 16px 24px 24px;
+  padding: 8px 0;
+  background: #ffffff;
+  border-radius: 24px;
+}
+
+.mine-service-grid__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25%;
+  height: 124px;
+}
+
+.mine-service-grid__image {
+  width: 48px;
+  height: 48px;
+}
+
+.mine-service-grid__title {
+  margin-top: 8px;
+  color: #5b5b5b;
+  font-size: 24px;
+  line-height: 34px;
+  text-align: center;
+}
+
+.mine-service-grid__badge {
+  position: absolute;
+  top: 0;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 54px;
+  height: 32px;
+  padding: 0 8px;
+  background: #f0484e;
+  border-color: #ffffff;
+  border-radius: 16px;
+  border-width: 2px;
+}
+
+.mine-service-grid__badge-text {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
 }

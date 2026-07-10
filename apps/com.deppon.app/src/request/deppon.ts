@@ -77,7 +77,7 @@ function normalizeOwsResponse<TResult>(
   response: HttpResponse<unknown>,
   loginRequired: boolean
 ): DepponResponse<TResult> {
-  saveSessionCookieFromResponse(response)
+  void saveSessionCookieFromResponse(response)
 
   const data = response.data
 
@@ -102,7 +102,7 @@ function normalizeOwsResponse<TResult>(
   if (
     shouldEmitAuthExpiredEvent(loginRequired, response.statusCode, data.status)
   ) {
-    clearSessionCookie()
+    void clearSessionCookie()
     emitRequestEvent('authExpired', {
       url: response.url,
       statusCode: response.statusCode,

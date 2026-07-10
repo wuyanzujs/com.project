@@ -261,3 +261,30 @@
   line-height: 34px;
   text-align: center;
 }
+
+.query-stations-empty__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 160px;
+  height: 64px;
+  margin-top: 22px;
+  padding: 0 24px;
+  background: #1a5eff;
+  border-radius: 8px;
+}
+
+.query-stations-empty__button-text {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.query-stations-empty__feedback {
+  margin-top: 18px;
+}
+
+.query-stations-empty__feedback-text {
+  color: #1a5eff;
+  font-size: 24px;
+  font-weight: 700;
+}

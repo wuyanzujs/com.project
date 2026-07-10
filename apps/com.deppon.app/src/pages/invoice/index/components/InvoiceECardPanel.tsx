@@ -4,6 +4,8 @@ import { InvoiceEmpty, InvoiceSummary } from './InvoiceCenterSections'
 
 import type { InvoiceECardView } from '../../../../services/invoice'
 
+import '../index.scss'
+
 function getMoneyText(value: number) {
   if (!Number.isFinite(value)) {
     return '¥0'

@@ -6,6 +6,10 @@ export type ExpressDraftBridgeSource =
   | 'COUPON_LIST'
   | 'GOODS_QUERY'
   | 'BATCH_RECOGNITION'
+  | 'SCAN_QR_CODE'
+  | 'DISPATCH_QUERY'
+  | 'COURIER'
+  | 'TEMPLATE'
 
 export interface ExpressDraftBridgePayload {
   source: ExpressDraftBridgeSource
@@ -24,7 +28,10 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
     goods: { ...draft.goods },
     service: { ...draft.service },
     pickup: { ...draft.pickup },
-    selectedProduct: draft.selectedProduct ? { ...draft.selectedProduct } : null
+    selectedProduct: draft.selectedProduct
+      ? { ...draft.selectedProduct }
+      : null,
+    scanContext: draft.scanContext ? { ...draft.scanContext } : undefined
   }
 }
 
@@ -103,6 +110,74 @@ export const expressDraftBridge = {
 
     pendingDraft = {
       source: 'BATCH_RECOGNITION',
+      draft: nextDraft,
+      quotes: [],
+      carriedAt: Date.now()
+    }
+  },
+
+  carryFromScanQrCode(draft: ExpressDraft) {
+    const nextDraft = cloneDraft({
+      ...draft,
+      selectedProduct: null,
+      agreementAccepted: false,
+      quoteStaleReason:
+        draft.quoteStaleReason || '扫码寄件信息变化，请重新获取价格'
+    })
+
+    pendingDraft = {
+      source: 'SCAN_QR_CODE',
+      draft: nextDraft,
+      quotes: [],
+      carriedAt: Date.now()
+    }
+  },
+
+  carryFromDispatchQuery(draft: ExpressDraft) {
+    const nextDraft = cloneDraft({
+      ...draft,
+      selectedProduct: null,
+      agreementAccepted: false,
+      quoteStaleReason:
+        draft.quoteStaleReason || '收派范围查询带入，请重新获取价格'
+    })
+
+    pendingDraft = {
+      source: 'DISPATCH_QUERY',
+      draft: nextDraft,
+      quotes: [],
+      carriedAt: Date.now()
+    }
+  },
+
+  carryFromCourier(draft: ExpressDraft) {
+    const nextDraft = cloneDraft({
+      ...draft,
+      selectedProduct: null,
+      agreementAccepted: false,
+      quoteStaleReason:
+        draft.quoteStaleReason || '专属快递员已带入，请重新获取价格'
+    })
+
+    pendingDraft = {
+      source: 'COURIER',
+      draft: nextDraft,
+      quotes: [],
+      carriedAt: Date.now()
+    }
+  },
+
+  carryFromTemplate(draft: ExpressDraft) {
+    const nextDraft = cloneDraft({
+      ...draft,
+      selectedProduct: null,
+      agreementAccepted: false,
+      quoteStaleReason:
+        draft.quoteStaleReason || '模板信息已带入，请重新获取价格'
+    })
+
+    pendingDraft = {
+      source: 'TEMPLATE',
       draft: nextDraft,
       quotes: [],
       carriedAt: Date.now()
