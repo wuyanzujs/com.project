@@ -12,23 +12,24 @@
 
 本项目现阶段不建议开启 CSS Modules，也不建议引入 Tailwind、styled-components 或新的 UI 主题库。现有页面前缀和 BEM 已经基本避免类名碰撞，真正的问题是硬编码值、重复 UI 模式、巨型页面 SCSS 和原生属性颜色没有统一入口。
 
-治理采用增量策略：不批量替换现有约 1.2 万行样式，不因为变量统一而制造大面积视觉回归；先冻结存量，再要求所有新增代码进入受治理区，最后随业务修改逐页迁移。
+项目当前只完成约 30% 的业务重构，治理范围因此调整为全量重写现有业务样式。交付仍按页面批次推进，每批保持可运行和可验证，但最终不保留旧 CSS 债务，也不把规则只应用到新增文件。
 
 ## 2. 项目基线
 
-以下是本次治理开始前的样式基线：
+以下是 v2 逐文件门禁启用时的当前基线：
 
-| 指标                     |        数值 |
-| ------------------------ | ----------: |
-| SCSS 文件                |          56 |
-| 物理行数                 |      12,129 |
-| 页面及共享组件 SCSS      |          51 |
-| 已接入 token 的业务 SCSS | 6，约 11.8% |
-| 十六进制颜色字面量       |       1,396 |
-| `font-size` 字面量       |         662 |
-| `line-height` 字面量     |         210 |
-| `border-radius` 字面量   |         272 |
-| TS/TSX 颜色字面量        |          37 |
+| 指标                     |         数值 |
+| ------------------------ | -----------: |
+| SCSS 文件                |           56 |
+| 业务 SCSS 物理行数       |       11,982 |
+| 页面及共享组件 SCSS      |           51 |
+| 已接入 token 的业务 SCSS | 11，约 21.6% |
+| 静态颜色字面量           |        1,345 |
+| `font-size` 字面量       |          638 |
+| `line-height` 字面量     |          203 |
+| `border-radius` 字面量   |          263 |
+| `font-weight` 字面量     |          435 |
+| TS/TSX 颜色字面量        |           36 |
 
 业务样式主要集中在订单、寄件、发票和查询模块，四个目录合计约占全部样式的 57%。
 
@@ -287,97 +288,77 @@ pnpm lint:app:styles
 
 `check-rn-boundaries` 继续负责项目已有的 RN 平台边界，两者职责互补。
 
-### 8.2 存量债务基线
+### 8.2 双门禁
 
-命令：
+日常开发使用：
 
 ```bash
 pnpm check:app-styles
 ```
 
-基线文件：`apps/com.deppon.app/scripts/style-governance-baseline.json`。
+它读取 `apps/com.deppon.app/scripts/style-governance-baseline.json` 的逐文件精确基线。每个旧文件的颜色、字号、行高、圆角、字重和行数只能下降；一个文件的清理不能抵消另一个文件的新增。基线出现可收紧项时，检查会要求同一次变更更新基线。
 
-策略：
+全量治理验收使用：
 
-- 现有 51 个业务 SCSS 允许继续存在，但颜色、字号、行高、圆角字面量总数不能增加。
-- 已进入 managed 清单的 6 个文件不能移除 token 引入。
-- 新增 SCSS 必须引入 token，且颜色、字号、行高、圆角字面量必须为零。
-- 新增 TS/TSX 文件不得增加静态颜色字面量，必须使用 `nativeTokens.ts`。
-- `src/styles` 中只有 `_tokens.scss` 可以直接声明 SCSS 颜色。
-- 禁止重新引入 Sass `@import`。
+```bash
+pnpm check:app-styles:strict
+```
 
-这是一种 ratchet 机制：允许存量逐步减少，不要求一次性清零，也不允许债务反弹。基线只能在明确完成迁移并经过代码审查后下调，不能为了让 CI 通过而上调。
+严格门禁要求所有业务 SCSS 接入 token、视觉字面量归零、页面不超过 300 行、组件不超过 180 行、TS/TSX 静态颜色归零、父样式导入归零，并删除 legacy `.dp-*` 全局类。
 
-两项检查已经进入 App 的 `verify` 链路。
+辅助命令：
 
-## 9. 迁移计划
+```bash
+pnpm report:app-styles
+pnpm update:app-styles-baseline
+```
 
-### 阶段 0：门禁和语义校正
+报告命令显示剩余债务和优先治理文件。基线更新命令只能记录债务下降、新增零债务文件和已删除文件；任何上限增加都会被拒绝。CI 还会将当前基线与目标分支基线比较，阻止手工抬高上限。
 
-状态：已完成。
+日常门禁和自身回归测试已经进入 `verify`。严格门禁在 CSS 全量重写完成前保持独立，全部通过后再替换日常门禁进入正式 `verify`。
 
-- 补充真实业务需要的文字、表面、边框、品牌浅色和状态色 token。
-- 将卡片、按钮圆角修正为项目事实标准 `8px`。
-- 增加 `nativeTokens.ts`。
-- 配置 Stylelint。
-- 增加样式治理基线并接入 `verify`。
-- 停止从全局入口输出未使用的 `.dp-*` 类。
+## 9. 全量重写顺序
 
-### 阶段 1：清理 managed 文件
+### 阶段 0：门禁和基础层
 
-先处理当前已接入 token 的 6 个文件，消除其中剩余的状态色、字号和圆角字面量：
+- 完成双门禁、逐文件基线和回归测试。
+- 补齐语义 token 与 `nativeTokens.ts`。
+- 落地 `AppPage`、`AppPageHeader`、`AppCard`、`AppPressable/AppButton`、`AppEmptyState`、`AppLoadingState`、`AppStatusTag` 和 `AppDialog`。
+- 删除无消费者的 `.dp-*` 和无效 mixin。
 
-- `courier/detail`
-- `courier/list`
-- `express/template/create`
-- `express/template/list`
-- `order/edit`
-- `order/subscriptions`
+### 阶段 1：简单页面
 
-完成后下调 baseline，使这些文件成为零视觉字面量样板。
+- 全量重写账号设置、联系人、优惠券等页面样式。
+- 保持业务逻辑和视觉方向，允许为样式归属调整 TSX 结构。
+- 每完成一个页面立即收紧逐文件基线。
 
-### 阶段 2：发票域试点
+### 阶段 2：列表和发票域
 
-发票页面结构重复高、业务边界清楚，适合作为第一批组件化试点：
+- 重写发票、订单列表、支付列表及其空态、加载态、筛选和卡片。
+- 让页面子组件导入自己的 SCSS，不再导入父级 `index.scss`。
 
-- 落地 `AppPageHeader`、`AppStatusTag`、`AppEmptyState`、`AppLoadingState`。
-- 迁移 `invoice/index`、`invoice/detail`、`invoice/apply`。
-- 将 `InvoiceCenterSections.tsx` 按 Header、Search、Summary、Card、State 拆分。
-- 目标：发票主页面 SCSS 控制在 250 至 300 行。
+### 阶段 3：订单详情和寄件
 
-### 阶段 3：订单域高频交互
-
-- 落地 `AppButton`、`AppOverlay/AppDialog`。
-- 优先迁移 `order/list` 和 `order/detail` 的按钮、状态、空态、弹层。
-- 将订单卡片、详情区块、动作区样式归属到对应组件。
-- 不在同一次修改中重做视觉和业务逻辑。
-
-### 阶段 4：寄件和表单
-
-- 先迁移 `express/template/*` 已有 managed 页面。
-- 再落地 `AppFormField` 的 `surface` 和 `inline` 两种模式。
+- `order/detail/index.scss` 按轨迹、地址、费用、售后、动作和弹层拆分。
 - `express/index.scss` 按 Contact、Goods、Service、Quote、SubmitBar 拆分。
-- 寄件业务 section 保持领域组件，不抽成万能配置组件。
+- 同步治理点击热区、安全区、状态栏和 Android/iOS 差异。
 
-### 阶段 5：体量门禁
+### 阶段 4：特殊页面和清账
 
-当主要模块完成拆分后，再启用严格文件预算：
-
-- 新页面 SCSS：300 行。
-- 新共享组件 SCSS：180 行。
-- 旧文件使用冻结预算，修改只能持平或下降。
+- 最后重写电子存根等结构特殊的页面。
+- 清除剩余 Native 静态颜色、父样式导入和 legacy 全局类。
+- 严格门禁通过后接入 `verify`，删除存量兼容规则。
 
 ## 10. 验收指标
 
-| 指标                        | 当前基线 | 第一里程碑 | 中期目标 |
-| --------------------------- | -------: | ---------: | -------: |
-| 业务 SCSS token 接入率      |    11.8% |        30% |      60% |
-| 新 SCSS 视觉字面量          |   未限制 |          0 |        0 |
-| TS/TSX 新增静态颜色         |   未限制 |          0 |        0 |
-| 颜色字面量                  |    1,396 |   只降不增 | 下降 50% |
-| 500 行以上 SCSS             |        3 |          2 |        0 |
-| 子组件导入父级 `index.scss` |       15 |          8 |        0 |
-| `.dp-*` 全局类业务依赖      |        0 |          0 |        0 |
+| 指标                        | 当前基线 | 中间目标 | 最终目标 |
+| --------------------------- | -------: | -------: | -------: |
+| 业务 SCSS token 接入率      |    21.6% |      60% |     100% |
+| 业务视觉字面量              |    2,884 | 下降 50% |        0 |
+| TS/TSX 静态颜色             |       36 |       18 |        0 |
+| 500 行以上 SCSS             |        3 |        1 |        0 |
+| 子组件导入父级 `index.scss` |       15 |        8 |        0 |
+| legacy 全局类文件           |        1 |        0 |        0 |
 
 ## 11. PR 检查清单
 
@@ -390,11 +371,12 @@ pnpm check:app-styles
 - 新抽象是否至少有三个稳定消费者。
 - 是否同时修改了视觉和业务逻辑；若是，应拆分提交或补充截图验证。
 - `pnpm lint:app:styles`、`pnpm check:app-styles`、`pnpm check:app-boundaries` 是否通过。
+- 完成治理的批次是否同时通过 `pnpm check:app-styles:strict` 对应项。
 
 ## 12. 明确不做的事情
 
-- 不一次性替换 1.2 万行旧 SCSS。
-- 不把所有 `14px`、`18px` 等值机械转换成全局 token。
+- 不在一个不可验证的大提交中同时删除全部旧 SCSS；全量范围按页面批次交付。
+- 不把所有局部几何尺寸机械转换成全局 token。
 - 不继续扩张未被组件承载的全局 `.dp-*` 工具类。
 - 不在当前阶段全量开启 CSS Modules。
 - 不引入 Tailwind、styled-components 或另一套主题运行时。

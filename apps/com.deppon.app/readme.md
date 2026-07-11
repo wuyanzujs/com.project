@@ -195,9 +195,18 @@ src/
 - `nativeTokens.ts`：供图标、SafeArea、原生组件属性使用的颜色 token。
 - `_components.scss`：早期通用类原型，当前不再从全局入口输出，也不要继续扩张；跨页面模式应优先实现为带自身 SCSS 的 `App*` 组件。
 
-新增页面必须使用 token；静态原生颜色使用 `nativeTokens.ts`，动态尺寸才保留受控内联样式。既有页面不做一次性大面积替换，后续在业务切片或视觉调整时逐步迁移，避免单纯为了统一变量制造大量样式噪音。
+当前 CSS 治理采用全量重写范围、分页面交付。所有现有业务 SCSS 最终都必须使用 token，静态原生颜色使用 `nativeTokens.ts`，动态尺寸才保留受控内联样式；页面子组件必须拥有自己的 SCSS，不得继续导入父级 `index.scss`。
 
-`pnpm lint:app:styles` 检查扁平 BEM、选择器复杂度、非法单位和 RN 不可靠属性；`pnpm check:app-styles` 使用基线冻结现有硬编码债务，并要求新增样式文件零颜色、字号、行高和圆角字面量。
+样式门禁命令：
+
+- `pnpm lint:app:styles`：检查扁平 BEM、选择器复杂度、非法单位和 RN 不可靠属性。
+- `pnpm test:app-style-governance`：运行门禁自身的回归测试。
+- `pnpm check:app-styles`：日常逐文件门禁，所有存量指标只降不增。
+- `pnpm check:app-styles:strict`：全量治理完成标准，治理期间允许失败但必须持续收敛。
+- `pnpm report:app-styles`：查看剩余债务和优先治理文件。
+- `pnpm update:app-styles-baseline`：在债务下降后安全收紧基线，禁止抬高上限。
+
+严格门禁要求页面 SCSS 不超过 300 行、页面子组件和共享组件 SCSS 不超过 180 行。CSS 全量治理完成并通过严格门禁后，再将它升级为正式 `verify` 条件。
 
 ## 路由规则
 

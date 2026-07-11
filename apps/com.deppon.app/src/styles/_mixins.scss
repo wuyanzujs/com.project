@@ -13,7 +13,7 @@
 @mixin dp-section-title {
   color: $dp-color-text-primary;
   font-size: $dp-font-size-title;
-  font-weight: 700;
+  font-weight: $dp-font-weight-bold;
   line-height: $dp-line-height-title;
 }
 

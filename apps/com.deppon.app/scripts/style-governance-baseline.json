@@ -1,96 +1,599 @@
 {
-  "version": 1,
+  "version": 2,
+  "limits": {
+    "pageScssLines": 300,
+    "componentScssLines": 180
+  },
   "scss": {
-    "fileCount": 51,
-    "rawColorLiterals": 1396,
-    "rawFontSizeLiterals": 662,
-    "rawLineHeightLiterals": 210,
-    "rawRadiusLiterals": 272,
-    "managedFiles": [
-      "src/pages/courier/detail/index.scss",
-      "src/pages/courier/list/index.scss",
-      "src/pages/express/template/create/index.scss",
-      "src/pages/express/template/list/index.scss",
-      "src/pages/order/edit/index.scss",
-      "src/pages/order/subscriptions/index.scss"
-    ],
-    "knownFiles": [
-      "src/pages/account/cancel/index.scss",
-      "src/pages/account/settings/index.scss",
-      "src/pages/batch/index.scss",
-      "src/pages/contact/edit/index.scss",
-      "src/pages/contact/list/index.scss",
-      "src/pages/coupon/detail/index.scss",
-      "src/pages/coupon/list/index.scss",
-      "src/pages/courier/detail/index.scss",
-      "src/pages/courier/list/index.scss",
-      "src/pages/customer/center/index.scss",
-      "src/pages/ecard/center/index.scss",
-      "src/pages/express/insurance/index.scss",
-      "src/pages/express/success/index.scss",
-      "src/pages/express/template/create/index.scss",
-      "src/pages/express/template/list/index.scss",
-      "src/pages/express/index.scss",
-      "src/pages/home/components/banner/index.scss",
-      "src/pages/home/components/menu/index.scss",
-      "src/pages/home/components/navibar/index.scss",
-      "src/pages/home/components/search/index.scss",
-      "src/pages/home/index.scss",
-      "src/pages/invoice/apply/index.scss",
-      "src/pages/invoice/detail/index.scss",
-      "src/pages/invoice/index/index.scss",
-      "src/pages/invoice/preview/index.scss",
-      "src/pages/invoice/taxpayer/edit/index.scss",
-      "src/pages/invoice/taxpayer/index.scss",
-      "src/pages/login/index.scss",
-      "src/pages/member/index/index.scss",
-      "src/pages/mine/index.scss",
-      "src/pages/order/cancel/index.scss",
-      "src/pages/order/detail/index.scss",
-      "src/pages/order/edit/index.scss",
-      "src/pages/order/list/index.scss",
-      "src/pages/order/stub/index.scss",
-      "src/pages/order/subscriptions/index.scss",
-      "src/pages/payment/list/index.scss",
-      "src/pages/print/index.scss",
-      "src/pages/privacy/settings/index.scss",
-      "src/pages/query/dispatch/index.scss",
-      "src/pages/query/goods/index.scss",
-      "src/pages/query/price/index.scss",
-      "src/pages/query/stations/detail/index.scss",
-      "src/pages/query/stations/index.scss",
-      "src/pages/realname/center/index.scss",
-      "src/pages/sign/code/index.scss",
-      "src/pages/support/center/index.scss",
-      "src/pages/web/index.scss",
-      "src/shared/components/AppPlaceholderPage/index.scss",
-      "src/shared/components/AppTabBar/index.scss",
-      "src/shared/components/QRCodeMatrix/index.scss"
-    ]
+    "files": {
+      "src/pages/account/cancel/index.scss": {
+        "rawColors": 24,
+        "rawFontSizes": 12,
+        "rawLineHeights": 4,
+        "rawRadii": 5,
+        "rawFontWeights": 7,
+        "usesTokens": false,
+        "lines": 172
+      },
+      "src/pages/account/settings/index.scss": {
+        "rawColors": 20,
+        "rawFontSizes": 11,
+        "rawLineHeights": 3,
+        "rawRadii": 4,
+        "rawFontWeights": 7,
+        "usesTokens": false,
+        "lines": 156
+      },
+      "src/pages/batch/index.scss": {
+        "rawColors": 36,
+        "rawFontSizes": 14,
+        "rawLineHeights": 5,
+        "rawRadii": 8,
+        "rawFontWeights": 9,
+        "usesTokens": false,
+        "lines": 237
+      },
+      "src/pages/contact/edit/index.scss": {
+        "rawColors": 33,
+        "rawFontSizes": 15,
+        "rawLineHeights": 5,
+        "rawRadii": 8,
+        "rawFontWeights": 9,
+        "usesTokens": false,
+        "lines": 238
+      },
+      "src/pages/contact/list/index.scss": {
+        "rawColors": 29,
+        "rawFontSizes": 15,
+        "rawLineHeights": 3,
+        "rawRadii": 6,
+        "rawFontWeights": 8,
+        "usesTokens": true,
+        "lines": 227
+      },
+      "src/pages/coupon/detail/index.scss": {
+        "rawColors": 31,
+        "rawFontSizes": 15,
+        "rawLineHeights": 6,
+        "rawRadii": 5,
+        "rawFontWeights": 8,
+        "usesTokens": false,
+        "lines": 238
+      },
+      "src/pages/coupon/list/index.scss": {
+        "rawColors": 46,
+        "rawFontSizes": 22,
+        "rawLineHeights": 5,
+        "rawRadii": 10,
+        "rawFontWeights": 14,
+        "usesTokens": false,
+        "lines": 362
+      },
+      "src/pages/courier/detail/index.scss": {
+        "rawColors": 3,
+        "rawFontSizes": 2,
+        "rawLineHeights": 1,
+        "rawRadii": 1,
+        "rawFontWeights": 8,
+        "usesTokens": true,
+        "lines": 208
+      },
+      "src/pages/courier/list/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 1,
+        "rawFontWeights": 6,
+        "usesTokens": true,
+        "lines": 195
+      },
+      "src/pages/customer/center/index.scss": {
+        "rawColors": 27,
+        "rawFontSizes": 14,
+        "rawLineHeights": 3,
+        "rawRadii": 3,
+        "rawFontWeights": 8,
+        "usesTokens": false,
+        "lines": 191
+      },
+      "src/pages/ecard/center/index.scss": {
+        "rawColors": 22,
+        "rawFontSizes": 13,
+        "rawLineHeights": 3,
+        "rawRadii": 2,
+        "rawFontWeights": 7,
+        "usesTokens": false,
+        "lines": 171
+      },
+      "src/pages/express/index.scss": {
+        "rawColors": 94,
+        "rawFontSizes": 45,
+        "rawLineHeights": 27,
+        "rawRadii": 18,
+        "rawFontWeights": 26,
+        "usesTokens": false,
+        "lines": 752
+      },
+      "src/pages/express/insurance/index.scss": {
+        "rawColors": 32,
+        "rawFontSizes": 14,
+        "rawLineHeights": 6,
+        "rawRadii": 6,
+        "rawFontWeights": 8,
+        "usesTokens": false,
+        "lines": 200
+      },
+      "src/pages/express/success/index.scss": {
+        "rawColors": 16,
+        "rawFontSizes": 8,
+        "rawLineHeights": 1,
+        "rawRadii": 4,
+        "rawFontWeights": 6,
+        "usesTokens": false,
+        "lines": 124
+      },
+      "src/pages/express/template/create/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 2,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 7,
+        "usesTokens": true,
+        "lines": 155
+      },
+      "src/pages/express/template/list/index.scss": {
+        "rawColors": 4,
+        "rawFontSizes": 0,
+        "rawLineHeights": 1,
+        "rawRadii": 1,
+        "rawFontWeights": 10,
+        "usesTokens": true,
+        "lines": 270
+      },
+      "src/pages/home/components/banner/index.scss": {
+        "rawColors": 1,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "usesTokens": false,
+        "lines": 11
+      },
+      "src/pages/home/components/menu/index.scss": {
+        "rawColors": 7,
+        "rawFontSizes": 2,
+        "rawLineHeights": 1,
+        "rawRadii": 3,
+        "rawFontWeights": 2,
+        "usesTokens": false,
+        "lines": 97
+      },
+      "src/pages/home/components/navibar/index.scss": {
+        "rawColors": 4,
+        "rawFontSizes": 2,
+        "rawLineHeights": 0,
+        "rawRadii": 1,
+        "rawFontWeights": 1,
+        "usesTokens": false,
+        "lines": 31
+      },
+      "src/pages/home/components/search/index.scss": {
+        "rawColors": 6,
+        "rawFontSizes": 1,
+        "rawLineHeights": 1,
+        "rawRadii": 3,
+        "rawFontWeights": 0,
+        "usesTokens": false,
+        "lines": 52
+      },
+      "src/pages/home/index.scss": {
+        "rawColors": 13,
+        "rawFontSizes": 6,
+        "rawLineHeights": 2,
+        "rawRadii": 3,
+        "rawFontWeights": 4,
+        "usesTokens": false,
+        "lines": 133
+      },
+      "src/pages/invoice/apply/index.scss": {
+        "rawColors": 36,
+        "rawFontSizes": 19,
+        "rawLineHeights": 4,
+        "rawRadii": 9,
+        "rawFontWeights": 13,
+        "usesTokens": false,
+        "lines": 279
+      },
+      "src/pages/invoice/detail/index.scss": {
+        "rawColors": 46,
+        "rawFontSizes": 22,
+        "rawLineHeights": 4,
+        "rawRadii": 7,
+        "rawFontWeights": 14,
+        "usesTokens": false,
+        "lines": 326
+      },
+      "src/pages/invoice/index/index.scss": {
+        "rawColors": 67,
+        "rawFontSizes": 24,
+        "rawLineHeights": 4,
+        "rawRadii": 12,
+        "rawFontWeights": 15,
+        "usesTokens": false,
+        "lines": 470
+      },
+      "src/pages/invoice/preview/index.scss": {
+        "rawColors": 28,
+        "rawFontSizes": 16,
+        "rawLineHeights": 4,
+        "rawRadii": 7,
+        "rawFontWeights": 10,
+        "usesTokens": false,
+        "lines": 235
+      },
+      "src/pages/invoice/taxpayer/edit/index.scss": {
+        "rawColors": 33,
+        "rawFontSizes": 14,
+        "rawLineHeights": 2,
+        "rawRadii": 7,
+        "rawFontWeights": 10,
+        "usesTokens": false,
+        "lines": 215
+      },
+      "src/pages/invoice/taxpayer/index.scss": {
+        "rawColors": 24,
+        "rawFontSizes": 13,
+        "rawLineHeights": 3,
+        "rawRadii": 6,
+        "rawFontWeights": 8,
+        "usesTokens": false,
+        "lines": 188
+      },
+      "src/pages/login/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 1,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "usesTokens": true,
+        "lines": 176
+      },
+      "src/pages/member/index/index.scss": {
+        "rawColors": 33,
+        "rawFontSizes": 13,
+        "rawLineHeights": 3,
+        "rawRadii": 6,
+        "rawFontWeights": 8,
+        "usesTokens": false,
+        "lines": 207
+      },
+      "src/pages/mine/index.scss": {
+        "rawColors": 21,
+        "rawFontSizes": 13,
+        "rawLineHeights": 7,
+        "rawRadii": 6,
+        "rawFontWeights": 7,
+        "usesTokens": false,
+        "lines": 313
+      },
+      "src/pages/order/cancel/index.scss": {
+        "rawColors": 20,
+        "rawFontSizes": 8,
+        "rawLineHeights": 3,
+        "rawRadii": 4,
+        "rawFontWeights": 5,
+        "usesTokens": true,
+        "lines": 146
+      },
+      "src/pages/order/detail/index.scss": {
+        "rawColors": 102,
+        "rawFontSizes": 46,
+        "rawLineHeights": 18,
+        "rawRadii": 21,
+        "rawFontWeights": 28,
+        "usesTokens": false,
+        "lines": 806
+      },
+      "src/pages/order/edit/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 6,
+        "usesTokens": true,
+        "lines": 214
+      },
+      "src/pages/order/list/index.scss": {
+        "rawColors": 46,
+        "rawFontSizes": 20,
+        "rawLineHeights": 3,
+        "rawRadii": 9,
+        "rawFontWeights": 13,
+        "usesTokens": false,
+        "lines": 386
+      },
+      "src/pages/order/stub/index.scss": {
+        "rawColors": 76,
+        "rawFontSizes": 42,
+        "rawLineHeights": 17,
+        "rawRadii": 14,
+        "rawFontWeights": 26,
+        "usesTokens": false,
+        "lines": 681
+      },
+      "src/pages/order/subscriptions/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 7,
+        "usesTokens": true,
+        "lines": 214
+      },
+      "src/pages/payment/list/index.scss": {
+        "rawColors": 53,
+        "rawFontSizes": 25,
+        "rawLineHeights": 2,
+        "rawRadii": 10,
+        "rawFontWeights": 16,
+        "usesTokens": false,
+        "lines": 380
+      },
+      "src/pages/print/index.scss": {
+        "rawColors": 26,
+        "rawFontSizes": 14,
+        "rawLineHeights": 5,
+        "rawRadii": 5,
+        "rawFontWeights": 9,
+        "usesTokens": false,
+        "lines": 192
+      },
+      "src/pages/privacy/settings/index.scss": {
+        "rawColors": 25,
+        "rawFontSizes": 12,
+        "rawLineHeights": 3,
+        "rawRadii": 3,
+        "rawFontWeights": 7,
+        "usesTokens": false,
+        "lines": 184
+      },
+      "src/pages/query/dispatch/index.scss": {
+        "rawColors": 1,
+        "rawFontSizes": 2,
+        "rawLineHeights": 1,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "usesTokens": true,
+        "lines": 209
+      },
+      "src/pages/query/goods/index.scss": {
+        "rawColors": 41,
+        "rawFontSizes": 15,
+        "rawLineHeights": 4,
+        "rawRadii": 7,
+        "rawFontWeights": 10,
+        "usesTokens": false,
+        "lines": 277
+      },
+      "src/pages/query/price/index.scss": {
+        "rawColors": 38,
+        "rawFontSizes": 21,
+        "rawLineHeights": 11,
+        "rawRadii": 7,
+        "rawFontWeights": 13,
+        "usesTokens": false,
+        "lines": 325
+      },
+      "src/pages/query/stations/detail/index.scss": {
+        "rawColors": 24,
+        "rawFontSizes": 13,
+        "rawLineHeights": 5,
+        "rawRadii": 2,
+        "rawFontWeights": 8,
+        "usesTokens": false,
+        "lines": 169
+      },
+      "src/pages/query/stations/index.scss": {
+        "rawColors": 39,
+        "rawFontSizes": 19,
+        "rawLineHeights": 4,
+        "rawRadii": 8,
+        "rawFontWeights": 13,
+        "usesTokens": false,
+        "lines": 290
+      },
+      "src/pages/realname/center/index.scss": {
+        "rawColors": 34,
+        "rawFontSizes": 15,
+        "rawLineHeights": 3,
+        "rawRadii": 6,
+        "rawFontWeights": 11,
+        "usesTokens": false,
+        "lines": 239
+      },
+      "src/pages/sign/code/index.scss": {
+        "rawColors": 33,
+        "rawFontSizes": 14,
+        "rawLineHeights": 6,
+        "rawRadii": 6,
+        "rawFontWeights": 9,
+        "usesTokens": false,
+        "lines": 239
+      },
+      "src/pages/support/center/index.scss": {
+        "rawColors": 29,
+        "rawFontSizes": 14,
+        "rawLineHeights": 4,
+        "rawRadii": 4,
+        "rawFontWeights": 8,
+        "usesTokens": false,
+        "lines": 205
+      },
+      "src/pages/web/index.scss": {
+        "rawColors": 10,
+        "rawFontSizes": 5,
+        "rawLineHeights": 2,
+        "rawRadii": 3,
+        "rawFontWeights": 3,
+        "usesTokens": false,
+        "lines": 69
+      },
+      "src/shared/components/AppPlaceholderPage/index.scss": {
+        "rawColors": 8,
+        "rawFontSizes": 5,
+        "rawLineHeights": 3,
+        "rawRadii": 1,
+        "rawFontWeights": 3,
+        "usesTokens": false,
+        "lines": 57
+      },
+      "src/shared/components/AppTabBar/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "usesTokens": true,
+        "lines": 42
+      },
+      "src/shared/components/QRCodeMatrix/index.scss": {
+        "rawColors": 4,
+        "rawFontSizes": 1,
+        "rawLineHeights": 0,
+        "rawRadii": 1,
+        "rawFontWeights": 0,
+        "usesTokens": false,
+        "lines": 29
+      }
+    }
   },
   "native": {
-    "rawColorLiterals": 37,
-    "knownColorFiles": [
-      "src/app.config.ts",
-      "src/pages/account/settings/index.tsx",
-      "src/pages/courier/detail/index.tsx",
-      "src/pages/express/components/ExpressServiceSection.tsx",
-      "src/pages/express/index.tsx",
-      "src/pages/express/template/list/index.tsx",
-      "src/pages/home/components/navibar/index.tsx",
-      "src/pages/home/components/search/index.tsx",
-      "src/pages/home/index.tsx",
-      "src/pages/invoice/detail/index.tsx",
-      "src/pages/member/index/index.tsx",
-      "src/pages/mine/index.tsx",
-      "src/pages/order/list/components/OrderListSections.tsx",
-      "src/pages/order/list/index.tsx",
-      "src/pages/realname/center/index.tsx",
-      "src/shared/components/AppIcon/index.tsx",
-      "src/shared/components/AppTabBar/index.tsx",
-      "src/shared/components/QRCodeMatrix/index.tsx",
-      "src/shared/native/AppSafeAreaView.tsx",
-      "src/shared/native/AppWebView.tsx"
-    ]
+    "files": {
+      "src/app.config.ts": {
+        "rawColors": 2
+      },
+      "src/pages/account/settings/index.tsx": {
+        "rawColors": 1
+      },
+      "src/pages/courier/detail/index.tsx": {
+        "rawColors": 2
+      },
+      "src/pages/express/components/ExpressServiceSection.tsx": {
+        "rawColors": 1
+      },
+      "src/pages/express/index.tsx": {
+        "rawColors": 2
+      },
+      "src/pages/express/template/list/index.tsx": {
+        "rawColors": 1
+      },
+      "src/pages/home/components/navibar/index.tsx": {
+        "rawColors": 1
+      },
+      "src/pages/home/components/search/index.tsx": {
+        "rawColors": 3
+      },
+      "src/pages/home/index.tsx": {
+        "rawColors": 4
+      },
+      "src/pages/invoice/detail/index.tsx": {
+        "rawColors": 2
+      },
+      "src/pages/member/index/index.tsx": {
+        "rawColors": 1
+      },
+      "src/pages/mine/index.tsx": {
+        "rawColors": 2
+      },
+      "src/pages/order/list/components/OrderListSections.tsx": {
+        "rawColors": 4
+      },
+      "src/pages/order/list/index.tsx": {
+        "rawColors": 3
+      },
+      "src/pages/realname/center/index.tsx": {
+        "rawColors": 1
+      },
+      "src/shared/components/AppIcon/index.tsx": {
+        "rawColors": 1
+      },
+      "src/shared/components/QRCodeMatrix/index.tsx": {
+        "rawColors": 2
+      },
+      "src/shared/native/AppSafeAreaView.tsx": {
+        "rawColors": 1
+      },
+      "src/shared/native/AppStatusBar.tsx": {
+        "rawColors": 1
+      },
+      "src/shared/native/AppWebView.tsx": {
+        "rawColors": 1
+      }
+    }
+  },
+  "architecture": {
+    "parentStyleImports": [
+      {
+        "file": "src/pages/express/components/ExpressContactPanel.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/express/components/ExpressGoodsSection.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/express/components/ExpressQuoteSection.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/express/components/ExpressServiceSection.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/invoice/index/components/InvoiceCenterSections.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/invoice/index/components/InvoiceECardPanel.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/invoice/index/components/OrderAuthDialog.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/order/detail/components/OrderDetailActionSections.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/order/detail/components/OrderDetailSections.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/order/edit/components/OrderEditContactSection.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/order/edit/components/OrderEditGoodsSection.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/order/list/components/OrderListCards.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/order/list/components/OrderListSections.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/payment/list/components/PaymentFeeRows.tsx",
+        "importPath": "../index.scss"
+      },
+      {
+        "file": "src/pages/query/price/components/QueryPriceProductCard.tsx",
+        "importPath": "../index.scss"
+      }
+    ],
+    "legacyGlobalClassFiles": ["src/styles/_components.scss"]
   }
 }

@@ -1,197 +1,188 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { execFileSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 
-const appRoot = process.cwd()
-const srcRoot = path.join(appRoot, 'src')
+import {
+  collectProjectSnapshot,
+  compareBaselineEvolution,
+  compareSnapshot,
+  createNextBaseline,
+  getSnapshotSummary
+} from './style-governance-lib.mjs'
+
+const scriptDirectory = path.dirname(fileURLToPath(import.meta.url))
+const appRoot = path.resolve(scriptDirectory, '..')
 const baselinePath = path.join(
-  appRoot,
-  'scripts',
+  scriptDirectory,
   'style-governance-baseline.json'
 )
-const baseline = JSON.parse(fs.readFileSync(baselinePath, 'utf8'))
+const repoRoot = path.resolve(appRoot, '..', '..')
+const baselineRepoPath =
+  'apps/com.deppon.app/scripts/style-governance-baseline.json'
+const supportedModes = new Map([
+  ['', 'daily'],
+  ['--strict', 'strict'],
+  ['--report', 'report'],
+  ['--update-baseline', 'update']
+])
+const argumentKey = process.argv.slice(2).join(' ')
+const mode = supportedModes.get(argumentKey)
 
-const normalize = value => value.replaceAll(path.sep, '/').replace(/^\.\//, '')
-const relative = filePath => normalize(path.relative(appRoot, filePath))
-const stripComments = content =>
-  content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|\s)\/\/.*$/gm, '$1')
-
-const walk = directory => {
-  const files = []
-  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
-    const filePath = path.join(directory, entry.name)
-    if (entry.isDirectory()) files.push(...walk(filePath))
-    else files.push(filePath)
-  }
-  return files
-}
-
-const countMatches = (content, pattern) => [...content.matchAll(pattern)].length
-const styleMetrics = content => {
-  const source = stripComments(content)
-  return {
-    colors: countMatches(source, /#[0-9a-f]{3,8}\b/gi),
-    fontSizes: countMatches(source, /\bfont-size\s*:\s*-?(?:\d*\.)?\d+px\b/gi),
-    lineHeights: countMatches(
-      source,
-      /\bline-height\s*:\s*-?(?:\d*\.)?\d+px\b/gi
-    ),
-    radii: countMatches(source, /\bborder-radius\s*:\s*-?(?:\d*\.)?\d+px\b/gi),
-    imports: countMatches(source, /@import\s+/g),
-    usesTokens:
-      /@use\s+['"](?:tokens|[^'"]*styles\/(?:_)?tokens(?:\.scss)?)['"]/.test(
-        source
-      ),
-    lines: content.split(/\r?\n/).length
-  }
-}
-
-const allFiles = walk(srcRoot)
-const scssFiles = allFiles.filter(filePath => filePath.endsWith('.scss'))
-const businessScssFiles = scssFiles.filter(filePath => {
-  const file = relative(filePath)
-  return file !== 'src/app.scss' && !file.startsWith('src/styles/')
-})
-const systemScssFiles = scssFiles.filter(filePath =>
-  relative(filePath).startsWith('src/styles/')
-)
-const nativeFiles = allFiles.filter(filePath => /\.(ts|tsx)$/.test(filePath))
-
-const businessMetrics = businessScssFiles.map(filePath => ({
-  file: relative(filePath),
-  ...styleMetrics(fs.readFileSync(filePath, 'utf8'))
-}))
-const nativeColorFiles = nativeFiles
-  .filter(
-    filePath => !relative(filePath).endsWith('src/styles/nativeTokens.ts')
+if (!mode) {
+  console.error(
+    '[style-governance] 参数无效。支持：--strict、--report、--update-baseline'
   )
-  .map(filePath => ({
-    file: relative(filePath),
-    colors: countMatches(
-      stripComments(fs.readFileSync(filePath, 'utf8')),
-      /#[0-9a-f]{3,8}\b/gi
+  process.exit(1)
+}
+
+const readBaseline = () => {
+  try {
+    return JSON.parse(fs.readFileSync(baselinePath, 'utf8'))
+  } catch (error) {
+    console.error(
+      `[style-governance] 无法读取基线：${error instanceof Error ? error.message : String(error)}`
     )
-  }))
-  .filter(({ colors }) => colors > 0)
-
-const scssTotals = businessMetrics.reduce(
-  (totals, item) => ({
-    colors: totals.colors + item.colors,
-    fontSizes: totals.fontSizes + item.fontSizes,
-    lineHeights: totals.lineHeights + item.lineHeights,
-    radii: totals.radii + item.radii
-  }),
-  { colors: 0, fontSizes: 0, lineHeights: 0, radii: 0 }
-)
-const nativeColors = nativeColorFiles.reduce(
-  (total, item) => total + item.colors,
-  0
-)
-const knownScssFiles = new Set(baseline.scss.knownFiles)
-const managedScssFiles = new Set(baseline.scss.managedFiles)
-const knownNativeFiles = new Set(baseline.native.knownColorFiles)
-const failures = []
-
-const assertDebt = (label, actual, allowed) => {
-  if (actual > allowed) failures.push(`${label} 从 ${allowed} 增加到 ${actual}`)
-}
-
-assertDebt('SCSS 颜色字面量', scssTotals.colors, baseline.scss.rawColorLiterals)
-assertDebt(
-  'SCSS font-size 字面量',
-  scssTotals.fontSizes,
-  baseline.scss.rawFontSizeLiterals
-)
-assertDebt(
-  'SCSS line-height 字面量',
-  scssTotals.lineHeights,
-  baseline.scss.rawLineHeightLiterals
-)
-assertDebt(
-  'SCSS border-radius 字面量',
-  scssTotals.radii,
-  baseline.scss.rawRadiusLiterals
-)
-assertDebt('TS/TSX 颜色字面量', nativeColors, baseline.native.rawColorLiterals)
-
-for (const filePath of scssFiles) {
-  const file = relative(filePath)
-  const metrics = styleMetrics(fs.readFileSync(filePath, 'utf8'))
-  if (metrics.imports > 0) failures.push(`${file} 仍使用 @import，请改用 @use`)
-}
-
-for (const item of businessMetrics) {
-  if (!knownScssFiles.has(item.file)) {
-    if (!item.usesTokens)
-      failures.push(`${item.file} 是新增样式文件，必须引入 styles/tokens`)
-    if (item.colors > 0)
-      failures.push(`${item.file} 含新增颜色字面量，请使用语义 token`)
-    if (item.fontSizes > 0)
-      failures.push(
-        `${item.file} 含新增 font-size 字面量，请使用 typography token`
-      )
-    if (item.lineHeights > 0)
-      failures.push(
-        `${item.file} 含新增 line-height 字面量，请使用 typography token`
-      )
-    if (item.radii > 0)
-      failures.push(
-        `${item.file} 含新增 border-radius 字面量，请使用 radius token`
-      )
-  }
-  if (managedScssFiles.has(item.file) && !item.usesTokens) {
-    failures.push(`${item.file} 已进入 managed 样式清单，但缺少 token 引入`)
+    process.exit(1)
   }
 }
 
-for (const filePath of systemScssFiles) {
-  const file = relative(filePath)
-  const metrics = styleMetrics(fs.readFileSync(filePath, 'utf8'))
-  if (file !== 'src/styles/_tokens.scss') {
-    if (metrics.colors > 0)
-      failures.push(`${file} 只能通过 _tokens.scss 持有颜色字面量`)
-    if (metrics.fontSizes > 0 || metrics.lineHeights > 0) {
-      failures.push(`${file} 只能通过 _tokens.scss 持有字号或行高字面量`)
-    }
-    if (metrics.radii > 0) {
-      failures.push(`${file} 只能通过 _tokens.scss 持有圆角字面量`)
-    }
+const readReferenceBaseline = reference => {
+  if (!reference || /^0+$/.test(reference)) return null
+
+  try {
+    const content = execFileSync(
+      'git',
+      ['show', `${reference}:${baselineRepoPath}`],
+      { cwd: repoRoot, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }
+    )
+    return JSON.parse(content)
+  } catch (error) {
+    console.error(
+      `[style-governance] 无法读取参考基线 ${reference}：${error instanceof Error ? error.message : String(error)}`
+    )
+    process.exit(1)
   }
 }
 
-const tokenSource = fs
-  .readFileSync(path.join(srcRoot, 'styles', '_tokens.scss'), 'utf8')
-  .toLowerCase()
-const nativeTokenSource = fs.readFileSync(
-  path.join(srcRoot, 'styles', 'nativeTokens.ts'),
-  'utf8'
-)
-for (const color of nativeTokenSource.match(/#[0-9a-f]{3,8}\b/gi) ?? []) {
-  if (!tokenSource.includes(color.toLowerCase())) {
-    failures.push(`nativeTokens.ts 的 ${color} 未在 _tokens.scss 中登记`)
-  }
+const printSummary = snapshot => {
+  const summary = getSnapshotSummary(snapshot)
+  const adoption = summary.scssFiles
+    ? ((summary.tokenFiles / summary.scssFiles) * 100).toFixed(1)
+    : '100.0'
+
+  console.log(
+    `[style-governance] 业务 SCSS ${summary.scssFiles} 个，共 ${summary.lines} 行，token 接入 ${summary.tokenFiles} 个（${adoption}%）`
+  )
+  console.log(
+    `[style-governance] 存量：颜色 ${summary.rawColors}，字号 ${summary.rawFontSizes}，行高 ${summary.rawLineHeights}，圆角 ${summary.rawRadii}，字重 ${summary.rawFontWeights}`
+  )
+  console.log(
+    `[style-governance] Native 颜色 ${summary.nativeColors}，父样式导入 ${summary.parentStyleImports}，legacy 全局类文件 ${summary.legacyGlobalClassFiles}`
+  )
 }
 
-for (const item of nativeColorFiles) {
-  if (!knownNativeFiles.has(item.file) && item.file !== 'src/app.config.ts') {
-    failures.push(
-      `${item.file} 是新增原生颜色入口，请使用 styles/nativeTokens.ts`
+const printFailures = (failures, limit = 80) => {
+  for (const failure of failures.slice(0, limit)) {
+    console.error(`- ${failure}`)
+  }
+  if (failures.length > limit) {
+    console.error(
+      `- 其余 ${failures.length - limit} 项已省略，请使用 --report 查看治理概况`
     )
   }
 }
 
-console.log(
-  `[style-governance] SCSS 文件 ${businessMetrics.length} 个，token 接入 ${businessMetrics.filter(item => item.usesTokens).length} 个`
-)
-console.log(
-  `[style-governance] 存量债务：颜色 ${scssTotals.colors}，字号 ${scssTotals.fontSizes}，行高 ${scssTotals.lineHeights}，圆角 ${scssTotals.radii}`
-)
-console.log(`[style-governance] 原生颜色字面量 ${nativeColors}`)
-
-if (failures.length > 0) {
-  console.error('[style-governance] 检查失败：')
-  for (const failure of failures) console.error(`- ${failure}`)
-  process.exitCode = 1
-} else {
-  console.log('[style-governance] 检查通过（存量冻结，增量收紧）')
+const writeBaseline = baseline => {
+  const temporaryPath = `${baselinePath}.tmp-${process.pid}`
+  fs.writeFileSync(temporaryPath, `${JSON.stringify(baseline, null, 2)}\n`)
+  fs.renameSync(temporaryPath, baselinePath)
 }
+
+const baseline = readBaseline()
+const snapshot = collectProjectSnapshot(appRoot)
+printSummary(snapshot)
+
+const referenceBaseline = readReferenceBaseline(
+  process.env.STYLE_GOVERNANCE_BASE_REF
+)
+if (referenceBaseline && mode !== 'report') {
+  const evolution = compareBaselineEvolution(baseline, referenceBaseline)
+  if (!evolution.ok) {
+    console.error('[style-governance] 基线不得放宽：')
+    printFailures(evolution.failures)
+    process.exit(1)
+  }
+  if (evolution.migratedFromV1) {
+    console.log('[style-governance] 已校验 v1 到 v2 的一次性基线迁移')
+  }
+}
+
+if (mode === 'report') {
+  const strictResult = compareSnapshot(snapshot, baseline, { strict: true })
+  if (strictResult.ok) {
+    console.log('[style-governance] 全量 CSS 治理目标已满足')
+  } else {
+    console.log(
+      `[style-governance] 严格门禁尚有 ${strictResult.failures.length} 项待治理`
+    )
+    const debtFiles = Object.entries(snapshot.scss.files)
+      .map(([file, metrics]) => ({
+        file,
+        debt:
+          metrics.rawColors +
+          metrics.rawFontSizes +
+          metrics.rawLineHeights +
+          metrics.rawRadii +
+          metrics.rawFontWeights,
+        lines: metrics.lines
+      }))
+      .sort((left, right) => right.debt - left.debt || right.lines - left.lines)
+      .slice(0, 10)
+
+    console.log('[style-governance] 优先治理文件：')
+    for (const item of debtFiles) {
+      console.log(`- ${item.file}：视觉字面量 ${item.debt}，${item.lines} 行`)
+    }
+  }
+  process.exit(0)
+}
+
+if (mode === 'update') {
+  if (process.env.CI === 'true') {
+    console.error('[style-governance] CI 环境禁止更新样式基线')
+    process.exit(1)
+  }
+
+  const update = createNextBaseline(snapshot, baseline)
+  if (!update.ok) {
+    console.error('[style-governance] 基线更新被拒绝：')
+    printFailures(update.failures)
+    process.exit(1)
+  }
+
+  writeBaseline(update.baseline)
+  console.log('[style-governance] 基线已收紧到当前逐文件状态')
+  process.exit(0)
+}
+
+const result = compareSnapshot(snapshot, baseline, {
+  strict: mode === 'strict'
+})
+
+if (!result.ok) {
+  console.error(
+    mode === 'strict'
+      ? `[style-governance] 严格门禁失败，共 ${result.failures.length} 项：`
+      : '[style-governance] 日常门禁失败：'
+  )
+  printFailures(result.failures)
+  process.exit(1)
+}
+
+console.log(
+  mode === 'strict'
+    ? '[style-governance] 严格门禁通过（全量 CSS 治理完成）'
+    : '[style-governance] 日常门禁通过（逐文件债务只降不增）'
+)

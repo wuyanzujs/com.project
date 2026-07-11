@@ -19,7 +19,7 @@
 .dp-page__title {
   color: $dp-color-text-primary;
   font-size: $dp-font-size-page-title;
-  font-weight: 700;
+  font-weight: $dp-font-weight-bold;
   line-height: $dp-line-height-page-title;
 }
 
@@ -58,7 +58,7 @@
 .dp-button__text {
   color: $dp-color-text-inverse;
   font-size: $dp-font-size-body;
-  font-weight: 700;
+  font-weight: $dp-font-weight-bold;
   line-height: $dp-line-height-body;
 }
 
@@ -72,7 +72,7 @@
 .dp-empty__title {
   color: $dp-color-text-primary;
   font-size: $dp-font-size-title;
-  font-weight: 700;
+  font-weight: $dp-font-weight-bold;
   line-height: $dp-line-height-title;
 }
 

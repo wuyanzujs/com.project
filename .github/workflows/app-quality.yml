@@ -16,12 +16,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: '17'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -44,6 +46,8 @@ jobs:
 
       - name: Verify app
         run: pnpm verify:app
+        env:
+          STYLE_GOVERNANCE_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
 
       - name: Compile Android debug app
         working-directory: apps/com.deppon.app/android
