@@ -369,13 +369,7 @@ const OrderDetailPage = () => {
   const handleOpenSecureDetail = () => {
     const url = getOrderDetailUrl(routeParams, 'secure')
 
-    if (!ensureAuthenticated({ redirectUrl: url })) {
-      return
-    }
-
-    Taro.navigateTo({
-      url
-    })
+    navigateToAppRoute(url, { login: true })
   }
 
   const handleDial = async (phoneNumber?: string | null) => {
@@ -397,12 +391,13 @@ const OrderDetailPage = () => {
       return
     }
 
-    Taro.navigateTo({
-      url: createAppRouteUrl(APP_ROUTES.orderCancel, {
+    navigateToAppRoute(
+      createAppRouteUrl(APP_ROUTES.orderCancel, {
         orderNumber: detail.orderNumber,
         source: 'detail'
-      })
-    })
+      }),
+      { login: true }
+    )
   }
 
   const handleDeleteOrder = async () => {
@@ -865,7 +860,7 @@ const OrderDetailPage = () => {
     }
 
     Taro.showToast({
-      title: '该服务后续接入',
+      title: '该服务暂不可用',
       icon: 'none'
     })
   }
@@ -936,7 +931,7 @@ const OrderDetailPage = () => {
           <OrderTrackSection
             tracks={tracks}
             hintText={trackState || '基础轨迹'}
-            emptyText='暂无轨迹，实时地图和快递员位置后续接入。'
+            emptyText='暂无物流轨迹，请稍后再试。'
           />
           <OrderDetailFooterActions
             resendActionText={resendActionText}

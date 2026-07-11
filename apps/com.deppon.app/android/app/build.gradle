@@ -69,6 +69,22 @@ def enableProguardInReleaseBuilds = false
  */
 def jscFlavor = 'org.webkit:android-jsc:+'
 
+def releaseStoreFile = System.getenv('ANDROID_RELEASE_STORE_FILE') ?:
+        project.findProperty('android.injected.signing.store.file')
+def releaseStorePassword = System.getenv('ANDROID_RELEASE_STORE_PASSWORD') ?:
+        project.findProperty('android.injected.signing.store.password')
+def releaseKeyAlias = System.getenv('ANDROID_RELEASE_KEY_ALIAS') ?:
+        project.findProperty('android.injected.signing.key.alias')
+def releaseKeyPassword = System.getenv('ANDROID_RELEASE_KEY_PASSWORD') ?:
+        project.findProperty('android.injected.signing.key.password')
+def hasReleaseSigning = [
+    releaseStoreFile,
+    releaseStorePassword,
+    releaseKeyAlias,
+    releaseKeyPassword
+].every { value -> value != null && !value.toString().trim().isEmpty() }
+def expectedReleaseAppId = "com.deppon.app"
+
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -89,18 +105,68 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        if (hasReleaseSigning) {
+            release {
+                storeFile file(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
+    }
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+    def releaseRequested = taskGraph.allTasks.any { task ->
+        task.project == project &&
+                task.name ==~ /(?i)(assemble|bundle|package|install).*release/
+    }
+
+    if (releaseRequested && !hasReleaseSigning) {
+        throw new GradleException(
+            'Release signing credentials are required; debug signing is never used for release builds.'
+        )
+    }
+
+    if (releaseRequested && app_id.toString() != expectedReleaseAppId) {
+        throw new GradleException(
+            "Release applicationId must be ${expectedReleaseAppId}; received ${app_id}."
+        )
+    }
+}
+
+def verifyProductionRuntimeBundle = tasks.register(
+    "verifyProductionRuntimeBundle",
+    Exec
+) {
+    workingDir rootProject.projectDir.parentFile
+    commandLine(
+        System.getenv('NODE_BINARY') ?: 'node',
+        'scripts/check-runtime-bundle.mjs',
+        'android',
+        '--require-production'
+    )
+}
+
+tasks.configureEach { task ->
+    if (task.name == 'preReleaseBuild') {
+        task.dependsOn(verifyProductionRuntimeBundle)
+    }
+
+    if (task.name == 'createBundleReleaseJsAndAssets') {
+        task.enabled = false
     }
 }
 

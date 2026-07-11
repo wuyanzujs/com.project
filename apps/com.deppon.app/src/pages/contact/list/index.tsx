@@ -8,6 +8,7 @@ import {
   contactService,
   getContactFullAddress
 } from '../../../services/contact'
+import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
@@ -132,9 +133,10 @@ const ContactListPage = () => {
       return
     }
 
-    Taro.navigateTo({
-      url: createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams)
-    })
+    navigateToAppRoute(
+      createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams),
+      { login: true }
+    )
   }
 
   const handleEdit = (contact: Contact) => {
@@ -143,9 +145,10 @@ const ContactListPage = () => {
     }
 
     contactSelection.setEditingContact(contact)
-    Taro.navigateTo({
-      url: createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams)
-    })
+    navigateToAppRoute(
+      createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams),
+      { login: true }
+    )
   }
 
   const handleSetDefault = async (contact: Contact) => {
@@ -248,17 +251,11 @@ const ContactListPage = () => {
       onScrollToLower={handleLoadMore}
       scrollY
     >
-      <View className='contact-list-header'>
-        <Text className='contact-list-header__label'>Contact</Text>
-        <Text className='contact-list-header__title'>
-          {selectionParams.mode === 'select' ? '选择地址' : '地址簿'}
-        </Text>
-        <Text className='contact-list-header__summary'>
-          {selectionParams.mode === 'select'
-            ? selectSummary
-            : '管理常用寄收件地址，基础新增、编辑和保存能力已接入。'}
-        </Text>
-      </View>
+      {selectionParams.mode === 'select' && (
+        <View className='contact-list-selection'>
+          <Text className='contact-list-selection__text'>{selectSummary}</Text>
+        </View>
+      )}
 
       <View className='contact-list-search'>
         <Input

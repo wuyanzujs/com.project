@@ -128,14 +128,6 @@ const AccountCancelPage = () => {
 
   return (
     <ScrollView className='account-cancel-page' scrollY>
-      <View className='account-cancel-header'>
-        <Text className='account-cancel-header__label'>Account</Text>
-        <Text className='account-cancel-header__title'>注销账号</Text>
-        <Text className='account-cancel-header__summary'>
-          注销是不可恢复操作，请确认影响后再继续。
-        </Text>
-      </View>
-
       <View className='account-cancel-card'>
         <Text className='account-cancel-card__title'>当前账号</Text>
         <Text className='account-cancel-card__mobile'>

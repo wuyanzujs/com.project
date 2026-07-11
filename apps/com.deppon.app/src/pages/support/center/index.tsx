@@ -98,7 +98,7 @@ const SupportCenterPage = () => {
 
   const openRouteEntry = (entry: SupportEntryView) => {
     if (!entry.route) {
-      showToast('该能力后续接入')
+      showToast('该服务暂不可用')
       return
     }
 
@@ -123,25 +123,17 @@ const SupportCenterPage = () => {
       return
     }
 
-    showToast('该能力后续接入')
+    showToast('该服务暂不可用')
   }
 
   return (
     <ScrollView className='support-page' scrollY>
-      <View className='support-header'>
-        <Text className='support-header__label'>Support</Text>
-        <Text className='support-header__title'>客服中心</Text>
-        <Text className='support-header__summary'>
-          首期承接在线客服、95353 热线、投诉理赔和自助查询，复杂售后状态机继续由 H5 或后续原生页承接。
-        </Text>
-      </View>
-
       <View className='support-card support-card--hotline'>
         <View>
           <Text className='support-card__label'>服务热线</Text>
           <Text className='support-card__title'>95353</Text>
           <Text className='support-card__summary'>
-            电话能力已通过 App 原生 facade 收口，后续可替换为更完整的呼叫组件。
+            全年无休，为您提供寄件、查询和售后服务。
           </Text>
         </View>
         <View

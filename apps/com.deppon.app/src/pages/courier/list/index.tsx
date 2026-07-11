@@ -137,17 +137,10 @@ const CourierListPage = () => {
 
   return (
     <ScrollView className='courier-list-page' scrollY>
-      <View className='courier-list-header'>
-        <Text className='courier-list-header__label'>Courier</Text>
-        <Text className='courier-list-header__title'>专属快递员</Text>
-        <Text className='courier-list-header__summary'>
-          {couriers.length
-            ? `已关注 ${couriers.length} 位快递员`
-            : '当前账号暂无已关注快递员'}
-        </Text>
-      </View>
-
       <View className='courier-list-actions'>
+        <Text className='courier-list-actions__summary'>
+          {couriers.length ? `已关注 ${couriers.length} 位` : '暂无关注'}
+        </Text>
         <View
           className='courier-list-action courier-list-action--quiet'
           onClick={loadCouriers}

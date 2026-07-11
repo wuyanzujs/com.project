@@ -1,3 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: '编辑地址'
+  navigationBarTitleText: '地址信息'
 })

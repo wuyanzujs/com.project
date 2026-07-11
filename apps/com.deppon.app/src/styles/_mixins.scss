@@ -7,7 +7,7 @@
 
 @mixin dp-card-surface {
   background: $dp-color-bg-card;
-  border-radius: $dp-radius-lg;
+  border-radius: $dp-card-radius;
 }
 
 @mixin dp-section-title {
@@ -34,5 +34,5 @@
   align-items: center;
   justify-content: center;
   background: $dp-color-brand;
-  border-radius: $dp-radius-pill;
+  border-radius: $dp-button-radius;
 }

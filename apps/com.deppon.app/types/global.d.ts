@@ -11,6 +11,21 @@ declare module '*.scss';
 declare module '*.sass';
 declare module '*.styl';
 
+declare const __APP_RUNTIME_CONFIG__: {
+  env: 'local' | 'dev' | 'test' | 'staging' | 'production'
+  apiBaseURL: string
+  webBaseURL: string
+  serviceWebURL: string
+  memberWebURL: string
+  webAllowedHosts: string[]
+  systemCode: string
+  appClientChannel: string
+  omsChannel: string
+  ecardPmcSystemCode: string
+  mobileLoginType: string
+  supportSurveyConfigKey: string
+}
+
 declare namespace NodeJS {
   interface ProcessEnv {
     /** NODE 内置环境变量, 会影响到最终构建生成产物 */
@@ -28,5 +43,6 @@ declare namespace NodeJS {
     APP_OMS_CHANNEL?: string
     APP_ECARD_PMC_SYSTEM_CODE?: string
     APP_MOBILE_LOGIN_TYPE?: string
+    APP_SURVEY_CONFIG_KEY?: string
   }
 }

@@ -1,0 +1,175 @@
+name: Android Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: Android versionName
+        required: true
+        default: "1.0.0"
+        type: string
+      version_code:
+        description: Android versionCode
+        required: true
+        default: "1"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build-android-release:
+    name: Build signed Android APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: production
+    env:
+      APP_ENV: production
+      APP_API_BASE_URL: ${{ vars.APP_API_BASE_URL }}
+      APP_WEB_BASE_URL: ${{ vars.APP_WEB_BASE_URL }}
+      APP_SERVICE_WEB_URL: ${{ vars.APP_SERVICE_WEB_URL }}
+      APP_MEMBER_WEB_URL: ${{ vars.APP_MEMBER_WEB_URL }}
+      APP_WEB_ALLOWED_HOSTS: ${{ vars.APP_WEB_ALLOWED_HOSTS }}
+      APP_SYSTEM_CODE: ${{ vars.APP_SYSTEM_CODE }}
+      APP_CLIENT_CHANNEL: ${{ vars.APP_CLIENT_CHANNEL }}
+      APP_OMS_CHANNEL: ${{ vars.APP_OMS_CHANNEL }}
+      APP_ECARD_PMC_SYSTEM_CODE: ${{ vars.APP_ECARD_PMC_SYSTEM_CODE }}
+      APP_MOBILE_LOGIN_TYPE: ${{ vars.APP_MOBILE_LOGIN_TYPE }}
+      APP_SURVEY_CONFIG_KEY: ${{ vars.APP_SURVEY_CONFIG_KEY }}
+      ANDROID_APP_ID: ${{ vars.ANDROID_APP_ID }}
+      ANDROID_RELEASE_CERT_SHA256: ${{ vars.ANDROID_RELEASE_CERT_SHA256 }}
+      ANDROID_VERSION_NAME: ${{ inputs.version_name }}
+      ANDROID_VERSION_CODE: ${{ inputs.version_code }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.13.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Android SDK packages
+        run: sdkmanager --install "platforms;android-34" "build-tools;34.0.0" "platform-tools" "ndk;25.1.8937393" "cmake;3.22.1"
+
+      - name: Validate release inputs
+        env:
+          ANDROID_RELEASE_KEYSTORE_BASE64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
+          ANDROID_RELEASE_STORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_STORE_PASSWORD }}
+          ANDROID_RELEASE_KEY_ALIAS: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
+          ANDROID_RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          required=(
+            APP_API_BASE_URL APP_WEB_BASE_URL APP_SERVICE_WEB_URL
+            APP_MEMBER_WEB_URL APP_WEB_ALLOWED_HOSTS APP_SYSTEM_CODE
+            APP_CLIENT_CHANNEL APP_OMS_CHANNEL APP_ECARD_PMC_SYSTEM_CODE
+            ANDROID_APP_ID ANDROID_RELEASE_CERT_SHA256
+            ANDROID_RELEASE_KEYSTORE_BASE64
+            ANDROID_RELEASE_STORE_PASSWORD ANDROID_RELEASE_KEY_ALIAS
+            ANDROID_RELEASE_KEY_PASSWORD
+          )
+          for name in "${required[@]}"; do
+            if [ -z "${!name:-}" ]; then
+              echo "Missing production variable or secret: $name" >&2
+              exit 1
+            fi
+          done
+          if [ "$ANDROID_APP_ID" != "com.deppon.app" ]; then
+            echo "ANDROID_APP_ID must be com.deppon.app." >&2
+            exit 1
+          fi
+          if ! [[ "$ANDROID_VERSION_CODE" =~ ^[1-9][0-9]{0,9}$ ]]; then
+            echo "version_code must be a positive integer with at most 10 digits." >&2
+            exit 1
+          fi
+          if ! [[ "$ANDROID_VERSION_NAME" =~ ^[0-9A-Za-z][0-9A-Za-z._+-]{0,63}$ ]]; then
+            echo "version_name contains unsupported characters or is too long." >&2
+            exit 1
+          fi
+
+      - name: Verify production app
+        run: pnpm verify:app
+
+      - name: Decode release keystore
+        env:
+          ANDROID_RELEASE_KEYSTORE_BASE64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
+        run: |
+          printf '%s' "$ANDROID_RELEASE_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/deppon-release.keystore"
+          chmod 600 "$RUNNER_TEMP/deppon-release.keystore"
+
+      - name: Assemble signed release APK
+        working-directory: apps/com.deppon.app/android
+        env:
+          ANDROID_RELEASE_STORE_FILE: ${{ runner.temp }}/deppon-release.keystore
+          ANDROID_RELEASE_STORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_STORE_PASSWORD }}
+          ANDROID_RELEASE_KEY_ALIAS: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
+          ANDROID_RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease \
+            -x createBundleReleaseJsAndAssets \
+            --no-daemon \
+            --stacktrace \
+            -Papp_id="$ANDROID_APP_ID" \
+            -Pandroid.injected.version.name="$ANDROID_VERSION_NAME" \
+            -Pandroid.injected.version.code="$ANDROID_VERSION_CODE"
+
+      - name: Verify packaged RN bundle
+        run: |
+          unzip -p apps/com.deppon.app/android/app/build/outputs/apk/release/app-release.apk \
+            assets/index.android.bundle > "$RUNNER_TEMP/packaged-index.android.bundle"
+          cmp \
+            apps/com.deppon.app/android/app/src/main/assets/index.android.bundle \
+            "$RUNNER_TEMP/packaged-index.android.bundle"
+          if unzip -Z1 apps/com.deppon.app/android/app/build/outputs/apk/release/app-release.apk \
+            | grep -E '\.map$'; then
+            echo "Android release APK must not contain source maps." >&2
+            exit 1
+          fi
+
+      - name: Verify APK signature
+        run: |
+          set -euo pipefail
+          apk=apps/com.deppon.app/android/app/build/outputs/apk/release/app-release.apk
+          signature_output=$("$ANDROID_HOME/build-tools/34.0.0/apksigner" verify \
+            --verbose --print-certs "$apk")
+          printf '%s\n' "$signature_output"
+          actual=$(printf '%s\n' "$signature_output" \
+            | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' \
+            | head -n 1 \
+            | tr -d ':[:space:]' \
+            | tr '[:lower:]' '[:upper:]')
+          expected=$(printf '%s' "$ANDROID_RELEASE_CERT_SHA256" \
+            | tr -d ':[:space:]' \
+            | tr '[:lower:]' '[:upper:]')
+          if [ -z "$actual" ] || [ "$actual" != "$expected" ]; then
+            echo "APK signing certificate SHA-256 mismatch." >&2
+            exit 1
+          fi
+
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: deppon-android-${{ inputs.version_name }}-${{ inputs.version_code }}
+          path: apps/com.deppon.app/android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 14

@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict')
+const runtimeBuild = require('../config/runtime-build.cjs')
 
 // Taro runtime expects compile-time flags when modules are loaded in Node.
 globalThis.ENABLE_ADJACENT_HTML = false
@@ -8,6 +9,27 @@ globalThis.ENABLE_INNER_HTML = false
 globalThis.ENABLE_MUTATION_OBSERVER = false
 globalThis.ENABLE_SIZE_APIS = false
 globalThis.ENABLE_TEMPLATE_CONTENT = false
+globalThis.__APP_RUNTIME_CONFIG__ = {
+  env: 'test',
+  apiBaseURL: 'https://owstest.deppon.com',
+  webBaseURL: 'https://owstest.deppon.com',
+  serviceWebURL:
+    'https://osstest.deppon.com.cn/dzfront/web/home?showChat=true&layout=true',
+  memberWebURL:
+    'https://mastest.deppon.com.cn/cms-h5/h5.html#/welfare-center',
+  webAllowedHosts: [
+    'owstest.deppon.com',
+    'ows.deppon.com',
+    'osstest.deppon.com.cn',
+    'mastest.deppon.com.cn'
+  ],
+  systemCode: 'APP',
+  appClientChannel: 'APP',
+  omsChannel: 'APP',
+  ecardPmcSystemCode: 'APP',
+  mobileLoginType: 'MOBILE_VERIFICATION_CODE',
+  supportSurveyConfigKey: 'app_survey_config'
+}
 
 require('ts-node').register({
   skipProject: true,
@@ -153,6 +175,7 @@ const { APP_WEB_TARGETS } = require('../src/shared/webview/appWeb')
 const { parseAppScanValue } = require('../src/shared/platform/scan')
 const {
   isDepponSuccessStatus,
+  isResponseForCurrentSession,
   shouldAcceptDepponHttpStatus,
   shouldEmitAuthExpiredEvent,
   shouldEmitRateLimitedEvent
@@ -163,6 +186,29 @@ const {
   getSetCookieFromHeaders,
   normalizeCookieList
 } = require('../src/request/cookie.rules')
+const {
+  RequestError,
+  getRequestFailureMessage
+} = require('../src/request/error')
+const {
+  ACCOUNT_SCOPED_CACHE_KEYS,
+  ACCOUNT_SCOPED_STORAGE_KEYS,
+  CACHE_KEYS,
+  createCacheStorageKey
+} = require('../src/cache/keys')
+const {
+  getStorageValue,
+  setStorageValue
+} = require('../src/cache/storage')
+const { clearAppSession } = require('../src/services/auth/session')
+const {
+  createAppUserIdentity,
+  isSameAppUser,
+  shouldClearAccountScopedCache
+} = require('../src/services/auth/sessionIdentity')
+const {
+  LatestRequestCoordinator
+} = require('../src/shared/async/latestRequest')
 const { createServiceFailure } = require('../src/services/serviceResponse')
 
 const senderContact = {
@@ -389,6 +435,27 @@ function getActionKinds(actions) {
 
 const tests = [
   {
+    name: 'runtime config rejects credentials embedded in every app url',
+    run() {
+      const tokenViolations = runtimeBuild.validateRuntimeEnvironment({
+        APP_MEMBER_WEB_URL:
+          'https://mastest.deppon.com.cn/cms-h5/h5.html#/welfare?access_Token=fixed'
+      })
+      const userInfoViolations = runtimeBuild.validateRuntimeEnvironment({
+        APP_API_BASE_URL: 'https://user:password@owstest.deppon.com'
+      })
+
+      assert.equal(
+        tokenViolations.some((message) => message.includes('固定 token')),
+        true
+      )
+      assert.equal(
+        userInfoViolations.some((message) => message.includes('用户名或密码')),
+        true
+      )
+    }
+  },
+  {
     name: 'service response factory creates consistent failure responses',
     run() {
       assert.deepEqual(createServiceFailure('业务失败'), {
@@ -548,6 +615,114 @@ const tests = [
     }
   },
   {
+    name: 'account scoped cache registry covers private business storage',
+    run() {
+      assert.deepEqual(ACCOUNT_SCOPED_CACHE_KEYS, [
+        CACHE_KEYS.expressDraft,
+        CACHE_KEYS.goodsQueryHistory,
+        CACHE_KEYS.invoiceOrderAuth,
+        CACHE_KEYS.invoiceOrderAuthCodeSend,
+        CACHE_KEYS.invoiceEmail
+      ])
+
+      for (const key of ACCOUNT_SCOPED_CACHE_KEYS) {
+        assert.equal(ACCOUNT_SCOPED_STORAGE_KEYS.includes(key), true)
+        assert.equal(
+          ACCOUNT_SCOPED_STORAGE_KEYS.includes(createCacheStorageKey(key)),
+          true
+        )
+      }
+
+      assert.equal(
+        ACCOUNT_SCOPED_STORAGE_KEYS.includes(CACHE_KEYS.expressPrivacyConfirm),
+        false
+      )
+    }
+  },
+  {
+    name: 'clearing app session removes account data but keeps device consent',
+    run() {
+      for (const key of ACCOUNT_SCOPED_STORAGE_KEYS) {
+        void setStorageValue(key, `private:${key}`)
+      }
+
+      void setStorageValue(CACHE_KEYS.cookie, 'ECO_TOKEN=old-token;')
+      void setStorageValue(CACHE_KEYS.userInfo, '{"mobile":"13800138000"}')
+      void setStorageValue(
+        CACHE_KEYS.accountCacheOwner,
+        '{"mobile":"13800138000"}'
+      )
+      void setStorageValue(CACHE_KEYS.userSession, 'legacy-session')
+      void setStorageValue(CACHE_KEYS.expressPrivacyConfirm, 'device-consent')
+
+      void clearAppSession()
+
+      for (const key of ACCOUNT_SCOPED_STORAGE_KEYS) {
+        assert.equal(getStorageValue(key), '')
+      }
+
+      assert.equal(getStorageValue(CACHE_KEYS.cookie), '')
+      assert.equal(getStorageValue(CACHE_KEYS.userInfo), '')
+      assert.equal(getStorageValue(CACHE_KEYS.accountCacheOwner), '')
+      assert.equal(getStorageValue(CACHE_KEYS.userSession), '')
+      assert.equal(
+        getStorageValue(CACHE_KEYS.expressPrivacyConfirm),
+        'device-consent'
+      )
+    }
+  },
+  {
+    name: 'account identity rules detect user switches conservatively',
+    run() {
+      assert.equal(
+        isSameAppUser(
+          { id: 'USER_1', mobile: '13800138000' },
+          { id: 'USER_1', mobile: '13900139000' }
+        ),
+        true
+      )
+      assert.equal(
+        isSameAppUser(
+          { mobile: '13800138000' },
+          { mobile: '13800138000', nickName: 'new profile' }
+        ),
+        true
+      )
+      assert.equal(
+        shouldClearAccountScopedCache(
+          { id: 'USER_1', mobile: '13800138000' },
+          { id: 'USER_2', mobile: '13800138000' },
+          { id: 'USER_1' }
+        ),
+        true
+      )
+      assert.equal(
+        shouldClearAccountScopedCache(
+          null,
+          { id: 'USER_2', mobile: '13900139000' },
+          null
+        ),
+        true
+      )
+      assert.equal(
+        shouldClearAccountScopedCache(
+          null,
+          { id: 'USER_2', mobile: '13900139000' },
+          { id: 'USER_2' }
+        ),
+        false
+      )
+      assert.deepEqual(
+        createAppUserIdentity({
+          id: ' USER_2 ',
+          mobile: '13900139000',
+          nickName: '不应进入 owner'
+        }),
+        { id: 'USER_2', mobile: '13900139000' }
+      )
+    }
+  },
+  {
     name: 'deppon request rules normalize OWS success and accepted http status',
     run() {
       assert.equal(isDepponSuccessStatus(true), true)
@@ -567,10 +742,103 @@ const tests = [
     run() {
       assert.equal(shouldEmitAuthExpiredEvent(true, 401, '901'), true)
       assert.equal(shouldEmitAuthExpiredEvent(false, 401, '901'), false)
-      assert.equal(shouldEmitAuthExpiredEvent(true, 200, '901'), false)
+      assert.equal(shouldEmitAuthExpiredEvent(true, 200, '901'), true)
+      assert.equal(shouldEmitAuthExpiredEvent(true, 401, 'failed'), true)
       assert.equal(shouldEmitRateLimitedEvent(429, false), true)
       assert.equal(shouldEmitRateLimitedEvent(200, 429), true)
       assert.equal(shouldEmitRateLimitedEvent(200, false), false)
+      assert.equal(isResponseForCurrentSession('cookie-a', 'cookie-a'), true)
+      assert.equal(isResponseForCurrentSession('cookie-a', 'cookie-b'), false)
+      assert.equal(isResponseForCurrentSession('', ''), true)
+    }
+  },
+  {
+    name: 'request failures expose stable user-facing retry messages',
+    run() {
+      assert.equal(
+        getRequestFailureMessage(
+          new RequestError({
+            type: 'NETWORK_ERROR',
+            message: 'network failed',
+            url: '/orders',
+            method: 'GET'
+          })
+        ),
+        '网络连接失败，请检查网络后重试'
+      )
+      assert.equal(
+        getRequestFailureMessage(
+          new RequestError({
+            type: 'NETWORK_ERROR',
+            message: 'network failed',
+            url: '/orders',
+            method: 'GET',
+            cause: { errMsg: 'request:fail timeout' }
+          })
+        ),
+        '请求超时，请稍后重试'
+      )
+      assert.equal(
+        getRequestFailureMessage(
+          new RequestError({
+            type: 'HTTP_ERROR',
+            message: 'http failed',
+            url: '/orders',
+            method: 'GET',
+            statusCode: 503
+          })
+        ),
+        '服务暂时不可用，请稍后重试'
+      )
+      assert.equal(
+        getRequestFailureMessage(
+          new RequestError({
+            type: 'HTTP_ERROR',
+            message: 'not found',
+            url: '/orders',
+            method: 'GET',
+            statusCode: 404
+          })
+        ),
+        null
+      )
+      assert.equal(getRequestFailureMessage(new Error('boom')), null)
+    }
+  },
+  {
+    name: 'latest request coordinator deduplicates and promotes repeated filters',
+    run() {
+      const coordinator = new LatestRequestCoordinator()
+      const first = coordinator.begin('orders:1')
+
+      assert.ok(first)
+      assert.equal(coordinator.begin('orders:1'), null)
+      assert.equal(coordinator.isLatest(first), true)
+
+      const second = coordinator.begin('orders:2')
+
+      assert.ok(second)
+      assert.equal(coordinator.isLatest(first), false)
+      assert.equal(coordinator.isLatest(second), true)
+      assert.equal(coordinator.begin('orders:1'), null)
+      assert.equal(coordinator.isLatest(first), true)
+      assert.equal(coordinator.isLatest(second), false)
+      assert.equal(coordinator.finish(second), false)
+      assert.equal(coordinator.finish(first), true)
+
+      const retried = coordinator.begin('orders:1')
+
+      assert.ok(retried)
+      assert.equal(coordinator.finish(retried), true)
+      assert.ok(coordinator.begin('orders:2'))
+
+      const refresh = coordinator.begin('orders:2', { force: true })
+
+      assert.ok(refresh)
+      assert.equal(coordinator.isLatest(refresh), true)
+      coordinator.invalidate()
+      assert.equal(coordinator.isLatest(refresh), false)
+      assert.ok(coordinator.begin('orders:2'))
     }
   },
   {

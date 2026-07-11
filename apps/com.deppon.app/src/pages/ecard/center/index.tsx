@@ -144,14 +144,6 @@ const ECardCenterPage = () => {
 
   return (
     <ScrollView className='ecard-page' scrollY>
-      <View className='ecard-header'>
-        <Text className='ecard-header__label'>E-Card</Text>
-        <Text className='ecard-header__title'>德邦 E 卡</Text>
-        <Text className='ecard-header__summary'>
-          首期同步储值卡余额、开通状态和充值入口，支付和充值流程由 E 卡 WebView 承接。
-        </Text>
-      </View>
-
       <View className='ecard-balance-card'>
         <View className='ecard-balance-card__top'>
           <View>

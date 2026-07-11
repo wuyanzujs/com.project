@@ -113,19 +113,10 @@ const OrderSubscriptionsPage = () => {
 
   return (
     <ScrollView className='subscriptions-page' scrollY>
-      <View className='subscriptions-header'>
-        <View>
-          <Text className='subscriptions-header__label'>Following</Text>
-          <Text className='subscriptions-header__title'>关注运单</Text>
-        </View>
-        <View className='subscriptions-header__count'>
-          <Text className='subscriptions-header__count-text'>
-            {items.length}
-          </Text>
-        </View>
-      </View>
-
       <View className='subscriptions-toolbar'>
+        <Text className='subscriptions-toolbar__summary'>
+          共 {items.length} 条
+        </Text>
         <View
           className='subscriptions-toolbar__button'
           onClick={loadSubscriptions}

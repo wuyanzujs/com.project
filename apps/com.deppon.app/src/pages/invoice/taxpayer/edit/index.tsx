@@ -176,12 +176,8 @@ const InvoiceTaxpayerEditPage = () => {
   return (
     <ScrollView className='invoice-taxpayer-edit-page' scrollY>
       <View className='invoice-taxpayer-edit-header'>
-        <Text className='invoice-taxpayer-edit-header__label'>Taxpayer</Text>
         <Text className='invoice-taxpayer-edit-header__title'>
           {form.id ? '编辑抬头' : '新增抬头'}
-        </Text>
-        <Text className='invoice-taxpayer-edit-header__summary'>
-          单位抬头可通过企业名称联想补全税号、地址、电话和银行信息。
         </Text>
       </View>
 

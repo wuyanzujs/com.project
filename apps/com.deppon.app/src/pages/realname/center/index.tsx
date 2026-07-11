@@ -194,14 +194,6 @@ const RealNameCenterPage = () => {
 
   return (
     <ScrollView className='real-name-page' scrollY>
-      <View className='real-name-header'>
-        <Text className='real-name-header__label'>Identity</Text>
-        <Text className='real-name-header__title'>实名认证</Text>
-        <Text className='real-name-header__summary'>
-          按 App 端重新承接实名收寄信息，不调用小程序实名组件。
-        </Text>
-      </View>
-
       <View
         className={
           authenticated
@@ -301,7 +293,7 @@ const RealNameCenterPage = () => {
             <View>
               <Text className='real-name-native__title'>国家网络身份认证</Text>
               <Text className='real-name-native__summary'>
-                后续接入 App 原生实名模块后，可从这里发起授权。
+                使用国家网络身份认证服务完成身份核验。
               </Text>
             </View>
             <View className='real-name-native__button' onClick={handleNativeAuth}>

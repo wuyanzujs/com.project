@@ -215,14 +215,6 @@ const QueryStationsPage = () => {
 
   return (
     <ScrollView className='query-stations-page' scrollY>
-      <View className='query-stations-header'>
-        <Text className='query-stations-header__label'>Station</Text>
-        <Text className='query-stations-header__title'>网点查询</Text>
-        <Text className='query-stations-header__summary'>
-          App 首期支持地址查询和电话拨打，导航后续接入原生地图能力。
-        </Text>
-      </View>
-
       <View className='query-stations-filter'>
         <Text className='query-stations-filter__label'>网点类型</Text>
         <View className='query-stations-chip-group'>

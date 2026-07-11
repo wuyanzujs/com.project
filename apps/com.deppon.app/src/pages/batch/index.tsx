@@ -94,7 +94,7 @@ const BatchPage = () => {
       return
     }
 
-    showToast(action.disabledReason || '该能力后续接入')
+    showToast(action.disabledReason || '该服务暂不可用')
   }
 
   const handleCarryFirstRecognized = () => {
@@ -112,15 +112,13 @@ const BatchPage = () => {
   return (
     <ScrollView className='batch-page' scrollY>
       <View className='batch-header'>
-        <Text className='batch-header__label'>Batch</Text>
         <Text className='batch-header__title'>{entry.title}</Text>
         <Text className='batch-header__summary'>{entry.summary}</Text>
       </View>
 
       <View className='batch-section'>
         <View className='batch-section__head'>
-          <Text className='batch-section__title'>能力入口</Text>
-          <Text className='batch-section__hint'>RN App 首期</Text>
+          <Text className='batch-section__title'>可用服务</Text>
         </View>
         {entry.actions.map((action) => (
           <View
@@ -243,13 +241,6 @@ const BatchPage = () => {
         ))}
       </View>
 
-      <View className='batch-notice'>
-        <Text className='batch-notice__title'>迁移边界</Text>
-        <Text className='batch-notice__content'>
-          不复制旧小程序批量寄 Redux 状态机、Excel 弹层和打印流程。后续接入时继续按
-          service 校验、页面 VM、原生文件/打印 facade 的方式拆分。
-        </Text>
-      </View>
     </ScrollView>
   )
 }

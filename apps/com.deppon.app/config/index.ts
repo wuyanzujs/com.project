@@ -2,6 +2,7 @@ import { defineConfig, type UserConfigExport } from '@tarojs/cli'
 import * as path from 'path'
 import devConfig from './dev'
 import prodConfig from './prod'
+import runtimeBuild from './runtime-build.cjs'
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
 export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
@@ -18,8 +19,7 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
     sourceRoot: 'src',
     outputRoot: 'dist',
     plugins: [],
-    defineConstants: {
-    },
+    defineConstants: runtimeBuild.createRuntimeDefineConstants(process.env),
     copy: {
       patterns: [
       ],
@@ -43,10 +43,10 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
         android: './android/app/src/main/assets/index.android.bundle',
         androidAssetsDest: './android/app/src/main/res',
         // iosSourceMapUrl: '',
-        iosSourcemapOutput: './ios/main.map',
+        iosSourcemapOutput: './dist/sourcemaps/main.ios.map',
         // iosSourcemapSourcesRoot: '',
         // androidSourceMapUrl: '',
-        androidSourcemapOutput: './android/app/src/main/assets/index.android.map',
+        androidSourcemapOutput: './dist/sourcemaps/index.android.map',
         // androidSourcemapSourcesRoot: '',
       },
       postcss: {

@@ -331,7 +331,6 @@ const OrderStubPage = () => {
   return (
     <ScrollView className='order-stub-page' scrollY>
       <View className='order-stub-header'>
-        <Text className='order-stub-header__label'>Receipt</Text>
         <Text className='order-stub-header__title'>
           {stub?.title || '电子存根'}
         </Text>

@@ -229,16 +229,6 @@ const ContactEditPage = () => {
 
   return (
     <ScrollView className='contact-edit-page' scrollY>
-      <View className='contact-edit-header'>
-        <Text className='contact-edit-header__label'>Contact</Text>
-        <Text className='contact-edit-header__title'>
-          {contact.id ? '编辑地址' : '新增地址'}
-        </Text>
-        <Text className='contact-edit-header__summary'>
-          先用可保存的基础表单承接地址能力，城市选择器、通讯录和地图定位后续接入。
-        </Text>
-      </View>
-
       <View className='contact-edit-analysis'>
         <View className='contact-edit-analysis__head'>
           <Text className='contact-edit-analysis__title'>智能识别</Text>

@@ -147,14 +147,6 @@ const AccountSettingsPage = () => {
 
   return (
     <ScrollView className='account-settings-page' scrollY>
-      <View className='account-settings-header'>
-        <Text className='account-settings-header__label'>Account</Text>
-        <Text className='account-settings-header__title'>账号设置</Text>
-        <Text className='account-settings-header__summary'>
-          管理登录状态、账号资料、隐私协议和安全操作。
-        </Text>
-      </View>
-
       <View className='account-settings-card'>
         <View className='account-settings-profile'>
           <View className='account-settings-profile__avatar'>

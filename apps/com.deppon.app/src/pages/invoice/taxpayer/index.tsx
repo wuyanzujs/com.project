@@ -137,14 +137,6 @@ const InvoiceTaxpayerListPage = () => {
 
   return (
     <ScrollView className='invoice-taxpayer-page' scrollY>
-      <View className='invoice-taxpayer-header'>
-        <Text className='invoice-taxpayer-header__label'>Taxpayer</Text>
-        <Text className='invoice-taxpayer-header__title'>发票抬头</Text>
-        <Text className='invoice-taxpayer-header__summary'>
-          App 首期支持抬头新增、编辑、删除和默认抬头设置。
-        </Text>
-      </View>
-
       <View className='invoice-taxpayer-toolbar'>
         <View>
           <Text className='invoice-taxpayer-toolbar__title'>抬头列表</Text>

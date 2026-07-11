@@ -223,14 +223,6 @@ const CouponDetailPage = () => {
 
   return (
     <ScrollView className='coupon-detail-page' scrollY>
-      <View className='coupon-detail-header'>
-        <Text className='coupon-detail-header__label'>Coupon</Text>
-        <Text className='coupon-detail-header__title'>优惠券详情</Text>
-        <Text className='coupon-detail-header__summary'>
-          展示券码、适用产品和使用规则，转赠分享与营销跳转后续拆分。
-        </Text>
-      </View>
-
       <View className='coupon-detail-card'>
         <View className='coupon-detail-card__top'>
           <View>

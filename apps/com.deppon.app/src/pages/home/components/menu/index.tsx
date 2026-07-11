@@ -17,8 +17,9 @@ const Menu = ({ actions, onSelect }: MenuProps) => {
   const [activePage, setActivePage] = useState(0)
   const pages = useMemo(
     () =>
-      Array.from({ length: Math.ceil(actions.length / PAGE_SIZE) }, (_, index) =>
-        actions.slice(index * PAGE_SIZE, (index + 1) * PAGE_SIZE)
+      Array.from(
+        { length: Math.ceil(actions.length / PAGE_SIZE) },
+        (_, index) => actions.slice(index * PAGE_SIZE, (index + 1) * PAGE_SIZE)
       ),
     [actions]
   )

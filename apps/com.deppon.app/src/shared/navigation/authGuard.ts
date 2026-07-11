@@ -1,8 +1,11 @@
 import Taro from '@tarojs/taro'
 
+import { APP_LOGIN_ROUTE_PATHS } from './routeRegistry'
 import { APP_ROUTES } from './routes'
 import { createAppRouteUrl, createRouteQuery } from './routeUrl'
 import { getCurrentEcoToken } from '../../services/auth'
+
+import type { AppRoutePath } from './routes'
 
 const LOGIN_REDIRECT_LOCK_MS = 800
 
@@ -141,4 +144,21 @@ export function ensureAuthenticated(options: LoginRedirectOptions = {}) {
 
   navigateToLogin(options)
   return false
+}
+
+export function ensureCurrentRouteAuthenticated() {
+  const currentUrl = getCurrentRouteUrl('')
+  const pathname = getRoutePathname(currentUrl)
+
+  if (
+    !pathname ||
+    !APP_LOGIN_ROUTE_PATHS.includes(pathname as AppRoutePath)
+  ) {
+    return true
+  }
+
+  return ensureAuthenticated({
+    redirectUrl: currentUrl,
+    replace: true
+  })
 }

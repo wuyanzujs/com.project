@@ -1,3 +1,5 @@
+@use '../../../styles/_tokens.scss' as *;
+
 .contact-list-page {
   min-height: 100%;
   background: #f5f7fb;
@@ -115,6 +117,16 @@
 .contact-card__tag--primary {
   color: #1a5eff;
   background: #e8efff;
+}
+
+.contact-list-selection {
+  padding: $dp-space-md $dp-space-lg 0;
+}
+
+.contact-list-selection__text {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
 }
 
 .contact-list-search {

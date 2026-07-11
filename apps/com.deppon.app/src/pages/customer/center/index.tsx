@@ -135,14 +135,6 @@ const CustomerCenterPage = () => {
 
   return (
     <ScrollView className='customer-page' scrollY>
-      <View className='customer-header'>
-        <Text className='customer-header__label'>Customer</Text>
-        <Text className='customer-header__title'>客户中心</Text>
-        <Text className='customer-header__summary'>
-          查看当前账号的客户编码、月结入口和号码保护设置。
-        </Text>
-      </View>
-
       <View className='customer-card customer-card--hero'>
         <View className='customer-card__top'>
           <View>

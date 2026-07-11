@@ -59,8 +59,11 @@ export const authService = {
     const response = await authApi.queryUserInfo(false, false)
 
     if (response.status && response.result) {
-      await saveCurrentUser(response.result)
-      return response.result
+      if (await saveCurrentUser(response.result)) {
+        return response.result
+      }
+
+      await clearAppSession()
     }
 
     return null
@@ -107,7 +110,15 @@ export const authService = {
     })
 
     if (response.status && response.result) {
-      await saveCurrentUser(response.result)
+      if (!(await saveCurrentUser(response.result))) {
+        await clearAppSession()
+
+        return {
+          status: false,
+          message: '登录信息保存失败，请重试',
+          user: null
+        }
+      }
 
       return {
         status: true,

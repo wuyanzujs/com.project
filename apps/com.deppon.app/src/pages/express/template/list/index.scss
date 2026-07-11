@@ -48,8 +48,15 @@
 }
 
 .template-list-toolbar {
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
   margin: $dp-space-md $dp-space-lg 0;
+}
+
+.template-list-toolbar__summary {
+  flex: 1;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-small;
 }
 
 .template-list-toolbar__button {

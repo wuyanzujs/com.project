@@ -5,10 +5,12 @@ import {
 } from './cookieJar'
 import {
   isDepponSuccessStatus,
+  isResponseForCurrentSession,
   shouldAcceptDepponHttpStatus,
   shouldEmitAuthExpiredEvent,
   shouldEmitRateLimitedEvent
 } from './deppon.rules'
+import { getRequestFailureMessage } from './error'
 import { emitRequestEvent } from './events'
 import { http } from './index'
 
@@ -29,6 +31,8 @@ export interface DepponResponse<TResult = unknown> {
   custName?: string | null
   code?: string
   locations?: Array<{ lng: number; lat: number }>
+  authExpired?: boolean
+  transportFailure?: boolean
 }
 
 export interface DepponRequestOptions<
@@ -64,50 +68,69 @@ function createRequestHeaders<TData, TResult>(
 }
 
 function createFallbackResponse<TResult>(
-  message = ''
+  message = '',
+  transportFailure = false,
+  authExpired = false
 ): DepponResponse<TResult> {
   return {
     status: false,
     message,
-    result: null
+    result: null,
+    ...(authExpired ? { authExpired: true } : {}),
+    ...(transportFailure ? { transportFailure: true } : {})
   }
 }
 
 function normalizeOwsResponse<TResult>(
   response: HttpResponse<unknown>,
-  loginRequired: boolean
+  loginRequired: boolean,
+  requestCookie: string
 ): DepponResponse<TResult> {
-  void saveSessionCookieFromResponse(response)
-
   const data = response.data
+  const dataStatus = isRecord(data) ? data.status : undefined
+  const message =
+    isRecord(data) && typeof data.message === 'string' ? data.message : null
+  const currentSession = isResponseForCurrentSession(
+    requestCookie,
+    getSessionCookie()
+  )
+  const authExpired =
+    currentSession &&
+    shouldEmitAuthExpiredEvent(loginRequired, response.statusCode, dataStatus)
+
+  if (currentSession && !authExpired) {
+    void saveSessionCookieFromResponse(response)
+  }
+
+  if (
+    currentSession &&
+    shouldEmitRateLimitedEvent(response.statusCode, dataStatus)
+  ) {
+    emitRequestEvent('rateLimited', {
+      url: response.url,
+      statusCode: response.statusCode,
+      message
+    })
+  }
+
+  if (authExpired) {
+    void clearSessionCookie()
+    emitRequestEvent('authExpired', {
+      url: response.url,
+      statusCode: response.statusCode,
+      message
+    })
+  }
 
   if (!isRecord(data)) {
-    return createFallbackResponse<TResult>()
+    return createFallbackResponse<TResult>('', false, authExpired)
   }
 
   const rawStatus = data.status
   const normalized: DepponResponse<TResult> = {
     ...(data as unknown as DepponResponse<TResult>),
-    status: isDepponSuccessStatus(rawStatus)
-  }
-
-  if (shouldEmitRateLimitedEvent(response.statusCode, data.status)) {
-    emitRequestEvent('rateLimited', {
-      url: response.url,
-      statusCode: response.statusCode,
-      message: normalized.message
-    })
-  }
-
-  if (
-    shouldEmitAuthExpiredEvent(loginRequired, response.statusCode, data.status)
-  ) {
-    void clearSessionCookie()
-    emitRequestEvent('authExpired', {
-      url: response.url,
-      statusCode: response.statusCode,
-      message: normalized.message
-    })
+    status: isDepponSuccessStatus(rawStatus),
+    ...(authExpired ? { authExpired: true } : {})
   }
 
   return normalized
@@ -120,13 +143,30 @@ function validateDepponStatus(statusCode: number) {
 export function depponRequest<TResult = unknown, TData = unknown>(
   options: DepponRequestOptions<TData, TResult>
 ): Promise<DepponResponse<TResult>> {
-  return http.request<DepponResponse<TResult>, TData>({
-    ...options,
-    headers: createRequestHeaders(options),
-    validateStatus: options.validateStatus ?? validateDepponStatus,
-    transformResponse: response =>
-      normalizeOwsResponse<TResult>(response, options.login !== false)
-  })
+  const headers = createRequestHeaders(options)
+  const requestCookie = headers.Cookie ?? ''
+
+  return http
+    .request<DepponResponse<TResult>, TData>({
+      ...options,
+      headers,
+      validateStatus: options.validateStatus ?? validateDepponStatus,
+      transformResponse: response =>
+        normalizeOwsResponse<TResult>(
+          response,
+          options.login !== false,
+          requestCookie
+        )
+    })
+    .catch((error: unknown) => {
+      const message = getRequestFailureMessage(error)
+
+      if (!message) {
+        throw error
+      }
+
+      return createFallbackResponse<TResult>(message, true)
+    })
 }
 
 export const depponHttp = {

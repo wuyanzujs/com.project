@@ -21,7 +21,6 @@ export function OrderDetailHeader(props: {
 }) {
   return (
     <View className='order-detail-header'>
-      <Text className='order-detail-header__label'>Order</Text>
       <Text className='order-detail-header__title'>{props.title}</Text>
       <View className='order-detail-header__summary-row'>
         <Text className='order-detail-header__summary'>{props.identityText}</Text>

@@ -23,10 +23,11 @@ export const authApi = {
     )
   },
 
-  checkEcoToken(login = true, loading = false) {
+  checkEcoToken(login = true, loading = false, timeout = 5000) {
     return depponHttp.get('/gwapi/userService/eco/user/secure/checkEcoToken', {
       login,
-      loading
+      loading,
+      timeout
     })
   },
 

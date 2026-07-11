@@ -60,13 +60,12 @@ const PrintCenterPage = () => {
       return
     }
 
-    showToast(action.disabledReason || '该能力后续接入')
+    showToast(action.disabledReason || '该服务暂不可用')
   }
 
   return (
     <ScrollView className='print-page' scrollY>
       <View className='print-header'>
-        <Text className='print-header__label'>Print</Text>
         <Text className='print-header__title'>{center.title}</Text>
         <Text className='print-header__summary'>{center.summary}</Text>
       </View>
@@ -75,7 +74,7 @@ const PrintCenterPage = () => {
         <View>
           <Text className='print-status__label'>原生打印能力</Text>
           <Text className='print-status__value'>
-            {center.nativeReady ? '已接入' : '待接入'}
+            {center.nativeReady ? '可用' : '暂不可用'}
           </Text>
         </View>
         <Text
@@ -110,8 +109,7 @@ const PrintCenterPage = () => {
 
       <View className='print-section'>
         <View className='print-section__head'>
-          <Text className='print-section__title'>打印入口</Text>
-          <Text className='print-section__hint'>RN App 首期</Text>
+          <Text className='print-section__title'>打印服务</Text>
         </View>
         {center.actions.map((action) => (
           <View
@@ -140,13 +138,6 @@ const PrintCenterPage = () => {
         ))}
       </View>
 
-      <View className='print-notice'>
-        <Text className='print-notice__title'>迁移边界</Text>
-        <Text className='print-notice__content'>
-          不迁入旧小程序蓝牙 API、GBK 指令拼接和设备缓存实现。后续应先新增
-          shared/platform/print facade，再接打印列表、模板和状态回写。
-        </Text>
-      </View>
     </ScrollView>
   )
 }

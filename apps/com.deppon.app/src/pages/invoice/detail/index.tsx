@@ -353,14 +353,6 @@ const InvoiceDetailPage = () => {
 
   return (
     <ScrollView className='invoice-detail-page' scrollY>
-      <View className='invoice-detail-header'>
-        <Text className='invoice-detail-header__label'>Detail</Text>
-        <Text className='invoice-detail-header__title'>发票详情</Text>
-        <Text className='invoice-detail-header__summary'>
-          展示开票记录、纸票收件地址、包含运单和电子发票邮箱发送。
-        </Text>
-      </View>
-
       <View className='invoice-detail-card'>
         <View className='invoice-detail-card__top'>
           <Text className='invoice-detail-card__title'>{invoice.title}</Text>

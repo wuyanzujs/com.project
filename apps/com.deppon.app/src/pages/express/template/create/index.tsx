@@ -96,11 +96,6 @@ const ExpressTemplateCreatePage = () => {
 
   return (
     <ScrollView className='template-create-page' scrollY>
-      <View className='template-create-header'>
-        <Text className='template-create-header__label'>Save</Text>
-        <Text className='template-create-header__title'>保存寄件模板</Text>
-      </View>
-
       <View className='template-create-section'>
         <Text className='template-create-section__title'>模板名称</Text>
         <Input

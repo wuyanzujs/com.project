@@ -1,4 +1,5 @@
 export const CACHE_KEYS = {
+  accountCacheOwner: 'DEPPON_ACCOUNT_CACHE_OWNER',
   cookie: 'DEPPON_COOKIE',
   expressDraft: 'DEPPON_EXPRESS_DRAFT',
   expressPrivacyConfirm: 'DEPPON_EXPRESS_PRIVACY_CONFIRM',
@@ -17,6 +18,23 @@ export const CACHE_PREFIX = 'DP_CACHE_'
 export function createCacheStorageKey(key: string) {
   return `${CACHE_PREFIX}${key}`
 }
+
+export const ACCOUNT_SCOPED_CACHE_KEYS = [
+  CACHE_KEYS.expressDraft,
+  CACHE_KEYS.goodsQueryHistory,
+  CACHE_KEYS.invoiceOrderAuth,
+  CACHE_KEYS.invoiceOrderAuthCodeSend,
+  CACHE_KEYS.invoiceEmail
+] as const
+
+export const ACCOUNT_SCOPED_STORAGE_KEYS = Array.from(
+  new Set(
+    ACCOUNT_SCOPED_CACHE_KEYS.flatMap((key) => [
+      key,
+      createCacheStorageKey(key)
+    ])
+  )
+)
 
 export const APP_STORAGE_KEYS = Array.from(
   new Set([

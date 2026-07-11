@@ -126,11 +126,7 @@ const MemberCenterPage = () => {
       <AppStatusBar />
       <ScrollView className='member-page' scrollY>
         <View className='member-header'>
-          <Text className='member-header__label'>Member</Text>
           <Text className='member-header__title'>会员权益</Text>
-          <Text className='member-header__summary'>
-            查看会员等级、成长值、积分和福利活动。
-          </Text>
         </View>
 
         <View className='member-card member-card--hero'>

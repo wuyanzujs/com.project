@@ -142,9 +142,7 @@ const LoginPage = () => {
   }
 
   const handlePolicyPress = (source: AppWebSource) => {
-    Taro.navigateTo({
-      url: createAppWebUrl({ source })
-    })
+    navigateToAppRoute(createAppWebUrl({ source }))
   }
 
   const handleSkip = () => {
@@ -155,20 +153,20 @@ const LoginPage = () => {
 
   return (
     <View className='login-page'>
-      <View className='login-header'>
-        <Text className='login-header__label'>Auth</Text>
-        <Text className='login-header__title'>手机号登录</Text>
-        <Text className='login-header__summary'>
-          App 端首期使用短信验证码登录，微信/支付宝授权、实名核验和会员注册后续通过原生能力接入。
+      <View className='login-intro'>
+        <Text className='login-intro__title'>登录/注册</Text>
+        <Text className='login-intro__summary'>
+          欢迎使用德邦快递，竭诚为您服务！
         </Text>
       </View>
 
       <View className='login-form'>
-        <View className='login-field'>
-          <Text className='login-field__label'>手机号</Text>
+        <View className='login-field login-field--mobile'>
+          <Text className='login-field__prefix'>+86</Text>
           <Input
             className='login-input'
             maxlength={11}
+            placeholderClass='login-input__placeholder'
             placeholder='请输入手机号'
             type='number'
             value={mobile}
@@ -179,36 +177,27 @@ const LoginPage = () => {
         </View>
 
         <View className='login-field'>
-          <Text className='login-field__label'>验证码</Text>
-          <View className='login-code-row'>
-            <Input
-              className='login-input login-input--code'
-              maxlength={6}
-              placeholder='请输入验证码'
-              type='number'
-              value={smsCode}
-              onInput={(event) =>
-                setSmsCode(event.detail.value.replace(/\D/g, '').slice(0, 6))
-              }
-            />
-            <View
+          <Input
+            className='login-input login-input--code'
+            maxlength={6}
+            placeholderClass='login-input__placeholder'
+            placeholder='请输入验证码'
+            type='number'
+            value={smsCode}
+            onInput={(event) =>
+              setSmsCode(event.detail.value.replace(/\D/g, '').slice(0, 6))
+            }
+          />
+          <View className='login-code-button' onClick={handleSendSms}>
+            <Text
               className={
                 canSend
-                  ? 'login-code-button login-code-button--active'
-                  : 'login-code-button'
+                  ? 'login-code-button__text login-code-button__text--active'
+                  : 'login-code-button__text'
               }
-              onClick={handleSendSms}
             >
-              <Text
-                className={
-                  canSend
-                    ? 'login-code-button__text login-code-button__text--active'
-                    : 'login-code-button__text'
-                }
-              >
-                {codeButtonLabel}
-              </Text>
-            </View>
+              {codeButtonLabel}
+            </Text>
           </View>
         </View>
 
@@ -252,6 +241,8 @@ const LoginPage = () => {
         <View className='login-secondary' onClick={handleSkip}>
           <Text className='login-secondary__text'>暂不登录</Text>
         </View>
+
+        <Text className='login-note'>未注册手机号将自动创建账号</Text>
       </View>
     </View>
   )

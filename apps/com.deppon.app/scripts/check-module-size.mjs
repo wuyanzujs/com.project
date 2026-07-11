@@ -31,6 +31,14 @@ const legacyBudgets = new Map([
     }
   ],
   [
+    'src/pages/order/list/index.tsx',
+    {
+      max: 460,
+      reason:
+        '订单列表页承接筛选、分页、取消、删除、修改和再寄流程；展示组件与筛选组件已独立拆分，当前冻结页面编排体量，避免为了行数机械拆分。'
+    }
+  ],
+  [
     'src/pages/invoice/index/index.tsx',
     {
       max: 880,

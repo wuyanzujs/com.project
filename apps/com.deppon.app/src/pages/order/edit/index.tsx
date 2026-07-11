@@ -181,14 +181,6 @@ const OrderEditPage = () => {
 
   return (
     <ScrollView className='order-edit-page' scrollY>
-      <View className='order-edit-header'>
-        <Text className='order-edit-header__label'>Order</Text>
-        <Text className='order-edit-header__title'>修改订单</Text>
-        <Text className='order-edit-header__summary'>
-          {orderNumber ? `订单 ${orderNumber}` : '订单号缺失'}
-        </Text>
-      </View>
-
       {loading && !draft && (
         <Text className='order-edit-loading'>正在加载订单...</Text>
       )}
@@ -206,6 +198,7 @@ const OrderEditPage = () => {
 
       {draft && (
         <>
+          <Text className='order-edit-identity'>订单 {orderNumber}</Text>
           <OrderEditContactSection
             contact={draft.sender}
             title='寄件人'

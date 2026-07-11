@@ -26,18 +26,6 @@ function getStatusClassName(base: string, statusClass: string) {
   return `${base} ${base}--${statusClass.toLowerCase()}`
 }
 
-export function InvoiceHeader() {
-  return (
-    <View className='invoice-header'>
-      <Text className='invoice-header__label'>Invoice</Text>
-      <Text className='invoice-header__title'>发票中心</Text>
-      <Text className='invoice-header__summary'>
-        支持可开票运单、储值卡开票、开票历史、发票预览和抬头管理。
-      </Text>
-    </View>
-  )
-}
-
 export function InvoiceTabs(props: {
   tabs: InvoiceTabItem[]
   activeTab: InvoiceTab
@@ -389,7 +377,7 @@ export function InvoiceTaxpayersPanel(props: {
       {!props.taxpayers.length && !props.loading && (
         <InvoiceEmpty
           title={props.errorMessage || '暂无发票抬头'}
-          summary='合同客户和抬头新增/编辑规则较多，后续单独迁移抬头管理页。'
+          summary='可前往发票抬头页面新增或管理常用抬头。'
         />
       )}
     </View>

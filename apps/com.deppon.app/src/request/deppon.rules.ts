@@ -42,7 +42,14 @@ export function shouldEmitAuthExpiredEvent(
 ) {
   return (
     loginRequired &&
-    statusCode === HTTP_STATUS.unauthorized &&
-    dataStatus === OWS_STATUS.logout
+    (statusCode === HTTP_STATUS.unauthorized ||
+      dataStatus === OWS_STATUS.logout)
   )
+}
+
+export function isResponseForCurrentSession(
+  requestCookie: string,
+  currentCookie: string
+) {
+  return requestCookie === currentCookie
 }

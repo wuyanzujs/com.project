@@ -19,8 +19,21 @@ platform :android do
 
   desc "assemble"
   lane :assemble do
+    build_type = ENV.fetch('BUILD_TYPE', '')
+    release_build = build_type.casecmp('Release').zero?
+
+    UI.user_error!('BUILD_TYPE is required.') if build_type.empty?
+
+    if release_build && ENV['APP_ID'] != 'com.deppon.app'
+      UI.user_error!('Android release APP_ID must be com.deppon.app.')
+    end
+
     sh("pnpm --dir .. install --frozen-lockfile")
-    sh("pnpm --dir .. run bundle:android")
+    sh(
+      release_build
+        ? "pnpm --dir .. run bundle:android:production"
+        : "pnpm --dir .. run bundle:android"
+    )
     update_android_strings(
       xml_path: 'app/src/main/res/values/strings.xml',
       block: lambda { |strings|
@@ -29,7 +42,8 @@ platform :android do
     )
     gradle(
       task: "assemble",
-      build_type: ENV['BUILD_TYPE'],
+      build_type: build_type,
+      flags: release_build ? "-x createBundleReleaseJsAndAssets" : nil,
       properties: {
         "app_id" => ENV['APP_ID'],
         "android.injected.version.code" => ENV['VERSION_CODE'].to_i,

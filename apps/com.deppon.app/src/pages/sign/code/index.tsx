@@ -132,14 +132,6 @@ const SignCodePage = () => {
 
   return (
     <ScrollView className='sign-code-page' scrollY>
-      <View className='sign-code-header'>
-        <Text className='sign-code-header__label'>Sign</Text>
-        <Text className='sign-code-header__title'>签收码</Text>
-        <Text className='sign-code-header__summary'>
-          首期承接实名签收码查询、实名登记和 App 端二维码展示。
-        </Text>
-      </View>
-
       <View className='sign-code-card'>
         <View className='sign-code-card__top'>
           <View>

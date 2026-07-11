@@ -6,12 +6,12 @@ import { useCallback, useRef } from 'react'
 import Banner from './components/banner'
 import Menu from './components/menu'
 import { HOME_QUICK_ACTIONS } from './home.data'
-import { privacyService } from '../../services/privacy'
 import {
   applyExpressScanContext,
   createExpressDraft,
   expressDraftBridge
 } from '../../services/express'
+import { privacyService } from '../../services/privacy'
 import { AppIcon } from '../../shared/components/AppIcon'
 import AppTabBar from '../../shared/components/AppTabBar'
 import { AppSafeAreaView, AppStatusBar } from '../../shared/native'

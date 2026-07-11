@@ -203,14 +203,6 @@ const QueryGoodsPage = () => {
 
   return (
     <ScrollView className='query-goods-page' scrollY>
-      <View className='query-goods-header'>
-        <Text className='query-goods-header__label'>Cargo</Text>
-        <Text className='query-goods-header__title'>货物查询</Text>
-        <Text className='query-goods-header__summary'>
-          输入品名，确认禁寄限制、未知品类和寄递风险提示。
-        </Text>
-      </View>
-
       <View className='query-goods-section'>
         <View className='query-goods-section__head'>
           <Text className='query-goods-section__title'>品名</Text>

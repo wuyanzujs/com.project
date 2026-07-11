@@ -165,7 +165,6 @@ const QueryStationDetailPage = () => {
   return (
     <ScrollView className='station-detail-page' scrollY>
       <View className='station-detail-header'>
-        <Text className='station-detail-header__label'>Station</Text>
         <Text className='station-detail-header__title'>
           {detail?.name || '网点详情'}
         </Text>

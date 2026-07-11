@@ -274,14 +274,6 @@ const QueryPricePage = () => {
 
   return (
     <ScrollView className='query-price-page' scrollY>
-      <View className='query-price-header'>
-        <Text className='query-price-header__label'>Price</Text>
-        <Text className='query-price-header__title'>价格时效</Text>
-        <Text className='query-price-header__summary'>
-          按 App 首期主链路重建查询页，复用寄件报价服务，不承载小程序语音、定位和营销分支。
-        </Text>
-      </View>
-
       <View className='query-price-section'>
         {renderContactForm('sender', '寄件地址', '寄')}
         <View className='query-price-swap' onClick={handleSwapContacts}>

@@ -175,14 +175,6 @@ const PrivacySettingsPage = () => {
 
   return (
     <ScrollView className='privacy-settings-page' scrollY>
-      <View className='privacy-settings-header'>
-        <Text className='privacy-settings-header__label'>Privacy</Text>
-        <Text className='privacy-settings-header__title'>隐私设置</Text>
-        <Text className='privacy-settings-header__summary'>
-          集中查看协议清单、同步隐私政策版本，并支持撤销同意条款。
-        </Text>
-      </View>
-
       <View className='privacy-status'>
         <View>
           <Text className='privacy-status__title'>

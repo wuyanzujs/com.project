@@ -1,7 +1,7 @@
 import { Input, ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 import PaymentFeeRows from './components/PaymentFeeRows'
 import {
@@ -10,6 +10,7 @@ import {
   getPaymentOrderTypeLabel,
   paymentService
 } from '../../../services/payment'
+import { LatestRequestCoordinator } from '../../../shared/async/latestRequest'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -67,6 +68,7 @@ const PaymentListPage = () => {
   const [loading, setLoading] = useState(false)
   const [payingKey, setPayingKey] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const requestCoordinator = useRef(new LatestRequestCoordinator()).current
 
   const ensurePaymentListAccess = useCallback(
     () =>
@@ -82,9 +84,15 @@ const PaymentListPage = () => {
       nextPage = 1,
       nextRole = role,
       nextKeyword = keyword,
-      nextStatus = status
+      nextStatus = status,
+      force = false
     ) => {
-      if (loading) {
+      const requestToken = requestCoordinator.begin(
+        JSON.stringify([nextPage, nextRole, nextKeyword, nextStatus]),
+        { force }
+      )
+
+      if (!requestToken) {
         return
       }
 
@@ -99,6 +107,10 @@ const PaymentListPage = () => {
           pageSize: PAGE_SIZE,
           waybillNumber: nextKeyword
         })
+
+        if (!requestCoordinator.isLatest(requestToken)) {
+          return
+        }
 
         if (!response.status || !response.result) {
           setErrorMessage(
@@ -115,24 +127,26 @@ const PaymentListPage = () => {
           return
         }
 
-        setPayments((current) =>
+        setPayments(current =>
           nextPage === 1
-            ? response.result?.list ?? []
+            ? (response.result?.list ?? [])
             : [...current, ...(response.result?.list ?? [])]
         )
         setPageIndex(response.result.pageIndex)
         setTotalPage(response.result.totalPage)
         setTotalRows(response.result.totalRows)
-        setLoadedAmount((current) =>
+        setLoadedAmount(current =>
           nextPage === 1
-            ? response.result?.pageAmount ?? 0
+            ? (response.result?.pageAmount ?? 0)
             : current + (response.result?.pageAmount ?? 0)
         )
       } finally {
-        setLoading(false)
+        if (requestCoordinator.finish(requestToken)) {
+          setLoading(false)
+        }
       }
     },
-    [keyword, loading, role, status]
+    [keyword, requestCoordinator, role, status]
   )
 
   useDidShow(() => {
@@ -229,7 +243,7 @@ const PaymentListPage = () => {
         title: '支付完成',
         icon: 'none'
       })
-      loadPayments(1, role, keyword)
+      loadPayments(1, role, keyword, status, true)
     } catch (error) {
       Taro.showToast({
         title: getNativeCapabilityErrorMessage(error),
@@ -263,16 +277,8 @@ const PaymentListPage = () => {
       onScrollToLower={handleLoadMore}
       scrollY
     >
-      <View className='payment-list-header'>
-        <Text className='payment-list-header__label'>Payment</Text>
-        <Text className='payment-list-header__title'>运单支付</Text>
-        <Text className='payment-list-header__summary'>
-          查询待支付与已支付运单，App 支付统一通过原生支付能力接入。
-        </Text>
-      </View>
-
       <View className='payment-status-tabs'>
-        {PAYMENT_STATUS_TABS.map((tab) => (
+        {PAYMENT_STATUS_TABS.map(tab => (
           <View
             className={
               tab.value === status
@@ -296,7 +302,7 @@ const PaymentListPage = () => {
       </View>
 
       <View className='payment-tabs'>
-        {PAYMENT_ROLE_TABS.map((tab) => (
+        {PAYMENT_ROLE_TABS.map(tab => (
           <View
             className={
               tab.value === role
@@ -324,7 +330,7 @@ const PaymentListPage = () => {
           className='payment-search__input'
           placeholder='输入运单号，多个用逗号分隔'
           value={keyword}
-          onInput={(event) => setKeyword(event.detail.value)}
+          onInput={event => setKeyword(event.detail.value)}
         />
         <View className='payment-search__button' onClick={handleSearch}>
           <Text className='payment-search__button-text'>搜索</Text>
@@ -347,10 +353,12 @@ const PaymentListPage = () => {
       </View>
 
       <View className='payment-list-content'>
-        {payments.map((item) => (
+        {payments.map(item => (
           <View className='payment-card' key={getPaymentItemKey(item)}>
             <View className='payment-card__top'>
-              <Text className='payment-card__number'>运单 {item.waybillNum}</Text>
+              <Text className='payment-card__number'>
+                运单 {item.waybillNum}
+              </Text>
               <View className='payment-card__tags'>
                 <Text className='payment-card__tag'>
                   {getPaymentOrderTypeLabel(item.orderSubType)}
@@ -366,7 +374,9 @@ const PaymentListPage = () => {
                 <Text className='payment-card__city'>
                   {item.senderCityName || '--'}
                 </Text>
-                <Text className='payment-card__name'>{item.sender || '--'}</Text>
+                <Text className='payment-card__name'>
+                  {item.sender || '--'}
+                </Text>
               </View>
               <Text className='payment-card__arrow'>→</Text>
               <View className='payment-card__city-block payment-card__city-block--right'>

@@ -138,6 +138,16 @@ if (resolvedAndroidSdk) {
     getAndroidSdkToolPath('build-tools', '34.0.0')
   )
   addCheck(
+    'Android NDK 25.1.8937393',
+    existsSync(getAndroidSdkToolPath('ndk', '25.1.8937393')),
+    getAndroidSdkToolPath('ndk', '25.1.8937393')
+  )
+  addCheck(
+    'Android CMake 3.22.1',
+    existsSync(getAndroidSdkToolPath('cmake', '3.22.1')),
+    getAndroidSdkToolPath('cmake', '3.22.1')
+  )
+  addCheck(
     'Android platform-tools adb',
     existsSync(adbPath) || commandExists('adb'),
     existsSync(adbPath) ? adbPath : '需要 adb 支持设备调试。'

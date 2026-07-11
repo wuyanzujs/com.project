@@ -1,3 +1,2 @@
-@use './tokens';
-@use './mixins';
-@use './components';
+@forward './tokens';
+@forward './mixins';

@@ -12,6 +12,7 @@ const androidMainActivityPath = path.join(
   'android/app/src/main/java/com/deppon/app/MainActivity.kt'
 )
 const androidFastfilePath = path.join(appRoot, 'android/fastlane/Fastfile')
+const androidBuildGradlePath = path.join(appRoot, 'android/app/build.gradle')
 const iosAppDelegatePath = path.join(appRoot, 'ios/taroDemo/AppDelegate.mm')
 const iosFastfilePath = path.join(appRoot, 'ios/fastlane/Fastfile')
 const violations = []
@@ -108,6 +109,14 @@ function checkBundleScripts(packageJson) {
     }
   }
 
+  for (const platform of ['android', 'ios']) {
+    const scriptName = `bundle:${platform}:production`
+
+    if (!scripts[scriptName]?.includes('build-production-bundle.mjs')) {
+      violations.push(`${scriptName} 必须强制生成并校验 production bundle。`)
+    }
+  }
+
   const resetCommand = scripts['dev:rn:reset-cache'] ?? ''
 
   if (
@@ -124,6 +133,10 @@ function checkBundleScripts(packageJson) {
 
 function checkNativeReleaseLanes() {
   const androidFastfile = readRequired(androidFastfilePath, 'Android Fastfile')
+  const androidBuildGradle = readRequired(
+    androidBuildGradlePath,
+    'Android app build.gradle'
+  )
   const iosFastfile = readRequired(iosFastfilePath, 'iOS Fastfile')
 
   if (!androidFastfile.includes('pnpm --dir .. install --frozen-lockfile')) {
@@ -132,6 +145,30 @@ function checkNativeReleaseLanes() {
 
   if (!androidFastfile.includes('pnpm --dir .. run bundle:android')) {
     violations.push('Android Fastlane 打包前必须生成最新 Android RN bundle。')
+  }
+
+  if (!androidFastfile.includes('bundle:android:production')) {
+    violations.push('Android Fastlane release 必须使用 production bundle。')
+  }
+
+  const debugSigningReferences = [
+    ...androidBuildGradle.matchAll(/signingConfig\s+signingConfigs\.debug/g)
+  ]
+
+  if (debugSigningReferences.length > 1) {
+    violations.push('Android release 禁止回退到 debug 签名。')
+  }
+
+  if (
+    !androidBuildGradle.includes('ANDROID_RELEASE_STORE_FILE') ||
+    !androidBuildGradle.includes('signingConfig signingConfigs.release') ||
+    !androidBuildGradle.includes('Release signing credentials are required') ||
+    !androidBuildGradle.includes('verifyProductionRuntimeBundle') ||
+    !androidBuildGradle.includes('Release applicationId must be')
+  ) {
+    violations.push(
+      'Android release 必须校验签名、production bundle 和固定 applicationId。'
+    )
   }
 
   if (!iosFastfile.includes('pnpm --dir .. install --frozen-lockfile')) {
@@ -155,6 +192,13 @@ function checkNativeReleaseLanes() {
   if (/\bproject\s*:\s*['"][^'"]+\.xcodeproj['"]/.test(iosFastfile)) {
     violations.push(
       'iOS Fastlane 禁止直接构建 .xcodeproj，请使用 .xcworkspace。'
+    )
+  }
+
+
+  if (!iosFastfile.includes('iOS release is disabled until signing')) {
+    violations.push(
+      '在锁文件和签名流水线就绪前，iOS Fastlane release 必须显式禁用。'
     )
   }
 
@@ -414,6 +458,13 @@ function checkHarmonyConfig(packageJson, configContent) {
 const packageJsonContent = readRequired(packageJsonPath, 'App package.json')
 const packageJson = packageJsonContent ? JSON.parse(packageJsonContent) : {}
 const configContent = readRequired(configPath, 'Taro config')
+
+if (
+  configContent.includes('android/app/src/main/assets/index.android.map') ||
+  !configContent.includes('dist/sourcemaps/index.android.map')
+) {
+  violations.push('Android source map 必须输出到 dist，禁止进入 APK assets。')
+}
 
 checkNativeIdentity(configContent)
 checkBundleScripts(packageJson)

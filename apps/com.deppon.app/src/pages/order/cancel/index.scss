@@ -1,3 +1,5 @@
+@use '../../../styles/_tokens.scss' as *;
+
 .order-cancel-page {
   min-height: 100%;
   background: #f5f7fb;
@@ -35,6 +37,14 @@
   padding: 24px;
   background: #ffffff;
   border-radius: 8px;
+}
+
+.order-cancel-section__identity {
+  display: flex;
+  margin-bottom: $dp-space-xs;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
 }
 
 .order-cancel-section__title {

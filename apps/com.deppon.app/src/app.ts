@@ -1,6 +1,7 @@
 import { Component, PropsWithChildren } from 'react'
 
 import { bootstrapAppRuntime } from './app.bootstrap'
+import { ensureCurrentRouteAuthenticated } from './shared/navigation/authGuard'
 import './app.scss'
 
 interface AppState {
@@ -14,11 +15,17 @@ class App extends Component<PropsWithChildren, AppState> {
 
   componentDidMount() {
     void bootstrapAppRuntime().finally(() => {
-      this.setState({ ready: true })
+      this.setState({ ready: true }, () => {
+        ensureCurrentRouteAuthenticated()
+      })
     })
   }
 
-  componentDidShow() {}
+  componentDidShow() {
+    if (this.state.ready) {
+      ensureCurrentRouteAuthenticated()
+    }
+  }
 
   componentDidHide() {}
 

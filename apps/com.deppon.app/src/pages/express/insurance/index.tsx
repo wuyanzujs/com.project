@@ -100,14 +100,6 @@ const ExpressInsurancePage = () => {
 
   return (
     <ScrollView className='insurance-rule-page' scrollY>
-      <View className='insurance-rule-header'>
-        <Text className='insurance-rule-header__label'>Insurance</Text>
-        <Text className='insurance-rule-header__title'>保价说明</Text>
-        <Text className='insurance-rule-header__summary'>
-          保费试算以寄件页接口结果为准，本页只承接规则说明和理赔口径。
-        </Text>
-      </View>
-
       <View className='insurance-rule-tabs'>
         {options.map(option => (
           <View
@@ -149,8 +141,7 @@ const ExpressInsurancePage = () => {
 
       <View className='insurance-rule-notice'>
         <Text className='insurance-rule-notice__text'>
-          页面文案用于 App
-          首期规则展示，具体可保范围、保价上限、费率和赔付结论以后端、网点开单及正式协议为准。
+          具体可保范围、保价上限、费率和赔付结论以后端、网点开单及正式协议为准。
         </Text>
       </View>
     </ScrollView>

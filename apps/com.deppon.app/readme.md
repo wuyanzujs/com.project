@@ -59,7 +59,9 @@ pnpm --filter com.deppon.app run bundle:android
 pnpm --filter com.deppon.app run bundle:ios
 ```
 
-Android/iOS Fastlane 已在打包 lane 内按锁文件安装依赖并调用对应 bundle 脚本；iOS 还会重新安装 Pods，并设置 `SKIP_BUNDLING=1`，避免 RN 原生 bundling 再次查找不存在的 `index.js`。iOS 工程只能通过 `ios/taroDemo.xcworkspace` 打开和构建，不能直接使用 `.xcodeproj`。
+Android/iOS Fastlane 已在本地打包 lane 内按锁文件安装依赖并调用对应 bundle 脚本；iOS 还会重新安装 Pods，并设置 `SKIP_BUNDLING=1`，避免 RN 原生 bundling 再次查找不存在的 `index.js`。iOS 工程只能通过 `ios/taroDemo.xcworkspace` 打开和构建，不能直接使用 `.xcodeproj`。
+
+正式 bundle 每次都会重置 Metro transform cache，并在生成后检查编译期配置是否进入产物。生产 bundle 还会拒绝测试域名和未替换的 `process.env.APP_*` / `__APP_RUNTIME_CONFIG__`。
 
 修改 `src/app.config.ts` 后若 Metro 仍保留旧路由，执行：
 
@@ -76,14 +78,37 @@ App 包提供 [`.env.example`](/D:/codeSpace/com.project/apps/com.deppon.app/.en
 `pnpm check:app-runtime-config` 会检查：
 
 - `runtime.ts` 不硬编码 `token=` 参数。
+- `APP_ENV` 只能使用 `local/dev/test/staging/production`，不接受含糊的 `prod`。
 - `APP_ENV=production` 时关键环境变量必须存在。
 - 生产 URL 必须使用 `https`。
+- 生产 URL 和 WebView 白名单不能包含测试域名。
 - 生产 WebView URL 的 host 必须进入 `APP_WEB_ALLOWED_HOSTS`。
 - `APP_SERVICE_WEB_URL` 不能携带固定 `token` 查询参数。
 
 可选配置：
 
 - `APP_SURVEY_CONFIG_KEY`：客服中心“体验调研”配置中心 key，默认 `app_survey_config`。
+
+## Android 发布
+
+根目录 `.github/workflows/android-release.yml` 提供手动触发的生产 APK 流水线。它会先运行完整 `verify:app`，再使用显式 release keystore 构建，核对 APK 内 RN bundle 与已验证 bundle 完全一致，并验证签名证书 SHA-256。
+
+GitHub `production` environment 需要配置这些 variables：
+
+- `APP_API_BASE_URL`、`APP_WEB_BASE_URL`、`APP_SERVICE_WEB_URL`、`APP_MEMBER_WEB_URL`
+- `APP_WEB_ALLOWED_HOSTS`
+- `APP_SYSTEM_CODE`、`APP_CLIENT_CHANNEL`、`APP_OMS_CHANNEL`、`APP_ECARD_PMC_SYSTEM_CODE`
+- `ANDROID_APP_ID`
+- `ANDROID_RELEASE_CERT_SHA256`
+
+需要配置这些 secrets：
+
+- `ANDROID_RELEASE_KEYSTORE_BASE64`
+- `ANDROID_RELEASE_STORE_PASSWORD`
+- `ANDROID_RELEASE_KEY_ALIAS`
+- `ANDROID_RELEASE_KEY_PASSWORD`
+
+Android release 在缺少任一签名参数时会直接失败，不再使用 debug keystore。当前仓库仍缺少 `Gemfile.lock` 和 `ios/Podfile.lock`；iOS 发布 workflow 应在 macOS 上生成并审核这两个锁文件、配置 Apple 证书与 provisioning profile 后再启用。
 
 ## RN-only 边界
 
@@ -167,9 +192,12 @@ src/
 
 - `_tokens.scss`：颜色、字号、行高、间距、圆角等设计 token。
 - `_mixins.scss`：页面、卡片、标题、正文、按钮等可复用 mixin。
-- `_components.scss`：`dp-page`、`dp-card`、`dp-button`、`dp-empty` 等跨页面通用类。
+- `nativeTokens.ts`：供图标、SafeArea、原生组件属性使用的颜色 token。
+- `_components.scss`：早期通用类原型，当前不再从全局入口输出，也不要继续扩张；跨页面模式应优先实现为带自身 SCSS 的 `App*` 组件。
 
-新增页面优先使用 token 和通用类。既有页面不做一次性大面积替换，后续在业务切片或视觉调整时逐步迁移，避免单纯为了统一变量制造大量样式噪音。
+新增页面必须使用 token；静态原生颜色使用 `nativeTokens.ts`，动态尺寸才保留受控内联样式。既有页面不做一次性大面积替换，后续在业务切片或视觉调整时逐步迁移，避免单纯为了统一变量制造大量样式噪音。
+
+`pnpm lint:app:styles` 检查扁平 BEM、选择器复杂度、非法单位和 RN 不可靠属性；`pnpm check:app-styles` 使用基线冻结现有硬编码债务，并要求新增样式文件零颜色、字号、行高和圆角字面量。
 
 ## 路由规则
 

@@ -429,13 +429,7 @@ const ExpressPage = () => {
     const params = contactSelection.createParams(target)
     const url = createAppRouteUrl(APP_ROUTES.contactList, params)
 
-    if (!ensureAuthenticated({ redirectUrl: url })) {
-      return
-    }
-
-    Taro.navigateTo({
-      url
-    })
+    navigateToAppRoute(url, { login: true })
   }
 
   const handleContactCreate = (target: 'sender' | 'consignee') => {
@@ -444,13 +438,7 @@ const ExpressPage = () => {
     })
     const url = createAppRouteUrl(APP_ROUTES.contactEdit, params)
 
-    if (!ensureAuthenticated({ redirectUrl: url })) {
-      return
-    }
-
-    Taro.navigateTo({
-      url
-    })
+    navigateToAppRoute(url, { login: true })
   }
 
   const handleSwapContacts = () => {
@@ -621,12 +609,13 @@ const ExpressPage = () => {
 
       expressDraftStorage.clear()
 
-      Taro.navigateTo({
-        url: createAppRouteUrl(APP_ROUTES.expressSuccess, {
+      navigateToAppRoute(
+        createAppRouteUrl(APP_ROUTES.expressSuccess, {
           orderNumber,
           waybillNumber
-        })
-      })
+        }),
+        { login: true }
+      )
     } finally {
       setSubmiting(false)
     }

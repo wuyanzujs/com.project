@@ -121,6 +121,9 @@ const nativeFacadeRelativePathPrefixes = [
   'src/shared/native/'
 ]
 const cacheFacadeRelativePathPrefixes = ['src/cache/']
+const pageUiRelativePathPrefix = 'src/pages/'
+const engineeringUiCopyPattern =
+  /首期|迁移边界|旧小程序|RN App|后续接入|后续拆分|不接小程序|不调用小程序/g
 const nativeOrCacheFacadeRelativePathPrefixes = [
   ...nativeFacadeRelativePathPrefixes,
   ...cacheFacadeRelativePathPrefixes
@@ -148,6 +151,12 @@ const forbiddenPatterns = [
       /\bTaro\.(?:getStorage|setStorage|removeStorage|clearStorage|getStorageInfo)\b/g,
     message: 'Taro 缓存 API 只能在 src/cache facade 中封装。',
     allowRelativePathPrefixes: cacheFacadeRelativePathPrefixes
+  },
+  {
+    pattern: /\bTaro\.(?:navigateTo|redirectTo|switchTab|reLaunch)\b/g,
+    message:
+      '业务页面不能绕过统一登录守卫，请通过 shared/navigation facade 跳转。',
+    allowRelativePathPrefixes: ['src/shared/navigation/']
   },
   {
     pattern: /(?:from\s+|require\(\s*)['"`]react-native(?:\/[^'"`]*)?['"`]/g,
@@ -536,6 +545,23 @@ checkNativeIdentity()
 for (const filePath of walkFiles(srcRoot)) {
   const content = readFileSync(filePath, 'utf8')
   const relativePath = toPosixPath(path.relative(appRoot, filePath))
+
+  if (
+    relativePath.startsWith(pageUiRelativePathPrefix) &&
+    path.extname(filePath) === '.tsx'
+  ) {
+    engineeringUiCopyPattern.lastIndex = 0
+
+    for (const match of content.matchAll(engineeringUiCopyPattern)) {
+      violations.push({
+        filePath,
+        line: getLineNumber(content, match.index ?? 0),
+        token: match[0],
+        message:
+          '用户界面不能展示迁移阶段或技术实现说明，请改为业务文案或正常的可用状态提示。'
+      })
+    }
+  }
 
   if (
     path.extname(filePath) === '.tsx' &&

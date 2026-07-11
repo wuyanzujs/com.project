@@ -1,7 +1,7 @@
 import { ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 import { OrderListContent } from './components/OrderListCards'
 import {
@@ -11,12 +11,13 @@ import {
   OrderSearchBar
 } from './components/OrderListSections'
 import { expressDraftBridge } from '../../../services/express'
-import { AppIcon } from '../../../shared/components/AppIcon'
 import {
   canDeleteOrder,
   createExpressDraftFromOrderDetail,
   orderService
 } from '../../../services/order'
+import { LatestRequestCoordinator } from '../../../shared/async/latestRequest'
+import { AppIcon } from '../../../shared/components/AppIcon'
 import AppTabBar from '../../../shared/components/AppTabBar'
 import { AppSafeAreaView, AppStatusBar } from '../../../shared/native'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
@@ -93,6 +94,7 @@ const OrderListPage = () => {
   const [deletingOrderKey, setDeletingOrderKey] = useState('')
   const [resendingOrderKey, setResendingOrderKey] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const requestCoordinator = useRef(new LatestRequestCoordinator()).current
   const ensureOrderListAccess = useCallback(
     () =>
       ensureAuthenticated({
@@ -111,7 +113,18 @@ const OrderListPage = () => {
       nextPaymentType = paymentType,
       nextRangeDays = rangeDays
     ) => {
-      if (loading) {
+      const requestToken = requestCoordinator.begin(
+        JSON.stringify([
+          nextPage,
+          nextRole,
+          nextKeyword,
+          nextStatus,
+          nextPaymentType,
+          nextRangeDays
+        ])
+      )
+
+      if (!requestToken) {
         return
       }
 
@@ -131,6 +144,10 @@ const OrderListPage = () => {
           endTime: dateRange.endTime
         })
 
+        if (!requestCoordinator.isLatest(requestToken)) {
+          return
+        }
+
         if (!response.status || !response.result) {
           setErrorMessage(response.message || '暂未获取到订单')
           if (nextPage === 1) {
@@ -148,10 +165,12 @@ const OrderListPage = () => {
         setTotalPage(response.result.totalPage)
         setTotalRows(response.result.totalRows)
       } finally {
-        setLoading(false)
+        if (requestCoordinator.finish(requestToken)) {
+          setLoading(false)
+        }
       }
     },
-    [keyword, loading, orderStatus, paymentType, rangeDays, role]
+    [keyword, orderStatus, paymentType, rangeDays, requestCoordinator, role]
   )
 
   useDidShow(() => {
@@ -237,9 +256,7 @@ const OrderListPage = () => {
   }
 
   const handleOpenDetail = (order: OrderListItem) => {
-    Taro.navigateTo({
-      url: getRouteToDetail(order)
-    })
+    navigateToAppRoute(getRouteToDetail(order), { login: true })
   }
 
   const handleCancelOrder = (order: OrderListItem) => {
@@ -247,12 +264,13 @@ const OrderListPage = () => {
       return
     }
 
-    Taro.navigateTo({
-      url: createAppRouteUrl(APP_ROUTES.orderCancel, {
+    navigateToAppRoute(
+      createAppRouteUrl(APP_ROUTES.orderCancel, {
         orderNumber: order.orderNumber,
         source: 'list'
-      })
-    })
+      }),
+      { login: true }
+    )
   }
 
   const handleModifyOrder = (order: OrderListItem) => {
@@ -353,11 +371,7 @@ const OrderListPage = () => {
   return (
     <AppSafeAreaView backgroundColor='#f4f7fb' edges={[]}>
       <AppStatusBar />
-      <AppSafeAreaView
-        backgroundColor='#eef6ff'
-        edges={['top']}
-        fill={false}
-      >
+      <AppSafeAreaView backgroundColor='#eef6ff' edges={['top']} fill={false}>
         <OrderRoleTabs
           role={role}
           onChange={handleChangeRole}
@@ -423,7 +437,12 @@ const OrderListPage = () => {
         className='order-support-float'
         onClick={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
       >
-        <AppIcon color='#16181a' name='headphones' size={34} strokeWidth={2.1} />
+        <AppIcon
+          color='#16181a'
+          name='headphones'
+          size={34}
+          strokeWidth={2.1}
+        />
         <Text className='order-support-float__text'>客服中心</Text>
       </View>
       <AppTabBar active='orderList' />

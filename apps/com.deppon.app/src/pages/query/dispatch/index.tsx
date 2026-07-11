@@ -137,14 +137,6 @@ const QueryDispatchPage = () => {
 
   return (
     <ScrollView className='query-dispatch-page' scrollY>
-      <View className='query-dispatch-header'>
-        <Text className='query-dispatch-header__label'>Coverage</Text>
-        <Text className='query-dispatch-header__title'>收派范围</Text>
-        <Text className='query-dispatch-header__summary'>
-          App 首期支持手填地址和智能识别查询，不接小程序定位和地图组件。
-        </Text>
-      </View>
-
       <View className='query-dispatch-tabs'>
         {DISPATCH_PRODUCT_OPTIONS.map((option) => (
           <View
@@ -171,7 +163,7 @@ const QueryDispatchPage = () => {
 
       <View className='query-dispatch-section'>
         <View className='query-dispatch-section__head'>
-          <Text className='query-dispatch-section__title'>查询地址</Text>
+          <Text className='query-dispatch-section__title'>填写查询地址</Text>
           <View className='query-dispatch-link' onClick={handleAnalyze}>
             <Text className='query-dispatch-link__text'>智能识别</Text>
           </View>

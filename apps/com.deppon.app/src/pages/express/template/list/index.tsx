@@ -150,15 +150,10 @@ const ExpressTemplateListPage = () => {
 
   return (
     <ScrollView className='template-list-page' scrollY>
-      <View className='template-list-header'>
-        <Text className='template-list-header__label'>Template</Text>
-        <Text className='template-list-header__title'>寄件模板</Text>
-        <Text className='template-list-header__summary'>
-          {templates.length}/{EXPRESS_TEMPLATE_LIMIT}
-        </Text>
-      </View>
-
       <View className='template-list-toolbar'>
+        <Text className='template-list-toolbar__summary'>
+          已保存 {templates.length}/{EXPRESS_TEMPLATE_LIMIT}
+        </Text>
         <View
           className='template-list-toolbar__button template-list-toolbar__button--quiet'
           onClick={loadTemplates}

@@ -224,14 +224,6 @@ const InvoicePreviewPage = () => {
 
   return (
     <ScrollView className='invoice-preview-page' scrollY>
-      <View className='invoice-preview-header'>
-        <Text className='invoice-preview-header__label'>Preview</Text>
-        <Text className='invoice-preview-header__title'>发票预览</Text>
-        <Text className='invoice-preview-header__summary'>
-          电子票链接由发票网关返回，App 原生下载和文件预览能力后续接入。
-        </Text>
-      </View>
-
       <View className='invoice-preview-card'>
         <View className='invoice-preview-card__row'>
           <Text className='invoice-preview-card__label'>申请号</Text>

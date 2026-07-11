@@ -1,8 +1,9 @@
 import { Text, View } from '@tarojs/components'
 
+import { APP_STYLE_COLORS } from '../../../styles/nativeTokens'
+import { AppSafeAreaView } from '../../native'
 import { navigateToAppRoute } from '../../navigation/appNavigation'
 import { APP_MAIN_NAVIGATION } from '../../navigation/routes'
-import { AppSafeAreaView } from '../../native'
 import { AppIcon } from '../AppIcon'
 
 import type { AppMainRouteName } from '../../navigation/routes'
@@ -32,7 +33,7 @@ const AppTabBar = ({ active }: AppTabBarProps) => {
   return (
     <View className='app-tab-bar'>
       <AppSafeAreaView
-        backgroundColor='#ffffff'
+        backgroundColor={APP_STYLE_COLORS.surface.card}
         edges={['bottom']}
         fill={false}
       >
@@ -48,7 +49,11 @@ const AppTabBar = ({ active }: AppTabBarProps) => {
               >
                 <View className='app-tab-bar__icon'>
                   <AppIcon
-                    color={isActive ? '#1a5eff' : '#2f3135'}
+                    color={
+                      isActive
+                        ? APP_STYLE_COLORS.brand.default
+                        : APP_STYLE_COLORS.text.heading
+                    }
                     name={TAB_ICONS[item.name]}
                     size={30}
                     strokeWidth={isActive ? 2.6 : 2.2}

@@ -6,6 +6,14 @@
   background: $dp-color-bg-page;
 }
 
+.order-edit-identity {
+  display: flex;
+  margin: $dp-space-md $dp-space-lg 0;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
 .order-edit-header {
   padding: $dp-space-xl $dp-space-lg $dp-space-lg;
   background: $dp-color-bg-card;

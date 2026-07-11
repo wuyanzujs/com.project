@@ -1,18 +1,37 @@
-$dp-color-text-primary: #16181a;
-$dp-color-text-secondary: #667085;
-$dp-color-text-muted: #98a2b3;
+$dp-color-text-heading: #16181a;
+$dp-color-text-body: #344054;
+$dp-color-text-supporting: #667085;
+$dp-color-text-placeholder: #98a2b3;
 $dp-color-text-inverse: #ffffff;
+
+$dp-color-text-primary: $dp-color-text-heading;
+$dp-color-text-secondary: $dp-color-text-supporting;
+$dp-color-text-muted: $dp-color-text-placeholder;
 
 $dp-color-brand: #1a5eff;
 $dp-color-brand-pressed: #0f4fe6;
+$dp-color-brand-soft: #e8efff;
+$dp-color-brand-faint: #eef6ff;
 $dp-color-danger: #f04438;
 $dp-color-warning: #f79009;
 $dp-color-success: #12b76a;
 
+$dp-color-status-danger-text: #b42318;
+$dp-color-status-danger-bg: #fff1f0;
+$dp-color-status-warning-text: #c2410c;
+$dp-color-status-warning-bg: #fff7ed;
+$dp-color-status-warning-border: #fed7aa;
+$dp-color-status-success-text: #047857;
+$dp-color-status-success-bg: #ecfdf3;
+$dp-color-status-success-soft: #dcfce7;
+
 $dp-color-bg-page: #f5f7fb;
+$dp-color-bg-page-alt: #f4f6f8;
+$dp-color-bg-subtle: #f8fafc;
 $dp-color-bg-card: #ffffff;
 $dp-color-bg-muted: #eef2f6;
 $dp-color-border: #d0d5dd;
+$dp-color-border-default: #e4e7ec;
 $dp-color-border-light: #eef2f6;
 
 $dp-font-size-caption: 22px;
@@ -29,6 +48,11 @@ $dp-line-height-body-large: 38px;
 $dp-line-height-title: 42px;
 $dp-line-height-page-title: 52px;
 
+$dp-font-weight-regular: 400;
+$dp-font-weight-medium: 400;
+$dp-font-weight-semibold: 700;
+$dp-font-weight-bold: 700;
+
 $dp-space-xxs: 8px;
 $dp-space-xs: 12px;
 $dp-space-sm: 16px;
@@ -36,12 +60,17 @@ $dp-space-md: 20px;
 $dp-space-lg: 24px;
 $dp-space-xl: 32px;
 $dp-space-2xl: 40px;
+$dp-space-3xl: 48px;
 
 $dp-radius-sm: 8px;
 $dp-radius-md: 12px;
 $dp-radius-lg: 16px;
+$dp-radius-circle: 999px;
 $dp-radius-pill: 999px;
 
 $dp-page-horizontal-padding: 24px;
 $dp-card-padding: 24px;
+$dp-card-radius: $dp-radius-sm;
 $dp-button-height: 88px;
+$dp-button-height-compact: 64px;
+$dp-button-radius: $dp-radius-sm;

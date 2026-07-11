@@ -1,7 +1,7 @@
 import { Input, ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 
 import { couponService } from '../../../services/coupon'
 import {
@@ -11,6 +11,7 @@ import {
   markExpressQuoteStale
 } from '../../../services/express'
 import { memberService } from '../../../services/member'
+import { LatestRequestCoordinator } from '../../../shared/async/latestRequest'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -55,9 +56,10 @@ const CouponListPage = () => {
   const [exchangeCode, setExchangeCode] = useState('')
   const [exchanging, setExchanging] = useState(false)
   const [openingWelfare, setOpeningWelfare] = useState(false)
+  const requestCoordinator = useRef(new LatestRequestCoordinator()).current
 
   const activeTabText = useMemo(
-    () => COUPON_TABS.find((item) => item.value === status)?.label || '未使用',
+    () => COUPON_TABS.find(item => item.value === status)?.label || '未使用',
     [status]
   )
 
@@ -71,8 +73,10 @@ const CouponListPage = () => {
   )
 
   const loadCoupons = useCallback(
-    async (nextStatus = status) => {
-      if (loading) {
+    async (nextStatus = status, force = false) => {
+      const requestToken = requestCoordinator.begin(nextStatus, { force })
+
+      if (!requestToken) {
         return
       }
 
@@ -82,6 +86,10 @@ const CouponListPage = () => {
       try {
         const response = await couponService.queryUserCoupons(nextStatus)
 
+        if (!requestCoordinator.isLatest(requestToken)) {
+          return
+        }
+
         if (!response.status || !response.result) {
           setCoupons([])
           setErrorMessage(response.message || '暂未获取到优惠券')
@@ -89,7 +97,7 @@ const CouponListPage = () => {
         }
 
         setCoupons(
-          response.result.list.map((item) =>
+          response.result.list.map(item =>
             couponService.toCouponCard(
               item,
               response.result?.status ?? nextStatus
@@ -97,10 +105,12 @@ const CouponListPage = () => {
           )
         )
       } finally {
-        setLoading(false)
+        if (requestCoordinator.finish(requestToken)) {
+          setLoading(false)
+        }
       }
     },
-    [loading, status]
+    [requestCoordinator, status]
   )
 
   useDidShow(() => {
@@ -153,7 +163,7 @@ const CouponListPage = () => {
         title: '兑换成功',
         icon: 'none'
       })
-      loadCoupons('USABLE')
+      loadCoupons('USABLE', true)
     } finally {
       setExchanging(false)
     }
@@ -224,22 +234,14 @@ const CouponListPage = () => {
 
   return (
     <ScrollView className='coupon-list-page' scrollY>
-      <View className='coupon-list-header'>
-        <Text className='coupon-list-header__label'>Coupon</Text>
-        <Text className='coupon-list-header__title'>我的优惠券</Text>
-        <Text className='coupon-list-header__summary'>
-          首期承接个人优惠券查询和兑换，营销发券、转赠分享和详情规则后续接入。
-        </Text>
-      </View>
-
       <View className='coupon-exchange'>
         <Input
           className='coupon-exchange__input'
           maxlength={20}
           placeholder='输入兑换码'
           value={exchangeCode}
-          onBlur={(event) => setExchangeCode(event.detail.value.trim())}
-          onInput={(event) => setExchangeCode(event.detail.value)}
+          onBlur={event => setExchangeCode(event.detail.value.trim())}
+          onInput={event => setExchangeCode(event.detail.value)}
         />
         <View className='coupon-exchange__button' onClick={handleExchange}>
           <Text className='coupon-exchange__button-text'>
@@ -249,10 +251,12 @@ const CouponListPage = () => {
       </View>
 
       <View className='coupon-tabs'>
-        {COUPON_TABS.map((tab) => (
+        {COUPON_TABS.map(tab => (
           <View
             className={
-              tab.value === status ? 'coupon-tab coupon-tab--active' : 'coupon-tab'
+              tab.value === status
+                ? 'coupon-tab coupon-tab--active'
+                : 'coupon-tab'
             }
             key={tab.value}
             onClick={() => handleChangeStatus(tab.value)}
@@ -273,11 +277,11 @@ const CouponListPage = () => {
       <View className='coupon-summary'>
         <View>
           <Text className='coupon-summary__title'>{activeTabText}</Text>
-          <Text className='coupon-summary__count'>共 {coupons.length} 张券</Text>
+          <Text className='coupon-summary__count'>
+            共 {coupons.length} 张券
+          </Text>
         </View>
-        <Text className='coupon-summary__hint'>
-          可用券会带入寄件页重新报价
-        </Text>
+        <Text className='coupon-summary__hint'>可用券会带入寄件页重新报价</Text>
       </View>
 
       <View className='coupon-list-content'>
@@ -285,7 +289,9 @@ const CouponListPage = () => {
           <View className='coupon-card' key={getCouponKey(coupon, index)}>
             {coupon.labelText && (
               <View className='coupon-card__ribbon'>
-                <Text className='coupon-card__ribbon-text'>{coupon.labelText}</Text>
+                <Text className='coupon-card__ribbon-text'>
+                  {coupon.labelText}
+                </Text>
               </View>
             )}
 
@@ -313,14 +319,16 @@ const CouponListPage = () => {
               <View className='coupon-card__info'>
                 <View className='coupon-card__title-row'>
                   <Text className='coupon-card__title'>{coupon.typeName}</Text>
-                  <Text className='coupon-card__status'>{coupon.statusText}</Text>
+                  <Text className='coupon-card__status'>
+                    {coupon.statusText}
+                  </Text>
                 </View>
                 <Text className='coupon-card__desc'>{coupon.title}</Text>
                 <Text className='coupon-card__time'>{coupon.validityText}</Text>
 
                 {coupon.tags.length > 0 && (
                   <View className='coupon-card__tags'>
-                    {coupon.tags.map((tag) => (
+                    {coupon.tags.map(tag => (
                       <Text className='coupon-card__tag' key={tag}>
                         {tag}
                       </Text>
@@ -331,7 +339,9 @@ const CouponListPage = () => {
             </View>
 
             <View className='coupon-card__footer'>
-              <Text className='coupon-card__code'>券码 {coupon.code || '--'}</Text>
+              <Text className='coupon-card__code'>
+                券码 {coupon.code || '--'}
+              </Text>
               <View
                 className='coupon-card__button coupon-card__button--ghost'
                 onClick={() => handleOpenDetail(coupon)}
@@ -368,7 +378,7 @@ const CouponListPage = () => {
               {errorMessage || `暂无${activeTabText}优惠券`}
             </Text>
             <Text className='coupon-empty__summary'>
-              可通过兑换码领取优惠券，更多会员权益后续由 App WebView 或原生页承接。
+              可通过兑换码领取优惠券，或前往福利中心查看可领取权益。
             </Text>
             <View className='coupon-empty__button' onClick={handleOpenWelfare}>
               <Text className='coupon-empty__button-text'>

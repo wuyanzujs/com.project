@@ -99,15 +99,10 @@ const OrderCancelPage = () => {
 
   return (
     <ScrollView className='order-cancel-page' scrollY>
-      <View className='order-cancel-header'>
-        <Text className='order-cancel-header__label'>Order</Text>
-        <Text className='order-cancel-header__title'>取消订单</Text>
-        <Text className='order-cancel-header__summary'>
+      <View className='order-cancel-section'>
+        <Text className='order-cancel-section__identity'>
           {orderNumber ? `订单 ${orderNumber}` : '订单号缺失'}
         </Text>
-      </View>
-
-      <View className='order-cancel-section'>
         <Text className='order-cancel-section__title'>取消原因</Text>
         <View className='order-cancel-reasons'>
           {CANCEL_REASONS.map((item) => (

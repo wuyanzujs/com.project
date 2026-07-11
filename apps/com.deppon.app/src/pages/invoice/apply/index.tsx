@@ -257,14 +257,6 @@ const InvoiceApplyPage = () => {
 
   return (
     <ScrollView className='invoice-apply-page' scrollY>
-      <View className='invoice-apply-header'>
-        <Text className='invoice-apply-header__label'>Apply</Text>
-        <Text className='invoice-apply-header__title'>申请发票</Text>
-        <Text className='invoice-apply-header__summary'>
-          核对开票记录、抬头和接收邮箱后提交，开具进展可在发票历史查看。
-        </Text>
-      </View>
-
       <View className='invoice-apply-card'>
         <View className='invoice-apply-card__top'>
           <Text className='invoice-apply-card__title'>
