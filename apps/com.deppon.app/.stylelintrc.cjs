@@ -30,6 +30,14 @@ module.exports = {
     ],
     'declaration-no-important': true,
     'function-calc-no-unspaced-operator': true,
+    'function-disallowed-list': [
+      'linear-gradient',
+      'repeating-linear-gradient',
+      'radial-gradient',
+      'repeating-radial-gradient',
+      'conic-gradient',
+      'repeating-conic-gradient'
+    ],
     'no-empty-source': true,
     'property-disallowed-list': [
       'float',
@@ -47,7 +55,7 @@ module.exports = {
     'selector-max-type': 0,
     'selector-max-universal': 0,
     'string-no-newline': true,
-    'unit-disallowed-list': ['em', 'rem', 'vw', 'vh', 'vmin', 'vmax'],
+    'unit-allowed-list': ['px', '%', 'deg'],
     'unit-no-unknown': true
   }
 }

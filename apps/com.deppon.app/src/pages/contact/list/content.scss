@@ -1,0 +1,222 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.contact-list-header {
+  padding: 32px 24px 24px;
+  background: $dp-color-bg-card;
+}
+
+.contact-list-header__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-list-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-list-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.contact-list-toolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+}
+
+.contact-list-toolbar__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-list-toolbar__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  height: 56px;
+  padding: 0 18px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.contact-list-toolbar__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-list-content {
+  padding: 0 24px 24px;
+}
+
+.contact-card {
+  padding: 24px;
+  margin-bottom: 16px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.contact-card__top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.contact-card__name {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-card__phone {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+}
+
+.contact-card__address {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body;
+}
+
+.contact-card__meta {
+  display: flex;
+  flex-direction: row;
+  margin-top: 16px;
+}
+
+.contact-card__tag {
+  margin-right: 12px;
+  padding: 6px 12px;
+  color: $dp-color-text-secondary;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+}
+
+.contact-card__tag--primary {
+  color: $dp-color-brand;
+  background: $dp-color-brand-soft;
+}
+
+.contact-list-selection {
+  padding: $dp-space-md $dp-space-lg 0;
+}
+
+.contact-list-selection__text {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.contact-list-search {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 20px 24px 0;
+}
+
+.contact-list-search__input {
+  flex: 1;
+  height: 68px;
+  padding: 0 20px;
+  color: $dp-color-text-heading;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-body-large;
+}
+
+.contact-list-search__button {
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 68px;
+  margin-left: 12px;
+  background: $dp-color-bg-inverse;
+  border-radius: $dp-radius-sm;
+}
+
+.contact-list-search__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-card__body {
+  padding-bottom: 18px;
+}
+
+.contact-card__footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding-top: 18px;
+  border-top-color: $dp-color-border-light;
+  border-top-width: 1px;
+}
+
+.contact-card__action {
+  margin-left: 24px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-card__action--primary {
+  color: $dp-color-brand;
+}
+
+.contact-card__action--disabled {
+  color: $dp-color-text-placeholder;
+}
+
+.contact-card__action--danger {
+  color: $dp-color-danger-emphasis;
+}
+
+.contact-list-empty {
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  padding: 32px 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.contact-list-empty__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-list-empty__summary {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+  text-align: center;
+}
+
+.contact-list-loading {
+  display: flex;
+  padding: 20px 0 36px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  text-align: center;
+}

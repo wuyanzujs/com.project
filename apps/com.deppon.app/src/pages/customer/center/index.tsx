@@ -4,6 +4,7 @@ import Taro, { useDidShow } from '@tarojs/taro'
 import { useCallback, useMemo, useState } from 'react'
 
 import { customerService } from '../../../services/customer'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -13,7 +14,9 @@ import { createAppWebUrl } from '../../../shared/webview/appWeb'
 import type { CustomerCenterView } from '../../../services/customer'
 import type { AppWebSource } from '../../../shared/webview/appWeb'
 
+
 import './index.scss'
+import './content.scss'
 
 interface CustomerWebAction {
   title: string
@@ -188,31 +191,31 @@ const CustomerCenterPage = () => {
         </View>
 
         <View className='customer-actions'>
-          <View className='customer-action customer-action--ghost' onClick={loadCustomer}>
+          <AppPressable className='customer-action customer-action--ghost' onPress={loadCustomer}>
             <Text className='customer-action__text customer-action__text--ghost'>
               {loading ? '同步中' : '刷新'}
             </Text>
-          </View>
-          <View className='customer-action' onClick={handleCopyCode}>
+          </AppPressable>
+          <AppPressable className='customer-action' onPress={handleCopyCode}>
             <Text className='customer-action__text'>复制编码</Text>
-          </View>
+          </AppPressable>
         </View>
       </View>
 
       <View className='customer-section'>
         <Text className='customer-section__title'>客户服务</Text>
         {customerWebActions.map((item) => (
-          <View
+          <AppPressable
             className='customer-link'
             key={item.source}
-            onClick={() => handleOpenWeb(item.source)}
+            onPress={() => handleOpenWeb(item.source)}
           >
             <View>
               <Text className='customer-link__title'>{item.title}</Text>
               <Text className='customer-link__summary'>{item.summary}</Text>
             </View>
             <Text className='customer-link__arrow'>›</Text>
-          </View>
+          </AppPressable>
         ))}
       </View>
 
@@ -221,12 +224,12 @@ const CustomerCenterPage = () => {
         <Text className='customer-support__summary'>
           可进入客服中心咨询客户绑定、月结和合同客户相关问题。
         </Text>
-        <View
+        <AppPressable
           className='customer-support__button'
-          onClick={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
+          onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
         >
           <Text className='customer-support__button-text'>联系客服</Text>
-        </View>
+        </AppPressable>
       </View>
     </ScrollView>
   )

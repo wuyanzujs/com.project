@@ -1,0 +1,27 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.query-price-validation {
+  background: $dp-color-warning-background;
+}
+
+.query-price-validation__message {
+  display: flex;
+  color: $dp-color-status-warning-text;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.query-price-submit {
+  align-items: center;
+  justify-content: center;
+  height: 88px;
+  margin-bottom: 18px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.query-price-submit__text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+}

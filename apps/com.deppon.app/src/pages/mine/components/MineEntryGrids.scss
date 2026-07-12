@@ -1,0 +1,85 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.mine-quick-grid {
+  display: flex;
+  flex-direction: row;
+  height: 136px;
+  margin: 16px 24px 0;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-feature-card;
+}
+
+.mine-quick-grid__item {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.mine-quick-grid__image {
+  width: 56px;
+  height: 56px;
+}
+
+.mine-quick-grid__title {
+  margin-top: 12px;
+  color: $dp-color-text-neutral;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-caption;
+  text-align: center;
+}
+
+.mine-service-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 16px 24px 24px;
+  padding: 8px 0;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-feature-card;
+}
+
+.mine-service-grid__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25%;
+  height: 124px;
+}
+
+.mine-service-grid__image {
+  width: 48px;
+  height: 48px;
+}
+
+.mine-service-grid__title {
+  margin-top: 8px;
+  color: $dp-color-text-neutral;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+  text-align: center;
+}
+
+.mine-service-grid__badge {
+  position: absolute;
+  top: 0;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 54px;
+  height: 32px;
+  padding: 0 8px;
+  background: $dp-color-danger-accent;
+  border-color: $dp-color-border-inverse;
+  border-radius: $dp-radius-lg;
+  border-width: 2px;
+}
+
+.mine-service-grid__badge-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-micro;
+  font-weight: $dp-font-weight-bold;
+}

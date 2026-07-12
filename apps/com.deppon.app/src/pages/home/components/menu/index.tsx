@@ -2,6 +2,8 @@ import { Image, Swiper, SwiperItem, Text, View } from '@tarojs/components'
 
 import { useMemo, useState } from 'react'
 
+import { AppPressable } from '../../../../shared/components'
+
 import type { HomeQuickAction } from '../../home.data'
 
 import './index.scss'
@@ -35,10 +37,12 @@ const Menu = ({ actions, onSelect }: MenuProps) => {
           <SwiperItem className='home-menu__page' key={`page-${pageIndex}`}>
             <View className='home-menu__grid'>
               {page.map(action => (
-                <View
+                <AppPressable
+                  accessibilityLabel={action.label}
+                  block
                   className='home-menu__item'
                   key={action.key}
-                  onClick={() => onSelect(action)}
+                  onPress={() => onSelect(action)}
                 >
                   <Image
                     className={
@@ -63,7 +67,7 @@ const Menu = ({ actions, onSelect }: MenuProps) => {
                       <Text className='home-menu__badge-text'>{action.badge}</Text>
                     </View>
                   )}
-                </View>
+                </AppPressable>
               ))}
             </View>
           </SwiperItem>

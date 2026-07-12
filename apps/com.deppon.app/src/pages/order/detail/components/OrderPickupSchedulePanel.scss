@@ -1,0 +1,114 @@
+@use '../../../../styles/_tokens.scss' as *;
+.order-pickup-mask {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: $dp-layer-dialog;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $dp-space-lg;
+  background: $dp-color-overlay;
+}
+.order-pickup-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 100%;
+  padding: $dp-card-padding;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-dialog;
+}
+.order-pickup-card__head {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.order-pickup-card__heading {
+  flex: 1;
+  padding-right: $dp-space-18;
+}
+
+.order-pickup-card__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-title-large;
+}
+
+.order-pickup-card__summary {
+  display: flex;
+  margin-top: $dp-space-6;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.order-pickup-card__close {
+  align-items: center;
+  justify-content: center;
+  width: $dp-touch-target-min;
+  height: $dp-touch-target-min;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-control;
+}
+
+.order-pickup-card__close-text {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-title-large;
+  line-height: $dp-line-height-title;
+}
+
+.order-pickup-card__current {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 68px;
+  margin-top: $dp-space-18;
+  padding: $dp-space-xs $dp-space-sm;
+  background: $dp-color-bg-subtle;
+  border-radius: $dp-radius-control;
+}
+
+.order-pickup-card__current-label {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+
+.order-pickup-card__current-value {
+  flex-shrink: 1;
+  margin-left: $dp-space-sm;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+  text-align: right;
+}
+
+.order-pickup-card__body {
+  flex-shrink: 1;
+  height: 520px;
+  margin-top: $dp-space-18;
+}
+
+.order-pickup-card__confirm {
+  align-items: center;
+  justify-content: center;
+  height: $dp-control-height-medium;
+  margin-top: $dp-space-18;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-control;
+}
+
+.order-pickup-card__confirm--disabled {
+  opacity: $dp-interaction-disabled-opacity;
+}
+
+.order-pickup-card__confirm-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-label-small;
+  font-weight: $dp-font-weight-bold;
+}

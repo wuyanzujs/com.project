@@ -1,0 +1,33 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.invoice-empty {
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  padding: 32px 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-empty__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-empty__summary {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+  text-align: center;
+}
+
+.invoice-loading {
+  display: flex;
+  padding: 20px 0 36px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  text-align: center;
+}

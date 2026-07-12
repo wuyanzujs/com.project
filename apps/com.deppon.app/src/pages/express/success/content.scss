@@ -1,0 +1,119 @@
+@use '../../../styles/_tokens.scss' as *;
+.express-success-hero {
+  align-items: center;
+  padding: 40px 24px 34px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.express-success-hero__icon {
+  width: 92px;
+  height: 92px;
+  color: $dp-color-text-inverse;
+  background: $dp-color-success-emphasis;
+  border-radius: $dp-radius-status-mark;
+  font-size: $dp-font-size-hero-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-hero-mark;
+  text-align: center;
+}
+
+.express-success-hero__title {
+  margin-top: 22px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-success-hero__summary {
+  margin-top: 12px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+}
+
+.express-success-section {
+  margin-top: 20px;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.express-success-section__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-success-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 18px 0;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: 1px;
+}
+
+.express-success-row__label {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+}
+
+.express-success-row__value {
+  flex: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  text-align: right;
+}
+
+.express-success-actions {
+  display: flex;
+  flex-direction: row;
+  margin-top: 24px;
+}
+
+.express-success-primary,
+.express-success-secondary {
+  align-items: center;
+  justify-content: center;
+  height: 88px;
+  border-radius: $dp-radius-sm;
+}
+
+.express-success-primary {
+  flex: 1;
+  margin-left: 14px;
+  background: $dp-color-brand;
+}
+
+.express-success-secondary {
+  width: 190px;
+  background: $dp-color-bg-card;
+}
+
+.express-success-primary__text,
+.express-success-secondary__text {
+  font-size: $dp-font-size-label-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-success-primary__text {
+  color: $dp-color-text-inverse;
+}
+
+.express-success-secondary__text {
+  color: $dp-color-text-body;
+}
+
+.express-success-link {
+  align-items: center;
+  justify-content: center;
+  height: 72px;
+  margin-top: 18px;
+}
+
+.express-success-link__text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}

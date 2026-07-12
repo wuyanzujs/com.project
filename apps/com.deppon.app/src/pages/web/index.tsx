@@ -3,6 +3,7 @@ import Taro, { useRouter } from '@tarojs/taro'
 
 import { useEffect, useMemo, useState } from 'react'
 
+import { AppPressable } from '../../shared/components'
 import { AppWebView } from '../../shared/native'
 import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../shared/navigation/routes'
@@ -11,7 +12,9 @@ import {
   resolveAppWebTarget
 } from '../../shared/webview/appWeb'
 
+
 import './index.scss'
+import './content.scss'
 
 const WebPage = () => {
   const router = useRouter()
@@ -61,9 +64,9 @@ const WebPage = () => {
           <Text className='web-fallback__summary'>
             来源：{target.source}
           </Text>
-          <View className='web-fallback__button' onClick={handleBack}>
+          <AppPressable className='web-fallback__button' onPress={handleBack}>
             <Text className='web-fallback__button-text'>返回</Text>
-          </View>
+          </AppPressable>
         </View>
       </View>
     )

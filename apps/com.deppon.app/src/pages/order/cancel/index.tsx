@@ -4,8 +4,11 @@ import Taro, { useRouter } from '@tarojs/taro'
 import { useMemo, useState } from 'react'
 
 import { orderService } from '../../../services/order'
+import { AppPressable } from '../../../shared/components'
+
 
 import './index.scss'
+import './content.scss'
 
 const OTHER_REASON = '其他原因'
 
@@ -106,14 +109,14 @@ const OrderCancelPage = () => {
         <Text className='order-cancel-section__title'>取消原因</Text>
         <View className='order-cancel-reasons'>
           {CANCEL_REASONS.map((item) => (
-            <View
+            <AppPressable
               className={
                 item === selectedReason
                   ? 'order-cancel-reason order-cancel-reason--active'
                   : 'order-cancel-reason'
               }
               key={item}
-              onClick={() => {
+              onPress={() => {
                 setSelectedReason(item)
                 setMessage('')
               }}
@@ -127,7 +130,7 @@ const OrderCancelPage = () => {
               >
                 {item}
               </Text>
-            </View>
+            </AppPressable>
           ))}
         </View>
 
@@ -152,14 +155,14 @@ const OrderCancelPage = () => {
       </View>
 
       <View className='order-cancel-actions'>
-        <View className='order-cancel-secondary' onClick={handleBack}>
+        <AppPressable className='order-cancel-secondary' onPress={handleBack}>
           <Text className='order-cancel-secondary__text'>暂不取消</Text>
-        </View>
-        <View className='order-cancel-primary' onClick={handleSubmit}>
+        </AppPressable>
+        <AppPressable flex className='order-cancel-primary' onPress={handleSubmit}>
           <Text className='order-cancel-primary__text'>
             {submitting ? '提交中' : '确认取消'}
           </Text>
-        </View>
+        </AppPressable>
       </View>
     </ScrollView>
   )

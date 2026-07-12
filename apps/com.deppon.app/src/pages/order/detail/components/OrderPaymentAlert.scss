@@ -1,0 +1,56 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-payment-alert {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 20px 24px 0;
+  padding: 22px 24px;
+  background: $dp-color-warning-background;
+  border-color: $dp-color-warning-border;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.order-payment-alert__content {
+  flex: 1;
+  padding-right: 18px;
+}
+
+.order-payment-alert__title {
+  color: $dp-color-warning-text-strong;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-payment-alert__summary,
+.order-payment-alert__hint {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-status-warning-text;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-caption;
+}
+
+.order-payment-alert__hint {
+  color: $dp-color-text-supporting;
+}
+
+.order-payment-alert__button {
+  align-items: center;
+  justify-content: center;
+  width: 128px;
+  height: 64px;
+  background: $dp-color-warning-emphasis;
+  border-radius: $dp-radius-sm;
+}
+
+.order-payment-alert__button--disabled {
+  background: $dp-color-bg-disabled-strong;
+}
+
+.order-payment-alert__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}

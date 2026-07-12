@@ -4,16 +4,20 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 import { useCallback, useState } from 'react'
 
 import { courierService } from '../../../services/courier'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 import { getNativeCapabilityErrorMessage } from '../../../shared/platform/capabilities'
 import { PhoneNumberError, dialPhone } from '../../../shared/platform/phone'
+import { APP_STYLE_COLORS } from '../../../styles/nativeTokens'
 
 import type { CourierDetailView } from '../../../services/courier'
 
+
 import './index.scss'
+import './content.scss'
 
 const COURIER_AVATAR = 'https://ca.deppon.com.cn/ows/assets/postman/1.png'
 
@@ -142,7 +146,9 @@ const CourierDetailPage = () => {
         ? `确定取消关注 ${detail.courier.name} 吗？`
         : `确定关注 ${detail.courier.name} 吗？`,
       confirmText: isBound ? '取消关注' : '确认关注',
-      confirmColor: isBound ? '#b42318' : '#1a5eff'
+      confirmColor: isBound
+        ? APP_STYLE_COLORS.status.dangerTextStrong
+        : APP_STYLE_COLORS.brand.default
     })
 
     if (!confirm.confirm) {
@@ -202,17 +208,17 @@ const CourierDetailPage = () => {
       {detail && (
         <>
           <View className='courier-detail-actions'>
-            <View
+            <AppPressable flex
               className='courier-detail-action courier-detail-action--quiet'
-              onClick={handleDial}
+              onPress={handleDial}
             >
               <Text className='courier-detail-action__text courier-detail-action__text--quiet'>
                 联系
               </Text>
-            </View>
-            <View
+            </AppPressable>
+            <AppPressable flex
               className='courier-detail-action courier-detail-action--quiet'
-              onClick={handleBinding}
+              onPress={handleBinding}
             >
               <Text className='courier-detail-action__text courier-detail-action__text--quiet'>
                 {processing
@@ -223,10 +229,10 @@ const CourierDetailPage = () => {
                       ? '关注'
                       : '重试状态'}
               </Text>
-            </View>
-            <View className='courier-detail-action' onClick={handleExpress}>
+            </AppPressable>
+            <AppPressable flex className='courier-detail-action' onPress={handleExpress}>
               <Text className='courier-detail-action__text'>找他寄件</Text>
-            </View>
+            </AppPressable>
           </View>
 
           <View className='courier-detail-section'>
@@ -260,14 +266,14 @@ const CourierDetailPage = () => {
             </View>
 
             {!!detail.courier.departmentCode && (
-              <View
+              <AppPressable
                 className='courier-detail-department'
-                onClick={handleOpenDepartment}
+                onPress={handleOpenDepartment}
               >
                 <Text className='courier-detail-department__text'>
                   查看网点详情
                 </Text>
-              </View>
+              </AppPressable>
             )}
           </View>
 
@@ -294,9 +300,9 @@ const CourierDetailPage = () => {
           <Text className='courier-detail-empty__title'>
             {errorMessage || '未查询到快递员信息'}
           </Text>
-          <View className='courier-detail-empty__button' onClick={loadDetail}>
+          <AppPressable className='courier-detail-empty__button' onPress={loadDetail}>
             <Text className='courier-detail-empty__button-text'>重新加载</Text>
-          </View>
+          </AppPressable>
         </View>
       )}
     </ScrollView>

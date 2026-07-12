@@ -1,0 +1,47 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-stub-actions {
+  display: flex;
+  flex-direction: row;
+  padding: $dp-space-lg;
+}
+
+.order-stub-primary-slot {
+  flex: 1;
+  min-width: 220px;
+}
+
+.order-stub-secondary-slot {
+  width: 150px;
+  margin-right: $dp-space-14;
+}
+
+.order-stub-primary,
+.order-stub-secondary {
+  align-items: center;
+  justify-content: center;
+  height: $dp-line-height-auth-field;
+  border-radius: $dp-radius-control;
+}
+
+.order-stub-primary {
+  background: $dp-color-brand;
+}
+
+.order-stub-secondary {
+  background: $dp-color-bg-muted;
+}
+
+.order-stub-primary__text,
+.order-stub-secondary__text {
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-stub-primary__text {
+  color: $dp-color-text-inverse;
+}
+
+.order-stub-secondary__text {
+  color: $dp-color-text-body;
+}

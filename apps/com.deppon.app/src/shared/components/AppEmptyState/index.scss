@@ -1,0 +1,49 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.app-empty-state {
+  display: flex;
+  min-height: 280px;
+  align-items: center;
+  justify-content: center;
+  padding: $dp-space-xl $dp-page-horizontal-padding;
+}
+
+.app-empty-state--neutral {
+  background: $dp-color-transparent;
+}
+
+.app-empty-state--error {
+  background: $dp-color-danger-background-subtle;
+}
+
+.app-empty-state__visual {
+  margin-bottom: $dp-space-md;
+}
+
+.app-empty-state__title {
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-title;
+  text-align: center;
+}
+
+.app-empty-state__title--neutral {
+  color: $dp-color-text-heading;
+}
+
+.app-empty-state__title--error {
+  color: $dp-color-danger-text;
+}
+
+.app-empty-state__description {
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+  text-align: center;
+}
+
+.app-empty-state__action {
+  min-height: $dp-touch-target-min;
+  margin-top: $dp-space-lg;
+}

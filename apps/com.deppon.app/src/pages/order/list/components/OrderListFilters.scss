@@ -1,0 +1,109 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-filter-panel {
+  padding: 18px 24px 6px;
+  background: $dp-color-bg-card;
+}
+
+.order-filter-panel__label {
+  display: flex;
+  margin-bottom: 10px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-legal;
+}
+
+.order-filter {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.order-filter__chip {
+  align-items: center;
+  justify-content: center;
+  min-width: 122px;
+  height: 54px;
+  padding: 0 18px;
+  margin: 0 12px 12px 0;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.order-filter__chip--active {
+  background: $dp-color-warning-background;
+  border-color: $dp-color-warning-emphasis;
+}
+
+.order-filter__chip-text {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-filter__chip-text--active {
+  color: $dp-color-warning-emphasis;
+}
+
+.order-list-summary {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 16px;
+}
+
+.order-list-summary__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-list-summary__count {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+}
+
+.order-list-summary__side {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.order-list-summary__pay {
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  margin-left: 14px;
+  padding: 0 18px;
+  background: $dp-color-warning-background;
+  border-color: $dp-color-warning-border;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.order-list-summary__subscribe {
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  margin-left: 14px;
+  padding: 0 18px;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.order-list-summary__subscribe-text {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-list-summary__pay-text {
+  color: $dp-color-warning-emphasis;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}

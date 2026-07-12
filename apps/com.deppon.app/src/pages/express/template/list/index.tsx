@@ -7,13 +7,17 @@ import {
   EXPRESS_TEMPLATE_LIMIT,
   templateService
 } from '../../../../services/template'
+import { AppPressable } from '../../../../shared/components'
 import { navigateToAppRoute } from '../../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../../shared/navigation/routes'
+import { APP_STYLE_COLORS } from '../../../../styles/nativeTokens'
 
 import type { ExpressTemplateView } from '../../../../services/template'
 
+
 import './index.scss'
+import './content.scss'
 
 const TEMPLATE_IMAGE = 'https://ca.deppon.com.cn/ows/template/images/6.png'
 
@@ -104,7 +108,7 @@ const ExpressTemplateListPage = () => {
       title: '删除模板',
       content: `删除后不可恢复，确定删除“${template.name}”吗？`,
       confirmText: '确认删除',
-      confirmColor: '#b42318'
+      confirmColor: APP_STYLE_COLORS.status.dangerTextStrong
     })
 
     if (!confirm.confirm) {
@@ -154,17 +158,17 @@ const ExpressTemplateListPage = () => {
         <Text className='template-list-toolbar__summary'>
           已保存 {templates.length}/{EXPRESS_TEMPLATE_LIMIT}
         </Text>
-        <View
+        <AppPressable
           className='template-list-toolbar__button template-list-toolbar__button--quiet'
-          onClick={loadTemplates}
+          onPress={loadTemplates}
         >
           <Text className='template-list-toolbar__text template-list-toolbar__text--quiet'>
             {loading ? '同步中' : '刷新'}
           </Text>
-        </View>
-        <View className='template-list-toolbar__button' onClick={handleCreate}>
+        </AppPressable>
+        <AppPressable className='template-list-toolbar__button' onPress={handleCreate}>
           <Text className='template-list-toolbar__text'>新建模板</Text>
-        </View>
+        </AppPressable>
       </View>
 
       <View className='template-list-content'>
@@ -214,17 +218,17 @@ const ExpressTemplateListPage = () => {
             )}
 
             <View className='template-card__actions'>
-              <View
+              <AppPressable
                 className='template-card__button template-card__button--danger'
-                onClick={() => handleDelete(template)}
+                onPress={() => handleDelete(template)}
               >
                 <Text className='template-card__button-text template-card__button-text--danger'>
                   删除
                 </Text>
-              </View>
-              <View
+              </AppPressable>
+              <AppPressable
                 className='template-card__button template-card__button--quiet'
-                onClick={() => handleSetDefault(template)}
+                onPress={() => handleSetDefault(template)}
               >
                 <Text className='template-card__button-text template-card__button-text--quiet'>
                   {processingId === template.id
@@ -233,13 +237,13 @@ const ExpressTemplateListPage = () => {
                       ? '取消默认'
                       : '设为默认'}
                 </Text>
-              </View>
-              <View
+              </AppPressable>
+              <AppPressable
                 className='template-card__button'
-                onClick={() => handleUse(template)}
+                onPress={() => handleUse(template)}
               >
                 <Text className='template-card__button-text'>使用模板</Text>
-              </View>
+              </AppPressable>
             </View>
           </View>
         ))}
@@ -253,12 +257,12 @@ const ExpressTemplateListPage = () => {
             <Text className='template-list-empty__title'>
               {errorMessage || '暂无寄件模板'}
             </Text>
-            <View
+            <AppPressable
               className='template-list-empty__button'
-              onClick={handleCreate}
+              onPress={handleCreate}
             >
               <Text className='template-list-empty__button-text'>去新建</Text>
-            </View>
+            </AppPressable>
           </View>
         )}
       </View>

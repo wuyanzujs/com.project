@@ -1,18 +1,23 @@
-import { Input, Text, View } from '@tarojs/components'
+import { Text, View } from '@tarojs/components'
+
+import {
+  InvoiceSearchBar,
+  InvoiceSummary
+} from './InvoiceCenterControls'
+import { InvoiceEmpty } from './InvoiceCenterStates'
+import { AppPressable } from '../../../../shared/components'
 
 import type {
   InvoiceHistoryView,
   InvoiceOrderView,
-  InvoiceTab,
   InvoiceTaxpayerView
 } from '../../../../services/invoice'
 
-import '../index.scss'
+import './InvoiceCenterCards.scss'
 
-export interface InvoiceTabItem {
-  label: string
-  value: InvoiceTab
-}
+export { InvoiceTabs } from './InvoiceCenterControls'
+export type { InvoiceTabItem } from './InvoiceCenterControls'
+export { InvoiceLoading } from './InvoiceCenterStates'
 
 function getMoneyText(value: number) {
   if (!Number.isFinite(value)) {
@@ -24,113 +29,6 @@ function getMoneyText(value: number) {
 
 function getStatusClassName(base: string, statusClass: string) {
   return `${base} ${base}--${statusClass.toLowerCase()}`
-}
-
-export function InvoiceTabs(props: {
-  tabs: InvoiceTabItem[]
-  activeTab: InvoiceTab
-  onChange: (tab: InvoiceTab) => void
-}) {
-  return (
-    <View className='invoice-tabs'>
-      {props.tabs.map((item) => (
-        <View
-          className={
-            item.value === props.activeTab
-              ? 'invoice-tab invoice-tab--active'
-              : 'invoice-tab'
-          }
-          key={item.value}
-          onClick={() => props.onChange(item.value)}
-        >
-          <Text
-            className={
-              item.value === props.activeTab
-                ? 'invoice-tab__text invoice-tab__text--active'
-                : 'invoice-tab__text'
-            }
-          >
-            {item.label}
-          </Text>
-        </View>
-      ))}
-    </View>
-  )
-}
-
-export function InvoiceSearchBar(props: {
-  placeholder: string
-  value: string
-  onChange: (value: string) => void
-  onSearch: () => void
-  onClear: () => void
-  onScan?: () => void
-}) {
-  return (
-    <View className='invoice-search'>
-      <Input
-        className='invoice-search__input'
-        placeholder={props.placeholder}
-        value={props.value}
-        onInput={(event) => props.onChange(event.detail.value)}
-      />
-      <View className='invoice-search__button' onClick={props.onSearch}>
-        <Text className='invoice-search__button-text'>搜索</Text>
-      </View>
-      {props.onScan && (
-        <View className='invoice-search__scan' onClick={props.onScan}>
-          <Text className='invoice-search__scan-text'>扫码</Text>
-        </View>
-      )}
-      {props.value && (
-        <View className='invoice-search__clear' onClick={props.onClear}>
-          <Text className='invoice-search__clear-text'>清除</Text>
-        </View>
-      )}
-    </View>
-  )
-}
-
-export function InvoiceSummary(props: {
-  title: string
-  countText: string
-  hintText?: string
-  inside?: boolean
-  actionText?: string
-  onAction?: () => void
-}) {
-  return (
-    <View
-      className={
-        props.inside
-          ? 'invoice-summary invoice-summary--inside'
-          : 'invoice-summary'
-      }
-    >
-      <View>
-        <Text className='invoice-summary__title'>{props.title}</Text>
-        <Text className='invoice-summary__count'>{props.countText}</Text>
-      </View>
-      {props.actionText ? (
-        <View className='invoice-summary__button' onClick={props.onAction}>
-          <Text className='invoice-summary__button-text'>
-            {props.actionText}
-          </Text>
-        </View>
-      ) : (
-        <Text className='invoice-summary__hint'>{props.hintText || ''}</Text>
-      )}
-    </View>
-  )
-}
-
-export function InvoiceEmpty(props: { title: string; summary: string }) {
-  return (
-    <View className='invoice-empty'>
-      <Text className='invoice-empty__title'>{props.title}</Text>
-      <Text className='invoice-empty__summary'>{props.summary}</Text>
-    </View>
-  )
 }
 
 export function InvoiceOrdersPanel(props: {
@@ -200,13 +98,16 @@ export function InvoiceOrdersPanel(props: {
               </Text>
             )}
             <View className='invoice-card__actions'>
-              <View
+              <AppPressable
+                accessibilityLabel={item.canApply ? '申请发票' : item.statusText}
+                allowDisabledPress={!item.canApply}
+                disabled={!item.canApply}
                 className={
                   item.canApply
                     ? 'invoice-card__button'
                     : 'invoice-card__button invoice-card__button--disabled'
                 }
-                onClick={() => props.onApply(item)}
+                onPress={() => props.onApply(item)}
               >
                 <Text
                   className={
@@ -217,7 +118,7 @@ export function InvoiceOrdersPanel(props: {
                 >
                   {item.canApply ? '申请发票' : item.statusText}
                 </Text>
-              </View>
+              </AppPressable>
             </View>
           </View>
         ))}
@@ -291,21 +192,25 @@ export function InvoiceHistoryPanel(props: {
               </Text>
             </View>
             <View className='invoice-card__actions'>
-              <View
+              <AppPressable
+                accessibilityLabel='查看发票详情'
                 className='invoice-card__button invoice-card__button--ghost'
-                onClick={() => props.onOpenDetail(item)}
+                onPress={() => props.onOpenDetail(item)}
               >
                 <Text className='invoice-card__button-text invoice-card__button-text--ghost'>
                   查看详情
                 </Text>
-              </View>
-              <View
+              </AppPressable>
+              <AppPressable
+                accessibilityLabel={item.canPreview ? '预览发票' : '暂无预览'}
+                allowDisabledPress={!item.canPreview}
+                disabled={!item.canPreview}
                 className={
                   item.canPreview
                     ? 'invoice-card__button'
                     : 'invoice-card__button invoice-card__button--disabled'
                 }
-                onClick={() => props.onPreview(item)}
+                onPress={() => props.onPreview(item)}
               >
                 <Text
                   className={
@@ -316,7 +221,7 @@ export function InvoiceHistoryPanel(props: {
                 >
                   {item.canPreview ? '预览发票' : '暂无预览'}
                 </Text>
-              </View>
+              </AppPressable>
             </View>
           </View>
         ))}
@@ -381,19 +286,5 @@ export function InvoiceTaxpayersPanel(props: {
         />
       )}
     </View>
-  )
-}
-
-export function InvoiceLoading(props: { tab: InvoiceTab }) {
-  return (
-    <Text className='invoice-loading'>
-      {props.tab === 'orders'
-        ? '正在加载可开票运单...'
-        : props.tab === 'ecards'
-          ? '正在加载储值卡开票记录...'
-        : props.tab === 'history'
-          ? '正在加载开票历史...'
-          : '正在加载发票抬头...'}
-    </Text>
   )
 }

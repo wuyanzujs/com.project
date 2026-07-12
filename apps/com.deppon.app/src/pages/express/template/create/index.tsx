@@ -5,13 +5,16 @@ import { useMemo, useState } from 'react'
 
 import { expressDraftStorage } from '../../../../services/express'
 import { templateService } from '../../../../services/template'
+import { AppPressable } from '../../../../shared/components'
 import { navigateToAppRoute } from '../../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../../shared/navigation/routes'
 
 import type { ExpressDraft } from '../../../../services/express'
 
+
 import './index.scss'
+import './content.scss'
 
 function getDraftSummary(draft: ExpressDraft) {
   return {
@@ -84,12 +87,12 @@ const ExpressTemplateCreatePage = () => {
         <Text className='template-create-empty__title'>
           暂无可保存的寄件信息
         </Text>
-        <View
+        <AppPressable
           className='template-create-empty__button'
-          onClick={() => navigateToAppRoute(APP_ROUTES.express)}
+          onPress={() => navigateToAppRoute(APP_ROUTES.express)}
         >
           <Text className='template-create-empty__button-text'>返回寄件页</Text>
-        </View>
+        </AppPressable>
       </View>
     )
   }
@@ -128,14 +131,14 @@ const ExpressTemplateCreatePage = () => {
         <Text className='template-create-section__title'>默认模板</Text>
         <View className='template-create-segment'>
           {([2, 1] as const).map(value => (
-            <View
+            <AppPressable flex
               className={
                 defaultFlag === value
                   ? 'template-create-segment__item template-create-segment__item--active'
                   : 'template-create-segment__item'
               }
               key={value}
-              onClick={() => setDefaultFlag(value)}
+              onPress={() => setDefaultFlag(value)}
             >
               <Text
                 className={
@@ -146,23 +149,23 @@ const ExpressTemplateCreatePage = () => {
               >
                 {value === 1 ? '设为默认' : '普通模板'}
               </Text>
-            </View>
+            </AppPressable>
           ))}
         </View>
       </View>
 
-      <View
+      <AppPressable
         className={
           saving
             ? 'template-create-submit template-create-submit--disabled'
             : 'template-create-submit'
         }
-        onClick={handleSave}
+        onPress={handleSave}
       >
         <Text className='template-create-submit__text'>
           {saving ? '保存中' : '保存模板'}
         </Text>
-      </View>
+      </AppPressable>
     </ScrollView>
   )
 }

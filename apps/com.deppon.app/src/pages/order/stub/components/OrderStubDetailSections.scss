@@ -1,0 +1,58 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-stub-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: $dp-space-18 0;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.order-stub-field--first {
+  margin-top: $dp-space-sm;
+}
+
+.order-stub-field--important {
+  background: $dp-color-bg-subtle;
+}
+
+.order-stub-field__label {
+  width: 150px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+}
+
+.order-stub-field__content {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.order-stub-field__value {
+  flex: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body-small;
+  text-align: right;
+}
+
+.order-stub-field__copy {
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 46px;
+  margin-left: $dp-space-xs;
+  background: $dp-color-brand-soft;
+  border-radius: $dp-radius-control;
+}
+
+.order-stub-field__copy-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}

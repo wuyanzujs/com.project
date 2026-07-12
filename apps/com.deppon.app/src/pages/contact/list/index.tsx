@@ -8,6 +8,7 @@ import {
   contactService,
   getContactFullAddress
 } from '../../../services/contact'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -15,7 +16,9 @@ import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type { Contact } from '../../../services/contact'
 
+
 import './index.scss'
+import './content.scss'
 
 const PAGE_SIZE = 20
 
@@ -264,24 +267,24 @@ const ContactListPage = () => {
           value={keyword}
           onInput={event => setKeyword(event.detail.value)}
         />
-        <View className='contact-list-search__button' onClick={handleSearch}>
+        <AppPressable className='contact-list-search__button' onPress={handleSearch}>
           <Text className='contact-list-search__button-text'>搜索</Text>
-        </View>
+        </AppPressable>
       </View>
 
       <View className='contact-list-toolbar'>
         <Text className='contact-list-toolbar__title'>常用地址</Text>
-        <View className='contact-list-toolbar__button' onClick={handleCreate}>
+        <AppPressable className='contact-list-toolbar__button' onPress={handleCreate}>
           <Text className='contact-list-toolbar__button-text'>新增</Text>
-        </View>
+        </AppPressable>
       </View>
 
       <View className='contact-list-content'>
         {contacts.map(contact => (
           <View className='contact-card' key={contact.id || contact.telephone}>
-            <View
+            <AppPressable
               className='contact-card__body'
-              onClick={() => handleSelect(contact)}
+              onPress={() => handleSelect(contact)}
             >
               <View className='contact-card__top'>
                 <Text className='contact-card__name'>{contact.name}</Text>
@@ -300,41 +303,41 @@ const ContactListPage = () => {
                   </Text>
                 )}
               </View>
-            </View>
+            </AppPressable>
             <View className='contact-card__footer'>
               {selectionParams.mode === 'manage' && (
-                <Text
+                <AppPressable contentElement='text'
                   className={
                     contact.defaultAddress === '1'
                       ? 'contact-card__action contact-card__action--disabled'
                       : 'contact-card__action'
                   }
-                  onClick={() => handleSetDefault(contact)}
+                  onPress={() => handleSetDefault(contact)}
                 >
                   {contact.defaultAddress === '1' ? '默认地址' : '设为默认'}
-                </Text>
+                </AppPressable>
               )}
-              <Text
+              <AppPressable contentElement='text'
                 className='contact-card__action'
-                onClick={() => handleEdit(contact)}
+                onPress={() => handleEdit(contact)}
               >
                 编辑
-              </Text>
+              </AppPressable>
               {selectionParams.mode === 'manage' && (
-                <Text
+                <AppPressable contentElement='text'
                   className='contact-card__action contact-card__action--danger'
-                  onClick={() => handleDelete(contact)}
+                  onPress={() => handleDelete(contact)}
                 >
                   删除
-                </Text>
+                </AppPressable>
               )}
               {selectionParams.mode === 'select' && (
-                <Text
+                <AppPressable contentElement='text'
                   className='contact-card__action contact-card__action--primary'
-                  onClick={() => handleSelect(contact)}
+                  onPress={() => handleSelect(contact)}
                 >
                   选择
-                </Text>
+                </AppPressable>
               )}
             </View>
           </View>

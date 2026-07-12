@@ -1,8 +1,16 @@
-import { Input, ScrollView, Text, View } from '@tarojs/components'
+import { ScrollView, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useMemo, useRef, useState } from 'react'
 
+import { CouponCard } from './components/CouponCard'
+import { CouponExchangeBar } from './components/CouponExchangeBar'
+import { CouponListStates } from './components/CouponListStates'
+import {
+  CouponStatusTabs,
+  type CouponTabItem
+} from './components/CouponStatusTabs'
+import { CouponSummary } from './components/CouponSummary'
 import { couponService } from '../../../services/coupon'
 import {
   createExpressDraft,
@@ -22,7 +30,7 @@ import type { CouponCardView, CouponStatus } from '../../../services/coupon'
 
 import './index.scss'
 
-const COUPON_TABS: Array<{ label: string; value: CouponStatus }> = [
+const COUPON_TABS: CouponTabItem[] = [
   {
     label: '未使用',
     value: 'USABLE'
@@ -234,165 +242,39 @@ const CouponListPage = () => {
 
   return (
     <ScrollView className='coupon-list-page' scrollY>
-      <View className='coupon-exchange'>
-        <Input
-          className='coupon-exchange__input'
-          maxlength={20}
-          placeholder='输入兑换码'
-          value={exchangeCode}
-          onBlur={event => setExchangeCode(event.detail.value.trim())}
-          onInput={event => setExchangeCode(event.detail.value)}
-        />
-        <View className='coupon-exchange__button' onClick={handleExchange}>
-          <Text className='coupon-exchange__button-text'>
-            {exchanging ? '兑换中' : '兑换'}
-          </Text>
-        </View>
-      </View>
+      <CouponExchangeBar
+        exchanging={exchanging}
+        value={exchangeCode}
+        onBlur={value => setExchangeCode(value.trim())}
+        onChange={setExchangeCode}
+        onExchange={handleExchange}
+      />
 
-      <View className='coupon-tabs'>
-        {COUPON_TABS.map(tab => (
-          <View
-            className={
-              tab.value === status
-                ? 'coupon-tab coupon-tab--active'
-                : 'coupon-tab'
-            }
-            key={tab.value}
-            onClick={() => handleChangeStatus(tab.value)}
-          >
-            <Text
-              className={
-                tab.value === status
-                  ? 'coupon-tab__text coupon-tab__text--active'
-                  : 'coupon-tab__text'
-              }
-            >
-              {tab.label}
-            </Text>
-          </View>
-        ))}
-      </View>
+      <CouponStatusTabs
+        activeStatus={status}
+        tabs={COUPON_TABS}
+        onChange={handleChangeStatus}
+      />
 
-      <View className='coupon-summary'>
-        <View>
-          <Text className='coupon-summary__title'>{activeTabText}</Text>
-          <Text className='coupon-summary__count'>
-            共 {coupons.length} 张券
-          </Text>
-        </View>
-        <Text className='coupon-summary__hint'>可用券会带入寄件页重新报价</Text>
-      </View>
+      <CouponSummary count={coupons.length} title={activeTabText} />
 
       <View className='coupon-list-content'>
         {coupons.map((coupon, index) => (
-          <View className='coupon-card' key={getCouponKey(coupon, index)}>
-            {coupon.labelText && (
-              <View className='coupon-card__ribbon'>
-                <Text className='coupon-card__ribbon-text'>
-                  {coupon.labelText}
-                </Text>
-              </View>
-            )}
-
-            <View className='coupon-card__main'>
-              <View
-                className={
-                  coupon.canUse
-                    ? 'coupon-card__amount'
-                    : 'coupon-card__amount coupon-card__amount--disabled'
-                }
-              >
-                <View className='coupon-card__amount-row'>
-                  <Text className='coupon-card__amount-value'>
-                    {coupon.amountValue}
-                  </Text>
-                  <Text className='coupon-card__amount-unit'>
-                    {coupon.amountUnit}
-                  </Text>
-                </View>
-                <Text className='coupon-card__amount-desc'>
-                  {coupon.thresholdText}
-                </Text>
-              </View>
-
-              <View className='coupon-card__info'>
-                <View className='coupon-card__title-row'>
-                  <Text className='coupon-card__title'>{coupon.typeName}</Text>
-                  <Text className='coupon-card__status'>
-                    {coupon.statusText}
-                  </Text>
-                </View>
-                <Text className='coupon-card__desc'>{coupon.title}</Text>
-                <Text className='coupon-card__time'>{coupon.validityText}</Text>
-
-                {coupon.tags.length > 0 && (
-                  <View className='coupon-card__tags'>
-                    {coupon.tags.map(tag => (
-                      <Text className='coupon-card__tag' key={tag}>
-                        {tag}
-                      </Text>
-                    ))}
-                  </View>
-                )}
-              </View>
-            </View>
-
-            <View className='coupon-card__footer'>
-              <Text className='coupon-card__code'>
-                券码 {coupon.code || '--'}
-              </Text>
-              <View
-                className='coupon-card__button coupon-card__button--ghost'
-                onClick={() => handleOpenDetail(coupon)}
-              >
-                <Text className='coupon-card__button-text coupon-card__button-text--ghost'>
-                  详情
-                </Text>
-              </View>
-              <View
-                className={
-                  coupon.canUse
-                    ? 'coupon-card__button'
-                    : 'coupon-card__button coupon-card__button--disabled'
-                }
-                onClick={() => handleUseCoupon(coupon)}
-              >
-                <Text
-                  className={
-                    coupon.canUse
-                      ? 'coupon-card__button-text'
-                      : 'coupon-card__button-text coupon-card__button-text--disabled'
-                  }
-                >
-                  {coupon.canUse ? '去使用' : coupon.statusText}
-                </Text>
-              </View>
-            </View>
-          </View>
+          <CouponCard
+            coupon={coupon}
+            key={getCouponKey(coupon, index)}
+            onOpenDetail={handleOpenDetail}
+            onUse={handleUseCoupon}
+          />
         ))}
 
-        {!coupons.length && !loading && (
-          <View className='coupon-empty'>
-            <Text className='coupon-empty__title'>
-              {errorMessage || `暂无${activeTabText}优惠券`}
-            </Text>
-            <Text className='coupon-empty__summary'>
-              可通过兑换码领取优惠券，或前往福利中心查看可领取权益。
-            </Text>
-            <View className='coupon-empty__button' onClick={handleOpenWelfare}>
-              <Text className='coupon-empty__button-text'>
-                {openingWelfare ? '打开中' : '去福利中心领券'}
-              </Text>
-            </View>
-          </View>
-        )}
-
-        {loading && (
-          <Text className='coupon-loading'>
-            {coupons.length ? '正在刷新优惠券...' : '正在加载优惠券...'}
-          </Text>
-        )}
+        <CouponListStates
+          emptyTitle={errorMessage || `暂无${activeTabText}优惠券`}
+          hasCoupons={coupons.length > 0}
+          loading={loading}
+          openingWelfare={openingWelfare}
+          onOpenWelfare={handleOpenWelfare}
+        />
       </View>
     </ScrollView>
   )

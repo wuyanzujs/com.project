@@ -1,0 +1,64 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-monthly-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 14px;
+  padding: 16px;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.express-monthly-card--success {
+  background: $dp-color-success-background-subtle;
+  border-color: $dp-color-success-border;
+}
+
+.express-monthly-card--warning {
+  background: $dp-color-warning-background;
+  border-color: $dp-color-warning-border;
+}
+
+.express-monthly-card__content {
+  flex: 1;
+  padding-right: 16px;
+}
+
+.express-monthly-card__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-caption;
+}
+
+.express-monthly-card__summary {
+  display: flex;
+  margin-top: 4px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-legal;
+  line-height: $dp-line-height-legal;
+}
+
+.express-monthly-card__action {
+  align-items: center;
+  justify-content: center;
+  min-width: 116px;
+  height: 48px;
+  padding: 0 14px;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.express-monthly-card__action-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-heading;
+  text-align: center;
+}

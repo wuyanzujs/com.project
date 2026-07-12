@@ -1,11 +1,11 @@
+@use '../../../../styles/_tokens.scss' as *;
 .home-menu {
   margin: 16px 24px 0;
   padding-top: 16px;
   overflow: hidden;
-  background: #ffffff;
-  border-radius: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-feature-card;
 }
-
 .home-menu__swiper,
 .home-menu__page,
 .home-menu__grid {
@@ -42,10 +42,10 @@
 
 .home-menu__label {
   margin-top: 12px;
-  color: #16181a;
-  font-size: 26px;
-  font-weight: 400;
-  line-height: 36px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-small;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-body;
   text-align: center;
 }
 
@@ -63,16 +63,16 @@
   min-width: 84px;
   height: 36px;
   padding: 0 8px;
-  background: #f0484e;
-  border-color: #ffffff;
-  border-radius: 16px;
+  background: $dp-color-danger-accent;
+  border-color: $dp-color-border-inverse;
+  border-radius: $dp-radius-lg;
   border-width: 2px;
 }
 
 .home-menu__badge-text {
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: 700;
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-micro;
+  font-weight: $dp-font-weight-bold;
 }
 
 .home-menu__pagination {
@@ -87,11 +87,11 @@
   width: 16px;
   height: 6px;
   margin-left: 8px;
-  background: #e2e2e2;
-  border-radius: 3px;
+  background: $dp-color-bg-track;
+  border-radius: $dp-radius-indicator;
 }
 
 .home-menu__dot--active {
   width: 32px;
-  background: #111111;
+  background: $dp-color-text-ink;
 }

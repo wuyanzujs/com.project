@@ -1,8 +1,21 @@
-import { Image, ScrollView, Text, View } from '@tarojs/components'
+import { ScrollView } from '@tarojs/components'
 import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useMemo, useState } from 'react'
 
+import { OrderStubActions } from './components/OrderStubActions'
+import { OrderStubDetailSections } from './components/OrderStubDetailSections'
+import { OrderStubDocumentSection } from './components/OrderStubDocumentSection'
+import { OrderStubGoodsSupplement } from './components/OrderStubGoodsSupplement'
+import { OrderStubHeader } from './components/OrderStubHeader'
+import { OrderStubImageEvidence } from './components/OrderStubImageEvidence'
+import { OrderStubImagePreview } from './components/OrderStubImagePreview'
+import { OrderStubNoticeList } from './components/OrderStubNoticeList'
+import {
+  OrderStubEmptyState,
+  OrderStubLoadingState
+} from './components/OrderStubPageState'
+import { OrderStubSummaryCard } from './components/OrderStubSummaryCard'
 import { orderService } from '../../../services/order'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
@@ -10,15 +23,11 @@ import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 import { copyTextToClipboard } from '../../../shared/platform/clipboard'
 
+import type { OrderStubImagePreviewState } from './components/OrderStubImagePreview'
 import type {
   OrderStubDocumentView,
-  OrderStubFieldView,
-  OrderStubImageGroupView,
   OrderStubImagesView,
-  OrderStubImageView,
   OrderStubPackageFeeView,
-  OrderStubPackageFeeGroupView,
-  OrderStubPartyView,
   OrderStubView
 } from '../../../services/order'
 
@@ -30,10 +39,6 @@ interface OrderStubRouteParams {
   role: string
   source: string
 }
-
-const BARCODE_PATTERN = [
-  1, 3, 1, 2, 4, 1, 2, 2, 1, 3, 3, 1, 4, 2, 1, 1, 3, 2, 2, 4, 1, 3, 1, 2
-]
 
 function getRouteParams(
   params: Record<string, string | undefined>
@@ -65,16 +70,6 @@ function getOrderDetailUrl(params: OrderStubRouteParams) {
   })
 }
 
-function getBarcodeBarClassName(value: number) {
-  return `order-stub-barcode__bar order-stub-barcode__bar--${value}`
-}
-
-interface ImagePreviewState {
-  group: OrderStubImageGroupView
-  image: OrderStubImageView
-  index: number
-}
-
 const OrderStubPage = () => {
   const router = useRouter()
   const routeParams = useMemo(
@@ -89,7 +84,7 @@ const OrderStubPage = () => {
   const [loading, setLoading] = useState(false)
   const [imagesLoading, setImagesLoading] = useState(false)
   const [previewImage, setPreviewImage] =
-    useState<ImagePreviewState | null>(null)
+    useState<OrderStubImagePreviewState | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
 
   const loadStub = async () => {
@@ -204,352 +199,50 @@ const OrderStubPage = () => {
     })
   }
 
-  const renderParty = (party: OrderStubPartyView) => (
-    <View className='order-stub-party' key={party.role}>
-      <Text
-        className={
-          party.role === 'sender'
-            ? 'order-stub-party__tag'
-            : 'order-stub-party__tag order-stub-party__tag--receiver'
-        }
-      >
-        {party.role === 'sender' ? '寄' : '收'}
-      </Text>
-      <View className='order-stub-party__content'>
-        <View className='order-stub-party__head'>
-          <Text className='order-stub-party__label'>{party.label}</Text>
-          {party.encrypted && (
-            <Text className='order-stub-party__badge'>隐私保护</Text>
-          )}
-        </View>
-        <Text className='order-stub-party__name'>
-          {party.name} {party.mobile}
-        </Text>
-        <Text className='order-stub-party__address'>{party.address}</Text>
-        <View
-          className='order-stub-party__copy'
-          onClick={() => handleCopy(party.copyText, '地址复制成功')}
-        >
-          <Text className='order-stub-party__copy-text'>复制地址</Text>
-        </View>
-      </View>
-    </View>
-  )
-
-  const renderField = (field: OrderStubFieldView, index: number) => (
-    <View
-      className={`order-stub-field${
-        index === 0 ? ' order-stub-field--first' : ''
-      }${field.important ? ' order-stub-field--important' : ''}`}
-      key={`${field.label}-${field.value}`}
-    >
-      <Text className='order-stub-field__label'>{field.label}</Text>
-      <View className='order-stub-field__content'>
-        <Text className='order-stub-field__value'>{field.value}</Text>
-        {!!field.copyValue && (
-          <View
-            className='order-stub-field__copy'
-            onClick={() => handleCopy(field.copyValue || '')}
-          >
-            <Text className='order-stub-field__copy-text'>复制</Text>
-          </View>
-        )}
-      </View>
-    </View>
-  )
-
-  const renderImageGroup = (
-    group: OrderStubImageGroupView,
-    groupIndex: number
-  ) => (
-    <View
-      className={groupIndex === 0 ? 'order-stub-image-group order-stub-image-group--first' : 'order-stub-image-group'}
-      key={group.kind}
-    >
-      <View className='order-stub-image-group__head'>
-        <View className='order-stub-image-group__content'>
-          <Text className='order-stub-image-group__title'>{group.title}</Text>
-          <Text className='order-stub-image-group__summary'>
-            {group.summary}
-          </Text>
-        </View>
-        <Text className='order-stub-image-group__count'>
-          {group.images.length}张
-        </Text>
-      </View>
-      <View className='order-stub-image-grid'>
-        {group.images.map((image, index) => (
-          <View
-            className='order-stub-image-thumb'
-            key={image.id}
-            onClick={() =>
-              setPreviewImage({
-                group,
-                image,
-                index
-              })
-            }
-          >
-            <Image
-              className='order-stub-image-thumb__image'
-              mode='aspectFill'
-              src={image.url}
-            />
-          </View>
-        ))}
-      </View>
-    </View>
-  )
-
-  const renderPackageFeeGroup = (group: OrderStubPackageFeeGroupView) => (
-    <View className='order-stub-package-group' key={group.title}>
-      <Text className='order-stub-package-group__title'>{group.title}</Text>
-      <View className='order-stub-package-row order-stub-package-row--head'>
-        <Text className='order-stub-package-row__name order-stub-package-row__name--head'>
-          {group.nameTitle}
-        </Text>
-        <Text className='order-stub-package-row__count order-stub-package-row__count--head'>
-          {group.countTitle}
-        </Text>
-        <Text className='order-stub-package-row__amount order-stub-package-row__amount--head'>
-          {group.amountTitle}
-        </Text>
-      </View>
-      {group.items.map((item) => (
-        <View
-          className='order-stub-package-row'
-          key={`${group.title}-${item.name}-${item.amount}`}
-        >
-          <Text className='order-stub-package-row__name'>{item.name}</Text>
-          <Text className='order-stub-package-row__count'>{item.count}</Text>
-          <Text className='order-stub-package-row__amount'>{item.amount}</Text>
-        </View>
-      ))}
-    </View>
-  )
-
   return (
     <ScrollView className='order-stub-page' scrollY>
-      <View className='order-stub-header'>
-        <Text className='order-stub-header__title'>
-          {stub?.title || '电子存根'}
-        </Text>
-        <Text className='order-stub-header__summary'>
-          {stub?.subtitle || '订单结构化凭证'}
-        </Text>
-      </View>
+      <OrderStubHeader title={stub?.title} subtitle={stub?.subtitle} />
 
-      {loading && !stub && (
-        <Text className='order-stub-loading'>正在加载电子存根...</Text>
-      )}
+      {loading && !stub && <OrderStubLoadingState />}
 
       {!loading && !stub && (
-        <View className='order-stub-empty'>
-          <Text className='order-stub-empty__title'>
-            {errorMessage || '暂未获取到电子存根'}
-          </Text>
-          <View className='order-stub-empty__button' onClick={handleBackToDetail}>
-            <Text className='order-stub-empty__button-text'>返回订单详情</Text>
-          </View>
-        </View>
+        <OrderStubEmptyState
+          message={errorMessage}
+          onBack={handleBackToDetail}
+        />
       )}
 
       {stub && (
         <>
-          <View className='order-stub-card'>
-            <View className='order-stub-card__head'>
-              <View>
-                <Text className='order-stub-card__status'>
-                  {stub.statusText}
-                </Text>
-                <Text className='order-stub-card__number'>
-                  {stub.copyNumber || stub.barcodeText}
-                </Text>
-              </View>
-              <View
-                className='order-stub-card__copy'
-                onClick={() => handleCopy(stub.copyNumber)}
-              >
-                <Text className='order-stub-card__copy-text'>复制</Text>
-              </View>
-            </View>
-
-            <View className='order-stub-barcode'>
-              <View className='order-stub-barcode__bars'>
-                {BARCODE_PATTERN.map((item, index) => (
-                  <View
-                    className={getBarcodeBarClassName(item)}
-                    key={`${item}-${index}`}
-                  />
-                ))}
-              </View>
-              <Text className='order-stub-barcode__text'>
-                {stub.barcodeText}
-              </Text>
-            </View>
-
-            <View className='order-stub-divider' />
-            {renderParty(stub.sender)}
-            {renderParty(stub.receiver)}
-          </View>
-
-          {stub.sections.map((section) => (
-            <View className='order-stub-section' key={section.title}>
-              <Text className='order-stub-section__title'>
-                {section.title}
-              </Text>
-              {section.fields.map(renderField)}
-            </View>
-          ))}
-
-          {(stub.size.available || packageFee?.available) && (
-            <View className='order-stub-section'>
-              <View className='order-stub-section__head'>
-                <Text className='order-stub-section__title'>货物补充</Text>
-                <Text className='order-stub-section__hint'>只读明细</Text>
-              </View>
-              {stub.size.available && (
-                <View className='order-stub-size'>
-                  <Text className='order-stub-size__title'>尺寸详情</Text>
-                  {stub.size.rows.map((row) => (
-                    <Text className='order-stub-size__row' key={row}>
-                      {row}
-                    </Text>
-                  ))}
-                  <Text className='order-stub-size__notice'>
-                    {stub.size.notice}
-                  </Text>
-                </View>
-              )}
-              {packageFee?.available && (
-                <View className='order-stub-package'>
-                  <View className='order-stub-package__head'>
-                    <Text className='order-stub-package__title'>包装费用</Text>
-                    <Text className='order-stub-package__amount'>
-                      {packageFee.totalAmount}
-                    </Text>
-                  </View>
-                  {packageFee.groups.map(renderPackageFeeGroup)}
-                </View>
-              )}
-            </View>
-          )}
-
-          <View className='order-stub-section'>
-            <View className='order-stub-section__head'>
-              <Text className='order-stub-section__title'>照片凭证</Text>
-              <Text className='order-stub-section__hint'>
-                {imagesLoading ? '查询中' : '只读预览'}
-              </Text>
-            </View>
-            {imagesLoading && (
-              <Text className='order-stub-section__empty'>
-                正在查询揽收/签收照片...
-              </Text>
-            )}
-            {!imagesLoading &&
-              images?.groups.map(renderImageGroup)}
-            {!imagesLoading && images && !images.groups.length && (
-              <Text className='order-stub-section__empty'>
-                {images.message || '暂未查询到揽收/签收照片'}
-              </Text>
-            )}
-          </View>
-
-          {document && (
-            <View className='order-stub-section'>
-              <View className='order-stub-section__head'>
-                <Text className='order-stub-section__title'>单据票证</Text>
-                <Text className='order-stub-section__hint'>
-                  {document.statusText}
-                </Text>
-              </View>
-              <View className='order-stub-document'>
-                <View
-                  className={
-                    document.canPreview
-                      ? 'order-stub-document__mark order-stub-document__mark--ready'
-                      : 'order-stub-document__mark'
-                  }
-                >
-                  <Text className='order-stub-document__mark-text'>PDF</Text>
-                </View>
-                <View className='order-stub-document__content'>
-                  <Text className='order-stub-document__title'>
-                    {document.title}
-                  </Text>
-                  <Text className='order-stub-document__summary'>
-                    {document.summary}
-                  </Text>
-                </View>
-                <View
-                  className={
-                    document.canPreview
-                      ? 'order-stub-document__button'
-                      : 'order-stub-document__button order-stub-document__button--disabled'
-                  }
-                  onClick={handleOpenDocument}
-                >
-                  <Text className='order-stub-document__button-text'>
-                    {document.actionText}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          )}
-
-          {stub.notices.map((notice) => (
-            <View
-              className={
-                notice.tone === 'warning'
-                  ? 'order-stub-notice order-stub-notice--warning'
-                  : 'order-stub-notice'
-              }
-              key={notice.title}
-            >
-              <Text className='order-stub-notice__title'>{notice.title}</Text>
-              <Text className='order-stub-notice__content'>
-                {notice.content}
-              </Text>
-            </View>
-          ))}
-
-          <View className='order-stub-actions'>
-            <View className='order-stub-secondary' onClick={loadStub}>
-              <Text className='order-stub-secondary__text'>刷新</Text>
-            </View>
-            <View className='order-stub-primary' onClick={handleBackToDetail}>
-              <Text className='order-stub-primary__text'>返回订单详情</Text>
-            </View>
-          </View>
-
-          {previewImage && (
-            <View className='order-stub-preview-mask'>
-              <View className='order-stub-preview-card'>
-                <View className='order-stub-preview-card__head'>
-                  <Text className='order-stub-preview-card__title'>
-                    {previewImage.group.title}
-                  </Text>
-                  <Text className='order-stub-preview-card__index'>
-                    {previewImage.index + 1}/{previewImage.group.images.length}
-                  </Text>
-                </View>
-                <Image
-                  className='order-stub-preview-card__image'
-                  mode='aspectFit'
-                  src={previewImage.image.url}
-                />
-                <View
-                  className='order-stub-preview-card__close'
-                  onClick={() => setPreviewImage(null)}
-                >
-                  <Text className='order-stub-preview-card__close-text'>
-                    关闭
-                  </Text>
-                </View>
-              </View>
-            </View>
-          )}
+          <OrderStubSummaryCard stub={stub} onCopy={handleCopy} />
+          <OrderStubDetailSections
+            sections={stub.sections}
+            onCopy={handleCopy}
+          />
+          <OrderStubGoodsSupplement
+            packageFee={packageFee}
+            size={stub.size}
+          />
+          <OrderStubImageEvidence
+            images={images}
+            loading={imagesLoading}
+            onPreview={(group, image, index) =>
+              setPreviewImage({ group, image, index })
+            }
+          />
+          <OrderStubDocumentSection
+            document={document}
+            onOpen={handleOpenDocument}
+          />
+          <OrderStubNoticeList notices={stub.notices} />
+          <OrderStubActions
+            onBack={handleBackToDetail}
+            onRefresh={loadStub}
+          />
+          <OrderStubImagePreview
+            preview={previewImage}
+            onClose={() => setPreviewImage(null)}
+          />
         </>
       )}
     </ScrollView>

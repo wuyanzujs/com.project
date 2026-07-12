@@ -4,6 +4,7 @@ import Taro, { useDidShow } from '@tarojs/taro'
 import { useCallback, useState } from 'react'
 
 import { ecardService } from '../../../services/ecard'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -16,7 +17,9 @@ import type {
 } from '../../../services/ecard'
 import type { AppWebSource } from '../../../shared/webview/appWeb'
 
+
 import './index.scss'
+import './content.scss'
 
 interface ECardAction {
   title: string
@@ -187,10 +190,10 @@ const ECardCenterPage = () => {
       <View className='ecard-actions'>
         <Text className='ecard-actions__title'>E 卡服务</Text>
         {ECARD_ACTIONS.map((item) => (
-          <View
+          <AppPressable
             className='ecard-action-row'
             key={item.source}
-            onClick={() =>
+            onPress={() =>
               handleOpenECard(
                 item.targetPage,
                 item.source,
@@ -206,7 +209,7 @@ const ECardCenterPage = () => {
             <Text className='ecard-action-row__arrow'>
               {opening === item.source ? '...' : '›'}
             </Text>
-          </View>
+          </AppPressable>
         ))}
       </View>
 

@@ -4,6 +4,7 @@ import { useRouter } from '@tarojs/taro'
 import { useMemo, useState } from 'react'
 
 import { expressInsuranceRules } from '../../../services/express'
+import { AppPressable } from '../../../shared/components'
 
 import type {
   ExpressInsuranceRuleTable,
@@ -11,7 +12,9 @@ import type {
   ExpressInsuranceRuleType
 } from '../../../services/express'
 
+
 import './index.scss'
+import './content.scss'
 
 function decodeParam(value?: string) {
   if (!value) {
@@ -102,17 +105,18 @@ const ExpressInsurancePage = () => {
     <ScrollView className='insurance-rule-page' scrollY>
       <View className='insurance-rule-tabs'>
         {options.map(option => (
-          <View
+          <AppPressable
+            flex
             className={getRuleOptionClassName(option.type, activeType)}
             key={option.type}
-            onClick={() => setActiveType(option.type)}
+            onPress={() => setActiveType(option.type)}
           >
             <Text
               className={getRuleOptionTextClassName(option.type, activeType)}
             >
               {option.title}
             </Text>
-          </View>
+          </AppPressable>
         ))}
       </View>
 

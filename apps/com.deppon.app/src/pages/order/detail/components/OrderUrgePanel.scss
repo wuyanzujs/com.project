@@ -1,0 +1,78 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-urge-mask {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: $dp-layer-overlay;
+  padding: $dp-space-lg;
+  background: $dp-color-overlay-soft;
+}
+
+.order-urge-card {
+  padding: $dp-card-padding;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-card;
+}
+
+.order-urge-card__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-urge-card__content {
+  display: flex;
+  margin-top: $dp-space-14;
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.order-urge-card__actions {
+  margin-top: $dp-space-lg;
+}
+
+.order-urge-card__button,
+.order-urge-card__cancel {
+  align-items: center;
+  justify-content: center;
+  height: $dp-control-height-medium;
+  border-radius: $dp-radius-control;
+}
+
+.order-urge-card__button {
+  margin-top: $dp-space-xs;
+  background: $dp-color-bg-muted;
+}
+
+.order-urge-card__button--primary {
+  background: $dp-color-brand;
+}
+
+.order-urge-card__button-text,
+.order-urge-card__cancel-text {
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-urge-card__button-text {
+  color: $dp-color-text-body;
+}
+
+.order-urge-card__button-text--primary {
+  color: $dp-color-text-inverse;
+}
+
+.order-urge-card__cancel {
+  margin-top: $dp-space-xs;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border;
+  border-width: $dp-border-width-hairline;
+}
+
+.order-urge-card__cancel-text {
+  color: $dp-color-text-supporting;
+}

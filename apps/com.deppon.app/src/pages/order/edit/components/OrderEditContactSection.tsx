@@ -2,7 +2,8 @@ import { Input, Text, View } from '@tarojs/components'
 
 import type { OrderEditContact } from '../../../../services/order'
 
-import '../index.scss'
+import './OrderEditContactSection.scss'
+import './OrderEditSection.scss'
 
 export function OrderEditContactSection(props: {
   title: string

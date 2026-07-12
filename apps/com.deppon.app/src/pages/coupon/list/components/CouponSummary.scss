@@ -1,0 +1,33 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.coupon-summary {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.coupon-summary__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.coupon-summary__count {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+}
+
+.coupon-summary__hint {
+  flex: 1;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+  text-align: right;
+}

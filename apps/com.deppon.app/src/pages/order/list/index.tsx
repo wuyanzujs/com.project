@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from '@tarojs/components'
+import { ScrollView } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useRef, useState } from 'react'
@@ -10,6 +10,7 @@ import {
   OrderRoleTabs,
   OrderSearchBar
 } from './components/OrderListSections'
+import { OrderSupportFloat } from './components/OrderSupportFloat'
 import { expressDraftBridge } from '../../../services/express'
 import {
   canDeleteOrder,
@@ -17,9 +18,8 @@ import {
   orderService
 } from '../../../services/order'
 import { LatestRequestCoordinator } from '../../../shared/async/latestRequest'
-import { AppIcon } from '../../../shared/components/AppIcon'
+import { AppPage } from '../../../shared/components'
 import AppTabBar from '../../../shared/components/AppTabBar'
-import { AppSafeAreaView, AppStatusBar } from '../../../shared/native'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -369,9 +369,13 @@ const OrderListPage = () => {
   }
 
   return (
-    <AppSafeAreaView backgroundColor='#f4f7fb' edges={[]}>
-      <AppStatusBar />
-      <AppSafeAreaView backgroundColor='#eef6ff' edges={['top']} fill={false}>
+    <AppPage
+      className='order-list-shell'
+      footer={<AppTabBar active='orderList' />}
+      safeArea='top'
+      statusBar='dark'
+    >
+      <>
         <OrderRoleTabs
           role={role}
           onChange={handleChangeRole}
@@ -385,7 +389,7 @@ const OrderListPage = () => {
           onSearch={handleSearch}
           onToggleFilter={() => setFilterVisible(current => !current)}
         />
-      </AppSafeAreaView>
+      </>
       {filterVisible && (
         <OrderFilterPanel
           orderStatus={orderStatus}
@@ -433,20 +437,10 @@ const OrderListPage = () => {
           onResendOrder={handleResendOrder}
         />
       </ScrollView>
-      <View
-        className='order-support-float'
-        onClick={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
-      >
-        <AppIcon
-          color='#16181a'
-          name='headphones'
-          size={34}
-          strokeWidth={2.1}
-        />
-        <Text className='order-support-float__text'>客服中心</Text>
-      </View>
-      <AppTabBar active='orderList' />
-    </AppSafeAreaView>
+      <OrderSupportFloat
+        onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
+      />
+    </AppPage>
   )
 }
 

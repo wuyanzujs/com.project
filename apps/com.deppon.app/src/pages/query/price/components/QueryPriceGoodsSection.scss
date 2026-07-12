@@ -1,0 +1,75 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.query-price-section__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.query-price-section__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.query-price-section__hint {
+  flex-shrink: 1;
+  margin-left: 16px;
+  color: $dp-color-warning-emphasis;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-legal;
+  text-align: right;
+}
+
+.query-price-field {
+  padding: 14px 0;
+}
+
+.query-price-field__label {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-legal;
+}
+
+.query-price-option-title {
+  display: flex;
+  margin: 18px 0 12px;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.query-price-chip-group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.query-price-chip {
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  height: 62px;
+  padding: 0 18px;
+  margin: 0 14px 14px 0;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.query-price-chip--active {
+  background: $dp-color-brand-soft;
+  border-color: $dp-color-brand;
+}
+
+.query-price-chip__text {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.query-price-chip__text--active {
+  color: $dp-color-brand;
+}

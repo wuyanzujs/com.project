@@ -1,0 +1,234 @@
+@use '../../../styles/_tokens.scss' as *;
+.real-name-header {
+  padding: 32px 24px 24px;
+  background: $dp-color-bg-card;
+}
+.real-name-header__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+.real-name-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+.real-name-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+.real-name-status,
+.real-name-card,
+.real-name-form,
+.real-name-rules {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+.real-name-status {
+  border-color: $dp-color-warning-border;
+  border-width: 1px;
+}
+.real-name-status--ok {
+  border-color: $dp-color-success-border;
+}
+.real-name-status__head,
+.real-name-card__actions,
+.real-name-native {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.real-name-status__label {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+}
+
+.real-name-status__title,
+.real-name-form__title,
+.real-name-rules__title,
+.real-name-native__title {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.real-name-status__badge {
+  padding: 8px 14px;
+  color: $dp-color-warning-text;
+  background: $dp-color-warning-background-subtle;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+.real-name-status__badge--ok {
+  color: $dp-color-success-text;
+  background: $dp-color-success-background-soft;
+}
+
+.real-name-status__summary,
+.real-name-form__summary,
+.real-name-card__hint,
+.real-name-native__summary,
+.real-name-rules__text {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.real-name-card {
+  background: $dp-color-bg-muted;
+}
+
+.real-name-card__name {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.real-name-card__id {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.real-name-card__actions {
+  margin-top: 22px;
+}
+
+.real-name-card__ghost-button,
+.real-name-card__danger-button {
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 68px;
+  border-radius: $dp-radius-sm;
+}
+
+.real-name-card__ghost-button {
+  margin-right: 14px;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border;
+  border-width: 1px;
+}
+
+.real-name-card__danger-button {
+  background: $dp-color-danger-background-soft;
+}
+
+.real-name-card__ghost-button-text,
+.real-name-card__danger-button-text {
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.real-name-card__ghost-button-text {
+  color: $dp-color-text-body;
+}
+
+.real-name-card__danger-button-text {
+  color: $dp-color-danger-text-strong;
+}
+
+.real-name-field {
+  margin-top: 22px;
+}
+
+.real-name-field__label {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.real-name-input {
+  height: 72px;
+  margin-top: 12px;
+  padding: 0 20px;
+  color: $dp-color-text-heading;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+  font-size: $dp-font-size-body-large;
+}
+
+.real-name-form__protocol {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 16px;
+}
+.real-name-form__protocol-text,
+.real-name-form__link {
+  flex-shrink: 1;
+  max-width: 100%;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+.real-name-form__protocol-text {
+  color: $dp-color-text-supporting;
+}
+.real-name-form__link {
+  color: $dp-color-brand;
+  font-weight: $dp-font-weight-bold;
+}
+
+.real-name-submit {
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  margin-top: 22px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.real-name-submit__text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+}
+
+.real-name-native {
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top-color: $dp-color-border-light;
+  border-top-width: 1px;
+}
+
+.real-name-native__summary {
+  max-width: 430px;
+}
+
+.real-name-native__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 124px;
+  height: 58px;
+  padding: 0 18px;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.real-name-native__button-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.real-name-rules__title {
+  margin-top: 0;
+}

@@ -9,6 +9,7 @@ import {
   createEmptyContact,
   validateContact
 } from '../../../services/contact'
+import { AppPressable, AppFormField } from '../../../shared/components'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
@@ -16,6 +17,7 @@ import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 import type { Contact } from '../../../services/contact'
 
 import './index.scss'
+import './content.scss'
 
 function getRoleByTarget(target: 'sender' | 'consignee'): Contact['type'] {
   return target === 'sender' ? 0 : 1
@@ -232,14 +234,14 @@ const ContactEditPage = () => {
       <View className='contact-edit-analysis'>
         <View className='contact-edit-analysis__head'>
           <Text className='contact-edit-analysis__title'>智能识别</Text>
-          <View
+          <AppPressable
             className='contact-edit-analysis__button'
-            onClick={handleAnalyze}
+            onPress={handleAnalyze}
           >
             <Text className='contact-edit-analysis__button-text'>
               {analyzing ? '识别中' : '识别'}
             </Text>
-          </View>
+          </AppPressable>
         </View>
         <Textarea
           className='contact-edit-analysis__input'
@@ -251,26 +253,28 @@ const ContactEditPage = () => {
       </View>
 
       <View className='contact-edit-form'>
-        <View className='contact-edit-row'>
-          <Text className='contact-edit-row__label'>联系人</Text>
-          <Input
-            className='contact-edit-input'
-            placeholder='请输入姓名'
-            value={contact.name}
-            onInput={event => updateContact({ name: event.detail.value })}
-          />
-        </View>
+        <AppFormField
+          className='contact-edit-row'
+          inputClassName='contact-edit-input'
+          label='联系人'
+          labelClassName='contact-edit-row__label'
+          placeholder='请输入姓名'
+          required
+          value={contact.name}
+          onChange={name => updateContact({ name })}
+        />
 
-        <View className='contact-edit-row'>
-          <Text className='contact-edit-row__label'>手机号</Text>
-          <Input
-            className='contact-edit-input'
-            placeholder='请输入手机号'
-            type='number'
-            value={contact.telephone}
-            onInput={event => updateContact({ telephone: event.detail.value })}
-          />
-        </View>
+        <AppFormField
+          className='contact-edit-row'
+          inputClassName='contact-edit-input'
+          label='手机号'
+          labelClassName='contact-edit-row__label'
+          placeholder='请输入手机号'
+          required
+          type='number'
+          value={contact.telephone}
+          onChange={telephone => updateContact({ telephone })}
+        />
 
         <View className='contact-edit-grid'>
           <View className='contact-edit-grid__item'>
@@ -328,14 +332,14 @@ const ContactEditPage = () => {
           <Text className='contact-edit-address-tools__hint'>
             已填写详细地址时，可尝试补全省市区和乡镇街道。
           </Text>
-          <View
+          <AppPressable
             className='contact-edit-address-tools__button'
-            onClick={handleRefineAddress}
+            onPress={handleRefineAddress}
           >
             <Text className='contact-edit-address-tools__button-text'>
               {refiningAddress ? '补全中' : '补全地址'}
             </Text>
-          </View>
+          </AppPressable>
         </View>
 
         <View className='contact-edit-row'>
@@ -352,14 +356,14 @@ const ContactEditPage = () => {
           <Text className='contact-edit-row__label'>地址类型</Text>
           <View className='contact-edit-switch'>
             {([0, 1] as const).map(type => (
-              <View
+              <AppPressable
                 className={
                   contact.type === type
                     ? 'contact-edit-chip contact-edit-chip--active'
                     : 'contact-edit-chip'
                 }
                 key={type}
-                onClick={() => updateContact({ type })}
+                onPress={() => updateContact({ type })}
               >
                 <Text
                   className={
@@ -370,7 +374,7 @@ const ContactEditPage = () => {
                 >
                   {type === 0 ? '寄件人' : '收件人'}
                 </Text>
-              </View>
+              </AppPressable>
             ))}
           </View>
         </View>
@@ -387,11 +391,11 @@ const ContactEditPage = () => {
         </View>
       )}
 
-      <View className='contact-edit-submit' onClick={handleSave}>
+      <AppPressable className='contact-edit-submit' onPress={handleSave}>
         <Text className='contact-edit-submit__text'>
           {saving ? '保存中' : '保存地址'}
         </Text>
-      </View>
+      </AppPressable>
     </ScrollView>
   )
 }

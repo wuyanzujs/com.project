@@ -1,0 +1,34 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.coupon-exchange {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 20px 24px 0;
+}
+
+.coupon-exchange__input {
+  flex: 1;
+  height: 68px;
+  padding: 0 20px;
+  color: $dp-color-text-heading;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-body-large;
+}
+
+.coupon-exchange__button {
+  align-items: center;
+  justify-content: center;
+  width: 112px;
+  height: 68px;
+  margin-left: 12px;
+  background: $dp-color-bg-inverse;
+  border-radius: $dp-radius-sm;
+}
+
+.coupon-exchange__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}

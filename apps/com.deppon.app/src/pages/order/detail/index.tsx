@@ -3,23 +3,23 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useMemo, useState } from 'react'
 
+import { OrderAddressSection } from './components/OrderAddressSection'
 import {
   OrderDetailFooterActions,
-  OrderPickupSchedulePanel,
-  OrderServiceActions,
-  OrderUrgePanel
-} from './components/OrderDetailActionSections'
+  OrderPublicTrackActions
+} from './components/OrderDetailActions'
+import { OrderDetailHeader } from './components/OrderDetailHeader'
 import {
-  OrderAddressSection,
   OrderDetailEmpty,
-  OrderDetailHeader,
-  OrderDetailLoading,
-  OrderPaymentAlert,
-  OrderPublicTrackActions,
-  OrderStubEntryCard,
-  OrderTrackSection,
-  OrderTransportSection
-} from './components/OrderDetailSections'
+  OrderDetailLoading
+} from './components/OrderDetailStates'
+import { OrderPaymentAlert } from './components/OrderPaymentAlert'
+import { OrderPickupSchedulePanel } from './components/OrderPickupSchedulePanel'
+import { OrderServiceActions } from './components/OrderServiceActions'
+import { OrderStubEntryCard } from './components/OrderStubEntryCard'
+import { OrderTrackSection } from './components/OrderTrackSection'
+import { OrderTransportSection } from './components/OrderTransportSection'
+import { OrderUrgePanel } from './components/OrderUrgePanel'
 import { useOrderPickupSchedule } from './hooks/useOrderPickupSchedule'
 import { useOrderSubscription } from './hooks/useOrderSubscription'
 import { expressDraftBridge } from '../../../services/express'
@@ -41,7 +41,7 @@ import { payWithApp } from '../../../shared/platform/payment'
 import { PhoneNumberError, dialPhone } from '../../../shared/platform/phone'
 import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
-import type { OrderDetailUrgePanelState } from './components/OrderDetailActionSections'
+import type { OrderDetailUrgePanelState } from './components/OrderUrgePanel'
 import type {
   OrderDetail,
   OrderDetailActionView,
@@ -885,7 +885,7 @@ const OrderDetailPage = () => {
         <OrderDetailEmpty
           title={errorMessage || '未查询到订单'}
           buttonText='返回订单列表'
-          onClick={handleBackToList}
+          onPress={handleBackToList}
         />
       )}
 
@@ -893,7 +893,7 @@ const OrderDetailPage = () => {
         <OrderDetailEmpty
           title={errorMessage || '未查询到物流轨迹'}
           buttonText='返回首页'
-          onClick={handleBackToList}
+          onPress={handleBackToList}
         />
       )}
 

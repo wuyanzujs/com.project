@@ -1,6 +1,12 @@
 import { Text, View } from '@tarojs/components'
 
 import { getExpressContactFullAddress } from '../../../services/express'
+import { AppPressable } from '../../../shared/components'
+import { AppIcon } from '../../../shared/components/AppIcon'
+import {
+  APP_NATIVE_TOKENS,
+  APP_STYLE_COLORS
+} from '../../../styles/nativeTokens'
 
 import type {
   ExpressContact,
@@ -8,7 +14,7 @@ import type {
   ExpressDraft
 } from '../../../services/express'
 
-import '../index.scss'
+import './ExpressContactPanel.scss'
 
 interface ExpressContactCardProps {
   contact: ExpressContact | null
@@ -36,43 +42,55 @@ function ExpressContactCard({
   onCreateContact,
   onSelectContact
 }: ExpressContactCardProps) {
+  const contentLabel = contact ? `编辑${placeholder}` : `新增${placeholder}`
+  const addressText = contact
+    ? getExpressContactFullAddress(contact)
+    : `请选择${placeholder.replace('人', '地址')}`
+
   return (
-    <View className='express-contact-card'>
-      <View
-        className={`express-contact-card__mark express-contact-card__mark--${markType}`}
+    <View className={`express-contact-card express-contact-card--${markType}`}>
+      <AppPressable
+        accessibilityLabel={contentLabel}
+        className='express-contact-card__main'
+        flex
+        layout='row-start'
+        onPress={() => onCreateContact(target)}
       >
-        <Text className='express-contact-card__mark-text'>{mark}</Text>
-      </View>
-      <View className='express-contact-card__content'>
-        {contact ? (
-          <>
-            <Text className='express-contact-card__name'>
-              {contact.name} {contact.mobile}
-            </Text>
-            <Text className='express-contact-card__address'>
-              {getExpressContactFullAddress(contact)}
-            </Text>
-          </>
-        ) : (
-          <>
-            <Text className='express-contact-card__name'>{placeholder}</Text>
-            <Text className='express-contact-card__address'>
-              请选择{placeholder.replace('人', '地址')}
-            </Text>
-          </>
-        )}
-      </View>
-      <View className='express-contact-card__actions'>
-        <Text className='express-link' onClick={() => onSelectContact(target)}>
-          地址簿
-        </Text>
-        <Text
-          className='express-link express-link--quiet'
-          onClick={() => onCreateContact(target)}
+        <View
+          className={`express-contact-card__mark express-contact-card__mark--${markType}`}
         >
-          新增
-        </Text>
-      </View>
+          <Text
+            className={`express-contact-card__mark-text express-contact-card__mark-text--${markType}`}
+          >
+            {mark}
+          </Text>
+        </View>
+        <View className='express-contact-card__content'>
+          <View className='express-contact-card__identity'>
+            <Text className='express-contact-card__name'>
+              {contact?.name || placeholder}
+            </Text>
+            {contact ? (
+              <Text className='express-contact-card__mobile'>
+                {contact.mobile}
+              </Text>
+            ) : null}
+          </View>
+          <Text className='express-contact-card__address'>{addressText}</Text>
+        </View>
+      </AppPressable>
+      <AppPressable
+        accessibilityLabel={`从地址簿选择${placeholder}`}
+        className='express-contact-card__address-book'
+        onPress={() => onSelectContact(target)}
+      >
+        <AppIcon
+          color={APP_STYLE_COLORS.text.secondary}
+          name='bookUser'
+          size={APP_NATIVE_TOKENS.icon.default}
+        />
+        <Text className='express-contact-card__address-book-text'>地址簿</Text>
+      </AppPressable>
     </View>
   )
 }
@@ -94,11 +112,21 @@ export function ExpressContactPanel({
         onCreateContact={onCreateContact}
         onSelectContact={onSelectContact}
       />
-
-      <View className='express-swap' onClick={onSwapContacts}>
-        <Text className='express-swap__text'>互换</Text>
+      <View className='express-contact-panel__swap-row'>
+        <AppPressable
+          accessibilityLabel='互换寄收件人'
+          className='express-swap'
+          layout='row-center'
+          onPress={onSwapContacts}
+        >
+          <AppIcon
+            color={APP_STYLE_COLORS.text.supporting}
+            name='chevronDown'
+            size={APP_NATIVE_TOKENS.icon.small}
+          />
+          <Text className='express-swap__text'>互换</Text>
+        </AppPressable>
       </View>
-
       <ExpressContactCard
         contact={draft.consignee}
         mark='收'

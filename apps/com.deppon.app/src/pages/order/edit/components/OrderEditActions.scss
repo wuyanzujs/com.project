@@ -1,0 +1,42 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-edit-actions {
+  display: flex;
+  flex-direction: row;
+  padding: $dp-space-lg;
+}
+
+.order-edit-actions__primary,
+.order-edit-actions__secondary {
+  align-items: center;
+  justify-content: center;
+  height: $dp-button-height;
+  border-radius: $dp-radius-sm;
+}
+
+.order-edit-actions__secondary {
+  width: 180px;
+  background: $dp-color-bg-muted;
+}
+
+.order-edit-actions__primary {
+  flex: 1;
+  margin-left: $dp-space-xs;
+  background: $dp-color-brand;
+}
+
+.order-edit-actions__primary--disabled {
+  background: $dp-color-text-muted;
+}
+
+.order-edit-actions__primary-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-edit-actions__secondary-text {
+  color: $dp-color-text-primary;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}

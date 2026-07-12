@@ -1,0 +1,208 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.subscriptions-header,
+.subscriptions-toolbar,
+.subscription-card__top,
+.subscription-card__route,
+.subscription-card__meta,
+.subscription-card__actions {
+  display: flex;
+  flex-direction: row;
+}
+
+.subscriptions-header {
+  align-items: center;
+  justify-content: space-between;
+  padding: $dp-space-xl $dp-space-lg $dp-space-lg;
+  background: $dp-color-bg-card;
+}
+
+.subscriptions-header__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.subscriptions-header__title {
+  display: flex;
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-primary;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-page-title;
+}
+
+.subscriptions-header__count {
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.subscriptions-header__count-text {
+  color: $dp-color-text-primary;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.subscriptions-toolbar {
+  align-items: center;
+  justify-content: space-between;
+  margin: $dp-space-md $dp-space-lg 0;
+}
+
+.subscriptions-toolbar__summary {
+  flex: 1;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-small;
+}
+
+.subscriptions-toolbar__button,
+.subscription-card__button,
+.subscriptions-empty__button {
+  align-items: center;
+  justify-content: center;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.subscriptions-toolbar__button {
+  width: 140px;
+  height: 60px;
+}
+
+.subscriptions-toolbar__button-text,
+.subscription-card__button-text,
+.subscriptions-empty__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.subscriptions-content {
+  padding: 0 $dp-space-lg;
+}
+
+.subscription-card {
+  margin-top: $dp-space-md;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.subscription-card__body {
+  padding: $dp-card-padding;
+}
+
+.subscription-card__top,
+.subscription-card__meta {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subscription-card__status {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.subscription-card__type {
+  padding: 6px $dp-space-xs;
+  color: $dp-color-text-secondary;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.subscription-card__route {
+  align-items: center;
+  margin-top: $dp-space-lg;
+}
+
+.subscription-card__party {
+  flex: 1;
+}
+
+.subscription-card__party--end {
+  align-items: flex-end;
+}
+
+.subscription-card__city {
+  color: $dp-color-text-primary;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.subscription-card__name,
+.subscription-card__time {
+  margin-top: $dp-space-xxs;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-small;
+}
+
+.subscription-card__arrow {
+  margin: 0 $dp-space-lg;
+  color: $dp-color-text-muted;
+  font-size: $dp-font-size-title;
+}
+
+.subscription-card__meta {
+  margin-top: $dp-space-lg;
+  padding-top: $dp-space-sm;
+  border-top-color: $dp-color-border-light;
+  border-top-width: 1px;
+}
+
+.subscription-card__number {
+  flex: 1;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-small;
+}
+
+.subscription-card__time {
+  margin-top: 0;
+  margin-left: $dp-space-sm;
+}
+
+.subscription-card__actions {
+  justify-content: flex-end;
+  padding: 0 $dp-card-padding $dp-card-padding;
+}
+
+.subscription-card__button {
+  min-width: 150px;
+  height: 62px;
+  padding: 0 $dp-space-sm;
+  margin-left: $dp-space-xs;
+}
+
+.subscription-card__button--quiet {
+  background: $dp-color-bg-muted;
+}
+
+.subscription-card__button-text--quiet {
+  color: $dp-color-text-primary;
+}
+
+.subscriptions-empty {
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+  margin-top: $dp-space-md;
+  padding: $dp-card-padding;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.subscriptions-empty__title {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-large;
+}
+
+.subscriptions-empty__button {
+  width: 180px;
+  height: 64px;
+  margin-top: $dp-space-lg;
+}

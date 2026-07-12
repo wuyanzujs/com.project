@@ -1,0 +1,21 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-contact-panel { margin-bottom: $dp-space-14; padding: $dp-space-12; background: $dp-color-bg-card; border-radius: $dp-radius-card; }
+.express-contact-card { display: flex; flex-direction: row; align-items: center; min-height: $dp-control-height-large; border-radius: $dp-radius-card; }
+.express-contact-card--consignee { background: $dp-color-bg-muted; }
+.express-contact-card__main { display: flex; flex: 1; flex-shrink: 1; flex-direction: row; align-items: center; justify-content: flex-start; min-width: 0; padding: $dp-space-8 $dp-space-8 $dp-space-8 $dp-space-4; }
+.express-contact-card__mark { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: $dp-space-48; height: $dp-space-48; margin-right: $dp-space-12; border-radius: $dp-radius-8; }
+.express-contact-card__mark--sender { background: $dp-color-brand-soft; }
+.express-contact-card__mark--consignee { background: $dp-color-warning-background-soft; }
+.express-contact-card__mark-text { color: $dp-color-text-heading; font-size: $dp-font-size-label; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-body; text-align: center; }
+.express-contact-card__mark-text--consignee { color: $dp-color-warning-text; }
+.express-contact-card__content { flex: 1; min-width: 0; }
+.express-contact-card__identity { display: flex; flex-direction: row; align-items: center; min-width: 0; }
+.express-contact-card__name { flex-shrink: 1; color: $dp-color-text-heading; font-size: $dp-font-size-label; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-body; }
+.express-contact-card__mobile { flex-shrink: 1; margin-left: $dp-space-8; color: $dp-color-text-secondary; font-size: $dp-font-size-body-small; line-height: $dp-line-height-body; }
+.express-contact-card__address { display: flex; flex-shrink: 1; margin-top: $dp-space-4; color: $dp-color-text-supporting; font-size: $dp-font-size-body-small; line-height: $dp-line-height-body-small; }
+.express-contact-card__address-book { align-items: center; justify-content: center; min-width: $dp-touch-target-min; min-height: $dp-touch-target-min; margin-right: $dp-space-4; padding: $dp-space-4; }
+.express-contact-card__address-book-text { margin-top: $dp-space-2; color: $dp-color-text-secondary; font-size: $dp-font-size-fine; line-height: $dp-line-height-fine; }
+.express-contact-panel__swap-row { display: flex; align-items: center; justify-content: flex-end; min-height: $dp-touch-target-min; }
+.express-swap { display: flex; flex-shrink: 0; flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: center; min-width: $dp-space-96; min-height: $dp-touch-target-min; padding: 0 $dp-space-8; border-color: $dp-color-border-default; border-radius: $dp-radius-pill; border-width: $dp-border-width-hairline; }
+.express-swap__text { margin-left: $dp-space-4; color: $dp-color-text-secondary; font-size: $dp-font-size-fine; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-fine; }

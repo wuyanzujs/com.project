@@ -1,0 +1,27 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-detail-section {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.order-detail-section__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.order-detail-section__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-detail-section__hint {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}

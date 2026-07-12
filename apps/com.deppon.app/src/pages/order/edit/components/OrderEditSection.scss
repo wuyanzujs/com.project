@@ -1,0 +1,58 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-edit-section {
+  margin: $dp-space-md $dp-space-lg 0;
+  padding: $dp-card-padding;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.order-edit-section__title {
+  color: $dp-color-text-primary;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-edit-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 76px;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: 1px;
+}
+
+.order-edit-row--last {
+  border-bottom-width: 0;
+}
+
+.order-edit-row__label {
+  width: 132px;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+}
+
+.order-edit-input {
+  flex: 1;
+  height: 72px;
+  color: $dp-color-text-primary;
+  font-size: $dp-font-size-body-large;
+  text-align: right;
+}
+
+.order-edit-region__label {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-edit-region__input {
+  height: 68px;
+  padding: 0 $dp-space-xs;
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-primary;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-body;
+  text-align: center;
+}

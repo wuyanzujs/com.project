@@ -10,6 +10,7 @@ import {
   expressDraftStorage,
   markExpressQuoteStale
 } from '../../../services/express'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -18,6 +19,7 @@ import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 import type { CouponDetailView, CouponStatus } from '../../../services/coupon'
 
 import './index.scss'
+import './content.scss'
 
 const ROUTE_STATUSES: CouponStatus[] = [
   'AVAILABLE',
@@ -213,9 +215,13 @@ const CouponDetailPage = () => {
           <Text className='coupon-detail-empty__summary'>
             请从我的优惠券列表进入详情。
           </Text>
-          <View className='coupon-detail-empty__button' onClick={handleBackToList}>
+          <AppPressable
+            accessibilityLabel='返回优惠券'
+            className='coupon-detail-empty__button'
+            onPress={handleBackToList}
+          >
             <Text className='coupon-detail-empty__button-text'>返回优惠券</Text>
-          </View>
+          </AppPressable>
         </View>
       </View>
     )
@@ -239,21 +245,25 @@ const CouponDetailPage = () => {
           详情规则用于下单前参考，最终可用性以价格时效和下单校验结果为准。
         </Text>
         <View className='coupon-detail-actions'>
-          <View
+          <AppPressable
+            accessibilityLabel='返回优惠券列表'
             className='coupon-detail-action coupon-detail-action--ghost'
-            onClick={handleBackToList}
+            onPress={handleBackToList}
           >
             <Text className='coupon-detail-action__text coupon-detail-action__text--ghost'>
               返回列表
             </Text>
-          </View>
-          <View
+          </AppPressable>
+          <AppPressable
+            accessibilityLabel={canUse ? '去使用优惠券' : STATUS_TEXT[routeStatus]}
+            allowDisabledPress={!canUse}
+            disabled={!canUse}
             className={
               canUse
                 ? 'coupon-detail-action'
                 : 'coupon-detail-action coupon-detail-action--disabled'
             }
-            onClick={handleUseCoupon}
+            onPress={handleUseCoupon}
           >
             <Text
               className={
@@ -264,7 +274,7 @@ const CouponDetailPage = () => {
             >
               {canUse ? '去使用' : STATUS_TEXT[routeStatus]}
             </Text>
-          </View>
+          </AppPressable>
         </View>
       </View>
 

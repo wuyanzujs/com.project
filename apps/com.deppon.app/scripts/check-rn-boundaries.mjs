@@ -244,6 +244,44 @@ const forbiddenPatterns = [
     fileExtensions: ['.scss']
   },
   {
+    pattern:
+      /\b(?:repeating-)?(?:linear|radial|conic)-gradient\s*\(/gi,
+    message:
+      'RN 样式禁止 gradient，请使用 Image 或可跨端渲染的视觉资产。',
+    fileExtensions: ['.scss']
+  },
+  {
+    pattern: /::[A-Za-z][A-Za-z0-9-]*/g,
+    message: 'RN 样式不支持伪元素，请给目标元素添加独立语义类。',
+    fileExtensions: ['.scss']
+  },
+  {
+    pattern: /\belevation\s*:/g,
+    message: '页面样式不能直接使用 elevation，请使用共享跨端视觉组件。',
+    fileExtensions: ['.scss'],
+    includeRelativePathPrefixes: ['src/pages/']
+  },
+  {
+    pattern: /\belevation\s*:/g,
+    message: '页面原生样式不能直接使用 elevation，请使用共享跨端视觉组件。',
+    fileExtensions: ['.ts', '.tsx'],
+    includeRelativePathPrefixes: ['src/pages/']
+  },
+  {
+    pattern:
+      /\bimport\s+((?:(?!\bimport\b)[\s\S])*?\b(?:Pressable|TouchableHighlight|TouchableNativeFeedback|TouchableOpacity|TouchableWithoutFeedback)\b(?:(?!\bfrom\b)[\s\S])*?)\s+from\s+['"]react-native['"]/g,
+    message:
+      '点击控件必须统一使用 AppPressable/AppButton，禁止业务或其他 facade 直接引入 RN Pressable。',
+    allowRelativePaths: ['src/shared/native/AppNativePressable.tsx']
+  },
+  {
+    pattern:
+      /\b(?:const|let|var)\s*\{[^}]*\b(?:Pressable|TouchableHighlight|TouchableNativeFeedback|TouchableOpacity|TouchableWithoutFeedback)\b[^}]*\}\s*=\s*require\s*\(\s*['"]react-native['"]\s*\)/g,
+    message:
+      '点击控件必须统一使用 AppPressable/AppButton，禁止业务或其他 facade 直接引入 RN Pressable。',
+    allowRelativePaths: ['src/shared/native/AppNativePressable.tsx']
+  },
+  {
     pattern: /\bfloat\s*:/g,
     message: 'React Native 不支持 float，请使用 flex 布局。',
     fileExtensions: ['.scss']
@@ -466,6 +504,15 @@ function isAllowedByRule(rule, relativePath) {
   )
 }
 
+function isIncludedByRule(rule, relativePath) {
+  return (
+    !rule.includeRelativePathPrefixes ||
+    rule.includeRelativePathPrefixes.some(prefix =>
+      relativePath.startsWith(prefix)
+    )
+  )
+}
+
 const violations = []
 
 function checkPackageDependencies() {
@@ -584,6 +631,10 @@ for (const filePath of walkFiles(srcRoot)) {
       rule.fileExtensions &&
       !rule.fileExtensions.includes(path.extname(filePath))
     ) {
+      continue
+    }
+
+    if (!isIncludedByRule(rule, relativePath)) {
       continue
     }
 

@@ -1,0 +1,36 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.payment-fees {
+  margin-top: 16px;
+  padding: 16px;
+  background: $dp-color-bg-subtle;
+  border-radius: $dp-radius-sm;
+}
+
+.payment-fees__title {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.payment-fee-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.payment-fee-row__label,
+.payment-fee-row__amount {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+
+.payment-fee-row__amount {
+  color: $dp-color-text-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.payment-fee-row__amount--discount {
+  color: $dp-color-danger-text;
+}

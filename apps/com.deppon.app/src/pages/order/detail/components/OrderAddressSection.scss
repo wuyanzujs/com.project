@@ -1,0 +1,61 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-address-card {
+  display: flex;
+  flex-direction: row;
+  padding-top: 20px;
+}
+
+.order-address-card__tag {
+  width: 42px;
+  height: 42px;
+  margin-right: 16px;
+  color: $dp-color-text-heading;
+  background: $dp-color-brand-soft;
+  border-radius: $dp-radius-tag;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-title;
+  text-align: center;
+}
+
+.order-address-card__tag--receive {
+  background: $dp-color-success-background-soft;
+}
+
+.order-address-card__content {
+  flex: 1;
+}
+
+.order-address-card__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order-address-card__name {
+  flex: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body;
+}
+
+.order-address-card__call-target {
+  margin-left: 14px;
+}
+
+.order-address-card__call {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-address-card__address {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}

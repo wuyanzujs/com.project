@@ -897,13 +897,13 @@ APP_RUNTIME_CONFIG.omsChannel
 - `services/sign/sign.api.ts`：封装实名姓名是否存在、保存实名姓名和查询签收码三个接口。
 - `services/sign/sign.service.ts`：归一实名状态、签收码、签收二维码 payload、签收人姓名、有效期文案和页面状态，页面只消费 `SignCodeView`。
 - `pages/sign/code`：支持进入后自动校验实名状态；未登记实名时可填写 2-20 字符真实姓名并保存；已实名时可查询、刷新和复制签收码。
-- `shared/components/QRCodeMatrix`：使用 App 显式依赖 `qrcode` 生成 QR 矩阵，再用 Taro `View` 渲染，不复用小程序 canvas/image 生成工具。
+- `pages/sign/code/components/QRCodeMatrix`：使用 App 显式依赖 `qrcode` 生成 QR 矩阵，再用 Taro `View` 渲染；当前只有签收码页面消费，因此保持页面本地，不复用小程序 canvas/image 生成工具。
 - `pages/sign/code`：首期展示二维码、可复制文本签收码和风险提示。
 - `pages/mine` 和统一路由已接入 `APP_ROUTES.signCode`，签收码入口受登录守卫保护。
 
 关键约束：
 
-- 旧项目 `taro3-code/lib/weapp/utils/qrcode` 不进入 RN App；二维码展示由 App 共享组件和显式依赖 `qrcode` 承接。
+- 旧项目 `taro3-code/lib/weapp/utils/qrcode` 不进入 RN App；二维码展示由签收码页面本地组件和显式依赖 `qrcode` 承接。
 - 签收码页面只处理实名签收姓名登记，不直接承接身份证实名核验。
 - 签收码复制走 `shared/platform/clipboard.copyTextToClipboard`，不在页面直接使用小程序专属 API。
 - 出示签收码属于确认收货授权动作，页面保留异常拒签风险提示。

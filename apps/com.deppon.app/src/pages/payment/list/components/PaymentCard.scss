@@ -1,0 +1,141 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.payment-card {
+  padding: 24px;
+  margin-bottom: 16px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.payment-card__top,
+.payment-card__route,
+.payment-card__meta,
+.payment-card__actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.payment-card__number {
+  flex: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.payment-card__tags {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 12px;
+}
+
+.payment-card__tag {
+  padding: 6px 14px;
+  color: $dp-color-warning-text-strong;
+  background: $dp-color-warning-background;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.payment-card__status {
+  margin-left: 8px;
+  padding: 6px 14px;
+  color: $dp-color-success-text-strong;
+  background: $dp-color-success-background;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.payment-card__route {
+  padding: 24px 0;
+}
+
+.payment-card__city-block {
+  flex: 1;
+}
+
+.payment-card__city-block--right {
+  align-items: flex-end;
+}
+
+.payment-card__city {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.payment-card__name {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+}
+
+.payment-card__arrow {
+  width: 68px;
+  color: $dp-color-text-placeholder;
+  font-size: $dp-font-size-label-large;
+  text-align: center;
+}
+
+.payment-card__meta {
+  padding-top: 16px;
+  border-top-color: $dp-color-border-light;
+  border-top-width: 1px;
+}
+
+.payment-card__time {
+  flex: 1;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+}
+
+.payment-card__amount {
+  color: $dp-color-warning-emphasis;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.payment-card__actions {
+  justify-content: flex-end;
+  padding-top: 18px;
+}
+
+.payment-card__outline-button,
+.payment-card__primary-button {
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  height: 58px;
+  padding: 0 18px;
+  margin-left: 12px;
+  border-radius: $dp-radius-sm;
+}
+
+.payment-card__outline-button {
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border;
+  border-width: 1px;
+}
+
+.payment-card__primary-button {
+  background: $dp-color-brand;
+}
+
+.payment-card__outline-button-text,
+.payment-card__primary-button-text {
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.payment-card__outline-button-text {
+  color: $dp-color-text-body;
+}
+
+.payment-card__primary-button-text {
+  color: $dp-color-text-inverse;
+}

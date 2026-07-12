@@ -1,0 +1,29 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.query-price-grid {
+  display: flex;
+  flex-direction: row;
+}
+
+.query-price-input {
+  height: 62px;
+  margin-top: 14px;
+  padding: 0 16px;
+  color: $dp-color-text-heading;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-field-large;
+}
+
+.query-price-input--grid,
+.query-price-field--grid {
+  flex: 1;
+}
+
+.query-price-input--right,
+.query-price-field--right {
+  margin-left: 14px;
+}

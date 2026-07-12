@@ -1,10 +1,14 @@
 import { Text, View } from '@tarojs/components'
 
-import { APP_STYLE_COLORS } from '../../../styles/nativeTokens'
+import {
+  APP_NATIVE_TOKENS,
+  APP_STYLE_COLORS
+} from '../../../styles/nativeTokens'
 import { AppSafeAreaView } from '../../native'
 import { navigateToAppRoute } from '../../navigation/appNavigation'
 import { APP_MAIN_NAVIGATION } from '../../navigation/routes'
 import { AppIcon } from '../AppIcon'
+import { AppPressable } from '../AppPressable'
 
 import type { AppMainRouteName } from '../../navigation/routes'
 
@@ -42,10 +46,11 @@ const AppTabBar = ({ active }: AppTabBarProps) => {
             const isActive = item.name === active
 
             return (
-              <View
+              <AppPressable flex
+                accessibilityLabel={item.title}
                 className='app-tab-bar__item'
                 key={item.name}
-                onClick={() => handleNavigate(item.name, item.path)}
+                onPress={() => handleNavigate(item.name, item.path)}
               >
                 <View className='app-tab-bar__icon'>
                   <AppIcon
@@ -55,8 +60,12 @@ const AppTabBar = ({ active }: AppTabBarProps) => {
                         : APP_STYLE_COLORS.text.heading
                     }
                     name={TAB_ICONS[item.name]}
-                    size={30}
-                    strokeWidth={isActive ? 2.6 : 2.2}
+                    size={APP_NATIVE_TOKENS.icon.large}
+                    strokeWidth={
+                      isActive
+                        ? APP_NATIVE_TOKENS.icon.strokeActive
+                        : APP_NATIVE_TOKENS.icon.strokeSubtle
+                    }
                   />
                 </View>
                 <Text
@@ -68,7 +77,7 @@ const AppTabBar = ({ active }: AppTabBarProps) => {
                 >
                   {item.title}
                 </Text>
-              </View>
+              </AppPressable>
             )
           })}
         </View>

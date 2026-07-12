@@ -1,0 +1,62 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.query-price-contact {
+  padding: 8px 0 18px;
+}
+
+.query-price-contact__head,
+.query-price-contact__title-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.query-price-contact__title-row {
+  justify-content: flex-start;
+}
+
+.query-price-contact__mark {
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-right: 14px;
+  border-radius: $dp-radius-feature-card;
+}
+
+.query-price-contact__mark--sender {
+  background: $dp-color-brand-soft;
+}
+
+.query-price-contact__mark--consignee {
+  background: $dp-color-success-background-soft;
+}
+
+.query-price-contact__mark-text {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-heading;
+  text-align: center;
+}
+
+.query-price-contact__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.query-price-link {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.query-price-contact__summary {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}

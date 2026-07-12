@@ -1,5 +1,10 @@
 import { StatusBar } from 'react-native'
 
+import {
+  APP_NATIVE_TOKENS,
+  APP_STYLE_COLORS
+} from '../../styles/nativeTokens'
+
 interface AppStatusBarProps {
   backgroundColor?: string
   theme?: 'dark' | 'light'
@@ -7,9 +12,9 @@ interface AppStatusBarProps {
 }
 
 export function AppStatusBar({
-  backgroundColor = 'transparent',
-  theme = 'dark',
-  translucent = true
+  backgroundColor = APP_STYLE_COLORS.transparent,
+  theme = APP_NATIVE_TOKENS.statusBar.theme,
+  translucent = APP_NATIVE_TOKENS.statusBar.translucent
 }: AppStatusBarProps) {
   return (
     <StatusBar

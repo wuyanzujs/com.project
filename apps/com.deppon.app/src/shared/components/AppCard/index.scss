@@ -1,0 +1,35 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.app-card {
+  border-radius: $dp-radius-card;
+}
+
+.app-card--default {
+  background: $dp-color-bg-card;
+}
+
+.app-card--subtle {
+  background: $dp-color-bg-subtle;
+}
+
+.app-card--outlined {
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border-default;
+  border-width: $dp-space-1;
+}
+
+.app-card--brand-soft {
+  background: $dp-color-brand-faint;
+}
+
+.app-card--padding-none {
+  padding: 0;
+}
+
+.app-card--padding-compact {
+  padding: $dp-space-sm;
+}
+
+.app-card--padding-default {
+  padding: $dp-card-padding;
+}

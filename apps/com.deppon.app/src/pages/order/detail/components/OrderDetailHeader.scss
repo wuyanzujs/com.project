@@ -1,0 +1,45 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-detail-header {
+  padding: 32px 24px 24px;
+  background: $dp-color-bg-card;
+}
+
+.order-detail-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-detail-header__summary-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.order-detail-header__summary {
+  display: flex;
+  flex: 1;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body;
+}
+
+.order-detail-header__copy {
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 52px;
+  margin-left: 16px;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.order-detail-header__copy-text {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}

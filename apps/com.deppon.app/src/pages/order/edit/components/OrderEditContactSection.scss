@@ -1,0 +1,15 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-edit-region {
+  display: flex;
+  flex-direction: row;
+  margin-top: $dp-space-md;
+}
+
+.order-edit-region__item {
+  flex: 1;
+}
+
+.order-edit-region__item--middle {
+  margin: 0 $dp-space-xs;
+}

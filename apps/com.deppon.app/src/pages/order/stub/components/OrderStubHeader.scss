@@ -1,0 +1,22 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-stub-header {
+  padding: $dp-space-xl $dp-page-horizontal-padding $dp-space-lg;
+  background: $dp-color-bg-card;
+}
+
+.order-stub-header__title {
+  display: flex;
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-stub-header__summary {
+  display: flex;
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body;
+}

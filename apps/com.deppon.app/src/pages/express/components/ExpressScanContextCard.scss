@@ -1,0 +1,56 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-scan-context {
+  margin: 0 0 18px;
+  padding: 16px;
+  background: $dp-color-info-background;
+  border-color: $dp-color-info-border;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.express-scan-context--success {
+  background: $dp-color-success-background-subtle;
+  border-color: $dp-color-success-border;
+}
+
+.express-scan-context__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.express-scan-context__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-caption;
+}
+
+.express-scan-context__tag {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-legal;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-legal;
+}
+
+.express-scan-context__summary {
+  display: flex;
+  margin-top: 6px;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-legal;
+  line-height: $dp-line-height-legal;
+}
+
+.express-scan-context__action {
+  align-self: flex-end;
+  margin-top: 10px;
+}
+
+.express-scan-context__action-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-caption;
+}

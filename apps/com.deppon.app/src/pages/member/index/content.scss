@@ -1,0 +1,203 @@
+@use '../../../styles/_tokens.scss' as *;
+.member-header {
+  padding: 32px 24px 24px;
+  background: $dp-color-bg-card;
+}
+
+.member-header__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.member-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.member-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.member-card,
+.member-section {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.member-card--hero {
+  background: $dp-color-text-strong;
+}
+
+.member-card__top,
+.member-actions,
+.member-benefit {
+  display: flex;
+  flex-direction: row;
+}
+
+.member-card__top,
+.member-benefit {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.member-card__label {
+  color: $dp-color-text-placeholder;
+  font-size: $dp-font-size-body-small;
+}
+
+.member-card__title {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-heading-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.member-card__title--hero {
+  color: $dp-color-text-inverse;
+}
+
+.member-card__badge {
+  padding: 8px 16px;
+  color: $dp-color-warning-text-dark;
+  background: $dp-color-warning-background-soft;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.member-card__badge--dark {
+  color: $dp-color-text-inverse;
+  background: $dp-color-brand;
+}
+
+.member-card__summary {
+  display: flex;
+  margin-top: 16px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.member-card__summary--hero {
+  color: $dp-color-text-disabled;
+}
+
+.member-progress {
+  height: 16px;
+  margin-top: 28px;
+  overflow: hidden;
+  background: $dp-color-bg-strong;
+  border-radius: $dp-radius-sm;
+}
+
+.member-progress__bar {
+  height: 16px;
+  background: $dp-color-warning-accent;
+  border-radius: $dp-radius-sm;
+}
+
+.member-actions {
+  justify-content: flex-end;
+  padding-top: 22px;
+}
+
+.member-action {
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  height: 60px;
+  padding: 0 18px;
+  margin-left: 14px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.member-action--ghost {
+  background: $dp-color-bg-muted;
+}
+
+.member-action__text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.member-action__text--ghost {
+  color: $dp-color-text-body;
+}
+
+.member-section__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.member-benefit {
+  padding: 20px 0;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: 1px;
+}
+
+.member-benefit__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+}
+
+.member-benefit__summary {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.member-benefit__tag {
+  padding: 6px 14px;
+  margin-left: 16px;
+  color: $dp-color-success-text-deep;
+  background: $dp-color-success-background;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.member-benefit__tag--pending {
+  color: $dp-color-status-warning-text;
+  background: $dp-color-warning-background;
+}
+
+.member-benefit__tag--web {
+  color: $dp-color-brand;
+  background: $dp-color-brand-soft;
+}
+
+.member-empty {
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+}
+
+.member-empty__title,
+.member-loading {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  text-align: center;
+}
+
+.member-loading {
+  display: flex;
+  padding: 20px 0 36px;
+}

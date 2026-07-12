@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 
 import { CACHE_KEYS, dpCache } from '../../../cache'
 import { invoiceService } from '../../../services/invoice'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -17,7 +18,9 @@ import type {
   InvoiceTaxpayerView
 } from '../../../services/invoice'
 
+
 import './index.scss'
+import './content.scss'
 
 const BILL_CATEGORY_OPTIONS: Array<{
   label: string
@@ -244,12 +247,12 @@ const InvoiceApplyPage = () => {
           <Text className='invoice-apply-empty__summary'>
             请从发票中心选择可开票运单或储值卡记录后再申请。
           </Text>
-          <View
+          <AppPressable
             className='invoice-apply-empty__button'
-            onClick={() => navigateToAppRoute(APP_ROUTES.invoiceCenter)}
+            onPress={() => navigateToAppRoute(APP_ROUTES.invoiceCenter)}
           >
             <Text className='invoice-apply-empty__button-text'>返回发票中心</Text>
-          </View>
+          </AppPressable>
         </View>
       </View>
     )
@@ -289,14 +292,14 @@ const InvoiceApplyPage = () => {
           <Text className='invoice-apply-section__title'>发票类型</Text>
         </View>
         {billCategoryOptions.map((item) => (
-          <View
+          <AppPressable
             className={
               item.value === billCategory
                 ? 'invoice-apply-option invoice-apply-option--active'
                 : 'invoice-apply-option'
             }
             key={item.value}
-            onClick={() =>
+            onPress={() =>
               applyMode === 'ecard'
                 ? setBillCategory('06')
                 : setBillCategory(item.value)
@@ -317,34 +320,34 @@ const InvoiceApplyPage = () => {
             >
               {item.value === billCategory ? '✓' : ''}
             </Text>
-          </View>
+          </AppPressable>
         ))}
       </View>
 
       <View className='invoice-apply-section'>
         <View className='invoice-apply-section__head'>
           <Text className='invoice-apply-section__title'>发票抬头</Text>
-          <View
+          <AppPressable
             className='invoice-apply-link'
-            onClick={() =>
+            onPress={() =>
               navigateToAppRoute(APP_ROUTES.invoiceTaxpayerList, {
                 login: true
               })
             }
           >
             <Text className='invoice-apply-link__text'>管理</Text>
-          </View>
+          </AppPressable>
         </View>
 
         {taxpayers.map((item) => (
-          <View
+          <AppPressable
             className={
               item.id === selectedTaxpayerId
                 ? 'invoice-apply-taxpayer invoice-apply-taxpayer--active'
                 : 'invoice-apply-taxpayer'
             }
             key={item.id}
-            onClick={() => setSelectedTaxpayerId(item.id)}
+            onPress={() => setSelectedTaxpayerId(item.id)}
           >
             <View>
               <Text className='invoice-apply-taxpayer__title'>{item.name}</Text>
@@ -355,7 +358,7 @@ const InvoiceApplyPage = () => {
             {item.isDefault && (
               <Text className='invoice-apply-taxpayer__tag'>默认</Text>
             )}
-          </View>
+          </AppPressable>
         ))}
 
         {!taxpayers.length && !loading && (
@@ -437,13 +440,13 @@ const InvoiceApplyPage = () => {
         )}
       </View>
 
-      <View
+      <AppPressable
         className={
           submitting
             ? 'invoice-apply-submit invoice-apply-submit--disabled'
             : 'invoice-apply-submit'
         }
-        onClick={handleSubmit}
+        onPress={handleSubmit}
       >
         <Text className='invoice-apply-submit__amount'>
           {getMoneyText(applyAmount)}
@@ -451,7 +454,7 @@ const InvoiceApplyPage = () => {
         <Text className='invoice-apply-submit__text'>
           {submitting ? '提交中...' : '提交申请'}
         </Text>
-      </View>
+      </AppPressable>
     </ScrollView>
   )
 }

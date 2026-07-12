@@ -1,0 +1,71 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.mine-hero {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 192px;
+  padding: 84px 28px 4px;
+  overflow: hidden;
+}
+
+.mine-hero__background {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mine-profile {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  min-width: 0;
+  height: 104px;
+}
+
+.mine-profile__avatar {
+  width: 98px;
+  height: 98px;
+  margin-right: 28px;
+}
+
+.mine-profile__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.mine-profile__name {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-field;
+}
+
+.mine-profile__summary {
+  display: flex;
+  margin-top: 4px;
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.mine-hero__message {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: $dp-touch-target-min;
+  min-height: $dp-touch-target-min;
+}
+
+.mine-hero__message-image {
+  width: 48px;
+  height: 48px;
+}

@@ -1,13 +1,14 @@
-import { Input, ScrollView, Text, View } from '@tarojs/components'
+import { ScrollView, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useRef, useState } from 'react'
 
-import PaymentFeeRows from './components/PaymentFeeRows'
+import { PaymentCard } from './components/PaymentCard'
+import { PaymentListControls } from './components/PaymentListControls'
+import { PaymentListStates } from './components/PaymentListStates'
 import {
   createPaymentEvaluateWebUri,
   getPaymentItemAmount,
-  getPaymentOrderTypeLabel,
   paymentService
 } from '../../../services/payment'
 import { LatestRequestCoordinator } from '../../../shared/async/latestRequest'
@@ -28,29 +29,6 @@ import type {
 import './index.scss'
 
 const PAGE_SIZE = 10
-
-const PAYMENT_STATUS_TABS: Array<{ label: string; value: PaymentListStatus }> =
-  [
-    {
-      label: '待支付',
-      value: 'UNPAID'
-    },
-    {
-      label: '已支付',
-      value: 'PAID'
-    }
-  ]
-
-const PAYMENT_ROLE_TABS: Array<{ label: string; value: PaymentRole }> = [
-  {
-    label: '我寄的',
-    value: 'sender'
-  },
-  {
-    label: '我收的',
-    value: 'receive'
-  }
-]
 
 function getPaymentItemKey(item: PaymentItem) {
   return item.accountStatementDetailNo || item.waybillNum
@@ -277,187 +255,41 @@ const PaymentListPage = () => {
       onScrollToLower={handleLoadMore}
       scrollY
     >
-      <View className='payment-status-tabs'>
-        {PAYMENT_STATUS_TABS.map(tab => (
-          <View
-            className={
-              tab.value === status
-                ? 'payment-status-tab payment-status-tab--active'
-                : 'payment-status-tab'
-            }
-            key={tab.value}
-            onClick={() => handleChangeStatus(tab.value)}
-          >
-            <Text
-              className={
-                tab.value === status
-                  ? 'payment-status-tab__text payment-status-tab__text--active'
-                  : 'payment-status-tab__text'
-              }
-            >
-              {tab.label}
-            </Text>
-          </View>
-        ))}
-      </View>
-
-      <View className='payment-tabs'>
-        {PAYMENT_ROLE_TABS.map(tab => (
-          <View
-            className={
-              tab.value === role
-                ? 'payment-tab payment-tab--active'
-                : 'payment-tab'
-            }
-            key={tab.value}
-            onClick={() => handleChangeRole(tab.value)}
-          >
-            <Text
-              className={
-                tab.value === role
-                  ? 'payment-tab__text payment-tab__text--active'
-                  : 'payment-tab__text'
-              }
-            >
-              {tab.label}
-            </Text>
-          </View>
-        ))}
-      </View>
-
-      <View className='payment-search'>
-        <Input
-          className='payment-search__input'
-          placeholder='输入运单号，多个用逗号分隔'
-          value={keyword}
-          onInput={event => setKeyword(event.detail.value)}
-        />
-        <View className='payment-search__button' onClick={handleSearch}>
-          <Text className='payment-search__button-text'>搜索</Text>
-        </View>
-      </View>
-
-      <View className='payment-summary'>
-        <View>
-          <Text className='payment-summary__title'>
-            {status === 'PAID' ? '最近180天' : '最近一个月'}
-          </Text>
-          <Text className='payment-summary__count'>共 {totalRows} 笔费用</Text>
-        </View>
-        <View className='payment-summary__side'>
-          <Text className='payment-summary__hint'>已加载合计</Text>
-          <Text className='payment-summary__amount'>
-            ¥{loadedAmount.toFixed(2)}
-          </Text>
-        </View>
-      </View>
+      <PaymentListControls
+        keyword={keyword}
+        loadedAmount={loadedAmount}
+        role={role}
+        status={status}
+        totalRows={totalRows}
+        onKeywordChange={setKeyword}
+        onRoleChange={handleChangeRole}
+        onSearch={handleSearch}
+        onStatusChange={handleChangeStatus}
+      />
 
       <View className='payment-list-content'>
-        {payments.map(item => (
-          <View className='payment-card' key={getPaymentItemKey(item)}>
-            <View className='payment-card__top'>
-              <Text className='payment-card__number'>
-                运单 {item.waybillNum}
-              </Text>
-              <View className='payment-card__tags'>
-                <Text className='payment-card__tag'>
-                  {getPaymentOrderTypeLabel(item.orderSubType)}
-                </Text>
-                {status === 'PAID' && (
-                  <Text className='payment-card__status'>已支付</Text>
-                )}
-              </View>
-            </View>
+        {payments.map(item => {
+          const itemKey = getPaymentItemKey(item)
 
-            <View className='payment-card__route'>
-              <View className='payment-card__city-block'>
-                <Text className='payment-card__city'>
-                  {item.senderCityName || '--'}
-                </Text>
-                <Text className='payment-card__name'>
-                  {item.sender || '--'}
-                </Text>
-              </View>
-              <Text className='payment-card__arrow'>→</Text>
-              <View className='payment-card__city-block payment-card__city-block--right'>
-                <Text className='payment-card__city'>
-                  {item.arriveCity || '--'}
-                </Text>
-                <Text className='payment-card__name'>
-                  {item.consignee || '--'}
-                </Text>
-              </View>
-            </View>
+          return (
+            <PaymentCard
+              item={item}
+              key={itemKey}
+              paying={payingKey === itemKey}
+              status={status}
+              onEvaluate={handleEvaluate}
+              onOpenOrder={handleOpenOrder}
+              onPay={handlePay}
+            />
+          )
+        })}
 
-            <View className='payment-card__meta'>
-              <Text className='payment-card__time'>
-                开单时间 {item.businessDate || '--'}
-              </Text>
-              <Text className='payment-card__amount'>
-                ¥{getPaymentItemAmount(item, status).toFixed(2)}
-              </Text>
-            </View>
-
-            <PaymentFeeRows item={item} />
-
-            <View className='payment-card__actions'>
-              <View
-                className='payment-card__outline-button'
-                onClick={() => handleOpenOrder(item)}
-              >
-                <Text className='payment-card__outline-button-text'>
-                  查看订单
-                </Text>
-              </View>
-              {status === 'PAID' && (
-                <View
-                  className='payment-card__primary-button'
-                  onClick={() => handleEvaluate(item)}
-                >
-                  <Text className='payment-card__primary-button-text'>
-                    服务评价
-                  </Text>
-                </View>
-              )}
-              {status === 'UNPAID' && (
-                <View
-                  className='payment-card__primary-button'
-                  onClick={() => handlePay(item)}
-                >
-                  <Text className='payment-card__primary-button-text'>
-                    {payingKey === getPaymentItemKey(item)
-                      ? '处理中'
-                      : '去支付'}
-                  </Text>
-                </View>
-              )}
-            </View>
-          </View>
-        ))}
-
-        {!payments.length && !loading && (
-          <View className='payment-empty'>
-            <Text className='payment-empty__title'>
-              {errorMessage ||
-                (status === 'PAID' ? '暂无支付记录' : '暂无待支付运单')}
-            </Text>
-            <Text className='payment-empty__summary'>
-              {status === 'PAID'
-                ? '可切换寄件/收件，或按运单号搜索最近180天支付记录。'
-                : '可切换寄件/收件，或按运单号搜索最近一个月费用。'}
-            </Text>
-          </View>
-        )}
-
-        {loading && (
-          <Text className='payment-loading'>
-            {payments.length
-              ? '加载更多费用...'
-              : status === 'PAID'
-                ? '正在加载支付记录...'
-                : '正在加载待支付运单...'}
-          </Text>
-        )}
+        <PaymentListStates
+          errorMessage={errorMessage}
+          hasPayments={!!payments.length}
+          loading={loading}
+          status={status}
+        />
       </View>
     </ScrollView>
   )

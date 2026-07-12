@@ -4,6 +4,7 @@ import Taro, { useDidShow } from '@tarojs/taro'
 import { useEffect, useState } from 'react'
 
 import { accountService } from '../../../services/account'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import {
   createLoginRedirectUrl,
@@ -13,7 +14,9 @@ import { APP_ROUTES } from '../../../shared/navigation/routes'
 
 import type { AccountOverviewView } from '../../../services/account'
 
+
 import './index.scss'
+import './content.scss'
 
 const CANCEL_WARNINGS = [
   '身份、账号和登录绑定信息将被清除。',
@@ -162,7 +165,7 @@ const AccountCancelPage = () => {
               setCode(event.detail.value.replace(/\D/g, '').slice(0, 6))
             }
           />
-          <View className='account-cancel-code__button' onClick={handleSendSms}>
+          <AppPressable className='account-cancel-code__button' onPress={handleSendSms}>
             <Text className='account-cancel-code__button-text'>
               {sending
                 ? '发送中'
@@ -170,13 +173,13 @@ const AccountCancelPage = () => {
                   ? `${countDown}秒`
                   : '获取验证码'}
             </Text>
-          </View>
+          </AppPressable>
         </View>
       </View>
 
-      <View
+      <AppPressable
         className='account-cancel-agreement'
-        onClick={() => setAccepted((current) => !current)}
+        onPress={() => setAccepted((current) => !current)}
       >
         <View
           className={
@@ -192,20 +195,20 @@ const AccountCancelPage = () => {
         <Text className='account-cancel-agreement__text'>
           我已知晓注销后账号和相关数据将无法恢复
         </Text>
-      </View>
+      </AppPressable>
 
-      <View
+      <AppPressable
         className={
           canSubmit
             ? 'account-cancel-submit'
             : 'account-cancel-submit account-cancel-submit--disabled'
         }
-        onClick={handleSubmit}
+        onPress={handleSubmit}
       >
         <Text className='account-cancel-submit__text'>
           {submitting ? '提交中' : '确认注销'}
         </Text>
-      </View>
+      </AppPressable>
     </ScrollView>
   )
 }

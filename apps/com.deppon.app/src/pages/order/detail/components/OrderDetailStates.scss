@@ -1,0 +1,39 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-detail-empty {
+  align-items: center;
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.order-detail-empty__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-detail-empty__button {
+  align-items: center;
+  justify-content: center;
+  height: 72px;
+  margin-top: 24px;
+  padding: 0 28px;
+  background: $dp-color-bg-inverse;
+  border-radius: $dp-radius-sm;
+}
+
+.order-detail-empty__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-detail-loading {
+  display: flex;
+  padding: 24px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+}

@@ -1,0 +1,100 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.invoice-ecard-card__top,
+.invoice-ecard-card__meta,
+.invoice-ecard-card__actions {
+  display: flex;
+  flex-direction: row;
+}
+
+.invoice-ecard-content {
+  padding: 20px 24px 40px;
+}
+
+.invoice-ecard-card {
+  padding: 24px;
+  margin-bottom: 16px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-ecard-card__top,
+.invoice-ecard-card__meta {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.invoice-ecard-card__number {
+  flex: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-ecard-card__status {
+  padding: 6px 14px;
+  color: $dp-color-brand;
+  background: $dp-color-brand-soft;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-ecard-card__status--success {
+  color: $dp-color-success-text-deep;
+  background: $dp-color-success-background;
+}
+
+.invoice-ecard-card__meta {
+  padding-top: 16px;
+  border-top-color: $dp-color-border-light;
+  border-top-width: 1px;
+}
+
+.invoice-ecard-card__time,
+.invoice-ecard-card__desc {
+  display: flex;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.invoice-ecard-card__desc {
+  margin-top: 10px;
+}
+
+.invoice-ecard-card__amount {
+  color: $dp-color-warning-emphasis;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-ecard-card__actions {
+  justify-content: flex-end;
+  padding-top: 18px;
+}
+
+.invoice-ecard-card__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  height: 58px;
+  padding: 0 18px;
+  margin-left: 14px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-ecard-card__button--ghost {
+  background: $dp-color-bg-muted;
+}
+
+.invoice-ecard-card__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-ecard-card__button-text--ghost {
+  color: $dp-color-text-body;
+}

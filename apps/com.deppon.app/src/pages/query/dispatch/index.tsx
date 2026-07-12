@@ -9,6 +9,7 @@ import {
   expressDraftBridge
 } from '../../../services/express'
 import { queryService } from '../../../services/query'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 
@@ -19,7 +20,9 @@ import type {
   DispatchRangeResult
 } from '../../../services/query'
 
+
 import './index.scss'
+import './content.scss'
 
 const DISPATCH_PRODUCT_OPTIONS: Array<{
   label: string
@@ -139,14 +142,14 @@ const QueryDispatchPage = () => {
     <ScrollView className='query-dispatch-page' scrollY>
       <View className='query-dispatch-tabs'>
         {DISPATCH_PRODUCT_OPTIONS.map((option) => (
-          <View
+          <AppPressable
             className={
               option.value === productType
                 ? 'query-dispatch-tab query-dispatch-tab--active'
                 : 'query-dispatch-tab'
             }
             key={option.value}
-            onClick={() => setProductType(option.value)}
+            onPress={() => setProductType(option.value)}
           >
             <Text
               className={
@@ -157,16 +160,16 @@ const QueryDispatchPage = () => {
             >
               {option.label}
             </Text>
-          </View>
+          </AppPressable>
         ))}
       </View>
 
       <View className='query-dispatch-section'>
         <View className='query-dispatch-section__head'>
           <Text className='query-dispatch-section__title'>填写查询地址</Text>
-          <View className='query-dispatch-link' onClick={handleAnalyze}>
+          <AppPressable className='query-dispatch-link' onPress={handleAnalyze}>
             <Text className='query-dispatch-link__text'>智能识别</Text>
-          </View>
+          </AppPressable>
         </View>
 
         <Input
@@ -207,11 +210,11 @@ const QueryDispatchPage = () => {
         </View>
       </View>
 
-      <View className='query-dispatch-submit' onClick={handleQuery}>
+      <AppPressable className='query-dispatch-submit' onPress={handleQuery}>
         <Text className='query-dispatch-submit__text'>
           {loading ? '查询中...' : '查询收派范围'}
         </Text>
-      </View>
+      </AppPressable>
 
       {errorMessage && (
         <View className='query-dispatch-message'>
@@ -275,9 +278,9 @@ const QueryDispatchPage = () => {
           ))}
 
           {result.canCreateExpress && (
-            <View className='query-dispatch-express' onClick={handleGoExpress}>
+            <AppPressable className='query-dispatch-express' onPress={handleGoExpress}>
               <Text className='query-dispatch-express__text'>去寄件</Text>
-            </View>
+            </AppPressable>
           )}
         </View>
       )}

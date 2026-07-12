@@ -1,12 +1,16 @@
-import { Input, ScrollView, Text, View } from '@tarojs/components'
+import { ScrollView } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { ExpressContactPanel } from './components/ExpressContactPanel'
 import { ExpressGoodsSection } from './components/ExpressGoodsSection'
+import { ExpressHeader } from './components/ExpressHeader'
+import { ExpressOrderOptionsSection } from './components/ExpressOrderOptionsSection'
+import { ExpressPickupSection } from './components/ExpressPickupSection'
 import { ExpressQuoteSection } from './components/ExpressQuoteSection'
 import { ExpressServiceSection } from './components/ExpressServiceSection'
+import { ExpressSubmitBar } from './components/ExpressSubmitBar'
 import { contactSelection } from '../../services/contact'
 import { customerService } from '../../services/customer'
 import {
@@ -27,7 +31,7 @@ import {
   validateExpressDraft
 } from '../../services/express'
 import { templateService } from '../../services/template'
-import { AppIcon } from '../../shared/components/AppIcon'
+import { AppPage } from '../../shared/components'
 import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
 import {
   ensureAuthenticated,
@@ -357,6 +361,21 @@ const ExpressPage = () => {
     )
   }
 
+  const updatePickup = (patch: Partial<ExpressDraft['pickup']>) => {
+    setDraft(current =>
+      markExpressQuoteStale(
+        {
+          ...current,
+          pickup: {
+            ...current.pickup,
+            ...patch
+          }
+        },
+        '取件方式变化，请重新获取价格'
+      )
+    )
+  }
+
   const handlePaymentTypeSelect = (paymentType: ExpressPaymentType) => {
     updateService({ paymentType })
 
@@ -449,6 +468,22 @@ const ExpressPage = () => {
     navigateToAppRoute(APP_ROUTES.expressTemplateList, {
       login: true
     })
+  }
+
+  const handleOpenRealName = () => {
+    navigateToAppRoute(APP_ROUTES.realNameCenter, { login: true })
+  }
+
+  const handleOpenBatch = () => {
+    navigateToAppRoute(APP_ROUTES.batchExpress, { login: true })
+  }
+
+  const handleOpenHelp = () => {
+    navigateToAppRoute(APP_ROUTES.supportCenter)
+  }
+
+  const handleOpenStations = () => {
+    navigateToAppRoute(APP_ROUTES.stationQuery)
   }
 
   const handleSaveTemplate = () => {
@@ -622,38 +657,48 @@ const ExpressPage = () => {
   }
 
   return (
-    <>
-      <ScrollView className='express-page' scrollY>
-        <View className='express-header'>
-          <View>
-            <Text className='express-header__title'>填写寄件信息</Text>
-            <Text className='express-header__label'>上门取件 · 全程可查</Text>
-          </View>
-          <View className='express-header__tools'>
-            <View
-              className='express-header__tool'
-              onClick={handleOpenTemplates}
-            >
-              <AppIcon color='#344054' name='fileCheck' size={20} />
-              <Text className='express-header__tool-text'>模板</Text>
-            </View>
-            <View className='express-header__tool' onClick={handleSaveTemplate}>
-              <AppIcon color='#344054' name='save' size={20} />
-              <Text className='express-header__tool-text'>保存</Text>
-            </View>
-            {!!draft.selectedProduct && (
-              <Text className='express-header__price'>
-                {getProductPriceText(draft.selectedProduct)}
-              </Text>
-            )}
-          </View>
-        </View>
+    <AppPage
+      footer={
+        <ExpressSubmitBar
+          priceText={getProductPriceText(draft.selectedProduct)}
+          quoteLoading={quoteStatus === 'loading'}
+          submitting={submiting}
+          onQuote={handleQuote}
+          onSubmit={handleSubmit}
+        />
+      }
+      keyboardAvoiding
+      safeArea='bottom'
+      surface='page'
+    >
+      <ScrollView className='express-page' scrollY style={{ flex: 1 }}>
+        <ExpressHeader
+          priceText={
+            draft.selectedProduct
+              ? getProductPriceText(draft.selectedProduct)
+              : ''
+          }
+          onOpenBatch={handleOpenBatch}
+          onOpenHelp={handleOpenHelp}
+          onOpenRealName={handleOpenRealName}
+          onOpenTemplates={handleOpenTemplates}
+          onSaveTemplate={handleSaveTemplate}
+        />
 
         <ExpressContactPanel
           draft={draft}
           onCreateContact={handleContactCreate}
           onSelectContact={handleContactSelect}
           onSwapContacts={handleSwapContacts}
+        />
+
+        <ExpressPickupSection
+          needContact={draft.service.needContact}
+          pickup={draft.pickup}
+          onModeChange={dispatch => updatePickup({ dispatch })}
+          onNeedContactChange={needContact => updateService({ needContact })}
+          onOpenStations={handleOpenStations}
+          onQueryPickupTime={handleQueryPickupTime}
         />
 
         <ExpressGoodsSection
@@ -696,93 +741,28 @@ const ExpressPage = () => {
           onSelectProduct={handleSelectProduct}
         />
 
-        <View className='express-section'>
-          <View className='express-field'>
-            <View className='express-field__row'>
-              <Text className='express-field__label'>优惠券</Text>
-              {draft.couponNumber && (
-                <Text
-                  className='express-link express-link--quiet'
-                  onClick={() => handleCouponNumberInput('')}
-                >
-                  清除
-                </Text>
-              )}
-            </View>
-            <Input
-              className='express-input'
-              placeholder='可从优惠券列表带入，也可手动输入'
-              value={draft.couponNumber}
-              onInput={event => handleCouponNumberInput(event.detail.value)}
-            />
-          </View>
-
-          <View className='express-field'>
-            <Text className='express-field__label'>备注</Text>
-            <Input
-              className='express-input'
-              placeholder='选填，交给快递员的信息'
-              value={draft.remark}
-              onInput={event =>
-                setDraft(current => ({
-                  ...current,
-                  remark: event.detail.value
-                }))
-              }
-            />
-          </View>
-
-          <View
-            className='express-agreement'
-            onClick={() =>
-              setDraft(current => ({
-                ...current,
-                agreementAccepted: !current.agreementAccepted
-              }))
-            }
-          >
-            <View
-              className={
-                draft.agreementAccepted
-                  ? 'express-checkbox express-checkbox--checked'
-                  : 'express-checkbox'
-              }
-            >
-              <Text className='express-checkbox__text'>
-                {draft.agreementAccepted ? '✓' : ''}
-              </Text>
-            </View>
-            <Text className='express-agreement__text'>
-              已阅读并同意电子运单协议
-            </Text>
-          </View>
-
-          {(submitMessage || !validation.valid) && (
-            <View className='express-validation'>
-              {submitMessage && (
-                <Text className='express-validation__message'>
-                  {submitMessage}
-                </Text>
-              )}
-              {validation.messages.slice(0, 3).map(message => (
-                <Text className='express-validation__message' key={message}>
-                  {message}
-                </Text>
-              ))}
-            </View>
-          )}
-        </View>
-
-        <View className='express-submit' onClick={handleSubmit}>
-          <Text className='express-submit__fee'>
-            {getProductPriceText(draft.selectedProduct)}
-          </Text>
-          <Text className='express-submit__text'>
-            {submiting ? '提交中' : '立即下单'}
-          </Text>
-        </View>
+        <ExpressOrderOptionsSection
+          agreementAccepted={draft.agreementAccepted}
+          couponNumber={draft.couponNumber}
+          remark={draft.remark}
+          submitMessage={submitMessage}
+          validationMessages={validation.valid ? [] : validation.messages}
+          onCouponNumberInput={handleCouponNumberInput}
+          onRemarkInput={value =>
+            setDraft(current => ({
+              ...current,
+              remark: value
+            }))
+          }
+          onToggleAgreement={() =>
+            setDraft(current => ({
+              ...current,
+              agreementAccepted: !current.agreementAccepted
+            }))
+          }
+        />
       </ScrollView>
-    </>
+    </AppPage>
   )
 }
 

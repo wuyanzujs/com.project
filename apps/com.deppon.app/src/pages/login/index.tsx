@@ -1,16 +1,20 @@
-import { Input, Text, View } from '@tarojs/components'
+import { Input, ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 
 import { useEffect, useMemo, useState } from 'react'
 
 import { authService, isValidMobile, isValidSmsCode } from '../../services/auth'
+import { AppPressable } from '../../shared/components'
+import { AppKeyboardAvoidingView } from '../../shared/native'
 import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../shared/navigation/routes'
 import { createAppWebUrl } from '../../shared/webview/appWeb'
 
 import type { AppWebSource } from '../../shared/webview/appWeb'
 
+
 import './index.scss'
+import './content.scss'
 
 const SMS_COUNTDOWN_SECONDS = 60
 
@@ -152,8 +156,9 @@ const LoginPage = () => {
   }
 
   return (
-    <View className='login-page'>
-      <View className='login-intro'>
+    <AppKeyboardAvoidingView>
+      <ScrollView className='login-page' scrollY>
+        <View className='login-intro'>
         <Text className='login-intro__title'>登录/注册</Text>
         <Text className='login-intro__summary'>
           欢迎使用德邦快递，竭诚为您服务！
@@ -188,7 +193,7 @@ const LoginPage = () => {
               setSmsCode(event.detail.value.replace(/\D/g, '').slice(0, 6))
             }
           />
-          <View className='login-code-button' onClick={handleSendSms}>
+          <AppPressable className='login-code-button' onPress={handleSendSms}>
             <Text
               className={
                 canSend
@@ -198,53 +203,54 @@ const LoginPage = () => {
             >
               {codeButtonLabel}
             </Text>
-          </View>
+          </AppPressable>
         </View>
 
         <View className='login-agreement'>
-          <View
+          <AppPressable
             className={
               agreementAccepted
                 ? 'login-agreement__checkbox login-agreement__checkbox--checked'
                 : 'login-agreement__checkbox'
             }
-            onClick={() => setAgreementAccepted((current) => !current)}
+            onPress={() => setAgreementAccepted((current) => !current)}
           >
             <Text className='login-agreement__check'>
               {agreementAccepted ? '✓' : ''}
             </Text>
-          </View>
+          </AppPressable>
           <View className='login-agreement__content'>
             <Text className='login-agreement__text'>我已阅读并同意</Text>
-            <Text
+            <AppPressable contentElement='text'
               className='login-agreement__link'
-              onClick={() => handlePolicyPress('AUTH_LOGIN_SERVICE_PROTOCOL')}
+              onPress={() => handlePolicyPress('AUTH_LOGIN_SERVICE_PROTOCOL')}
             >
               《服务协议》
-            </Text>
+            </AppPressable>
             <Text className='login-agreement__text'>和</Text>
-            <Text
+            <AppPressable contentElement='text'
               className='login-agreement__link'
-              onClick={() => handlePolicyPress('AUTH_LOGIN_PRIVACY_PROTOCOL')}
+              onPress={() => handlePolicyPress('AUTH_LOGIN_PRIVACY_PROTOCOL')}
             >
               《隐私政策》
-            </Text>
+            </AppPressable>
           </View>
         </View>
 
-        <View className='login-submit' onClick={handleSubmit}>
+        <AppPressable className='login-submit' onPress={handleSubmit}>
           <Text className='login-submit__text'>
             {submitting ? '登录中' : '登录'}
           </Text>
-        </View>
+        </AppPressable>
 
-        <View className='login-secondary' onClick={handleSkip}>
+        <AppPressable className='login-secondary' onPress={handleSkip}>
           <Text className='login-secondary__text'>暂不登录</Text>
-        </View>
+        </AppPressable>
 
         <Text className='login-note'>未注册手机号将自动创建账号</Text>
-      </View>
-    </View>
+        </View>
+      </ScrollView>
+    </AppKeyboardAvoidingView>
   )
 }
 

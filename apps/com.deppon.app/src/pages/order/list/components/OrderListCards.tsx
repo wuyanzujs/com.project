@@ -1,8 +1,10 @@
 import { Image, Text, View } from '@tarojs/components'
 
+import { AppPressable } from '../../../../shared/components'
+
 import type { OrderListItem } from '../../../../services/order'
 
-import '../index.scss'
+import './OrderListCards.scss'
 
 function getOrderCardKey(order: OrderListItem) {
   return `${order.role}-${order.orderNumber}-${order.waybillNumber}`
@@ -54,9 +56,11 @@ export function OrderCard(props: {
 
   return (
     <View className='order-card'>
-      <View
+      <AppPressable
+        accessibilityLabel='查看订单详情'
+        block
         className='order-card__body'
-        onClick={() => props.onOpenDetail(props.order)}
+        onPress={() => props.onOpenDetail(props.order)}
       >
         <View className='order-card__top'>
           <Text className='order-card__status'>
@@ -97,53 +101,58 @@ export function OrderCard(props: {
             <Text className='order-card__price'>¥{props.order.orderPrice}</Text>
           )}
         </View>
-      </View>
+      </AppPressable>
 
       {hasActions && (
         <View className='order-card__actions'>
-          <View
+          <AppPressable
+            accessibilityLabel='查看订单详情'
             className='order-card__outline-button'
-            onClick={() => props.onOpenDetail(props.order)}
+            onPress={() => props.onOpenDetail(props.order)}
           >
             <Text className='order-card__outline-button-text'>查看详情</Text>
-          </View>
+          </AppPressable>
           {cancelable && (
-            <View
+            <AppPressable
+              accessibilityLabel='取消订单'
               className='order-card__danger-button'
-              onClick={() => props.onCancelOrder(props.order)}
+              onPress={() => props.onCancelOrder(props.order)}
             >
               <Text className='order-card__danger-button-text'>取消订单</Text>
-            </View>
+            </AppPressable>
           )}
           {modifiable && (
-            <View
+            <AppPressable
+              accessibilityLabel='修改订单'
               className='order-card__outline-button'
-              onClick={() => props.onModifyOrder(props.order)}
+              onPress={() => props.onModifyOrder(props.order)}
             >
               <Text className='order-card__outline-button-text'>修改订单</Text>
-            </View>
+            </AppPressable>
           )}
           {resendable && (
-            <View
+            <AppPressable
+              accessibilityLabel='再次下单'
               className='order-card__outline-button'
-              onClick={() => props.onResendOrder(props.order)}
+              onPress={() => props.onResendOrder(props.order)}
             >
               <Text className='order-card__outline-button-text'>
                 {props.resendingOrderKey === orderKey
                   ? '带入中'
                   : props.getResendActionText(props.order)}
               </Text>
-            </View>
+            </AppPressable>
           )}
           {deletable && (
-            <View
+            <AppPressable
+              accessibilityLabel='删除订单'
               className='order-card__danger-button'
-              onClick={() => props.onDeleteOrder(props.order)}
+              onPress={() => props.onDeleteOrder(props.order)}
             >
               <Text className='order-card__danger-button-text'>
                 {props.deletingOrderKey === orderKey ? '删除中' : '删除'}
               </Text>
-            </View>
+            </AppPressable>
           )}
         </View>
       )}

@@ -1,0 +1,15 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-header { padding: $dp-space-12 0 $dp-space-4; }
+.express-header__notice { display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: $dp-space-12 $dp-space-16; background: $dp-color-warning-background; border-radius: $dp-radius-card; }
+.express-header__notice-copy { display: flex; flex: 1; flex-direction: row; align-items: flex-start; min-width: 0; }
+.express-header__notice-text { flex: 1; margin-left: $dp-space-8; color: $dp-color-warning-text; font-size: $dp-font-size-body-small; line-height: $dp-line-height-body-small; }
+.express-header__real-name { display: flex; flex-shrink: 0; align-items: center; justify-content: center; min-width: $dp-space-96 + $dp-space-24; min-height: $dp-control-height-compact; margin-left: $dp-space-12; padding: 0 $dp-space-12; border-color: $dp-color-warning-emphasis; border-radius: $dp-radius-pill; border-width: $dp-border-width-hairline; }
+.express-header__real-name-text { flex-shrink: 0; color: $dp-color-warning-text; font-size: $dp-font-size-body; font-weight: $dp-font-weight-semibold; line-height: $dp-line-height-body; }
+.express-header__quick-row { display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; margin-top: $dp-space-12; }
+.express-header__quick { display: flex; flex-shrink: 0; flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: center; min-height: $dp-control-height-compact; margin: 0 $dp-space-8 $dp-space-8 0; padding: 0 $dp-space-16; background: $dp-color-bg-card; border-radius: $dp-radius-pill; }
+.express-header__quick--active { background: $dp-color-brand; }
+.express-header__quick--save { padding: 0 $dp-space-12; }
+.express-header__quick-text { flex-shrink: 0; color: $dp-color-text-secondary; font-size: $dp-font-size-body; font-weight: $dp-font-weight-semibold; line-height: $dp-line-height-body; }
+.express-header__quick-text--active { color: $dp-color-text-inverse; }
+.express-header__price { margin: 0 0 $dp-space-8 auto; color: $dp-color-warning-emphasis; font-size: $dp-font-size-label; font-weight: $dp-font-weight-bold; }

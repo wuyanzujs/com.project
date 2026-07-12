@@ -1,10 +1,12 @@
 import { Text, View } from '@tarojs/components'
 
 import { createExpressProductQuoteView } from '../../../../services/express'
+import { AppPressable } from '../../../../shared/components'
 
 import type { ExpressProductQuote } from '../../../../services/express'
 
-import '../index.scss'
+
+import './QueryPriceProductCard.scss'
 
 interface QueryPriceProductCardProps {
   product: ExpressProductQuote
@@ -39,12 +41,12 @@ export function QueryPriceProductCard({
         <Text className='query-price-product__price'>
           {view.priceWithSuffixText}
         </Text>
-        <View
+        <AppPressable
           className='query-price-product__button'
-          onClick={() => onExpress(product)}
+          onPress={() => onExpress(product)}
         >
           <Text className='query-price-product__button-text'>去寄件</Text>
-        </View>
+        </AppPressable>
       </View>
     </View>
   )

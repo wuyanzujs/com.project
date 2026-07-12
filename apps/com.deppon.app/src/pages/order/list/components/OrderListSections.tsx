@@ -1,6 +1,8 @@
 import { Input, Text, View } from '@tarojs/components'
 
+import { AppPressable } from '../../../../shared/components'
 import { AppIcon } from '../../../../shared/components/AppIcon'
+import { APP_STYLE_COLORS } from '../../../../styles/nativeTokens'
 
 import type {
   OrderPaymentFilter,
@@ -8,7 +10,8 @@ import type {
   OrderStatusFilter
 } from '../../../../services/order'
 
-import '../index.scss'
+import './OrderListTabsSearch.scss'
+import './OrderListFilters.scss'
 
 export type OrderDateRangeDays = 7 | 30 | 90
 
@@ -125,17 +128,18 @@ function OrderFilterGroup<TValue extends string | number>(props: {
         const active = option.value === props.value
 
         return (
-          <View
+          <AppPressable
+            accessibilityLabel={option.label}
             className={getFilterChipClassName(active)}
             key={
               props.getKey ? props.getKey(option.value) : String(option.value)
             }
-            onClick={() => props.onChange(option.value)}
+            onPress={() => props.onChange(option.value)}
           >
             <Text className={getFilterChipTextClassName(active)}>
               {option.label}
             </Text>
-          </View>
+          </AppPressable>
         )
       })}
     </View>
@@ -151,14 +155,15 @@ export function OrderRoleTabs(props: {
   return (
     <View className='order-tabs'>
       {ORDER_TABS.map(tab => (
-        <View
+        <AppPressable flex
+          accessibilityLabel={tab.label}
           className={
             tab.value === props.role
               ? 'order-tab order-tab--active'
               : 'order-tab'
           }
           key={tab.value}
-          onClick={() => props.onChange(tab.value)}
+          onPress={() => props.onChange(tab.value)}
         >
           <Text
             className={
@@ -169,14 +174,22 @@ export function OrderRoleTabs(props: {
           >
             {tab.label}
           </Text>
-        </View>
+        </AppPressable>
       ))}
-      <View className='order-tab' onClick={props.onOpenPayment}>
+      <AppPressable flex
+        accessibilityLabel='待支付'
+        className='order-tab'
+        onPress={props.onOpenPayment}
+      >
         <Text className='order-tab__text'>待支付</Text>
-      </View>
-      <View className='order-tab' onClick={props.onOpenSubscriptions}>
+      </AppPressable>
+      <AppPressable flex
+        accessibilityLabel='关注运单'
+        className='order-tab'
+        onPress={props.onOpenSubscriptions}
+      >
         <Text className='order-tab__text'>关注</Text>
-      </View>
+      </AppPressable>
     </View>
   )
 }
@@ -191,7 +204,7 @@ export function OrderSearchBar(props: {
   return (
     <View className='order-search'>
       <View className='order-search__field'>
-        <AppIcon color='#98a2b3' name='search' size={25} />
+        <AppIcon color={APP_STYLE_COLORS.text.placeholder} name='search' size={25} />
         <Input
           className='order-search__input'
           placeholder='运单号/姓名/手机/城市查询'
@@ -199,18 +212,30 @@ export function OrderSearchBar(props: {
           onConfirm={props.onSearch}
           onInput={event => props.onKeywordChange(event.detail.value)}
         />
-        <View className='order-search__submit' onClick={props.onSearch}>
-          <AppIcon color='#667085' name='scan' size={24} />
-        </View>
+        <AppPressable
+          accessibilityLabel='搜索订单'
+          className='order-search__submit'
+          onPress={props.onSearch}
+        >
+          <AppIcon color={APP_STYLE_COLORS.text.supporting} name='scan' size={24} />
+        </AppPressable>
       </View>
-      <View className='order-search__filter' onClick={props.onToggleFilter}>
+      <AppPressable
+        accessibilityLabel='筛选订单'
+        className='order-search__filter'
+        onPress={props.onToggleFilter}
+      >
         <Text className='order-search__filter-text'>筛选</Text>
         <AppIcon
-          color={props.filterVisible ? '#1a5eff' : '#344054'}
+          color={
+            props.filterVisible
+              ? APP_STYLE_COLORS.brand.default
+              : APP_STYLE_COLORS.text.body
+          }
           name='filter'
           size={25}
         />
-      </View>
+      </AppPressable>
     </View>
   )
 }
@@ -266,18 +291,20 @@ export function OrderListSummary(props: {
         <Text className='order-list-summary__count'>
           共 {props.totalRows} 单
         </Text>
-        <View
+        <AppPressable
+          accessibilityLabel='关注运单'
           className='order-list-summary__subscribe'
-          onClick={props.onOpenSubscriptions}
+          onPress={props.onOpenSubscriptions}
         >
           <Text className='order-list-summary__subscribe-text'>关注运单</Text>
-        </View>
-        <View
+        </AppPressable>
+        <AppPressable
+          accessibilityLabel='待支付'
           className='order-list-summary__pay'
-          onClick={props.onOpenPaymentList}
+          onPress={props.onOpenPaymentList}
         >
           <Text className='order-list-summary__pay-text'>待支付</Text>
-        </View>
+        </AppPressable>
       </View>
     </View>
   )

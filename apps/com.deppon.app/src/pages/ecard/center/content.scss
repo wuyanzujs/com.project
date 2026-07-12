@@ -1,0 +1,166 @@
+@use '../../../styles/_tokens.scss' as *;
+.ecard-header {
+  padding: 32px 24px 24px;
+  background: $dp-color-bg-card;
+}
+
+.ecard-header__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.ecard-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.ecard-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.ecard-balance-card,
+.ecard-status,
+.ecard-actions,
+.ecard-promotions,
+.ecard-footer {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.ecard-balance-card {
+  background: $dp-color-text-strong;
+}
+
+.ecard-balance-card__top,
+.ecard-status,
+.ecard-action-row,
+.ecard-promotions__head {
+  display: flex;
+  flex-direction: row;
+}
+
+.ecard-balance-card__top,
+.ecard-action-row,
+.ecard-promotions__head {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ecard-balance-card__label {
+  color: $dp-color-text-placeholder;
+  font-size: $dp-font-size-body-small;
+}
+
+.ecard-balance-card__amount {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-display;
+  font-weight: $dp-font-weight-bold;
+}
+
+.ecard-balance-card__badge {
+  padding: 8px 16px;
+  margin-left: 18px;
+  color: $dp-color-warning-text-dark;
+  background: $dp-color-warning-background-soft;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.ecard-balance-card__badge--ok {
+  color: $dp-color-success-text-deep;
+  background: $dp-color-success-background;
+}
+
+.ecard-balance-card__summary {
+  display: flex;
+  margin-top: 16px;
+  color: $dp-color-text-disabled;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.ecard-status__item {
+  flex: 1;
+}
+
+.ecard-status__label {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+
+.ecard-status__value {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-subtitle;
+  font-weight: $dp-font-weight-bold;
+}
+
+.ecard-actions__title,
+.ecard-promotions__title,
+.ecard-footer__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.ecard-action-row {
+  min-height: 96px;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: 1px;
+}
+
+.ecard-action-row__title,
+.ecard-promotion__title,
+.ecard-empty__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+}
+
+.ecard-action-row__summary,
+.ecard-promotions__summary,
+.ecard-promotion__summary,
+.ecard-empty__summary,
+.ecard-footer__summary {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.ecard-action-row__arrow {
+  margin-left: 14px;
+  color: $dp-color-text-placeholder;
+  font-size: $dp-font-size-heading-large;
+}
+
+.ecard-promotion {
+  padding: 20px 0;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: 1px;
+}
+
+.ecard-empty {
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+}
+
+.ecard-empty__summary {
+  text-align: center;
+}

@@ -1,0 +1,234 @@
+@use '../../../styles/_tokens.scss' as *;
+.sign-code-header {
+  padding: 32px 24px 24px;
+  background: $dp-color-bg-card;
+}
+.sign-code-header__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+.sign-code-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+.sign-code-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+.sign-code-card,
+.sign-realname,
+.sign-code-panel,
+.sign-empty,
+.sign-rules {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+.sign-code-card {
+  background: $dp-color-text-strong;
+}
+.sign-code-card__top,
+.sign-code-actions {
+  display: flex;
+  flex-direction: row;
+}
+.sign-code-card__top {
+  align-items: center;
+  justify-content: space-between;
+}
+.sign-code-card__label {
+  color: $dp-color-text-placeholder;
+  font-size: $dp-font-size-body-small;
+}
+.sign-code-card__title {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-heading-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.sign-code-card__badge {
+  padding: 8px 16px;
+  color: $dp-color-warning-text-dark;
+  background: $dp-color-warning-background-soft;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.sign-code-card__badge--ok {
+  color: $dp-color-success-text-deep;
+  background: $dp-color-success-background;
+}
+
+.sign-code-card__summary {
+  display: flex;
+  margin-top: 16px;
+  color: $dp-color-text-disabled;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.sign-realname__title,
+.sign-code-panel__title,
+.sign-empty__title,
+.sign-rules__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.sign-realname__summary,
+.sign-empty__summary,
+.sign-rules__text {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.sign-realname__input {
+  height: 72px;
+  margin-top: 22px;
+  padding: 0 20px;
+  color: $dp-color-text-heading;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+  font-size: $dp-font-size-body-large;
+}
+
+.sign-realname__protocol {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 16px;
+}
+.sign-realname__protocol-text,
+.sign-realname__protocol-link {
+  flex-shrink: 1;
+  max-width: 100%;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+.sign-realname__protocol-text {
+  color: $dp-color-text-supporting;
+}
+.sign-realname__protocol-link {
+  color: $dp-color-brand;
+  font-weight: $dp-font-weight-bold;
+}
+
+.sign-realname__button,
+.sign-code-action,
+.sign-empty__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 148px;
+  height: 62px;
+  padding: 0 20px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.sign-realname__button {
+  margin-top: 24px;
+}
+
+.sign-realname__button-text,
+.sign-code-action__text,
+.sign-empty__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.sign-code-value {
+  align-items: center;
+  justify-content: center;
+  min-height: 88px;
+  margin-top: 18px;
+  padding: 18px 24px;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.sign-code-qrcode {
+  align-items: center;
+  justify-content: center;
+  margin-top: 22px;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.sign-code-value__text {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-field;
+  text-align: center;
+}
+
+.sign-code-panel__hint,
+.sign-code-panel__name {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+  text-align: center;
+}
+
+.sign-code-panel__name {
+  color: $dp-color-text-heading;
+  font-weight: $dp-font-weight-bold;
+}
+
+.sign-code-actions {
+  justify-content: flex-end;
+  padding-top: 24px;
+}
+
+.sign-code-action {
+  margin-left: 12px;
+}
+
+.sign-code-action--ghost {
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border;
+  border-width: 1px;
+}
+
+.sign-code-action__text--ghost {
+  color: $dp-color-text-body;
+}
+
+.sign-empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.sign-empty__summary {
+  text-align: center;
+}
+
+.sign-empty__button {
+  margin-top: 22px;
+}

@@ -1,0 +1,179 @@
+@use '../../../styles/_tokens.scss' as *;
+.privacy-settings-header {
+  padding: 32px 24px 24px;
+  background: $dp-color-bg-card;
+}
+
+.privacy-settings-header__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.privacy-settings-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.privacy-settings-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.privacy-status,
+.privacy-version-card,
+.privacy-links,
+.privacy-actions,
+.privacy-danger {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.privacy-status,
+.privacy-version-card,
+.privacy-link,
+.privacy-actions {
+  display: flex;
+  flex-direction: row;
+}
+
+.privacy-status,
+.privacy-link {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.privacy-status__title,
+.privacy-links__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.privacy-status__summary {
+  display: flex;
+  margin-top: 10px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.privacy-status__tag {
+  padding: 8px 16px;
+  margin-left: 20px;
+  color: $dp-color-status-warning-text;
+  background: $dp-color-warning-background;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.privacy-status__tag--ok {
+  color: $dp-color-success-text-deep;
+  background: $dp-color-success-background;
+}
+
+.privacy-version-card__item {
+  flex: 1;
+}
+
+.privacy-version-card__label {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+
+.privacy-version-card__value {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-subtitle;
+  font-weight: $dp-font-weight-bold;
+}
+
+.privacy-link {
+  padding: 22px 0;
+  border-top-color: $dp-color-border-light;
+  border-top-width: 1px;
+}
+
+.privacy-link__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+}
+
+.privacy-link__summary {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.privacy-link__arrow {
+  width: 36px;
+  color: $dp-color-text-placeholder;
+  font-size: $dp-font-size-heading-small;
+  text-align: right;
+}
+
+.privacy-actions {
+  align-items: center;
+}
+
+.privacy-actions__secondary,
+.privacy-actions__primary,
+.privacy-danger {
+  align-items: center;
+  justify-content: center;
+  height: 72px;
+  border-radius: $dp-radius-sm;
+}
+
+.privacy-actions__secondary,
+.privacy-actions__primary {
+  flex: 1;
+}
+
+.privacy-actions__secondary {
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border;
+  border-width: 1px;
+}
+
+.privacy-actions__primary {
+  margin-left: 14px;
+  background: $dp-color-brand;
+}
+
+.privacy-actions__secondary-text,
+.privacy-actions__primary-text,
+.privacy-danger__text {
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.privacy-actions__secondary-text {
+  color: $dp-color-text-body;
+}
+
+.privacy-actions__primary-text {
+  color: $dp-color-text-inverse;
+}
+
+.privacy-danger {
+  border-color: $dp-color-danger-border-soft;
+  border-width: 1px;
+}
+
+.privacy-danger__text {
+  color: $dp-color-danger-text;
+}

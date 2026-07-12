@@ -62,6 +62,17 @@ function readCommandVersion(command, args) {
   }
 }
 
+function commandSucceeds(command, args) {
+  try {
+    execFileSync(command, args, {
+      stdio: 'ignore'
+    })
+    return true
+  } catch {
+    return false
+  }
+}
+
 function addCheck(name, passed, detail, required = true) {
   checks.push({
     name,
@@ -170,7 +181,21 @@ addCheck(
 )
 
 if (process.platform === 'darwin') {
-  addCheck('Xcode', commandExists('xcodebuild'), '需要 xcodebuild。')
+  const xcodeVersion = commandExists('xcodebuild')
+    ? readCommandVersion('xcodebuild', ['-version'])
+    : ''
+  const hasFullXcode =
+    /^Xcode\s+\S+/m.test(xcodeVersion) &&
+    commandExists('xcrun') &&
+    commandSucceeds('xcrun', ['--find', 'simctl'])
+
+  addCheck(
+    'Xcode',
+    hasFullXcode,
+    hasFullXcode
+      ? xcodeVersion.split(/\r?\n/).join(', ')
+      : '需要完整 Xcode，并确保 xcodebuild 和 xcrun simctl 指向 Xcode Developer 目录。'
+  )
   addCheck('CocoaPods', commandExists('pod'), '需要 pod install 支持 iOS 原生依赖。')
 } else {
   addCheck(

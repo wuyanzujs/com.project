@@ -1,0 +1,29 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-stub-notice {
+  margin: $dp-section-gap $dp-page-horizontal-padding 0;
+  padding: $dp-card-padding;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-info-border-soft;
+  border-width: $dp-border-width-hairline;
+  border-radius: $dp-radius-card;
+}
+
+.order-stub-notice--warning {
+  border-color: $dp-color-warning-border;
+  background: $dp-color-warning-background;
+}
+
+.order-stub-notice__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-stub-notice__content {
+  display: flex;
+  margin-top: $dp-space-8;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}

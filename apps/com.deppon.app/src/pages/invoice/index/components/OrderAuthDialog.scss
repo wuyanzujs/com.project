@@ -1,0 +1,118 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.invoice-auth {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0 40px;
+  background: $dp-color-overlay-strong;
+}
+
+.invoice-auth__panel {
+  width: 100%;
+  padding: 32px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-auth__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+  text-align: center;
+}
+
+.invoice-auth__summary,
+.invoice-auth__message {
+  display: flex;
+  margin-top: 18px;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.invoice-auth__summary {
+  color: $dp-color-text-secondary;
+}
+
+.invoice-auth__message {
+  color: $dp-color-danger-text;
+}
+
+.invoice-auth__field,
+.invoice-auth__actions {
+  display: flex;
+  flex-direction: row;
+}
+
+.invoice-auth__field {
+  align-items: center;
+  min-height: 76px;
+  margin-top: 28px;
+  background: $dp-color-bg-subtle;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-auth__input {
+  flex: 1;
+  height: 76px;
+  padding: 0 20px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-large;
+}
+
+.invoice-auth__send {
+  align-items: center;
+  justify-content: center;
+  width: 172px;
+  height: 76px;
+}
+
+.invoice-auth__send--disabled {
+  background: $dp-color-bg-muted;
+}
+
+.invoice-auth__send-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-auth__send-text--disabled {
+  color: $dp-color-text-supporting;
+}
+
+.invoice-auth__actions {
+  justify-content: space-between;
+  margin-top: 34px;
+}
+
+.invoice-auth__button {
+  align-items: center;
+  justify-content: center;
+  width: 280px;
+  height: 72px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-auth__button--ghost {
+  background: $dp-color-bg-muted;
+}
+
+.invoice-auth__button--disabled {
+  background: $dp-color-bg-disabled-strong;
+}
+
+.invoice-auth__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-auth__button-text--ghost {
+  color: $dp-color-text-body;
+}

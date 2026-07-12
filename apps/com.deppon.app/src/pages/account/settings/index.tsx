@@ -5,6 +5,7 @@ import { useState } from 'react'
 
 import { accountService } from '../../../services/account'
 import { authService } from '../../../services/auth'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import {
   createLoginRedirectUrl,
@@ -12,12 +13,15 @@ import {
 } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppWebUrl } from '../../../shared/webview/appWeb'
+import { APP_STYLE_COLORS } from '../../../styles/nativeTokens'
 
 import type { AccountOverviewView } from '../../../services/account'
 import type { AppRoutePath } from '../../../shared/navigation/routes'
 import type { AppWebSource } from '../../../shared/webview/appWeb'
 
+
 import './index.scss'
+import './content.scss'
 
 interface AccountEntry {
   title: string
@@ -123,7 +127,7 @@ const AccountSettingsPage = () => {
       title: '退出登录',
       content: '退出后，本机将清除当前登录态，但不会注销账号。',
       confirmText: '退出',
-      confirmColor: '#b42318',
+      confirmColor: APP_STYLE_COLORS.status.dangerTextStrong,
       success: async (res) => {
         if (!res.confirm) {
           return
@@ -170,9 +174,9 @@ const AccountSettingsPage = () => {
         </View>
 
         {!overview.loggedIn && (
-          <View className='account-settings-login' onClick={handleLogin}>
+          <AppPressable className='account-settings-login' onPress={handleLogin}>
             <Text className='account-settings-login__text'>去登录</Text>
-          </View>
+          </AppPressable>
         )}
       </View>
 
@@ -195,10 +199,10 @@ const AccountSettingsPage = () => {
       <View className='account-settings-section'>
         <Text className='account-settings-section__title'>安全与隐私</Text>
         {ACCOUNT_ENTRIES.map((entry) => (
-          <View
+          <AppPressable
             className='account-settings-entry'
             key={entry.title}
-            onClick={() => handleEntry(entry)}
+            onPress={() => handleEntry(entry)}
           >
             <View className='account-settings-entry__content'>
               <Text className='account-settings-entry__title'>
@@ -209,24 +213,24 @@ const AccountSettingsPage = () => {
               </Text>
             </View>
             <Text className='account-settings-entry__arrow'>›</Text>
-          </View>
+          </AppPressable>
         ))}
       </View>
 
       {overview.loggedIn && (
         <View className='account-settings-section'>
           <Text className='account-settings-section__title'>账号操作</Text>
-          <View className='account-settings-danger' onClick={handleLogout}>
+          <AppPressable className='account-settings-danger' onPress={handleLogout}>
             <Text className='account-settings-danger__title'>
               {logouting ? '退出中' : '退出登录'}
             </Text>
             <Text className='account-settings-danger__summary'>
               清除当前设备登录态，账号和数据仍会保留。
             </Text>
-          </View>
-          <View
+          </AppPressable>
+          <AppPressable
             className='account-settings-danger account-settings-danger--strong'
-            onClick={() =>
+            onPress={() =>
               navigateToAppRoute(APP_ROUTES.accountCancel, {
                 login: true
               })
@@ -238,7 +242,7 @@ const AccountSettingsPage = () => {
             <Text className='account-settings-danger__summary'>
               注销后账号信息将无法恢复，请谨慎操作。
             </Text>
-          </View>
+          </AppPressable>
         </View>
       )}
     </ScrollView>

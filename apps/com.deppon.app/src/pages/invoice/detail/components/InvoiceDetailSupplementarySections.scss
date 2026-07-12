@@ -1,0 +1,135 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.invoice-detail-section {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-detail-section__head,
+.invoice-detail-waybill {
+  display: flex;
+  flex-direction: row;
+}
+
+.invoice-detail-section__head {
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 4px;
+}
+
+.invoice-detail-section__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-detail-section__summary {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+}
+
+.invoice-detail-section__button {
+  min-width: 108px;
+  height: 58px;
+  padding: 0 18px;
+  background: $dp-color-brand-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-detail-section__button--disabled {
+  background: $dp-color-bg-disabled;
+}
+
+.invoice-detail-section__button-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-detail-section__summary--block {
+  display: flex;
+  margin-top: 10px;
+  line-height: $dp-line-height-body-small;
+}
+
+.invoice-detail-mail {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 18px;
+}
+
+.invoice-detail-mail__input {
+  flex: 1;
+  height: 68px;
+  padding: 0 20px;
+  color: $dp-color-text-heading;
+  background: $dp-color-bg-subtle;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-body-large;
+}
+
+.invoice-detail-mail__button {
+  width: 118px;
+  height: 68px;
+  margin-left: 12px;
+  background: $dp-color-bg-inverse;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-detail-mail__button--disabled {
+  background: $dp-color-bg-disabled-strong;
+}
+
+.invoice-detail-mail__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-detail-mail__hint {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-status-warning-text;
+  font-size: $dp-font-size-body-small;
+}
+
+.invoice-detail-waybill {
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: 1px;
+}
+
+.invoice-detail-waybill__index {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+
+.invoice-detail-waybill__number {
+  display: flex;
+  margin-top: 6px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-detail-waybill__amount {
+  color: $dp-color-warning-emphasis;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-detail-empty-block {
+  align-items: center;
+  justify-content: center;
+}
+
+.invoice-detail-empty-block__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}

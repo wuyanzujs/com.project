@@ -1,0 +1,51 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.app-page-header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: $dp-space-xl $dp-page-horizontal-padding $dp-space-lg;
+}
+
+.app-page-header--card {
+  background: $dp-color-bg-card;
+}
+
+.app-page-header--brand-soft {
+  background: $dp-color-brand-faint;
+}
+
+.app-page-header__leading {
+  flex-shrink: 0;
+  margin-right: $dp-space-sm;
+}
+
+.app-page-header__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-page-header__eyebrow {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.app-page-header__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-page-title;
+}
+
+.app-page-header__subtitle {
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.app-page-header__action {
+  flex-shrink: 0;
+  margin-left: $dp-space-sm;
+}

@@ -1,0 +1,32 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.qr-code-matrix {
+  overflow: hidden;
+  background: $dp-color-bg-card;
+}
+
+.qr-code-matrix__row {
+  display: flex;
+  flex-direction: row;
+}
+
+.qr-code-matrix__cell {
+  flex-shrink: 0;
+}
+
+.qr-code-matrix--empty {
+  align-items: center;
+  justify-content: center;
+  width: $dp-qr-size-default;
+  height: $dp-qr-size-default;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border;
+  border-radius: $dp-radius-card;
+  border-width: $dp-space-1;
+}
+
+.qr-code-matrix__empty-text {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}

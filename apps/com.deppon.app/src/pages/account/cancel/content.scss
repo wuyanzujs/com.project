@@ -1,0 +1,167 @@
+@use '../../../styles/_tokens.scss' as *;
+.account-cancel-header {
+  padding: 32px 24px 24px;
+  background: $dp-color-bg-card;
+}
+
+.account-cancel-header__label {
+  color: $dp-color-danger-text-strong;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.account-cancel-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.account-cancel-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.account-cancel-card,
+.account-cancel-section,
+.account-cancel-agreement {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.account-cancel-card {
+  border-color: $dp-color-danger-border;
+  border-width: 1px;
+}
+
+.account-cancel-card__title,
+.account-cancel-section__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.account-cancel-card__mobile {
+  display: flex;
+  margin-top: 10px;
+  color: $dp-color-danger-text-strong;
+  font-size: $dp-font-size-heading-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.account-cancel-section__head,
+.account-cancel-code,
+.account-cancel-agreement {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.account-cancel-section__head {
+  justify-content: space-between;
+}
+
+.account-cancel-section__hint {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+}
+
+.account-cancel-warning {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.account-cancel-code {
+  margin-top: 18px;
+}
+
+.account-cancel-code__input {
+  flex: 1;
+  height: 72px;
+  padding: 0 20px;
+  color: $dp-color-text-heading;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+  font-size: $dp-font-size-body-large;
+}
+
+.account-cancel-code__button {
+  align-items: center;
+  justify-content: center;
+  width: 168px;
+  height: 72px;
+  margin-left: 14px;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.account-cancel-code__button-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.account-cancel-agreement {
+  align-items: flex-start;
+}
+
+.account-cancel-checkbox {
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-right: 14px;
+  border-color: $dp-color-border;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.account-cancel-checkbox--checked {
+  background: $dp-color-danger-text-strong;
+  border-color: $dp-color-danger-text-strong;
+}
+
+.account-cancel-checkbox__text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body;
+  text-align: center;
+}
+
+.account-cancel-agreement__text {
+  flex: 1;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+}
+
+.account-cancel-submit {
+  align-items: center;
+  justify-content: center;
+  height: 84px;
+  margin: 20px 24px 0;
+  background: $dp-color-danger-text-strong;
+  border-radius: $dp-radius-sm;
+}
+
+.account-cancel-submit--disabled {
+  background: $dp-color-bg-disabled-strong;
+}
+
+.account-cancel-submit__text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+}

@@ -2,8 +2,16 @@ import { Text, View } from '@tarojs/components'
 
 import { useState } from 'react'
 
+import { ExpressMonthlyPayCard } from './ExpressMonthlyPayCard'
+import { ExpressScanContextCard } from './ExpressScanContextCard'
+import { ExpressSection } from './ExpressSection'
 import { expressReturnBillOptions } from '../../../services/express'
+import { AppPressable } from '../../../shared/components'
 import { AppIcon } from '../../../shared/components/AppIcon'
+import {
+  APP_NATIVE_TOKENS,
+  APP_STYLE_COLORS
+} from '../../../styles/nativeTokens'
 
 import type {
   ExpressDeliveryMode,
@@ -14,7 +22,7 @@ import type {
   ExpressScanContextView
 } from '../../../services/express'
 
-import '../index.scss'
+import './ExpressServiceSection.scss'
 
 const PAYMENT_OPTIONS: Array<{ label: string; value: ExpressPaymentType }> = [
   {
@@ -71,159 +79,142 @@ export function ExpressServiceSection({
   onPrivacyProtectionChange,
   onServiceChange
 }: ExpressServiceSectionProps) {
-  const [expanded, setExpanded] = useState(false)
+  const [expandedPanel, setExpandedPanel] = useState<
+    'delivery' | 'valueAdded' | null
+  >(null)
+  const deliveryLabel =
+    DELIVERY_OPTIONS.find(option => option.value === service.deliveryMode)
+      ?.label || '请选择'
+  const valueAddedSummary = [
+    service.privacyProtection === 'Y' && '隐私面单',
+    service.passwordSigning === 'Y' && '签收密码',
+    selectedReturnBillOption.value !== 'NO_RETURN_SIGNED' &&
+      selectedReturnBillOption.label
+  ]
+    .filter(Boolean)
+    .join('、')
+
+  const togglePanel = (panel: 'delivery' | 'valueAdded') => {
+    setExpandedPanel(current => (current === panel ? null : panel))
+  }
 
   return (
-    <View className='express-section'>
-      <View className='express-section__head'>
-        <Text className='express-section__title'>服务方式</Text>
-      </View>
-
+    <ExpressSection title='寄件服务'>
       {scanContextView && (
-        <View
-          className={`express-scan-context express-scan-context--${scanContextView.tone}`}
-        >
-          <View className='express-scan-context__head'>
-            <Text className='express-scan-context__title'>
-              {scanContextView.title}
-            </Text>
-            <Text className='express-scan-context__tag'>
-              {scanContextView.tag}
-            </Text>
-          </View>
-          <Text className='express-scan-context__summary'>
-            {scanContextView.summary}
-          </Text>
-          <View
-            className='express-scan-context__action'
-            onClick={onClearScanContext}
-          >
-            <Text className='express-scan-context__action-text'>
-              {scanContextView.actionText}
-            </Text>
-          </View>
-        </View>
+        <ExpressScanContextCard
+          view={scanContextView}
+          onClear={onClearScanContext}
+        />
       )}
 
-      <Text className='express-option-title'>付款方式</Text>
-      <View className='express-chip-group'>
-        {PAYMENT_OPTIONS.map(option => (
-          <View
-            className={
-              option.value === service.paymentType
-                ? 'express-chip express-chip--active'
-                : 'express-chip'
-            }
-            key={option.value}
-            onClick={() => onPaymentTypeSelect(option.value)}
-          >
-            <Text
+      <View className='express-service-payment'>
+        <Text className='express-option-title express-option-title--inline'>
+          付款方式
+        </Text>
+        <View className='express-chip-group'>
+          {PAYMENT_OPTIONS.map(option => (
+            <AppPressable
+              accessibilityLabel={`选择付款方式${option.label}`}
               className={
                 option.value === service.paymentType
-                  ? 'express-chip__text express-chip__text--active'
-                  : 'express-chip__text'
+                  ? 'express-chip express-chip--active'
+                  : 'express-chip'
               }
+              key={option.value}
+              selected={option.value === service.paymentType}
+              onPress={() => onPaymentTypeSelect(option.value)}
             >
-              {option.label}
-            </Text>
-          </View>
-        ))}
+              <Text
+                className={
+                  option.value === service.paymentType
+                    ? 'express-chip__text express-chip__text--active'
+                    : 'express-chip__text'
+                }
+              >
+                {option.label}
+              </Text>
+            </AppPressable>
+          ))}
+        </View>
       </View>
 
       {monthlyPayView && (
-        <View
-          className={`express-monthly-card express-monthly-card--${monthlyPayView.tone}`}
-        >
-          <View className='express-monthly-card__content'>
-            <Text className='express-monthly-card__title'>
-              {monthlyPayView.title}
-            </Text>
-            <Text className='express-monthly-card__summary'>
-              {monthlyPayView.summary}
-            </Text>
-          </View>
-          <View
-            className='express-monthly-card__action'
-            onClick={() => onMonthlyPayAction(monthlyPayView)}
-          >
-            <Text className='express-monthly-card__action-text'>
-              {monthlyPayView.actionText}
-            </Text>
-          </View>
-        </View>
+        <ExpressMonthlyPayCard
+          view={monthlyPayView}
+          onAction={onMonthlyPayAction}
+        />
       )}
 
-      <Text className='express-option-title'>送货方式</Text>
-      <View className='express-chip-group'>
-        {DELIVERY_OPTIONS.map(option => (
-          <View
-            className={
-              option.value === service.deliveryMode
-                ? 'express-chip express-chip--active'
-                : 'express-chip'
-            }
-            key={option.value}
-            onClick={() => onServiceChange({ deliveryMode: option.value })}
-          >
-            <Text
-              className={
-                option.value === service.deliveryMode
-                  ? 'express-chip__text express-chip__text--active'
-                  : 'express-chip__text'
-              }
-            >
-              {option.label}
-            </Text>
-          </View>
-        ))}
-      </View>
-
-      <View
-        className='express-service-more'
-        onClick={() => setExpanded(current => !current)}
+      <AppPressable
+        accessibilityLabel={
+          expandedPanel === 'delivery' ? '收起送货方式' : '展开送货方式'
+        }
+        block
+        className='express-service-entry'
+        layout='row-start'
+        onPress={() => togglePanel('delivery')}
       >
-        <View className='express-service-more__content'>
-          <Text className='express-service-more__title'>更多寄件服务</Text>
-          <Text className='express-service-more__summary'>
-            电话联系、隐私面单、签收密码和返单
-          </Text>
-        </View>
+        <Text className='express-service-entry__title'>送货方式</Text>
+        <Text className='express-service-entry__summary'>{deliveryLabel}</Text>
         <AppIcon
-          color='#667085'
-          name={expanded ? 'chevronUp' : 'chevronDown'}
-          size={24}
+          color={APP_STYLE_COLORS.text.supporting}
+          name={expandedPanel === 'delivery' ? 'chevronUp' : 'chevronDown'}
+          size={APP_NATIVE_TOKENS.icon.small}
         />
-      </View>
+      </AppPressable>
 
-      {expanded && (
-        <>
-          <View className='express-service-row'>
-            <Text className='express-option-title'>取件前电话联系</Text>
-            <View className='express-toggle-group'>
-              {(['Y', 'N'] as const).map(value => (
-                <View
+      {expandedPanel === 'delivery' ? (
+        <View className='express-service-panel'>
+          <View className='express-chip-group'>
+            {DELIVERY_OPTIONS.map(option => (
+              <AppPressable
+                accessibilityLabel={`选择送货方式${option.label}`}
+                className={
+                  option.value === service.deliveryMode
+                    ? 'express-chip express-chip--active'
+                    : 'express-chip'
+                }
+                key={option.value}
+                selected={option.value === service.deliveryMode}
+                onPress={() => onServiceChange({ deliveryMode: option.value })}
+              >
+                <Text
                   className={
-                    value === service.needContact
-                      ? 'express-toggle express-toggle--active'
-                      : 'express-toggle'
+                    option.value === service.deliveryMode
+                      ? 'express-chip__text express-chip__text--active'
+                      : 'express-chip__text'
                   }
-                  key={value}
-                  onClick={() => onServiceChange({ needContact: value })}
                 >
-                  <Text
-                    className={
-                      value === service.needContact
-                        ? 'express-toggle__text express-toggle__text--active'
-                        : 'express-toggle__text'
-                    }
-                  >
-                    {value === 'Y' ? '联系' : '不联系'}
-                  </Text>
-                </View>
-              ))}
-            </View>
+                  {option.label}
+                </Text>
+              </AppPressable>
+            ))}
           </View>
+        </View>
+      ) : null}
 
+      <AppPressable
+        accessibilityLabel={
+          expandedPanel === 'valueAdded' ? '收起增值服务' : '展开增值服务'
+        }
+        block
+        className='express-service-entry'
+        layout='row-start'
+        onPress={() => togglePanel('valueAdded')}
+      >
+        <Text className='express-service-entry__title'>增值服务</Text>
+        <Text className='express-service-entry__summary'>
+          {valueAddedSummary || '可选'}
+        </Text>
+        <AppIcon
+          color={APP_STYLE_COLORS.text.supporting}
+          name={expandedPanel === 'valueAdded' ? 'chevronUp' : 'chevronDown'}
+          size={APP_NATIVE_TOKENS.icon.small}
+        />
+      </AppPressable>
+
+      {expandedPanel === 'valueAdded' ? (
+        <View className='express-service-panel'>
           <View className='express-service-row express-service-row--stack'>
             <View className='express-service-row__content'>
               <Text className='express-option-title'>隐私面单</Text>
@@ -233,14 +224,18 @@ export function ExpressServiceSection({
             </View>
             <View className='express-toggle-group'>
               {(['Y', 'N'] as const).map(value => (
-                <View
+                <AppPressable
+                  accessibilityLabel={
+                    value === 'Y' ? '开启隐私面单' : '关闭隐私面单'
+                  }
                   className={
                     value === service.privacyProtection
                       ? 'express-toggle express-toggle--active'
                       : 'express-toggle'
                   }
                   key={value}
-                  onClick={() => onPrivacyProtectionChange(value)}
+                  selected={value === service.privacyProtection}
+                  onPress={() => onPrivacyProtectionChange(value)}
                 >
                   <Text
                     className={
@@ -251,7 +246,7 @@ export function ExpressServiceSection({
                   >
                     {value === 'Y' ? '开启' : '关闭'}
                   </Text>
-                </View>
+                </AppPressable>
               ))}
             </View>
           </View>
@@ -265,14 +260,18 @@ export function ExpressServiceSection({
             </View>
             <View className='express-toggle-group'>
               {(['Y', 'N'] as const).map(value => (
-                <View
+                <AppPressable
+                  accessibilityLabel={
+                    value === 'Y' ? '开启签收密码' : '关闭签收密码'
+                  }
                   className={
                     value === service.passwordSigning
                       ? 'express-toggle express-toggle--active'
                       : 'express-toggle'
                   }
                   key={value}
-                  onClick={() => onServiceChange({ passwordSigning: value })}
+                  selected={value === service.passwordSigning}
+                  onPress={() => onServiceChange({ passwordSigning: value })}
                 >
                   <Text
                     className={
@@ -283,23 +282,25 @@ export function ExpressServiceSection({
                   >
                     {value === 'Y' ? '开启' : '关闭'}
                   </Text>
-                </View>
+                </AppPressable>
               ))}
             </View>
           </View>
 
           <View className='express-value-added'>
             <Text className='express-option-title'>签收单返单</Text>
-            <View className='express-chip-group'>
+            <View className='express-chip-group express-chip-group--wrap'>
               {expressReturnBillOptions.map(option => (
-                <View
+                <AppPressable
+                  accessibilityLabel={`选择${option.label}`}
                   className={
                     option.value === service.returnBillType
-                      ? 'express-chip express-chip--active'
-                      : 'express-chip'
+                      ? 'express-chip express-chip--wrap express-chip--active'
+                      : 'express-chip express-chip--wrap'
                   }
                   key={option.value}
-                  onClick={() =>
+                  selected={option.value === service.returnBillType}
+                  onPress={() =>
                     onServiceChange({ returnBillType: option.value })
                   }
                 >
@@ -312,7 +313,7 @@ export function ExpressServiceSection({
                   >
                     {option.label}
                   </Text>
-                </View>
+                </AppPressable>
               ))}
             </View>
             <Text className='express-value-added__summary'>
@@ -325,8 +326,8 @@ export function ExpressServiceSection({
               代收货款需先完成收款账户、协议和额度校验，可在客户中心处理相关设置。
             </Text>
           </View>
-        </>
-      )}
-    </View>
+        </View>
+      ) : null}
+    </ExpressSection>
   )
 }

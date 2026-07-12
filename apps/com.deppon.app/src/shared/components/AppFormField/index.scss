@@ -1,0 +1,84 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.app-form-field {
+  display: flex;
+}
+
+.app-form-field--disabled {
+  opacity: $dp-opacity-disabled;
+}
+
+.app-form-field__label-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: $dp-space-8;
+}
+
+.app-form-field__label {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body;
+}
+
+.app-form-field__required {
+  margin-left: $dp-space-4;
+  color: $dp-color-danger-text;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.app-form-field__control {
+  display: flex;
+  flex-direction: row;
+  min-height: $dp-field-height;
+  align-items: center;
+  padding: 0 $dp-space-sm;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border;
+  border-radius: $dp-radius-control;
+  border-width: $dp-space-1;
+}
+
+.app-form-field__control--focused {
+  border-color: $dp-interaction-focus-border;
+  border-width: $dp-interaction-focus-width;
+}
+
+.app-form-field__control--error {
+  border-color: $dp-color-danger-border;
+}
+
+.app-form-field__control--disabled {
+  background: $dp-interaction-disabled-background;
+}
+
+.app-form-field__input {
+  flex: 1;
+  min-width: 0;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.app-form-field__trailing {
+  flex-shrink: 0;
+  min-width: $dp-touch-target-min;
+  min-height: $dp-touch-target-min;
+  margin-left: $dp-space-xs;
+}
+
+.app-form-field__helper {
+  margin-top: $dp-space-8;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.app-form-field__error {
+  margin-top: $dp-space-8;
+  color: $dp-color-danger-text;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}

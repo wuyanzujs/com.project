@@ -1,0 +1,150 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-pickup-section {
+  margin-bottom: $dp-space-14;
+  overflow: hidden;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-card;
+}
+
+.express-pickup-section__modes {
+  display: flex;
+  flex-direction: row;
+  background: $dp-color-bg-muted;
+}
+
+.express-pickup-section__mode {
+  flex: 1;
+  min-height: $dp-touch-target-min;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-card;
+}
+
+.express-pickup-section__mode--active {
+  background: $dp-color-bg-card;
+}
+
+.express-pickup-section__mode-text {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-small;
+  font-weight: $dp-font-weight-medium;
+  line-height: $dp-line-height-label;
+}
+
+.express-pickup-section__mode-text--active {
+  color: $dp-color-text-strong;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-pickup-section__body {
+  padding: 0 $dp-space-lg;
+}
+
+.express-pickup-section__row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: $dp-touch-target-min;
+}
+
+.express-pickup-section__row--station {
+  min-height: $dp-control-height-large;
+}
+
+.express-pickup-section__label {
+  margin-left: $dp-space-xs;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-body;
+}
+
+.express-pickup-section__label--contact {
+  margin-left: 0;
+}
+
+.express-pickup-section__value {
+  flex: 1;
+  margin-left: $dp-space-md;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-label;
+  text-align: right;
+}
+
+.express-pickup-section__chevron {
+  flex-shrink: 0;
+  margin-left: $dp-space-8;
+  transform: rotate(-90deg);
+}
+
+.express-pickup-section__contact-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: $dp-touch-target-min;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.express-pickup-section__contact-label {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+}
+
+.express-pickup-section__required {
+  margin-left: $dp-space-8;
+  padding: $dp-space-2 $dp-space-8;
+  color: $dp-color-brand;
+  font-size: $dp-font-size-fine;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-fine;
+  background: $dp-color-brand-soft;
+  border-radius: $dp-radius-tag;
+}
+
+.express-pickup-section__contact-options {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: row;
+  align-items: center;
+}
+
+.express-pickup-section__contact-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  min-width: $dp-control-height-medium;
+  min-height: $dp-touch-target-min;
+  margin-left: $dp-space-8;
+  background: $dp-color-transparent;
+  border-width: 0;
+}
+
+.express-pickup-section__radio {
+  width: $dp-space-28;
+  height: $dp-space-28;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border;
+  border-radius: $dp-radius-radio;
+  border-width: $dp-interaction-focus-width;
+}
+
+.express-pickup-section__radio--active {
+  background: $dp-color-brand;
+  border-color: $dp-color-brand;
+}
+
+.express-pickup-section__contact-text {
+  margin-left: $dp-space-8;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-body;
+}

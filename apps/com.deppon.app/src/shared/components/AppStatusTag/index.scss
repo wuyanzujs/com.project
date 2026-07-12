@@ -1,0 +1,67 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.app-status-tag {
+  display: flex;
+  align-self: flex-start;
+  justify-content: center;
+  min-height: $dp-control-height-compact;
+  padding: 0 $dp-space-xs;
+  border-radius: $dp-radius-pill;
+}
+
+.app-status-tag--neutral {
+  background: $dp-color-bg-muted;
+}
+
+.app-status-tag--brand {
+  background: $dp-color-brand-soft;
+}
+
+.app-status-tag--info {
+  background: $dp-color-info-background;
+  border-color: $dp-color-info-border;
+  border-width: $dp-space-1;
+}
+
+.app-status-tag--success {
+  background: $dp-color-success-background;
+}
+
+.app-status-tag--warning {
+  background: $dp-color-warning-background;
+}
+
+.app-status-tag--danger {
+  background: $dp-color-danger-background;
+}
+
+.app-status-tag__label {
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-caption;
+  text-align: center;
+}
+
+.app-status-tag__label--neutral {
+  color: $dp-color-text-supporting;
+}
+
+.app-status-tag__label--brand {
+  color: $dp-color-brand;
+}
+
+.app-status-tag__label--info {
+  color: $dp-color-brand;
+}
+
+.app-status-tag__label--success {
+  color: $dp-color-success-text;
+}
+
+.app-status-tag__label--warning {
+  color: $dp-color-warning-text-strong;
+}
+
+.app-status-tag__label--danger {
+  color: $dp-color-danger-text;
+}

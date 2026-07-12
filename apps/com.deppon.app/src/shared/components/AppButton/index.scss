@@ -1,0 +1,53 @@
+@use '../../../styles/_tokens.scss' as *;
+.app-button {
+  display: flex;
+  flex-direction: row;
+  padding: 0 $dp-space-lg;
+  border-radius: $dp-button-radius;
+}
+.app-button--default {
+  min-height: $dp-control-height-default;
+}
+.app-button--compact {
+  min-height: $dp-control-height-compact;
+}
+.app-button--primary {
+  background: $dp-color-brand;
+}
+.app-button--secondary {
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border;
+  border-width: $dp-space-1;
+}
+.app-button--danger {
+  background: $dp-color-danger-emphasis;
+}
+.app-button--ghost {
+  background: $dp-color-bg-muted;
+}
+.app-button__label {
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-title;
+  text-align: center;
+}
+.app-button__label--primary {
+  color: $dp-color-text-inverse;
+}
+.app-button__label--secondary {
+  color: $dp-color-text-heading;
+}
+.app-button__label--danger {
+  color: $dp-color-text-inverse;
+}
+.app-button__label--ghost {
+  color: $dp-color-brand;
+}
+.app-button__leading {
+  flex-shrink: 0;
+  margin-right: $dp-space-xs;
+}
+.app-button__trailing {
+  flex-shrink: 0;
+  margin-left: $dp-space-xs;
+}

@@ -1,0 +1,80 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-quote-action {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: $dp-touch-target-min;
+  padding: $dp-space-8 $dp-space-12;
+  background: $dp-color-brand-faint;
+  border-radius: $dp-radius-sm;
+}
+.express-quote-action__content {
+  flex: 1;
+  padding-right: $dp-space-12;
+}
+.express-quote-action__title {
+  display: flex;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+.express-quote-action__summary {
+  display: flex;
+  margin-top: $dp-space-2;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-fine;
+}
+.express-quote-action__link {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+.express-product-list {
+  margin-top: $dp-space-8;
+}
+.express-product {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: $dp-touch-target-min;
+  padding: $dp-space-10 $dp-space-12;
+  margin-bottom: $dp-space-8;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: $dp-border-width-hairline;
+}
+.express-product--active {
+  background: $dp-color-warning-background;
+  border-color: $dp-color-warning-emphasis;
+}
+.express-product__main {
+  flex: 1;
+  padding-right: $dp-space-12;
+}
+.express-product__name {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+.express-product__desc {
+  display: flex;
+  margin-top: $dp-space-2;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+.express-product__meta {
+  display: flex;
+  margin-top: $dp-space-2;
+  color: $dp-color-text-placeholder;
+  font-size: $dp-font-size-legal;
+  line-height: $dp-line-height-legal;
+}
+.express-product__price {
+  color: $dp-color-warning-emphasis;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}

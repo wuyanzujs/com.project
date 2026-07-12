@@ -1,0 +1,56 @@
+@use '../../../styles/_tokens.scss' as *;
+.app-dialog {
+  display: flex;
+  flex: 1;
+  padding: $dp-space-lg;
+  background: $dp-color-overlay;
+}
+.app-dialog--center {
+  justify-content: center;
+}
+.app-dialog--bottom {
+  justify-content: flex-end;
+}
+.app-dialog__panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 100%;
+  max-width: $dp-dialog-max-width;
+  align-self: center;
+  padding: $dp-card-padding;
+  background: $dp-color-bg-card;
+}
+
+.app-dialog__panel--center {
+  border-radius: $dp-radius-dialog;
+}
+
+.app-dialog__panel--bottom {
+  border-radius: $dp-radius-sheet;
+}
+.app-dialog__body {
+  flex-shrink: 1;
+}
+.app-dialog__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-44;
+}
+
+.app-dialog__description {
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.app-dialog__content {
+  margin-top: $dp-space-lg;
+}
+.app-dialog__footer {
+  display: flex;
+  min-height: $dp-touch-target-min;
+  margin-top: $dp-space-lg;
+}

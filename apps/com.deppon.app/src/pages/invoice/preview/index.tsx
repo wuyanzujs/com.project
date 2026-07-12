@@ -5,6 +5,7 @@ import { useState } from 'react'
 
 import { CACHE_KEYS, DPCacheExpireType, dpCache } from '../../../cache'
 import { invoiceService } from '../../../services/invoice'
+import { AppPressable } from '../../../shared/components'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import {
   copyTextToClipboard,
@@ -18,7 +19,9 @@ import type {
   InvoicePreviewView
 } from '../../../services/invoice'
 
+
 import './index.scss'
+import './content.scss'
 
 function decodeRouteParam(value?: string) {
   if (!value) {
@@ -190,20 +193,20 @@ const InvoicePreviewPage = () => {
         </Text>
 
         <View className='invoice-preview-file__actions'>
-          <View
+          <AppPressable
             className='invoice-preview-file__button invoice-preview-file__button--ghost'
-            onClick={() => handleCopy(file.displayUrl)}
+            onPress={() => handleCopy(file.displayUrl)}
           >
             <Text className='invoice-preview-file__button-text invoice-preview-file__button-text--ghost'>
               复制链接
             </Text>
-          </View>
-          <View
+          </AppPressable>
+          <AppPressable
             className='invoice-preview-file__button'
-            onClick={() => handleOpenFile(file)}
+            onPress={() => handleOpenFile(file)}
           >
             <Text className='invoice-preview-file__button-text'>下载/打开</Text>
-          </View>
+          </AppPressable>
         </View>
       </View>
     )
@@ -258,18 +261,18 @@ const InvoicePreviewPage = () => {
               onBlur={(event) => setEmail(event.detail.value.trim())}
               onInput={(event) => setEmail(event.detail.value)}
             />
-            <View
+            <AppPressable
               className={
                 sending
                   ? 'invoice-preview-mail__button invoice-preview-mail__button--disabled'
                   : 'invoice-preview-mail__button'
               }
-              onClick={handleSendEmail}
+              onPress={handleSendEmail}
             >
               <Text className='invoice-preview-mail__button-text'>
                 {sending ? '发送中' : '发送'}
               </Text>
-            </View>
+            </AppPressable>
           </View>
         </View>
       )}

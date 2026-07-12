@@ -11,8 +11,8 @@
 .app-tab-bar__inner {
   display: flex;
   flex-direction: row;
-  min-height: 104px;
-  padding: 8px 18px 4px;
+  min-height: $dp-tab-bar-height;
+  padding: $dp-space-8 $dp-space-18 $dp-space-4;
 }
 
 .app-tab-bar__item {
@@ -25,9 +25,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  height: 46px;
-  margin-bottom: 1px;
+  min-width: $dp-touch-target-min;
+  min-height: $dp-touch-target-min;
+  margin-bottom: $dp-space-1;
 }
 
 .app-tab-bar__text {

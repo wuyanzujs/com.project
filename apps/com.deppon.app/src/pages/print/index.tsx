@@ -4,11 +4,14 @@ import Taro, { useRouter } from '@tarojs/taro'
 import { useMemo } from 'react'
 
 import { printService } from '../../services/print'
+import { AppPressable } from '../../shared/components'
 import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
 
 import type { PrintCenterActionView } from '../../services/print'
 
+
 import './index.scss'
+import './content.scss'
 
 function getActionClassName(action: PrintCenterActionView) {
   return `print-action print-action--${action.status}`
@@ -112,10 +115,10 @@ const PrintCenterPage = () => {
           <Text className='print-section__title'>打印服务</Text>
         </View>
         {center.actions.map((action) => (
-          <View
+          <AppPressable
             className={getActionClassName(action)}
             key={action.key}
-            onClick={() => handleAction(action)}
+            onPress={() => handleAction(action)}
           >
             <View className='print-action__main'>
               <Text className='print-action__title'>{action.title}</Text>
@@ -124,7 +127,7 @@ const PrintCenterPage = () => {
             <Text className={getActionStatusClassName(action)}>
               {action.statusText}
             </Text>
-          </View>
+          </AppPressable>
         ))}
       </View>
 

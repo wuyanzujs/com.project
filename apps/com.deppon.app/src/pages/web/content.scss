@@ -1,0 +1,59 @@
+@use '../../styles/_tokens.scss' as *;
+.web-loading {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 2;
+  padding: 10px 16px;
+  background: $dp-color-bg-inverse;
+  border-radius: $dp-radius-sm;
+}
+
+.web-loading__text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-caption;
+}
+
+.web-fallback {
+  padding: 28px 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.web-fallback__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.web-fallback__title {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-heading-small;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-title-large;
+}
+
+.web-fallback__summary {
+  display: flex;
+  margin-top: 10px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+}
+
+.web-fallback__button {
+  align-items: center;
+  justify-content: center;
+  height: 72px;
+  margin-top: 24px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.web-fallback__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-label-small;
+  font-weight: $dp-font-weight-bold;
+}

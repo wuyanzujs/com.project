@@ -1,69 +1,11 @@
+@use '../../styles/_tokens.scss' as *;
 .web-page {
   flex: 1;
-  background: #ffffff;
+  background: $dp-color-bg-card;
 }
 
 .web-page--fallback {
   justify-content: center;
   padding: 24px;
-  background: #f5f7fb;
-}
-
-.web-loading {
-  position: absolute;
-  top: 24px;
-  left: 24px;
-  z-index: 2;
-  padding: 10px 16px;
-  background: #16181a;
-  border-radius: 8px;
-}
-
-.web-loading__text {
-  color: #ffffff;
-  font-size: 22px;
-}
-
-.web-fallback {
-  padding: 28px 24px;
-  background: #ffffff;
-  border-radius: 8px;
-}
-
-.web-fallback__label {
-  color: #1a5eff;
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.web-fallback__title {
-  display: flex;
-  margin-top: 12px;
-  color: #16181a;
-  font-size: 34px;
-  font-weight: 700;
-  line-height: 44px;
-}
-
-.web-fallback__summary {
-  display: flex;
-  margin-top: 10px;
-  color: #667085;
-  font-size: 24px;
-  line-height: 34px;
-}
-
-.web-fallback__button {
-  align-items: center;
-  justify-content: center;
-  height: 72px;
-  margin-top: 24px;
-  background: #1a5eff;
-  border-radius: 8px;
-}
-
-.web-fallback__button-text {
-  color: #ffffff;
-  font-size: 26px;
-  font-weight: 700;
+  background: $dp-color-bg-page;
 }

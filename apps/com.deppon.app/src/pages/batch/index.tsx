@@ -9,6 +9,7 @@ import {
   expressDraftBridge,
   expressDraftStorage
 } from '../../services/express'
+import { AppPressable } from '../../shared/components'
 import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../shared/navigation/routes'
 import { copyTextToClipboard } from '../../shared/platform/clipboard'
@@ -18,7 +19,9 @@ import type {
   BatchRecognizedConsignee
 } from '../../services/batch'
 
+
 import './index.scss'
+import './content.scss'
 
 function getActionClassName(action: BatchEntryActionView) {
   return `batch-action batch-action--${action.status}`
@@ -121,10 +124,10 @@ const BatchPage = () => {
           <Text className='batch-section__title'>可用服务</Text>
         </View>
         {entry.actions.map((action) => (
-          <View
+          <AppPressable
             className={getActionClassName(action)}
             key={action.key}
-            onClick={() => handleAction(action)}
+            onPress={() => handleAction(action)}
           >
             <View className='batch-action__main'>
               <Text className='batch-action__title'>{action.title}</Text>
@@ -133,7 +136,7 @@ const BatchPage = () => {
             <Text className={getActionStatusClassName(action)}>
               {action.statusText}
             </Text>
-          </View>
+          </AppPressable>
         ))}
       </View>
 
@@ -160,13 +163,13 @@ const BatchPage = () => {
               : ''}
           </Text>
         </View>
-        <View
+        <AppPressable
           className={
             firstReadyItem
               ? 'batch-recognition__carry'
               : 'batch-recognition__carry batch-recognition__carry--disabled'
           }
-          onClick={handleCarryFirstRecognized}
+          onPress={handleCarryFirstRecognized}
         >
           <Text
             className={
@@ -177,7 +180,7 @@ const BatchPage = () => {
           >
             带入首条寄件
           </Text>
-        </View>
+        </AppPressable>
         {recognition.items.map((item) => (
           <View
             className={

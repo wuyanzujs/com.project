@@ -1,0 +1,36 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.invoice-detail-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: 20px;
+}
+
+.invoice-detail-row__label {
+  width: 170px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+}
+
+.invoice-detail-row__value {
+  flex: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+  text-align: right;
+}
+
+.invoice-detail-row__amount {
+  color: $dp-color-warning-emphasis;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-detail-row--address {
+  align-items: flex-start;
+}
+
+.invoice-detail-row__value--address {
+  line-height: $dp-line-height-body;
+}

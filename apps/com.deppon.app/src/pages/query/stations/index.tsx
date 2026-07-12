@@ -4,6 +4,7 @@ import Taro from '@tarojs/taro'
 import { useState } from 'react'
 
 import { queryService } from '../../../services/query'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
@@ -20,7 +21,9 @@ import type {
   StationSubType
 } from '../../../services/query'
 
+
 import './index.scss'
+import './content.scss'
 
 const STATION_TYPE_OPTIONS: Array<{
   label: string
@@ -219,14 +222,14 @@ const QueryStationsPage = () => {
         <Text className='query-stations-filter__label'>网点类型</Text>
         <View className='query-stations-chip-group'>
           {STATION_TYPE_OPTIONS.map((option) => (
-            <View
+            <AppPressable
               className={
                 option.value === stationType
                   ? 'query-stations-chip query-stations-chip--active'
                   : 'query-stations-chip'
               }
               key={option.value}
-              onClick={() => setStationType(option.value)}
+              onPress={() => setStationType(option.value)}
             >
               <Text
                 className={
@@ -237,21 +240,21 @@ const QueryStationsPage = () => {
               >
                 {option.label}
               </Text>
-            </View>
+            </AppPressable>
           ))}
         </View>
 
         <Text className='query-stations-filter__label'>业务类型</Text>
         <View className='query-stations-chip-group'>
           {STATION_SUB_TYPE_OPTIONS.map((option) => (
-            <View
+            <AppPressable
               className={
                 option.value === subType
                   ? 'query-stations-chip query-stations-chip--active'
                   : 'query-stations-chip'
               }
               key={option.value}
-              onClick={() => setSubType(option.value)}
+              onPress={() => setSubType(option.value)}
             >
               <Text
                 className={
@@ -262,7 +265,7 @@ const QueryStationsPage = () => {
               >
                 {option.label}
               </Text>
-            </View>
+            </AppPressable>
           ))}
         </View>
       </View>
@@ -270,9 +273,9 @@ const QueryStationsPage = () => {
       <View className='query-stations-section'>
         <View className='query-stations-section__head'>
           <Text className='query-stations-section__title'>查询地址</Text>
-          <View className='query-stations-link' onClick={handleAnalyze}>
+          <AppPressable className='query-stations-link' onPress={handleAnalyze}>
             <Text className='query-stations-link__text'>智能识别</Text>
-          </View>
+          </AppPressable>
         </View>
 
         <Input
@@ -313,11 +316,11 @@ const QueryStationsPage = () => {
         </View>
       </View>
 
-      <View className='query-stations-submit' onClick={handleQuery}>
+      <AppPressable className='query-stations-submit' onPress={handleQuery}>
         <Text className='query-stations-submit__text'>
           {loading ? '查询中...' : '查询网点'}
         </Text>
-      </View>
+      </AppPressable>
 
       {errorMessage && (
         <View className='query-stations-message'>
@@ -368,38 +371,38 @@ const QueryStationsPage = () => {
                 </Text>
 
                 <View className='query-stations-card__actions'>
-                  <View
+                  <AppPressable
                     className='query-stations-card__outline-button'
-                    onClick={() => handleFeedback(item)}
+                    onPress={() => handleFeedback(item)}
                   >
                     <Text className='query-stations-card__outline-button-text'>
                       反馈
                     </Text>
-                  </View>
-                  <View
+                  </AppPressable>
+                  <AppPressable
                     className='query-stations-card__outline-button'
-                    onClick={() => handleOpenMap(item)}
+                    onPress={() => handleOpenMap(item)}
                   >
                     <Text className='query-stations-card__outline-button-text'>
                       导航
                     </Text>
-                  </View>
-                  <View
+                  </AppPressable>
+                  <AppPressable
                     className='query-stations-card__primary-button'
-                    onClick={() => handleDial(item)}
+                    onPress={() => handleDial(item)}
                   >
                     <Text className='query-stations-card__primary-button-text'>
                       拨打
                     </Text>
-                  </View>
-                  <View
+                  </AppPressable>
+                  <AppPressable
                     className='query-stations-card__primary-button'
-                    onClick={() => handleDetail(item)}
+                    onPress={() => handleDetail(item)}
                   >
                     <Text className='query-stations-card__primary-button-text'>
                       详情
                     </Text>
-                  </View>
+                  </AppPressable>
                 </View>
               </View>
             ))
@@ -409,20 +412,20 @@ const QueryStationsPage = () => {
               <Text className='query-stations-empty__summary'>
                 可先预约寄件，等待快递员联系。
               </Text>
-              <View
+              <AppPressable
                 className='query-stations-empty__button'
-                onClick={handleGoExpress}
+                onPress={handleGoExpress}
               >
                 <Text className='query-stations-empty__button-text'>去寄件</Text>
-              </View>
-              <View
+              </AppPressable>
+              <AppPressable
                 className='query-stations-empty__feedback'
-                onClick={() => handleFeedback()}
+                onPress={() => handleFeedback()}
               >
                 <Text className='query-stations-empty__feedback-text'>
                   找不到网点？
                 </Text>
-              </View>
+              </AppPressable>
             </View>
           )}
         </View>

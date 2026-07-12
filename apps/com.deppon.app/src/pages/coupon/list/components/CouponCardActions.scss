@@ -1,0 +1,55 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.coupon-card__footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top-color: $dp-color-border-light;
+  border-top-width: 1px;
+}
+
+.coupon-card__code {
+  display: flex;
+  flex: 1;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.coupon-card__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 128px;
+  height: 56px;
+  padding: 0 18px;
+  margin-left: 12px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.coupon-card__button--ghost {
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border;
+  border-width: 1px;
+}
+
+.coupon-card__button--disabled {
+  background: $dp-color-bg-disabled;
+}
+
+.coupon-card__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.coupon-card__button-text--disabled {
+  color: $dp-color-text-supporting;
+}
+
+.coupon-card__button-text--ghost {
+  color: $dp-color-text-body;
+}

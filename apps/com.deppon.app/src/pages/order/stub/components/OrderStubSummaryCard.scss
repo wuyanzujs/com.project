@@ -1,0 +1,100 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-stub-card {
+  margin: $dp-section-gap $dp-page-horizontal-padding 0;
+  padding: $dp-card-padding;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-card;
+}
+
+.order-stub-card__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order-stub-card__status {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-stub-card__number {
+  display: flex;
+  margin-top: $dp-space-8;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+}
+
+.order-stub-card__copy {
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 52px;
+  margin-left: $dp-space-sm;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-control;
+}
+
+.order-stub-card__copy-text {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-stub-barcode {
+  align-items: center;
+  justify-content: center;
+  margin-top: $dp-space-28;
+  padding: 26px $dp-space-18 $dp-space-22;
+  background: $dp-color-bg-subtle;
+  border-radius: $dp-radius-control;
+}
+
+.order-stub-barcode__bars {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  height: $dp-line-height-option;
+  overflow: hidden;
+}
+
+.order-stub-barcode__bar {
+  height: $dp-line-height-option;
+  margin-right: $dp-space-4;
+  background: $dp-color-bg-inverse;
+  border-radius: $dp-radius-hairline;
+}
+
+.order-stub-barcode__bar--1 {
+  width: $dp-space-4;
+}
+
+.order-stub-barcode__bar--2 {
+  width: $dp-space-8;
+}
+
+.order-stub-barcode__bar--3 {
+  width: $dp-space-xs;
+}
+
+.order-stub-barcode__bar--4 {
+  width: $dp-space-sm;
+}
+
+.order-stub-barcode__text {
+  display: flex;
+  margin-top: $dp-space-14;
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-stub-divider {
+  height: $dp-border-width-hairline;
+  margin: 26px 0 $dp-space-8;
+  background: $dp-color-bg-disabled-strong;
+}

@@ -1,0 +1,183 @@
+@use '../../../styles/_tokens.scss' as *;
+.invoice-taxpayer-header {
+  padding: 32px 24px 24px;
+  background: $dp-color-bg-card;
+}
+
+.invoice-taxpayer-header__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-taxpayer-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-taxpayer-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.invoice-taxpayer-toolbar,
+.invoice-taxpayer-card__top,
+.invoice-taxpayer-card__actions {
+  display: flex;
+  flex-direction: row;
+}
+
+.invoice-taxpayer-toolbar {
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-taxpayer-toolbar__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-taxpayer-toolbar__summary {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+}
+
+.invoice-taxpayer-toolbar__button {
+  align-items: center;
+  justify-content: center;
+  width: 112px;
+  height: 58px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-taxpayer-toolbar__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-taxpayer-content {
+  padding: 20px 24px 40px;
+}
+
+.invoice-taxpayer-card {
+  padding: 24px;
+  margin-bottom: 16px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-taxpayer-card__top {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.invoice-taxpayer-card__title {
+  flex: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-subtitle;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-taxpayer-card__tag {
+  padding: 6px 14px;
+  color: $dp-color-success-text-deep;
+  background: $dp-color-success-background;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-taxpayer-card__meta {
+  display: flex;
+  margin-top: 10px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.invoice-taxpayer-card__actions {
+  justify-content: flex-end;
+  padding-top: 18px;
+}
+
+.invoice-taxpayer-card__outline-button,
+.invoice-taxpayer-card__danger-button {
+  align-items: center;
+  justify-content: center;
+  min-width: 118px;
+  height: 56px;
+  padding: 0 16px;
+  margin-left: 12px;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-taxpayer-card__outline-button {
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border;
+  border-width: 1px;
+}
+
+.invoice-taxpayer-card__danger-button {
+  background: $dp-color-danger-background-subtle;
+}
+
+.invoice-taxpayer-card__outline-button-text,
+.invoice-taxpayer-card__danger-button-text {
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-taxpayer-card__outline-button-text {
+  color: $dp-color-text-body;
+}
+
+.invoice-taxpayer-card__danger-button-text {
+  color: $dp-color-danger-text;
+}
+
+.invoice-taxpayer-empty {
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  padding: 32px 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-taxpayer-empty__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-taxpayer-empty__summary {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+  text-align: center;
+}
+
+.invoice-taxpayer-loading {
+  display: flex;
+  padding: 20px 0 36px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  text-align: center;
+}

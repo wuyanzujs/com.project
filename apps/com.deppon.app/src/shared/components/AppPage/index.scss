@@ -1,0 +1,29 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.app-page {
+  display: flex;
+  flex: 1;
+  min-height: 100%;
+}
+
+.app-page--page {
+  background: $dp-color-bg-page;
+}
+
+.app-page--card {
+  background: $dp-color-bg-card;
+}
+
+.app-page--brand-soft {
+  background: $dp-color-brand-faint;
+}
+
+.app-page__content {
+  display: flex;
+  flex: 1;
+}
+
+.app-page__footer {
+  flex-shrink: 0;
+  background: $dp-color-bg-card;
+}

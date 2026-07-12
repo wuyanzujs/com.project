@@ -1,0 +1,47 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.invoice-detail-empty {
+  align-items: center;
+  justify-content: center;
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-detail-empty__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-detail-empty__summary {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+  text-align: center;
+}
+
+.invoice-detail-empty__button {
+  width: 220px;
+  height: 64px;
+  margin-top: 28px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-detail-empty__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-detail-loading {
+  display: flex;
+  padding: 20px 0 36px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  text-align: center;
+}

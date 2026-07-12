@@ -1,6 +1,9 @@
-import { Component, PropsWithChildren } from 'react'
+import { Component, createElement, PropsWithChildren } from 'react'
+
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { bootstrapAppRuntime } from './app.bootstrap'
+import { AppStatusBar } from './shared/native'
 import { ensureCurrentRouteAuthenticated } from './shared/navigation/authGuard'
 import './app.scss'
 
@@ -35,7 +38,12 @@ class App extends Component<PropsWithChildren, AppState> {
       return null
     }
 
-    return this.props.children
+    return createElement(
+      SafeAreaProvider,
+      null,
+      createElement(AppStatusBar),
+      this.props.children
+    )
   }
 }
 export default App

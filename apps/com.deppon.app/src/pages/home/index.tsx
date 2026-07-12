@@ -12,20 +12,22 @@ import {
   expressDraftBridge
 } from '../../services/express'
 import { privacyService } from '../../services/privacy'
+import { AppPage, AppPressable } from '../../shared/components'
 import { AppIcon } from '../../shared/components/AppIcon'
 import AppTabBar from '../../shared/components/AppTabBar'
-import { AppSafeAreaView, AppStatusBar } from '../../shared/native'
 import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
 import { getNativeCapabilityErrorMessage } from '../../shared/platform/capabilities'
 import { dialPhone } from '../../shared/platform/phone'
 import { scanAppCode } from '../../shared/platform/scan'
+import { APP_STYLE_COLORS } from '../../styles/nativeTokens'
 
 import type { HomeQuickAction } from './home.data'
 import type { AppRoutePath } from '../../shared/navigation/routes'
 
 import './index.scss'
+import './content.scss'
 
 const HomePage = () => {
   const privacyPromptingRef = useRef(false)
@@ -142,15 +144,21 @@ const HomePage = () => {
   })
 
   return (
-    <AppSafeAreaView backgroundColor='#f4f6f8' edges={[]}>
-      <AppStatusBar theme='light' />
+    <AppPage
+      className='home-page-shell'
+      footer={<AppTabBar active='home' />}
+      safeArea='top'
+      statusBar='dark'
+    >
       <ScrollView className='home-page' scrollY>
-        <Banner onClick={() => handleNavigate(APP_ROUTES.express)} />
+        <Banner onPress={() => handleNavigate(APP_ROUTES.express)} />
 
         <View className='home-primary-actions'>
-          <View
+          <AppPressable flex
+            accessibilityLabel='寄快递'
+            block
             className='home-primary-action'
-            onClick={() => handleNavigate(APP_ROUTES.express)}
+            onPress={() => handleNavigate(APP_ROUTES.express)}
           >
             <Image
               className='home-primary-action__image'
@@ -161,11 +169,13 @@ const HomePage = () => {
               <Text className='home-primary-action__title'>寄快递</Text>
               <Text className='home-primary-action__summary'>1小时取件</Text>
             </View>
-          </View>
+          </AppPressable>
           <View className='home-primary-actions__divider' />
-          <View
+          <AppPressable flex
+            accessibilityLabel='发物流'
+            block
             className='home-primary-action'
-            onClick={() => handleNavigate(APP_ROUTES.express)}
+            onPress={() => handleNavigate(APP_ROUTES.express)}
           >
             <Image
               className='home-primary-action__image'
@@ -178,54 +188,62 @@ const HomePage = () => {
                 大件/零担/整车
               </Text>
             </View>
-          </View>
+          </AppPressable>
         </View>
 
         <Menu actions={HOME_QUICK_ACTIONS} onSelect={handleQuickAction} />
 
         <View className='home-support-bar'>
-          <View className='home-support-bar__item' onClick={handleServicePhone}>
-            <AppIcon color='#16181a' name='phone' size={24} />
+          <AppPressable flex
+            accessibilityLabel='拨打 95353'
+            className='home-support-bar__item'
+            onPress={handleServicePhone}
+          >
+            <AppIcon color={APP_STYLE_COLORS.text.heading} name='phone' size={24} />
             <Text className='home-support-bar__text'>95353</Text>
-          </View>
+          </AppPressable>
           <View className='home-support-bar__divider' />
-          <View
+          <AppPressable flex
+            accessibilityLabel='在线客服'
             className='home-support-bar__item'
-            onClick={() => handleNavigate(APP_ROUTES.supportCenter)}
+            onPress={() => handleNavigate(APP_ROUTES.supportCenter)}
           >
-            <AppIcon color='#16181a' name='headphones' size={24} />
+            <AppIcon color={APP_STYLE_COLORS.text.heading} name='headphones' size={24} />
             <Text className='home-support-bar__text'>在线客服</Text>
-          </View>
+          </AppPressable>
           <View className='home-support-bar__divider' />
-          <View
+          <AppPressable flex
+            accessibilityLabel='企业服务'
             className='home-support-bar__item'
-            onClick={() => handleNavigate(APP_ROUTES.customerCenter)}
+            onPress={() => handleNavigate(APP_ROUTES.customerCenter)}
           >
-            <AppIcon color='#16181a' name='contact' size={24} />
+            <AppIcon color={APP_STYLE_COLORS.text.heading} name='contact' size={24} />
             <Text className='home-support-bar__text'>企业服务</Text>
-          </View>
+          </AppPressable>
         </View>
 
         <View className='home-query-bar'>
-          <View
+          <AppPressable flex
+            accessibilityLabel='服务查询'
+            block
             className='home-query-bar__main'
-            onClick={() => handleNavigate(APP_ROUTES.dispatchQuery)}
+            onPress={() => handleNavigate(APP_ROUTES.dispatchQuery)}
           >
             <Text className='home-query-bar__title'>服务查询</Text>
             <Text className='home-query-bar__summary'>
               网点/派送范围/收寄标准
             </Text>
-          </View>
-          <View
+          </AppPressable>
+          <AppPressable
+            accessibilityLabel='查价格查时效'
             className='home-query-bar__price'
-            onClick={() => handleNavigate(APP_ROUTES.priceQuery)}
+            onPress={() => handleNavigate(APP_ROUTES.priceQuery)}
           >
             <Text className='home-query-bar__price-text'>查价格/查时效</Text>
-          </View>
+          </AppPressable>
         </View>
       </ScrollView>
-      <AppTabBar active='home' />
-    </AppSafeAreaView>
+    </AppPage>
   )
 }
 

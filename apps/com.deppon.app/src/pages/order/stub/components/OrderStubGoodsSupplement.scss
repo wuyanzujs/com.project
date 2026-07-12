@@ -1,0 +1,99 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-stub-size {
+  margin-top: $dp-space-md;
+  padding-top: $dp-space-md;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.order-stub-size__title,
+.order-stub-package__title,
+.order-stub-package-group__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-stub-size__row {
+  display: flex;
+  margin-top: $dp-space-10;
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+}
+
+.order-stub-size__notice {
+  display: flex;
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.order-stub-package {
+  margin-top: $dp-space-md;
+  padding-top: $dp-space-md;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.order-stub-package__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order-stub-package__amount {
+  color: $dp-color-danger-emphasis;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-stub-package-group {
+  margin-top: $dp-space-18;
+}
+
+.order-stub-package-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: $dp-space-xs;
+}
+
+.order-stub-package-row--head {
+  padding-top: $dp-space-10;
+}
+
+.order-stub-package-row__name {
+  flex: 1;
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-caption;
+}
+
+.order-stub-package-row__count {
+  width: 126px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-caption;
+  text-align: center;
+}
+
+.order-stub-package-row__amount {
+  width: 140px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-caption;
+  text-align: right;
+}
+
+.order-stub-package-row__name--head,
+.order-stub-package-row__count--head,
+.order-stub-package-row__amount--head {
+  color: $dp-color-text-placeholder;
+  font-size: $dp-font-size-legal;
+  font-weight: $dp-font-weight-bold;
+}

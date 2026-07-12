@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react'
+import { type ComponentType } from 'react'
 
 import {
   BadgeCheck,
@@ -36,10 +36,14 @@ import {
   Truck,
   UserRound,
   UserRoundSearch,
-  WalletCards
+  WalletCards,
+  type LucideProps
 } from 'lucide-react-native'
 
-import type { LucideProps } from 'lucide-react-native'
+import {
+  APP_NATIVE_TOKENS,
+  APP_STYLE_COLORS
+} from '../../../styles/nativeTokens'
 
 const APP_ICONS = {
   badgeCheck: BadgeCheck,
@@ -91,9 +95,9 @@ interface AppIconProps {
 
 export function AppIcon({
   name,
-  color = '#344054',
-  size = 24,
-  strokeWidth = 2
+  color = APP_STYLE_COLORS.text.body,
+  size = APP_NATIVE_TOKENS.icon.default,
+  strokeWidth = APP_NATIVE_TOKENS.icon.stroke
 }: AppIconProps) {
   const Icon = APP_ICONS[name]
 

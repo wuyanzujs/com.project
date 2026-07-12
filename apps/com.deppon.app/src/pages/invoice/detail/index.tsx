@@ -1,8 +1,14 @@
-import { Input, ScrollView, Text, View } from '@tarojs/components'
+import { ScrollView, View } from '@tarojs/components'
 import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useState } from 'react'
 
+import { InvoiceDetailOverviewCard } from './components/InvoiceDetailOverviewCard'
+import {
+  InvoiceDetailLoadingState,
+  InvoiceDetailMissingState
+} from './components/InvoiceDetailStates'
+import { InvoiceDetailSupplementarySections } from './components/InvoiceDetailSupplementarySections'
 import { CACHE_KEYS, DPCacheExpireType, dpCache } from '../../../cache'
 import {
   contactSelection,
@@ -13,6 +19,7 @@ import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
+import { APP_STYLE_COLORS } from '../../../styles/nativeTokens'
 
 import type { Contact } from '../../../services/contact'
 import type {
@@ -32,18 +39,6 @@ function parseHistory(value?: string): InvoiceHistoryView | null {
   } catch {
     return null
   }
-}
-
-function getMoneyText(value: number) {
-  if (!Number.isFinite(value)) {
-    return '¥0'
-  }
-
-  return Number.isInteger(value) ? `¥${value}` : `¥${value.toFixed(2)}`
-}
-
-function getStatusClassName(statusClass: string) {
-  return `invoice-detail-status invoice-detail-status--${statusClass.toLowerCase()}`
 }
 
 function createPreviewUrl(invoice: InvoiceHistoryView) {
@@ -150,7 +145,7 @@ const InvoiceDetailPage = () => {
       title: '修改收票地址',
       content: `确认将收票地址修改为 ${contact.name} ${contact.telephone} ${getContactFullAddress(contact)} 吗？`,
       confirmText: '确认修改',
-      confirmColor: '#1a5eff'
+      confirmColor: APP_STYLE_COLORS.brand.default
     })
 
     if (!confirm.confirm) {
@@ -247,6 +242,14 @@ const InvoiceDetailPage = () => {
     }
   }
 
+  const handleEmailBlur = (value: string) => {
+    setEmail(value.trim())
+  }
+
+  const handleEmailInput = (value: string) => {
+    setEmail(value)
+  }
+
   const handleSelectInvoiceAddress = () => {
     if (!invoice || modifyingAddress) {
       return
@@ -290,7 +293,7 @@ const InvoiceDetailPage = () => {
         ? '确定要撤销当前发票申请吗？'
         : '确定要将当前发票作废吗？作废后请在开票历史查看处理结果。',
       confirmText: isCancel ? '确认撤销' : '确认作废',
-      confirmColor: '#b42318'
+      confirmColor: APP_STYLE_COLORS.status.dangerTextStrong
     })
 
     if (!confirm.confirm) {
@@ -330,247 +333,57 @@ const InvoiceDetailPage = () => {
     }
   }
 
+  const handlePreviewInvoice = () => {
+    if (!invoice) {
+      return
+    }
+
+    if (!invoice.canPreview) {
+      showToast('暂无预览信息')
+      return
+    }
+
+    navigateToAppRoute(createPreviewUrl(invoice), {
+      login: true
+    })
+  }
+
   if (!invoice) {
     return (
       <View className='invoice-detail-page invoice-detail-page--empty'>
-        <View className='invoice-detail-empty'>
-          <Text className='invoice-detail-empty__title'>缺少发票信息</Text>
-          <Text className='invoice-detail-empty__summary'>
-            请从发票中心的开票历史进入详情。
-          </Text>
-          <View
-            className='invoice-detail-empty__button'
-            onClick={() => navigateToAppRoute(APP_ROUTES.invoiceCenter)}
-          >
-            <Text className='invoice-detail-empty__button-text'>
-              返回发票中心
-            </Text>
-          </View>
-        </View>
+        <InvoiceDetailMissingState
+          onBack={() => navigateToAppRoute(APP_ROUTES.invoiceCenter)}
+        />
       </View>
     )
   }
 
   return (
     <ScrollView className='invoice-detail-page' scrollY>
-      <View className='invoice-detail-card'>
-        <View className='invoice-detail-card__top'>
-          <Text className='invoice-detail-card__title'>{invoice.title}</Text>
-          <Text className={getStatusClassName(invoice.statusClass)}>
-            {invoice.statusText}
-          </Text>
-        </View>
+      <InvoiceDetailOverviewCard
+        invoice={invoice}
+        processingAction={processingAction}
+        onCancel={() => handleInvoiceAction('cancel')}
+        onPreview={handlePreviewInvoice}
+        onReverse={() => handleInvoiceAction('reverse')}
+      />
 
-        <View className='invoice-detail-row'>
-          <Text className='invoice-detail-row__label'>申请号</Text>
-          <Text className='invoice-detail-row__value'>{invoice.id}</Text>
-        </View>
-        <View className='invoice-detail-row'>
-          <Text className='invoice-detail-row__label'>发票类型</Text>
-          <Text className='invoice-detail-row__value'>{invoice.typeText}</Text>
-        </View>
-        <View className='invoice-detail-row'>
-          <Text className='invoice-detail-row__label'>发票金额</Text>
-          <Text className='invoice-detail-row__amount'>
-            {getMoneyText(invoice.amount)}
-          </Text>
-        </View>
-        <View className='invoice-detail-row'>
-          <Text className='invoice-detail-row__label'>纳税人识别号</Text>
-          <Text className='invoice-detail-row__value'>
-            {invoice.taxNumber || '--'}
-          </Text>
-        </View>
-        <View className='invoice-detail-row'>
-          <Text className='invoice-detail-row__label'>接收邮箱</Text>
-          <Text className='invoice-detail-row__value'>
-            {invoice.email || '--'}
-          </Text>
-        </View>
-        <View className='invoice-detail-row'>
-          <Text className='invoice-detail-row__label'>申请时间</Text>
-          <Text className='invoice-detail-row__value'>{invoice.applyTime}</Text>
-        </View>
-        {!!invoice.remark && (
-          <View className='invoice-detail-row'>
-            <Text className='invoice-detail-row__label'>备注</Text>
-            <Text className='invoice-detail-row__value'>{invoice.remark}</Text>
-          </View>
-        )}
+      <InvoiceDetailSupplementarySections
+        addressText={getInvoiceAddressText(invoice)}
+        email={email}
+        invoice={invoice}
+        loading={loading}
+        message={message}
+        modifyingAddress={modifyingAddress}
+        sending={sending}
+        waybills={waybills}
+        onEmailBlur={handleEmailBlur}
+        onEmailInput={handleEmailInput}
+        onSelectAddress={handleSelectInvoiceAddress}
+        onSendEmail={handleSendEmail}
+      />
 
-        <View className='invoice-detail-actions'>
-          <View
-            className={
-              invoice.canPreview
-                ? 'invoice-detail-action'
-                : 'invoice-detail-action invoice-detail-action--disabled'
-            }
-            onClick={() =>
-              invoice.canPreview
-                ? navigateToAppRoute(createPreviewUrl(invoice), {
-                    login: true
-                  })
-                : showToast('暂无预览信息')
-            }
-          >
-            <Text
-              className={
-                invoice.canPreview
-                  ? 'invoice-detail-action__text'
-                  : 'invoice-detail-action__text invoice-detail-action__text--disabled'
-              }
-            >
-              预览/发送邮箱
-            </Text>
-          </View>
-          {invoice.canCancel && (
-            <View
-              className={
-                processingAction === 'cancel'
-                  ? 'invoice-detail-action invoice-detail-action--disabled'
-                  : 'invoice-detail-action invoice-detail-action--danger'
-              }
-              onClick={() => handleInvoiceAction('cancel')}
-            >
-              <Text className='invoice-detail-action__text'>
-                {processingAction === 'cancel' ? '撤销中' : '撤销申请'}
-              </Text>
-            </View>
-          )}
-          {invoice.canReverse && (
-            <View
-              className={
-                processingAction === 'reverse'
-                  ? 'invoice-detail-action invoice-detail-action--disabled'
-                  : 'invoice-detail-action invoice-detail-action--danger'
-              }
-              onClick={() => handleInvoiceAction('reverse')}
-            >
-              <Text className='invoice-detail-action__text'>
-                {processingAction === 'reverse' ? '作废中' : '作废发票'}
-              </Text>
-            </View>
-          )}
-        </View>
-      </View>
-
-      {invoice.billCategory === '01' && (
-        <View className='invoice-detail-section'>
-          <View className='invoice-detail-section__head'>
-            <Text className='invoice-detail-section__title'>收票地址</Text>
-            {invoice.canModifyAddress && (
-              <View
-                className={
-                  modifyingAddress
-                    ? 'invoice-detail-section__button invoice-detail-section__button--disabled'
-                    : 'invoice-detail-section__button'
-                }
-                onClick={handleSelectInvoiceAddress}
-              >
-                <Text className='invoice-detail-section__button-text'>
-                  {modifyingAddress ? '修改中' : '修改'}
-                </Text>
-              </View>
-            )}
-          </View>
-
-          {invoice.contactName ||
-          invoice.contactPhone ||
-          invoice.contactAddress ? (
-            <>
-              <View className='invoice-detail-row'>
-                <Text className='invoice-detail-row__label'>收票人</Text>
-                <Text className='invoice-detail-row__value'>
-                  {[invoice.contactName, invoice.contactPhone]
-                    .filter(Boolean)
-                    .join(' ') || '--'}
-                </Text>
-              </View>
-              <View className='invoice-detail-row invoice-detail-row--address'>
-                <Text className='invoice-detail-row__label'>收票地址</Text>
-                <Text className='invoice-detail-row__value invoice-detail-row__value--address'>
-                  {getInvoiceAddressText(invoice)}
-                </Text>
-              </View>
-            </>
-          ) : (
-            <View className='invoice-detail-empty-block'>
-              <Text className='invoice-detail-empty-block__title'>
-                暂无收票地址
-              </Text>
-            </View>
-          )}
-        </View>
-      )}
-
-      <View className='invoice-detail-section'>
-        <Text className='invoice-detail-section__title'>发送至邮箱</Text>
-        <Text className='invoice-detail-section__summary invoice-detail-section__summary--block'>
-          可发送状态由发票网关状态决定，邮箱会在本机保留以便下次使用。
-        </Text>
-        <View className='invoice-detail-mail'>
-          <Input
-            className='invoice-detail-mail__input'
-            maxlength={50}
-            placeholder='请输入接收邮箱'
-            value={email}
-            onBlur={event => setEmail(event.detail.value.trim())}
-            onInput={event => setEmail(event.detail.value)}
-          />
-          <View
-            className={
-              invoice.canSendEmail && !sending
-                ? 'invoice-detail-mail__button'
-                : 'invoice-detail-mail__button invoice-detail-mail__button--disabled'
-            }
-            onClick={handleSendEmail}
-          >
-            <Text className='invoice-detail-mail__button-text'>
-              {sending ? '发送中' : '发送'}
-            </Text>
-          </View>
-        </View>
-        {!invoice.canSendEmail && (
-          <Text className='invoice-detail-mail__hint'>当前状态暂不可发送</Text>
-        )}
-      </View>
-
-      <View className='invoice-detail-section'>
-        <View className='invoice-detail-section__head'>
-          <Text className='invoice-detail-section__title'>包含运单</Text>
-          <Text className='invoice-detail-section__summary'>
-            共 {waybills.length} 条
-          </Text>
-        </View>
-
-        {waybills.map((item, index) => (
-          <View className='invoice-detail-waybill' key={item.waybillNumber}>
-            <View>
-              <Text className='invoice-detail-waybill__index'>
-                {index + 1}. 运单
-              </Text>
-              <Text className='invoice-detail-waybill__number'>
-                {item.waybillNumber}
-              </Text>
-            </View>
-            <Text className='invoice-detail-waybill__amount'>
-              {getMoneyText(item.amount)}
-            </Text>
-          </View>
-        ))}
-
-        {!waybills.length && !loading && (
-          <View className='invoice-detail-empty-block'>
-            <Text className='invoice-detail-empty-block__title'>
-              {message || '暂无包含运单信息'}
-            </Text>
-          </View>
-        )}
-      </View>
-
-      {loading && (
-        <Text className='invoice-detail-loading'>正在加载包含运单...</Text>
-      )}
+      {loading && <InvoiceDetailLoadingState />}
     </ScrollView>
   )
 }

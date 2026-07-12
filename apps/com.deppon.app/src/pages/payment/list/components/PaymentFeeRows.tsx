@@ -4,7 +4,7 @@ import { createPaymentFeeSummary } from '../../../../services/payment'
 
 import type { PaymentItem } from '../../../../services/payment'
 
-import '../index.scss'
+import './PaymentFeeRows.scss'
 
 interface PaymentFeeRowsProps {
   item: PaymentItem

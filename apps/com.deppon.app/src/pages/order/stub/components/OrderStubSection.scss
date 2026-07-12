@@ -1,0 +1,34 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-stub-section {
+  margin: $dp-section-gap $dp-page-horizontal-padding 0;
+  padding: $dp-card-padding;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-card;
+}
+
+.order-stub-section__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-stub-section__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order-stub-section__hint {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+
+.order-stub-section__empty {
+  display: flex;
+  margin-top: $dp-space-18;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+}

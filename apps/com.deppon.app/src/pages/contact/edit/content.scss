@@ -1,0 +1,234 @@
+@use '../../../styles/_tokens.scss' as *;
+.contact-edit-header {
+  padding: 32px 24px 24px;
+  background: $dp-color-bg-card;
+}
+
+.contact-edit-header__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-edit-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-edit-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.contact-edit-form {
+  margin: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.contact-edit-analysis {
+  margin: 24px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.contact-edit-analysis__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.contact-edit-analysis__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-edit-analysis__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 104px;
+  height: 56px;
+  padding: 0 18px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.contact-edit-analysis__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-edit-analysis__input {
+  min-height: 132px;
+  margin-top: 18px;
+  padding: 18px;
+  color: $dp-color-text-heading;
+  background: $dp-color-bg-subtle;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-label-small;
+  line-height: $dp-line-height-body-large;
+}
+
+.contact-edit-row {
+  display: flex;
+  min-height: 104px;
+  padding: 18px 24px;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: 1px;
+}
+
+.contact-edit-row__label {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-edit-row__value {
+  flex: 1;
+  color: $dp-color-text-placeholder;
+  font-size: $dp-font-size-label-small;
+  text-align: right;
+}
+
+.contact-edit-input {
+  height: 48px;
+  margin-top: 10px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  line-height: $dp-line-height-heading;
+}
+
+.contact-edit-address-tools {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: 1px;
+}
+
+.contact-edit-address-tools__hint {
+  flex: 1;
+  padding-right: 18px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+}
+
+.contact-edit-address-tools__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 128px;
+  height: 56px;
+  background: $dp-color-brand-soft;
+  border-color: $dp-color-brand-border-soft;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.contact-edit-address-tools__button-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-edit-grid {
+  display: flex;
+  flex-direction: row;
+  padding: 0 24px;
+}
+
+.contact-edit-grid__item {
+  flex: 1;
+  min-height: 104px;
+  padding: 18px 0;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: 1px;
+}
+
+.contact-edit-grid__item--right {
+  margin-left: 24px;
+}
+
+.contact-edit-switch-row {
+  padding: 18px 24px 24px;
+}
+
+.contact-edit-switch {
+  display: flex;
+  flex-direction: row;
+  margin-top: 14px;
+}
+
+.contact-edit-chip {
+  align-items: center;
+  justify-content: center;
+  min-width: 128px;
+  height: 56px;
+  margin-right: 14px;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.contact-edit-chip--active {
+  background: $dp-color-brand-soft;
+  border-color: $dp-color-brand;
+}
+
+.contact-edit-chip__text {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-edit-chip__text--active {
+  color: $dp-color-brand;
+}
+
+.contact-edit-check {
+  margin: 0 24px;
+  padding: 24px;
+  background: $dp-color-warning-background;
+  border-radius: $dp-radius-sm;
+}
+
+.contact-edit-check__title {
+  color: $dp-color-warning-text;
+  font-size: $dp-font-size-label-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-edit-check__message {
+  display: flex;
+  margin-top: 10px;
+  color: $dp-color-warning-text-deep;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+}
+
+.contact-edit-submit {
+  align-items: center;
+  justify-content: center;
+  height: 88px;
+  margin: 24px;
+  background: $dp-color-bg-inverse;
+  border-radius: $dp-radius-sm;
+}
+
+.contact-edit-submit__text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+}

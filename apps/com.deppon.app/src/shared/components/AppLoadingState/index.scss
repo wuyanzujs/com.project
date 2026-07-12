@@ -1,0 +1,39 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.app-loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-loading-state--inline {
+  flex-direction: row;
+  min-height: $dp-control-height-default;
+}
+
+.app-loading-state--page {
+  min-height: 280px;
+}
+
+.app-loading-state__indicator {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: $dp-space-xs;
+}
+
+.app-loading-state__dot {
+  width: $dp-space-8;
+  height: $dp-space-8;
+  margin: 0 $dp-space-3;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-circle;
+}
+
+.app-loading-state__label {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+  text-align: center;
+}

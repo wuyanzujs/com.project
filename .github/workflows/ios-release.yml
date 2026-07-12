@@ -1,0 +1,84 @@
+name: iOS Release Validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-ios-release:
+    name: Validate iOS production bundle
+    runs-on: macos-14
+    timeout-minutes: 45
+    environment: production
+    env:
+      APP_ENV: production
+      APP_API_BASE_URL: ${{ vars.APP_API_BASE_URL }}
+      APP_WEB_BASE_URL: ${{ vars.APP_WEB_BASE_URL }}
+      APP_SERVICE_WEB_URL: ${{ vars.APP_SERVICE_WEB_URL }}
+      APP_MEMBER_WEB_URL: ${{ vars.APP_MEMBER_WEB_URL }}
+      APP_WEB_ALLOWED_HOSTS: ${{ vars.APP_WEB_ALLOWED_HOSTS }}
+      APP_SYSTEM_CODE: ${{ vars.APP_SYSTEM_CODE }}
+      APP_CLIENT_CHANNEL: ${{ vars.APP_CLIENT_CHANNEL }}
+      APP_OMS_CHANNEL: ${{ vars.APP_OMS_CHANNEL }}
+      APP_ECARD_PMC_SYSTEM_CODE: ${{ vars.APP_ECARD_PMC_SYSTEM_CODE }}
+      APP_MOBILE_LOGIN_TYPE: ${{ vars.APP_MOBILE_LOGIN_TYPE }}
+      APP_SURVEY_CONFIG_KEY: ${{ vars.APP_SURVEY_CONFIG_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.13.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate production runtime variables
+        run: |
+          set -euo pipefail
+          required=(
+            APP_API_BASE_URL APP_WEB_BASE_URL APP_SERVICE_WEB_URL
+            APP_MEMBER_WEB_URL APP_WEB_ALLOWED_HOSTS APP_SYSTEM_CODE
+            APP_CLIENT_CHANNEL APP_OMS_CHANNEL APP_ECARD_PMC_SYSTEM_CODE
+          )
+          for name in "${required[@]}"; do
+            if [ -z "${!name:-}" ]; then
+              echo "Missing production variable: $name" >&2
+              exit 1
+            fi
+          done
+
+      - name: Verify style baseline cannot be relaxed
+        run: node apps/com.deppon.app/scripts/check-release-style-baseline.mjs
+        env:
+          STYLE_GOVERNANCE_BASE_REF: origin/${{ github.event.repository.default_branch }}
+
+      - name: Run strict style and engineering checks
+        run: |
+          pnpm test:app-style-governance
+          pnpm check:app-styles:strict
+          pnpm check:app-boundaries
+          pnpm typecheck:app
+          pnpm lint:app
+          pnpm lint:app:styles
+          pnpm check:app-routes
+          pnpm check:app-runtime-config
+          pnpm check:app-platform-build
+
+      - name: Build and validate iOS production RN bundle
+        run: pnpm --filter com.deppon.app run bundle:ios:production

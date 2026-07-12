@@ -1,0 +1,96 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-order-options {
+  margin-bottom: $dp-space-14;
+  padding: $dp-space-8 $dp-space-20;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+.express-order-options__entry {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: $dp-touch-target-min;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: $dp-border-width-hairline;
+}
+.express-order-options__edit {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: $dp-touch-target-min;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: $dp-border-width-hairline;
+}
+.express-order-options__label {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+.express-order-options__summary {
+  flex: 1;
+  margin: 0 $dp-space-8 0 $dp-space-16;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  text-align: right;
+}
+.express-order-options__clear {
+  align-items: center;
+  justify-content: center;
+  min-width: $dp-touch-target-min;
+}
+.express-order-options__clear-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+.express-order-options__input {
+  flex: 1;
+  height: $dp-control-height-compact;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-field;
+}
+.express-order-options__agreement {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: $dp-touch-target-min;
+}
+.express-order-options__checkbox {
+  align-items: center;
+  justify-content: center;
+  width: $dp-space-32;
+  height: $dp-space-32;
+  margin-right: $dp-space-12;
+  border-color: $dp-color-text-placeholder;
+  border-radius: $dp-radius-checkbox;
+  border-width: $dp-border-width-hairline;
+}
+.express-order-options__checkbox--checked {
+  background: $dp-color-brand;
+  border-color: $dp-color-brand;
+}
+.express-order-options__checkbox-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+  text-align: center;
+}
+.express-order-options__agreement-text {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-caption;
+}
+.express-order-options__validation {
+  margin-top: $dp-space-8;
+  padding: $dp-space-10 $dp-space-12;
+  background: $dp-color-warning-background;
+  border-radius: $dp-radius-sm;
+}
+.express-order-options__validation-message {
+  display: flex;
+  color: $dp-color-status-warning-text;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}

@@ -4,6 +4,7 @@ import Taro from '@tarojs/taro'
 import { useEffect, useState } from 'react'
 
 import { supportService } from '../../../services/support'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -16,7 +17,9 @@ import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
 import type { SupportEntryView } from '../../../services/support'
 
+
 import './index.scss'
+import './content.scss'
 
 function getEntryClassName(entry: SupportEntryView) {
   return `support-entry support-entry--${entry.tone}`
@@ -136,9 +139,9 @@ const SupportCenterPage = () => {
             全年无休，为您提供寄件、查询和售后服务。
           </Text>
         </View>
-        <View
+        <AppPressable
           className='support-card__button'
-          onClick={() =>
+          onPress={() =>
             callHotline({
               id: 'hotline-card',
               title: '95353 热线',
@@ -150,7 +153,7 @@ const SupportCenterPage = () => {
           }
         >
           <Text className='support-card__button-text'>拨打</Text>
-        </View>
+        </AppPressable>
       </View>
 
       {sections.map((section) => (
@@ -160,10 +163,10 @@ const SupportCenterPage = () => {
             <Text className='support-section__summary'>{section.summary}</Text>
           </View>
           {section.entries.map((entry) => (
-            <View
+            <AppPressable
               className={getEntryClassName(entry)}
               key={entry.id}
-              onClick={() => handleEntry(entry)}
+              onPress={() => handleEntry(entry)}
             >
               <Text className={getEntryMarkClassName(entry)}>
                 {entry.title.slice(0, 1)}
@@ -180,7 +183,7 @@ const SupportCenterPage = () => {
                 <Text className='support-entry__summary'>{entry.summary}</Text>
               </View>
               <Text className='support-entry__arrow'>›</Text>
-            </View>
+            </AppPressable>
           ))}
         </View>
       ))}
@@ -190,16 +193,16 @@ const SupportCenterPage = () => {
         <Text className='support-footer__summary'>
           可先查看订单列表定位运单，再从订单详情进入在线客服。
         </Text>
-        <View
+        <AppPressable
           className='support-footer__button'
-          onClick={() =>
+          onPress={() =>
             navigateToAppRoute(APP_ROUTES.orderList, {
               login: true
             })
           }
         >
           <Text className='support-footer__button-text'>查看订单</Text>
-        </View>
+        </AppPressable>
       </View>
     </ScrollView>
   )

@@ -4,6 +4,7 @@ import Taro, { useDidShow } from '@tarojs/taro'
 import { useCallback, useState } from 'react'
 
 import { invoiceService } from '../../../services/invoice'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -11,7 +12,9 @@ import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type { InvoiceTaxpayerView } from '../../../services/invoice'
 
+
 import './index.scss'
+import './content.scss'
 
 const InvoiceTaxpayerListPage = () => {
   const [taxpayers, setTaxpayers] = useState<InvoiceTaxpayerView[]>([])
@@ -144,9 +147,9 @@ const InvoiceTaxpayerListPage = () => {
             共 {taxpayers.length} 条，最多建议保留 20 条
           </Text>
         </View>
-        <View className='invoice-taxpayer-toolbar__button' onClick={handleCreate}>
+        <AppPressable className='invoice-taxpayer-toolbar__button' onPress={handleCreate}>
           <Text className='invoice-taxpayer-toolbar__button-text'>新增</Text>
-        </View>
+        </AppPressable>
       </View>
 
       <View className='invoice-taxpayer-content'>
@@ -181,30 +184,30 @@ const InvoiceTaxpayerListPage = () => {
             )}
 
             <View className='invoice-taxpayer-card__actions'>
-              <View
+              <AppPressable
                 className='invoice-taxpayer-card__outline-button'
-                onClick={() => handleToggleDefault(item)}
+                onPress={() => handleToggleDefault(item)}
               >
                 <Text className='invoice-taxpayer-card__outline-button-text'>
                   {item.isDefault ? '取消默认' : '设为默认'}
                 </Text>
-              </View>
-              <View
+              </AppPressable>
+              <AppPressable
                 className='invoice-taxpayer-card__outline-button'
-                onClick={() => handleEdit(item)}
+                onPress={() => handleEdit(item)}
               >
                 <Text className='invoice-taxpayer-card__outline-button-text'>
                   编辑
                 </Text>
-              </View>
-              <View
+              </AppPressable>
+              <AppPressable
                 className='invoice-taxpayer-card__danger-button'
-                onClick={() => handleDelete(item)}
+                onPress={() => handleDelete(item)}
               >
                 <Text className='invoice-taxpayer-card__danger-button-text'>
                   删除
                 </Text>
-              </View>
+              </AppPressable>
             </View>
           </View>
         ))}

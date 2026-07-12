@@ -3,17 +3,20 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
+import QRCodeMatrix from './components/QRCodeMatrix'
 import { signService } from '../../../services/sign'
-import QRCodeMatrix from '../../../shared/components/QRCodeMatrix'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { copyTextToClipboard } from '../../../shared/platform/clipboard'
 import { createAppWebUrl } from '../../../shared/webview/appWeb'
+import { APP_NATIVE_TOKENS } from '../../../styles/nativeTokens'
 
 import type { SignCodeView } from '../../../services/sign'
 
 import './index.scss'
+import './content.scss'
 
 const SignCodePage = () => {
   const [signInfo, setSignInfo] = useState<SignCodeView | null>(null)
@@ -167,22 +170,28 @@ const SignCodePage = () => {
             className='sign-realname__input'
             placeholder='请输入签收人真实姓名'
             value={realName}
-            onInput={(event) => setRealName(event.detail.value)}
+            onInput={event => setRealName(event.detail.value)}
           />
-          <Text className='sign-realname__protocol'>
-            保存即表示你已阅读并同意
-            <Text
+          <View className='sign-realname__protocol'>
+            <Text className='sign-realname__protocol-text'>
+              保存即表示你已阅读并同意
+            </Text>
+            <AppPressable
+              contentElement='text'
               className='sign-realname__protocol-link'
-              onClick={handleOpenPrivacy}
+              onPress={handleOpenPrivacy}
             >
               隐私政策
-            </Text>
-          </Text>
-          <View className='sign-realname__button' onClick={handleSaveRealName}>
+            </AppPressable>
+          </View>
+          <AppPressable
+            className='sign-realname__button'
+            onPress={handleSaveRealName}
+          >
             <Text className='sign-realname__button-text'>
               {saving ? '保存中' : '保存并生成'}
             </Text>
-          </View>
+          </AppPressable>
         </View>
       )}
 
@@ -190,7 +199,10 @@ const SignCodePage = () => {
         <View className='sign-code-panel'>
           <Text className='sign-code-panel__title'>给快递员扫描签收码</Text>
           <View className='sign-code-qrcode'>
-            <QRCodeMatrix value={signInfo?.qrPayload || ''} size={320} />
+            <QRCodeMatrix
+              value={signInfo?.qrPayload || ''}
+              size={APP_NATIVE_TOKENS.qr.presentationSize}
+            />
           </View>
           <View className='sign-code-value'>
             <Text className='sign-code-value__text' selectable>
@@ -204,17 +216,20 @@ const SignCodePage = () => {
             签收人：{signInfo?.realName || '--'}
           </Text>
           <View className='sign-code-actions'>
-            <View
+            <AppPressable
               className='sign-code-action sign-code-action--ghost'
-              onClick={loadSignCode}
+              onPress={loadSignCode}
             >
               <Text className='sign-code-action__text sign-code-action__text--ghost'>
                 {loading ? '刷新中' : '刷新'}
               </Text>
-            </View>
-            <View className='sign-code-action' onClick={handleCopySignCode}>
+            </AppPressable>
+            <AppPressable
+              className='sign-code-action'
+              onPress={handleCopySignCode}
+            >
               <Text className='sign-code-action__text'>复制签收码</Text>
-            </View>
+            </AppPressable>
           </View>
         </View>
       )}
@@ -227,12 +242,12 @@ const SignCodePage = () => {
           <Text className='sign-empty__summary'>
             可稍后刷新，或进入客服中心咨询签收授权问题。
           </Text>
-          <View
+          <AppPressable
             className='sign-empty__button'
-            onClick={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
+            onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
           >
             <Text className='sign-empty__button-text'>联系客服</Text>
-          </View>
+          </AppPressable>
         </View>
       )}
 

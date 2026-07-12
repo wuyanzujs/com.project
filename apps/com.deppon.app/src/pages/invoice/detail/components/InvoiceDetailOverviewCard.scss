@@ -1,0 +1,89 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.invoice-detail-card {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-detail-card__top,
+.invoice-detail-actions {
+  display: flex;
+  flex-direction: row;
+}
+
+.invoice-detail-card__top {
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: 1px;
+}
+
+.invoice-detail-card__title {
+  flex: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-detail-status {
+  padding: 6px 14px;
+  color: $dp-color-brand;
+  background: $dp-color-brand-soft;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-detail-status--success {
+  color: $dp-color-success-text-deep;
+  background: $dp-color-success-background;
+}
+
+.invoice-detail-status--cancel {
+  color: $dp-color-text-supporting;
+  background: $dp-color-bg-disabled;
+}
+
+.invoice-detail-status--error {
+  color: $dp-color-danger-text;
+  background: $dp-color-danger-background-subtle;
+}
+
+.invoice-detail-status--process {
+  color: $dp-color-status-warning-text;
+  background: $dp-color-warning-background;
+}
+
+.invoice-detail-actions {
+  justify-content: flex-end;
+  padding-top: 24px;
+}
+
+.invoice-detail-action {
+  min-width: 190px;
+  height: 62px;
+  padding: 0 20px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-detail-action--disabled {
+  background: $dp-color-bg-disabled;
+}
+
+.invoice-detail-action--danger {
+  background: $dp-color-danger-text-strong;
+}
+
+.invoice-detail-action__text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-detail-action__text--disabled {
+  color: $dp-color-text-supporting;
+}

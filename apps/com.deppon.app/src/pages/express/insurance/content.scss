@@ -1,0 +1,195 @@
+@use '../../../styles/_tokens.scss' as *;
+.insurance-rule-header {
+  padding: 32px 24px 24px;
+  background: $dp-color-bg-card;
+}
+
+.insurance-rule-header__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.insurance-rule-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.insurance-rule-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.insurance-rule-tabs,
+.insurance-rule-card,
+.insurance-rule-notice {
+  margin: 20px 24px 0;
+}
+
+.insurance-rule-tabs {
+  display: flex;
+  flex-direction: row;
+  padding: 8px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.insurance-rule-option {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  border-radius: $dp-radius-sm;
+}
+
+.insurance-rule-option--active {
+  background: $dp-color-brand;
+}
+
+.insurance-rule-option__text {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.insurance-rule-option__text--active {
+  color: $dp-color-text-inverse;
+}
+
+.insurance-rule-card {
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.insurance-rule-card--hero {
+  background: $dp-color-text-strong;
+}
+
+.insurance-rule-card__badge {
+  align-self: flex-start;
+  padding: 7px 14px;
+  color: $dp-color-brand;
+  background: $dp-color-brand-soft;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.insurance-rule-card__title {
+  display: flex;
+  margin-top: 16px;
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-heading-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.insurance-rule-card__summary {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-disabled;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.insurance-rule-section__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-compact;
+  font-weight: $dp-font-weight-bold;
+}
+
+.insurance-rule-section__text {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.insurance-rule-table {
+  margin-top: 20px;
+  overflow: hidden;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.insurance-rule-table__title {
+  display: flex;
+  padding: 16px;
+  color: $dp-color-text-heading;
+  background: $dp-color-bg-subtle;
+  border-bottom-color: $dp-color-border-default;
+  border-bottom-width: 1px;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.insurance-rule-table__head,
+.insurance-rule-table__row {
+  display: flex;
+  flex-direction: row;
+}
+
+.insurance-rule-table__head {
+  background: $dp-color-bg-muted;
+}
+
+.insurance-rule-table__row {
+  border-top-color: $dp-color-border-default;
+  border-top-width: 1px;
+}
+
+.insurance-rule-table__row--warning {
+  background: $dp-color-warning-background;
+}
+
+.insurance-rule-table__head-cell,
+.insurance-rule-table__cell {
+  flex: 1;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.insurance-rule-table__head-cell {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.insurance-rule-table__cell {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.insurance-rule-table__note {
+  display: flex;
+  padding: 14px 16px;
+  color: $dp-color-text-supporting;
+  background: $dp-color-bg-subtle;
+  border-top-color: $dp-color-border-default;
+  border-top-width: 1px;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.insurance-rule-notice {
+  padding: 20px 24px;
+  background: $dp-color-warning-background;
+  border-color: $dp-color-warning-border;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.insurance-rule-notice__text {
+  color: $dp-color-status-warning-text;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}

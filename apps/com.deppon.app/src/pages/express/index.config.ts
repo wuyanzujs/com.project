@@ -1,3 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: '预约寄件'
+  navigationBarTitleText: '寄快递'
 })

@@ -1,0 +1,8 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.query-price-section {
+  margin-bottom: 18px;
+  padding: 22px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}

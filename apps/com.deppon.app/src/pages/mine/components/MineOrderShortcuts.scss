@@ -1,0 +1,33 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.mine-shortcuts {
+  display: flex;
+  flex-direction: row;
+  height: 146px;
+  margin: 16px 24px 0;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-feature-card;
+}
+
+.mine-shortcut {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.mine-shortcut__count {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-control-compact;
+}
+
+.mine-shortcut__title {
+  margin-top: 6px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+  text-align: center;
+}

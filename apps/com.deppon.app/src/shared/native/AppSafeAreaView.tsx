@@ -1,8 +1,11 @@
-import type { PropsWithChildren } from 'react'
+import { type PropsWithChildren } from 'react'
 
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, type Edge } from 'react-native-safe-area-context'
 
-import type { Edge } from 'react-native-safe-area-context'
+import {
+  APP_NATIVE_TOKENS,
+  APP_STYLE_COLORS
+} from '../../styles/nativeTokens'
 
 interface AppSafeAreaViewProps extends PropsWithChildren {
   backgroundColor?: string
@@ -11,9 +14,9 @@ interface AppSafeAreaViewProps extends PropsWithChildren {
 }
 
 export function AppSafeAreaView({
-  backgroundColor = '#ffffff',
+  backgroundColor = APP_STYLE_COLORS.surface.card,
   children,
-  edges = ['top', 'bottom'],
+  edges = [...APP_NATIVE_TOKENS.safeArea.defaultEdges],
   fill = true
 }: AppSafeAreaViewProps) {
   return (

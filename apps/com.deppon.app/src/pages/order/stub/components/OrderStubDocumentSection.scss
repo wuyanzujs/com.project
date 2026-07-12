@@ -1,0 +1,69 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-stub-document {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: $dp-space-md;
+  padding-top: $dp-space-md;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.order-stub-document__mark {
+  align-items: center;
+  justify-content: center;
+  width: $dp-control-height-compact;
+  height: $dp-control-height-compact;
+  margin-right: $dp-space-sm;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-control;
+}
+
+.order-stub-document__mark--ready {
+  background: $dp-color-danger-background;
+}
+
+.order-stub-document__mark-text {
+  color: $dp-color-danger-emphasis;
+  font-size: $dp-font-size-fine;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-stub-document__content {
+  flex: 1;
+  padding-right: $dp-space-sm;
+}
+
+.order-stub-document__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-stub-document__summary {
+  display: flex;
+  margin-top: $dp-space-8;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.order-stub-document__button {
+  align-items: center;
+  justify-content: center;
+  width: 132px;
+  height: 60px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-control;
+}
+
+.order-stub-document__button--disabled {
+  background: $dp-color-bg-disabled-strong;
+}
+
+.order-stub-document__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}

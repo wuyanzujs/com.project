@@ -1,10 +1,14 @@
-import { ScrollView, Text, View } from '@tarojs/components'
+import { ScrollView } from '@tarojs/components'
 import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useMemo, useRef, useState } from 'react'
 
+import { OrderEditActions } from './components/OrderEditActions'
 import { OrderEditContactSection } from './components/OrderEditContactSection'
 import { OrderEditGoodsSection } from './components/OrderEditGoodsSection'
+import { OrderEditIdentity } from './components/OrderEditIdentity'
+import { OrderEditLoadState } from './components/OrderEditLoadState'
+import { OrderEditMessage } from './components/OrderEditMessage'
 import {
   buildOrderModifyRequest,
   createOrderEditDraft,
@@ -181,24 +185,16 @@ const OrderEditPage = () => {
 
   return (
     <ScrollView className='order-edit-page' scrollY>
-      {loading && !draft && (
-        <Text className='order-edit-loading'>正在加载订单...</Text>
-      )}
-
-      {!loading && !draft && (
-        <View className='order-edit-empty'>
-          <Text className='order-edit-empty__title'>
-            {errorMessage || '暂无法修改订单'}
-          </Text>
-          <View className='order-edit-empty__button' onClick={loadOrder}>
-            <Text className='order-edit-empty__button-text'>重新加载</Text>
-          </View>
-        </View>
-      )}
+      <OrderEditLoadState
+        errorMessage={errorMessage}
+        hasDraft={!!draft}
+        loading={loading}
+        onReload={loadOrder}
+      />
 
       {draft && (
         <>
-          <Text className='order-edit-identity'>订单 {orderNumber}</Text>
+          <OrderEditIdentity orderNumber={orderNumber} />
           <OrderEditContactSection
             contact={draft.sender}
             title='寄件人'
@@ -212,29 +208,15 @@ const OrderEditPage = () => {
           <OrderEditGoodsSection draft={draft} onChange={updateDraft} />
 
           {!!errorMessage && (
-            <Text className='order-edit-message'>{errorMessage}</Text>
+            <OrderEditMessage message={errorMessage} />
           )}
 
-          <View className='order-edit-actions'>
-            <View
-              className='order-edit-actions__secondary'
-              onClick={() => Taro.navigateBack()}
-            >
-              <Text className='order-edit-actions__secondary-text'>取消</Text>
-            </View>
-            <View
-              className={
-                submitting || !preview?.changed
-                  ? 'order-edit-actions__primary order-edit-actions__primary--disabled'
-                  : 'order-edit-actions__primary'
-              }
-              onClick={handleSubmit}
-            >
-              <Text className='order-edit-actions__primary-text'>
-                {submitting ? '提交中' : '保存修改'}
-              </Text>
-            </View>
-          </View>
+          <OrderEditActions
+            disabled={submitting || !preview?.changed}
+            submitting={submitting}
+            onCancel={() => Taro.navigateBack()}
+            onSubmit={handleSubmit}
+          />
         </>
       )}
     </ScrollView>

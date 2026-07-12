@@ -1,6 +1,8 @@
 import { StyleSheet } from 'react-native'
 import { WebView } from 'react-native-webview'
 
+import { APP_STYLE_COLORS } from '../../styles/nativeTokens'
+
 interface AppWebViewProps {
   authenticated: boolean
   uri: string
@@ -13,7 +15,7 @@ interface AppWebViewProps {
 const styles = StyleSheet.create({
   webView: {
     flex: 1,
-    backgroundColor: '#ffffff'
+    backgroundColor: APP_STYLE_COLORS.surface.card
   }
 })
 

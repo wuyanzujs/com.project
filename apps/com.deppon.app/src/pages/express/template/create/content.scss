@@ -1,0 +1,143 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.template-create-header {
+  padding: $dp-space-xl $dp-space-lg $dp-space-lg;
+  background: $dp-color-bg-card;
+}
+
+.template-create-header__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-create-header__title {
+  display: flex;
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-primary;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-page-title;
+}
+
+.template-create-section {
+  margin: $dp-space-md $dp-space-lg 0;
+  padding: $dp-card-padding;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.template-create-section__title {
+  color: $dp-color-text-primary;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-create-input {
+  height: 76px;
+  padding: 0 $dp-space-md;
+  margin-top: $dp-space-md;
+  color: $dp-color-text-primary;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-create-count {
+  display: flex;
+  margin-top: $dp-space-xxs;
+  color: $dp-color-text-muted;
+  font-size: $dp-font-size-caption;
+  text-align: right;
+}
+
+.template-create-row,
+.template-create-segment {
+  display: flex;
+  flex-direction: row;
+}
+
+.template-create-row {
+  justify-content: space-between;
+  padding: $dp-space-md 0;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: 1px;
+}
+
+.template-create-row__label {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+}
+
+.template-create-row__value {
+  flex: 1;
+  color: $dp-color-text-primary;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+  text-align: right;
+}
+
+.template-create-segment {
+  margin-top: $dp-space-md;
+  padding: 4px;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.template-create-segment__item {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  height: 68px;
+  border-radius: $dp-radius-sm;
+}
+
+.template-create-segment__item--active {
+  background: $dp-color-bg-card;
+}
+
+.template-create-segment__text {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-create-segment__text--active {
+  color: $dp-color-brand;
+}
+
+.template-create-submit,
+.template-create-empty__button {
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.template-create-submit {
+  margin: $dp-space-xl $dp-space-lg 0;
+}
+
+.template-create-submit--disabled {
+  background: $dp-color-text-muted;
+}
+
+.template-create-submit__text,
+.template-create-empty__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-create-empty__title {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-large;
+  text-align: center;
+}
+
+.template-create-empty__button {
+  width: 220px;
+  margin-top: $dp-space-lg;
+}

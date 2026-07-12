@@ -10,6 +10,7 @@ import {
   markExpressQuoteStale
 } from '../../../services/express'
 import { goodsQueryService } from '../../../services/goods'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
@@ -21,7 +22,9 @@ import type {
   GoodsSuggestionView
 } from '../../../services/goods'
 
+
 import './index.scss'
+import './content.scss'
 
 function getSuggestionKey(item: GoodsSuggestionView, index: number) {
   return `${item.name}-${item.firstCategory}-${item.secondCategory}-${index}`
@@ -221,19 +224,23 @@ const QueryGoodsPage = () => {
           }}
         />
         <View className='query-goods-actions'>
-          <View className='query-goods-outline-button' onClick={handleSearch}>
+          <AppPressable
+            flex
+            className='query-goods-outline-button'
+            onPress={handleSearch}
+          >
             <Text className='query-goods-outline-button__text'>
               {searching ? '搜索中' : '搜索推荐'}
             </Text>
-          </View>
-          <View
+          </AppPressable>
+          <AppPressable flex
             className='query-goods-primary-button'
-            onClick={() => checkGoodsName(keyword)}
+            onPress={() => checkGoodsName(keyword)}
           >
             <Text className='query-goods-primary-button__text'>
               {checking ? '校验中' : '校验货物'}
             </Text>
-          </View>
+          </AppPressable>
         </View>
         {!!message && (
           <Text className='query-goods-message__text'>{message}</Text>
@@ -244,10 +251,10 @@ const QueryGoodsPage = () => {
         <View className='query-goods-section'>
           <Text className='query-goods-section__title'>推荐品名</Text>
           {suggestions.map((item, index) => (
-            <View
+            <AppPressable
               className='query-goods-suggestion'
               key={getSuggestionKey(item, index)}
-              onClick={() => handleSuggestionSelect(item)}
+              onPress={() => handleSuggestionSelect(item)}
             >
               <View>
                 <Text className='query-goods-suggestion__name'>
@@ -258,7 +265,7 @@ const QueryGoodsPage = () => {
                 </Text>
               </View>
               <Text className='query-goods-suggestion__action'>校验</Text>
-            </View>
+            </AppPressable>
           ))}
         </View>
       )}
@@ -267,13 +274,13 @@ const QueryGoodsPage = () => {
         <Text className='query-goods-section__title'>热门品名</Text>
         <View className='query-goods-chip-group'>
           {hotGoods.map((item, index) => (
-            <View
+            <AppPressable
               className='query-goods-chip'
               key={getSuggestionKey(item, index)}
-              onClick={() => handleSuggestionSelect(item)}
+              onPress={() => handleSuggestionSelect(item)}
             >
               <Text className='query-goods-chip__text'>{item.name}</Text>
-            </View>
+            </AppPressable>
           ))}
         </View>
       </View>
@@ -282,15 +289,15 @@ const QueryGoodsPage = () => {
         <View className='query-goods-section'>
           <View className='query-goods-section__head'>
             <Text className='query-goods-section__title'>最近查询</Text>
-            <Text className='query-goods-link' onClick={handleClearHistory}>
+            <AppPressable contentElement='text' className='query-goods-link' onPress={handleClearHistory}>
               清空
-            </Text>
+            </AppPressable>
           </View>
           {history.map((item) => (
-            <View
+            <AppPressable
               className='query-goods-history'
               key={`${item.goodsName}-${item.checkedAt}`}
-              onClick={() => handleHistorySelect(item)}
+              onPress={() => handleHistorySelect(item)}
             >
               <View className='query-goods-history__main'>
                 <Text className='query-goods-history__name'>
@@ -303,7 +310,7 @@ const QueryGoodsPage = () => {
               <Text className={getStatusClassName(item.status)}>
                 {getStatusText(item.status)}
               </Text>
-            </View>
+            </AppPressable>
           ))}
         </View>
       )}
@@ -340,16 +347,16 @@ const QueryGoodsPage = () => {
             </View>
           )}
 
-          <View
+          <AppPressable
             className={
               canCarryToExpress
                 ? 'query-goods-express'
                 : 'query-goods-express query-goods-express--disabled'
             }
-            onClick={handleCarryToExpress}
+            onPress={handleCarryToExpress}
           >
             <Text className='query-goods-express__text'>带入寄件</Text>
-          </View>
+          </AppPressable>
         </View>
       )}
     </ScrollView>

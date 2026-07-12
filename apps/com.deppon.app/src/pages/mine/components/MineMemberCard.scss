@@ -1,0 +1,124 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.mine-member-card {
+  margin: 8px 24px 0;
+  overflow: hidden;
+  border-radius: $dp-radius-feature-card;
+}
+
+.mine-member-card__body {
+  position: relative;
+  height: 224px;
+  overflow: hidden;
+}
+
+.mine-member-card__background,
+.mine-member-card__svip-background {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mine-member-card__top {
+  position: relative;
+  min-height: 144px;
+  padding: 36px 24px 12px;
+}
+
+.mine-member-card__level-row,
+.mine-member-card__benefits,
+.mine-member-card__benefit,
+.mine-member-card__svip {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.mine-member-card__level {
+  color: $dp-color-text-member;
+  font-size: $dp-font-size-heading;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-page-title;
+}
+
+.mine-member-card__rights {
+  margin-left: 18px;
+  color: $dp-color-text-member-muted;
+  font-size: $dp-font-size-body;
+}
+
+.mine-member-card__growth {
+  display: flex;
+  margin-top: 4px;
+  color: $dp-color-text-member;
+  font-size: $dp-font-size-body;
+}
+
+.mine-member-card__benefits {
+  position: relative;
+  height: 80px;
+  padding: 0 24px;
+  border-top-color: $dp-color-member-border;
+  border-top-width: 1px;
+}
+
+.mine-member-card__benefit {
+  flex: 1;
+  min-width: 0;
+}
+
+.mine-member-card__benefit-icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 4px;
+}
+
+.mine-member-card__benefit-text {
+  color: $dp-color-text-member;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-regular;
+}
+
+.mine-member-card__svip {
+  position: relative;
+  height: 88px;
+  padding: 0 24px;
+  overflow: hidden;
+}
+
+.mine-member-card__svip-logo {
+  position: relative;
+  width: 100px;
+  height: 48px;
+}
+
+.mine-member-card__svip-text {
+  position: relative;
+  flex: 1;
+  margin-left: 8px;
+  color: $dp-color-member-accent;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.mine-member-card__svip-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 116px;
+  height: 48px;
+  padding: 0 16px;
+  background: $dp-color-member-background;
+  border-radius: $dp-radius-feature-card;
+}
+
+.mine-member-card__svip-button-text {
+  color: $dp-color-text-member-strong;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}

@@ -2,7 +2,8 @@ import { Input, Text, Textarea, View } from '@tarojs/components'
 
 import type { OrderEditDraft } from '../../../../services/order'
 
-import '../index.scss'
+import './OrderEditGoodsSection.scss'
+import './OrderEditSection.scss'
 
 export function OrderEditGoodsSection(props: {
   draft: OrderEditDraft

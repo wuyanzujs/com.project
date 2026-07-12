@@ -1,18 +1,21 @@
-import { Input, ScrollView, Text, View } from '@tarojs/components'
+import { ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
 import { realNameService } from '../../../services/realname'
+import { AppPressable, AppFormField } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { getNativeCapabilityErrorMessage } from '../../../shared/platform/capabilities'
 import { createAppWebUrl } from '../../../shared/webview/appWeb'
+import { APP_STYLE_COLORS } from '../../../styles/nativeTokens'
 
 import type { RealNameAuthView } from '../../../services/realname'
 
 import './index.scss'
+import './content.scss'
 
 const REAL_NAME_NOTICES = [
   '实名认证后，本人寄件时仅需出示有效身份证件供查验。',
@@ -123,7 +126,7 @@ const RealNameCenterPage = () => {
       title: '删除实名信息',
       content: '删除后，寄件时需重新出示身份证件供快递员核验。',
       confirmText: '确认删除',
-      confirmColor: '#b42318',
+      confirmColor: APP_STYLE_COLORS.status.dangerTextStrong,
       success: async (res) => {
         if (!res.confirm) {
           return
@@ -235,16 +238,20 @@ const RealNameCenterPage = () => {
             德邦快递将按隐私政策保护你的实名信息。
           </Text>
           <View className='real-name-card__actions'>
-            <View className='real-name-card__ghost-button' onClick={loadRealName}>
+            <AppPressable
+              flex
+              className='real-name-card__ghost-button'
+              onPress={loadRealName}
+            >
               <Text className='real-name-card__ghost-button-text'>
                 {loading ? '刷新中' : '刷新'}
               </Text>
-            </View>
-            <View className='real-name-card__danger-button' onClick={handleDelete}>
+            </AppPressable>
+            <AppPressable flex className='real-name-card__danger-button' onPress={handleDelete}>
               <Text className='real-name-card__danger-button-text'>
                 {deleting ? '删除中' : '删除实名'}
               </Text>
-            </View>
+            </AppPressable>
           </View>
         </View>
       )}
@@ -255,39 +262,47 @@ const RealNameCenterPage = () => {
           <Text className='real-name-form__summary'>
             请填写二代身份证姓名和号码，提交后由后端完成实名校验。
           </Text>
-          <View className='real-name-field'>
-            <Text className='real-name-field__label'>真实姓名</Text>
-            <Input
-              className='real-name-input'
-              placeholder='请输入真实姓名'
-              maxlength={20}
-              value={name}
-              onInput={(event) => setName(event.detail.value)}
-            />
-          </View>
-          <View className='real-name-field'>
-            <Text className='real-name-field__label'>身份证号</Text>
-            <Input
-              className='real-name-input'
-              placeholder='请输入二代身份证号'
-              maxlength={18}
-              value={idCardNo}
-              onInput={(event) =>
-                setIdCardNo(event.detail.value.replace(/\s+/g, '').toUpperCase())
-              }
-            />
-          </View>
-          <Text className='real-name-form__protocol'>
-            提交即表示你已阅读并同意
-            <Text className='real-name-form__link' onClick={handleOpenPrivacy}>
-              隐私政策
+          <AppFormField
+            className='real-name-field'
+            inputClassName='real-name-input'
+            label='真实姓名'
+            labelClassName='real-name-field__label'
+            maxLength={20}
+            placeholder='请输入真实姓名'
+            required
+            value={name}
+            onChange={setName}
+          />
+          <AppFormField
+            className='real-name-field'
+            inputClassName='real-name-input'
+            label='身份证号'
+            labelClassName='real-name-field__label'
+            maxLength={18}
+            placeholder='请输入二代身份证号'
+            required
+            value={idCardNo}
+            onChange={value =>
+              setIdCardNo(value.replace(/\s+/g, '').toUpperCase())
+            }
+          />
+          <View className='real-name-form__protocol'>
+            <Text className='real-name-form__protocol-text'>
+              提交即表示你已阅读并同意
             </Text>
-          </Text>
-          <View className='real-name-submit' onClick={handleSubmit}>
+            <AppPressable
+              contentElement='text'
+              className='real-name-form__link'
+              onPress={handleOpenPrivacy}
+            >
+              隐私政策
+            </AppPressable>
+          </View>
+          <AppPressable className='real-name-submit' onPress={handleSubmit}>
             <Text className='real-name-submit__text'>
               {submitting ? '提交中' : '立即认证'}
             </Text>
-          </View>
+          </AppPressable>
 
           <View className='real-name-native'>
             <View>
@@ -296,11 +311,11 @@ const RealNameCenterPage = () => {
                 使用国家网络身份认证服务完成身份核验。
               </Text>
             </View>
-            <View className='real-name-native__button' onClick={handleNativeAuth}>
+            <AppPressable className='real-name-native__button' onPress={handleNativeAuth}>
               <Text className='real-name-native__button-text'>
                 {nativeAuthing ? '授权中' : '去授权'}
               </Text>
-            </View>
+            </AppPressable>
           </View>
         </View>
       )}

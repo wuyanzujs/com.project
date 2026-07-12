@@ -4,6 +4,7 @@ import Taro, { useDidShow } from '@tarojs/taro'
 import { useCallback, useState } from 'react'
 
 import { courierService } from '../../../services/courier'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -14,7 +15,9 @@ import { scanAppCode } from '../../../shared/platform/scan'
 
 import type { CourierView } from '../../../services/courier'
 
+
 import './index.scss'
+import './content.scss'
 
 const COURIER_AVATAR = 'https://ca.deppon.com.cn/ows/assets/postman/1.png'
 
@@ -141,17 +144,17 @@ const CourierListPage = () => {
         <Text className='courier-list-actions__summary'>
           {couriers.length ? `已关注 ${couriers.length} 位` : '暂无关注'}
         </Text>
-        <View
+        <AppPressable
           className='courier-list-action courier-list-action--quiet'
-          onClick={loadCouriers}
+          onPress={loadCouriers}
         >
           <Text className='courier-list-action__text courier-list-action__text--quiet'>
             {loading ? '同步中' : '刷新'}
           </Text>
-        </View>
-        <View className='courier-list-action' onClick={handleScan}>
+        </AppPressable>
+        <AppPressable className='courier-list-action' onPress={handleScan}>
           <Text className='courier-list-action__text'>扫描快递员码</Text>
-        </View>
+        </AppPressable>
       </View>
 
       <View className='courier-list-content'>
@@ -178,28 +181,28 @@ const CourierListPage = () => {
             </View>
 
             <View className='courier-card__actions'>
-              <View
+              <AppPressable
                 className='courier-card__button courier-card__button--quiet'
-                onClick={() => handleDial(courier)}
+                onPress={() => handleDial(courier)}
               >
                 <Text className='courier-card__button-text courier-card__button-text--quiet'>
                   联系
                 </Text>
-              </View>
-              <View
+              </AppPressable>
+              <AppPressable
                 className='courier-card__button courier-card__button--quiet'
-                onClick={() => handleOpenDetail(courier)}
+                onPress={() => handleOpenDetail(courier)}
               >
                 <Text className='courier-card__button-text courier-card__button-text--quiet'>
                   详情
                 </Text>
-              </View>
-              <View
+              </AppPressable>
+              <AppPressable
                 className='courier-card__button'
-                onClick={() => handleExpress(courier)}
+                onPress={() => handleExpress(courier)}
               >
                 <Text className='courier-card__button-text'>找他寄件</Text>
-              </View>
+              </AppPressable>
             </View>
           </View>
         ))}

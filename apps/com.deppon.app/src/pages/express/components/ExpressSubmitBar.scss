@@ -1,0 +1,19 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-submit {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 112px;
+  padding: 14px 24px;
+  background: $dp-color-bg-card;
+}
+.express-submit__summary { flex: 1; align-items: flex-start; justify-content: center; padding-right: 20px; }
+.express-submit__price-row { display: flex; flex-direction: row; align-items: center; }
+.express-submit__label { color: $dp-color-text-heading; font-size: $dp-font-size-label; font-weight: $dp-font-weight-bold; }
+.express-submit__fee { margin-left: 8px; color: $dp-color-danger-accent; font-size: $dp-font-size-label; font-weight: $dp-font-weight-bold; }
+.express-submit__detail { margin-left: 14px; color: $dp-color-text-body; font-size: $dp-font-size-body-small; }
+.express-submit__note { display: flex; margin-top: 6px; color: $dp-color-text-supporting; font-size: $dp-font-size-caption; }
+.express-submit__action { align-items: center; justify-content: center; min-width: 300px; min-height: 80px; padding: 0 24px; background: $dp-color-brand; border-radius: $dp-radius-pill; }
+.express-submit__text { color: $dp-color-text-inverse; font-size: $dp-font-size-label-large; font-weight: $dp-font-weight-bold; }

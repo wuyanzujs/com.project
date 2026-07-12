@@ -1,0 +1,44 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-track {
+  display: flex;
+  flex-direction: row;
+  padding: 0 0 24px;
+}
+
+.order-track__dot {
+  width: 18px;
+  height: 18px;
+  margin: 8px 20px 0 2px;
+  background: $dp-color-bg-disabled-strong;
+  border-radius: $dp-radius-timeline-dot;
+}
+
+.order-track__dot--active {
+  background: $dp-color-brand;
+}
+
+.order-track__content {
+  flex: 1;
+}
+
+.order-track__text {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body;
+}
+
+.order-track__time {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+
+.order-track__empty {
+  display: flex;
+  padding: 24px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+}

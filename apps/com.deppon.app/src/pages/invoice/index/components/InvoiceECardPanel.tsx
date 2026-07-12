@@ -1,10 +1,12 @@
 import { Text, View } from '@tarojs/components'
 
-import { InvoiceEmpty, InvoiceSummary } from './InvoiceCenterSections'
+import { InvoiceSummary } from './InvoiceCenterControls'
+import { InvoiceEmpty } from './InvoiceCenterStates'
+import { AppPressable } from '../../../../shared/components'
 
 import type { InvoiceECardView } from '../../../../services/invoice'
 
-import '../index.scss'
+import './InvoiceECardPanel.scss'
 
 function getMoneyText(value: number) {
   if (!Number.isFinite(value)) {
@@ -40,54 +42,55 @@ export function InvoiceECardPanel(props: {
         onAction={props.onApplySelected}
       />
 
-      <View className='invoice-content'>
+      <View className='invoice-ecard-content'>
         {props.ecards.map((item) => {
           const selected = props.selectedIds.includes(item.id)
 
           return (
-            <View className='invoice-card' key={item.id}>
-              <View className='invoice-card__top'>
-                <Text className='invoice-card__number'>
+            <View className='invoice-ecard-card' key={item.id}>
+              <View className='invoice-ecard-card__top'>
+                <Text className='invoice-ecard-card__number'>
                   打款编码 {item.id || '--'}
                 </Text>
                 <Text
                   className={
                     selected
-                      ? 'invoice-card__status invoice-card__status--success'
-                      : 'invoice-card__status'
+                      ? 'invoice-ecard-card__status invoice-ecard-card__status--success'
+                      : 'invoice-ecard-card__status'
                   }
                 >
                   {selected ? '已选择' : '可开票'}
                 </Text>
               </View>
-              <Text className='invoice-card__desc'>储值卡（预存卡）</Text>
-              <View className='invoice-card__meta'>
-                <Text className='invoice-card__time'>
+              <Text className='invoice-ecard-card__desc'>储值卡（预存卡）</Text>
+              <View className='invoice-ecard-card__meta'>
+                <Text className='invoice-ecard-card__time'>
                   充值时间 {item.businessTime}
                 </Text>
-                <Text className='invoice-card__amount'>
+                <Text className='invoice-ecard-card__amount'>
                   {getMoneyText(item.amount)}
                 </Text>
               </View>
-              <View className='invoice-card__actions'>
-                <View
+              <View className='invoice-ecard-card__actions'>
+                <AppPressable
+                  accessibilityLabel={selected ? '取消选择储值卡' : '选择储值卡'}
                   className={
                     selected
-                      ? 'invoice-card__button invoice-card__button--ghost'
-                      : 'invoice-card__button'
+                      ? 'invoice-ecard-card__button invoice-ecard-card__button--ghost'
+                      : 'invoice-ecard-card__button'
                   }
-                  onClick={() => props.onToggle(item)}
+                  onPress={() => props.onToggle(item)}
                 >
                   <Text
                     className={
                       selected
-                        ? 'invoice-card__button-text invoice-card__button-text--ghost'
-                        : 'invoice-card__button-text'
+                        ? 'invoice-ecard-card__button-text invoice-ecard-card__button-text--ghost'
+                        : 'invoice-ecard-card__button-text'
                     }
                   >
                     {selected ? '取消选择' : '选择'}
                   </Text>
-                </View>
+                </AppPressable>
               </View>
             </View>
           )

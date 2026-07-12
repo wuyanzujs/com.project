@@ -1,0 +1,67 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.query-price-product {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 112px;
+  padding: 18px 0;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: 1px;
+}
+
+.query-price-product__main {
+  flex: 1;
+  padding-right: 16px;
+}
+
+.query-price-product__side {
+  align-items: flex-end;
+  justify-content: center;
+  width: 132px;
+}
+
+.query-price-product__name {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.query-price-product__time,
+.query-price-product__weight,
+.query-price-product__fees {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-legal;
+}
+
+.query-price-product__fees {
+  color: $dp-color-text-secondary;
+}
+
+.query-price-product__price {
+  color: $dp-color-warning-emphasis;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-label;
+  text-align: right;
+}
+
+.query-price-product__button {
+  align-items: center;
+  justify-content: center;
+  width: 116px;
+  height: 52px;
+  margin-top: 12px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.query-price-product__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}

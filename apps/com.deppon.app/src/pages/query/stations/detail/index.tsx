@@ -4,6 +4,7 @@ import Taro, { useRouter } from '@tarojs/taro'
 import { useEffect, useState } from 'react'
 
 import { queryService } from '../../../../services/query'
+import { AppPressable } from '../../../../shared/components'
 import { navigateToAppRoute } from '../../../../shared/navigation/appNavigation'
 import { getNativeCapabilityErrorMessage } from '../../../../shared/platform/capabilities'
 import { openMapLocation } from '../../../../shared/platform/map'
@@ -12,7 +13,9 @@ import { createAppWebUrl } from '../../../../shared/webview/appWeb'
 
 import type { StationDetailView } from '../../../../services/query'
 
+
 import './index.scss'
+import './content.scss'
 
 function decodeParam(value?: string) {
   if (!value) {
@@ -205,24 +208,24 @@ const QueryStationDetailPage = () => {
           </View>
 
           <View className='station-detail-actions'>
-            <View
+            <AppPressable flex
               className='station-detail-action station-detail-action--outline'
-              onClick={handleFeedback}
+              onPress={handleFeedback}
             >
               <Text className='station-detail-action__outline-text'>反馈</Text>
-            </View>
-            <View
+            </AppPressable>
+            <AppPressable flex
               className='station-detail-action station-detail-action--outline'
-              onClick={handleOpenMap}
+              onPress={handleOpenMap}
             >
               <Text className='station-detail-action__outline-text'>导航</Text>
-            </View>
-            <View
+            </AppPressable>
+            <AppPressable flex
               className='station-detail-action station-detail-action--primary'
-              onClick={handleDial}
+              onPress={handleDial}
             >
               <Text className='station-detail-action__primary-text'>拨打电话</Text>
-            </View>
+            </AppPressable>
           </View>
 
           <View className='station-detail-section'>

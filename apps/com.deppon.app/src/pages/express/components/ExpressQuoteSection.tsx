@@ -1,10 +1,15 @@
 import { Text, View } from '@tarojs/components'
 
+import { ExpressSection } from './ExpressSection'
 import { createExpressProductQuoteView } from '../../../services/express'
+import { AppPressable } from '../../../shared/components'
 
-import type { ExpressDraft, ExpressProductQuote } from '../../../services/express'
+import type {
+  ExpressDraft,
+  ExpressProductQuote
+} from '../../../services/express'
 
-import '../index.scss'
+import './ExpressQuoteSection.scss'
 
 interface ExpressQuoteSectionProps {
   pickup: ExpressDraft['pickup']
@@ -18,45 +23,39 @@ interface ExpressQuoteSectionProps {
 }
 
 export function ExpressQuoteSection({
-  pickup,
   quoteStaleReason,
   quoteStatus,
   quotes,
   selectedProduct,
-  onQueryPickupTime,
   onQuote,
   onSelectProduct
 }: ExpressQuoteSectionProps) {
   return (
-    <View className='express-section'>
-      <View className='express-section__head'>
-        <Text className='express-section__title'>产品价格</Text>
-        {quoteStaleReason && (
-          <Text className='express-section__hint'>{quoteStaleReason}</Text>
-        )}
-      </View>
-
-      <View className='express-actions'>
-        <View className='express-secondary-button' onClick={onQueryPickupTime}>
-          <Text className='express-secondary-button__text'>
-            {pickup.time ? '更新取件时间' : '获取取件时间'}
+    <ExpressSection title='产品价格'>
+      <AppPressable
+        accessibilityLabel='获取产品价格'
+        block
+        className='express-quote-action'
+        layout='row-start'
+        onPress={onQuote}
+      >
+        <View className='express-quote-action__content'>
+          <Text className='express-quote-action__title'>
+            {quoteStatus === 'loading'
+              ? '正在获取价格'
+              : quotes.length
+                ? '重新获取价格'
+                : '获取产品价格'}
+          </Text>
+          <Text className='express-quote-action__summary'>
+            {quoteStaleReason ||
+              (quoteStatus === 'error'
+                ? '获取失败，请检查信息后重试'
+                : '根据地址、货物和服务信息试算')}
           </Text>
         </View>
-        <View className='express-primary-button' onClick={onQuote}>
-          <Text className='express-primary-button__text'>
-            {quoteStatus === 'loading' ? '获取中' : '获取价格'}
-          </Text>
-        </View>
-      </View>
-
-      {pickup.time && (
-        <View className='express-pickup'>
-          <Text className='express-pickup__label'>预计取件</Text>
-          <Text className='express-pickup__value'>
-            {pickup.timeSlot || pickup.time}
-          </Text>
-        </View>
-      )}
+        <Text className='express-quote-action__link'>获取价格</Text>
+      </AppPressable>
 
       {quotes.length > 0 && (
         <View className='express-product-list'>
@@ -64,14 +63,19 @@ export function ExpressQuoteSection({
             const view = createExpressProductQuoteView(product)
 
             return (
-              <View
+              <AppPressable
+                accessibilityLabel={`选择产品${view.name}`}
+                block
                 className={
                   selectedProduct?.omsProductCode === product.omsProductCode
                     ? 'express-product express-product--active'
                     : 'express-product'
                 }
                 key={view.key}
-                onClick={() => onSelectProduct(product)}
+                selected={
+                  selectedProduct?.omsProductCode === product.omsProductCode
+                }
+                onPress={() => onSelectProduct(product)}
               >
                 <View className='express-product__main'>
                   <Text className='express-product__name'>{view.name}</Text>
@@ -90,14 +94,12 @@ export function ExpressQuoteSection({
                     </Text>
                   )}
                 </View>
-                <Text className='express-product__price'>
-                  {view.priceText}
-                </Text>
-              </View>
+                <Text className='express-product__price'>{view.priceText}</Text>
+              </AppPressable>
             )
           })}
         </View>
       )}
-    </View>
+    </ExpressSection>
   )
 }

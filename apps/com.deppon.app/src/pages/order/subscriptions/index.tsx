@@ -4,6 +4,7 @@ import Taro, { useDidShow } from '@tarojs/taro'
 import { useCallback, useRef, useState } from 'react'
 
 import { orderSubscriptionService } from '../../../services/order'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -11,7 +12,9 @@ import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 
 import type { WaybillSubscriptionView } from '../../../services/order'
 
+
 import './index.scss'
+import './content.scss'
 
 const OrderSubscriptionsPage = () => {
   const [items, setItems] = useState<WaybillSubscriptionView[]>([])
@@ -117,22 +120,22 @@ const OrderSubscriptionsPage = () => {
         <Text className='subscriptions-toolbar__summary'>
           共 {items.length} 条
         </Text>
-        <View
+        <AppPressable
           className='subscriptions-toolbar__button'
-          onClick={loadSubscriptions}
+          onPress={loadSubscriptions}
         >
           <Text className='subscriptions-toolbar__button-text'>
             {loading ? '刷新中' : '刷新'}
           </Text>
-        </View>
+        </AppPressable>
       </View>
 
       <View className='subscriptions-content'>
         {items.map(item => (
           <View className='subscription-card' key={item.id}>
-            <View
+            <AppPressable
               className='subscription-card__body'
-              onClick={() => handleOpenDetail(item)}
+              onPress={() => handleOpenDetail(item)}
             >
               <View className='subscription-card__top'>
                 <Text className='subscription-card__status'>
@@ -169,22 +172,22 @@ const OrderSubscriptionsPage = () => {
                   {item.createdAt || '--'}
                 </Text>
               </View>
-            </View>
+            </AppPressable>
             <View className='subscription-card__actions'>
-              <View
+              <AppPressable
                 className='subscription-card__button subscription-card__button--quiet'
-                onClick={() => handleCancel(item)}
+                onPress={() => handleCancel(item)}
               >
                 <Text className='subscription-card__button-text subscription-card__button-text--quiet'>
                   {processingId === item.id ? '处理中' : '取消关注'}
                 </Text>
-              </View>
-              <View
+              </AppPressable>
+              <AppPressable
                 className='subscription-card__button'
-                onClick={() => handleOpenDetail(item)}
+                onPress={() => handleOpenDetail(item)}
               >
                 <Text className='subscription-card__button-text'>查看详情</Text>
-              </View>
+              </AppPressable>
             </View>
           </View>
         ))}
@@ -194,12 +197,12 @@ const OrderSubscriptionsPage = () => {
             <Text className='subscriptions-empty__title'>
               {errorMessage || '暂无关注运单'}
             </Text>
-            <View
+            <AppPressable
               className='subscriptions-empty__button'
-              onClick={loadSubscriptions}
+              onPress={loadSubscriptions}
             >
               <Text className='subscriptions-empty__button-text'>重新加载</Text>
-            </View>
+            </AppPressable>
           </View>
         )}
       </View>

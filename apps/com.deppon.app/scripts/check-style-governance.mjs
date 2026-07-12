@@ -30,6 +30,13 @@ const supportedModes = new Map([
 const argumentKey = process.argv.slice(2).join(' ')
 const mode = supportedModes.get(argumentKey)
 
+const isTruthyEnvironmentValue = value =>
+  new Set(['1', 'true', 'yes', 'on']).has(
+    String(value ?? '')
+      .trim()
+      .toLowerCase()
+  )
+
 if (!mode) {
   console.error(
     '[style-governance] 参数无效。支持：--strict、--report、--update-baseline'
@@ -79,7 +86,7 @@ const printSummary = snapshot => {
     `[style-governance] 存量：颜色 ${summary.rawColors}，字号 ${summary.rawFontSizes}，行高 ${summary.rawLineHeights}，圆角 ${summary.rawRadii}，字重 ${summary.rawFontWeights}`
   )
   console.log(
-    `[style-governance] Native 颜色 ${summary.nativeColors}，父样式导入 ${summary.parentStyleImports}，legacy 全局类文件 ${summary.legacyGlobalClassFiles}`
+    `[style-governance] Native 颜色 ${summary.nativeColors}，父样式导入 ${summary.parentStyleImports}，legacy 全局类文件 ${summary.legacyGlobalClassFiles}，原生点击控件 ${summary.nativeClickHandlers}`
   )
 }
 
@@ -150,7 +157,7 @@ if (mode === 'report') {
 }
 
 if (mode === 'update') {
-  if (process.env.CI === 'true') {
+  if (isTruthyEnvironmentValue(process.env.CI)) {
     console.error('[style-governance] CI 环境禁止更新样式基线')
     process.exit(1)
   }

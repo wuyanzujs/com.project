@@ -1,0 +1,269 @@
+@use '../../../styles/_tokens.scss' as *;
+.invoice-apply-header {
+  padding: 32px 24px 24px;
+  background: $dp-color-bg-card;
+}
+
+.invoice-apply-header__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-apply-header__title {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-apply-header__summary {
+  display: flex;
+  margin-top: 14px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.invoice-apply-card,
+.invoice-apply-section,
+.invoice-apply-preview,
+.invoice-apply-empty {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-apply-card__top,
+.invoice-apply-section__head,
+.invoice-apply-option,
+.invoice-apply-taxpayer,
+.invoice-apply-preview__row,
+.invoice-apply-submit {
+  display: flex;
+  flex-direction: row;
+}
+
+.invoice-apply-card__top,
+.invoice-apply-section__head,
+.invoice-apply-option,
+.invoice-apply-taxpayer,
+.invoice-apply-preview__row,
+.invoice-apply-submit {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.invoice-apply-card__title,
+.invoice-apply-section__title,
+.invoice-apply-preview__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-apply-card__amount,
+.invoice-apply-preview__amount,
+.invoice-apply-submit__amount {
+  color: $dp-color-warning-emphasis;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-apply-card__meta {
+  display: flex;
+  margin-top: 10px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.invoice-apply-option,
+.invoice-apply-taxpayer {
+  margin-top: 16px;
+  padding: 20px;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.invoice-apply-option--active,
+.invoice-apply-taxpayer--active {
+  background: $dp-color-brand-soft;
+  border-color: $dp-color-brand;
+}
+
+.invoice-apply-option__title,
+.invoice-apply-taxpayer__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-apply-option__summary,
+.invoice-apply-taxpayer__summary {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+
+.invoice-apply-option__radio {
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  color: $dp-color-text-inverse;
+  border-color: $dp-color-border;
+  border-radius: $dp-radius-radio;
+  border-width: 2px;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+  text-align: center;
+}
+
+.invoice-apply-option__radio--active {
+  background: $dp-color-brand;
+  border-color: $dp-color-brand;
+}
+
+.invoice-apply-link {
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  padding: 0 18px;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-apply-link__text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-apply-taxpayer__tag {
+  padding: 6px 14px;
+  color: $dp-color-success-text-deep;
+  background: $dp-color-success-background;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-apply-field {
+  margin-top: 22px;
+}
+
+.invoice-apply-field__label,
+.invoice-apply-preview__label {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-apply-input {
+  height: 72px;
+  margin-top: 12px;
+  padding: 0 20px;
+  color: $dp-color-text-heading;
+  background: $dp-color-bg-subtle;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-body-large;
+}
+
+.invoice-apply-preview__row {
+  padding-top: 16px;
+}
+
+.invoice-apply-preview__value {
+  flex: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  text-align: right;
+}
+
+.invoice-apply-preview__message {
+  display: flex;
+  margin-top: 18px;
+  color: $dp-color-status-warning-text;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.invoice-apply-submit {
+  height: 86px;
+  margin: 20px 24px 40px;
+  padding: 0 24px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-apply-submit--disabled {
+  background: $dp-color-bg-disabled-strong;
+}
+
+.invoice-apply-submit__amount,
+.invoice-apply-submit__text {
+  color: $dp-color-text-inverse;
+}
+
+.invoice-apply-submit__text {
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-apply-empty,
+.invoice-apply-empty-block {
+  align-items: center;
+  justify-content: center;
+}
+
+.invoice-apply-empty {
+  width: 680px;
+}
+
+.invoice-apply-empty-block {
+  min-height: 220px;
+  margin-top: 16px;
+  padding: 24px;
+  background: $dp-color-bg-subtle;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-apply-empty__title,
+.invoice-apply-empty-block__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.invoice-apply-empty__summary,
+.invoice-apply-empty-block__summary {
+  display: flex;
+  margin-top: 12px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body-small;
+  text-align: center;
+}
+
+.invoice-apply-empty__button {
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  padding: 0 22px;
+  margin-top: 24px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.invoice-apply-empty__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}

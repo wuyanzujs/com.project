@@ -1,0 +1,9 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-edit-message {
+  display: flex;
+  margin: $dp-space-md $dp-space-lg 0;
+  color: $dp-color-danger;
+  font-size: $dp-font-size-body-large;
+  text-align: center;
+}

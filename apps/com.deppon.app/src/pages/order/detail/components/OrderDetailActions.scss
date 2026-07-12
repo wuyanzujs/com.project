@@ -1,0 +1,60 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-detail-actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 24px;
+}
+
+.order-detail-primary-slot {
+  flex: 1;
+  min-width: 220px;
+}
+
+.order-detail-primary,
+.order-detail-danger,
+.order-detail-secondary {
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  border-radius: $dp-radius-sm;
+}
+
+.order-detail-primary {
+  width: 100%;
+  background: $dp-color-brand;
+}
+
+.order-detail-secondary {
+  width: 150px;
+  margin: 0 14px 14px 0;
+  background: $dp-color-bg-muted;
+}
+
+.order-detail-danger {
+  width: 150px;
+  margin: 0 14px 14px 0;
+  background: $dp-color-danger-background;
+  border-color: $dp-color-danger-border-strong;
+  border-width: 1px;
+}
+
+.order-detail-primary__text,
+.order-detail-danger__text,
+.order-detail-secondary__text {
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-detail-primary__text {
+  color: $dp-color-text-inverse;
+}
+
+.order-detail-danger__text {
+  color: $dp-color-danger-emphasis;
+}
+
+.order-detail-secondary__text {
+  color: $dp-color-text-body;
+}

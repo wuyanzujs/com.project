@@ -1,0 +1,34 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-edit-metrics {
+  display: flex;
+  flex-direction: row;
+  margin-top: $dp-space-md;
+}
+
+.order-edit-metric {
+  flex: 1;
+}
+
+.order-edit-metric--middle {
+  margin: 0 $dp-space-xs;
+}
+
+.order-edit-field-label {
+  display: flex;
+  margin-top: $dp-space-md;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-edit-textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: $dp-space-sm;
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-primary;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-body;
+}

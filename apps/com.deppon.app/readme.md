@@ -324,7 +324,7 @@ src/
 
 ## 签收码边界
 
-`pages/sign/code` 首期承接实名签收姓名登记、签收码查询、二维码展示、文本码复制和刷新。二维码使用 App 显式依赖 `qrcode` 生成矩阵，并由 `shared/components/QRCodeMatrix` 使用 Taro `View` 渲染，不复用旧小程序 `taro3-code` canvas/image 工具。
+`pages/sign/code` 首期承接实名签收姓名登记、签收码查询、二维码展示、文本码复制和刷新。二维码使用 App 显式依赖 `qrcode` 生成矩阵，并由页面本地 `components/QRCodeMatrix` 使用 Taro `View` 渲染；该模式当前只有签收码页面消费，因此不进入 shared，不复用旧小程序 `taro3-code` canvas/image 工具。
 
 亮屏、防截屏、扫码签收结果回调和签收异常申诉后续按 App 原生能力或独立业务切片接入。
 

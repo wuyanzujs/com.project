@@ -1,0 +1,83 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-stub-party {
+  display: flex;
+  flex-direction: row;
+  padding-top: $dp-space-md;
+}
+
+.order-stub-party__tag {
+  width: $dp-line-height-title;
+  height: $dp-line-height-title;
+  margin-right: $dp-space-sm;
+  color: $dp-color-text-heading;
+  background: $dp-color-brand-soft;
+  border-radius: $dp-radius-tag;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-title;
+  text-align: center;
+}
+
+.order-stub-party__tag--receiver {
+  background: $dp-color-success-background-soft;
+}
+
+.order-stub-party__content {
+  flex: 1;
+}
+
+.order-stub-party__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.order-stub-party__label {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-stub-party__badge {
+  margin-left: $dp-space-xs;
+  padding: $dp-space-4 $dp-space-10;
+  color: $dp-color-warning-text-strong;
+  background: $dp-color-warning-background;
+  border-radius: $dp-radius-control;
+  font-size: $dp-font-size-fine;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-stub-party__name {
+  display: flex;
+  margin-top: $dp-space-8;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body-large;
+}
+
+.order-stub-party__address {
+  display: flex;
+  margin-top: $dp-space-8;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.order-stub-party__copy {
+  align-items: center;
+  justify-content: center;
+  width: 128px;
+  height: 48px;
+  margin-top: $dp-space-14;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-control;
+}
+
+.order-stub-party__copy-text {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}

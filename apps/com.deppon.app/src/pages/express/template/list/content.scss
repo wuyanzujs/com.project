@@ -1,0 +1,264 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.template-list-header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: $dp-space-xl $dp-space-lg $dp-space-lg;
+  background: $dp-color-bg-card;
+}
+
+.template-list-header__label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-list-header__title {
+  flex: 1;
+  margin-left: $dp-space-sm;
+  color: $dp-color-text-primary;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-page-title;
+}
+
+.template-list-header__summary {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-list-toolbar,
+.template-card__head,
+.template-card__title-row,
+.template-card__route,
+.template-card__contact,
+.template-card__tags,
+.template-card__actions {
+  display: flex;
+  flex-direction: row;
+}
+
+.template-list-toolbar {
+  align-items: center;
+  justify-content: space-between;
+  margin: $dp-space-md $dp-space-lg 0;
+}
+
+.template-list-toolbar__summary {
+  flex: 1;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-small;
+}
+
+.template-list-toolbar__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 148px;
+  height: 64px;
+  padding: 0 $dp-space-sm;
+  margin-left: $dp-space-xs;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.template-list-toolbar__button--quiet {
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border;
+  border-width: 1px;
+}
+
+.template-list-toolbar__text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-list-toolbar__text--quiet {
+  color: $dp-color-text-primary;
+}
+
+.template-list-content {
+  padding: 0 $dp-space-lg;
+}
+
+.template-card,
+.template-list-empty {
+  margin-top: $dp-space-md;
+  padding: $dp-card-padding;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.template-card__head,
+.template-card__title-row,
+.template-card__route,
+.template-card__contact {
+  align-items: center;
+}
+
+.template-card__image {
+  width: 72px;
+  height: 72px;
+  margin-right: $dp-space-sm;
+}
+
+.template-card__head-body,
+.template-card__title,
+.template-card__contact {
+  flex: 1;
+}
+
+.template-card__title-row {
+  justify-content: space-between;
+}
+
+.template-card__title {
+  color: $dp-color-text-primary;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-card__badge {
+  padding: 6px $dp-space-xs;
+  color: $dp-color-danger;
+  background: $dp-color-danger-background;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-card__goods {
+  display: flex;
+  margin-top: $dp-space-xxs;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-small;
+}
+
+.template-card__route {
+  margin-top: $dp-space-lg;
+  padding: $dp-space-md;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.template-card__contact--end {
+  justify-content: flex-end;
+}
+
+.template-card__contact-label {
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin-right: $dp-space-xs;
+  color: $dp-color-brand;
+  background: $dp-color-brand-soft;
+  border-radius: $dp-radius-tag;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-title;
+  text-align: center;
+}
+
+.template-card__contact-label--receive {
+  color: $dp-color-success-text-deep;
+  background: $dp-color-success-background-soft;
+}
+
+.template-card__contact-value {
+  color: $dp-color-text-primary;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-card__route-arrow {
+  margin: 0 $dp-space-sm;
+  color: $dp-color-text-muted;
+  font-size: $dp-font-size-title;
+}
+
+.template-card__tags {
+  flex-wrap: wrap;
+  padding-top: $dp-space-sm;
+}
+
+.template-card__tag {
+  padding: 6px $dp-space-xs;
+  margin-right: $dp-space-xs;
+  margin-bottom: $dp-space-xs;
+  color: $dp-color-text-secondary;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-caption;
+}
+
+.template-card__actions {
+  justify-content: flex-end;
+  padding-top: $dp-space-sm;
+}
+
+.template-card__button {
+  align-items: center;
+  justify-content: center;
+  min-width: 136px;
+  height: 62px;
+  padding: 0 $dp-space-sm;
+  margin-left: $dp-space-xs;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.template-card__button--quiet,
+.template-card__button--danger {
+  background: $dp-color-bg-muted;
+}
+
+.template-card__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-card__button-text--quiet {
+  color: $dp-color-text-primary;
+}
+
+.template-card__button-text--danger {
+  color: $dp-color-danger;
+}
+
+.template-list-empty {
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+}
+
+.template-list-empty__image {
+  width: 128px;
+  height: 128px;
+}
+
+.template-list-empty__title {
+  margin-top: $dp-space-md;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-large;
+}
+
+.template-list-empty__button {
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 64px;
+  margin-top: $dp-space-lg;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.template-list-empty__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}

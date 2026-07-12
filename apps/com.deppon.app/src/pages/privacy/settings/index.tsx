@@ -5,6 +5,7 @@ import { useCallback, useState } from 'react'
 
 import { authService } from '../../../services/auth'
 import { privacyService } from '../../../services/privacy'
+import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -13,7 +14,9 @@ import { createAppWebUrl } from '../../../shared/webview/appWeb'
 import type { PrivacyStatusView } from '../../../services/privacy'
 import type { AppWebSource } from '../../../shared/webview/appWeb'
 
+
 import './index.scss'
+import './content.scss'
 
 interface PrivacyLink {
   title: string
@@ -215,38 +218,42 @@ const PrivacySettingsPage = () => {
       <View className='privacy-links'>
         <Text className='privacy-links__title'>协议与清单</Text>
         {PRIVACY_LINKS.map((item) => (
-          <View
+          <AppPressable
             className='privacy-link'
             key={item.source}
-            onClick={() => handleOpenLink(item.source)}
+            onPress={() => handleOpenLink(item.source)}
           >
             <View>
               <Text className='privacy-link__title'>{item.title}</Text>
               <Text className='privacy-link__summary'>{item.summary}</Text>
             </View>
             <Text className='privacy-link__arrow'>›</Text>
-          </View>
+          </AppPressable>
         ))}
       </View>
 
       <View className='privacy-actions'>
-        <View className='privacy-actions__secondary' onClick={loadPrivacyStatus}>
+        <AppPressable
+          flex
+          className='privacy-actions__secondary'
+          onPress={loadPrivacyStatus}
+        >
           <Text className='privacy-actions__secondary-text'>
             {loading ? '同步中' : '同步状态'}
           </Text>
-        </View>
-        <View className='privacy-actions__primary' onClick={handleSaveAgreement}>
+        </AppPressable>
+        <AppPressable flex className='privacy-actions__primary' onPress={handleSaveAgreement}>
           <Text className='privacy-actions__primary-text'>
             {saving ? '处理中' : '同意最新条款'}
           </Text>
-        </View>
+        </AppPressable>
       </View>
 
-      <View className='privacy-danger' onClick={handleCancelAgreement}>
+      <AppPressable className='privacy-danger' onPress={handleCancelAgreement}>
         <Text className='privacy-danger__text'>
           {saving ? '处理中' : '撤销同意条款'}
         </Text>
-      </View>
+      </AppPressable>
     </ScrollView>
   )
 }

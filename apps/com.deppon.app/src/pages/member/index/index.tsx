@@ -4,8 +4,11 @@ import { useDidShow } from '@tarojs/taro'
 import { useState } from 'react'
 
 import { memberService } from '../../../services/member'
+import { AppPressable,
+  AppPage,
+  AppStatusTag
+} from '../../../shared/components'
 import AppTabBar from '../../../shared/components/AppTabBar'
-import { AppSafeAreaView, AppStatusBar } from '../../../shared/native'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -19,6 +22,7 @@ import type {
 import type { AppWebSource } from '../../../shared/webview/appWeb'
 
 import './index.scss'
+import './content.scss'
 
 const MEMBER_WEB_SOURCES: Record<MemberWebAction, AppWebSource> = {
   MEMBER_CENTER: 'MEMBER_CENTER_HOME',
@@ -122,8 +126,13 @@ const MemberCenterPage = () => {
   }
 
   return (
-    <AppSafeAreaView backgroundColor='#eef6ff' edges={['top']}>
-      <AppStatusBar />
+    <AppPage
+      className='member-page-shell'
+      footer={<AppTabBar active='memberCenter' />}
+      safeArea='top'
+      statusBar='dark'
+      surface='brand-soft'
+    >
       <ScrollView className='member-page' scrollY>
         <View className='member-header'>
           <Text className='member-header__title'>会员权益</Text>
@@ -169,44 +178,50 @@ const MemberCenterPage = () => {
             {overview?.svipMessage || '更多权益由福利中心承接'}
           </Text>
           <View className='member-actions'>
-            <View className='member-action' onClick={() => handleOpenWelfare()}>
+            <AppPressable className='member-action' onPress={() => handleOpenWelfare()}>
               <Text className='member-action__text'>
                 {overview?.svipButtonText || '查看权益'}
               </Text>
-            </View>
-            <View
+            </AppPressable>
+            <AppPressable
               className='member-action member-action--ghost'
-              onClick={() => navigateToAppRoute(APP_ROUTES.couponList)}
+              onPress={() => navigateToAppRoute(APP_ROUTES.couponList)}
             >
               <Text className='member-action__text member-action__text--ghost'>
                 我的优惠券
               </Text>
-            </View>
+            </AppPressable>
           </View>
         </View>
 
         <View className='member-section'>
           <Text className='member-section__title'>权益服务</Text>
           {(overview?.benefits ?? []).map(item => (
-            <View
+            <AppPressable
               className='member-benefit'
               key={item.title}
-              onClick={() => handleBenefit(item)}
+              onPress={() => handleBenefit(item)}
             >
               <View>
                 <Text className='member-benefit__title'>{item.title}</Text>
                 <Text className='member-benefit__summary'>{item.summary}</Text>
               </View>
-              <Text
+              <AppStatusTag
                 className={
                   item.status === 'ready'
                     ? 'member-benefit__tag'
                     : `member-benefit__tag member-benefit__tag--${item.status}`
                 }
-              >
-                {item.badgeText}
-              </Text>
-            </View>
+                label={item.badgeText}
+                tone={
+                  item.status === 'ready'
+                    ? 'success'
+                    : item.status === 'pending'
+                      ? 'warning'
+                      : 'brand'
+                }
+              />
+            </AppPressable>
           ))}
 
           {!overview && !loading && (
@@ -220,8 +235,7 @@ const MemberCenterPage = () => {
 
         {loading && <Text className='member-loading'>正在同步会员权益...</Text>}
       </ScrollView>
-      <AppTabBar active='memberCenter' />
-    </AppSafeAreaView>
+    </AppPage>
   )
 }
 
