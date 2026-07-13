@@ -22,9 +22,14 @@ import { OrderTransportSection } from './components/OrderTransportSection'
 import { OrderUrgePanel } from './components/OrderUrgePanel'
 import { useOrderPickupSchedule } from './hooks/useOrderPickupSchedule'
 import { useOrderSubscription } from './hooks/useOrderSubscription'
+import {
+  createOrderDetailViewModel,
+  getOrderDetailRole,
+  getOrderDetailRouteParams,
+  getOrderDetailRouteUrl
+} from './orderDetailViewModel'
 import { expressDraftBridge } from '../../../services/express'
 import {
-  canDeleteOrder,
   createExpressDraftFromOrderDetail,
   getOrderCopyNumber,
   getOrderIdentityText,
@@ -46,8 +51,6 @@ import type {
   OrderDetail,
   OrderDetailActionView,
   OrderUrgeButtonRaw,
-  OrderResendMode,
-  OrderRole,
   OrderStubEntryView,
   WaybillTrackItem
 } from '../../../services/order'
@@ -55,94 +58,13 @@ import type { PaymentSummary } from '../../../services/payment'
 
 import './index.scss'
 
-type OrderDetailViewMode = 'public' | 'secure'
-
-interface OrderDetailRouteParams {
-  orderNumber: string
-  waybillNumber: string
-  role: string
-  source: string
-  view: OrderDetailViewMode
-}
-
-function getViewMode(value?: string): OrderDetailViewMode {
-  return value === 'secure' ? 'secure' : 'public'
-}
-
-function getRouteParams(
-  params: Record<string, string | undefined>
-): OrderDetailRouteParams {
-  return {
-    orderNumber: params.orderNumber || params.orderNo || '',
-    waybillNumber: params.waybillNumber || params.waybillNo || '',
-    role: params.role || '',
-    source: params.source || '',
-    view: getViewMode(params.view)
-  }
-}
-
-function isPublicTrackMode(params: OrderDetailRouteParams) {
-  return (
-    params.view !== 'secure' &&
-    !!params.waybillNumber &&
-    !params.orderNumber &&
-    !params.role
-  )
-}
-
-function canCancelOrder(detail: OrderDetail | null, publicTrackMode: boolean) {
-  if (!detail || publicTrackMode || !detail.orderNumber) {
-    return false
-  }
-
-  const orderClass = Number(detail.orderClassification)
-
-  return orderClass === 0 && detail.modifyFlag !== false
-}
-
-function canDeleteDetail(detail: OrderDetail | null, publicTrackMode: boolean) {
-  return !publicTrackMode && !!detail && canDeleteOrder(detail)
-}
-
-function getDetailRole(detail: OrderDetail, routeRole: string): OrderRole {
-  if (routeRole === 'receive') {
-    return 'receive'
-  }
-
-  if (routeRole === 'sender') {
-    return 'sender'
-  }
-
-  return detail.isReceiver === 'Y' && detail.isSender !== 'Y'
-    ? 'receive'
-    : 'sender'
-}
-
-function getResendMode(role: OrderRole): OrderResendMode {
-  return role === 'receive' ? 'return' : 'repeat'
-}
-
-function getResendActionText(role: OrderRole) {
-  return role === 'receive' ? '一键回寄' : '再来一单'
-}
-
-function getOrderDetailUrl(
-  params: OrderDetailRouteParams,
-  view: OrderDetailViewMode = params.view
-) {
-  return createAppRouteUrl(APP_ROUTES.orderDetail, {
-    orderNumber: params.orderNumber,
-    waybillNumber: params.waybillNumber,
-    role: params.role,
-    source: params.source,
-    view
-  })
-}
-
 const OrderDetailPage = () => {
   const router = useRouter()
   const routeParams = useMemo(
-    () => getRouteParams(router.params as Record<string, string | undefined>),
+    () =>
+      getOrderDetailRouteParams(
+        router.params as Record<string, string | undefined>
+      ),
     [router.params]
   )
   const [detail, setDetail] = useState<OrderDetail | null>(null)
@@ -172,14 +94,16 @@ const OrderDetailPage = () => {
     toggle: toggleSubscription
   } = useOrderSubscription()
   const pickupSchedule = useOrderPickupSchedule()
-  const publicTrackMode = useMemo(
-    () => isPublicTrackMode(routeParams),
-    [routeParams]
+  const {
+    publicTrackMode,
+    cancelable,
+    deletable,
+    detailRole,
+    resendActionText
+  } = useMemo(
+    () => createOrderDetailViewModel(routeParams, detail),
+    [detail, routeParams]
   )
-  const cancelable = canCancelOrder(detail, publicTrackMode)
-  const deletable = canDeleteDetail(detail, publicTrackMode)
-  const detailRole = detail ? getDetailRole(detail, routeParams.role) : 'sender'
-  const resendActionText = getResendActionText(detailRole)
   const stubEntry = useMemo<OrderStubEntryView | null>(() => {
     if (!detail) {
       return null
@@ -234,7 +158,7 @@ const OrderDetailPage = () => {
 
   const loadDetail = async () => {
     if (!publicTrackMode) {
-      const redirectUrl = getOrderDetailUrl(routeParams, 'secure')
+      const redirectUrl = getOrderDetailRouteUrl(routeParams, 'secure')
 
       if (!ensureAuthenticated({ redirectUrl, replace: true })) {
         return
@@ -287,7 +211,7 @@ const OrderDetailPage = () => {
 
       setDetail(nextDetail)
 
-      const nextRole = getDetailRole(nextDetail, routeParams.role)
+      const nextRole = getOrderDetailRole(nextDetail, routeParams.role)
       const [trackResponse, paymentResponse, nextUrgeAction] =
         await Promise.all([
           orderService.queryTrackList(waybillNumber, {
@@ -367,7 +291,7 @@ const OrderDetailPage = () => {
   }
 
   const handleOpenSecureDetail = () => {
-    const url = getOrderDetailUrl(routeParams, 'secure')
+    const url = getOrderDetailRouteUrl(routeParams, 'secure')
 
     navigateToAppRoute(url, { login: true })
   }
@@ -420,7 +344,7 @@ const OrderDetailPage = () => {
 
     try {
       const response = await orderService.deleteOrder({
-        role: getDetailRole(detail, routeParams.role),
+        role: getOrderDetailRole(detail, routeParams.role),
         orderNumber: detail.orderNumber,
         waybillNumber: detail.waybillNumber
       })
@@ -446,7 +370,10 @@ const OrderDetailPage = () => {
     }
 
     expressDraftBridge.carryFromOrderResend(
-      createExpressDraftFromOrderDetail(detail, getResendMode(detailRole))
+      createExpressDraftFromOrderDetail(
+        detail,
+        detailRole === 'receive' ? 'return' : 'repeat'
+      )
     )
     navigateToAppRoute(APP_ROUTES.express, {
       replace: true

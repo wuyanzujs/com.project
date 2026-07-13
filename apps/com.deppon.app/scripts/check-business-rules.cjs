@@ -137,6 +137,10 @@ const {
   resolveOrderUrgeMenuAction
 } = require('../src/services/order/order.detailUseCases')
 const {
+  createOrderDetailViewModel,
+  getOrderDetailRouteParams
+} = require('../src/pages/order/detail/orderDetailViewModel')
+const {
   createOrderSubscriptionAction,
   normalizeWaybillSubscription
 } = require('../src/services/order/order.subscription')
@@ -2508,6 +2512,40 @@ const tests = [
         }),
         []
       )
+    }
+  },
+  {
+    name: 'order detail view model normalizes public and secure route state',
+    run() {
+      const publicView = createOrderDetailViewModel(
+        getOrderDetailRouteParams({ waybillNo: 'DPK123456789' }),
+        null
+      )
+
+      assert.equal(publicView.publicTrackMode, true)
+      assert.equal(publicView.detailRole, 'sender')
+      assert.equal(publicView.cancelable, false)
+      assert.equal(publicView.deletable, false)
+
+      const secureView = createOrderDetailViewModel(
+        getOrderDetailRouteParams({
+          orderNo: 'ORDER_001',
+          role: 'receive',
+          view: 'secure'
+        }),
+        createOrderDetail({
+          isSender: 'N',
+          isReceiver: 'Y',
+          orderClassification: '0',
+          waybillNumber: null
+        })
+      )
+
+      assert.equal(secureView.publicTrackMode, false)
+      assert.equal(secureView.detailRole, 'receive')
+      assert.equal(secureView.cancelable, true)
+      assert.equal(secureView.deletable, false)
+      assert.equal(secureView.resendActionText, '一键回寄')
     }
   },
   {

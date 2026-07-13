@@ -2,6 +2,12 @@
 
 生成日期：2026-07-07
 
+## Codex 验证边界
+
+- Codex 默认不得主动执行 RN bundle、Android/iOS 打包、Gradle、Xcode 或发布包验证。
+- 项目打包由用户自行执行；仅当用户明确要求时，Codex 才能运行对应打包命令。
+- Codex 日常验证限于 TypeScript、ESLint、Stylelint、业务规则、路由、模块体积、RN 边界和其他不产出安装包的静态门禁。
+
 ## 一、整体判断
 
 当前项目已经不是简单 Demo，而是在做一个 Taro RN App 的业务迁移和重构。项目底座有一定工程化意识，已经做了这些比较好的事情：

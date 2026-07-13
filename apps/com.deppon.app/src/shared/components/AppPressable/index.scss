@@ -1,11 +1,6 @@
 @use '../../../styles/_tokens.scss' as *;
 
-.app-pressable {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: $dp-radius-control;
-}
+.app-pressable { display: flex; min-width: $dp-touch-target-min; min-height: $dp-touch-target-min; align-items: center; justify-content: center; border-radius: $dp-radius-control; }
 
 .app-pressable--plain { background: $dp-color-transparent; }
 .app-pressable--surface { background: $dp-color-bg-card; }
@@ -16,9 +11,7 @@
 .app-pressable--column-start { flex-direction: column; align-items: flex-start; justify-content: center; }
 
 .app-pressable--block { width: 100%; }
-
-.app-pressable--selected {
-  background: $dp-interaction-selected-background;
-  border-color: $dp-interaction-focus-border;
-  border-width: $dp-interaction-focus-width;
-}
+.app-pressable--flex { flex: 1; }
+.app-pressable--disabled { opacity: $dp-interaction-disabled-opacity; }
+.app-pressable--pressed { opacity: $dp-opacity-pressed; }
+.app-pressable--selected { background: $dp-interaction-selected-background; border-color: $dp-interaction-focus-border; border-width: $dp-interaction-focus-width; }

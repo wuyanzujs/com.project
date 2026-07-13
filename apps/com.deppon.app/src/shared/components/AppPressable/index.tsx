@@ -1,6 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
-import type { PropsWithChildren } from 'react'
+import { useState, type PropsWithChildren } from 'react'
 
 import { AppNativePressable } from '../../native'
 import './index.scss'
@@ -46,31 +46,42 @@ export function AppPressable({
   selected = false,
   variant = 'plain'
 }: AppPressableProps) {
+  const [pressed, setPressed] = useState(false)
   const contentClassName = classNames(
     'app-pressable',
     `app-pressable--${variant}`,
     block && 'app-pressable--block',
+    flex && 'app-pressable--flex',
     layout !== 'center' && `app-pressable--${layout}`,
+    disabled && 'app-pressable--disabled',
+    pressed && 'app-pressable--pressed',
     selected && 'app-pressable--selected',
     className
   )
 
+  const textClassName = classNames('app-pressable__text', className)
+
   return (
-    <AppNativePressable
-      accessibilityLabel={accessibilityLabel}
-      allowDisabledPress={allowDisabledPress}
-      block={block}
-      disabled={disabled}
-      flex={flex}
-      selected={selected}
-      onLongPress={onLongPress}
-      onPress={onPress}
-    >
+    <View className={contentClassName}>
       {contentElement === 'text' ? (
-        <Text className={contentClassName}>{children}</Text>
+        <Text className={textClassName}>{children}</Text>
       ) : (
-        <View className={contentClassName}>{children}</View>
+        children
       )}
-    </AppNativePressable>
+      <AppNativePressable
+        accessibilityLabel={accessibilityLabel}
+        allowDisabledPress={allowDisabledPress}
+        block={block}
+        disabled={disabled}
+        overlay
+        selected={selected}
+        onLongPress={onLongPress}
+        onPress={onPress}
+        onPressIn={() => {
+          if (!disabled) setPressed(true)
+        }}
+        onPressOut={() => setPressed(false)}
+      />
+    </View>
   )
 }

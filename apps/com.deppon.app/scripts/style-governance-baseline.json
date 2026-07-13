@@ -1516,7 +1516,7 @@
         "rawRadii": 0,
         "rawFontWeights": 0,
         "usesTokens": true,
-        "lines": 24
+        "lines": 17
       },
       "src/shared/components/AppStatusTag/index.scss": {
         "rawColors": 0,
