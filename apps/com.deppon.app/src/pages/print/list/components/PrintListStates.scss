@@ -1,0 +1,30 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.print-list-state {
+  padding: $dp-space-sm 0 $dp-space-xl;
+}
+
+.print-list-inline-error {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: $dp-space-sm;
+  background: $dp-color-danger-background;
+  border-radius: $dp-radius-sm;
+}
+
+.print-list-inline-error__message {
+  flex: 1;
+  margin-right: $dp-space-sm;
+  color: $dp-color-danger-text-strong;
+  font-size: $dp-font-size-body-small;
+}
+
+.print-list-state__end {
+  display: flex;
+  justify-content: center;
+  color: $dp-color-text-placeholder;
+  font-size: $dp-font-size-body-small;
+  text-align: center;
+}

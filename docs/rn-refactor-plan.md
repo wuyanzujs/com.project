@@ -25,7 +25,7 @@
 | `home` | 首页、运营位、寄件入口、查询入口、营销弹窗、隐私协议、新客券 | 可迁，但要 App 化：首页做主入口，不照搬订阅、收藏和分享逻辑。 |
 | `send/express` | 核心寄件下单巨石页：地址、产品、价格、优惠、取件、增值服务、实名、支付 | 首期核心，但必须拆分重构。 |
 | `order/list` | 查快递、寄/收件订单、待支付、关注、搜索、筛选 | 首期主链路。 |
-| `order/detail` | 轨迹、地图、快递员、签收、复制单号、电子存根、货物补充明细、照片凭证、单据票证、催单、通知派送、拦截作废、收件方式、联系营业部、评价、支付入口、修改/售后入口 | 首期迁基础详情、轨迹列表、单号复制、电子存根、尺寸/包装费用只读明细、照片凭证只读预览、电子合同状态和完成态 WebView 预览、待支付提示、催单、通知派送、拦截作废、收件方式 H5、联系营业部、评价 H5 和售后快捷入口；地图/原生评价表单/完整售后状态机后置。 |
+| `order/detail` | 轨迹、地图、快递员、签收、复制单号、电子存根、货物补充明细、照片凭证、单据票证、催单、通知派送、拦截作废、收件方式、联系营业部、评价、支付入口、修改/售后入口 | 已迁基础详情、轨迹、电子存根、只读凭证、支付提示、售后快捷动作、原生服务评价和动态场景问卷/NPS；地图和完整售后状态机后置。 |
 | `center` | 我的、订单统计、地址簿、发票、客服、客户中心、会员、设置入口 | 首期做 App 我的页骨架，并拆出客服中心、客户中心等 App 化页面。 |
 | `login` / `user` | 登录、绑定、实名、签收码、注销 | 登录必须先迁；签收码读能力和实名签收登记进入首期，完整实名核验后置。 |
 | `contact` | 地址簿、地址编辑、智能解析、委托寄件联系人 | 首期迁地址簿基础能力。 |
@@ -78,11 +78,11 @@
 - 已新增 `scripts/check-route-registry.mjs` 和 `check:routes` 门禁，校验路由注册表唯一性、页面文件存在性、主导航顺序、登录路由和派生消费关系。
 - 已新增 `src/styles` 样式基础层，集中维护颜色、字号、行高、间距、圆角 token，以及页面、卡片、按钮、空态等通用类；既有页面不做一次性大面积替换，后续业务切片逐步迁移。
 - 已补齐 `shared/platform` 首期 facade：定位、地图、文件选择/上传/下载/预览、支付、通知、外部 App/小程序、实名核验、电话和扫码都通过统一能力矩阵暴露，默认 pending 的能力会明确降级为“待接入 App 原生模块”。
-- 已新增工程验证脚本：根目录 `typecheck:app`、`lint:app`、`check:app-boundaries`、`check:app-routes`、`check:app-module-size`、`check:app-business-rules`、`verify:app`，App 包内 `typecheck`、`lint`、`check:rn-boundaries`、`check:routes`、`check:module-size`、`check:business-rules`、`verify`，后续每轮可用一条命令执行类型检查、ESLint、RN 边界检查、路由注册表检查、页面/service 体量检查、业务规则检查和 RN build。
+- 已新增工程验证脚本：根目录 `typecheck:app`、`lint:app`、`check:app-boundaries`、`check:app-routes`、`check:app-module-size`、`check:app-business-rules`、`verify:app`，App 包内 `typecheck`、`lint`、`check:rn-boundaries`、`check:routes`、`check:module-size`、`check:business-rules`、`verify:static`、`verify`；默认 verify 只执行静态门禁，不生成 RN bundle，bundle 由 `verify:bundle:android/ios` 显式触发。
 - 已新增 `scripts/check-module-size.mjs` 和 `check:module-size` 门禁，新页面默认不超过 420 行，新 service 默认不超过 450 行；已存在或自然复杂的页面/service 使用带原因的冻结预算，目标是阻止无意识膨胀，而不是为了行数机械拆分。
 - 已新增 `scripts/check-business-rules.cjs` 和 `check:business-rules`，首批覆盖 service 失败响应形态、OWS 状态归一、`ECO_TOKEN` cookie 提取、路由 query、扫码分类、寄件模板映射/保存 payload/草稿桥、寄件草稿校验、关注运单映射和详情动作、订单修改草稿/差异请求/校验、网点反馈 H5 参数、优惠券卡片/详情归一、优惠券价格时效 payload、批量寄入口/校验规则、打印中心入口/打印前置规则、发票申请校验/抬头校验/提交 payload、订单金额/重量/手机号展示和订单详情动作 VM 等纯函数规则，后续拆 mapper/rules/useCases 时继续补用例。
 - 已新增原生环境检查脚本：根目录 `check:app-native-env`，App 包内 `check:native-env`，用于检查 JDK、Android SDK、Gradle wrapper、iOS 构建宿主等 Android/iOS 编译前置条件。
-- 已新增 `.github/workflows/app-quality.yml`，push 和 pull request 统一执行 `pnpm install --frozen-lockfile`、`pnpm verify:app` 和 `pnpm check:app-native-env`，把 RN-only 边界、路由、体量、运行时配置和 RN bundle 构建固化到协作入口。
+- 已新增 `.github/workflows/app-quality.yml`，push 和 pull request 统一执行 `pnpm install --frozen-lockfile`、静态 `pnpm verify:app` 和 `pnpm check:app-native-env`，把 RN-only 边界、路由、体量和运行时配置固化到协作入口；Android/iOS bundle 与原生包保留给显式发布流程。
 
 ## 高风险平台能力
 
@@ -145,6 +145,7 @@
 - 禁止直接使用 `wx.*`、`my.*`。
 - 禁止保留 `process.env.TARO_ENV` 或 `Taro.getEnv` 多端运行时分支；App 端差异使用 `shared/config/runtime.ts` 和 capability 矩阵表达。
 - 禁止直接使用 `Taro.scanCode`、`Taro.getLocation`、`Taro.chooseLocation`、`Taro.openLocation`、`Taro.makePhoneCall`、`Taro.uploadFile`、`Taro.downloadFile`、`Taro.requestSubscribeMessage`、`Taro.navigateToMiniProgram`、`Taro.chooseImage/chooseMedia/chooseVideo`、`Taro.getUserProfile/authorize/getSetting/openSetting`、`Taro.saveImageToPhotosAlbum`、`Taro.setClipboardData/getClipboardData`、`Taro.previewImage`、`Taro.openDocument`、`Taro.onUserCaptureScreen/offUserCaptureScreen`、`Taro.getFileSystemManager/createSelectorQuery`。
+- 同一门禁会解析 `@tarojs/taro` 的默认导入改名、namespace、具名导入和 CommonJS 解构；`Foo.scanCode()`、`import { scanCode as scan }` 等别名写法不能绕过 RN boundary。
 - 禁止直接使用 `useShareAppMessage`、`useShareTimeline`、`onShareAppMessage` 和小程序组件 `openType`；分享、登录、客服等开放能力必须先走对应 `shared/platform` facade，当前按能力矩阵降级。
 - 禁止直接迁入旧项目 `EVENT_TRACK` 或 `sensors` 小程序埋点入口；埋点统一通过 `shared/platform/analytics.ts` 预留 App SDK facade。
 - 禁止业务代码直接调用 RN `NativeModules`、`PermissionsAndroid`、`Linking`、`Share.share`、`Alert.alert`；这些 API 只能在 `shared/platform` 或后续 `shared/native` 中封装。
@@ -206,13 +207,13 @@ shared/platform/
 
 - `request/index.ts`：保留通用 HTTP client。
 - `request/deppon.ts`：新增 OWS client，负责 `status` 归一、`401 + 901`、`429`、cookie 保存和业务响应结构。
-- `request/cookieJar.ts`：统一保存、读取、清理 `ECO_TOKEN` cookie。
+- `request/cookieJar.ts`：统一保存、读取、清理 `ECO_TOKEN`，并通过可注入 runtime adapter 与 RN 原生 cookie jar 双向同步。
 - `request/events.ts`：提供 `authExpired`、`rateLimited` 事件，不在请求层直接跳页面或弹窗。
 - `cache/storage.ts`、`cache/dpCache.ts`：提供启动 hydrate 的异步 Taro storage adapter、运行期内存镜像和带过期策略的缓存工具；业务层只通过 cache facade 读写。
 - `services/auth`：先落登录服务边界，包含 `queryUserInfo`、`checkEcoToken`、`logout`、`sendSmsMessage`、短信登录骨架。
 - `services/contact`：先落地址簿基础能力，包含分页查询、保存、删除、默认地址、地址解析、地址联想、乡镇补全、地址详细度校验和选择参数约定。
 - `shared/navigation/authGuard.ts`：以 `ECO_TOKEN` 作为 App 登录态证据，统一生成登录页 `redirectUrl`、处理登录跳转去重和安全页面入口拦截。
-- `app.bootstrap.ts`：配置 baseURL/timeout，并监听 `authExpired` 清理 App 会话，再通过统一 guard 跳转登录页。
+- `app.bootstrap.ts`：先挂载 `shared/native/AppSessionCookie`、hydrate storage 与原生 cookie，再配置 baseURL/timeout；监听 `authExpired` 时同时清理两侧会话，再通过统一 guard 跳转登录页。
 
 ## Login / Mine 首期切片
 
@@ -221,16 +222,19 @@ shared/platform/
 已落地边界：
 
 - `services/auth/auth.api.ts`：封装短信发送、手机号验证码登录、查询用户、校验 `ECO_TOKEN` 和退出登录。
+- `services/auth/login.rules.ts`：集中构造 App 短信登录请求和 RN 安全的 `registerRecord`；只保留来源页、`APP` 系统码和旧接口要求的空字段信封，不调用小程序设备/启动参数 API。
 - `services/auth/auth.service.ts`：负责手机号/验证码校验、登录请求组装、用户缓存、用户展示名和脱敏手机号。
 - `pages/login/index`：实现短信登录表单、验证码发送、60 秒重发倒计时、6 位验证码校验、协议勾选和协议入口。
+- `shared/native/AppFormScrollView.tsx`：封装 RN 表单滚动容器的键盘点击语义，登录页输入后首次点击按钮仍会进入业务 handler；页面禁止直接使用 RN `keyboardShouldPersistTaps` 属性。
 - `pages/mine/index`：实现用户摘要、登录、账号设置、地址簿、寄件、订单、待支付、客服中心、客户中心、签收码和 E 卡入口。
+- 显式登录入口统一调用 `shared/navigation/authGuard.navigateToLogin`；通用导航不再把合法登录 URL 改写回“我的”，RN boundary 仍禁止业务页手工生成登录 URL，以保留回跳、去重和提示语义。
 - `shared/webview/appWeb.ts` 与 `pages/web/index`：实现协议、客服、投诉、理赔等 H5 能力的统一路由生成、来源映射、HTTPS 白名单和 RN WebView 承接；客服入口已覆盖首页、我的页和订单详情页。
 - `pages/privacy/settings`：实现隐私政策、个人信息清单、合作方清单、权限调用清单等入口，并支持同步、确认和撤销隐私条款。
 
 关键约束：
 
-- 登录接口沿用旧项目真实契约：`account`、`verifyCode`、`loginType`、`sysCode`。页面和 service 不再混发 `mobile`、`smsCode`、`code` 等非登录接口字段。
-- App 端首期只承接手机号短信登录；微信/支付宝小程序静默登录、绑定授权、实名核验和营销注册记录先不迁入页面主流程。
+- 登录接口沿用旧项目真实契约：`account`、`verifyCode`、`loginType`、`sysCode`、`registerRecord`。页面和 service 不再混发 `mobile`、`smsCode`、`code` 等非登录接口字段；`registerRecord` 只记录安全来源页和 App 系统码，其他小程序营销/设备字段保持空值。
+- App 端首期只承接手机号短信登录；微信/支付宝小程序静默登录、绑定授权、实名核验和营销活动状态机不迁入页面主流程。
 - 协议首期做前端强校验和 Web 承接入口；隐私版本查询、首页轻提示、保存确认和撤销确认都由 `privacyService` 收口。
 - 我的页只消费 `authService` 和路由入口，不直接读 cookie 或请求层事件。
 - WebView 默认只允许 `https` 和 `APP_RUNTIME_CONFIG.webAllowedHosts` 中的域名；H5 客服 URL、Web baseURL 和白名单都通过 runtime/env 管理。
@@ -243,6 +247,21 @@ shared/platform/
 - 订单列表、地址簿列表/编辑、首页订单入口、寄件/查价地址簿入口和我的页快捷入口已接入 `ensureAuthenticated`。
 - `pages/mine` 在无 `ECO_TOKEN` 时不再请求 `queryUserInfo`，只展示未登录态。
 - `authExpired` 事件触发后会清理会话并跳转登录页，登录页自身不会重复跳转。
+- Taro RN 4.2 的 `request` 实现只把原生 `fetch` 的 `Headers` 放到 `response.header`，不提供 `cookies`，而 RN `fetch` 又不能可靠向 JS 暴露 `Set-Cookie`。现保留 header/cookies 解析作为兼容路径，同时以 `@preeternal/react-native-cookie-manager` 封装 `shared/native/AppSessionCookie`：请求统一使用 `credentials: include`，登录响应读不到 header 时从系统 cookie jar 取得 `ECO_TOKEN`，再写入异步 storage、原生网络 cookie store 和 WebKit cookie store。Android 原生网络写 CookieJar 为异步动作，成功包体后的恢复最多重试 5 次、每次间隔 40ms，仍未取得 token 才拒绝登录。
+- 登录业务规则覆盖显式登录 URL 不被改写、短信/登录 payload、`registerRecord` 来源页归一、无 Cookie 拒绝假登录、原生 cookie jar fallback、公开登录接口 `login=false`、启动 hydrate 和多种兼容响应形态。
+- 登录入口验收会 mock “我的”当前页并实际执行 `navigateToLogin`，断言发出的目标是带安全回跳参数的注册登录路由；RN App 未配置 Taro `tabBar`，四个主入口使用自定义 `AppTabBar` 且都位于同一根 Stack，因此不能套用小程序 `switchTab` 或嵌套 `tabNav` 结论。
+- 参考项目只能证明 `MOBILE_VERIFICATION_CODE` 及小程序 `WECHAT_MINI/ALIPAY_MINI` 系统码，不能证明原生 App 的系统码。当前 `APP_SYSTEM_CODE=APP` 继续由 runtime config 管理，不伪装成小程序渠道；最终值仍需以 App 后端联调配置为准。
+- 登录回跳参数只在仍是 `%2Fpages%2F...` 的兼容形态下解码一次，已由 RN 路由解码的嵌套 query 不再二次展开。
+- 发码和登录页面对未被请求层归一的异常提供显式重试提示，避免网络或运行时异常发生后只恢复按钮、用户侧没有反馈。
+- `shared/navigation/navigationRuntime.ts` 统一观察 RN 路由 Promise；只有非空当前 pathname 与目标一致才确认成功，页面栈短暂为空会继续等待，最终未命中才显示失败提示。
+- Taro RN Router 的 Promise 在 dispatch 后立即 resolve，并不等待页面挂载。关键登录导航因此只允许 dispatch 一次，再等待页面实例出现；确认超时只提示失败并释放 in-flight，不再发第二次 `redirectTo` 覆盖仍在进行的首次 replace。普通业务跳转继续保留原同步调用形态，避免扩大改动面。
+- 登录守卫使用 in-flight Promise 代替固定 800ms 时间锁，并发鉴权只发起一次跳转且在导航成功或失败后释放；提示 toast 不可用时不阻断登录页导航。登录页异步请求返回和 finally 写状态前检查 mounted 状态，用户已离开时不再 setState 或强制回跳。
+- 登录页只有在 `ECO_TOKEN` 与用户缓存均落盘、且目标路由确认打开后才提示“登录成功”。会话已经建立但回跳失败时，按钮切换为“返回原页面”，后续点击只重试导航，不会再次提交手机号和验证码。
+- “我的”显式登录使用 `navigateTo` 打开登录页，登录成功后才 `replace` 回安全目标，避免入口 replace 与页面挂载竞态；寄件/批量寄首次登录前通过 cache facade 短时标记匿名草稿，建立账号 owner 时只保留这些草稿，其他私有缓存与账号切换仍严格清理。
+- 2026-07-16 的再次实机反馈确认旧静态假设不足：仅兼容 `Headers` 仍会出现“登录凭证保存失败”。本轮已加入原生 cookie manager，因此必须重新安装依赖并重建 Android/iOS 原生包；运行时继续验证发码、协议、`status/result`、原生与 storage 中的 `ECO_TOKEN`、用户缓存、原目标回跳和杀进程后的会话恢复。
+- 项目内回 App 模式已再次核对：App 内登录使用 push 进入、成功后 route replace 返回；支付结果和注销成功使用 App route；寄件成功页按业务完成页保留普通跳转；只有受控 H5 数据回传使用 `postMessage -> 一次性 bridge -> navigateBack -> useDidShow consume`。登录不新增 URL scheme、H5 私有回跳或小程序页面栈逻辑。
+- `pages/web` 现在对 `auth=Y` 做页面级动态守卫：未登录时不渲染 WebView，保存完整当前 Web App 路由并进入统一登录页；登录成功后 replace 回原 Web 服务。公开协议等 `auth=N` 目标不受影响，非法或未登记 URL 仍先按白名单 fail-closed。
+- RN boundary 已锁定键盘点击容器、原生 Cookie 恢复入口、`credentials: include`、认证 WebView 动态判断和统一登录守卫；叠加模板元数据规则后当前业务规则为 190/190。
 
 ## Account Settings 首期切片
 
@@ -353,6 +372,7 @@ shared/platform/
 - `contactService.queryTownList`
 - `contactService.checkAddressDetail`
 - `contactService.queryCount`
+- `contact.addressIntegrity.ts`：归一地址校验请求，并把后端响应拆为 `pass/review/unavailable/blocked`，避免页面各自猜测 `status/message`。
 
 不纳入首期：
 
@@ -378,9 +398,14 @@ type ContactSelectMode = 'select' | 'manage'
 - `pages/contact/edit` 已接入文本智能识别：用户粘贴“姓名、电话、省市区、详细地址”后可自动填充表单，识别成功后仍要求用户核对。
 - `services/contact/selection.ts` 使用 `returnDelta` 区分“列表进入编辑”和“页面直接新增”，避免保存后多退或少退。
 - `pages/contact/list` 在 `manage` 模式下支持单条删除和设为默认地址；设默认复用更新联系人接口并本地刷新默认标识，删除前有确认弹窗。
+- `pages/contact/list` 在 `select` 模式写入选择桥前调用地址完整性校验；后端提示地址不完整时允许用户选择“修改地址”或“继续使用”，确认修改会携带当前联系人进入编辑页。
+- `pages/contact/edit` 在新增或更新联系人前复用同一校验；选择继续修改会保留表单，选择仍然保存才调用保存接口。网络校验失败只提示并继续，`authExpired` 会中止当前动作并交给统一登录失效流程。
+- `pages/contact/hooks/useContactAddressIntegrity.ts` 统一承接请求锁、弹窗语义和失败降级，列表与编辑页不直接解析 OWS 响应，也不能重复提交校验。
 - `pages/express` 在 `useDidShow` 中消费选择结果，先把 `Contact.telephone` 映射成寄件草稿的 `mobile`，再调用 `setExpressContact` 触发报价/取件依赖清理。
 
 保留这个桥接的约束：选择桥只传递选择结果，不直接改寄件草稿；报价、取件、网点清理等业务副作用统一留在 `services/express`。
+
+按定位推荐联系人仍依赖 `shared/platform/location`；当前 `location` capability 为 `pending`，因此本轮不调用旧小程序 `Taro.getLocation`，待 App 原生定位 facade ready 后再接入。
 
 ## Express 首期切片
 
@@ -388,38 +413,103 @@ type ContactSelectMode = 'select' | 'manage'
 
 - `services/express/types.ts`：定义 `ExpressDraft`、`ExpressContact`、`ExpressGoods`、产品报价、取件时间、下单请求/响应等首期契约。
 - `services/express/express.api.ts`：只封装 OWS 端点，包含价格时效、取件时间、货物品名/标签、保价、筛单、下单拦截、创建订单、订单详情、取消订单。
-- `services/express/express.draft.ts`：拆出 draft 默认值、联系人映射、地址展示、收寄地址互换、依赖失效和下单/查价基础校验。
+- `services/express/express.draft.ts`：拆出 draft 默认值、联系人映射、地址展示和下单/查价基础校验；草稿变更规则由独立 mutation 模块承接。
+- `services/express/express.mutations.ts`：集中处理货物/服务/取件方式变更、优惠券归一、报价失效、产品选择、取件时间映射和收寄地址依赖清理，页面只保留状态更新编排。
+- `services/express/couponOrder.rules.ts`：按当前报价恢复优惠券查询所需的原始 `FRT/BF/AD/NMBZ` 费用；优惠券减免只加回 `couponRankType` 对应费用，线路限时优惠只加回运费，并生成绑定产品、地址、手机号和 App OMS 渠道的稳定请求与竞态 key。
+- `services/coupon/expressCoupon.api.ts` 与 `expressCoupon.service.ts`：接入 `/queryCouponOrder`，将 `available/unAvailable` 分别归一为可选与只读券卡 VM；API 或映射运行时异常统一返回可重试失败，个人券列表、兑换码领取和寄件上下文可用券查询保持独立接口职责。
+- `pages/express/hooks/useExpressCoupons.ts` 与 `ExpressCouponCard.tsx`：报价选中产品后以 300ms debounce 自动查询适用券，旧响应按请求 key 丢弃；自动 timer、手动刷新和卸载共享清理边界，异常按 mounted/key 收敛为 error，不会留下旧列表或 loading。页面支持可用/不可用券、详情、手输券码、选择、清除和登录后恢复草稿。任一券码变化都清空页面旧报价并要求重新计价，不复制旧 Redux Picker 或自动推荐状态机。
 - `services/express/express.payload.ts`：拆出价格时效、取件时间、保价试算、筛单和创建订单 payload 组装，页面不直接拼 OWS 字段。
 - `services/express/express.service.ts`：保留货物品名、报价、取件时间、保价、筛单、下单拦截、创建订单、订单详情和取消订单等 API 编排。
 - `services/express/draftBridge.ts`：提供一次性跨页草稿桥，当前用于价格时效查询结果带入寄件页，不引入 Redux 巨石状态。
 - `pages/express/index`：升级为 RN App 表单壳，包含收寄地址、货物信息、付款/送货方式、取件时间、产品价格、备注、协议和提交入口。
 - `pages/express/components/ExpressContactPanel.tsx`、`ExpressGoodsSection.tsx`、`ExpressServiceSection.tsx` 和 `ExpressQuoteSection.tsx`：拆出收寄地址、货物信息、服务方式和产品价格面板，页面继续负责草稿状态、报价失效、登录守卫和提交编排，避免寄件页继续膨胀。
 - `pages/express/index`：货物名称支持按输入关键词查询后端品名推荐，点击候选只回填标准品名；分类信息仅作为辅助展示，不写入下单字段。
-- `pages/express/index`：保价金额支持按当前产品、重量、体积调用保价费用试算；页面只展示标准保费反馈，不迁旧项目保价弹窗、标签营销和复杂分支。
+- `services/express/insurance.product.ts`、`insurance.rules.ts` 与 `insurance.view.ts`：独立承接产品必保/免费保障/全额保/省心保权限、货物标签能力、动态上限、金额校验、报价/下单字段和页面 VM，不把保价状态并回货物或 Redux 巨石。
+- `services/customer/customer.service.ts`：归一 `customerLabel.insuredPriceCap` 为客户保价额度；客户编码二维码只有与当前账号客户一致时才继承该额度，避免扫码上下文跨客户复用权限。
+- `services/express/productAvailability.service.ts`：有货物名称时始终在 `Promise.allSettled` 中查询货物标签，不再只为 DCZP 推荐查询；结果同时生成当前地址/品名指纹绑定的保价能力。
+- `pages/express/hooks/useExpressInsurance.ts` 与 `ExpressInsuranceCard.tsx`：提供基础保/全额保/省心保选择、易碎保自动归一、动态额度、免费保障、费用试算和请求版本隔离；旧单金额输入已从货物卡移除。
 - `services/express/insuranceRules.ts`：新增保价规则 VM，将基础保、全额保、省心保的收费和理赔说明结构化为 App 页面可消费的数据，不复用旧项目保价编辑 Redux 状态机。
 - `pages/express/insurance/index`：新增 App 原生保价说明页，寄件页保价金额旁提供规则入口；页面只展示规则说明，不承担保价金额提交或费用试算。
 - `services/express/monthlyPay.ts`：新增月结付款提示 VM，只消费客户中心读结果并输出页面提示/引导，不复用旧项目付款弹窗、合同状态机和优惠联动。
 - `pages/express/index`：选择月结时同步当前账号客户中心状态；已绑定时展示客户编码并引导月结中心，未绑定或未登录时引导受控客户绑定 WebView，提交结果仍以后端月结/合同权限校验为准。
-- `services/express/valueAdded.ts`：新增签收单返单选项 VM，按当前 RN 下单字段暴露无需返单、电子签回单、原件返回和电子云签，不迁旧项目返单子类型、委托书、图片上传和合同签署弹窗。
-- `pages/express/index`：服务方式中新增签收密码和签收单返单基础选择；变更后沿用当前报价失效机制，提交时通过 `passwordSigning`、`returnBillType` 进入下单请求。
+- `services/express/collection.rules.ts`：将代收货款收敛为独立 `ExpressCollectionDraft`，统一返款类型、金额、审核账户、额度、协议、手续费和报价/下单字段映射；不复用旧项目 Redux 代收状态。
+- `services/customer/customer.service.ts`：通过 `customerLabel` 能力归一当前客户代收额度、保价额度和合同标识，寄件页只消费稳定的 `CustomerCapability`，接口异常时保守使用默认额度并展示可刷新提示。
+- `pages/express/hooks/useExpressCollection.ts` 与 `ExpressCollectionCard.tsx`：编排三日退/即日退、金额、账户、协议和额度刷新；关闭服务时统一清理代收草稿并使旧报价失效。
+- `shared/webview/appWebMessage.ts`：为代收账户页提供来源受限、事件受限的一次性内存消息桥；H5 只能以 `EXPRESS_COLLECTION_ACCOUNT/COLLECTION_CHANGE` 回传已审核账户，业务代码不使用同步缓存或直接访问 RN Native API。
+- `services/express/deliveryPreference.rules.ts`：将派送偏好收敛为独立草稿，统一常规派送、定时派送、等寄件人通知和等收件人通知四种互斥状态，负责日期窗口、能力请求、报价字段、下单扩展字段和校验规则。
+- `services/express/express.api.ts` 与 `express.service.ts`：接入定时派送范围查询；只有当前产品提供预计到达时间、收件地址完整且后端明确返回支持时，页面才会启用定时派送；`DCZP/TKDR` 按参考端已知规则保守排除。
+- `pages/express/hooks/useExpressDeliveryPreference.ts` 与 `ExpressDeliveryPreferenceCard.tsx`：承接派送范围查询、预计到达后 7 天日期、六个派送时段和未来 30 天不可收货日期；能力结果带地址、货物、产品和送货方式指纹，输入变化或异步旧响应不能重新写入失效的定时派送状态。
+- `services/express/pickupTime.rules.ts` 与 `pickupTime.options.ts`：拆出夜间揽收能力缓存、草稿兼容、北京时间截单、费用确认、时段响应归一和日期/时段 VM；普通、夜间和不可用时段按日期合并排序，重复“一小时上门”优先保留夜间时段。
+- `services/express/express.api.ts` 与 `express.service.ts`：先通过 `matchFeatureAoi` 查询寄件地址是否支持夜间揽收，再将 `nightOpening/nightStartTime/nightEndTime` 传给 `dispatchTimeByDeptCode`；地址能力在草稿缓存中保留 2 小时，失败时仍可降级查询普通取件时段。
+- `pages/express/hooks/useExpressPickupTime.ts` 与 `ExpressPickupTimeCard.tsx`：提供 RN 日期/时段选择、刷新保留有效选择、旧请求输入指纹隔离和夜间费用确认；页面主文件只消费控制器，不保存取件状态机。
+- `services/express/warehouse.rules.ts`、`warehouse.payload.ts`、`warehouse.service.ts`：将送货进仓筛单、预约暂存、报价字段、订单扩展字段和 H5 URI 编排收敛为独立领域边界；筛单结果缺失或 type 非 0-4 时 fail-closed。
+- `pages/express/hooks/useExpressWarehouse.ts` 与 `ExpressWarehouseCard.tsx`：承接 type 0-4、100kg 精准进仓一次自动开启、用户确认/拒绝、自提与派送互斥、staging 等待和报价失效；type 2/3/4 未得到当前证明上的明确确认时不能提交。
+- `shared/webview/appWebMessage.ts`：`SEND_WAREHOUSE` 必须匹配当前 WebView URL 的 `warehouseId/stagingId`、输入指纹和一次性 expectation；附件限制为 HTTPS、无凭据、最多 9 个，并在账号切换/登出时清空桥状态。
+- `services/express/packaging.catalog.ts`、`packaging.rules.ts` 与 `packaging.payload.ts`：独立承接 9 种普通纸箱、4 种木包装和 2 种拆包装目录、非法 code 归一、报价体积下限、报价失效及报价/下单差异映射，不把旧小程序包装 Redux 状态并回货物模型。
+- `pages/express/components/ExpressPackagingCard.tsx`：使用参考端真实纸箱/木包装目录和价格提供 RN 纸箱单选、木包装多选与拆包装多选；“无需包装”清理三类服务，组件作为寄件页顶层分区，不嵌套在货物卡中。
+- `services/express/draftStorage.ts`、`draftBridge.ts` 与 `template.bridge.ts`：旧缓存缺少包装或包含非法 code 时恢复为空；查价、优惠券和品名选择往返保留当前包装，再寄、批量、扫码、派送范围、快递员和模板带入不隐式继承实际包材，所有桥均深拷贝包装对象。
+- `services/express/productAvailability.rules.ts`：将 `passProductCode` 从 OMS 产品码中拆出，按普通寄件、快递员二维码、客户编码二维码、司机二维码和营业部二维码归一为产品融合角色；当前 RN 没有旧端运单号、特快、铁路等输入，不虚构 `NEWEXP/TZKJC/DZLY` 分支。
+- `services/express/productAvailability.service.ts`：登录态先通过客户能力 service 获取客户编码、月结、合同与保价额度，客户编码二维码优先使用扫码值且只有与账号客户一致时才继承权限；随后以 `Promise.allSettled` 独立查询 DCZP 点城市、产品融合、产品升级和货物标签，单个可选接口失败不会拖垮主报价。
+- `services/express/express.api.ts`：接入 `queryPointCityByProduct`、`queryNewProductPointCity` 和 `queryPointCityByAddress`；融合接口只有明确 `false` 才切到 `OLD`，升级接口只有明确 `NEW` 才按合同客户/散客切到 `CONTRACT/UNIVERSAL`，其他结果保持 `EXP`。
+- `express.payload.ts` 与 `pages/express/hooks/useExpressQuote.ts`：报价请求发送产品角色、客户权限、`isOffSiteTransfer=N` 和升级角色需要的 `collectMode/deliveryMode`；同时按保价类型发送 `fullCoverage/sxb/isFragileArticles`，把客户动态额度和标签能力应用到草稿后再选择产品；报价列表原顺序不变。
+- `services/query/query.station.ts` 与 `stationSelection.ts`：地址网点查询在 `PICKUP + EXPRESS` 下使用 `expressPickup`，选择模式只保留 `source=Address`、`pickupSelf=true`、距离 `0..20km`、非空 `deptNo` 和名称的服务点；`StationItem.id/code` 分别固定映射 `deptNo/deptCode`。
+- `services/express/deliveryPoint.rules.ts`：将收件自提服务点独立为 `{ code, name }` 草稿，`code` 只接受 `StationItem.id/deptNo`，不回退 `deptCode`；未指定网点表示由后端匹配最近服务点，收件地址变化、地址互换或退出 `PICKSELF` 统一清空。
+- `pages/express/hooks/useExpressDeliveryPoint.ts`、`ExpressDeliveryPointField.tsx` 与 `pages/query/stations` 选择模式：通过 source 隔离的一次性内存桥往返具体服务点或 null 最近点；网点筛选、结果列表和选择提示分别拆入独立组件/SCSS，页面主文件只保留查询和导航编排。
+- `express.payload.ts`：创建订单仅按有效自提草稿写 `receivingToPoint=deptNo` 与 `receivingToPointName`；异常网点、未指定网点和非自提方式均写空字段，不猜测编码。
+- `services/express/valueAdded.ts`：将签收单返单拆成独立规则，承接 OMS/PPC 五类映射、R1-R8 归一、纸质/纯云签校验、1-99 张数、`DCZP` 云签限制和模板/旧缓存兼容，不迁旧项目委托书、图片上传和复杂营销状态机。
+- `pages/express/components/ExpressReturnBillCard.tsx` 与 `hooks/useExpressReturnBill.ts`：服务方式中提供纸质返单要求、返单张数和电子云签入口；hook 负责类型更新、报价失效和一次性 WebView 回填，寄件主页面只保留控制器接线并维持 720 行冻结预算。
+- `express.payload.ts`：报价和下单分别映射 PPC/OMS 返单类型；只有云签类型携带 `fileCode`，纸质返单张数大于 1 时才追加 `orderExtendFields[{ key: 'returnBillQty', value }]`。
+- `shared/webview/appWebMessage.ts` 与 `pages/web/index.tsx`：电子云签使用受控 source、一次性 `messageContext` 和 `ONLINE_SIGN` 消息回填 `fileCode`；错误来源、上下文、额外字段、空值和重复消费均拒绝，离开页面会取消 expectation。
+- `services/template`：模板 schema 不保存临时 `fileCode`，加载/保存仍保留返单类型与纸质要求，带入寄件页后云签类型必须重新签署。
 - `pages/express/index`：隐私面单作为服务选项接入，首次开启时展示 App 内确认说明，确认结果写入本地缓存；创建订单时通过 `encryptInfo: 'Y' | 'N'` 传给后端。
 - `pages/express/index` 已移除演示联系人“填入”能力，联系人来源只保留地址簿选择、新增后回填和查价草稿带入。
 - `services/express/draftStorage.ts`：新增寄件草稿持久化，使用 2 小时 TTL 缓存收寄件、货物、服务、报价和备注；提交成功后清理。
 - `pages/express/index`：草稿变化自动保存，页面初始化优先恢复草稿；未登录点击提交时先保存草稿，再跳登录页，登录后回到寄件页继续提交。
-- `services/express.submitDraft`：下单前新增货物标签和筛单校验。`queryGoodsRemark` 返回 `displayType=forbid` 时阻断；`sieveOrder/tips` 返回 `type=2/3/4` 时阻断并展示后端 `reason`，`type=1` 作为提醒类结果暂不阻断。
+- `services/express.submitDraft`：下单前新增货物标签和筛单校验。`queryGoodsRemark` 返回 `displayType=forbid` 时阻断；`sieveOrder/tips` 返回 `type=2/3/4` 时必须完成当前证明上的明确确认，未确认时阻断并展示后端 `reason`，`type=1` 作为提醒类结果暂不阻断。
 
 首期保留的业务规则：
 
 - 发件人变化后清空取件时间、接货网点、已选产品价格。
 - 收件人变化后清空已选产品价格。
-- 收寄地址互换时，如果省市区变化，则同步清空取件依赖。
+- 收寄地址互换时清空取件时间、夜揽地址能力和派送偏好，避免详细地址变化复用旧范围结果。
 - 下单前校验协议、收寄件完整度、手机号、地址差异、货物名称、重量、件数和产品价格。
 - 下单前必须具备 `ECO_TOKEN`，未登录不会直接打安全接口，避免 401 后丢失当前寄件表单。
 - 隐私面单不影响报价，开启/关闭不会清空已选产品；最终是否成功生效仍以后端下单校验为准。
 - 月结付款在 RN 首期只做客户编码可见提示和客户绑定引导，不在前端硬编码合同客户、统一结算、折扣价和代收货款权限。
-- 签收单返单首期只承接当前创建订单接口已有枚举字段；返单图片、子类型、委托书、云签合同签署和加原件组合能力后续按独立 service 拆分。
-- 首期未迁入进仓、工序收费、二次确认弹窗等复杂分支，因此筛单高风险类型先保守阻断，不在 RN App 中静默提交。
-- 保价首期承接手填金额、费用试算和规则说明；足额保/省心保选择、易碎保、无忧保标签、保价上限动态规则和月结客户差异后续再独立建模。
+- `passProductCode` 表示产品融合/升级角色，不是 `selectedProduct.omsProductCode`；普通寄件默认 `EXP`，融合明确关闭时回到空角色，司机和营业部二维码使用 `DRIVER_QR_CODE`。
+- 客户编码二维码覆盖账号客户编码，但不会凭扫码值直接伪造月结或合同权限；账号能力与扫码编码不一致时按散客能力报价，最终权限仍以后端校验为准。
+- DCZP 推荐只由本次报价的点城市与货物标签结果共同派生，不持久化 `battery` 或产品开关字段；点城市、融合、升级、标签任一失败均按各自默认语义降级。
+- 代收货款只有在正金额、不超过客户额度、已选择审核账户并确认协议时才允许下单；`NORMAL/INTRADAY` 在报价中分别映射为 `R3/R1`，报价与下单始终提交真实账户、户名和金额。
+- 代收账户管理继续由受控 H5 承接，但账户结果只允许通过来源隔离的一次性消息桥进入寄件草稿，页面和 WebView 不共享同步 storage。
+- 定时派送会在报价中区分普通 `appointmentDelivery=Y` 和夜间 `nightDelivery=Y`，下单时分别写入 `isAppointmentDeliver` 或 `nightDelivery` 扩展字段，并提交结构化 `appointmentDeliveryTime` 时间窗。
+- 等寄件人通知在报价和下单中使用 `notifyIsDeliver=N`；等收件人通知使用 `waitReceiveNotifyDeliver` 与逗号分隔的 `waitReceiveNotifyNotDeliverTime`，不把两套通知语义混写。
+- 派送偏好与自提互斥；收件地址变化或收寄地址互换会清空全部派送偏好，货物变化会清空依赖重量/体积校验的定时派送，任何派送偏好变化都要求重新报价。
+- 收件自提服务点只接受地址匹配接口中 0..20km、明确支持 `pickupSelf` 且带 `deptNo` 的结果；20km 边界包含，负距离、空距离和仅有 `deptCode` 的异常项 fail-closed。
+- 用户可不指定具体自提点，此时草稿和下单字段保持空，由后端按地址匹配最近点；指定点变化、收件地址变化、地址互换或退出 `PICKSELF` 都会使旧报价失效并清除旧选择。
+- 定时派送的后端支持结果必须与当前地址、货物、产品、预计到达时间和送货方式指纹一致；提交前指纹不一致会阻断并要求重新校验，异步旧响应不能回写新草稿。
+- 夜间揽收只在 `matchFeatureAoi` 明确返回支持并给出起止时间时进入取件时段请求；能力缓存 2 小时，寄件地址变化立即清理，货物变化清理已选时段但可复用仍有效的地址能力。
+- 夜间时段必须由用户显式选择并确认 50 元/票费用提示；北京时间 18:00 后不允许预约次日 06:00 前的夜间时段。报价提交 `nightAccept=Y/N`，下单扩展提交 `nightAccept=Y/N`，夜间额外提交 `nightAcceptStatus=-1`。
+- 送货进仓筛单 type 2/3/4 统一要求用户明确确认；互斥清理只清服务字段，不伪造“无需进仓”决定。精准进仓 100kg 自动开启仅发生一次，后续拒绝会保留明确拒绝证明。
+- 送货进仓暂存通过 `/gwapi/queryService/eco/query/staging/secure/setStaging`，返回的 `stagingId` 必须与 WebView 当前 URL 的 `warehouseId` 一致后才消费 `SEND_WAREHOUSE`。
+- 普通纸箱为可选单选服务；报价体积使用 `max(货物真实体积, 纸箱体积下限)`，但不回写草稿，下单 `receive[0].totalVolume` 始终保留货物真实体积。
+- 选择纸箱时，报价和创建订单顶层都只发送 `packageInfoList: [{ type: 'COUNT', data: '1', packageCode }]`；未选择时字段完全省略，包装变化会清除已选产品和页面旧报价并要求重新计价。
+- 木包装支持 `WOOD_03/WOOD_04/WOOD_01/WOOD_02` 多选，并可与一个普通纸箱并存；草稿只保存稳定业务 code，归一时按目录顺序去重并丢弃未知值。
+- 木包装报价不混入纸箱 `packageInfoList`，而是通过顶层 `packageLtlType='WOOD_PACKAGE'` 表达；未选木包装时按参考契约发送空字符串。纸箱仍独立影响报价体积下限。
+- 创建订单才把木架、木箱、木托 1 号、木托 2 号分别映射为 `VOLUME/SJ`、`VOLUME/BG`、`COUNT/SP`、`COUNT/NSP`，并在 `receive[0].packing` 发送去重后的 `木架,木箱,木托` 文案。
+- 拆包装支持 `UNPACKING_01` 拆木包装和 `UNPACKING_02` 拆非木包装独立复选，可与纸箱、木包装并存；草稿保存 canonical `unpackingCodes`，不复制旧页面 `active/count` 状态，当前选择精确映射为数量 1、未选为 0。
+- 报价始终发送顶层 `unpackingWoodPackagingNumber/unpackingNonWoodPackagingNumber`，并按木包装/拆包装组合发送空值、`WOOD_PACKAGE`、`UN_PACKAGE` 或 `WOOD_PACKAGE,UN_PACKAGE`；拆包装不进入纸箱或木包装 `packageInfoList`。
+- 创建订单始终发送顶层 `unpackageLtlInfo` 两个数值字段；统一报价 VM 将后端 `CBF` 费用稳定展示为“包装服务-拆包装”，目录中的 20/10 元只作为选择信息，最终费用仍以后端报价为准。
+- `draftStorage`、寄件 draft bridge 和模板 stage/consume 均通过包装归一器深拷贝 `woodenCodes/unpackingCodes`；只选择木包装或拆包装也属于有意义草稿。外部再寄、批量识别、扫码、派送范围、专属快递员和模板带入仍按既有策略清空包装。
+- `ExpressPackagingCard` 保留纸箱单选，同时增加木包装和拆包装复选区；木包装静态目录价只作为选项信息，实际费用明确以快递员核实为准。
+- “一小时内”等快速取件时段下单使用展示时段作为 `beginAcceptTime`，并提交 `currentFirstTime=Y`；刷新取件时间时优先保留后端仍返回的当前选择，不自动把仅有的收费夜间时段设为默认值。
+- 返单纸质首期只承接 R1-R8、备注和 1-99 张数；代打回单文件、返单图片 OCR/上传、委托书及其他返单附件仍后置，不用 RN UI 伪造。
+- 电子云签只承接受控 WebView 的合同签署回传，不在业务页直接调用 WebView/RN Native API；云签凭证不进入模板或长期缓存。
+- 送货进仓预约、工序字段、附件回传和 type 2/3/4 二次确认已形成 RN App 切片；复杂仓库收费计算、更多工序矩阵和后端未提供的营销分支仍不在首期范围内。
+- 保价类型已原生化：普通/全额保/省心保互斥，`fragile_articles` 自动映射易碎保，`worry_free_protection` 仅推荐省心保，`limitation_insure` 禁止保价；普通额度使用 `insuredPriceCap` 或 1000000 元默认值，必保产品上限 9990000 元，省心保上限 500 元。
+- 保价试算按 `QEB/SXB/YSB` 调用固定保障接口；主报价发送 `fullCoverage/sxb/isFragileArticles`，创建订单发送 `bjlx=0/1/3/4`，`NFLF/NLRF` 未填金额时提交 2000 元与 `insuranceSource=DEFAULT`。
+- 提交前重新查询货物标签并对比当前能力证明；标签变化、地址/品名/扫码上下文变化或旧草稿缺少证明时要求重新报价，不能用过期能力下单。
+- 可用优惠券查询只在已有当前产品报价、收寄地址和发件手机号完整且已登录时执行；请求精确发送 `freight/productCode/arriveProvinceName/channel/mobile/sendAnAddress/receivesAnAddress/couponFeeList`。当前付款模型没有 E 卡，因此不伪造可选 `paymentType`。
+- 选择、手输或清除优惠券继续统一写入 `draft.couponNumber`，价格时效请求通过既有 `promotionsCode + customerMobile` 校验真实优惠；优惠券查询结果本身不替代重新报价和下单后端校验。
 - 页面只处理交互反馈，接口状态归一、cookie 会话和登录失效仍由 `request/deppon.ts` 管理。
 
 首期接入端点：
@@ -427,11 +517,20 @@ type ContactSelectMode = 'select' | 'manage'
 | 能力 | 端点 |
 | --- | --- |
 | 价格时效 | `/gwapi/pricetimeService/eco/pricetime/queryPriceTime` |
-| 取件时间 | `/gwapi/orderService/eco/order/dispatchTime/pilotCityDispatchTime` |
+| DCZP 产品点城市 | `/gwapi/pricetimeService/eco/pricetime/queryPointCityByProduct` |
+| 产品融合开关 | `/gwapi/pricetimeService/eco/pricetime/queryNewProductPointCity` |
+| 产品升级开关 | `/gwapi/pricetimeService/eco/pricetime/queryPointCityByAddress` |
+| 收件自提服务点 | `/gwapi/queryService/eco/query/branch/stationSearch`（`matchtypes: ['expressPickup']`） |
+| 夜间揽收范围 | `/gwapi/queryService/eco/query/range/matchFeatureAoi` |
+| 取件时间（含夜揽切片） | `/gwapi/orderService/eco/order/dispatchTime/dispatchTimeByDeptCode` |
 | 货物品名 | `/gwapi/onlineService/eco/online/cargo/queryCargoInfo` |
 | 货物标签 | `/gwapi/orderService/eco/order/queryGoodsRemark` |
 | 保价费用 | `/gwapi/pricetimeService/eco/fixedProtection/queryFixedProtection` |
+| 客户代收/保价额度 | `/gwapi/userService/eco/user/secure/customerLabel` |
+| 寄件可用优惠券 | `/gwapi/couponService/eco/coupon/new/secure/queryCouponOrder` |
+| 定时派送范围 | `/gwapi/onlineService/eco/online/print/order/secure/canOrderCityDelivery` |
 | 下单筛单 | `/gwapi/orderService/eco/order/sieveOrder/tips` |
+| 送货进仓信息暂存 | `/gwapi/queryService/eco/query/staging/secure/setStaging` |
 | 是否可下单 | `/gwapi/orderService/eco/order/secure/queryIsCanCreateOrder` |
 | 创建订单 | `/gwapi/orderService/eco/order/mysql/createOrder` |
 | 订单详情 | `/gwapi/orderService/eco/order/secure/orderDetail` |
@@ -439,10 +538,9 @@ type ContactSelectMode = 'select' | 'manage'
 
 后置能力：
 
-- 产品推荐、产品升级、产品开关、特殊产品矩阵。
-- 优惠券、月结/合同客户完整结算规则、支付分、E 卡和真实支付。
-- 夜间揽收、网点切片、预约派送、送货进仓、代收货款、签收单返单增强。
-- 包装推荐、木架/木箱、拆包装、雪具、3C 原厂包装、通电验机、保价标签增强。
+- 特快、当日达、铁路、雪具、工业大件等当前 RN 没有入口契约的特殊产品矩阵。
+- 优惠券自动最优推荐、复杂营销互斥、月结/合同客户完整结算规则、支付分、E 卡和真实支付。
+- 智能包装推荐、防水包装、雪具、3C 原厂包装、通电验机和保价标签增强；这些能力具有不同字段或端能力，不与纸箱、木包装或拆包装切片混用。
 - 批量寄件、模板寄件、再次下单、扫码角色初始化。
 
 App 端渠道码已从小程序环境分支中解耦到 runtime：
@@ -486,8 +584,9 @@ APP_RUNTIME_CONFIG.omsChannel
 收派范围查询已经从旧项目 `pages/query/dispatch` 的小程序定位、城市选择器、授权弹窗和分享逻辑中拆出，首期改成 RN 可用的手填/粘贴地址查询：
 
 - `services/query/query.api.ts`：封装快递收派范围、零担收派范围、地址乡镇匹配和网点查询接口。
-- `services/query/query.service.ts`：复用地址智能解析补齐省市区编码，将快递/零担后端响应归一为 `DispatchRangeResult`，将地址/区县网点响应归一为 `StationQueryResult`。
-- `services/query/query.service.ts`：新增网点详情 VM，按网点编码读取详情接口，统一归一地址、电话、业务范围、营业时间和坐标。
+- `services/query/query.dispatch.ts`：复用地址智能解析补齐省市区编码，将快递/零担后端响应归一为 `DispatchRangeResult`，并集中处理收派范围提示和可寄判断。
+- `services/query/query.station.ts`：负责地址/区县网点查询、网点详情归一、电话提取、详情路由和反馈 H5 参数。
+- `services/query/query.service.ts`：只保留查询域兼容门面，页面继续通过同一 `queryService` API 调用，避免业务页面感知内部拆分。
 - `pages/query/dispatch/index`：支持快递/零担切换、完整地址粘贴识别、省市区/详细地址手填、收派范围查询、命中乡镇高亮和可寄件提示。
 - `pages/query/stations/index`：支持网点类型、快递/零担业务类型、完整地址识别、省市区/详细地址手填、网点列表、电话拨打、地图导航降级提示、网点反馈 H5 和空结果“去寄件”兜底入口。
 - `pages/query/stations/detail/index`：新增 App 原生网点详情页，通过列表传入的网点编码重新查询详情，展示地址、电话、业务范围、营业时间和坐标占位；导航继续走 `shared/platform/map.openMapLocation`，反馈继续走 `STATION_FEEDBACK` 受控 WebView。
@@ -571,35 +670,43 @@ APP_RUNTIME_CONFIG.omsChannel
 
 已落地边界：
 
-- `services/batch/types.ts`：定义批量寄联系人、收货人草稿、入口动作 VM 和校验结果。
-- `services/batch/batch.service.ts`：沉淀批量寄入口 VM、官网 Excel 批量寄 URL、批量地址文本识别、收货人数量上限、手机号、收寄地址一致、货物名、运单号和港澳台互寄校验。
-- `pages/batch/index`：新增 RN 原生批量寄入口页，展示 App 可用入口、批量文本识别预览、待接入能力和批量规则；识别出的首条可用收货人可通过 `expressDraftBridge` 带入单票寄件，Excel 批量寄复制官网地址。
+- `services/batch/types.ts`、`batch.draft.ts`：定义批量寄联系人、逐票货物/增值服务、公共付款/取件配置、扫码上下文、逐票报价、入口动作 VM 和校验结果；默认值集中在 draft factory，不复制旧 Redux state。
+- `services/batch/batch.payload.ts`：将批量草稿映射为一次 `/gwapi/orderService/eco/order/mysql/createOrder` 请求，显式设置 `batch: true`，将多个收货人放入同一个 `receive[]`，并去重地址簿 ID、映射取件和扫码上下文。
+- `services/batch/batch.quote.service.ts`：按收货人并行调用现有价格接口，归一每票默认产品和费用；货物、发货人或取件设置变化会清空旧报价。
+- `services/batch/batch.service.ts`：沉淀批量寄入口 VM、官网 Excel 批量寄 URL、批量地址文本识别、收货人数量上限、联系人/手机号、收寄地址一致、货物指标、运单号和港澳台互寄校验；`submitDraft` 只做一次下单拦截检查和一次批量创建请求，并归一全部/部分失败结果。
+- `services/batch/batch.storage.ts`：通过 `src/cache` facade 持久化批量草稿，登录回跳或页面重建不会丢失收货清单，成功提交后清理。
+- `pages/batch/index` 及同页 components：提供发货人地址簿选择、批量文本识别、多收货人逐票货物编辑、逐票价格展示、取件/联系设置和提交反馈；Excel 批量寄复制官网地址，单票入口继续复用寄件页。
 - 首页快捷入口新增“批量寄”，通过路由注册表 `batchExpress` 进入。
-- `check-business-rules` 新增批量寄入口和校验规则用例，防止后续把旧项目规则散回页面。
+- `check-business-rules` 新增批量寄入口、校验规则、多个 `receive[]` payload 和单次提交编排用例，防止后续把旧项目规则散回页面或循环调用单票接口。
 
 首期保留规则：
 
-- 批量寄首期不伪造完整下单能力；完整批量创建订单需要继续复用 `services/express` 的 payload 和后端筛单/货物校验后再接。
+- 批量请求、逐票计价和 service 编排已经接入页面；后端对 `batch: true` 的筛单、实名/协议和逐票错误回传仍需联调确认，页面会阻止未获取产品价格的草稿提交。
+- 批量提交必须保持“一次请求包含多个 `receive[]`”，禁止循环调用单票创建接口，避免部分成功且无法回滚；后端逐票错误通过 `orderErrorInfo` 的展示模型另行承接。
 - 批量识别首期只支持本地文本格式识别和首条带入单票寄件，后续应复用地址解析 service，并把多收货人列表建成独立 VM，不搬旧 Redux。
 - Excel 文件导入依赖 App 文件选择、上传和模板解析能力，首期只提供官网电脑端兜底入口。
 - 批量打印依赖 App 原生打印 facade，不直接迁小程序蓝牙打印和云打印二维码逻辑。
 
-## Print 首期切片
+## Print 查询切片
 
-面单打印从旧项目 `pages/print`、`pages/common/print` 和 `api/order.ts` 中先抽取入口、端点清单和打印前置规则，不复制小程序蓝牙 API、GBK 指令、设备缓存和模板写入流程。
+面单打印从旧项目 `pages/print`、`pages/common/print` 和 `api/order.ts` 中抽取入口、只读列表契约和打印前置规则，不复制小程序蓝牙 API、GBK 指令、设备缓存和模板写入流程。当前先完成待打印/已打印查询；真实打印仍需要独立原生能力切片。
 
 已落地边界：
 
 - `shared/platform/capabilities.ts`：新增 `print` 原生能力，当前状态为 `pending`。
-- `services/print/types.ts`：定义打印中心动作 VM、打印前置状态和选择校验结果。
-- `services/print/print.service.ts`：记录待打印列表、蓝牙模板、打印配置、配置提交和状态回写端点；沉淀打印前必须连接设备、有待打印订单且选中运单的规则，并为扫码带入的 `printId` 生成云打印码提示 VM。
-- `pages/print/index`：新增 RN 原生打印中心入口页，展示订单回退入口、待打印列表、打印机管理、打印设置和云打印码的接入状态；从首页扫码带入的 `printId` 只展示受控待接入提示。
+- `services/print/print.api.ts`：只封装 `queryNewOrderPrintList`，请求精确发送 `pageNum/pageSize/startTime/endTime/searchType`，安全接口继续由统一 OWS 会话处理。
+- `services/print/print.mapper.ts`：归一后端空值、分页字段、收件手机号脱敏和省市区详细地址；页面不直接兼容原始响应。
+- `services/print/print.rules.ts`：定义今天、近 3 天、近一周、近一个月、近三个月的本地日历范围，默认近 3 天；同时承接分页去重和双 tab 计数部分失败归一。
+- `services/print/print.service.ts`：编排列表查询和待打印/已打印计数。两个计数使用 `Promise.allSettled` 独立降级，一个失败时另一个仍展示真实数量；打印前置选择规则继续保留给后续原生打印切片。
+- `pages/print/index`：打印中心的“打印订单”已改为可用 App 路由；打印机管理、打印设置和云打印码仍按原生能力状态明确降级。
+- `pages/print/list`：新增登录保护的只读列表，支持待打印/已打印 tab、数量、五档日期范围、刷新重试、错误/空态和分页加载；卡片只展示运单、脱敏收件人和地址，不提供勾选、全选或打印动作。
 - 我的页新增“面单打印”入口，通过 `printCenter` 路由进入。
-- `check-business-rules` 新增打印中心入口和打印前置规则用例。
+- `check-business-rules` 覆盖查询日期、请求契约、映射脱敏、分页去重、双计数部分失败、打印中心入口和打印前置规则；当前全量为 195 条。
+- RN boundary 锁定打印列表只能调用 `printService`，禁止页面混入 `printApi`、模板下发、配置、状态回写或选择打印逻辑。
 
-首期保留规则：
+当前保留规则：
 
-- 当前不请求打印列表和模板，不执行真实打印，不调用小程序蓝牙 API。
+- 当前只请求待打印/已打印列表；不请求打印模板、打印配置，不回写打印状态，不执行真实打印，也不调用小程序蓝牙 API。
 - 后续真实打印必须先落 `shared/platform/print` 或 `shared/native/print`，只在 facade 内封装蓝牙扫描、连接、模板写入和平台差异。
 - 打印状态回写必须跟真实打印成功链路绑定，不能在页面里提前伪造成功。
 - 云打印码已经在 `shared/platform/scan` 中识别为 `printCode` 并分流到面单打印中心；打印中心只展示待接入提示，真实云打印下单仍需后续单独建模，不混入普通寄件扫码。
@@ -631,7 +738,7 @@ APP_RUNTIME_CONFIG.omsChannel
 
 - App 分享名片、企业微信沟通二维码和快递员邀请链路。
 - 快递员实时位置和营业部地图导航，统一等待 map/location facade 接入。
-- 关联运单评价查询和提交，后续拆独立评价表单 VM，不复制旧详情页状态机。
+- 关联运单评价查询和提交已由订单域独立评价页承接；快递员页后续只补评价后的详情/关注衔接，不复制旧详情页状态机。
 
 ## Template 首期切片
 
@@ -641,12 +748,13 @@ APP_RUNTIME_CONFIG.omsChannel
 
 - `services/template/template.api.ts`：封装模板查询、保存和删除接口，统一按登录态 secure 请求处理。
 - `template.mapper.ts`：在后端模板结构与 `ExpressDraft` 之间双向映射，归一空联系人、产品、支付、返单、保价和取件时间字段。
-- `template.service.ts`：统一处理 5 个模板上限、名称 5 字校验、列表排序、设置默认、删除和寄件草稿桥接。
-- `pages/express/template/list`：支持刷新、设置/取消默认、删除、使用模板，并在达到上限时阻止继续新建。
+- `template.service.ts`：统一处理 5 个新增模板上限、名称 5 字校验、列表排序、元数据修改、设置默认、删除和寄件草稿桥接；修改现有模板不查询数量，也不受新增上限影响。
+- `pages/express/template/list`：支持刷新、编辑名称/默认状态、设置/取消默认、删除、使用模板，并在达到上限时只阻止继续新建。
 - `pages/express/template/create`：从寄件页当前草稿保存模板；暂存只经过内存 bridge 或 `expressDraftStorage` facade，不直接调用任何 Storage API。
 - `pages/express/index`：新增模板列表和保存入口；模板带入后清空历史报价、产品选择和协议勾选，必须重新报价。
 - 路由注册表新增 `expressTemplateList` 和 `expressTemplateCreate`，两页均受登录守卫保护。
-- `check-business-rules` 新增模板读取映射、保存 payload/校验和 `TEMPLATE` bridge 清报价规则。
+- `check-business-rules` 覆盖模板读取映射、保存 payload/校验、元数据 payload 保留完整模板正文、唯一默认状态、修改失败恢复和 `TEMPLATE` bridge 清报价规则。
+- `TemplateMetaEditor.scss` 已登记到严格样式基线；当前 208 个业务 SCSS 全量使用 token/Flex，存量债务为 0。
 
 首期接入端点：
 
@@ -658,13 +766,12 @@ APP_RUNTIME_CONFIG.omsChannel
 
 后置能力：
 
-- 模板名称和默认状态的独立编辑入口。
 - 收寄件人、货物、取件、付款、产品、保价和返单的完整模板详情编辑。
 - 默认模板自动推荐只在寄件领域明确消费时接入，不恢复旧 Redux 初始化副作用。
 
 ## Order 首期切片
 
-订单模块已开始按 App 主链路重构，首期承接“列表 -> 详情 -> 轨迹”的读链路，并在详情页补充单号复制、未支付费用提示、催单、通知派送、拦截作废、收件方式 H5、联系营业部、评价 H5 和售后快捷动作；真实支付、订阅、完整售后状态机、地图和原生评价表单不从旧项目直接迁入。
+订单模块已开始按 App 主链路重构，首期承接“列表 -> 详情 -> 轨迹”的读链路，并在详情页补充单号复制、未支付费用提示、催单、通知派送、拦截作废、收件方式 H5、联系营业部、原生服务评价、动态场景问卷和售后快捷动作；真实支付、订阅、完整售后状态机和地图不从旧项目直接迁入。
 
 已落地边界：
 
@@ -680,12 +787,23 @@ APP_RUNTIME_CONFIG.omsChannel
 - `services/order/order.stubImages.ts`：拆出取货、复磅、签收、返单、增值服务和木包装等照片凭证查询与图片分组归一。
 - `services/order/order.service.ts`：统一最近一个月默认查询范围、订单接口编排、轨迹查询、取消订单、终态订单删除和删除权限判断。
 - `services/order/order.subscription.ts`：归一关注运单列表并编排关注状态查询、关注和取消；详情页动态动作由纯 VM 生成。
-- `services/order/order.edit.ts`：把安全订单详情归一为编辑草稿，校验收寄件与货物字段，只生成实际变化的 `/modifyOrder` 请求。
-- `services/order/order.detailActions.ts`：新增催单、通知派送、拦截作废、收件方式 H5、联系营业部和评价 H5 的动作 VM，页面不散落状态判断或 H5 参数。
+- `services/order/order.edit.ts`：把安全订单详情归一为编辑草稿，统一校验收寄件、货物、代收、保价和改单上门服务，并合并各领域实际变化的 `/modifyOrder` 请求；页面进入前统一校验 `modifyFlag`、发件人身份、待揽件状态和产品修改权限。
+- `services/order/order.edit.collection.ts`：独立承接改单代收货款类型、金额、额度、账户、协议、详情字段兼容和四字段 diff；关闭服务固定发送 `NORMAL/0/空户名/空账户`，未变化时完全不发送代收字段。
+- `services/order/order.edit.insurance.ts`：独立承接普通基础保价的详情归一、产品必保/赠送保障策略、特殊 `bjlx` 锁定、金额校验和 `insuredAmount + insuranceSource` 成组差异。
+- `services/order/order.edit.packaging.ts`：独立承接改单打包动作件数，从详情扩展字段 `packingService` 恢复 `0..999` 的 canonical 数量，统一 2 元/件参考费用、整数校验和字符串扩展字段 diff；它不表示纸箱、木包装或其他具体包材类型。
+- `services/order/order.edit.schedule.ts`、`schedule.options.ts`、`schedule.selection.ts`：独立承接上门时段输入指纹、夜揽能力、普通/夜间/不可用时段归一、送货方式显示规则、选择校验和 `/modifyOrder` 差异；不复用详情快捷预约的 `source=4` 或 `/orderDispatchFlag`。
+- `services/order/order.edit.schedule.service.ts` 与 `schedule.api.ts`：先查询地址夜揽能力，再以 `source=0` 查询改单时段；旧异步响应由页面 hook 的请求指纹隔离，不会覆盖新地址或新重体积草稿。
+- `services/order/order.edit.types.ts`：隔离改单专属 draft、扩展字段和请求类型，避免继续膨胀共享订单 DTO。
+- `services/order/order.detailActions.ts`：新增催单、通知派送、拦截作废、收件方式 H5、联系营业部和 App 评价路由的动作 VM，页面不散落状态判断或 H5 参数。
 - `services/order/order.detailUseCases.ts`：催单点击后查询后端话术和按钮；查看进度走受控 H5，提交催单走 `orderUrgent` 接口。
 - `services/order/order.detailUseCases.ts`：通知派送统一调用 `modifyNotifyDeliver`；拦截作废统一调用 `invalidWaybill`，并把“货物已出发需去运单修改拦截”的后端文案归一为页面可消费的结果 VM。
 - `services/order/order.detailUseCases.ts`：联系营业部优先使用详情电话，否则通过 `deptTelephone` 查询，最终兜底 95353。
-- `services/payment`：封装待支付费用查询、详情页汇总、费用类型文案、费用明细 VM 和待支付列表分页，不复用旧项目合并支付和小程序收银台状态机。
+- `pages/order/detail/hooks/useOrderDetailData.ts`：集中加载公开轨迹或安全订单详情，并行编排轨迹、待支付、催单入口和关注状态，统一派生页面状态与动作列表。
+- `pages/order/detail/hooks/useOrderDetailActions.ts`：承接复制、删除、再寄、支付和通用动作分发；支付动作只生成统一收银台路由，电话和剪贴板等原生能力继续通过 platform facade 调用。
+- `pages/order/detail/hooks/useOrderDetailServiceActions.ts`：承接催单、通知派送、拦截作废、营业部电话和预约上门等服务动作，页面不再保存这些流程状态机。
+- `pages/order/detail/index.tsx`：只保留路由解析、控制 hook 组合和 JSX 渲染，已移除旧 900 行遗留体积预算，后续按普通页面预算治理。
+- `services/payment`：封装待支付费用查询、详情页汇总、费用类型文案、费用明细 VM、待支付列表分页和 App 收银台编排，不复用旧项目小程序授权与收银台状态机。
+- `services/payment/payment.checkout.ts`：集中处理支付明细选择与去重、金额校验、`payCreate -> payConfirm -> platform payment -> payCancel` 编排，以及微信、支付宝、H5 收银台确认结果归一。原生支付能力未就绪时会在 `payCreate` 前阻断，避免产生悬挂支付单。
 - `pages/order/list`：支持我寄的/我收的切换、时间范围、状态、付款方式筛选、关键字搜索、分页加载和跳详情；寄件待揽件订单在后端允许修改时展示“取消订单”，并跳转取消原因页处理；已签收、已退回、已取消、已作废、已失效等终态订单展示“删除”，成功后从当前列表移除。
 - `pages/order/list`：终态寄件订单支持“再来一单”，终态收件订单支持“一键回寄”；列表项会先读取订单详情，再生成寄件草稿，不从列表摘要字段拼凑下单数据。
 - `pages/order/list/components/OrderListSections.tsx`：拆出列表页头、寄/收件 tab、搜索、时间/状态/付款筛选和汇总条等纯展示区块，页面主文件不再承载筛选 JSX。
@@ -695,8 +813,20 @@ APP_RUNTIME_CONFIG.omsChannel
 - `pages/order/detail`：安全详情模式下已接入取消订单动作。首期只在待揽件、有订单号且后端详情未显式禁止修改时展示“取消订单”，并跳转取消原因页处理。
 - `pages/order/detail`：安全详情模式下已接入终态订单删除动作，成功后回到订单列表；公开轨迹模式不展示删除，避免未登录轨迹页操作安全订单。
 - `pages/order/subscriptions`：展示已关注运单，支持刷新、进入安全详情和取消关注；订单列表提供统一入口。
-- `pages/order/edit`：承接待揽件订单基础信息修改，支持收寄件、货物件重体积和备注；列表与详情在后端允许时均可进入。
+- `pages/order/edit`：承接待揽件订单基础信息修改，支持收寄件、货物件重体积、打包服务件数、期望上门时间、夜间揽收、送货方式、基础保价、备注和代收货款；列表与详情只有在后端明确允许、当前用户是发件人且产品允许修改时才可进入。
+- `pages/order/edit/hooks/useOrderEditCollection.ts` 与 `OrderEditCollectionSection.tsx`：编排客户绑定/额度查询、三日退/即日退、金额、账户、协议和关闭服务；返回账户时不会重新加载订单覆盖本地草稿。
+- `pages/order/edit/components/OrderEditInsuranceSection.tsx`：提供基础保价金额编辑、清除、上限提示和保价规则入口；全额保、省心保及未知特殊 `bjlx` 订单只读锁定。
+- `pages/order/edit/components/OrderEditPackagingSection.tsx`：提供打包服务开关、1..999 件输入和加减步进、2 元/件参考费用；关闭服务保留显式清零语义，页面不猜测包材 code 或包装类型。
+- `pages/order/edit/hooks/useOrderEditSchedule.ts` 与 `OrderEditScheduleSection.tsx`：自动查询当前地址和货物输入对应的时段，提供日期/时段与三种送货方式选择；地址、件重体积或产品输入变化会取消旧响应并要求重新确认有效时段。
+- `shared/webview/appWebMessage.ts`：寄件和改单账户页都必须先注册一次性 expectation，消息回填要求 WebView source 与 `messageContext` 同时匹配；改单 context 绑定订单号，旧页面或其他订单不能消费账户。
 - `pages/order/detail/hooks/useOrderSubscription.ts`：独立管理关注状态查询、确认取消和状态切换，避免继续扩大详情页主流程。
+- `services/order/order.pdcFeedback.api.ts`：独立封装签收反馈状态查询与提交端点；查询保持参考端 `loading=false/login=false/timeout=3000`，提交仍走登录会话且使用 3 秒超时。
+- `services/order/order.pdcFeedback.ts`：将已签收状态、`PDC_KDYZJO/PDC_KDYZJT` 来源、`ONE/TWO` 频次和 `Y/N` payload 收敛为纯规则与 service，不把来源判断散回页面。
+- `pages/order/detail/hooks/useOrderPdcFeedback.ts` 与 `OrderPdcFeedbackPanel.tsx`：安全详情加载后只查询一次当前来源运单；后端明确返回 `N` 才展示“是否已收到货物”底部面板，提交失败保留面板并允许重试。
+- `services/order/order.evaluation.api.ts`、`order.evaluation.rules.ts` 与 `order.evaluation.catalog.ts`：独立承接订单评价详情查询、寄/收角色与签收状态映射、快递员身份 fail-closed、1-5 星标签目录、草稿校验和提交 payload；不把参考端评价弹层或 Redux 快递员状态并回订单详情。
+- `pages/order/evaluation`：提供登录后原生服务评价页，支持星级、标签、最多 250 字建议、已评价只读状态和提交反馈；原生查询失败时才提供 `ORDER_DETAIL_EVALUATE` 受控 WebView 降级，fallback 使用 App 渠道 `channel=APP` 并保留 `S0505/S0907` 场景。
+- `services/order/order.sceneSurvey.*` 与 `order.npsSurvey.*`：独立承接动态场景计划、SCORE/LABEL 首题、0-10 NPS 目录、状态查询、提交 payload 和部分失败编排，不与快递员服务评价或 PDC 收货反馈混用。
+- `pages/order/detail/hooks/useOrderSceneSurvey.ts` 与 `OrderSceneSurveyPanel`：按当前详情上下文查询并顺序展示可填写问卷；旧请求由 generation 隔离，PDC 面板优先，关闭会清空整个队列。
 
 关注运单端点：
 
@@ -707,8 +837,19 @@ APP_RUNTIME_CONFIG.omsChannel
 | 关注运单 | `/gwapi/waybillService/eco/wayBill/subscribe/submit` |
 | 取消关注 | `/gwapi/waybillService/eco/wayBill/subscribe/cancel` |
 | 修改待揽件订单 | `/gwapi/orderService/eco/order/secure/modifyOrder` |
+| 查询改单夜揽能力 | `/gwapi/queryService/eco/query/range/matchFeatureAoi` |
+| 查询改单上门时段 | `/gwapi/orderService/eco/order/dispatchTime/dispatchTimeByDeptCode` |
+| 查询签收 PDC 反馈状态 | `/gwapi/commentService/eco/comment/secure/queryFeedback` |
+| 提交签收 PDC 反馈 | `/gwapi/commentService/eco/comment/secure/submitFeedback` |
+| 查询订单服务评价 | `/gwapi/onlineService/eco/online/evaluate/secure/queryEvaluateDetail` |
+| 提交快递员服务评价 | `/gwapi/onlineService/eco/online/courier/evaluation/secure/commit` |
+| 查询场景评价状态 | `/gwapi/commentService/eco/comment/queryComment` |
+| 查询场景评价配置 | `/gwapi/commentService/eco/comment/queryCommentScene` |
+| 提交场景评价 | `/gwapi/commentService/eco/comment/insertComment` |
+| 查询 NPS 状态 | `/gwapi/commentService/eco/comment/queryCustomerQuestionnaire` |
+| 提交 NPS | `/gwapi/commentService/eco/comment/addCustomerQuestionnaire` |
 - `pages/order/detail`：安全详情模式下已接入“再来一单/一键回寄”，由 `orderService.createExpressDraftFromOrderDetail` 将订单详情归一为新的寄件草稿，再通过 `expressDraftBridge` 带入寄件页；不会复用旧项目 Redux 重放状态。
-- `pages/order/detail`：安全详情模式下会按运单号查询最近一个月未核销费用，展示待支付金额提示；点击“去支付”先走 `shared/platform/payment.payWithApp`，当前因 App 原生支付能力未接入而统一降级提示。
+- `pages/order/detail`：安全详情模式下会按运单号查询最近一个月未核销费用，展示待支付金额提示；点击“去支付”进入统一 App 收银台，由收银台重新校验当前待支付明细。
 - `pages/order/detail/components/OrderDetailSections.tsx`：拆出头部、空态、轨迹、待支付提示、电子存根入口、运输信息和寄收信息等纯展示区块。
 - `pages/order/detail/components/OrderDetailActionSections.tsx`：拆出售后动作、底部动作和催单弹层展示；页面主文件保留动作处理和状态编排。
 - `pages/order/stub`：新增电子存根首期只读页，入口由订单详情的 `orderService.getStubEntry` 生成，页面通过 `orderService.queryDetail` 重新读取详情并消费 `OrderStubView`，展示寄收信息、货物明细、费用、订单编号和照片凭证分组。
@@ -722,9 +863,11 @@ APP_RUNTIME_CONFIG.omsChannel
 - `pages/order/stub`：新增单据票证分区，展示电子合同状态；合同完成时通过 `ORDER_STUB_CONTRACT_PREVIEW` 进入受控 RN WebView，不调用 `Taro.downloadFile` 或 `Taro.openDocument`。
 - `pages/order/detail`：安全详情模式下已接入在线客服，统一走 `shared/webview/appWeb.ts` 的 `ORDER_DETAIL_SERVICE` 来源和 RN WebView 白名单，不在页面散落 H5 URL。
 - `services/order/order.detailActions.ts`：新增订单详情售后动作 VM，统一生成在线客服、投诉、在线理赔、去开票和修改运单入口，页面只按 `OrderDetailActionView` 渲染，不直接拼 H5 URL 或散落状态判断。
-- `pages/order/detail`：新增“售后服务”分区。催单在 App 内展示后端话术弹层，通知派送和拦截作废在 App 内二次确认后提交，联系营业部统一走 App 电话 facade，收件方式、评价、投诉、在线理赔和修改运单首期通过 RN WebView 承接受控 H5；去开票优先进入 App 原生发票中心；公开轨迹模式不展示售后动作。
+- `pages/order/detail`：新增“售后服务”分区。催单在 App 内展示后端话术弹层，通知派送和拦截作废在 App 内二次确认后提交，联系营业部统一走 App 电话 facade，服务评价进入 App 原生评价页，收件方式、投诉、在线理赔和运输中修改运单继续由 RN WebView 承接；去开票优先进入 App 原生发票中心；公开轨迹模式不展示售后动作。
 - `pages/order/cancel`：提供 App 原生取消原因选择和其他原因输入，提交时复用 `orderService.cancelOrder(orderNumber, reason)`，成功返回后列表/详情通过 `useDidShow` 刷新。
-- `pages/payment/list`：提供独立待支付运单页，支持我寄的/我收的切换、运单号搜索、分页、金额汇总、基础/增值/减免/已支付费用明细、跳订单详情和支付入口降级；入口已接入我的页和订单列表。
+- `pages/payment/list`：提供独立待支付运单页，支持我寄的/我收的切换、运单号搜索、分页、金额汇总、基础/增值/减免/已支付费用明细和跳订单详情；“去支付”统一进入 App 收银台，入口已接入我的页和订单列表。
+- `pages/payment/checkout`：根据运单号重新查询待支付费用，按明细号锁定付款项，展示金额与支付能力状态；支付能力未就绪时按钮不可提交，也不会请求后端创建支付单。
+- `pages/payment/result`：承接支付成功后的金额、支付单号、渠道流水和运单回跳，不复用旧小程序页面栈、营销弹窗或支付后授权逻辑。
 - `pages/express/success`：从下单结果承接订单号/运单号，可直接跳订单详情或订单列表。
 
 关键约束：
@@ -744,9 +887,21 @@ APP_RUNTIME_CONFIG.omsChannel
 - 订单详情联系营业部不直接调用 `Taro.makePhoneCall`；电话拨打统一走 `shared/platform/phone.dialPhone`，查询营业部电话失败时兜底服务热线。
 - 订单详情复制单号不直接散落 `Taro.setClipboardData`；页面使用 `shared/platform/clipboard.copyTextToClipboard`，公开轨迹和安全详情复用同一规则。
 - 电子存根首期迁结构化存根、尺寸/包装费用只读明细、照片凭证只读预览和电子合同完成态 WebView 预览，不迁旧项目 `pages/orderService/doc` 中的合同 PDF 下载、图片保存相册、支付按钮和弹窗状态机；这些能力涉及 App 文件、相册、下载和支付原生能力，后续按独立 service/API 切片接入。
-- 订单详情评价首期只承接问卷 H5，不迁旧项目 `FetchWaybillEvaluate`、PDC 评价和场景评价弹层；后续若原生化，需要单独建评价 service 和表单 VM。
-- 待揽件修改订单已使用 App 原生页和 `/modifyOrder`，只发送基础字段差异；运输中修改运单仅对非收件角色、有运单号且详情未显式禁止修改的订单展示，继续由受控 H5 承接。
-- 支付入口不直接跳旧小程序收银台，也不提前创建支付单；当前只查询未支付费用并把支付动作收口到 App 原生能力 facade。
+- 订单详情服务评价已原生化：先以 `FetchWaybillEvaluate` 对应契约查询可评价快递员和已评价状态，只有工号与姓名同时存在才开放表单；寄件运输中使用 `COLLECTION`，收件角色或已签收使用 `DELIVERY`。查询失败保留受控 H5 降级；动态 NPS/轨迹场景问卷已作为独立切片接入，不与服务评价或 PDC payload 混用。
+- PDC 反馈只对 `orderClassification=2`、有运单号、非公开轨迹模式且来源包含 `PDC_KDYZJO` 或 `PDC_KDYZJT` 的详情生效；其他订单不会请求反馈接口，也不会展示通用弹层。
+- `PDC_KDYZJO` 映射 `sendFrequency=ONE`，`PDC_KDYZJT` 映射 `TWO`；提交只发送 `waybillNo/sendFrequency/feedbackResult`，页面不附加埋点、小程序来源状态或猜测其他后端字段。
+- 待揽件修改订单已使用 App 原生页和 `/modifyOrder`，基础字段、打包服务件数、代收货款、基础保价、期望上门时间与送货方式均只发送真实差异；启用/修改代收时四个字段成组提交，关闭时明确清空，额度、协议等本地状态变化不会误发后端字段。
+- 打包服务只读取并写回 `orderExtendFields[{ key: 'packingService', value }]`：`0` 表示关闭，启用时限制为 `1..999` 的整数，清除必须显式发送字符串 `"0"`。2 元/件只用于页面参考费用，真实收费以后端改单结果和揽收确认结果为准。
+- 待揽件改单基础保价仅允许普通可编辑保价变更；产品要求保价时金额不能为 0，普通产品上限为 1000000 元，参考端必保产品上限按 9990000 元处理。用户金额变化时成组发送 `insuredAmount` 和空 `insuranceSource`；`NFLF/NLRF` 详情金额为 0 时按参考契约补交 2000 元与 `insuranceSource=DEFAULT`，其余未变化不发送。
+- 单改期望上门时间使用 `dispatchTimeByDeptCode` 的 `source=0`，与详情快捷预约使用的 `dispatchTimeNew source=4 + orderDispatchFlag` 严格隔离。时间变化提交 `beginAcceptTime`，有值时提交 `pickPeriodTime`；原 `ServicePoint` 订单额外提交 `channelType=VISITING_SERVICE`。
+- 夜揽切换通过 `orderExtendFields` 提交 `nightAccept=Y/N` 与 `nightAcceptStatus=-1/空`，并与保价 `insuranceSource` 合并，不能互相覆盖；夜间时段要求当前地址的 2 小时能力证明、北京时间截单校验和 50 元/票费用确认。
+- 送货方式只提供 `PICKNOTUPSTAIRS/PICKUPSTAIRS/PICKSELF`。`NZBRH/ZBTH` 重包隐藏；零担订单始终展示；普通快递仅在重量大于 60kg 或体积大于 0.36m³ 时展示，隐藏状态不伪造送货字段差异。
+- 详情扩展字段 `bjlx=0/1` 分别表示全额保/省心保，或未知非空特殊类型时，改单页 fail-closed 为只读，不伪造普通基础保价能力；具体纸箱/木包装 code、产品/线路切换、付款方式、优惠券和图片上传仍是后置切片。
+- 单改页权限按参考端稳定条件 fail-closed：必须 `modifyFlag=true`、`isSender=Y`、`orderClassification=0`，且 `productCodeFlag` 未明确禁止；仅靠前端路由角色不能获得修改权限。
+- 运输中修改运单仅对非收件角色、有运单号且详情未显式禁止修改的订单展示，继续由受控 H5 承接，不与待揽件订单改单混用。
+- 支付入口不直接跳旧小程序收银台，也不在列表或详情页创建支付单；只有收银台确认提交且原生支付能力可用时，才执行支付单创建、确认和 platform payment 调用。
+- 支付单确认失败、渠道参数不完整、用户取消或原生支付未完成时，由 payment service 统一尝试 `payCancel`；页面不直接处理后端支付单状态。
+- 微信、支付宝 App SDK 仍必须在 `shared/platform/payment` 或 `shared/native` 内接入；当前能力矩阵为 `pending`，因此收银台展示不可支付状态，但业务路由和后端契约已经收口。
 - 待支付列表仅展示当前接口返回的可 App 在线支付费用；旧项目里 `isJdPay=Y` 的派送中/签收场景先过滤，避免在 App 内展示不可付账单。
 - 支付费用类型沿用旧项目稳定语义：`CR` 展示为货款，`DVAR` 展示为保管费，其余类型展示为运费；该规则统一沉淀在 `services/payment`，页面不重复判断后端枚举。
 - 支付费用明细只承接旧收银台可纯展示的字段归一：基础运费、增值费用、减免费用和已支付费用；拦截费合并到“转寄/拦截费”，不迁旧小程序收银台弹层、支付方式、分享付款和真实支付确认流程。
@@ -764,6 +919,9 @@ APP_RUNTIME_CONFIG.omsChannel
 | 取消订单 | `/gwapi/orderService/eco/order/secure/revokeOrder` |
 | 删除订单 | `/gwapi/orderService/eco/order/secure/removeOrder` |
 | 待支付费用 | `/gwapi/onlineService/eco/online/pay/pmc/secure/queryUnWriteOffList` |
+| 创建支付单 | `/gwapi/onlineService/eco/online/pay/pmc/secure/payCreate` |
+| 确认支付单 | `/gwapi/onlineService/eco/online/pay/pmc/secure/payConfirm` |
+| 取消支付单 | `/gwapi/onlineService/eco/online/pay/pmc/secure/payCancel` |
 | 催单按钮 | `/gwapi/onlineService/eco/online/complaint/secure/getUrgeButtons` |
 | 催单话术 | `/gwapi/onlineService/eco/online/complaint/secure/urgeOrder` |
 | 提交催单 | `/gwapi/orderService/eco/order/urgent/secure/v2/orderUrgent` |
@@ -796,7 +954,7 @@ APP_RUNTIME_CONFIG.omsChannel
 | 收件方式 | `/depponmobile/orderStayTmp` + RN WebView |
 | 联系营业部 | `shared/platform/phone.dialPhone` |
 | 复制单号 | `shared/platform/clipboard.copyTextToClipboard` |
-| 服务评价 | `/depponmobile/survey/land` + RN WebView |
+| 服务评价 | `APP_ROUTES.orderEvaluation` 原生页；失败时 `/depponmobile/survey/land` + RN WebView |
 | 投诉 | `/depponmobile/complaint/apply/index` + RN WebView |
 | 在线理赔 | `/depponmobile/h5/index#/claimPackagePages/index` + RN WebView |
 | 尺寸/包装费用 | App 原生只读明细 |
@@ -808,7 +966,7 @@ APP_RUNTIME_CONFIG.omsChannel
 
 - 合并支付、App 微信/支付宝真实支付和支付结果轮询。
 - 关注/订阅消息、App Push 替代和站内信。
-- 订单产品/价格/付款/保价/代收货款/取件时间/增值服务修改、收件方式编辑原生化、派送偏好时间窗、拦截作废进度与退款状态、催单进度原生化、原生评价表单、投诉/理赔进度原生化和开票提交闭环。
+- 订单产品/线路与价格、付款方式、返单和具体包材类型修改，收件方式编辑原生化、派送偏好时间窗、拦截作废进度与退款状态、催单进度原生化、投诉/理赔详情状态机原生化和开票提交闭环。
 - 轨迹地图、快递员实时位置、签收图片、二维码分享、营业部导航。
 
 ## Support 首期切片
@@ -819,9 +977,9 @@ APP_RUNTIME_CONFIG.omsChannel
 
 - `services/support/support.api.ts`：封装配置中心 `graySwitch` 查询，当前用于体验调研配置。
 - `services/support/support.service.ts`：归一客服中心分组、入口类型、登录要求、WebView 来源、热线号码、体验调研配置和 App 内路由，页面只消费 `SupportSectionView` / `SupportEntryView`。
-- `pages/support/center`：提供在线客服、95353 热线、体验调研、投诉、在线理赔、收派范围、网点查询、价格时效和订单列表入口。
-- `shared/webview/appWeb.ts`：新增 `SUPPORT_ONLINE_SERVICE`、`SUPPORT_SURVEY`、`SUPPORT_COMPLAINT`、`SUPPORT_CLAIM` 来源，继续走 HTTPS 白名单和统一 WebView 页面。
-- 投诉/理赔点击时先做登录守卫，再按当前 `ECO_TOKEN`、`systemCode` 生成 H5 URL，避免未登录回跳携带空 token。
+- `pages/support/center`：提供在线客服、95353 热线、体验调研、投诉、投诉记录、在线理赔、理赔处理中、理赔已完成、收派范围、网点查询、价格时效和订单列表入口。
+- `shared/webview/appWeb.ts`：除申请入口外，新增 `SUPPORT_COMPLAINT_RECORD`、`SUPPORT_CLAIM_PROCESSING`、`SUPPORT_CLAIM_COMPLETED` 三个受控来源，继续走 HTTPS 白名单和统一 WebView 页面。
+- 投诉/理赔申请、记录和进度点击时先做登录守卫，再按当前 `ECO_TOKEN`、`systemCode` 生成 H5 URL，避免未登录回跳携带空 token。
 - 热线拨打统一走 `shared/platform/phone.dialPhone`，不在页面直接调用小程序 `Taro.makePhoneCall`。
 - 首页“客服中心”和我的页“客服中心”已接入 `APP_ROUTES.supportCenter`；订单详情在线客服继续保留独立上下文入口。
 
@@ -829,8 +987,8 @@ APP_RUNTIME_CONFIG.omsChannel
 
 - 客服中心页面本身不强制登录，热线和自助查询可直接访问；投诉、理赔和订单列表等敏感入口按动作单独触发登录守卫。
 - 体验调研入口由 `APP_SURVEY_CONFIG_KEY` 指向的配置中心 key 控制，默认 `app_survey_config`；配置缺失或网络失败时不展示入口，不影响客服中心基础能力。
-- 投诉/理赔首期仍由 H5 承接，不复制旧页面的自动登录、分享和埋点状态机。
-- 后续若接入 App 原生 IM、投诉进度或理赔进度，应继续从 `services/support` 扩展 VM，不在首页/我的页散落 H5 URL。
+- 投诉/理赔申请、记录和进度仍由 H5 承接，不复制旧页面的自动登录、分享和埋点状态机；普通路径与 hash route query 都通过统一 URL helper 追加认证上下文。
+- 后续若原生化投诉或理赔详情状态机，应继续从 `services/support` 扩展 VM，不在首页/我的页散落 H5 URL。
 
 首期承接入口：
 
@@ -839,14 +997,17 @@ APP_RUNTIME_CONFIG.omsChannel
 | 在线客服 | `APP_RUNTIME_CONFIG.serviceWebURL` + RN WebView |
 | 体验调研 | `APP_SURVEY_CONFIG_KEY` 配置 URL + RN WebView |
 | 投诉 | `/depponmobile/complaint/list` + RN WebView |
+| 投诉记录 | `/depponmobile/complaint/record` + RN WebView |
 | 在线理赔 | `/depponmobile/h5/index#/claimPackagePages/index` + RN WebView |
+| 理赔处理中 | `/depponmobile/h5/index#/claimPackagePages/list?tab=2` + RN WebView |
+| 理赔已完成 | `/depponmobile/h5/index#/claimPackagePages/list?tab=3` + RN WebView |
 | 95353 热线 | `shared/platform/phone.dialPhone` |
 | 收派范围 / 网点 / 价格时效 / 订单列表 | App 内已有 RN 页面 |
 
 后置能力：
 
 - 原生 IM SDK、客服会话列表和未读消息。
-- 投诉记录、投诉进度、理赔进度和证据材料上传原生化。
+- 投诉/理赔详情状态机、处理节点展示和证据材料上传原生化。
 - App Push/站内信替代旧订阅消息。
 
 ## Customer 首期切片
@@ -856,15 +1017,17 @@ APP_RUNTIME_CONFIG.omsChannel
 已落地边界：
 
 - `services/customer/customer.api.ts`：封装当前账号绑定客户信息查询接口。
-- `services/customer/customer.service.ts`：归一客户编码、客户名称、主联系人、隐私面单状态和绑定状态，页面只消费 `CustomerCenterView`。
-- `pages/customer/center`：展示客户绑定状态和客户资料，支持刷新、复制客户编码；未绑定时主入口直达 `CUSTOMER_BIND`，已绑定时进入 `CUSTOMER_CENTER` 管理，并提供月结中心、号码保护和客服中心入口。
+- `services/customer/customer.service.ts`：归一客户编码、客户名称、主联系人、隐私面单、代收额度、月结付款和合同状态；`queryCustomerOverview` 并行查询客户资料与服务能力，单接口失败时保留另一部分结果，双接口失败才整体失败。
+- `pages/customer/center`：展示客户绑定状态、客户资料和服务能力摘要，支持一次刷新两组数据及复制客户编码；未绑定时主入口直达 `CUSTOMER_BIND`，已绑定时进入 `CUSTOMER_CENTER` 管理，并提供月结中心、号码保护和客服中心入口。
+- `pages/customer/center/CustomerCapabilitySection.tsx`：只消费归一后的额度、月结和合同文案，不读取 `teanLimit/exPayWay/ifExistContract` 原始字段，也不新增跨账号缓存。
 - `shared/webview/appWeb.ts`：新增 `CUSTOMER_CENTER`、`CUSTOMER_BIND`、`CUSTOMER_MONTHLY_CENTER`、`CUSTOMER_PHONE_PROTECT` 来源，继续走统一 WebView 和 HTTPS 白名单。
 - `pages/mine` 和统一路由已接入 `APP_ROUTES.customerCenter`，客户中心入口受登录守卫保护。
 
 关键约束：
 
 - 客户中心首期只读，不把月结/合同客户能力直接写进寄件下单的付款规则。
-- 绑定、解绑、客户资料修改、代收货款和月结中心继续由受控 H5 承接，后续再按 App 原生能力和接口契约拆分。
+- 客户资料与能力接口相互独立降级：额度接口异常不清空已加载客户资料，客户资料接口异常也不伪造绑定状态；页面展示局部提示并允许刷新。
+- 绑定、解绑、客户资料修改、代收账户管理和月结中心继续由受控 H5 承接；寄件页已原生化代收草稿、额度、报价和下单规则。
 - 页面复制客户编码走 `shared/platform/clipboard.copyTextToClipboard`，不直接散落平台 API。
 
 首期接入端点：
@@ -872,6 +1035,7 @@ APP_RUNTIME_CONFIG.omsChannel
 | 能力 | 端点 |
 | --- | --- |
 | 查询绑定客户信息 | `/gwapi/userService/eco/user/secure/selectCustName` |
+| 查询客户代收额度 | `/gwapi/userService/eco/user/secure/customerLabel` |
 
 首期承接 H5：
 
@@ -885,8 +1049,8 @@ APP_RUNTIME_CONFIG.omsChannel
 后置能力：
 
 - 客户编码绑定/解绑原生化。
-- 月结客户、合同客户、统一结算用户和代收货款规则深度接入寄件报价/下单链路。
-- 客户资料变更、审核状态、银行卡/代收账户管理。
+- 月结客户、合同客户和统一结算用户规则深度接入寄件报价/下单链路。
+- 客户资料变更、审核状态和银行卡/代收账户管理原生化。
 
 ## SignCode 首期切片
 
@@ -968,13 +1132,15 @@ APP_RUNTIME_CONFIG.omsChannel
 - `pages/coupon/list`：支持未使用、已使用、已过期三个 tab，支持兑换码领取，空态和错误态按 App 页面承接。
 - `pages/coupon/list`：未使用券点击“去使用”会通过 `expressDraftBridge` 带入寄件草稿的 `couponNumber`，并要求寄件页重新获取价格。
 - `pages/coupon/detail`：展示券码、适用产品、发货地、收货地、使用限制和使用说明，不迁条码组件、转赠分享和特殊营销跳转。
-- `pages/express`：新增优惠券字段，可展示从优惠券列表带入的券码，也支持手动输入和清除；优惠券变化会清空已选产品并提示重新报价。
+- `pages/express`：优惠券已拆为独立 RN 卡片；报价后以 300ms debounce 查询当前订单可用/不可用券，运行时异常可显式刷新重试，支持详情、选择、手动输入和清除。从个人券列表或详情带入的券码继续通过草稿桥恢复，任何变化都会清空已选产品并提示重新报价。
 - `pages/mine` 和统一路由已接入 `APP_ROUTES.couponList` / `APP_ROUTES.couponDetail`，优惠券入口受登录守卫保护。
 
 关键约束：
 
-- 优惠券 service 只处理券展示和兑换，不直接跳转页面、不修改寄件表单。
+- 优惠券 service 只处理券展示、兑换和寄件上下文查询，不直接跳转页面、不修改寄件表单。
 - 寄件页仍负责报价和下单校验；优惠券只是草稿字段，最终可用性由价格时效/下单接口确认。选择优惠券后，价格时效请求会携带 `promotionsCode` 和发件人手机号 `customerMobile`，该旧语义统一收口在 `services/express/express.payload.ts`。
+- `queryCouponOrder` 的费用列表沿用参考端真实枚举 `FRT/BF/AD/NMBZ`。当前报价若已含优惠券或线路限时减免，会按 `couponRankType` 和 `YHJ/YHQ/XLYHF` 折扣明细恢复原始费用后再查询，避免用优惠后价格错误筛券。
+- 参考端自动选择首张券、月结自动切现付、Redux `couponSource/couponRecommend` 和小程序 Picker 不迁；App 由用户明确选择，随后显式重新获取价格。
 - 旧项目的购买记录、会员福利中心、转赠分享、订阅消息、特殊渠道跳转、券包购买和营销 banner 不进入 RN 首期。
 
 首期接入端点：
@@ -984,6 +1150,7 @@ APP_RUNTIME_CONFIG.omsChannel
 | 个人优惠券列表 | `/gwapi/couponService/eco/coupon/new/secure/queryNewCouponList` |
 | 兑换优惠券 | `/gwapi/couponService/eco/coupon/coupon/secure/exchangeCoupon` |
 | 优惠券详情 | `/gwapi/couponService/eco/coupon/new/secure/queryCouponDetail` |
+| 寄件上下文可用券 | `/gwapi/couponService/eco/coupon/new/secure/queryCouponOrder` |
 
 ## Member 首期切片
 
@@ -1023,9 +1190,12 @@ APP_RUNTIME_CONFIG.omsChannel
 - `services/invoice/invoice.taxpayer.ts`：拆出抬头展示归一、抬头表单默认值、保存 payload 和抬头校验规则。
 - `services/invoice/invoice.apply.ts`：拆出普通运单电子票申请预览、邮箱校验和提交 payload 组装。
 - `services/invoice/invoice.shared.ts`：沉淀发票域通用文本、金额、长度和时间格式化工具。
-- `services/invoice/invoice.service.ts`：保留发票网关 API 编排、分页查询、提交、预览、发送邮箱、抬头匹配、保存和删除。
-- `services/invoice/order.mapper.ts` 和 `orderSearch.service.ts`：拆出可开票运单映射、运单号搜索、手机号/短信身份校验，不继续膨胀主 `invoice.service.ts`。
-- `pages/invoice/index`：提供“可开票 / 开票历史 / 发票抬头”三个 tab，支持可开票运单分页、按运单号搜索可开票记录、扫码填入运单号、手机号/短信身份校验、近一年开票历史分页、按运单号查询历史和抬头列表查看。
+- `services/invoice/invoice.apply.service.ts`：承接普通运单/储值卡申请提交、电子票预览、邮箱发送、历史包含运单查询、撤销/作废和收票地址修改。
+- `services/invoice/invoice.center.service.ts`：承接可开票运单、储值卡和开票历史分页查询，统一日期范围、分页结果和后端列表归一。
+- `services/invoice/invoice.taxpayer.service.ts`：承接抬头查询、联想、保存和删除；`invoice.service.ts` 只保留兼容 facade，不再集中保存多个业务域的请求编排。
+- `services/invoice/order.mapper.ts`、`orderSearch.service.ts` 和 `invoice.orderAuth.ts`：拆出可开票运单映射、运单号搜索、手机号/短信身份校验、身份验证缓存和倒计时规则。
+- `pages/invoice/index`：提供“可开票 / 储值卡 / 开票历史 / 发票抬头”四个 tab，支持可开票运单分页、按运单号搜索可开票记录、扫码填入运单号、手机号/短信身份校验、近一年开票历史分页、按运单号查询历史、储值卡多选和抬头列表查看。
+- `pages/invoice/index/invoiceCenterViewModel.ts`：收敛 tab 参数、发票路由 URL、储值卡选择和金额汇总等纯视图规则，页面主文件当前约 745 行，冻结预算为 780 行。
 - `pages/invoice/index/components/InvoiceCenterSections.tsx`：拆出页头、tab、搜索条、可开票列表、历史列表、抬头列表、空态和加载态展示；页面主文件保留请求、鉴权、身份校验和跳转编排。
 - `pages/invoice/taxpayer/index`：支持抬头列表管理、新增、编辑、删除和默认抬头设置。
 - `pages/invoice/taxpayer/edit`：支持个人/单位抬头表单、单位抬头联想补全、税号格式校验和保存。
@@ -1084,9 +1254,16 @@ APP_RUNTIME_CONFIG.omsChannel
 - `pnpm --filter com.deppon.app run check:routes`
 - `pnpm --filter com.deppon.app run check:module-size`
 - `pnpm --filter com.deppon.app run check:runtime-config`
-- `pnpm --filter com.deppon.app run check:business-rules`
-- `pnpm --filter com.deppon.app build`
-- `pnpm verify:app` 可作为后续同等验证入口，会串行执行 `typecheck`、`lint`、`check:rn-boundaries`、`check:routes`、`check:module-size`、`check:runtime-config`、`check:business-rules` 和 `build`。
+- `pnpm --filter com.deppon.app run check:business-rules`（186 条）
+- `pnpm --filter com.deppon.app run lint:styles`
+- `pnpm --filter com.deppon.app run check:styles`
+- `pnpm --filter com.deppon.app run check:styles:strict`
+
+验证边界：
+
+- 自 2026-07-13 起，Codex 默认不主动执行 RN bundle、Android/iOS 打包、Gradle、Xcode 或发布包验证；打包由用户自行执行。
+- Codex 日常回归使用类型检查、ESLint、Stylelint、业务规则、RN boundary、路由、模块体积、运行时配置和平台配置门禁。
+- `verify`/`verify:static` 只做静态质量检查；`verify:bundle:android`、`verify:bundle:ios` 和原生包脚本保留给用户或 CI 的显式发布流程，不作为 Codex 默认执行入口。
 
 RN build 仍会输出 Sass legacy API、stylelint CommonJS API、React Native CLI 缓存版本和 Node `DEP0190` 提醒，当前均不是阻塞错误。
 
@@ -1199,6 +1376,8 @@ pages: [
   'pages/order/cancel/index',
   'pages/order/stub/index',
   'pages/payment/list/index',
+  'pages/print/index',
+  'pages/print/list/index',
   'pages/coupon/list/index',
   'pages/coupon/detail/index',
   'pages/support/center/index',
@@ -1227,6 +1406,7 @@ pages: [
 - 非主路由继续使用 `navigateTo`，保留详情、编辑、WebView 等页面返回语义。
 - 订单列表作为受保护主入口，由 `navigateToAppRoute` 自动触发登录守卫。
 - 登录成功、暂不登录、下单成功继续寄件、进入订单列表、订单详情返回主入口等路径统一复用该导航工具。
+- 登录关键导航会等待非空目标路由确认，但始终只 dispatch 一次；确认失败会提示并释放守卫，不再以第二次 redirect 制造竞态。守卫按 in-flight Promise 去重，不使用固定时间窗或小程序 `switchTab`。
 - 新增页面先登记 `shared/navigation/routeRegistry.ts`，再由注册表派生 Taro 页面列表、`APP_ROUTES`、主导航和登录守卫；页面内不要自行维护另一份路径白名单。
 
 ### 第 3 阶段：原生能力接入
@@ -1249,7 +1429,7 @@ pages: [
 - `order/detail` 的实时地图、Canvas 分享图、快递员位置。
 - `print`：蓝牙打印和外部设备能力。
 - `invoice`：E 卡开票、支付、作废和纸票寄送链路长。
-- 客服售后全量：原生 IM、投诉记录、理赔进度和材料上传。
+- 客服售后全量：原生 IM、投诉/理赔详情状态机和材料上传。
 - 营销/会员全量：优惠券发放、SVIP 支付、学生专区、活动弹窗。
 
 ## 待确认事项
@@ -1267,6 +1447,7 @@ pages: [
 
 ## 验收原则
 
+- Codex 日常只执行 TypeScript、Lint、业务规则、路由、模块体积、样式治理和 RN 边界等静态门禁，不主动执行 RN bundle、Gradle、Xcode 或安装包验证；打包由用户执行并反馈问题。
 - `pnpm dev:app` 能启动 Taro RN watch。
 - `pnpm build:app` 能产出 RN bundle。
 - `pnpm check:app-boundaries` 不允许 App 源码直接引用小程序专属 API。

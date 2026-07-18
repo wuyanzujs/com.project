@@ -17,6 +17,9 @@ importers:
       '@babel/runtime':
         specifier: ^7.20.0
         version: 7.29.7
+      '@preeternal/react-native-cookie-manager':
+        specifier: 6.3.3
+        version: 6.3.3(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))(react@18.2.0)
       '@react-native-async-storage/async-storage':
         specifier: 1.21.0
         version: 1.21.0(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))
@@ -1713,6 +1716,12 @@ packages:
         optional: true
       webpack-plugin-serve:
         optional: true
+
+  '@preeternal/react-native-cookie-manager@6.3.3':
+    resolution: {integrity: sha512-ddA3H7nbV0n/EdJ3ZXDd9GpT9jzhBiMrVeXftJf1mJ1gqyQnZ6d8EEd+k/lnjzfhqK6Z2kvXggCSpwAH991Gvw==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
 
   '@react-native-async-storage/async-storage@1.21.0':
     resolution: {integrity: sha512-JL0w36KuFHFCvnbOXRekqVAUplmOyT/OuCQkogo6X98MtpSaJOKEAeZnYO8JB0U/RIEixZaGI5px73YbRm/oag==}
@@ -10733,6 +10742,11 @@ snapshots:
     optionalDependencies:
       type-fest: 2.19.0
       webpack-dev-server: 4.15.2(webpack@5.108.4(@swc/core@1.3.96)(postcss@8.5.16))
+
+  '@preeternal/react-native-cookie-manager@6.3.3(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))(react@18.2.0)':
+    dependencies:
+      react: 18.2.0
+      react-native: 0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0)
 
   '@react-native-async-storage/async-storage@1.21.0(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))':
     dependencies:

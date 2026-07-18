@@ -1,13 +1,23 @@
+import { buildBatchCreateOrderRequest } from './batch.payload'
+import { quoteBatchDraft } from './batch.quote.service'
 import { APP_ROUTES } from '../../shared/navigation/routes'
+import { expressApi } from '../express/express.api'
+import { createServiceFailure as createFailureResponse } from '../serviceResponse'
 
 import type {
   BatchAddressRecognitionResult,
   BatchContact,
   BatchDraft,
   BatchEntryView,
+  BatchQuoteItem,
   BatchRecognizedConsignee,
+  BatchSubmitSummary,
   BatchValidationResult
 } from './types'
+import type { DepponResponse } from '../../request/deppon'
+import type {
+  CreateExpressOrderResponse
+} from '../express/types'
 
 export const BATCH_MAX_CONSIGNEE_COUNT = 10
 export const BATCH_EXCEL_URL =
@@ -43,6 +53,16 @@ function isValidContactPhone(value: string) {
   const phone = normalizeText(value)
 
   return /^1[3-9]\d{9}$/.test(phone) || /^0\d{2,3}-?\d{7,8}$/.test(phone)
+}
+
+function isCompleteContact(contact: BatchContact) {
+  return [
+    contact.name,
+    contact.province,
+    contact.city,
+    contact.county,
+    contact.address
+  ].every((value) => !!normalizeText(value))
 }
 
 function createAddressKey(contact: BatchContact) {
@@ -174,9 +194,16 @@ export function shouldBlockSpecialRegionBatchOrder(
   return senderSpecial && sender.includes('台湾')
 }
 
-export function validateBatchDraft(draft: BatchDraft): BatchValidationResult {
+export function validateBatchDraft(
+  draft: BatchDraft,
+  options: { requireProduct?: boolean } = {}
+): BatchValidationResult {
   if (!draft.sender?.name) {
     return createFailure('sender', '请选择发货人')
+  }
+
+  if (!isCompleteContact(draft.sender)) {
+    return createFailure('sender', '请完善发货人地址信息')
   }
 
   if (!draft.consignees.length) {
@@ -199,8 +226,16 @@ export function validateBatchDraft(draft: BatchDraft): BatchValidationResult {
   for (let index = 0; index < draft.consignees.length; index += 1) {
     const item = draft.consignees[index]
 
-    if (!item.contact) {
+    if (!item.contact || !isCompleteContact(item.contact)) {
       return createFailure('consignee', `第 ${index + 1} 个收货人信息不完整`, index)
+    }
+
+    if (!isValidContactPhone(item.contact.mobile)) {
+      return createFailure(
+        'consigneePhone',
+        `第 ${index + 1} 个收货人手机号格式不正确`,
+        index
+      )
     }
 
     if (senderAddress === createAddressKey(item.contact)) {
@@ -211,10 +246,34 @@ export function validateBatchDraft(draft: BatchDraft): BatchValidationResult {
       )
     }
 
-    if (!normalizeText(item.goodsName)) {
+    if (!normalizeText(item.goods.name)) {
       return createFailure(
         'goods',
         `第 ${index + 1} 个收货人缺少货物名称`,
+        index
+      )
+    }
+
+    if (!Number.isFinite(item.goods.count) || item.goods.count < 1) {
+      return createFailure(
+        'goodsCount',
+        `第 ${index + 1} 个收货人的货物件数不正确`,
+        index
+      )
+    }
+
+    if (!Number.isFinite(item.goods.weight) || item.goods.weight <= 0) {
+      return createFailure(
+        'goodsWeight',
+        `第 ${index + 1} 个收货人的货物重量不正确`,
+        index
+      )
+    }
+
+    if (options.requireProduct && !item.productCode) {
+      return createFailure(
+        'product',
+        `第 ${index + 1} 个收货人尚未获取产品价格`,
         index
       )
     }
@@ -244,19 +303,63 @@ export function validateBatchDraft(draft: BatchDraft): BatchValidationResult {
   return createSuccess()
 }
 
+export function validateBatchSubmitDraft(draft: BatchDraft) {
+  return validateBatchDraft(draft, { requireProduct: true })
+}
+
+export function createBatchSubmitSummary(
+  result: CreateExpressOrderResponse
+): BatchSubmitSummary {
+  const successCount = Math.max(
+    result.orderNumbers?.length ?? 0,
+    result.waybillNumbers?.length ?? 0,
+    result.waybillNumber ? 1 : 0
+  )
+  const failedItems = result.orderErrorInfo ?? []
+  const failedCount = failedItems.length
+  const firstFailure = failedItems[0]
+  const failureMessage = firstFailure
+    ? `第 ${firstFailure.index + 1} 票：${firstFailure.errorMessage}`
+    : ''
+
+  if (failedCount && successCount) {
+    return {
+      status: 'partial',
+      successCount,
+      failedCount,
+      message: `成功 ${successCount} 票，失败 ${failedCount} 票。${failureMessage}`
+    }
+  }
+
+  if (failedCount || !successCount) {
+    return {
+      status: 'failure',
+      successCount: 0,
+      failedCount,
+      message: failureMessage || '批量订单未创建，请检查后重试'
+    }
+  }
+
+  return {
+    status: 'success',
+    successCount,
+    failedCount: 0,
+    message: `已成功提交 ${successCount} 票`
+  }
+}
+
 export const batchService = {
   getEntryView(): BatchEntryView {
     return {
       title: '批量寄',
-      summary:
-        '首期先承接批量寄入口、校验规则和能力边界；完整批量下单、Excel 导入和打印后续按原生能力切片接入。',
+      summary: '一次添加多个收货人，统一获取价格并确认后提交。',
       maxConsigneeCount: BATCH_MAX_CONSIGNEE_COUNT,
       excelUrl: BATCH_EXCEL_URL,
       actions: [
         {
           key: 'singleExpress',
           title: '先寄一票',
-          summary: '当前 App 已支持单票寄件，可先完成发货人、收货人和货物信息。',
+          summary: '只寄一个收货人时使用单票寄件。',
           status: 'ready',
           statusText: 'App',
           route: APP_ROUTES.express
@@ -264,15 +367,15 @@ export const batchService = {
         {
           key: 'addressRecognition',
           title: '批量识别',
-          summary: '可在下方粘贴多行地址文本，先做本地识别和校验预览。',
+          summary: '粘贴多行地址，快速生成收货清单。',
           status: 'ready',
           statusText: '本页',
-          disabledReason: '可在下方批量识别区域粘贴文本'
+          disabledReason: '请先在下方输入地址文本'
         },
         {
           key: 'excelImport',
           title: 'Excel 寄件',
-          summary: 'Excel 批量寄首期提供官网入口，可复制网址后在电脑浏览器继续。',
+          summary: '在电脑端使用 Excel 模板导入多票地址。',
           status: 'copy',
           statusText: '复制网址',
           copyText: BATCH_EXCEL_URL
@@ -280,10 +383,10 @@ export const batchService = {
         {
           key: 'print',
           title: '批量打印',
-          summary: '电子面单、蓝牙打印和打印状态依赖 App 原生打印能力。',
+          summary: '从订单列表选择已提交的运单打印面单。',
           status: 'pending',
           statusText: '待接入',
-          disabledReason: '打印能力待接入 App 原生模块'
+          disabledReason: '打印机连接能力暂不可用'
         }
       ],
       rules: [
@@ -298,7 +401,43 @@ export const batchService = {
 
   validateDraft: validateBatchDraft,
 
+  validateSubmitDraft: validateBatchSubmitDraft,
+
   recognizeAddressText: recognizeBatchAddressText,
 
-  shouldBlockSpecialRegionOrder: shouldBlockSpecialRegionBatchOrder
+  shouldBlockSpecialRegionOrder: shouldBlockSpecialRegionBatchOrder,
+
+  async quoteDraft(
+    draft: BatchDraft
+  ): Promise<DepponResponse<BatchQuoteItem[]>> {
+    const validation = validateBatchDraft(draft)
+
+    if (!validation.valid) {
+      return createFailureResponse(validation.message)
+    }
+
+    return quoteBatchDraft(draft)
+  },
+
+  async submitDraft(
+    draft: BatchDraft
+  ): Promise<DepponResponse<CreateExpressOrderResponse>> {
+    const validation = validateBatchSubmitDraft(draft)
+
+    if (!validation.valid) {
+      return createFailureResponse(validation.message)
+    }
+
+    const intercept = await expressApi.checkCanCreateOrder()
+
+    if (!intercept.status) {
+      return createFailureResponse(intercept.message || '暂时无法提交批量订单')
+    }
+
+    if (intercept.result?.orderFlag === 'N') {
+      return createFailureResponse('当前账号存在未完成拦截，请稍后再试')
+    }
+
+    return expressApi.createOrder(buildBatchCreateOrderRequest(draft))
+  }
 }

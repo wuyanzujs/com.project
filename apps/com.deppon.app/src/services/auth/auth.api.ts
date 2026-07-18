@@ -12,7 +12,7 @@ export const authApi = {
     return depponHttp.post<AppUser, LoginRequest>(
       '/gwapi/userService/eco/user/login',
       data,
-      { loading }
+      { loading, login: false }
     )
   },
 
@@ -39,7 +39,11 @@ export const authApi = {
   },
 
   sendSmsMessage(data: SendSmsRequest) {
-    return depponHttp.post('/gwapi/messageService/eco/message/sendSmsMessage', data)
+    return depponHttp.post(
+      '/gwapi/messageService/eco/message/sendSmsMessage',
+      data,
+      { login: false }
+    )
   },
 
   generateTmpToken(data: GenerateTmpTokenRequest, loading = false) {

@@ -31,6 +31,31 @@ export interface CouponItem {
   fitCouponTagList?: string[]
 }
 
+export type ExpressCouponFeeType = 'FRT' | 'BF' | 'AD' | 'NMBZ'
+
+export interface ExpressCouponFee {
+  feeType: ExpressCouponFeeType
+  freight: number
+}
+
+export interface ExpressCouponQueryRequest {
+  freight: number
+  couponCode?: string
+  productCode: string
+  arriveProvinceName: string
+  channel: string
+  mobile: string
+  paymentType?: string
+  sendAnAddress: string
+  receivesAnAddress: string
+  couponFeeList: ExpressCouponFee[]
+}
+
+export interface ExpressCouponQueryRaw {
+  available?: CouponItem[] | null
+  unAvailable?: CouponItem[] | null
+}
+
 export interface UserCouponListRequest {
   type: CouponStatus
 }
@@ -91,4 +116,9 @@ export interface CouponDetailView {
   senderAddresses: string[]
   consigneeAddresses: string[]
   hasDetail: boolean
+}
+
+export interface ExpressCouponQueryResult {
+  available: CouponCardView[]
+  unavailable: CouponCardView[]
 }

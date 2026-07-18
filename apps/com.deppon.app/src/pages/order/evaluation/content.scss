@@ -1,0 +1,76 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.order-evaluation-page {
+  flex: 1;
+  background: $dp-color-bg-page;
+}
+
+.order-evaluation-overview {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: $dp-card-padding;
+  background: $dp-color-bg-card;
+  border-bottom-color: $dp-color-border-default;
+  border-bottom-width: $dp-border-width-hairline;
+}
+
+.order-evaluation-overview__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-evaluation-overview__name {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-title;
+}
+
+.order-evaluation-overview__summary {
+  margin-top: $dp-space-xxs;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.order-evaluation-result {
+  align-items: center;
+  padding: $dp-space-3xl $dp-card-padding;
+  background: $dp-color-bg-card;
+}
+
+.order-evaluation-result__score {
+  color: $dp-color-warning-text;
+  font-size: $dp-font-size-display;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-heading-large;
+}
+
+.order-evaluation-result__title {
+  margin-top: $dp-space-sm;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-title-large;
+}
+
+.order-evaluation-result__summary {
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+  text-align: center;
+}
+
+.order-evaluation-footer {
+  padding: $dp-space-sm $dp-page-horizontal-padding;
+  background: $dp-color-bg-card;
+  border-top-color: $dp-color-border-default;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.order-evaluation-error-actions {
+  display: flex;
+  width: 100%;
+}

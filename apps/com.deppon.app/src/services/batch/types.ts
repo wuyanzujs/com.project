@@ -1,4 +1,13 @@
 import type { AppRoutePath } from '../../shared/navigation/routes'
+import type {
+  ExpressCollectionType,
+  ExpressDeliveryMode,
+  ExpressFlag,
+  ExpressPaymentType,
+  ExpressProductCode,
+  ExpressReturnBillType,
+  ExpressScanContext
+} from '../express/types'
 
 export type BatchEntryActionKind =
   | 'singleExpress'
@@ -20,14 +29,53 @@ export interface BatchContact {
 
 export interface BatchConsigneeDraft {
   contact: BatchContact | null
-  goodsName: string
-  waybillNumber?: string
+  goods: BatchGoodsDraft
+  service: BatchServiceDraft
+  productCode: ExpressProductCode
+  productName: string
+  estimatedFee: number | null
+  deliveryMode: ExpressDeliveryMode
+  couponNumber: string
+  remark: string
+  waybillNumber: string
+  receiveGoods: boolean
+}
+
+export interface BatchGoodsDraft {
+  name: string
+  count: number
+  weight: number
+  volume: number
+}
+
+export interface BatchServiceDraft {
+  insuredAmount: number
+  reciveLoanType: ExpressCollectionType
+  reciveLoanAccount: string
+  reviceMoneyAmount: number
+  returnBillType: ExpressReturnBillType
+  returnRequirement: string
+  accountName: string
+  privacyProtection: ExpressFlag
+}
+
+export interface BatchPickupDraft {
+  dispatch: ExpressFlag
+  time: string
+  endTime?: string
+  stationCode: string
+  stationName: string
+  pickPeriodTime?: number
 }
 
 export interface BatchDraft {
   sender: BatchContact | null
   consignees: BatchConsigneeDraft[]
-  requireWaybillNumber?: boolean
+  paymentType: ExpressPaymentType
+  needContact: ExpressFlag
+  pickup: BatchPickupDraft
+  scanContext?: ExpressScanContext
+  requireWaybillNumber: boolean
 }
 
 export interface BatchValidationResult {
@@ -36,13 +84,31 @@ export interface BatchValidationResult {
     | 'sender'
     | 'consignee'
     | 'senderPhone'
+    | 'consigneePhone'
     | 'address'
     | 'goods'
+    | 'goodsCount'
+    | 'goodsWeight'
+    | 'product'
     | 'waybill'
     | 'specialRegion'
     | 'ready'
   consigneeIndex: number
   message: string
+}
+
+export interface BatchSubmitSummary {
+  status: 'success' | 'partial' | 'failure'
+  successCount: number
+  failedCount: number
+  message: string
+}
+
+export interface BatchQuoteItem {
+  consigneeIndex: number
+  productCode: ExpressProductCode
+  productName: string
+  estimatedFee: number | null
 }
 
 export type BatchRecognizedConsigneeStatus = 'ready' | 'error'

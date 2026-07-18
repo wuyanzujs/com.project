@@ -49,19 +49,5 @@ jobs:
         env:
           STYLE_GOVERNANCE_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
 
-      - name: Compile Android debug app
-        working-directory: apps/com.deppon.app/android
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
-
-      - name: Verify debug APK excludes source maps
-        run: |
-          apk=apps/com.deppon.app/android/app/build/outputs/apk/debug/app-debug.apk
-          if unzip -Z1 "$apk" | grep -E '\.map$'; then
-            echo "Android APK must not contain source maps." >&2
-            exit 1
-          fi
-
       - name: Check native environment
         run: pnpm check:app-native-env

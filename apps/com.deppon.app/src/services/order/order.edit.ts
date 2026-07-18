@@ -1,4 +1,28 @@
 import { orderApi } from './order.api'
+import {
+  createOrderEditCollectionDraft,
+  createOrderEditCollectionRequestFields,
+  isOrderEditCollectionChanged,
+  validateOrderEditCollection
+} from './order.edit.collection'
+import {
+  createOrderEditInsuranceDraft,
+  createOrderEditInsuranceRequestFields,
+  getOrderEditInsuranceChangedLabel,
+  isOrderEditInsuranceChanged,
+  validateOrderEditInsurance
+} from './order.edit.insurance'
+import {
+  createOrderEditPackagingDraft,
+  createOrderEditPackagingRequestFields,
+  isOrderEditPackagingChanged,
+  validateOrderEditPackaging
+} from './order.edit.packaging'
+import {
+  createOrderEditScheduleDraft,
+  createOrderEditScheduleRequestDiff,
+  validateOrderEditSchedule
+} from './order.edit.schedule'
 import { validateContact } from '../contact'
 import { createServiceFailure } from '../serviceResponse'
 
@@ -74,16 +98,51 @@ function addressesEqual(left: OrderEditContact, right: OrderEditContact) {
 }
 
 export function createOrderEditDraft(detail: OrderDetail): OrderEditDraft {
+  const sender = createEditContact(detail, 'sender')
+  const receiver = createEditContact(detail, 'receiver')
+  const goodsNumber = Math.max(1, normalizeNumber(detail.goodsNumber, 1))
+  const totalWeight = Math.max(0.1, normalizeNumber(detail.totalWeight, 1))
+  const totalVolume = Math.max(0, normalizeNumber(detail.totalVolume, 0))
+
   return {
     orderNumber: normalizeText(detail.orderNumber),
-    sender: createEditContact(detail, 'sender'),
-    receiver: createEditContact(detail, 'receiver'),
+    sender,
+    receiver,
     goodsName: normalizeText(detail.goodsName),
-    goodsNumber: Math.max(1, normalizeNumber(detail.goodsNumber, 1)),
-    totalWeight: Math.max(0.1, normalizeNumber(detail.totalWeight, 1)),
-    totalVolume: Math.max(0, normalizeNumber(detail.totalVolume, 0)),
+    goodsNumber,
+    totalWeight,
+    totalVolume,
+    collection: createOrderEditCollectionDraft(detail),
+    insurance: createOrderEditInsuranceDraft(detail),
+    packaging: createOrderEditPackagingDraft(detail),
+    schedule: createOrderEditScheduleDraft(detail, {
+      sender,
+      goodsNumber,
+      totalWeight,
+      totalVolume
+    }),
     remark: normalizeText(detail.remark)
   }
+}
+
+export function getOrderEditUnavailableMessage(detail: OrderDetail) {
+  if (detail.modifyFlag !== true) {
+    return '当前订单不允许修改'
+  }
+
+  if (detail.isSender !== 'Y') {
+    return '您没有权限修改此订单'
+  }
+
+  if (Number(detail.orderClassification) !== 0) {
+    return '当前订单状态不支持修改'
+  }
+
+  if (detail.productCodeFlag === false) {
+    return '当前产品不允许修改'
+  }
+
+  return ''
 }
 
 export function validateOrderEditDraft(
@@ -101,6 +160,11 @@ export function validateOrderEditDraft(
     ...senderValidation.messages.map(message => `寄件人：${message}`),
     ...receiverValidation.messages.map(message => `收件人：${message}`)
   )
+
+  messages.push(...validateOrderEditCollection(draft.collection))
+  messages.push(...validateOrderEditInsurance(draft.insurance))
+  messages.push(...validateOrderEditPackaging(draft.packaging))
+  messages.push(...validateOrderEditSchedule(draft))
 
   if (addressesEqual(draft.sender, draft.receiver)) {
     messages.push('寄件和收件地址不能相同')
@@ -147,6 +211,22 @@ function setChangedText(
   if (normalizedValue !== originValue.trim()) {
     Object.assign(request, { [key]: normalizedValue })
     changedFields.push(label)
+  }
+}
+
+function assignOrderModifyFields(
+  request: OrderModifyRequest,
+  fields: Partial<OrderModifyRequest>
+) {
+  const { orderExtendFields = [], ...topLevelFields } = fields
+
+  Object.assign(request, topLevelFields)
+
+  if (orderExtendFields.length) {
+    request.orderExtendFields = [
+      ...(request.orderExtendFields ?? []),
+      ...orderExtendFields
+    ]
   }
 }
 
@@ -254,6 +334,35 @@ export function buildOrderModifyRequest(
     request.totalVolume = draft.totalVolume
     changedFields.push('货物体积')
   }
+
+  if (isOrderEditPackagingChanged(draft.packaging, origin.packaging)) {
+    assignOrderModifyFields(
+      request,
+      createOrderEditPackagingRequestFields(draft.packaging)
+    )
+    changedFields.push('打包服务')
+  }
+
+  if (isOrderEditCollectionChanged(draft.collection, origin.collection)) {
+    assignOrderModifyFields(
+      request,
+      createOrderEditCollectionRequestFields(draft.collection)
+    )
+    changedFields.push('代收货款')
+  }
+
+  if (isOrderEditInsuranceChanged(draft.insurance, origin.insurance)) {
+    assignOrderModifyFields(
+      request,
+      createOrderEditInsuranceRequestFields(draft.insurance)
+    )
+    changedFields.push(getOrderEditInsuranceChangedLabel(draft.insurance))
+  }
+
+  const scheduleDiff = createOrderEditScheduleRequestDiff(draft, origin)
+
+  assignOrderModifyFields(request, scheduleDiff.request)
+  changedFields.push(...scheduleDiff.changedFields)
 
   if (draft.remark !== origin.remark) {
     request.remark = draft.remark.trim()

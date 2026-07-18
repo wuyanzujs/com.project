@@ -119,7 +119,7 @@ export const contactApi = {
   },
 
   checkAddressDetail(data: ContactAddressCheckRequest) {
-    return depponHttp.post(
+    return depponHttp.post<null, ContactAddressCheckRequest>(
       '/gwapi/userService/eco/user/contact/secure/checkAddressIsDetail',
       data,
       {

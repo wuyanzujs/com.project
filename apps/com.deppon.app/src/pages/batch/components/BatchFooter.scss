@@ -1,0 +1,66 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.batch-footer,
+.batch-footer__actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.batch-footer {
+  min-height: 96px;
+  padding: 12px 24px;
+  justify-content: space-between;
+  background: $dp-color-bg-card;
+}
+
+.batch-footer__summary {
+  flex: 1;
+  padding-right: 16px;
+}
+
+.batch-footer__count {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.batch-footer__hint {
+  display: flex;
+  margin-top: 4px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+
+.batch-footer__quote,
+.batch-footer__submit {
+  min-width: 168px;
+  min-height: 72px;
+  padding: 12px 20px;
+  border-radius: $dp-radius-sm;
+}
+
+.batch-footer__quote {
+  margin-right: 10px;
+  background: $dp-color-brand-faint;
+  border-color: $dp-color-brand-border-subtle;
+  border-width: 1px;
+}
+
+.batch-footer__submit {
+  background: $dp-color-brand;
+}
+
+.batch-footer__quote-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  text-align: center;
+}
+
+.batch-footer__submit-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  text-align: center;
+}

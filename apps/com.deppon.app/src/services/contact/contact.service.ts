@@ -1,3 +1,4 @@
+import { createContactAddressCheckRequest } from './contact.addressIntegrity'
 import { contactApi } from './contact.api'
 import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 
@@ -322,7 +323,9 @@ export const contactService = {
   },
 
   checkAddressDetail(contact: Pick<Contact, 'province' | 'city' | 'county' | 'address'>) {
-    return contactApi.checkAddressDetail(contact)
+    return contactApi.checkAddressDetail(
+      createContactAddressCheckRequest(contact)
+    )
   },
 
   queryCount() {

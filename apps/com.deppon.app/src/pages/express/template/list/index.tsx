@@ -3,7 +3,9 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useRef, useState } from 'react'
 
+import { TemplateMetaEditor } from './components/TemplateMetaEditor'
 import {
+  applyTemplateMetadataUpdate,
   EXPRESS_TEMPLATE_LIMIT,
   templateService
 } from '../../../../services/template'
@@ -13,7 +15,10 @@ import { ensureAuthenticated } from '../../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../../shared/navigation/routes'
 import { APP_STYLE_COLORS } from '../../../../styles/nativeTokens'
 
-import type { ExpressTemplateView } from '../../../../services/template'
+import type {
+  ExpressTemplateDraftMeta,
+  ExpressTemplateView
+} from '../../../../services/template'
 
 
 import './index.scss'
@@ -25,6 +30,8 @@ const ExpressTemplateListPage = () => {
   const [templates, setTemplates] = useState<ExpressTemplateView[]>([])
   const [loading, setLoading] = useState(false)
   const [processingId, setProcessingId] = useState('')
+  const [editingTemplate, setEditingTemplate] =
+    useState<ExpressTemplateView | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
   const loadingRef = useRef(false)
 
@@ -99,6 +106,39 @@ const ExpressTemplateListPage = () => {
     }
   }
 
+  const handleSaveMetadata = async (meta: ExpressTemplateDraftMeta) => {
+    if (!editingTemplate || processingId) {
+      return
+    }
+
+    const template = editingTemplate
+
+    setProcessingId(template.id)
+
+    try {
+      const response = await templateService.updateMetadata(template, meta)
+
+      if (!response.status) {
+        Taro.showToast({
+          title: response.message || '修改失败，请稍后再试',
+          icon: 'none'
+        })
+        return
+      }
+
+      setTemplates(current =>
+        applyTemplateMetadataUpdate(current, template.id, meta)
+      )
+      setEditingTemplate(null)
+      Taro.showToast({
+        title: '模板信息已保存',
+        icon: 'success'
+      })
+    } finally {
+      setProcessingId('')
+    }
+  }
+
   const handleDelete = async (template: ExpressTemplateView) => {
     if (processingId) {
       return
@@ -153,7 +193,8 @@ const ExpressTemplateListPage = () => {
   }
 
   return (
-    <ScrollView className='template-list-page' scrollY>
+    <>
+      <ScrollView className='template-list-page' scrollY>
       <View className='template-list-toolbar'>
         <Text className='template-list-toolbar__summary'>
           已保存 {templates.length}/{EXPRESS_TEMPLATE_LIMIT}
@@ -228,6 +269,16 @@ const ExpressTemplateListPage = () => {
               </AppPressable>
               <AppPressable
                 className='template-card__button template-card__button--quiet'
+                onPress={() => {
+                  if (!processingId) setEditingTemplate(template)
+                }}
+              >
+                <Text className='template-card__button-text template-card__button-text--quiet'>
+                  编辑信息
+                </Text>
+              </AppPressable>
+              <AppPressable
+                className='template-card__button template-card__button--quiet'
                 onPress={() => handleSetDefault(template)}
               >
                 <Text className='template-card__button-text template-card__button-text--quiet'>
@@ -265,8 +316,17 @@ const ExpressTemplateListPage = () => {
             </AppPressable>
           </View>
         )}
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+      <TemplateMetaEditor
+        saving={Boolean(
+          editingTemplate && processingId === editingTemplate.id
+        )}
+        template={editingTemplate}
+        onClose={() => setEditingTemplate(null)}
+        onSave={handleSaveMetadata}
+      />
+    </>
   )
 }
 

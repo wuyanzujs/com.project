@@ -13,6 +13,7 @@ import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
+import { useContactAddressIntegrity } from '../hooks/useContactAddressIntegrity'
 
 import type { Contact } from '../../../services/contact'
 
@@ -42,6 +43,8 @@ const ContactListPage = () => {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [processingContactId, setProcessingContactId] = useState('')
+  const { checkingKey, checkAddressIntegrity } =
+    useContactAddressIntegrity()
   const contactListUrl = useMemo(
     () => createAppRouteUrl(APP_ROUTES.contactList, selectionParams),
     [selectionParams]
@@ -59,6 +62,8 @@ const ContactListPage = () => {
       ? '选择后会回填为纸质发票收票地址，请在发票详情页确认后提交。'
       : selectionParams.source === 'QUERY_PRICE'
         ? '选择后会回填到价格时效页，并触发对应报价依赖清理。'
+        : selectionParams.source === 'BATCH'
+          ? '选择后会回填为批量寄件发货人。'
         : '选择后会回填到寄件页，并触发对应报价和取件依赖清理。'
 
   const loadContacts = useCallback(
@@ -234,9 +239,27 @@ const ContactListPage = () => {
     }
   }
 
-  const handleSelect = (contact: Contact) => {
+  const handleSelect = async (contact: Contact) => {
     if (selectionParams.mode === 'manage') {
       handleEdit(contact)
+      return
+    }
+
+    if (!ensureContactAccess()) {
+      return
+    }
+
+    const integrityAction = await checkAddressIntegrity(contact, {
+      confirmText: '修改地址',
+      cancelText: '继续使用'
+    })
+
+    if (integrityAction === 'review') {
+      handleEdit(contact)
+      return
+    }
+
+    if (integrityAction !== 'continue') {
       return
     }
 
@@ -284,6 +307,7 @@ const ContactListPage = () => {
           <View className='contact-card' key={contact.id || contact.telephone}>
             <AppPressable
               className='contact-card__body'
+              disabled={selectionParams.mode === 'select' && !!checkingKey}
               onPress={() => handleSelect(contact)}
             >
               <View className='contact-card__top'>
@@ -334,9 +358,13 @@ const ContactListPage = () => {
               {selectionParams.mode === 'select' && (
                 <AppPressable contentElement='text'
                   className='contact-card__action contact-card__action--primary'
+                  disabled={!!checkingKey}
                   onPress={() => handleSelect(contact)}
                 >
-                  选择
+                  {checkingKey ===
+                  (contact.id || `${contact.telephone}-${contact.address}`)
+                    ? '校验中'
+                    : '选择'}
                 </AppPressable>
               )}
             </View>

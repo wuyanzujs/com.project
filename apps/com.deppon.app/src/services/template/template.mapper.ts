@@ -1,4 +1,9 @@
 import { createExpressDraft } from '../express/express.draft'
+import {
+  getExpressReturnBillRequirementText,
+  normalizeExpressReturnBillDraft,
+  normalizeExpressReturnBillForTemplate
+} from '../express/valueAdded'
 
 import type {
   ExpressContact,
@@ -25,7 +30,8 @@ const RETURN_LABELS: Record<ExpressReturnBillType, string> = {
   NO_RETURN_SIGNED: '无需返单',
   CUSTOMER_SIGNED_FAX: '电子签回单',
   CUSTOMER_SIGNED_ORIGINAL: '原件返回',
-  RETURNBILL_TYPE_ONLINE: '电子云签'
+  RETURNBILL_TYPE_ONLINE: '电子云签',
+  ORIGINAL_ONLINE: '原件+电子云签'
 }
 
 const EXPRESS_PRODUCT_CODES = new Set<ExpressProductCode>([
@@ -41,7 +47,15 @@ const EXPRESS_PRODUCT_CODES = new Set<ExpressProductCode>([
   'XJTK',
   'XJTH',
   'DJTH',
-  'YTY'
+  'YTY',
+  'YTYDS',
+  'JZKH',
+  'JZQY_LONG',
+  'JZZH',
+  'NJZZH',
+  'NZBRH',
+  'NFLF',
+  'NLRF'
 ])
 
 function normalizeText(value?: string | null) {
@@ -62,7 +76,8 @@ function normalizeReturnType(value?: string): ExpressReturnBillType {
   if (
     value === 'CUSTOMER_SIGNED_FAX' ||
     value === 'CUSTOMER_SIGNED_ORIGINAL' ||
-    value === 'RETURNBILL_TYPE_ONLINE'
+    value === 'RETURNBILL_TYPE_ONLINE' ||
+    value === 'ORIGINAL_ONLINE'
   ) {
     return value
   }
@@ -142,11 +157,17 @@ function mapExpressContact(contact: ExpressContact | null) {
 export function mapTemplateToExpressDraft(raw: ExpressTemplateRaw) {
   const draft = createExpressDraft()
   const paymentType = normalizePaymentType(raw.template.payment?.paymentType)
-  const returnBillType = normalizeReturnType(
-    raw.template.addedService?.returnBillType
-  )
   const transportMode = normalizeProductCode(
     raw.template.product?.omsProductCode
+  )
+  const returnBill = normalizeExpressReturnBillForTemplate(
+    normalizeExpressReturnBillDraft({
+      type: normalizeReturnType(raw.template.addedService?.returnBillType),
+      returnRequirement: raw.template.addedService?.returnRequirement,
+      customReturnRequirement:
+        raw.template.addedService?.customReturnRequirement
+    }),
+    transportMode
   )
   const pickupTime = normalizeText(raw.template.pickupTime?.beginAcceptTime)
 
@@ -167,7 +188,7 @@ export function mapTemplateToExpressDraft(raw: ExpressTemplateRaw) {
       ...draft.service,
       transportMode,
       paymentType,
-      returnBillType,
+      returnBill,
       needContact: raw.template.isContact === 'N' ? 'N' : 'Y'
     },
     pickup: {
@@ -189,8 +210,8 @@ export function normalizeExpressTemplate(
     PAYMENT_LABELS[draft.service.paymentType],
     draft.service.transportMode || '',
     draft.goods.insuredAmount > 0 ? `保价${draft.goods.insuredAmount}元` : '',
-    draft.service.returnBillType !== 'NO_RETURN_SIGNED'
-      ? RETURN_LABELS[draft.service.returnBillType]
+    draft.service.returnBill.type !== 'NO_RETURN_SIGNED'
+      ? RETURN_LABELS[draft.service.returnBill.type]
       : '',
     draft.service.needContact === 'Y' ? '电话联系' : ''
   ].filter(Boolean)
@@ -235,7 +256,76 @@ export function validateTemplateMeta(meta: ExpressTemplateDraftMeta) {
     return '模板名称不能超过5个字'
   }
 
+  if (meta.defaultFlag !== 1 && meta.defaultFlag !== 2) {
+    return '请选择模板默认状态'
+  }
+
   return ''
+}
+
+export function isTemplateMetadataChanged(
+  template: ExpressTemplateView,
+  meta: ExpressTemplateDraftMeta
+) {
+  return (
+    template.name !== meta.name.trim() ||
+    template.isDefault !== (meta.defaultFlag === 1)
+  )
+}
+
+export function buildTemplateMetadataSaveRequest(
+  template: ExpressTemplateView,
+  meta: ExpressTemplateDraftMeta,
+  sysCode: string
+): ExpressTemplateSaveRequest {
+  return {
+    ...template.raw,
+    id: template.id,
+    templateName: meta.name.trim(),
+    defaultFlag: meta.defaultFlag,
+    sysCode
+  }
+}
+
+export function applyTemplateMetadataUpdate(
+  templates: ExpressTemplateView[],
+  id: string,
+  meta: ExpressTemplateDraftMeta
+): ExpressTemplateView[] {
+  const targetId = id.trim()
+
+  if (!targetId || !templates.some(template => template.id === targetId)) {
+    return templates
+  }
+
+  const targetDefault = meta.defaultFlag === 1
+  const targetName = meta.name.trim()
+
+  return templates.map(template => {
+    const target = template.id === targetId
+    const isDefault = target
+      ? targetDefault
+      : targetDefault
+        ? false
+        : template.isDefault
+    const name = target ? targetName : template.name
+    const defaultFlag: ExpressTemplateRaw['defaultFlag'] = isDefault ? 1 : 2
+
+    if (name === template.name && isDefault === template.isDefault) {
+      return template
+    }
+
+    return {
+      ...template,
+      name,
+      isDefault,
+      raw: {
+        ...template.raw,
+        templateName: target ? targetName : template.raw.templateName,
+        defaultFlag
+      }
+    }
+  })
 }
 
 export function buildTemplateSaveRequest(
@@ -245,7 +335,11 @@ export function buildTemplateSaveRequest(
   id = ''
 ): ExpressTemplateSaveRequest {
   const paymentType = draft.service.paymentType
-  const returnBillType = draft.service.returnBillType
+  const returnBill = normalizeExpressReturnBillForTemplate(
+    draft.service.returnBill,
+    draft.selectedProduct?.omsProductCode || draft.service.transportMode
+  )
+  const returnBillType = returnBill.type
   const productCode = draft.service.transportMode
   const pickupTime = draft.pickup.time || '现在发货'
 
@@ -286,8 +380,8 @@ export function buildTemplateSaveRequest(
       addedService: {
         returnBillType,
         returnBillName: RETURN_LABELS[returnBillType],
-        returnRequirement: '',
-        customReturnRequirement: ''
+        returnRequirement: getExpressReturnBillRequirementText(returnBill),
+        customReturnRequirement: returnBill.customRequirement
       }
     }
   }

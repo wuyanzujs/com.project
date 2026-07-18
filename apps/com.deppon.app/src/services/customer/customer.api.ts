@@ -1,6 +1,6 @@
 import { depponHttp } from '../../request/deppon'
 
-import type { CustomerInfoRaw } from './types'
+import type { CustomerCapabilityRaw, CustomerInfoRaw } from './types'
 
 export const customerApi = {
   queryCustomerInfo(loading = false) {
@@ -10,6 +10,14 @@ export const customerApi = {
       {
         loading
       }
+    )
+  },
+
+  queryCustomerCapability(loading = false) {
+    return depponHttp.post<CustomerCapabilityRaw>(
+      '/gwapi/userService/eco/user/secure/customerLabel',
+      undefined,
+      { loading }
     )
   }
 }

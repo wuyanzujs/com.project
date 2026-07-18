@@ -16,6 +16,11 @@ export interface ExpressProductQuoteView {
   feeRows: ExpressQuoteFeeRow[]
 }
 
+const EXPRESS_FEE_NAMES: Record<string, string> = {
+  BZ: '包装服务-纸箱',
+  CBF: '包装服务-拆包装'
+}
+
 function toFiniteAmount(value: unknown) {
   if (value === null || value === undefined || value === '') {
     return null
@@ -70,9 +75,11 @@ function createFeeRow(detail: ExpressPriceDetail): ExpressQuoteFeeRow | null {
     return null
   }
 
+  const code = detail.priceEntryCode.trim().toUpperCase()
+
   return {
-    key: detail.priceEntryCode || detail.priceEntryName,
-    name: detail.priceEntryName || detail.priceEntryCode,
+    key: code || detail.priceEntryName,
+    name: EXPRESS_FEE_NAMES[code] || detail.priceEntryName || code,
     amount
   }
 }

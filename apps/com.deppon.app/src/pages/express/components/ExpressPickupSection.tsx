@@ -1,5 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
+import { ExpressPickupTimeCard } from './ExpressPickupTimeCard'
 import { AppPressable } from '../../../shared/components'
 import { AppIcon } from '../../../shared/components/AppIcon'
 import {
@@ -8,14 +9,15 @@ import {
 } from '../../../styles/nativeTokens'
 
 import type { ExpressDraft, ExpressFlag } from '../../../services/express'
+import type { ExpressPickupTimeController } from '../hooks/useExpressPickupTime'
 
 import './ExpressPickupSection.scss'
 
 export interface ExpressPickupSectionProps {
   pickup: ExpressDraft['pickup']
+  pickupTimeController: ExpressPickupTimeController
   needContact: ExpressFlag
   onModeChange: (dispatch: ExpressFlag) => void
-  onQueryPickupTime: () => void
   onNeedContactChange: (needContact: ExpressFlag) => void
   onOpenStations: () => void
 }
@@ -27,9 +29,9 @@ const CONTACT_OPTIONS: Array<{ label: string; value: ExpressFlag }> = [
 
 export function ExpressPickupSection({
   pickup,
+  pickupTimeController,
   needContact,
   onModeChange,
-  onQueryPickupTime,
   onNeedContactChange,
   onOpenStations
 }: ExpressPickupSectionProps) {
@@ -89,7 +91,7 @@ export function ExpressPickupSection({
             block
             className='express-pickup-section__row'
             layout='row-start'
-            onPress={onQueryPickupTime}
+            onPress={pickupTimeController.onQuery}
           >
             <AppIcon
               color={APP_STYLE_COLORS.brand.default}
@@ -108,6 +110,11 @@ export function ExpressPickupSection({
               />
             </View>
           </AppPressable>
+
+          <ExpressPickupTimeCard
+            controller={pickupTimeController}
+            pickup={pickup}
+          />
 
           <View className='express-pickup-section__contact-row'>
             <View className='express-pickup-section__contact-label'>

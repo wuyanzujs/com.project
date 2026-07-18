@@ -1,0 +1,178 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-delivery-preference {
+  padding-top: $dp-space-12;
+  margin-top: $dp-space-8;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.express-delivery-preference__header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.express-delivery-preference__summary {
+  flex: 1;
+  margin-left: $dp-space-12;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  text-align: right;
+}
+
+.express-delivery-preference__options {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: $dp-space-8;
+}
+
+.express-delivery-preference__option {
+  flex-basis: 44%;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: $dp-control-height-compact;
+  padding: 0 $dp-space-8;
+  margin: 0 $dp-space-6 $dp-space-6 0;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: $dp-border-width-hairline;
+}
+
+.express-delivery-preference__option--active {
+  background: $dp-color-brand-soft;
+  border-color: $dp-color-brand;
+}
+
+.express-delivery-preference__option-text {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-delivery-preference__option-text--active {
+  color: $dp-color-brand;
+}
+
+.express-delivery-preference__description {
+  display: flex;
+  margin-top: $dp-space-4;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-legal;
+  line-height: $dp-line-height-legal;
+}
+
+.express-delivery-preference__details {
+  margin-top: $dp-space-12;
+  padding: $dp-space-12;
+  background: $dp-color-bg-subtle;
+  border-radius: $dp-radius-sm;
+}
+
+.express-delivery-preference__label {
+  display: flex;
+  margin-bottom: $dp-space-8;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-delivery-preference__date-list,
+.express-delivery-preference__time-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-bottom: $dp-space-10;
+}
+
+.express-delivery-preference__date {
+  flex-basis: 28%;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: $dp-control-height-medium;
+  margin: 0 $dp-space-6 $dp-space-6 0;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: $dp-border-width-hairline;
+}
+
+.express-delivery-preference__date--active,
+.express-delivery-preference__time--active,
+.express-delivery-preference__unavailable--active {
+  background: $dp-color-brand-soft;
+  border-color: $dp-color-brand;
+}
+
+.express-delivery-preference__date-text,
+.express-delivery-preference__time-text,
+.express-delivery-preference__unavailable-text {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-legal;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-delivery-preference__date-text--active,
+.express-delivery-preference__time-text--active,
+.express-delivery-preference__unavailable-text--active {
+  color: $dp-color-brand;
+}
+
+.express-delivery-preference__weekday,
+.express-delivery-preference__fee {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-micro;
+}
+
+.express-delivery-preference__time {
+  flex-basis: 44%;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: $dp-control-height-medium;
+  margin: 0 $dp-space-6 $dp-space-6 0;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: $dp-border-width-hairline;
+}
+
+.express-delivery-preference__date-scroll {
+  height: $dp-control-height-large;
+}
+
+.express-delivery-preference__date-track {
+  display: flex;
+  flex-direction: row;
+}
+
+.express-delivery-preference__unavailable {
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 132px;
+  min-height: $dp-control-height-medium;
+  margin-right: $dp-space-6;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: $dp-border-width-hairline;
+}
+
+.express-delivery-preference__message {
+  margin-top: $dp-space-10;
+  padding: $dp-space-8 $dp-space-10;
+  background: $dp-color-info-background;
+  border-radius: $dp-radius-sm;
+}
+
+.express-delivery-preference__message-text {
+  display: flex;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-legal;
+  line-height: $dp-line-height-legal;
+}

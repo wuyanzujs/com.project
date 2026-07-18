@@ -33,6 +33,59 @@ const releaseBaselineContractPath = path.join(
   scriptDirectory,
   'check-release-style-baseline.mjs'
 )
+
+const makeFixtureWritable = root => {
+  if (!fs.existsSync(root)) {
+    return
+  }
+
+  for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+    const filePath = path.join(root, entry.name)
+
+    if (entry.isDirectory()) {
+      makeFixtureWritable(filePath)
+      continue
+    }
+
+    try {
+      fs.chmodSync(filePath, 0o666)
+    } catch {
+      // Cleanup should remain best-effort when another process owns a file.
+    }
+  }
+
+  try {
+    fs.chmodSync(root, 0o777)
+  } catch {
+    // Cleanup should remain best-effort when another process owns a directory.
+  }
+}
+
+const cleanupWaitBuffer = new Int32Array(new SharedArrayBuffer(4))
+
+const removeFixture = root => {
+  let lastError
+
+  for (let attempt = 0; attempt <= 50; attempt += 1) {
+    try {
+      makeFixtureWritable(root)
+      fs.rmSync(root, {
+        recursive: true,
+        force: true
+      })
+      return
+    } catch (error) {
+      if (!['EPERM', 'EBUSY', 'ENOTEMPTY'].includes(error?.code)) {
+        throw error
+      }
+
+      lastError = error
+      Atomics.wait(cleanupWaitBuffer, 0, 0, 100)
+    }
+  }
+
+  throw lastError
+}
 const workspaceRoot = path.resolve(scriptDirectory, '..', '..', '..')
 
 const writeFixtureFile = (root, file, content) => {
@@ -43,7 +96,7 @@ const writeFixtureFile = (root, file, content) => {
 
 const createProjectFixture = (t, files = {}) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'style-governance-'))
-  t.after(() => fs.rmSync(root, { recursive: true, force: true }))
+  t.after(() => removeFixture(root))
 
   const defaults = {
     'src/app.scss': "@use './styles/tokens' as *;\n",
@@ -67,7 +120,7 @@ const run = (command, args, options = {}) =>
 
 const createCliFixture = (t, files = {}) => {
   const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'style-cli-'))
-  t.after(() => fs.rmSync(repoRoot, { recursive: true, force: true }))
+  t.after(() => removeFixture(repoRoot))
   const appRoot = path.join(repoRoot, 'apps', 'com.deppon.app')
   const fixtureFiles = {
     'src/app.scss': "@use './styles/tokens' as *;\n",
@@ -778,21 +831,21 @@ test('collectProjectSnapshot rejects direct RN pressable bypasses outside the sh
 })
 
 test('stylelint contract rejects unsupported RN style functions and units', () => {
-  const stylelintPath = path.join(
+  const stylelintScriptPath = path.join(
     workspaceRoot,
-    'apps/com.deppon.app/node_modules/.bin/stylelint'
+    'apps/com.deppon.app/node_modules/stylelint/bin/stylelint.mjs'
   )
   const invalid = run(
-    stylelintPath,
-    ['--stdin-filename', 'src/pages/example/index.scss'],
+    process.execPath,
+    [stylelintScriptPath, '--stdin-filename', 'src/pages/example/index.scss'],
     {
       cwd: path.join(workspaceRoot, 'apps/com.deppon.app'),
       input: `.example { width: 2ch; background: repeating-conic-gradient(red, blue); }\n`
     }
   )
   const valid = run(
-    stylelintPath,
-    ['--stdin-filename', 'src/pages/example/index.scss'],
+    process.execPath,
+    [stylelintScriptPath, '--stdin-filename', 'src/pages/example/index.scss'],
     {
       cwd: path.join(workspaceRoot, 'apps/com.deppon.app'),
       input: `.example { width: 2px; transform: rotate(2deg); }\n`
@@ -803,7 +856,7 @@ test('stylelint contract rejects unsupported RN style functions and units', () =
   assert.equal(valid.status, 0, valid.stderr)
 })
 
-test('RN boundary contract includes unsupported style and pressable bypass rules', () => {
+test('RN boundary contract includes style, pressable and Taro alias rules', () => {
   const boundarySource = fs.readFileSync(
     path.join(scriptDirectory, 'check-rn-boundaries.mjs'),
     'utf8'
@@ -814,7 +867,8 @@ test('RN boundary contract includes unsupported style and pressable bypass rules
     '::[A-Za-z]',
     'elevation\\s*:',
     'Pressable|TouchableHighlight|TouchableNativeFeedback|TouchableOpacity|TouchableWithoutFeedback',
-    'includeRelativePathPrefixes'
+    'includeRelativePathPrefixes',
+    'checkForbiddenTaroApiAliases'
   ]) {
     assert.ok(
       boundarySource.includes(token),
@@ -1453,7 +1507,17 @@ test('formal verify includes the strict style gate', () => {
     fs.readFileSync(path.join(workspaceRoot, 'apps/com.deppon.app/package.json'))
   )
 
-  assert.match(packageJson.scripts.verify, /pnpm run check:styles:strict/)
+  assert.match(
+    packageJson.scripts['verify:static'],
+    /pnpm run check:styles:strict/
+  )
+  assert.doesNotMatch(
+    packageJson.scripts.verify,
+    /bundle:android|bundle:ios|gradle|xcode|taro build/i
+  )
+  assert.match(packageJson.scripts['verify:static'], /check:platform-build/)
+  assert.match(packageJson.scripts['verify:bundle:android'], /bundle:android/)
+  assert.match(packageJson.scripts['verify:bundle:ios'], /bundle:ios/)
 })
 
 test('release baseline contract handles dirty worktrees and clean release commits', t => {

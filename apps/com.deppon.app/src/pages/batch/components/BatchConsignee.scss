@@ -1,0 +1,128 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.batch-consignee {
+  margin-top: 16px;
+  padding: 18px;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-light;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.batch-consignee__head,
+.batch-setting,
+.batch-setting__options {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.batch-consignee__head,
+.batch-setting {
+  justify-content: space-between;
+}
+
+.batch-consignee__title {
+  flex: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.batch-consignee__address {
+  margin-top: 8px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.batch-consignee__quote {
+  display: flex;
+  flex-direction: row;
+  margin-top: 12px;
+  padding: 12px 14px;
+  align-items: center;
+  justify-content: space-between;
+  background: $dp-color-brand-faint;
+  border-radius: $dp-radius-sm;
+}
+
+.batch-consignee__quote-name {
+  flex: 1;
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.batch-consignee__quote-fee {
+  margin-left: 12px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.batch-consignee__input,
+.batch-consignee__metric {
+  color: $dp-color-text-heading;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+  font-size: $dp-font-size-body;
+}
+
+.batch-consignee__input {
+  min-height: 64px;
+  margin-top: 14px;
+  padding: 12px 14px;
+}
+
+.batch-consignee__metrics {
+  display: flex;
+  flex-direction: row;
+  margin-top: 12px;
+}
+
+.batch-consignee__metric {
+  flex: 1;
+  min-height: 60px;
+  padding: 10px 14px;
+}
+
+.batch-consignee__metric--last {
+  margin-left: 12px;
+}
+
+.batch-setting {
+  min-height: 76px;
+  padding-top: 16px;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: 1px;
+}
+
+.batch-setting__label {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+}
+
+.batch-setting__options {
+  flex: 1;
+  justify-content: flex-end;
+  padding-left: 16px;
+}
+
+.batch-setting__option {
+  min-width: 132px;
+  min-height: 56px;
+  margin-left: 10px;
+  padding: 8px 12px;
+  border-color: $dp-color-border;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.batch-setting__option-text {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-small;
+  text-align: center;
+}

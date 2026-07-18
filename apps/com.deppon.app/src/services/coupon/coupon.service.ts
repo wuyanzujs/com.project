@@ -294,7 +294,9 @@ export const couponService = {
       statusText: getStatusText(coupon, status),
       labelText,
       tags: createTags(coupon, usageTimeText, labelText),
-      canUse: status === 'USABLE' && coupon.businessStatus !== '1',
+      canUse:
+        (status === 'USABLE' || status === 'AVAILABLE') &&
+        coupon.businessStatus !== '1',
       raw: coupon
     }
   },

@@ -1,0 +1,71 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-scene-survey {
+  max-height: 96%;
+  padding: $dp-card-padding;
+}
+
+.order-scene-survey__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-scene-survey__body {
+  margin-top: $dp-space-lg;
+}
+
+.order-scene-survey__question {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-title;
+}
+
+.order-scene-survey__label-options {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: $dp-space-md;
+}
+
+.order-scene-survey__label-option {
+  width: 50%;
+  min-height: $dp-control-height-default;
+  padding: $dp-space-xs;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-control;
+  border-width: $dp-border-width-hairline;
+}
+
+.order-scene-survey__label-option-text {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body-large;
+  text-align: center;
+}
+
+.order-scene-survey__completed {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  padding-top: $dp-space-3xl;
+}
+
+.order-scene-survey__completed-title {
+  color: $dp-color-success-text;
+  font-size: $dp-font-size-heading;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-heading;
+}
+
+.order-scene-survey__completed-summary {
+  margin-top: $dp-space-xs;
+  margin-bottom: $dp-space-xl;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+  text-align: center;
+}

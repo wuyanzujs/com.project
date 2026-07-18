@@ -3,6 +3,7 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useMemo, useState } from 'react'
 
+import { CustomerCapabilitySection } from './CustomerCapabilitySection'
 import { customerService } from '../../../services/customer'
 import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
@@ -11,7 +12,10 @@ import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { copyTextToClipboard } from '../../../shared/platform/clipboard'
 import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
-import type { CustomerCenterView } from '../../../services/customer'
+import type {
+  CustomerCapabilitySummaryView,
+  CustomerCenterView
+} from '../../../services/customer'
 import type { AppWebSource } from '../../../shared/webview/appWeb'
 
 
@@ -62,6 +66,9 @@ function getPrimaryCustomerAction(
 
 const CustomerCenterPage = () => {
   const [customer, setCustomer] = useState<CustomerCenterView | null>(null)
+  const [capability, setCapability] =
+    useState<CustomerCapabilitySummaryView | null>(null)
+  const [capabilityMessage, setCapabilityMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const customerWebActions = useMemo(
@@ -87,15 +94,22 @@ const CustomerCenterPage = () => {
     setErrorMessage('')
 
     try {
-      const response = await customerService.queryCustomerCenter()
+      const response = await customerService.queryCustomerOverview()
 
       if (!response.status || !response.result) {
         setCustomer(null)
+        setCapability(null)
+        setCapabilityMessage('')
         setErrorMessage(response.message || '暂未获取到客户信息')
         return
       }
 
-      setCustomer(response.result)
+      setCustomer(response.result.customer)
+      setCapability(response.result.capability)
+      setCapabilityMessage(response.result.warning)
+      setErrorMessage(
+        response.result.customer ? '' : response.result.warning
+      )
     } finally {
       setLoading(false)
     }
@@ -162,6 +176,12 @@ const CustomerCenterPage = () => {
             '进入页面后会自动同步当前账号的客户绑定状态。'}
         </Text>
       </View>
+
+      <CustomerCapabilitySection
+        capability={capability}
+        loading={loading}
+        message={capabilityMessage}
+      />
 
       <View className='customer-section'>
         <Text className='customer-section__title'>客户资料</Text>

@@ -1,5 +1,6 @@
 export const CACHE_KEYS = {
   accountCacheOwner: 'DEPPON_ACCOUNT_CACHE_OWNER',
+  batchDraft: 'DEPPON_BATCH_DRAFT',
   cookie: 'DEPPON_COOKIE',
   expressDraft: 'DEPPON_EXPRESS_DRAFT',
   expressPrivacyConfirm: 'DEPPON_EXPRESS_PRIVACY_CONFIRM',
@@ -20,6 +21,7 @@ export function createCacheStorageKey(key: string) {
 }
 
 export const ACCOUNT_SCOPED_CACHE_KEYS = [
+  CACHE_KEYS.batchDraft,
   CACHE_KEYS.expressDraft,
   CACHE_KEYS.goodsQueryHistory,
   CACHE_KEYS.invoiceOrderAuth,

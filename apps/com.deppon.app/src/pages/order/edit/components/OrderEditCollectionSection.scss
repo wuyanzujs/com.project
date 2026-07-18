@@ -1,0 +1,102 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-edit-collection__header,
+.order-edit-collection__amount-head,
+.order-edit-collection-agreement,
+.order-edit-collection-message {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order-edit-collection__header-content,
+.order-edit-collection-account__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-edit-collection__summary,
+.order-edit-collection__hint {
+  display: flex;
+  margin-top: $dp-space-4;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.order-edit-collection-toggle {
+  align-items: center;
+  justify-content: center;
+  min-width: $dp-touch-target-min;
+  min-height: $dp-touch-target-min;
+  margin-left: $dp-space-16;
+}
+
+.order-edit-collection-toggle__track {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: $dp-space-72;
+  height: $dp-space-40;
+  padding: $dp-space-4;
+  background: $dp-color-bg-track;
+  border-radius: $dp-radius-pill;
+}
+
+.order-edit-collection-toggle__track--active {
+  align-items: flex-end;
+  background: $dp-color-brand;
+}
+
+.order-edit-collection-toggle__thumb {
+  width: $dp-space-32;
+  height: $dp-space-32;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-circle;
+}
+
+.order-edit-collection__body {
+  padding-top: $dp-space-16;
+  margin-top: $dp-space-12;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.order-edit-collection__label {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-edit-collection__types {
+  display: flex;
+  flex-direction: row;
+  margin-top: $dp-space-10;
+}
+
+.order-edit-collection-type {
+  min-width: $dp-space-96;
+  min-height: $dp-control-height-compact;
+  padding: 0 $dp-space-16;
+  margin-right: $dp-space-10;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: $dp-border-width-hairline;
+}
+
+.order-edit-collection-type--active {
+  background: $dp-color-brand-soft;
+  border-color: $dp-color-brand;
+}
+
+.order-edit-collection-type__text {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-edit-collection-type__text--active {
+  color: $dp-color-brand;
+}

@@ -1,0 +1,100 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-coupon-option {
+  margin-top: $dp-space-12;
+  overflow: hidden;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-card;
+  border-width: $dp-border-width-hairline;
+}
+
+.express-coupon-option--selected {
+  background: $dp-color-brand-faint;
+  border-color: $dp-color-brand;
+}
+
+.express-coupon-option__select,
+.express-coupon-option__disabled {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: $dp-space-88;
+  padding: $dp-space-12;
+}
+
+.express-coupon-option__disabled {
+  opacity: $dp-opacity-muted;
+}
+
+.express-coupon-option__amount {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+  width: $dp-space-88;
+}
+
+.express-coupon-option__value {
+  color: $dp-color-warning-text;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-title-large;
+}
+
+.express-coupon-option__unit {
+  margin: 0 0 $dp-space-4 $dp-space-2;
+  color: $dp-color-warning-text;
+  font-size: $dp-font-size-caption;
+}
+
+.express-coupon-option__content {
+  flex: 1;
+  min-width: 0;
+  margin-left: $dp-space-12;
+}
+
+.express-coupon-option__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body;
+}
+
+.express-coupon-option__meta,
+.express-coupon-option__state,
+.express-coupon-option__unavailable {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.express-coupon-option__meta {
+  display: flex;
+  margin-top: $dp-space-4;
+}
+
+.express-coupon-option__state {
+  margin-left: $dp-space-8;
+  color: $dp-color-brand;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-coupon-option__unavailable {
+  margin-left: $dp-space-8;
+}
+
+.express-coupon-option__detail {
+  align-items: flex-end;
+  justify-content: center;
+  min-height: $dp-touch-target-min;
+  padding: 0 $dp-space-12;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.express-coupon-option__detail-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}

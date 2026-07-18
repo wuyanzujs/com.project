@@ -1,3 +1,5 @@
 export * from './coupon.api'
 export * from './coupon.service'
+export * from './expressCoupon.api'
+export * from './expressCoupon.service'
 export * from './types'

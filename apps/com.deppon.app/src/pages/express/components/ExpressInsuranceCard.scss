@@ -1,0 +1,159 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-insurance {
+  padding-top: $dp-space-16;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.express-insurance__summary,
+.express-insurance__hint,
+.express-insurance__result,
+.express-insurance__message {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.express-insurance-options {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  margin-top: $dp-space-16;
+}
+
+.express-insurance-option {
+  flex: 1;
+  min-height: $dp-control-height-large;
+  padding: $dp-space-12;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-light;
+  border-width: $dp-border-width-hairline;
+  border-radius: $dp-radius-control;
+}
+
+.express-insurance-option--spaced {
+  margin-left: $dp-space-8;
+}
+
+.express-insurance-option--selected {
+  background: $dp-color-brand-faint;
+  border-color: $dp-color-brand;
+}
+
+.express-insurance-option--disabled {
+  opacity: $dp-opacity-disabled;
+}
+
+.express-insurance-option__title-row,
+.express-insurance__field-head,
+.express-insurance__actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.express-insurance-option__title,
+.express-insurance__label {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body;
+}
+
+.express-insurance-option__badge {
+  padding: 0 $dp-space-6;
+  margin-left: $dp-space-4;
+  color: $dp-color-warning-text;
+  font-size: $dp-font-size-micro;
+  line-height: $dp-line-height-fine;
+  background: $dp-color-warning-background-soft;
+  border-radius: $dp-radius-xs;
+}
+
+.express-insurance-option__summary {
+  margin-top: $dp-space-4;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-fine;
+}
+
+.express-insurance__field-head {
+  margin-top: $dp-space-20;
+}
+
+.express-insurance__limit {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.express-insurance-amount {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: $dp-control-height-default;
+  padding: 0 $dp-space-20;
+  margin-top: $dp-space-12;
+  background: $dp-color-bg-subtle;
+  border-radius: $dp-radius-control;
+}
+
+.express-insurance-amount__currency {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-insurance-amount__input {
+  flex: 1;
+  min-height: $dp-control-height-default;
+  margin-left: $dp-space-12;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+}
+
+.express-insurance__hint,
+.express-insurance__result,
+.express-insurance__message {
+  margin-top: $dp-space-8;
+}
+
+.express-insurance__result {
+  color: $dp-color-success-text;
+}
+
+.express-insurance__message {
+  color: $dp-color-danger;
+}
+
+.express-insurance__actions {
+  justify-content: flex-end;
+  margin-top: $dp-space-16;
+}
+
+.express-insurance__action {
+  min-width: $dp-space-96;
+  min-height: $dp-touch-target-min;
+  padding: 0 $dp-space-16;
+  border-color: $dp-color-border;
+  border-width: $dp-border-width-hairline;
+  border-radius: $dp-radius-control;
+}
+
+.express-insurance__action--primary {
+  margin-left: $dp-space-12;
+  background: $dp-color-brand;
+  border-color: $dp-color-brand;
+}
+
+.express-insurance__action-text {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-insurance__action-text--primary {
+  color: $dp-color-text-inverse;
+}

@@ -116,6 +116,98 @@ const nativeIdentityChecks = [
     message: 'iOS Bundle ID 应使用 com.deppon.app。'
   }
 ]
+const rnBehaviorContractChecks = [
+  {
+    filePath: path.join(
+      appRoot,
+      'src/shared/native/AppFormScrollView.tsx'
+    ),
+    expected: "keyboardShouldPersistTaps='handled'",
+    message:
+      '表单滚动容器必须保证键盘开启时按钮点击仍能交给业务 handler。'
+  },
+  {
+    filePath: path.join(appRoot, 'src/pages/login/index.tsx'),
+    expected: '<AppFormScrollView',
+    message:
+      '登录表单必须使用 shared/native 的键盘点击容器，避免首次点击只收起键盘。'
+  },
+  {
+    filePath: path.join(appRoot, 'src/request/index.ts'),
+    expected: "credentials: options.credentials ?? 'include'",
+    message:
+      'RN OWS 请求必须显式携带原生 cookie credentials，不能依赖 fetch 默认值。'
+  },
+  {
+    filePath: path.join(
+      appRoot,
+      'src/shared/native/AppSessionCookie.ts'
+    ),
+    expected: "from '@preeternal/react-native-cookie-manager'",
+    message:
+      'RN ECO_TOKEN 必须通过 shared/native cookie facade 同步，业务层不能猜测 Set-Cookie。'
+  },
+  {
+    filePath: path.join(appRoot, 'src/request/cookieJar.ts'),
+    expected: 'recoverSessionCookie',
+    message:
+      'RN 登录必须保留原生 cookie 异步写入后的有界恢复入口。'
+  },
+  {
+    filePath: path.join(appRoot, 'src/pages/web/index.tsx'),
+    expected: 'requiresAppWebLogin(target, hasValidSession())',
+    message:
+      '认证 WebView 必须在页面渲染前动态检查 App 登录态。'
+  },
+  {
+    filePath: path.join(appRoot, 'src/pages/web/index.tsx'),
+    expected: 'ensureAuthenticated({',
+    message:
+      '认证 WebView 必须通过统一登录守卫保存当前 App 路由并回跳。'
+  },
+  {
+    filePath: path.join(
+      appRoot,
+      'src/pages/contact/hooks/useContactAddressIntegrity.ts'
+    ),
+    expected: 'contactService.checkAddressDetail',
+    message:
+      '联系人地址完整性检查必须通过 contact service，不能由页面直接调用 API。'
+  },
+  {
+    filePath: path.join(appRoot, 'src/pages/contact/list/index.tsx'),
+    expected: 'checkAddressIntegrity(contact',
+    message:
+      '选择地址前必须执行统一地址完整性决策，保留修改或继续使用语义。'
+  },
+  {
+    filePath: path.join(appRoot, 'src/pages/contact/edit/index.tsx'),
+    expected: 'checkAddressIntegrity(contact',
+    message:
+      '保存地址前必须执行统一地址完整性决策，不能只做本地字段校验。'
+  },
+  {
+    filePath: path.join(
+      appRoot,
+      'src/services/express/productAvailability.service.ts'
+    ),
+    expected: 'Promise.allSettled',
+    message:
+      '寄件产品点城市、融合、升级和货物标签必须独立降级，不能由单个可选接口拖垮报价。'
+  },
+  {
+    filePath: path.join(appRoot, 'src/services/print/print.service.ts'),
+    expected: 'Promise.allSettled',
+    message:
+      '待打印和已打印数量必须独立降级，单个计数接口失败不能清空另一个 tab。'
+  },
+  {
+    filePath: path.join(appRoot, 'src/pages/print/list/index.tsx'),
+    expected: 'printService.queryList',
+    message:
+      '打印订单页必须通过 print service 查询，不能直接调用领域 API。'
+  }
+]
 const nativeFacadeRelativePathPrefixes = [
   'src/shared/platform/',
   'src/shared/native/'
@@ -128,6 +220,50 @@ const nativeOrCacheFacadeRelativePathPrefixes = [
   ...nativeFacadeRelativePathPrefixes,
   ...cacheFacadeRelativePathPrefixes
 ]
+const taroApiFacadeRelativePathPrefixes = [
+  ...nativeOrCacheFacadeRelativePathPrefixes,
+  'src/shared/navigation/'
+]
+const forbiddenTaroApiNames = new Set([
+  'authorize',
+  'canvasToTempFilePath',
+  'checkSession',
+  'chooseAddress',
+  'chooseImage',
+  'chooseInvoiceTitle',
+  'chooseLocation',
+  'chooseMedia',
+  'chooseVideo',
+  'createCanvasContext',
+  'createSelectorQuery',
+  'downloadFile',
+  'getFileSystemManager',
+  'getLocation',
+  'getMenuButtonBoundingClientRect',
+  'getSetting',
+  'getSystemInfoSync',
+  'getUserProfile',
+  'hideShareMenu',
+  'login',
+  'makePhoneCall',
+  'navigateToMiniProgram',
+  'offUserCaptureScreen',
+  'onUserCaptureScreen',
+  'openDocument',
+  'openLocation',
+  'openSetting',
+  'pageScrollTo',
+  'previewImage',
+  'removeTabBarBadge',
+  'requestPayment',
+  'requestSubscribeMessage',
+  'saveImageToPhotosAlbum',
+  'scanCode',
+  'setClipboardData',
+  'setTabBarBadge',
+  'showShareMenu',
+  'uploadFile'
+])
 
 const forbiddenPatterns = [
   {
@@ -159,10 +295,42 @@ const forbiddenPatterns = [
     allowRelativePathPrefixes: ['src/shared/navigation/']
   },
   {
+    pattern: /\bcreateLoginRedirectUrl\s*\(/g,
+    message:
+      '业务页面不能手工生成登录路由，请通过 authGuard.navigateToLogin 跳转。',
+    allowRelativePathPrefixes: ['src/shared/navigation/']
+  },
+  {
+    pattern: /\bAPP_ROUTES\.login\b/g,
+    message:
+      '业务代码不能把登录页当普通路由，请通过 authGuard.navigateToLogin 跳转。',
+    allowRelativePathPrefixes: ['src/shared/navigation/']
+  },
+  {
+    pattern:
+      /(?:from\s+|require\(\s*)['"`][^'"`]*services\/[^'"`]*\.api['"`]/g,
+    message:
+      '页面和 shared 层不能绕过 service facade 直接调用领域 API。',
+    allowRelativePathPrefixes: ['src/services/']
+  },
+  {
+    pattern:
+      /\b(?:printApi|blueToothPrintCode|queryPrintConfig|userPrintConfig|updatePrintStatus|validatePrintSelection)\b/g,
+    message:
+      '打印订单列表首期只允许只读查询，不能绕过 service 或混入设备、模板、配置和状态回写逻辑。',
+    includeRelativePathPrefixes: ['src/pages/print/list/']
+  },
+  {
     pattern: /(?:from\s+|require\(\s*)['"`]react-native(?:\/[^'"`]*)?['"`]/g,
     message:
       '业务代码不能直接依赖 react-native，请通过 shared/platform 或 shared/native facade。',
     allowRelativePathPrefixes: nativeFacadeRelativePathPrefixes
+  },
+  {
+    pattern: /\bkeyboardShouldPersistTaps\s*=/g,
+    message:
+      '页面不能直接使用 RN ScrollView 键盘属性，请通过 shared/native 表单滚动容器。',
+    allowRelativePathPrefixes: ['src/shared/native/']
   },
   {
     pattern: /(?:from\s+|require\(\s*)['"`]react-native-webview['"`]/g,
@@ -513,6 +681,93 @@ function isIncludedByRule(rule, relativePath) {
   )
 }
 
+function isTaroApiFacade(relativePath) {
+  return taroApiFacadeRelativePathPrefixes.some(prefix =>
+    relativePath.startsWith(prefix)
+  )
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function pushForbiddenTaroApiViolation(filePath, content, index, token) {
+  violations.push({
+    filePath,
+    line: getLineNumber(content, index),
+    token,
+    message:
+      '禁止通过别名或具名导入绕过 Taro RN API 门禁，请使用 shared facade。'
+  })
+}
+
+function checkForbiddenTaroApiAliases(filePath, relativePath, content) {
+  if (
+    isTaroApiFacade(relativePath) ||
+    !['.ts', '.tsx'].includes(path.extname(filePath))
+  ) {
+    return
+  }
+
+  const aliases = []
+  const aliasPatterns = [
+    /\bimport\s+([A-Za-z_$][\w$]*)\s*(?:,\s*\{[^}]*\})?\s+from\s+['"]@tarojs\/taro['"]/g,
+    /\bimport\s+\*\s+as\s+([A-Za-z_$][\w$]*)\s+from\s+['"]@tarojs\/taro['"]/g,
+    /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*require\(\s*['"]@tarojs\/taro['"]\s*\)/g
+  ]
+
+  for (const pattern of aliasPatterns) {
+    for (const match of content.matchAll(pattern)) {
+      aliases.push(match[1])
+    }
+  }
+
+  const apiAlternation = Array.from(forbiddenTaroApiNames).join('|')
+
+  for (const alias of new Set(aliases)) {
+    const memberPattern = new RegExp(
+      `\\b${escapeRegExp(alias)}\\.(${apiAlternation})\\b`,
+      'g'
+    )
+
+    for (const match of content.matchAll(memberPattern)) {
+      pushForbiddenTaroApiViolation(
+        filePath,
+        content,
+        match.index ?? 0,
+        match[0]
+      )
+    }
+  }
+
+  const namedImportPatterns = [
+    /\bimport\s*\{([\s\S]*?)\}\s*from\s+['"]@tarojs\/taro['"]/g,
+    /\b(?:const|let|var)\s*\{([^}]*)\}\s*=\s*require\(\s*['"]@tarojs\/taro['"]\s*\)/g
+  ]
+
+  for (const pattern of namedImportPatterns) {
+    for (const match of content.matchAll(pattern)) {
+      for (const rawSpecifier of match[1].split(',')) {
+        const specifier = rawSpecifier.trim().replace(/^type\s+/, '')
+        const importedName = specifier.split(/\s+(?:as|:)\s+/)[0]
+
+        if (!forbiddenTaroApiNames.has(importedName)) {
+          continue
+        }
+
+        const index = (match.index ?? 0) + match[0].indexOf(rawSpecifier)
+
+        pushForbiddenTaroApiViolation(
+          filePath,
+          content,
+          index,
+          rawSpecifier.trim()
+        )
+      }
+    }
+  }
+}
+
 const violations = []
 
 function checkPackageDependencies() {
@@ -589,6 +844,33 @@ function checkNativeIdentity() {
 
 checkNativeIdentity()
 
+function checkRnBehaviorContracts() {
+  for (const item of rnBehaviorContractChecks) {
+    if (!existsSync(item.filePath)) {
+      violations.push({
+        filePath: item.filePath,
+        line: 1,
+        token: path.relative(appRoot, item.filePath),
+        message: item.message
+      })
+      continue
+    }
+
+    const content = readFileSync(item.filePath, 'utf8')
+
+    if (!content.includes(item.expected)) {
+      violations.push({
+        filePath: item.filePath,
+        line: 1,
+        token: item.expected,
+        message: item.message
+      })
+    }
+  }
+}
+
+checkRnBehaviorContracts()
+
 for (const filePath of walkFiles(srcRoot)) {
   const content = readFileSync(filePath, 'utf8')
   const relativePath = toPosixPath(path.relative(appRoot, filePath))
@@ -625,6 +907,8 @@ for (const filePath of walkFiles(srcRoot)) {
         'Taro RN 组件使用 className 时必须在当前 TSX 显式导入样式文件，否则子组件样式不会生成映射。'
     })
   }
+
+  checkForbiddenTaroApiAliases(filePath, relativePath, content)
 
   for (const rule of forbiddenPatterns) {
     if (

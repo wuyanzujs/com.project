@@ -1,0 +1,139 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-pickup-time-card {
+  padding: $dp-space-md 0;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.express-pickup-time-card__header,
+.express-pickup-time-card__heading,
+.express-pickup-time-card__track,
+.express-pickup-time-card__time-list,
+.express-pickup-time-card__notice {
+  display: flex;
+}
+
+.express-pickup-time-card__header {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.express-pickup-time-card__heading {
+  flex: 1;
+  flex-direction: column;
+}
+
+.express-pickup-time-card__title,
+.express-pickup-time-card__label {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-label;
+}
+
+.express-pickup-time-card__summary,
+.express-pickup-time-card__message,
+.express-pickup-time-card__empty {
+  margin-top: $dp-space-4;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-fine;
+}
+
+.express-pickup-time-card__refresh,
+.express-pickup-time-card__notice-action {
+  min-height: $dp-touch-target-min;
+  padding: 0 $dp-space-sm;
+}
+
+.express-pickup-time-card__refresh-text,
+.express-pickup-time-card__notice-action-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-label-small;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-label;
+}
+
+.express-pickup-time-card__content {
+  margin-top: $dp-space-md;
+}
+
+.express-pickup-time-card__scroll {
+  margin-top: $dp-space-8;
+}
+
+.express-pickup-time-card__track {
+  flex-direction: row;
+}
+
+.express-pickup-time-card__date {
+  min-width: $dp-control-height-large;
+  min-height: $dp-control-height-medium;
+  margin-right: $dp-space-8;
+  padding: $dp-space-8 $dp-space-sm;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border-light;
+  border-radius: $dp-radius-control;
+  border-width: $dp-border-width-hairline;
+}
+
+.express-pickup-time-card__date--active,
+.express-pickup-time-card__time--active {
+  background: $dp-color-brand-soft;
+  border-color: $dp-color-brand;
+}
+
+.express-pickup-time-card__date-text,
+.express-pickup-time-card__weekday,
+.express-pickup-time-card__time-text,
+.express-pickup-time-card__night-fee {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-fine;
+  text-align: center;
+}
+
+.express-pickup-time-card__weekday,
+.express-pickup-time-card__night-fee {
+  margin-top: $dp-space-2;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-micro;
+}
+
+.express-pickup-time-card__time-list {
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: $dp-space-8;
+}
+
+.express-pickup-time-card__time {
+  min-width: 31%;
+  min-height: $dp-control-height-medium;
+  margin-right: $dp-space-8;
+  margin-bottom: $dp-space-8;
+  padding: $dp-space-8;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border-light;
+  border-radius: $dp-radius-control;
+  border-width: $dp-border-width-hairline;
+}
+
+.express-pickup-time-card__time--disabled {
+  opacity: $dp-opacity-disabled;
+}
+
+.express-pickup-time-card__notice {
+  flex-direction: column;
+  margin-top: $dp-space-8;
+  padding: $dp-space-sm;
+  background: $dp-color-warning-background-soft;
+  border-radius: $dp-radius-control;
+}
+
+.express-pickup-time-card__notice-text {
+  color: $dp-color-warning-text;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-fine;
+}

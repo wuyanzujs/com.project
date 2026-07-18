@@ -1,146 +1,61 @@
+import {
+  buildExpressDeliveryAppointmentRequest,
+  isExpressScheduledDeliveryProductSupported
+} from './deliveryPreference.rules'
 import { expressApi } from './express.api'
 import {
   createExpressDraft,
   trimText,
-  validateExpressContact,
   validateExpressDraft,
   validateExpressPriceTimeDraft,
   toFiniteNumber
 } from './express.draft'
 import {
   buildCreateOrderRequest,
-  buildFilterOrderRequest,
   buildFreightRequest,
-  buildInsurancePriceRequest,
-  buildPickupTimeRequest
+  buildInsurancePriceRequest
 } from './express.payload'
+import {
+  getBlockingExpressGoodsLabel,
+  normalizeExpressGoodsCheckResult
+} from './goodsCheck.rules'
+import {
+  applyExpressInsuranceCapability,
+  createExpressInsuranceCapability,
+  isExpressInsuranceCapabilityCurrent,
+  validateExpressInsurance
+} from './insurance.rules'
+import { queryExpressPickupTime } from './pickupTime.service'
+import { createExpressGoodsLabelRequest } from './productAvailability.rules'
+import {
+  queryExpressProductAvailability
+} from './productAvailability.service'
+import { validateExpressWarehouseScreeningForSubmit } from './warehouse.rules'
+import {
+  queryExpressWarehouseScreening,
+  stageExpressWarehouse
+} from './warehouse.service'
 import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type {
   CreateExpressOrderResponse,
+  ExpressDeliveryAppointmentResponse,
   ExpressDraft,
-  ExpressFilterResponse,
   ExpressGoodsCheckResult,
-  ExpressGoodsCheckStatus,
-  ExpressGoodsLabel,
   ExpressGoodsLabelRequest,
+  ExpressInsuranceCapability,
   ExpressInsurancePriceResponse,
   ExpressInsuranceQuote,
   ExpressOrderCancelRequest,
   ExpressOrderDetailRequest,
-  ExpressPickupTimeResponse,
-  ExpressProductQuote
+  ExpressProductQuote,
+  ExpressQuoteResult
 } from './types'
 import type { DepponResponse } from '../../request/deppon'
 
 function getResponseFailureMessage(response: DepponResponse<unknown>) {
   return response.message || '校验失败，请稍后再试'
-}
-
-function getBlockingGoodsLabel(labels: ExpressGoodsLabel[]) {
-  return labels.find((label) => label.displayType === 'forbid')
-}
-
-function getGoodsLabelStatus(
-  label: ExpressGoodsLabel
-): ExpressGoodsCheckStatus {
-  if (label.displayType === 'forbid') {
-    return 'forbid'
-  }
-
-  if (label.goodsRemarkCode === 'unknow_category') {
-    return 'unknown'
-  }
-
-  if (
-    label.goodsRemarkCode === 'contraband_category' ||
-    label.displayType === 'alert' ||
-    label.displayType === 'addprice' ||
-    label.displayType === 'tips'
-  ) {
-    return 'risk'
-  }
-
-  return 'risk'
-}
-
-function compareGoodsStatus(
-  current: ExpressGoodsCheckStatus,
-  next: ExpressGoodsCheckStatus
-) {
-  const rank: Record<ExpressGoodsCheckStatus, number> = {
-    ok: 0,
-    risk: 1,
-    unknown: 2,
-    forbid: 3
-  }
-
-  return rank[next] > rank[current] ? next : current
-}
-
-function getGoodsCheckStatus(
-  labels: ExpressGoodsLabel[]
-): ExpressGoodsCheckStatus {
-  return labels.reduce<ExpressGoodsCheckStatus>(
-    (status, label) => compareGoodsStatus(status, getGoodsLabelStatus(label)),
-    'ok'
-  )
-}
-
-function getGoodsCheckTitle(status: ExpressGoodsCheckStatus) {
-  switch (status) {
-    case 'forbid':
-      return '暂不支持寄递'
-    case 'unknown':
-      return '需要人工确认'
-    case 'risk':
-      return '存在寄递提示'
-    default:
-      return '可正常寄递'
-  }
-}
-
-function getGoodsCheckMessage(
-  status: ExpressGoodsCheckStatus,
-  labels: ExpressGoodsLabel[]
-) {
-  const message = labels.map((label) => trimText(label.tip)).find(Boolean)
-
-  if (message) {
-    return message
-  }
-
-  switch (status) {
-    case 'forbid':
-      return '该货物当前不支持寄递，请更换货物名称或咨询客服。'
-    case 'unknown':
-      return '暂未识别到明确品类，寄件前建议补充准确名称。'
-    case 'risk':
-      return '该货物存在包装、保价或收寄限制提示，请按页面提示确认。'
-    default:
-      return '未命中禁寄或特殊风险规则。'
-  }
-}
-
-function normalizeGoodsCheckResult(
-  goodsName: string,
-  labels: ExpressGoodsLabel[]
-): ExpressGoodsCheckResult {
-  const status = getGoodsCheckStatus(labels)
-
-  return {
-    goodsName,
-    status,
-    canExpress: status !== 'forbid',
-    title: getGoodsCheckTitle(status),
-    message: getGoodsCheckMessage(status, labels),
-    labels
-  }
-}
-
-function isBlockingFilterResult(result?: ExpressFilterResponse | null) {
-  return !!result && result.type !== 0 && result.type !== 1
 }
 
 function normalizeInsuranceQuote(
@@ -159,17 +74,9 @@ function normalizeInsuranceQuote(
 
 async function checkGoodsBeforeSubmit(
   draft: ExpressDraft
-): Promise<DepponResponse<boolean>> {
+): Promise<DepponResponse<ExpressInsuranceCapability>> {
   const response = await expressApi.queryGoodsLabels(
-    {
-      goodsName: draft.goods.name,
-      senderProvinceName: draft.sender?.province,
-      senderCityName: draft.sender?.city,
-      senderCountyName: draft.sender?.county,
-      arriveProvinceName: draft.consignee?.province,
-      arriveCityName: draft.consignee?.city,
-      arriveCountyName: draft.consignee?.county
-    },
+    createExpressGoodsLabelRequest(draft),
     false
   )
 
@@ -177,16 +84,26 @@ async function checkGoodsBeforeSubmit(
     return createFailure(response.message || '暂未完成货物校验，请稍后再试')
   }
 
-  const blockingLabel = getBlockingGoodsLabel(response.result ?? [])
+  const labels = response.result ?? []
+  const blockingLabel = getBlockingExpressGoodsLabel(labels)
 
   if (blockingLabel) {
     return createFailure(blockingLabel.tip || '该货物暂不支持寄递')
   }
 
-  return {
-    ...response,
-    result: true
+  const capability = createExpressInsuranceCapability(draft, labels)
+
+  if (!isExpressInsuranceCapabilityCurrent(draft, capability)) {
+    return createFailure('货物保价规则已更新，请重新获取价格')
   }
+
+  const insuranceMessages = validateExpressInsurance(draft, capability)
+
+  if (insuranceMessages.length) {
+    return createFailure(insuranceMessages[0])
+  }
+
+  return { ...response, result: capability }
 }
 
 async function checkGoodsByName(
@@ -212,21 +129,26 @@ async function checkGoodsByName(
 
   return {
     ...response,
-    result: normalizeGoodsCheckResult(goodsName, response.result ?? [])
+    result: normalizeExpressGoodsCheckResult(goodsName, response.result ?? [])
   }
 }
 
 async function checkOrderFilterBeforeSubmit(
   draft: ExpressDraft
 ): Promise<DepponResponse<boolean>> {
-  const response = await expressApi.filterOrder(buildFilterOrderRequest(draft))
+  const response = await queryExpressWarehouseScreening(draft)
 
-  if (!response.status) {
+  if (!response.status || !response.result) {
     return createFailure(getResponseFailureMessage(response))
   }
 
-  if (isBlockingFilterResult(response.result)) {
-    return createFailure(response.result?.reason || '当前订单暂不支持提交')
+  const messages = validateExpressWarehouseScreeningForSubmit(
+    draft,
+    response.result
+  )
+
+  if (messages.length) {
+    return createFailure(messages[0])
   }
 
   return {
@@ -237,14 +159,20 @@ async function checkOrderFilterBeforeSubmit(
 
 async function checkBeforeSubmit(
   draft: ExpressDraft
-): Promise<DepponResponse<boolean>> {
+): Promise<DepponResponse<ExpressInsuranceCapability>> {
   const goodsCheck = await checkGoodsBeforeSubmit(draft)
 
   if (!goodsCheck.status) {
     return goodsCheck
   }
 
-  return checkOrderFilterBeforeSubmit(draft)
+  const filterCheck = await checkOrderFilterBeforeSubmit(draft)
+
+  if (!filterCheck.status) {
+    return createFailure(filterCheck.message || '暂时无法提交订单')
+  }
+
+  return { ...goodsCheck, result: goodsCheck.result }
 }
 
 export const expressService = {
@@ -259,29 +187,58 @@ export const expressService = {
   },
 
   queryGoodsLabels(draft: ExpressDraft) {
-    return expressApi.queryGoodsLabels({
-      goodsName: draft.goods.name,
-      senderProvinceName: draft.sender?.province,
-      senderCityName: draft.sender?.city,
-      senderCountyName: draft.sender?.county,
-      arriveProvinceName: draft.consignee?.province,
-      arriveCityName: draft.consignee?.city,
-      arriveCountyName: draft.consignee?.county
-    })
+    return expressApi.queryGoodsLabels(createExpressGoodsLabelRequest(draft))
   },
 
   checkGoodsByName,
 
-  quote(draft: ExpressDraft) {
+  async quote(
+    draft: ExpressDraft
+  ): Promise<DepponResponse<ExpressQuoteResult>> {
     const validation = validateExpressDraft(draft)
 
     if (!validation.valid) {
-      return Promise.resolve(
-        createFailure<ExpressProductQuote[]>(validation.messages[0])
-      )
+      return createFailure<ExpressQuoteResult>(validation.messages[0])
     }
 
-    return expressApi.queryFreight(buildFreightRequest(draft), false)
+    const availability = await queryExpressProductAvailability(draft)
+    const availableDraft = applyExpressInsuranceCapability(
+      draft,
+      availability.insuranceCapability,
+      availability.customer.insuranceLimit
+    )
+    const insuranceMessages = validateExpressInsurance(
+      availableDraft,
+      availability.insuranceCapability
+    )
+
+    if (insuranceMessages.length) {
+      return {
+        status: false,
+        message: insuranceMessages[0],
+        result: { availability, products: [] }
+      }
+    }
+
+    const response = await expressApi.queryFreight(
+      buildFreightRequest(availableDraft, availability),
+      false
+    )
+
+    if (!response.status) {
+      return {
+        ...response,
+        result: { availability, products: [] }
+      }
+    }
+
+    return {
+      ...response,
+      result: {
+        availability,
+        products: response.result ?? []
+      }
+    }
   },
 
   quotePriceTime(draft: ExpressDraft) {
@@ -311,7 +268,7 @@ export const expressService = {
         ...response,
         result: normalizeInsuranceQuote(
           response.result ?? null,
-          toFiniteNumber(draft.goods.insuredAmount)
+          toFiniteNumber(Number(request.statements[0] ?? 0))
         )
       }
     } catch (error) {
@@ -321,16 +278,47 @@ export const expressService = {
     }
   },
 
-  queryPickupTime(draft: ExpressDraft) {
-    const senderMessages = validateExpressContact(draft.sender, '寄件人')
+  queryPickupTime: queryExpressPickupTime,
 
-    if (senderMessages.length) {
+  queryWarehouseScreening: queryExpressWarehouseScreening,
+
+  stageWarehouse: stageExpressWarehouse,
+
+  queryDeliveryAppointment(draft: ExpressDraft) {
+    if (
+      !draft.consignee?.province ||
+      !draft.consignee.city ||
+      !draft.consignee.county ||
+      !trimText(draft.consignee.address)
+    ) {
       return Promise.resolve(
-        createFailure<ExpressPickupTimeResponse>(senderMessages[0])
+        createFailure<ExpressDeliveryAppointmentResponse>('请先填写完整收件地址')
       )
     }
 
-    return expressApi.queryPickupTime(buildPickupTimeRequest(draft), false)
+    if (!draft.selectedProduct?.arriveDate) {
+      return Promise.resolve(
+        createFailure<ExpressDeliveryAppointmentResponse>(
+          '请先获取并选择包含预计到达时间的产品'
+        )
+      )
+    }
+
+    if (
+      !isExpressScheduledDeliveryProductSupported(
+        draft.selectedProduct.omsProductCode
+      )
+    ) {
+      return Promise.resolve(
+        createFailure<ExpressDeliveryAppointmentResponse>(
+          '当前产品暂不支持定时派送'
+        )
+      )
+    }
+
+    return expressApi.queryDeliveryAppointment(
+      buildExpressDeliveryAppointmentRequest(draft)
+    )
   },
 
   async submitDraft(
@@ -361,7 +349,9 @@ export const expressService = {
       return createFailure('当前账号存在未完成拦截，请稍后再试')
     }
 
-    return expressApi.createOrder(buildCreateOrderRequest(draft))
+    return expressApi.createOrder(
+      buildCreateOrderRequest(draft, submitCheck.result)
+    )
   },
 
   queryOrderDetail(data: ExpressOrderDetailRequest) {

@@ -7,6 +7,7 @@ export interface AppWebRouteOptions {
   uri?: string
   title?: string
   auth?: boolean
+  messageContext?: string
 }
 
 export interface AppWebTarget {
@@ -16,12 +17,20 @@ export interface AppWebTarget {
   auth: boolean
   allowed: boolean
   message: string
+  messageContext: string
 }
 
 interface KnownWebTarget {
   title: string
   url: string
   auth?: boolean
+}
+
+export function requiresAppWebLogin(
+  target: Pick<AppWebTarget, 'allowed' | 'auth'>,
+  authenticated: boolean
+) {
+  return target.allowed && target.auth && !authenticated
 }
 
 export const APP_WEB_TARGETS = {
@@ -111,9 +120,21 @@ export const APP_WEB_TARGETS = {
     title: '投诉',
     url: '/depponmobile/complaint/list'
   },
+  SUPPORT_COMPLAINT_RECORD: {
+    title: '投诉记录',
+    url: '/depponmobile/complaint/record'
+  },
   SUPPORT_CLAIM: {
     title: '在线理赔',
     url: '/depponmobile/h5/index#/claimPackagePages/index'
+  },
+  SUPPORT_CLAIM_PROCESSING: {
+    title: '理赔处理中',
+    url: '/depponmobile/h5/index#/claimPackagePages/list?tab=2'
+  },
+  SUPPORT_CLAIM_COMPLETED: {
+    title: '理赔已完成',
+    url: '/depponmobile/h5/index#/claimPackagePages/list?tab=3'
   },
   STATION_FEEDBACK: {
     title: '网点反馈',
@@ -130,6 +151,32 @@ export const APP_WEB_TARGETS = {
   CUSTOMER_MONTHLY_CENTER: {
     title: '月结中心',
     url: '/depponmobile/mow/customer/dshkCenter'
+  },
+  EXPRESS_COLLECTION_ACCOUNT: {
+    title: '选择收款账户',
+    url: '/depponmobile/h5/index#/customerCenterPackagePages/dshk/tkzh/list?from=EXPRESS_SERVICE'
+  },
+  ORDER_EDIT_COLLECTION_ACCOUNT: {
+    title: '选择收款账户',
+    url: '/depponmobile/h5/index#/customerCenterPackagePages/dshk/tkzh/list?from=EXPRESS_SERVICE'
+  },
+  EXPRESS_COLLECTION_RULES: {
+    title: '代收货款服务协议',
+    url: '/depponmobile/h5/index#/queryPackagePages/service/detail/index?value=COLLECTION',
+    auth: false
+  },
+  EXPRESS_WAREHOUSE: {
+    title: '送货进仓',
+    url: '/depponmobile/mow/send/warehouse/index'
+  },
+  EXPRESS_WAREHOUSE_RULES: {
+    title: '送货进仓服务说明',
+    url: '/depponmobile/h5/index#/queryPackagePages/service/detail/index?value=WAREHOUSE',
+    auth: false
+  },
+  EXPRESS_RETURN_BILL_CLOUD_SIGN: {
+    title: '电子云签',
+    url: '/depponmobile/electronCloudSign/index'
   },
   CUSTOMER_PRIVATE_BILL: {
     title: '隐私面单',
@@ -249,6 +296,54 @@ export function isAllowedAppWebUrl(url: string) {
   }
 }
 
+export function getAppWebWarehouseStagingId(url: string) {
+  try {
+    return new URL(url).searchParams.get('warehouseId')?.trim() ?? ''
+  } catch {
+    return ''
+  }
+}
+
+export function getAppWebReturnBillFileCode(url: string) {
+  try {
+    return new URL(url).searchParams.get('fileCode')?.trim() ?? ''
+  } catch {
+    return ''
+  }
+}
+
+const MESSAGE_SOURCE_TARGETS = new Set<AppWebSource>([
+  'EXPRESS_COLLECTION_ACCOUNT',
+  'ORDER_EDIT_COLLECTION_ACCOUNT',
+  'EXPRESS_WAREHOUSE',
+  'EXPRESS_RETURN_BILL_CLOUD_SIGN'
+])
+
+export function isAllowedAppWebTargetUrl(source: string, url: string) {
+  if (!isAllowedAppWebUrl(url)) {
+    return false
+  }
+
+  if (!isAppWebSource(source) || !MESSAGE_SOURCE_TARGETS.has(source)) {
+    return true
+  }
+
+  try {
+    const target = new URL(toAbsoluteWebUrl(APP_WEB_TARGETS[source].url))
+    const candidate = new URL(url)
+    const targetHashPath = target.hash.split('?')[0]
+    const candidateHashPath = candidate.hash.split('?')[0]
+
+    return (
+      candidate.origin === target.origin &&
+      candidate.pathname === target.pathname &&
+      (!targetHashPath || candidateHashPath === targetHashPath)
+    )
+  } catch {
+    return false
+  }
+}
+
 export function createAppWebUrl(options: AppWebRouteOptions) {
   const knownTarget: KnownWebTarget = APP_WEB_TARGETS[options.source]
   const uri = options.uri || knownTarget?.url || ''
@@ -262,7 +357,8 @@ export function createAppWebUrl(options: AppWebRouteOptions) {
     source: options.source,
     uri,
     title,
-    auth: auth ? 'Y' : 'N'
+    auth: auth ? 'Y' : 'N',
+    messageContext: options.messageContext
   })
 }
 
@@ -281,7 +377,10 @@ export function resolveAppWebTarget(
     params.auth === undefined
       ? knownTarget?.auth !== false
       : decodeRouteValue(params.auth) !== 'N'
-  const allowed = isAllowedAppWebUrl(url)
+  const rawMessageContext = decodeRouteValue(params.messageContext).trim()
+  const messageContext =
+    rawMessageContext.length <= 256 ? rawMessageContext : ''
+  const allowed = isAllowedAppWebTargetUrl(source, url)
 
   return {
     source,
@@ -289,6 +388,7 @@ export function resolveAppWebTarget(
     url,
     auth,
     allowed,
+    messageContext,
     message: url ? '当前链接暂未允许访问' : '当前入口暂未配置承接地址'
   }
 }

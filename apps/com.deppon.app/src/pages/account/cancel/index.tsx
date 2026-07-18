@@ -7,8 +7,8 @@ import { accountService } from '../../../services/account'
 import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import {
-  createLoginRedirectUrl,
-  hasValidSession
+  hasValidSession,
+  navigateToLogin
 } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 
@@ -50,8 +50,10 @@ const AccountCancelPage = () => {
 
   useDidShow(() => {
     if (!hasValidSession()) {
-      navigateToAppRoute(createLoginRedirectUrl(APP_ROUTES.accountCancel), {
-        replace: true
+      navigateToLogin({
+        redirectUrl: APP_ROUTES.accountCancel,
+        replace: true,
+        message: false
       })
       return
     }

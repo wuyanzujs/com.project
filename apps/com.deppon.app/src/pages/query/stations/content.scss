@@ -26,9 +26,7 @@
   line-height: $dp-line-height-body-large;
 }
 
-.query-stations-filter,
 .query-stations-section,
-.query-stations-results,
 .query-stations-message {
   margin: 20px 24px 0;
   padding: 24px;
@@ -36,64 +34,18 @@
   border-radius: $dp-radius-sm;
 }
 
-.query-stations-filter__label {
-  display: flex;
-  margin-bottom: 12px;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-body-small;
-  font-weight: $dp-font-weight-bold;
-}
-
-.query-stations-chip-group,
 .query-stations-grid,
-.query-stations-section__head,
-.query-stations-result-head,
-.query-stations-card__actions {
+.query-stations-section__head {
   display: flex;
   flex-direction: row;
 }
 
-.query-stations-chip-group {
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-}
-
-.query-stations-chip {
-  align-items: center;
-  justify-content: center;
-  min-width: 120px;
-  height: 56px;
-  padding: 0 18px;
-  margin: 0 12px 12px 0;
-  background: $dp-color-bg-subtle;
-  border-color: $dp-color-border-default;
-  border-radius: $dp-radius-sm;
-  border-width: 1px;
-}
-
-.query-stations-chip--active {
-  background: $dp-color-brand-soft;
-  border-color: $dp-color-brand;
-}
-
-.query-stations-chip__text {
-  color: $dp-color-text-secondary;
-  font-size: $dp-font-size-body-small;
-  font-weight: $dp-font-weight-bold;
-}
-
-.query-stations-chip__text--active {
-  color: $dp-color-brand;
-}
-
-.query-stations-section__head,
-.query-stations-result-head {
+.query-stations-section__head {
   align-items: center;
   justify-content: space-between;
 }
 
-.query-stations-section__title,
-.query-stations-result-head__title {
+.query-stations-section__title {
   color: $dp-color-text-heading;
   font-size: $dp-font-size-title-large;
   font-weight: $dp-font-weight-bold;
@@ -157,129 +109,4 @@
   color: $dp-color-status-warning-text;
   font-size: $dp-font-size-body;
   line-height: $dp-line-height-body-small;
-}
-
-.query-stations-result-head__summary {
-  display: flex;
-  margin-top: 8px;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-body-small;
-}
-
-.query-stations-result-head__tag {
-  padding: 8px 16px;
-  color: $dp-color-brand;
-  background: $dp-color-brand-soft;
-  border-radius: $dp-radius-sm;
-  font-size: $dp-font-size-body-small;
-  font-weight: $dp-font-weight-bold;
-}
-
-.query-stations-card {
-  padding: 22px 0;
-  border-top-color: $dp-color-border-light;
-  border-top-width: 1px;
-}
-
-.query-stations-card__title {
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-subtitle;
-  font-weight: $dp-font-weight-bold;
-}
-
-.query-stations-card__address,
-.query-stations-card__meta {
-  display: flex;
-  margin-top: 10px;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-body-small;
-  line-height: $dp-line-height-body-small;
-}
-
-.query-stations-card__actions {
-  justify-content: flex-end;
-  padding-top: 18px;
-}
-
-.query-stations-card__outline-button,
-.query-stations-card__primary-button {
-  align-items: center;
-  justify-content: center;
-  min-width: 128px;
-  height: 56px;
-  padding: 0 18px;
-  margin-left: 12px;
-  border-radius: $dp-radius-sm;
-}
-
-.query-stations-card__outline-button {
-  background: $dp-color-bg-subtle;
-  border-color: $dp-color-border;
-  border-width: 1px;
-}
-
-.query-stations-card__primary-button {
-  background: $dp-color-brand;
-}
-
-.query-stations-card__outline-button-text,
-.query-stations-card__primary-button-text {
-  font-size: $dp-font-size-body-small;
-  font-weight: $dp-font-weight-bold;
-}
-
-.query-stations-card__outline-button-text {
-  color: $dp-color-text-body;
-}
-
-.query-stations-card__primary-button-text {
-  color: $dp-color-text-inverse;
-}
-
-.query-stations-empty {
-  align-items: center;
-  justify-content: center;
-  min-height: 240px;
-}
-
-.query-stations-empty__title {
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-title;
-  font-weight: $dp-font-weight-bold;
-}
-
-.query-stations-empty__summary {
-  display: flex;
-  margin-top: 12px;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-body;
-  line-height: $dp-line-height-body-small;
-  text-align: center;
-}
-
-.query-stations-empty__button {
-  align-items: center;
-  justify-content: center;
-  min-width: 160px;
-  height: 64px;
-  margin-top: 22px;
-  padding: 0 24px;
-  background: $dp-color-brand;
-  border-radius: $dp-radius-sm;
-}
-
-.query-stations-empty__button-text {
-  color: $dp-color-text-inverse;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-bold;
-}
-
-.query-stations-empty__feedback {
-  margin-top: 18px;
-}
-
-.query-stations-empty__feedback-text {
-  color: $dp-color-brand;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-bold;
 }

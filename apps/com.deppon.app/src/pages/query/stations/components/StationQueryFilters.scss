@@ -1,0 +1,51 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.query-stations-filter {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.query-stations-filter__label {
+  display: flex;
+  margin-bottom: 12px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.query-stations-chip-group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.query-stations-chip {
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  height: 56px;
+  padding: 0 18px;
+  margin: 0 12px 12px 0;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.query-stations-chip--active {
+  background: $dp-color-brand-soft;
+  border-color: $dp-color-brand;
+}
+
+.query-stations-chip__text {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.query-stations-chip__text--active {
+  color: $dp-color-brand;
+}

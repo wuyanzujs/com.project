@@ -1,7 +1,13 @@
 import { hydrateStorage } from './cache'
-import { configureRequest, onRequestEvent } from './request'
+import {
+  configureRequest,
+  configureSessionCookieRuntime,
+  hydrateSessionCookie,
+  onRequestEvent
+} from './request'
 import { authApi, clearAppSession, getCurrentEcoToken } from './services/auth'
 import { APP_RUNTIME_CONFIG } from './shared/config/runtime'
+import { createAppSessionCookieRuntime } from './shared/native/AppSessionCookie'
 import { navigateToLogin } from './shared/navigation/authGuard'
 
 let bootstrapPromise: Promise<void> | null = null
@@ -12,7 +18,14 @@ export function bootstrapAppRuntime() {
   }
 
   bootstrapPromise = (async () => {
+    configureSessionCookieRuntime(
+      createAppSessionCookieRuntime([
+        APP_RUNTIME_CONFIG.apiBaseURL,
+        APP_RUNTIME_CONFIG.webBaseURL
+      ])
+    )
     await hydrateStorage()
+    await hydrateSessionCookie(APP_RUNTIME_CONFIG.apiBaseURL)
 
     configureRequest({
       baseURL: APP_RUNTIME_CONFIG.apiBaseURL,

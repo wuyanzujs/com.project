@@ -129,3 +129,116 @@ export interface PaymentListResult {
   totalRows: number
   pageAmount: number
 }
+
+export type PaymentCheckoutSource = 'ORDER_DETAIL' | 'PAYMENT_LIST'
+
+export interface PaymentCreateRequest {
+  orderSource: string
+  returnUrl: string
+  list: PaymentItem[]
+  payMethod?: 'PCS_E_CARD'
+}
+
+export interface PaymentOrderDetail {
+  outTradeNo: string
+  amount: number
+}
+
+export interface PaymentOrder {
+  amount?: string
+  appId: string
+  isbatch: 'Y' | 'N'
+  orderSource: string
+  outTradeNo: string
+  payNo: string
+  paymentChannelNo: string
+  paymentTypeNo: string
+  requestFrom: string
+  subject: string
+  userId: string | null
+  waybillType: string | null
+  scene?: string
+  pdaFlag?: 'Y' | 'N'
+  pmcList?: PaymentOrderDetail[]
+  couponCode?: string
+}
+
+export type PaymentBackendStatus =
+  | 'PAYING'
+  | 'CREATE'
+  | 'PAY_FAILED'
+  | 'PAY_SUCCESS'
+  | 'CANCELED'
+  | 'LATER_PAY'
+
+export interface PaymentConfirmResponse {
+  payStatus?: PaymentBackendStatus
+  tradeNo?: string
+  orderInfo?: string
+  timeStamp?: string
+  appId?: string
+  sign?: string
+  signType?: string
+  packages?: string
+  nonceStr?: string
+  cashierUrl?: string
+  transactionId?: string
+}
+
+export interface PaymentCancelRequest {
+  orderSource: string
+  appId: string
+  payNo: string
+  requestFrom: string
+  paymentChannelNo: string
+}
+
+export interface PaymentCheckoutRouteOptions {
+  waybillNumber: string
+  role: PaymentRole
+  source: PaymentCheckoutSource
+  detailNo?: string
+}
+
+export interface PaymentCheckoutValidation {
+  valid: boolean
+  message: string
+}
+
+export interface PaymentCheckoutView {
+  items: PaymentItem[]
+  amount: number
+  count: number
+  waybillNumbers: string[]
+}
+
+export type PaymentCommand =
+  | {
+      kind: 'settled'
+      transactionId?: string
+    }
+  | {
+      kind: 'native'
+      channel: 'wechat' | 'alipay' | 'h5Cashier'
+      payload: Record<string, unknown>
+    }
+  | {
+      kind: 'invalid'
+      message: string
+    }
+
+export interface SubmitPaymentCheckoutOptions {
+  source: PaymentCheckoutSource
+  items: PaymentItem[]
+}
+
+export interface PaymentCheckoutResult {
+  amount: number
+  channel?: 'wechat' | 'alipay' | 'h5Cashier'
+  outTradeNo: string
+  paid: boolean
+  payNo: string
+  subject: string
+  transactionId?: string
+  waybillNumber: string
+}

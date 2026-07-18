@@ -17,7 +17,6 @@ import './PaymentCard.scss'
 interface PaymentCardProps {
   item: PaymentItem
   status: PaymentListStatus
-  paying: boolean
   onOpenOrder: (item: PaymentItem) => void
   onEvaluate: (item: PaymentItem) => void
   onPay: (item: PaymentItem) => void
@@ -88,13 +87,11 @@ export function PaymentCard(props: PaymentCardProps) {
         )}
         {props.status === 'UNPAID' && (
           <AppPressable
-            accessibilityLabel={props.paying ? '正在支付' : '去支付'}
+            accessibilityLabel='去支付'
             className='payment-card__primary-button'
             onPress={() => props.onPay(item)}
           >
-            <Text className='payment-card__primary-button-text'>
-              {props.paying ? '处理中' : '去支付'}
-            </Text>
+            <Text className='payment-card__primary-button-text'>去支付</Text>
           </AppPressable>
         )}
       </View>

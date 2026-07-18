@@ -1,13 +1,12 @@
 import Taro from '@tarojs/taro'
 
+import { dispatchAppRouteAsync } from './navigationRuntime'
 import { APP_LOGIN_ROUTE_PATHS } from './routeRegistry'
 import { APP_ROUTES } from './routes'
 import { createAppRouteUrl, createRouteQuery } from './routeUrl'
 import { getCurrentEcoToken } from '../../services/auth'
 
 import type { AppRoutePath } from './routes'
-
-const LOGIN_REDIRECT_LOCK_MS = 800
 
 type RouteParams = Record<string, unknown>
 
@@ -27,7 +26,7 @@ export interface LoginRedirectOptions {
   message?: string | false
 }
 
-let lastLoginRedirectAt = 0
+let loginRedirectInFlight: Promise<boolean> | null = null
 
 function isRecord(value: unknown): value is RouteParams {
   return !!value && typeof value === 'object' && !Array.isArray(value)
@@ -111,29 +110,43 @@ export function navigateToLogin(options: LoginRedirectOptions = {}) {
     return false
   }
 
-  const now = Date.now()
-
-  if (now - lastLoginRedirectAt < LOGIN_REDIRECT_LOCK_MS) {
+  if (loginRedirectInFlight) {
     return false
   }
 
-  lastLoginRedirectAt = now
-
   if (options.message !== false) {
-    Taro.showToast({
-      title: options.message || '请先登录',
-      icon: 'none'
-    })
+    try {
+      const toast = Taro.showToast({
+        title: options.message || '请先登录',
+        icon: 'none'
+      })
+
+      void Promise.resolve(toast).catch(() => undefined)
+    } catch {
+      // Login navigation must continue when transient feedback is unavailable.
+    }
   }
 
   const url = createLoginRedirectUrl(options.redirectUrl)
+  const navigation = dispatchAppRouteAsync(url, {
+    failureMessage: '登录页打开失败，请重试',
+    replace: options.replace
+  })
 
-  if (options.replace) {
-    Taro.redirectTo({ url })
-    return true
-  }
+  loginRedirectInFlight = navigation
+  void navigation.then(
+    () => {
+      if (loginRedirectInFlight === navigation) {
+        loginRedirectInFlight = null
+      }
+    },
+    () => {
+      if (loginRedirectInFlight === navigation) {
+        loginRedirectInFlight = null
+      }
+    }
+  )
 
-  Taro.navigateTo({ url })
   return true
 }
 

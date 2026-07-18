@@ -1,0 +1,101 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-coupon-dialog__content {
+  padding: 0 $dp-space-20 $dp-space-20;
+}
+
+.express-coupon-dialog__manual {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: $dp-control-height-default;
+  padding: 0 $dp-space-12;
+  background: $dp-color-bg-subtle;
+  border-radius: $dp-radius-control;
+}
+
+.express-coupon-dialog__input {
+  flex: 1;
+  min-width: 0;
+  min-height: $dp-control-height-default;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+}
+
+.express-coupon-dialog__apply {
+  align-items: center;
+  justify-content: center;
+  min-width: $dp-space-88;
+  min-height: $dp-touch-target-min;
+  margin-left: $dp-space-12;
+}
+
+.express-coupon-dialog__apply-text,
+.express-coupon-dialog__clear-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-coupon-dialog__clear,
+.express-coupon-dialog__login,
+.express-coupon-dialog__close {
+  align-items: center;
+  justify-content: center;
+  min-height: $dp-touch-target-min;
+}
+
+.express-coupon-dialog__clear,
+.express-coupon-dialog__login {
+  margin-top: $dp-space-12;
+  border-radius: $dp-radius-control;
+}
+
+.express-coupon-dialog__clear {
+  background: $dp-color-bg-muted;
+}
+
+.express-coupon-dialog__login {
+  background: $dp-color-brand-muted;
+}
+
+.express-coupon-dialog__login-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-coupon-dialog__close {
+  width: 100%;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-control;
+}
+
+.express-coupon-dialog__close-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-coupon-dialog__section {
+  margin-top: $dp-space-20;
+}
+
+.express-coupon-dialog__section-title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body;
+}
+
+.express-coupon-dialog__empty {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.express-coupon-dialog__empty {
+  display: flex;
+  padding: $dp-space-32 $dp-space-12;
+  text-align: center;
+}

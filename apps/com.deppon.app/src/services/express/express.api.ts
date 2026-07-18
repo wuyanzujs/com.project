@@ -4,6 +4,8 @@ import type {
   CreateExpressOrderRequest,
   CreateExpressOrderResponse,
   ExpressCreateInterceptResponse,
+  ExpressDeliveryAppointmentRequest,
+  ExpressDeliveryAppointmentResponse,
   ExpressFilterRequest,
   ExpressFilterResponse,
   ExpressFreightRequest,
@@ -16,9 +18,16 @@ import type {
   ExpressOrderCancelRequest,
   ExpressOrderDetail,
   ExpressOrderDetailRequest,
+  ExpressPickupNightRequest,
+  ExpressPickupNightResponse,
   ExpressPickupTimeRequest,
   ExpressPickupTimeResponse,
-  ExpressProductQuote
+  ExpressProductPointRequest,
+  ExpressProductQuote,
+  ExpressProductSwitchRequest,
+  ExpressProductUpgradeRequest,
+  ExpressProductUpgradeResult,
+  ExpressWarehouseStagingRequest
 } from './types'
 
 export const expressApi = {
@@ -33,13 +42,80 @@ export const expressApi = {
     )
   },
 
+  queryProductPointCity(data: ExpressProductPointRequest) {
+    return depponHttp.post<boolean, ExpressProductPointRequest>(
+      '/gwapi/pricetimeService/eco/pricetime/queryPointCityByProduct',
+      data,
+      {
+        loading: false,
+        login: false,
+        timeout: 3000
+      }
+    )
+  },
+
+  queryProductSwitch(data: ExpressProductSwitchRequest) {
+    return depponHttp.post<boolean, ExpressProductSwitchRequest>(
+      '/gwapi/pricetimeService/eco/pricetime/queryNewProductPointCity',
+      data,
+      {
+        loading: false,
+        login: false,
+        timeout: 3000
+      }
+    )
+  },
+
+  queryProductUpgrade(data: ExpressProductUpgradeRequest) {
+    return depponHttp.post<
+      ExpressProductUpgradeResult,
+      ExpressProductUpgradeRequest
+    >(
+      '/gwapi/pricetimeService/eco/pricetime/queryPointCityByAddress',
+      data,
+      {
+        loading: false,
+        login: false,
+        timeout: 3000
+      }
+    )
+  },
+
   queryPickupTime(data: ExpressPickupTimeRequest, loading = true) {
     return depponHttp.post<ExpressPickupTimeResponse, ExpressPickupTimeRequest>(
-      '/gwapi/orderService/eco/order/dispatchTime/pilotCityDispatchTime',
+      '/gwapi/orderService/eco/order/dispatchTime/dispatchTimeByDeptCode',
       data,
       {
         loading,
         timeout: 3000
+      }
+    )
+  },
+
+  queryPickupNight(data: ExpressPickupNightRequest) {
+    return depponHttp.post<
+      ExpressPickupNightResponse,
+      ExpressPickupNightRequest
+    >(
+      '/gwapi/queryService/eco/query/range/matchFeatureAoi',
+      data,
+      {
+        loading: false,
+        timeout: 3000
+      }
+    )
+  },
+
+  queryDeliveryAppointment(data: ExpressDeliveryAppointmentRequest) {
+    return depponHttp.post<
+      ExpressDeliveryAppointmentResponse,
+      ExpressDeliveryAppointmentRequest
+    >(
+      '/gwapi/onlineService/eco/online/print/order/secure/canOrderCityDelivery',
+      data,
+      {
+        loading: false,
+        timeout: 5000
       }
     )
   },
@@ -86,6 +162,18 @@ export const expressApi = {
       data,
       {
         loading: false,
+        timeout: 3000
+      }
+    )
+  },
+
+  stageWarehouse(data: ExpressWarehouseStagingRequest) {
+    return depponHttp.post<string, ExpressWarehouseStagingRequest>(
+      '/gwapi/queryService/eco/query/staging/secure/setStaging',
+      data,
+      {
+        loading: false,
+        login: false,
         timeout: 3000
       }
     )

@@ -93,3 +93,11 @@ export function ensureNativeCapability(capability: NativeCapability) {
     throw new NativeCapabilityError(capability)
   }
 }
+
+export function getNativeCapabilityStatus(capability: NativeCapability) {
+  return APP_NATIVE_CAPABILITIES[capability]
+}
+
+export function isNativeCapabilityReady(capability: NativeCapability) {
+  return getNativeCapabilityStatus(capability) === 'ready'
+}

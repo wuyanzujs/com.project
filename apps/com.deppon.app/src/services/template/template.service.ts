@@ -4,7 +4,9 @@ import { createServiceFailure } from '../serviceResponse'
 import { templateApi } from './template.api'
 import { templateDraftBridge } from './template.bridge'
 import {
+  buildTemplateMetadataSaveRequest,
   buildTemplateSaveRequest,
+  isTemplateMetadataChanged,
   mapTemplateToExpressDraft,
   normalizeExpressTemplate,
   validateTemplateDraft,
@@ -83,6 +85,42 @@ export const templateService = {
 
     if (!response.status || response.result === false) {
       return createServiceFailure(response.message || '保存失败，请稍后再试')
+    }
+
+    return {
+      ...response,
+      result: null
+    }
+  },
+
+  async updateMetadata(
+    template: ExpressTemplateView,
+    meta: ExpressTemplateDraftMeta
+  ): Promise<DepponResponse<null>> {
+    const message = validateTemplateMeta(meta)
+
+    if (message) {
+      return createServiceFailure(message)
+    }
+
+    if (!template.id.trim()) {
+      return createServiceFailure('缺少模板编号')
+    }
+
+    if (!isTemplateMetadataChanged(template, meta)) {
+      return createServiceFailure('您还没有修改模板信息')
+    }
+
+    const response = await templateApi.save(
+      buildTemplateMetadataSaveRequest(
+        template,
+        meta,
+        APP_RUNTIME_CONFIG.systemCode
+      )
+    )
+
+    if (!response.status || response.result === false) {
+      return createServiceFailure(response.message || '修改失败，请稍后再试')
     }
 
     return {

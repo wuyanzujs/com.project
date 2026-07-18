@@ -1,0 +1,33 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-packaging-group__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: $dp-space-40;
+  padding: 0 $dp-space-12;
+  background: $dp-color-bg-muted;
+}
+
+.express-packaging-group__head--divided {
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.express-packaging-group__title {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-caption;
+}
+
+.express-packaging-group__note {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-fine;
+}
+
+.express-packaging-option__indicator--multiple {
+  border-radius: $dp-radius-xs;
+}

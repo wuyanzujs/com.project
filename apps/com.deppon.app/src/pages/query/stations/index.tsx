@@ -1,9 +1,11 @@
 import { Input, ScrollView, Text, View } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import Taro, { useRouter } from '@tarojs/taro'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { queryService } from '../../../services/query'
+import { StationQueryFilters } from './components/StationQueryFilters'
+import { StationQueryResults } from './components/StationQueryResults'
+import { queryService, stationSelection } from '../../../services/query'
 import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
@@ -16,76 +18,37 @@ import { createAppWebUrl } from '../../../shared/webview/appWeb'
 import type {
   DispatchAddress,
   StationItem,
+  StationQueryOptions,
   StationQueryResult,
   StationQueryType,
   StationSubType
 } from '../../../services/query'
 
-
 import './index.scss'
 import './content.scss'
-
-const STATION_TYPE_OPTIONS: Array<{
-  label: string
-  value: StationQueryType
-}> = [
-  {
-    label: '全部',
-    value: 'ALL'
-  },
-  {
-    label: '发货',
-    value: 'LEAVE'
-  },
-  {
-    label: '提货',
-    value: 'PICKUP'
-  },
-  {
-    label: '送货',
-    value: 'DELIVERY'
-  }
-]
-
-const STATION_SUB_TYPE_OPTIONS: Array<{
-  label: string
-  value: StationSubType
-}> = [
-  {
-    label: '快递网点',
-    value: 'EXPRESS'
-  },
-  {
-    label: '零担网点',
-    value: 'LOGISTICS'
-  }
-]
-
-function getStationKey(item: StationItem) {
-  return `${item.source}-${item.id}-${item.code}`
-}
-
-function getFullRegion(address: DispatchAddress | null) {
-  if (!address) {
-    return ''
-  }
-
-  return [address.province, address.city, address.county]
-    .filter(Boolean)
-    .join('-')
-}
+import './selection.scss'
 
 const QueryStationsPage = () => {
-  const [stationType, setStationType] = useState<StationQueryType>('ALL')
+  const router = useRouter()
+  const routeParams = router.params
+  const selectionParams = useMemo(
+    () => stationSelection.parseParams(routeParams),
+    [routeParams]
+  )
+  const selectionMode = Boolean(selectionParams)
+  const [stationType, setStationType] = useState<StationQueryType>(
+    selectionParams ? 'PICKUP' : 'ALL'
+  )
   const [subType, setSubType] = useState<StationSubType>('EXPRESS')
   const [rawText, setRawText] = useState('')
-  const [province, setProvince] = useState('')
-  const [city, setCity] = useState('')
-  const [county, setCounty] = useState('')
-  const [address, setAddress] = useState('')
+  const [province, setProvince] = useState(selectionParams?.province ?? '')
+  const [city, setCity] = useState(selectionParams?.city ?? '')
+  const [county, setCounty] = useState(selectionParams?.county ?? '')
+  const [address, setAddress] = useState(selectionParams?.address ?? '')
   const [result, setResult] = useState<StationQueryResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const initialSelectionQueryKey = useRef('')
 
   const createQuery = () => ({
     rawText,
@@ -97,12 +60,12 @@ const QueryStationsPage = () => {
     subType
   })
 
-  const applyResolvedAddress = (nextAddress: DispatchAddress) => {
+  const applyResolvedAddress = useCallback((nextAddress: DispatchAddress) => {
     setProvince(nextAddress.province)
     setCity(nextAddress.city)
     setCounty(nextAddress.county)
     setAddress([nextAddress.town, nextAddress.address].filter(Boolean).join(''))
-  }
+  }, [])
 
   const handleAnalyze = async () => {
     setErrorMessage('')
@@ -125,17 +88,13 @@ const QueryStationsPage = () => {
     })
   }
 
-  const handleQuery = async () => {
-    if (loading) {
-      return
-    }
-
+  const runQuery = useCallback(async (query: StationQueryOptions) => {
     setLoading(true)
     setErrorMessage('')
     setResult(null)
 
     try {
-      const response = await queryService.queryStations(createQuery())
+      const response = await queryService.queryStations(query)
 
       if (!response.status || !response.result) {
         setErrorMessage(response.message || '暂未查询到网点')
@@ -143,11 +102,44 @@ const QueryStationsPage = () => {
       }
 
       applyResolvedAddress(response.result.address)
-      setResult(response.result)
+      setResult(
+        selectionParams
+          ? stationSelection.filterResult(
+              selectionParams.source,
+              response.result
+            )
+          : response.result
+      )
     } finally {
       setLoading(false)
     }
+  }, [applyResolvedAddress, selectionParams])
+
+  const handleQuery = () => {
+    if (!loading) {
+      void runQuery(createQuery())
+    }
   }
+
+  useEffect(() => {
+    if (!selectionParams) {
+      return
+    }
+
+    const queryKey = [
+      selectionParams.province,
+      selectionParams.city,
+      selectionParams.county,
+      selectionParams.address
+    ].join('|')
+
+    if (initialSelectionQueryKey.current === queryKey) {
+      return
+    }
+
+    initialSelectionQueryKey.current = queryKey
+    void runQuery(stationSelection.createQuery(selectionParams))
+  }, [runQuery, selectionParams])
 
   const handleDial = async (item: StationItem) => {
     try {
@@ -175,6 +167,15 @@ const QueryStationsPage = () => {
     }
 
     navigateToAppRoute(route)
+  }
+
+  const handleSelectStation = (item: StationItem | null) => {
+    if (!selectionParams) {
+      return
+    }
+
+    stationSelection.select(selectionParams.source, item)
+    Taro.navigateBack()
   }
 
   const handleGoExpress = () => {
@@ -218,61 +219,40 @@ const QueryStationsPage = () => {
 
   return (
     <ScrollView className='query-stations-page' scrollY>
-      <View className='query-stations-filter'>
-        <Text className='query-stations-filter__label'>网点类型</Text>
-        <View className='query-stations-chip-group'>
-          {STATION_TYPE_OPTIONS.map((option) => (
-            <AppPressable
-              className={
-                option.value === stationType
-                  ? 'query-stations-chip query-stations-chip--active'
-                  : 'query-stations-chip'
-              }
-              key={option.value}
-              onPress={() => setStationType(option.value)}
-            >
-              <Text
-                className={
-                  option.value === stationType
-                    ? 'query-stations-chip__text query-stations-chip__text--active'
-                    : 'query-stations-chip__text'
-                }
-              >
-                {option.label}
-              </Text>
-            </AppPressable>
-          ))}
-        </View>
-
-        <Text className='query-stations-filter__label'>业务类型</Text>
-        <View className='query-stations-chip-group'>
-          {STATION_SUB_TYPE_OPTIONS.map((option) => (
-            <AppPressable
-              className={
-                option.value === subType
-                  ? 'query-stations-chip query-stations-chip--active'
-                  : 'query-stations-chip'
-              }
-              key={option.value}
-              onPress={() => setSubType(option.value)}
-            >
-              <Text
-                className={
-                  option.value === subType
-                    ? 'query-stations-chip__text query-stations-chip__text--active'
-                    : 'query-stations-chip__text'
-                }
-              >
-                {option.label}
-              </Text>
-            </AppPressable>
-          ))}
-        </View>
-      </View>
+      {!selectionMode && (
+        <StationQueryFilters
+          stationType={stationType}
+          subType={subType}
+          onStationTypeChange={setStationType}
+          onSubTypeChange={setSubType}
+        />
+      )}
 
       <View className='query-stations-section'>
+        {selectionParams && (
+          <View className='query-stations-selection'>
+            <View className='query-stations-selection__content'>
+              <Text className='query-stations-selection__title'>
+                收件自提服务点
+              </Text>
+              <Text className='query-stations-selection__summary'>
+                20 公里内支持自提的快递网点
+              </Text>
+            </View>
+            <AppPressable
+              className='query-stations-selection__nearest'
+              onPress={() => handleSelectStation(null)}
+            >
+              <Text className='query-stations-selection__nearest-text'>
+                使用最近服务点
+              </Text>
+            </AppPressable>
+          </View>
+        )}
         <View className='query-stations-section__head'>
-          <Text className='query-stations-section__title'>查询地址</Text>
+          <Text className='query-stations-section__title'>
+            {selectionMode ? '收件地址' : '查询地址'}
+          </Text>
           <AppPressable className='query-stations-link' onPress={handleAnalyze}>
             <Text className='query-stations-link__text'>智能识别</Text>
           </AppPressable>
@@ -318,7 +298,11 @@ const QueryStationsPage = () => {
 
       <AppPressable className='query-stations-submit' onPress={handleQuery}>
         <Text className='query-stations-submit__text'>
-          {loading ? '查询中...' : '查询网点'}
+          {loading
+            ? '查询中...'
+            : selectionMode
+              ? '查询自提网点'
+              : '查询网点'}
         </Text>
       </AppPressable>
 
@@ -329,106 +313,16 @@ const QueryStationsPage = () => {
       )}
 
       {result && (
-        <View className='query-stations-results'>
-          <View className='query-stations-result-head'>
-            <View>
-              <Text className='query-stations-result-head__title'>
-                {getFullRegion(result.address)}
-              </Text>
-              <Text className='query-stations-result-head__summary'>
-                共 {result.totalRows} 个网点
-              </Text>
-            </View>
-            <Text className='query-stations-result-head__tag'>
-              {result.source === 'Address' ? '地址匹配' : '区县网点'}
-            </Text>
-          </View>
-
-          {result.list.length ? (
-            result.list.map((item) => (
-              <View className='query-stations-card' key={getStationKey(item)}>
-                <Text className='query-stations-card__title'>{item.name}</Text>
-                <Text className='query-stations-card__address'>
-                  {item.address || '暂无地址'}
-                </Text>
-                {item.distance && (
-                  <Text className='query-stations-card__meta'>
-                    距离 {item.distance}
-                  </Text>
-                )}
-                {item.phone && (
-                  <Text className='query-stations-card__meta'>
-                    电话 {item.phone}
-                  </Text>
-                )}
-                {item.business && (
-                  <Text className='query-stations-card__meta'>
-                    业务 {item.business}
-                  </Text>
-                )}
-                <Text className='query-stations-card__meta'>
-                  营业时间 {item.time}
-                </Text>
-
-                <View className='query-stations-card__actions'>
-                  <AppPressable
-                    className='query-stations-card__outline-button'
-                    onPress={() => handleFeedback(item)}
-                  >
-                    <Text className='query-stations-card__outline-button-text'>
-                      反馈
-                    </Text>
-                  </AppPressable>
-                  <AppPressable
-                    className='query-stations-card__outline-button'
-                    onPress={() => handleOpenMap(item)}
-                  >
-                    <Text className='query-stations-card__outline-button-text'>
-                      导航
-                    </Text>
-                  </AppPressable>
-                  <AppPressable
-                    className='query-stations-card__primary-button'
-                    onPress={() => handleDial(item)}
-                  >
-                    <Text className='query-stations-card__primary-button-text'>
-                      拨打
-                    </Text>
-                  </AppPressable>
-                  <AppPressable
-                    className='query-stations-card__primary-button'
-                    onPress={() => handleDetail(item)}
-                  >
-                    <Text className='query-stations-card__primary-button-text'>
-                      详情
-                    </Text>
-                  </AppPressable>
-                </View>
-              </View>
-            ))
-          ) : (
-            <View className='query-stations-empty'>
-              <Text className='query-stations-empty__title'>暂无网点</Text>
-              <Text className='query-stations-empty__summary'>
-                可先预约寄件，等待快递员联系。
-              </Text>
-              <AppPressable
-                className='query-stations-empty__button'
-                onPress={handleGoExpress}
-              >
-                <Text className='query-stations-empty__button-text'>去寄件</Text>
-              </AppPressable>
-              <AppPressable
-                className='query-stations-empty__feedback'
-                onPress={() => handleFeedback()}
-              >
-                <Text className='query-stations-empty__feedback-text'>
-                  找不到网点？
-                </Text>
-              </AppPressable>
-            </View>
-          )}
-        </View>
+        <StationQueryResults
+          result={result}
+          selectionParams={selectionParams}
+          onDetail={handleDetail}
+          onDial={handleDial}
+          onFeedback={handleFeedback}
+          onGoExpress={handleGoExpress}
+          onOpenMap={handleOpenMap}
+          onSelect={handleSelectStation}
+        />
       )}
     </ScrollView>
   )

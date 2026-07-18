@@ -19,8 +19,9 @@ import {
   isWaitAllotOrder
 } from './order.detailRules'
 import { canScheduleOrderPickup } from './order.dispatch'
+import { getOrderEditUnavailableMessage } from './order.edit'
+import { createOrderEvaluationRoute } from './order.evaluation.rules'
 import { APP_ROUTES } from '../../shared/navigation/routes'
-import { getCurrentUser } from '../auth'
 
 import type {
   OrderDetail,
@@ -31,25 +32,10 @@ import type {
 } from './types'
 
 const COMPLAINT_ORDER_CLASSES = new Set([1, 2, 6])
-const EVALUATE_ORDER_CLASSES = new Set([1, 2, 6])
 const COMPLAINT_WINDOW_DAYS = 90
 const URGE_PROGRESS_WEB_PATH = '/depponmobile/mow/order/urgeProgress'
-const EVALUATE_WEB_PATH = '/depponmobile/survey/land'
 const WAYBILL_MODIFY_WEB_PATH = '/depponmobile/mow/order/modifyNew/index'
 const DELIVERY_PREFERENCE_WEB_PATH = '/depponmobile/orderStayTmp'
-
-function createEvaluateRowData(order: OrderDetail) {
-  return JSON.stringify([
-    {
-      field: 'orderNumber',
-      data: order.orderNumber || ''
-    },
-    {
-      field: 'waybillNumber',
-      data: order.waybillNumber || ''
-    }
-  ])
-}
 
 function isComplaintStatus(order: OrderDetail) {
   const orderClass = getOrderClass(order)
@@ -64,21 +50,6 @@ function isComplaintStatus(order: OrderDetail) {
   }
 
   return COMPLAINT_ORDER_CLASSES.has(orderClass)
-}
-
-function isEvaluateStatus(order: OrderDetail) {
-  const orderClass = getOrderClass(order)
-  const statusText = getOrderStatusText(order)
-
-  if (orderClass === null) {
-    return (
-      statusText.includes('运输') ||
-      statusText.includes('派送') ||
-      statusText.includes('签收')
-    )
-  }
-
-  return EVALUATE_ORDER_CLASSES.has(orderClass)
 }
 
 function isWithinDays(value: string | null | undefined, days: number) {
@@ -126,7 +97,7 @@ function canModifyOrder(order: OrderDetail, role?: OrderRole) {
     role !== 'receive' &&
     isWaitAllotOrder(order) &&
     !!order.orderNumber &&
-    order.modifyFlag !== false
+    !getOrderEditUnavailableMessage(order)
   )
 }
 
@@ -136,12 +107,6 @@ function canNotifyDeliver(order: OrderDetail, role?: OrderRole) {
     isTransitOrder(order) &&
     !!getDetailWaybillNumber(order) &&
     order.isDlyNotified === 'N'
-  )
-}
-
-function canEvaluateOrder(order: OrderDetail) {
-  return (
-    (!!order.orderNumber || !!order.waybillNumber) && isEvaluateStatus(order)
   )
 }
 
@@ -164,18 +129,6 @@ function canEditDeliveryPreference(order: OrderDetail, role?: OrderRole) {
 
 function canContactDepartment(order: OrderDetail) {
   return isInvalidOrder(order) && !!getOrderStationCode(order)
-}
-
-function createEvaluateWebUri(order: OrderDetail, role?: OrderRole) {
-  const user = getCurrentUser()
-  const scene = isSenderDetail(order, role) ? 'S0505' : 'S0907'
-
-  return createOrderDetailWebUri(EVALUATE_WEB_PATH, {
-    scene,
-    channel: 'APP',
-    mobile: user?.mobile || '',
-    rowData: createEvaluateRowData(order)
-  })
 }
 
 export function createOrderUrgeContext(
@@ -330,16 +283,17 @@ export function createOrderDetailActions(
     })
   }
 
-  if (canEvaluateOrder(order)) {
+  const evaluationRoute = createOrderEvaluationRoute(order, options.role)
+
+  if (evaluationRoute) {
     actions.push({
       kind: 'evaluate',
       title: '服务评价',
       summary: '对当前订单服务体验进行评价',
-      target: 'web',
+      target: 'route',
       tone: 'neutral',
-      badgeText: 'H5',
-      webSource: 'ORDER_DETAIL_EVALUATE',
-      webUri: createEvaluateWebUri(order, options.role),
+      badgeText: 'App',
+      route: evaluationRoute,
       loginRequired: true
     })
   }

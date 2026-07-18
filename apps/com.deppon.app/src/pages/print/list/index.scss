@@ -1,0 +1,22 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.print-list-shell,
+.print-list-page {
+  display: flex;
+  flex: 1;
+  min-height: 100%;
+  background: $dp-color-bg-page;
+}
+
+.print-list-page {
+  flex-direction: column;
+}
+
+.print-list-scroll {
+  flex: 1;
+}
+
+.print-list-content {
+  min-height: 100%;
+  padding: $dp-space-md $dp-page-horizontal-padding $dp-space-2xl;
+}

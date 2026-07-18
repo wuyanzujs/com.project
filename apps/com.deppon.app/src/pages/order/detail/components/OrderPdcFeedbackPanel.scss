@@ -1,0 +1,74 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-pdc-feedback {
+  padding: $dp-card-padding;
+}
+
+.order-pdc-feedback__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-title-large;
+}
+
+.order-pdc-feedback__description {
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+.order-pdc-feedback__options {
+  display: flex;
+  flex-direction: row;
+  margin-top: $dp-space-lg;
+}
+
+.order-pdc-feedback__option {
+  height: $dp-control-height-large;
+  align-items: center;
+  justify-content: center;
+  border-radius: $dp-radius-control;
+  border-width: $dp-border-width-hairline;
+}
+
+.order-pdc-feedback__option--yes {
+  background: $dp-color-success-background;
+  border-color: $dp-color-success-border;
+}
+
+.order-pdc-feedback__option--no {
+  margin-left: $dp-space-sm;
+  background: $dp-color-bg-muted;
+  border-color: $dp-color-border;
+}
+
+.order-pdc-feedback__option-title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-title;
+}
+
+.order-pdc-feedback__option-summary {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.order-pdc-feedback__later {
+  height: $dp-control-height-medium;
+  margin-top: $dp-space-sm;
+  align-items: center;
+  justify-content: center;
+  border-radius: $dp-radius-control;
+  border-color: $dp-color-border;
+  border-width: $dp-border-width-hairline;
+}
+
+.order-pdc-feedback__later-text {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body-large;
+}

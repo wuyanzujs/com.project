@@ -34,16 +34,6 @@
   font-size: $dp-font-size-caption;
   text-align: right;
 }
-.express-order-options__clear {
-  align-items: center;
-  justify-content: center;
-  min-width: $dp-touch-target-min;
-}
-.express-order-options__clear-text {
-  color: $dp-color-brand;
-  font-size: $dp-font-size-caption;
-  font-weight: $dp-font-weight-bold;
-}
 .express-order-options__input {
   flex: 1;
   height: $dp-control-height-compact;

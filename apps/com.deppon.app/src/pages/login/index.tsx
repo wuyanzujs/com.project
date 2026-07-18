@@ -1,13 +1,21 @@
-import { Input, ScrollView, Text, View } from '@tarojs/components'
+import { Input, Text, View } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { authService, isValidMobile, isValidSmsCode } from '../../services/auth'
 import { AppPressable } from '../../shared/components'
-import { AppKeyboardAvoidingView } from '../../shared/native'
-import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
+import {
+  AppFormScrollView,
+  AppKeyboardAvoidingView
+} from '../../shared/native'
+import {
+  navigateToAppRoute,
+  navigateToAppRouteAsync
+} from '../../shared/navigation/appNavigation'
+import { hasValidSession } from '../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../shared/navigation/routes'
+import { normalizeAppRouteUrlParam } from '../../shared/navigation/routeUrl'
 import { createAppWebUrl } from '../../shared/webview/appWeb'
 
 import type { AppWebSource } from '../../shared/webview/appWeb'
@@ -18,22 +26,10 @@ import './content.scss'
 
 const SMS_COUNTDOWN_SECONDS = 60
 
-function normalizeRedirectUrl(value?: string) {
-  if (!value) {
-    return ''
-  }
-
-  try {
-    return decodeURIComponent(value)
-  } catch {
-    return value
-  }
-}
-
 const LoginPage = () => {
   const router = useRouter()
   const redirectUrl = useMemo(
-    () => normalizeRedirectUrl(router.params.redirectUrl),
+    () => normalizeAppRouteUrlParam(router.params.redirectUrl),
     [router.params.redirectUrl]
   )
   const [mobile, setMobile] = useState('')
@@ -42,12 +38,26 @@ const LoginPage = () => {
   const [submitting, setSubmitting] = useState(false)
   const [countdown, setCountdown] = useState(0)
   const [agreementAccepted, setAgreementAccepted] = useState(false)
-  const canSend = isValidMobile(mobile) && !sending && countdown <= 0
+  const [sessionReady, setSessionReady] = useState(
+    () => hasValidSession() && Boolean(authService.getCachedUser())
+  )
+  const mountedRef = useRef(true)
+  const targetUrl = redirectUrl || APP_ROUTES.mine
+  const canSend =
+    !sessionReady && isValidMobile(mobile) && !sending && countdown <= 0
   const codeButtonLabel = sending
     ? '发送中'
     : countdown > 0
       ? `${countdown}秒后重试`
       : '获取验证码'
+
+  useEffect(() => {
+    mountedRef.current = true
+
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
 
   useEffect(() => {
     if (countdown <= 0) {
@@ -75,6 +85,10 @@ const LoginPage = () => {
     try {
       const response = await authService.sendLoginSms(mobile)
 
+      if (!mountedRef.current) {
+        return
+      }
+
       Taro.showToast({
         title: response.status
           ? '验证码已发送'
@@ -85,13 +99,52 @@ const LoginPage = () => {
       if (response.status) {
         setCountdown(SMS_COUNTDOWN_SECONDS)
       }
+    } catch {
+      if (mountedRef.current) {
+        Taro.showToast({
+          title: '验证码发送失败，请检查网络后重试',
+          icon: 'none'
+        })
+      }
     } finally {
-      setSending(false)
+      if (mountedRef.current) {
+        setSending(false)
+      }
     }
+  }
+
+  const returnAfterLogin = async () => {
+    const navigated = await navigateToAppRouteAsync(targetUrl, {
+      failureMessage: '登录已完成，但返回页面失败，请点击重试',
+      replace: true
+    })
+
+    if (navigated) {
+      Taro.showToast({
+        title: '登录成功',
+        icon: 'none'
+      })
+    }
+
+    return navigated
   }
 
   const handleSubmit = async () => {
     if (submitting) {
+      return
+    }
+
+    if (sessionReady) {
+      setSubmitting(true)
+
+      try {
+        await returnAfterLogin()
+      } finally {
+        if (mountedRef.current) {
+          setSubmitting(false)
+        }
+      }
+
       return
     }
 
@@ -122,7 +175,15 @@ const LoginPage = () => {
     setSubmitting(true)
 
     try {
-      const result = await authService.loginWithSms(mobile, smsCode)
+      const result = await authService.loginWithSms(
+        mobile,
+        smsCode,
+        targetUrl
+      )
+
+      if (!mountedRef.current) {
+        return
+      }
 
       if (!result.status) {
         Taro.showToast({
@@ -132,16 +193,19 @@ const LoginPage = () => {
         return
       }
 
-      Taro.showToast({
-        title: '登录成功',
-        icon: 'none'
-      })
-
-      navigateToAppRoute(redirectUrl || APP_ROUTES.mine, {
-        replace: true
-      })
+      setSessionReady(true)
+      await returnAfterLogin()
+    } catch {
+      if (mountedRef.current) {
+        Taro.showToast({
+          title: '登录失败，请检查网络后重试',
+          icon: 'none'
+        })
+      }
     } finally {
-      setSubmitting(false)
+      if (mountedRef.current) {
+        setSubmitting(false)
+      }
     }
   }
 
@@ -157,7 +221,7 @@ const LoginPage = () => {
 
   return (
     <AppKeyboardAvoidingView>
-      <ScrollView className='login-page' scrollY>
+      <AppFormScrollView className='login-page' scrollY>
         <View className='login-intro'>
         <Text className='login-intro__title'>登录/注册</Text>
         <Text className='login-intro__summary'>
@@ -239,7 +303,13 @@ const LoginPage = () => {
 
         <AppPressable className='login-submit' onPress={handleSubmit}>
           <Text className='login-submit__text'>
-            {submitting ? '登录中' : '登录'}
+            {submitting
+              ? sessionReady
+                ? '返回中'
+                : '登录中'
+              : sessionReady
+                ? '返回原页面'
+                : '登录'}
           </Text>
         </AppPressable>
 
@@ -249,7 +319,7 @@ const LoginPage = () => {
 
         <Text className='login-note'>未注册手机号将自动创建账号</Text>
         </View>
-      </ScrollView>
+      </AppFormScrollView>
     </AppKeyboardAvoidingView>
   )
 }

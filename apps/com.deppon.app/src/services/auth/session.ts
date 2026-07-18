@@ -9,7 +9,13 @@ import {
   removeStorageValue,
   setJsonStorageValue
 } from '../../cache/storage'
-import { clearSessionCookie, getEcoToken } from '../../request/cookieJar'
+import {
+  clearSessionCookie,
+  getEcoToken,
+  recoverSessionCookie
+} from '../../request/cookieJar'
+import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
+import { appWebMessageBridge } from '../../shared/webview/appWebMessage'
 
 import type { AppUser } from './types'
 
@@ -17,14 +23,34 @@ export function getCurrentEcoToken() {
   return getEcoToken()
 }
 
+export async function recoverCurrentEcoToken() {
+  if (getCurrentEcoToken()) {
+    return getCurrentEcoToken()
+  }
+
+  await recoverSessionCookie(APP_RUNTIME_CONFIG.apiBaseURL)
+
+  return getCurrentEcoToken()
+}
+
 export async function saveCurrentUser(user: AppUser) {
+  const currentUser = getCurrentUser()
   const owner = getJsonStorageValue<AppUser>(CACHE_KEYS.accountCacheOwner)
   const needsCacheClear = shouldClearAccountScopedCache(
-    getCurrentUser(),
+    currentUser,
     user,
     owner
   )
-  const cacheReady = !needsCacheClear || (await clearAccountScopedCache())
+
+  if (needsCacheClear) {
+    appWebMessageBridge.clear()
+  }
+
+  const cacheReady =
+    !needsCacheClear ||
+    (await clearAccountScopedCache({
+      preserveLoginReturnDrafts: !currentUser && !owner
+    }))
 
   if (!cacheReady) {
     return false
@@ -51,6 +77,8 @@ export function clearCurrentUser() {
 }
 
 export async function clearAppSession() {
+  appWebMessageBridge.clear()
+
   await Promise.all([
     clearSessionCookie(),
     clearCurrentUser(),

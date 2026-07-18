@@ -2,6 +2,7 @@ import { supportApi } from './support.api'
 import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 import { APP_ROUTES } from '../../shared/navigation/routes'
 import { appendRouteQuery } from '../../shared/navigation/routeUrl'
+import { APP_WEB_TARGETS } from '../../shared/webview/appWeb'
 import { getCurrentEcoToken } from '../auth'
 
 import type {
@@ -90,7 +91,7 @@ export const supportService = {
             tone: 'neutral',
             badgeText: '需登录',
             webSource: 'SUPPORT_CHAT_LIST',
-            webPath: '/depponmobile/h5/index#/chatPackagePages/chatList/index',
+            webPath: APP_WEB_TARGETS.SUPPORT_CHAT_LIST.url,
             webParamSource: 'APP_SUPPORT_CENTER',
             loginRequired: true
           },
@@ -126,7 +127,19 @@ export const supportService = {
             tone: 'warning',
             badgeText: '需登录',
             webSource: 'SUPPORT_COMPLAINT',
-            webPath: '/depponmobile/complaint/list',
+            webPath: APP_WEB_TARGETS.SUPPORT_COMPLAINT.url,
+            webParamSource: 'APP_SUPPORT_CENTER',
+            loginRequired: true
+          },
+          {
+            id: 'complaint-record',
+            title: '投诉记录',
+            summary: '查看历史投诉和处理记录',
+            kind: 'web',
+            tone: 'neutral',
+            badgeText: '需登录',
+            webSource: 'SUPPORT_COMPLAINT_RECORD',
+            webPath: APP_WEB_TARGETS.SUPPORT_COMPLAINT_RECORD.url,
             webParamSource: 'APP_SUPPORT_CENTER',
             loginRequired: true
           },
@@ -138,7 +151,31 @@ export const supportService = {
             tone: 'neutral',
             badgeText: '需登录',
             webSource: 'SUPPORT_CLAIM',
-            webPath: '/depponmobile/h5/index#/claimPackagePages/index',
+            webPath: APP_WEB_TARGETS.SUPPORT_CLAIM.url,
+            webParamSource: 'APP_SUPPORT_CENTER',
+            loginRequired: true
+          },
+          {
+            id: 'claim-processing',
+            title: '理赔处理中',
+            summary: '查看正在处理的理赔申请',
+            kind: 'web',
+            tone: 'warning',
+            badgeText: '需登录',
+            webSource: 'SUPPORT_CLAIM_PROCESSING',
+            webPath: APP_WEB_TARGETS.SUPPORT_CLAIM_PROCESSING.url,
+            webParamSource: 'APP_SUPPORT_CENTER',
+            loginRequired: true
+          },
+          {
+            id: 'claim-completed',
+            title: '理赔已完成',
+            summary: '查看已经完成的理赔记录',
+            kind: 'web',
+            tone: 'success',
+            badgeText: '需登录',
+            webSource: 'SUPPORT_CLAIM_COMPLETED',
+            webPath: APP_WEB_TARGETS.SUPPORT_CLAIM_COMPLETED.url,
             webParamSource: 'APP_SUPPORT_CENTER',
             loginRequired: true
           }

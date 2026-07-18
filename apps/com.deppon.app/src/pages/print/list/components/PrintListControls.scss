@@ -1,0 +1,113 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.print-list-controls {
+  flex-shrink: 0;
+  padding-bottom: $dp-space-md;
+  background: $dp-color-bg-card;
+}
+
+.print-list-status-tabs {
+  display: flex;
+  flex-direction: row;
+  padding: $dp-space-md $dp-page-horizontal-padding 0;
+}
+
+.print-list-status-tab {
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: $dp-touch-target-min;
+  background: $dp-color-bg-page;
+  border-bottom-color: $dp-color-border;
+  border-bottom-width: $dp-border-width-hairline;
+}
+
+.print-list-status-tab--active {
+  background: $dp-color-bg-card;
+  border-bottom-color: $dp-color-brand;
+  border-bottom-width: $dp-space-4;
+}
+
+.print-list-status-tab__label,
+.print-list-status-tab__count {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+}
+
+.print-list-status-tab__count {
+  margin-left: $dp-space-8;
+}
+
+.print-list-status-tab__label--active,
+.print-list-status-tab__count--active {
+  color: $dp-color-brand;
+}
+
+.print-list-range-head,
+.print-list-summary {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: $dp-space-md $dp-page-horizontal-padding 0;
+}
+
+.print-list-range-title,
+.print-list-summary__label {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.print-list-range-summary,
+.print-list-summary__count {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+}
+
+.print-list-range-scroll {
+  height: $dp-touch-target-min;
+  margin-top: $dp-space-sm;
+}
+
+.print-list-range-options {
+  display: flex;
+  flex-direction: row;
+  padding: 0 $dp-page-horizontal-padding;
+}
+
+.print-list-range-option {
+  align-items: center;
+  justify-content: center;
+  width: 148px;
+  height: $dp-touch-target-min;
+  margin-right: $dp-space-xs;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-sm;
+  border-width: $dp-border-width-hairline;
+}
+
+.print-list-range-option--active {
+  background: $dp-color-brand-soft;
+  border-color: $dp-color-brand;
+}
+
+.print-list-range-option__label {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.print-list-range-option__label--active {
+  color: $dp-color-brand;
+}
+
+.print-list-count-warning {
+  display: flex;
+  padding: $dp-space-xs $dp-page-horizontal-padding 0;
+  color: $dp-color-warning-text;
+  font-size: $dp-font-size-caption;
+}

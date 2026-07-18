@@ -2,10 +2,18 @@ import { Text, View } from '@tarojs/components'
 
 import { useState } from 'react'
 
+import { ExpressCollectionCard } from './ExpressCollectionCard'
+import { ExpressDeliveryPointField } from './ExpressDeliveryPointField'
+import { ExpressDeliveryPreferenceCard } from './ExpressDeliveryPreferenceCard'
 import { ExpressMonthlyPayCard } from './ExpressMonthlyPayCard'
+import { ExpressReturnBillCard } from './ExpressReturnBillCard'
 import { ExpressScanContextCard } from './ExpressScanContextCard'
 import { ExpressSection } from './ExpressSection'
-import { expressReturnBillOptions } from '../../../services/express'
+import { ExpressWarehouseCard } from './ExpressWarehouseCard'
+import {
+  getExpressReturnBillOption,
+  getExpressDeliveryPreferenceOption
+} from '../../../services/express'
 import { AppPressable } from '../../../shared/components'
 import { AppIcon } from '../../../shared/components/AppIcon'
 import {
@@ -18,9 +26,11 @@ import type {
   ExpressDraft,
   ExpressMonthlyPayView,
   ExpressPaymentType,
-  ExpressReturnBillOption,
   ExpressScanContextView
 } from '../../../services/express'
+import type { ExpressCollectionController } from '../hooks/useExpressCollection'
+import type { ExpressDeliveryPreferenceController } from '../hooks/useExpressDeliveryPreference'
+import type { ExpressWarehouseController } from '../hooks/useExpressWarehouse'
 
 import './ExpressServiceSection.scss'
 
@@ -55,13 +65,25 @@ const DELIVERY_OPTIONS: Array<{ label: string; value: ExpressDeliveryMode }> = [
 ]
 
 interface ExpressServiceSectionProps {
+  collection: ExpressDraft['collection']
+  collectionController: ExpressCollectionController
+  deliveryPreference: ExpressDraft['deliveryPreference']
+  deliveryPreferenceController: ExpressDeliveryPreferenceController
+  deliveryPoint: ExpressDraft['deliveryPoint']
   monthlyPayView: ExpressMonthlyPayView | null
   scanContextView: ExpressScanContextView | null
-  selectedReturnBillOption: ExpressReturnBillOption
+  selectedProduct: ExpressDraft['selectedProduct']
   service: ExpressDraft['service']
+  warehouse: ExpressDraft['warehouse']
+  warehouseController: ExpressWarehouseController
   onClearScanContext: () => void
+  onOpenDeliveryPoints: () => void
   onMonthlyPayAction: (view: ExpressMonthlyPayView) => void
   onPaymentTypeSelect: (paymentType: ExpressPaymentType) => void
+  onReturnBillChange: (
+    patch: Partial<ExpressDraft['service']['returnBill']>
+  ) => void
+  onOpenReturnBillCloudSign: () => void
   onPrivacyProtectionChange: (
     value: ExpressDraft['service']['privacyProtection']
   ) => void
@@ -69,13 +91,23 @@ interface ExpressServiceSectionProps {
 }
 
 export function ExpressServiceSection({
+  collection,
+  collectionController,
+  deliveryPreference,
+  deliveryPreferenceController,
+  deliveryPoint,
   monthlyPayView,
   scanContextView,
-  selectedReturnBillOption,
+  selectedProduct,
   service,
+  warehouse,
+  warehouseController,
   onClearScanContext,
+  onOpenDeliveryPoints,
   onMonthlyPayAction,
   onPaymentTypeSelect,
+  onReturnBillChange,
+  onOpenReturnBillCloudSign,
   onPrivacyProtectionChange,
   onServiceChange
 }: ExpressServiceSectionProps) {
@@ -86,10 +118,14 @@ export function ExpressServiceSection({
     DELIVERY_OPTIONS.find(option => option.value === service.deliveryMode)
       ?.label || '请选择'
   const valueAddedSummary = [
+    collection.type && '代收货款',
     service.privacyProtection === 'Y' && '隐私面单',
     service.passwordSigning === 'Y' && '签收密码',
-    selectedReturnBillOption.value !== 'NO_RETURN_SIGNED' &&
-      selectedReturnBillOption.label
+    deliveryPreference.type &&
+      getExpressDeliveryPreferenceOption(deliveryPreference.type).label,
+    warehouse.enabled && '送货进仓',
+    service.returnBill.type !== 'NO_RETURN_SIGNED' &&
+      getExpressReturnBillOption(service.returnBill.type).label
   ]
     .filter(Boolean)
     .join('、')
@@ -190,6 +226,12 @@ export function ExpressServiceSection({
               </AppPressable>
             ))}
           </View>
+          {service.deliveryMode === 'PICKSELF' && (
+            <ExpressDeliveryPointField
+              deliveryPoint={deliveryPoint}
+              onOpen={onOpenDeliveryPoints}
+            />
+          )}
         </View>
       ) : null}
 
@@ -287,45 +329,30 @@ export function ExpressServiceSection({
             </View>
           </View>
 
-          <View className='express-value-added'>
-            <Text className='express-option-title'>签收单返单</Text>
-            <View className='express-chip-group express-chip-group--wrap'>
-              {expressReturnBillOptions.map(option => (
-                <AppPressable
-                  accessibilityLabel={`选择${option.label}`}
-                  className={
-                    option.value === service.returnBillType
-                      ? 'express-chip express-chip--wrap express-chip--active'
-                      : 'express-chip express-chip--wrap'
-                  }
-                  key={option.value}
-                  selected={option.value === service.returnBillType}
-                  onPress={() =>
-                    onServiceChange({ returnBillType: option.value })
-                  }
-                >
-                  <Text
-                    className={
-                      option.value === service.returnBillType
-                        ? 'express-chip__text express-chip__text--active'
-                        : 'express-chip__text'
-                    }
-                  >
-                    {option.label}
-                  </Text>
-                </AppPressable>
-              ))}
-            </View>
-            <Text className='express-value-added__summary'>
-              {selectedReturnBillOption.summary}
-            </Text>
-          </View>
+          <ExpressReturnBillCard
+            onChange={onReturnBillChange}
+            onOpenCloudSign={onOpenReturnBillCloudSign}
+            productCode={
+              selectedProduct?.omsProductCode || service.transportMode
+            }
+            returnBill={service.returnBill}
+          />
 
-          <View className='express-service-note'>
-            <Text className='express-service-note__text'>
-              代收货款需先完成收款账户、协议和额度校验，可在客户中心处理相关设置。
-            </Text>
-          </View>
+          <ExpressCollectionCard
+            collection={collection}
+            controller={collectionController}
+            selectedProduct={selectedProduct}
+          />
+
+          <ExpressDeliveryPreferenceCard
+            controller={deliveryPreferenceController}
+            preference={deliveryPreference}
+          />
+
+          <ExpressWarehouseCard
+            controller={warehouseController}
+            warehouse={warehouse}
+          />
         </View>
       ) : null}
     </ExpressSection>

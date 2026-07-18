@@ -1,5 +1,5 @@
 import { ScrollView, View } from '@tarojs/components'
-import Taro, { useDidShow } from '@tarojs/taro'
+import { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useRef, useState } from 'react'
 
@@ -7,8 +7,8 @@ import { PaymentCard } from './components/PaymentCard'
 import { PaymentListControls } from './components/PaymentListControls'
 import { PaymentListStates } from './components/PaymentListStates'
 import {
+  createPaymentCheckoutUrl,
   createPaymentEvaluateWebUri,
-  getPaymentItemAmount,
   paymentService
 } from '../../../services/payment'
 import { LatestRequestCoordinator } from '../../../shared/async/latestRequest'
@@ -16,8 +16,6 @@ import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-import { getNativeCapabilityErrorMessage } from '../../../shared/platform/capabilities'
-import { payWithApp } from '../../../shared/platform/payment'
 import { createAppWebUrl } from '../../../shared/webview/appWeb'
 
 import type {
@@ -44,7 +42,6 @@ const PaymentListPage = () => {
   const [totalRows, setTotalRows] = useState(0)
   const [loadedAmount, setLoadedAmount] = useState(0)
   const [loading, setLoading] = useState(false)
-  const [payingKey, setPayingKey] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const requestCoordinator = useRef(new LatestRequestCoordinator()).current
 
@@ -196,40 +193,16 @@ const PaymentListPage = () => {
     })
   }
 
-  const handlePay = async (item: PaymentItem) => {
-    const itemKey = getPaymentItemKey(item)
-
-    if (payingKey) {
-      return
-    }
-
-    setPayingKey(itemKey)
-
-    try {
-      await payWithApp({
-        source: 'PAYMENT_LIST',
-        channel: 'h5Cashier',
-        orderNumber: item.waybillNum,
-        payload: {
-          role,
-          amount: getPaymentItemAmount(item, 'UNPAID'),
-          item
-        }
-      })
-
-      Taro.showToast({
-        title: '支付完成',
-        icon: 'none'
-      })
-      loadPayments(1, role, keyword, status, true)
-    } catch (error) {
-      Taro.showToast({
-        title: getNativeCapabilityErrorMessage(error),
-        icon: 'none'
-      })
-    } finally {
-      setPayingKey('')
-    }
+  const handlePay = (item: PaymentItem) => {
+    navigateToAppRoute(
+      createPaymentCheckoutUrl({
+        waybillNumber: item.waybillNum,
+        detailNo: item.accountStatementDetailNo,
+        role,
+        source: 'PAYMENT_LIST'
+      }),
+      { login: true }
+    )
   }
 
   const handleEvaluate = (item: PaymentItem) => {
@@ -275,7 +248,6 @@ const PaymentListPage = () => {
             <PaymentCard
               item={item}
               key={itemKey}
-              paying={payingKey === itemKey}
               status={status}
               onEvaluate={handleEvaluate}
               onOpenOrder={handleOpenOrder}

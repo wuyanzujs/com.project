@@ -121,6 +121,12 @@ export const APP_ROUTE_DEFINITIONS = [
     path: 'pages/order/detail/index'
   },
   {
+    name: 'orderEvaluation',
+    title: '服务评价',
+    path: 'pages/order/evaluation/index',
+    loginRequired: true
+  },
+  {
     name: 'orderEdit',
     title: '修改订单',
     path: 'pages/order/edit/index',
@@ -150,9 +156,27 @@ export const APP_ROUTE_DEFINITIONS = [
     loginRequired: true
   },
   {
+    name: 'paymentCheckout',
+    title: '确认支付',
+    path: 'pages/payment/checkout/index',
+    loginRequired: true
+  },
+  {
+    name: 'paymentResult',
+    title: '支付结果',
+    path: 'pages/payment/result/index',
+    loginRequired: true
+  },
+  {
     name: 'printCenter',
     title: '面单打印',
     path: 'pages/print/index',
+    loginRequired: true
+  },
+  {
+    name: 'printList',
+    title: '打印订单',
+    path: 'pages/print/list/index',
     loginRequired: true
   },
   {

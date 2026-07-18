@@ -1,0 +1,63 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.print-order-card {
+  padding: $dp-card-padding;
+  margin-bottom: $dp-space-sm;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-card;
+}
+
+.print-order-card__head,
+.print-order-card__recipient {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.print-order-card__head {
+  justify-content: space-between;
+}
+
+.print-order-card__number-block {
+  flex: 1;
+  margin-right: $dp-space-sm;
+}
+
+.print-order-card__eyebrow {
+  display: flex;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+
+.print-order-card__number {
+  display: flex;
+  margin-top: $dp-space-6;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.print-order-card__recipient {
+  margin-top: $dp-space-lg;
+}
+
+.print-order-card__name {
+  flex-shrink: 1;
+  color: $dp-color-text-strong;
+  font-size: $dp-font-size-label-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.print-order-card__phone {
+  margin-left: $dp-space-xs;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+}
+
+.print-order-card__address {
+  display: flex;
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body;
+}

@@ -1,0 +1,169 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-edit-schedule__header,
+.order-edit-schedule__date-track,
+.order-edit-schedule__time-list,
+.order-edit-schedule__delivery-options,
+.order-edit-schedule__notice {
+  display: flex;
+}
+
+.order-edit-schedule__header {
+  flex-direction: row;
+  align-items: center;
+}
+
+.order-edit-schedule__heading {
+  flex: 1;
+}
+
+.order-edit-schedule__summary,
+.order-edit-schedule__empty,
+.order-edit-schedule__message {
+  margin-top: $dp-space-4;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-fine;
+}
+
+.order-edit-schedule__refresh {
+  width: $dp-touch-target-min;
+  min-height: $dp-touch-target-min;
+  margin-left: $dp-space-8;
+}
+
+.order-edit-schedule__picker,
+.order-edit-schedule__delivery {
+  padding-top: $dp-space-16;
+  margin-top: $dp-space-12;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.order-edit-schedule__label {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-caption;
+}
+
+.order-edit-schedule__scroll,
+.order-edit-schedule__time-list,
+.order-edit-schedule__delivery-options {
+  margin-top: $dp-space-8;
+}
+
+.order-edit-schedule__date-track,
+.order-edit-schedule__time-list,
+.order-edit-schedule__delivery-options {
+  flex-direction: row;
+}
+
+.order-edit-schedule__time-list,
+.order-edit-schedule__delivery-options {
+  flex-wrap: wrap;
+}
+
+.order-edit-schedule__date {
+  min-width: $dp-control-height-large;
+  min-height: $dp-control-height-medium;
+  padding: $dp-space-8 $dp-space-16;
+  margin-right: $dp-space-8;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border-light;
+  border-radius: $dp-radius-control;
+  border-width: $dp-border-width-hairline;
+}
+
+.order-edit-schedule__date--active,
+.order-edit-schedule__time--active,
+.order-edit-schedule__delivery-option--active {
+  background: $dp-color-brand-soft;
+  border-color: $dp-color-brand;
+}
+
+.order-edit-schedule__date-text,
+.order-edit-schedule__weekday,
+.order-edit-schedule__time-text,
+.order-edit-schedule__night {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-fine;
+  text-align: center;
+}
+
+.order-edit-schedule__weekday,
+.order-edit-schedule__night {
+  margin-top: $dp-space-2;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-micro;
+}
+
+.order-edit-schedule__time {
+  width: 31%;
+  min-height: $dp-control-height-medium;
+  padding: $dp-space-8;
+  margin-right: $dp-space-8;
+  margin-bottom: $dp-space-8;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border-light;
+  border-radius: $dp-radius-control;
+  border-width: $dp-border-width-hairline;
+}
+
+.order-edit-schedule__time--disabled {
+  opacity: $dp-opacity-disabled;
+}
+
+.order-edit-schedule__notice {
+  flex-direction: column;
+  padding: $dp-space-12;
+  margin-top: $dp-space-8;
+  background: $dp-color-warning-background-soft;
+  border-radius: $dp-radius-control;
+}
+
+.order-edit-schedule__notice-text {
+  color: $dp-color-warning-text;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-fine;
+}
+
+.order-edit-schedule__notice-action {
+  min-height: $dp-touch-target-min;
+  margin-top: $dp-space-4;
+}
+
+.order-edit-schedule__notice-action-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-edit-schedule__delivery-option {
+  width: 31%;
+  min-height: 144px;
+  padding: $dp-space-12 $dp-space-8;
+  margin-right: $dp-space-8;
+  margin-bottom: $dp-space-8;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-control;
+  border-width: $dp-border-width-hairline;
+}
+
+.order-edit-schedule__delivery-label {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-caption;
+  text-align: center;
+}
+
+.order-edit-schedule__delivery-summary {
+  margin-top: $dp-space-4;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-micro;
+  line-height: $dp-line-height-fine;
+  text-align: center;
+}

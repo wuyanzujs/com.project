@@ -40,15 +40,20 @@ pnpm --filter com.deppon.app run check:module-size
 pnpm --filter com.deppon.app run check:runtime-config
 pnpm --filter com.deppon.app run check:business-rules
 pnpm --filter com.deppon.app run check:platform-build
-pnpm --filter com.deppon.app run bundle:android
-pnpm --filter com.deppon.app run bundle:ios
 ```
 
-`pnpm verify:app` 是本地和 CI 的统一质量入口，会串行执行类型检查、ESLint、RN 边界检查、路由注册表检查、页面/service 体量检查、运行时配置检查、业务规则检查、平台发布契约检查和 Android RN bundle 构建。
+`pnpm verify:app` 是本地和 CI 的统一静态质量入口，会串行执行类型检查、ESLint、Stylelint、样式治理、RN 边界、路由注册表、页面/service 体量、运行时配置、业务规则和平台契约检查，不会生成 RN bundle 或原生安装包。
+
+需要由发布者显式生成 bundle 时执行：
+
+```bash
+pnpm --filter com.deppon.app run verify:bundle:android
+pnpm --filter com.deppon.app run verify:bundle:ios
+```
 
 Metro 默认限制为 2 个 worker，避免 Windows 本地构建一次拉起过多子进程；构建机可通过 `METRO_MAX_WORKERS` 设置正整数覆盖。
 
-根目录已新增 `.github/workflows/app-quality.yml`，push 和 pull request 会执行 `pnpm verify:app` 与 `pnpm check:app-native-env`。后续业务迁移不应绕过这条质量入口。
+根目录已新增 `.github/workflows/app-quality.yml`，push 和 pull request 会执行静态 `pnpm verify:app` 与 `pnpm check:app-native-env`，不会在质量 workflow 中编译 Android APK。原生包和 bundle 由发布者或显式发布 workflow 负责。
 
 ## 原生发布门禁
 
@@ -91,7 +96,7 @@ App 包提供 [`.env.example`](/D:/codeSpace/com.project/apps/com.deppon.app/.en
 
 ## Android 发布
 
-根目录 `.github/workflows/android-release.yml` 提供手动触发的生产 APK 流水线。它会先运行完整 `verify:app`，再使用显式 release keystore 构建，核对 APK 内 RN bundle 与已验证 bundle 完全一致，并验证签名证书 SHA-256。
+根目录 `.github/workflows/android-release.yml` 提供手动触发的生产 APK 流水线。它会先运行静态 `verify:app`，再按发布流程生成 RN bundle、使用显式 release keystore 构建，并验证签名证书 SHA-256。
 
 GitHub `production` environment 需要配置这些 variables：
 
@@ -119,7 +124,7 @@ Android release 在缺少任一签名参数时会直接失败，不再使用 deb
 - iOS Bundle ID: `com.deppon.app`
 - Android/iOS 展示名：`德邦快递`
 
-Taro RN 依赖的 Expo autolinking 需要 `expo` 作为 App 显式依赖。Android `settings.gradle` 和 iOS `Podfile` 已通过 `@tarojs/taro-rn` 定位 Expo 脚本，避免 pnpm workspace 下解析到错误路径。
+Taro RN 依赖的 Expo autolinking 需要 `expo` 作为 App 显式依赖。Android `settings.gradle` 和 iOS `Podfile` 已通过 `@tarojs/taro-rn` 定位 Expo 脚本，避免 pnpm workspace 下解析到错误路径。登录会话还依赖 `@preeternal/react-native-cookie-manager` 从 RN 系统 cookie jar 同步 `ECO_TOKEN`；依赖变化后必须重新安装依赖并重建原生包，iOS 同时重新执行 pod install。
 
 业务代码不能直接使用小程序或 H5 平台能力，包括：
 
@@ -206,7 +211,7 @@ src/
 - `pnpm report:app-styles`：查看剩余债务和优先治理文件。
 - `pnpm update:app-styles-baseline`：在债务下降后安全收紧基线，禁止抬高上限。
 
-严格门禁要求页面 SCSS 不超过 300 行、页面子组件和共享组件 SCSS 不超过 180 行。CSS 全量治理完成并通过严格门禁后，再将它升级为正式 `verify` 条件。
+严格门禁要求页面 SCSS 不超过 300 行、页面子组件和共享组件 SCSS 不超过 180 行。当前 CSS 全量治理已完成，严格门禁已纳入正式 `verify`；bundle 仍不属于日常静态验证。
 
 ## 路由规则
 
@@ -243,7 +248,7 @@ src/
 
 ## 业务规则检查
 
-`pnpm check:app-business-rules` 会运行 `scripts/check-business-rules.cjs`，当前覆盖 service 失败响应形态、OWS 状态归一、`ECO_TOKEN` cookie 提取、路由 query、扫码分类、专属快递员归一和寄件上下文、寄件模板映射/保存 payload/草稿桥、寄件草稿校验、寄件扫码上下文到下单字段映射、关注运单映射和详情动作、订单修改草稿/差异请求/校验、网点反馈 H5 参数、批量寄入口/校验规则、打印中心入口/打印前置规则、支付费用类型/金额/评价参数、发票申请校验/抬头校验/提交 payload、订单金额/重量/手机号展示和订单详情动作 VM 等纯函数规则。后续拆核心 service 时，优先把稳定的 mapper、rules、view model 用例补到这里。
+`pnpm check:app-business-rules` 会运行 `scripts/check-business-rules.cjs`，当前覆盖 service 失败响应形态、OWS 状态归一、登录 URL、短信登录 payload、`registerRecord`、原生/本地 `ECO_TOKEN` 同步、单次导航 dispatch、路由 query、扫码分类、专属快递员归一和寄件上下文、寄件模板映射/保存 payload/草稿桥、寄件草稿校验、寄件扫码上下文到下单字段映射、关注运单映射和详情动作、订单修改草稿/差异请求/校验、网点反馈 H5 参数、批量寄入口/校验规则、打印中心入口/打印前置规则、支付费用类型/金额/评价参数、发票申请校验/抬头校验/提交 payload、订单金额/重量/手机号展示和订单详情动作 VM 等纯函数规则。后续拆核心 service 时，优先把稳定的 mapper、rules、view model 用例补到这里。
 
 ## 扫码规则
 
@@ -296,7 +301,7 @@ src/
 
 - `services/order/order.edit.ts` 负责详情转编辑草稿、表单校验、差异字段计算和提交编排，接口只发送实际变化字段。
 - 首期 App 原生页支持收寄件姓名、手机号、省市区、详细地址、货物名称、件数、重量、体积和备注。
-- 产品、价格、付款、保价、代收货款、取件时间和复杂增值服务不能脱离报价、合同和扩展字段规则单独修改，当前保留原值，后续按独立 use case 接入。
+- 当前 App 原生改单页已支持代收货款和普通基础保价的独立规则/diff；全额保、省心保、产品、价格、付款、取件时间和其他复杂增值服务仍不能脱离报价、合同和扩展字段规则单独修改，后续按独立 use case 接入。
 - 页面加载和提交前都校验订单号、待揽件状态、后端修改标记、联系人、地址差异和货物数值；无变化时不会请求接口。
 
 ## 迁移旧项目业务的规则

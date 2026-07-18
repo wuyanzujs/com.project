@@ -13,82 +13,33 @@ import './ExpressOrderOptionsSection.scss'
 
 interface ExpressOrderOptionsSectionProps {
   agreementAccepted: boolean
-  couponNumber: string
   remark: string
   submitMessage: string
   validationMessages: string[]
-  onCouponNumberInput: (value: string) => void
   onRemarkInput: (value: string) => void
   onToggleAgreement: () => void
 }
 
 export function ExpressOrderOptionsSection({
   agreementAccepted,
-  couponNumber,
   remark,
   submitMessage,
   validationMessages,
-  onCouponNumberInput,
   onRemarkInput,
   onToggleAgreement
 }: ExpressOrderOptionsSectionProps) {
-  const [expandedField, setExpandedField] = useState<
-    'coupon' | 'remark' | null
-  >(null)
-  const toggleField = (field: 'coupon' | 'remark') => {
-    setExpandedField(current => (current === field ? null : field))
-  }
+  const [remarkExpanded, setRemarkExpanded] = useState(false)
 
   return (
     <View className='express-order-options'>
       <AppPressable
         accessibilityLabel={
-          expandedField === 'coupon' ? '收起优惠券输入' : '展开优惠券输入'
+          remarkExpanded ? '收起备注输入' : '展开备注输入'
         }
         block
         className='express-order-options__entry'
         layout='row-start'
-        onPress={() => toggleField('coupon')}
-      >
-        <Text className='express-order-options__label'>优惠券</Text>
-        <Text className='express-order-options__summary'>
-          {couponNumber ? '已填写' : '暂无可用优惠券'}
-        </Text>
-        <AppIcon
-          color={APP_STYLE_COLORS.text.supporting}
-          name={expandedField === 'coupon' ? 'chevronUp' : 'chevronDown'}
-          size={APP_NATIVE_TOKENS.icon.small}
-        />
-      </AppPressable>
-      {expandedField === 'coupon' ? (
-        <View className='express-order-options__edit'>
-          <Input
-            className='express-order-options__input'
-            placeholder='输入优惠券编号'
-            style={{ minHeight: APP_NATIVE_TOKENS.touch.minimum }}
-            value={couponNumber}
-            onInput={event => onCouponNumberInput(event.detail.value)}
-          />
-          {couponNumber ? (
-            <AppPressable
-              accessibilityLabel='清除优惠券'
-              className='express-order-options__clear'
-              onPress={() => onCouponNumberInput('')}
-            >
-              <Text className='express-order-options__clear-text'>清除</Text>
-            </AppPressable>
-          ) : null}
-        </View>
-      ) : null}
-
-      <AppPressable
-        accessibilityLabel={
-          expandedField === 'remark' ? '收起备注输入' : '展开备注输入'
-        }
-        block
-        className='express-order-options__entry'
-        layout='row-start'
-        onPress={() => toggleField('remark')}
+        onPress={() => setRemarkExpanded(current => !current)}
       >
         <Text className='express-order-options__label'>备注</Text>
         <Text className='express-order-options__summary'>
@@ -96,11 +47,11 @@ export function ExpressOrderOptionsSection({
         </Text>
         <AppIcon
           color={APP_STYLE_COLORS.text.supporting}
-          name={expandedField === 'remark' ? 'chevronUp' : 'chevronDown'}
+          name={remarkExpanded ? 'chevronUp' : 'chevronDown'}
           size={APP_NATIVE_TOKENS.icon.small}
         />
       </AppPressable>
-      {expandedField === 'remark' ? (
+      {remarkExpanded ? (
         <View className='express-order-options__edit'>
           <Input
             className='express-order-options__input'

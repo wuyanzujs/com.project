@@ -1,0 +1,102 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-packaging-list {
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.express-packaging-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: $dp-control-height-large;
+  padding: $dp-space-8 0;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: $dp-border-width-hairline;
+}
+
+.express-packaging-option--selected {
+  background: $dp-color-brand-faint;
+}
+
+.express-packaging-option__visual {
+  flex-shrink: 0;
+  width: $dp-space-64;
+  height: $dp-space-64;
+  margin: 0 $dp-space-12;
+}
+
+.express-packaging-option__visual--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.express-packaging-option__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.express-packaging-option__title-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.express-packaging-option__name {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body;
+}
+
+.express-packaging-option__tag {
+  padding: 0 $dp-space-6;
+  margin-left: $dp-space-6;
+  color: $dp-color-warning-text;
+  font-size: $dp-font-size-micro;
+  line-height: $dp-line-height-fine;
+  background: $dp-color-warning-background-soft;
+  border-radius: $dp-radius-xs;
+}
+
+.express-packaging-option__detail {
+  display: flex;
+  margin-top: $dp-space-2;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-fine;
+}
+
+.express-packaging-option__aside {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: row;
+  align-items: center;
+  margin: 0 $dp-space-12;
+}
+
+.express-packaging-option__price {
+  margin-right: $dp-space-8;
+  color: $dp-color-warning-text;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-packaging-option__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $dp-space-32;
+  height: $dp-space-32;
+  border-color: $dp-color-border;
+  border-width: $dp-border-width-hairline;
+  border-radius: $dp-radius-circle;
+}
+
+.express-packaging-option__indicator--selected {
+  border-color: $dp-color-brand;
+}

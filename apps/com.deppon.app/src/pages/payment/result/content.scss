@@ -1,0 +1,73 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.payment-result-status {
+  display: flex;
+  align-items: center;
+  padding: $dp-space-40 0;
+}
+
+.payment-result-status__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $dp-control-height-default;
+  height: $dp-control-height-default;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-avatar;
+}
+
+.payment-result-status__title {
+  margin-top: $dp-space-20;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-heading;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-heading;
+}
+
+.payment-result-status__amount {
+  margin-top: $dp-space-12;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-hero;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-72;
+}
+
+.payment-result-detail {
+  padding: $dp-space-8 $dp-card-padding;
+  background: $dp-color-bg-card;
+  border-radius: $dp-card-radius;
+}
+
+.payment-result-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: $dp-control-height-medium;
+  padding: $dp-space-20 0;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: $dp-border-width-hairline;
+}
+
+.payment-result-row__label {
+  width: 150px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.payment-result-row__value {
+  flex: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+  text-align: right;
+}
+
+.payment-result-actions {
+  margin-top: $dp-space-32;
+}
+
+.payment-result-actions__secondary {
+  margin-top: $dp-space-16;
+}

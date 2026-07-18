@@ -1,10 +1,8 @@
 import { APP_ROUTES } from '../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
 
-import type {
-  ExpressInsuranceRuleType,
-  ExpressInsuranceRuleView
-} from './types'
+import type { ExpressInsuranceRuleView } from './insuranceRule.types'
+import type { ExpressInsuranceRuleType } from './types'
 
 const RULES: Record<ExpressInsuranceRuleType, ExpressInsuranceRuleView> = {
   NORMAL: {

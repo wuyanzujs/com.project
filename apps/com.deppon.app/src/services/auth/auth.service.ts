@@ -1,7 +1,10 @@
 import { authApi } from './auth.api'
+import { createAppSmsLoginRequest } from './login.rules'
 import {
   clearAppSession,
+  getCurrentEcoToken,
   getCurrentUser,
+  recoverCurrentEcoToken,
   saveCurrentUser
 } from './session'
 import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
@@ -85,7 +88,11 @@ export const authService = {
     })
   },
 
-  async loginWithSms(mobile: string, smsCode: string): Promise<AuthResult> {
+  async loginWithSms(
+    mobile: string,
+    smsCode: string,
+    redirectUrl?: string
+  ): Promise<AuthResult> {
     if (!isValidMobile(mobile)) {
       return {
         status: false,
@@ -102,14 +109,25 @@ export const authService = {
       }
     }
 
-    const response = await authApi.login({
-      account: mobile.trim(),
-      verifyCode: smsCode.trim(),
-      loginType: APP_RUNTIME_CONFIG.mobileLoginType,
-      sysCode: getSystemCode()
-    })
+    const response = await authApi.login(
+      createAppSmsLoginRequest(mobile, smsCode, redirectUrl)
+    )
 
     if (response.status && response.result) {
+      const sessionReady =
+        (response.sessionCookieSaved && getCurrentEcoToken()) ||
+        (!getCurrentEcoToken() && (await recoverCurrentEcoToken()))
+
+      if (!sessionReady) {
+        await clearAppSession()
+
+        return {
+          status: false,
+          message: '登录凭证保存失败，请重试',
+          user: null
+        }
+      }
+
       if (!(await saveCurrentUser(response.result))) {
         await clearAppSession()
 
@@ -125,6 +143,10 @@ export const authService = {
         message: '',
         user: response.result
       }
+    }
+
+    if (response.sessionCookieSaved) {
+      await clearAppSession()
     }
 
     return {

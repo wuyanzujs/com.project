@@ -1,0 +1,6 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.payment-checkout-page {
+  min-height: 100%;
+  background: $dp-color-bg-page;
+}

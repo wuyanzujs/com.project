@@ -1,7 +1,7 @@
 import { ScrollView } from '@tarojs/components'
 import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   InvoiceHistoryPanel,
@@ -12,8 +12,18 @@ import {
 } from './components/InvoiceCenterSections'
 import { InvoiceECardPanel } from './components/InvoiceECardPanel'
 import { OrderAuthDialog } from './components/OrderAuthDialog'
-import { CACHE_KEYS, DPCacheExpireType, dpCache } from '../../../cache'
 import {
+  INVOICE_CENTER_TABS,
+  createInvoiceDetailUrl,
+  createInvoiceECardApplyUrl,
+  createInvoiceOrderApplyUrl,
+  createInvoicePreviewUrl,
+  getSelectedInvoiceECards,
+  getSelectedInvoiceECardAmount,
+  parseInvoiceCenterTab
+} from './invoiceCenterViewModel'
+import {
+  invoiceOrderAuth,
   invoiceOrderSearchService,
   invoiceService
 } from '../../../services/invoice'
@@ -21,11 +31,9 @@ import { useLatestRequestRunner } from '../../../shared/async/useLatestRequest'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
 import { getNativeCapabilityErrorMessage } from '../../../shared/platform/capabilities'
 import { scanAppCode } from '../../../shared/platform/scan'
 
-import type { InvoiceTabItem } from './components/InvoiceCenterSections'
 import type { DepponResponse } from '../../../request/deppon'
 import type {
   InvoiceHistoryView,
@@ -40,120 +48,10 @@ import type {
 import './index.scss'
 
 const PAGE_SIZE = 10
-const ORDER_AUTH_CODE_SECONDS = 60
-
-interface CachedInvoiceOrderAuth {
-  id: string
-  value: string
-}
-
-const INVOICE_TABS: InvoiceTabItem[] = [
-  {
-    label: '可开票',
-    value: 'orders'
-  },
-  {
-    label: '储值卡',
-    value: 'ecards'
-  },
-  {
-    label: '开票历史',
-    value: 'history'
-  },
-  {
-    label: '发票抬头',
-    value: 'taxpayers'
-  }
-]
-
-function parseInvoiceTab(value?: string): InvoiceTab {
-  return value === 'ecards' || value === 'history' || value === 'taxpayers'
-    ? value
-    : 'orders'
-}
-
-function createInvoiceApplyUrl(order: InvoiceOrderView) {
-  return createAppRouteUrl(APP_ROUTES.invoiceApply, {
-    order: JSON.stringify(order)
-  })
-}
-
-function createInvoiceECardApplyUrl(items: InvoiceECardView[]) {
-  return createAppRouteUrl(APP_ROUTES.invoiceApply, {
-    ecards: JSON.stringify(items)
-  })
-}
-
-function createInvoicePreviewUrl(item: InvoiceHistoryView) {
-  return createAppRouteUrl(APP_ROUTES.invoicePreview, {
-    id: item.id,
-    title: item.title,
-    email: item.email
-  })
-}
-
-function createInvoiceDetailUrl(item: InvoiceHistoryView) {
-  return createAppRouteUrl(APP_ROUTES.invoiceDetail, {
-    data: JSON.stringify(item)
-  })
-}
-
-function getCachedInvoiceOrderAuth(waybillNumber: string) {
-  const list =
-    dpCache.get<CachedInvoiceOrderAuth[]>(CACHE_KEYS.invoiceOrderAuth) ?? []
-
-  return list.find(item => item.id === waybillNumber.trim())?.value.trim() ?? ''
-}
-
-function cacheInvoiceOrderAuth(waybillNumber: string, value: string) {
-  const normalizedWaybill = waybillNumber.trim()
-  const normalizedValue = value.trim()
-  const list =
-    dpCache.get<CachedInvoiceOrderAuth[]>(CACHE_KEYS.invoiceOrderAuth) ?? []
-  const nextList = list.filter(item => item.id !== normalizedWaybill)
-
-  nextList.push({
-    id: normalizedWaybill,
-    value: normalizedValue
-  })
-
-  dpCache.set(CACHE_KEYS.invoiceOrderAuth, {
-    data: nextList,
-    expire: {
-      type: DPCacheExpireType.TODAY
-    }
-  })
-}
-
-function getOrderAuthValidationMessage(
-  auth: InvoiceOrderAuthChallenge,
-  value: string
-) {
-  const normalizedValue = value.trim()
-
-  if (!normalizedValue) {
-    return '请按提示输入验证信息'
-  }
-
-  if (auth.authType === '02' && !/^\d{4}$/.test(normalizedValue)) {
-    return '请输入付款人手机号后四位'
-  }
-
-  if (auth.authType === '03' && normalizedValue.length <= 6) {
-    return '请输入付款人完整的联系方式'
-  }
-
-  if (auth.authType === '04' && !/^\d{6}$/.test(normalizedValue)) {
-    return '请输入正确的短信验证码'
-  }
-
-  return ''
-}
-
 const InvoiceCenterPage = () => {
   const router = useRouter()
   const [tab, setTab] = useState<InvoiceTab>(() =>
-    parseInvoiceTab(router.params.tab)
+    parseInvoiceCenterTab(router.params.tab)
   )
   const [orders, setOrders] = useState<InvoiceOrderView[]>([])
   const [orderPageIndex, setOrderPageIndex] = useState(1)
@@ -187,8 +85,10 @@ const InvoiceCenterPage = () => {
     setErrorMessage('')
   }, [])
   const finishLatestRequest = useCallback(() => setLoading(false), [])
-  const { invalidateLatestRequest, runLatestRequest } =
-    useLatestRequestRunner(startLatestRequest, finishLatestRequest)
+  const { invalidateLatestRequest, runLatestRequest } = useLatestRequestRunner(
+    startLatestRequest,
+    finishLatestRequest
+  )
 
   const ensureInvoiceAccess = useCallback(
     () =>
@@ -205,18 +105,7 @@ const InvoiceCenterPage = () => {
       return
     }
 
-    const sendTime = dpCache.get<number>(CACHE_KEYS.invoiceOrderAuthCodeSend)
-
-    if (!sendTime) {
-      setOrderAuthCountdown(0)
-      return
-    }
-
-    const nextSeconds = Math.ceil(
-      ORDER_AUTH_CODE_SECONDS - (Date.now() - sendTime) / 1000
-    )
-
-    setOrderAuthCountdown(nextSeconds > 0 ? nextSeconds : 0)
+    setOrderAuthCountdown(invoiceOrderAuth.getCodeCountdown())
   }, [orderAuth])
 
   useEffect(() => {
@@ -308,7 +197,7 @@ const InvoiceCenterPage = () => {
       await runLatestRequest(
         `order-search:${normalizedKeyword}`,
         async () => {
-          const cachedValue = getCachedInvoiceOrderAuth(normalizedKeyword)
+          const cachedValue = invoiceOrderAuth.getCachedValue(normalizedKeyword)
 
           if (cachedValue) {
             const cachedResponse = await invoiceOrderSearchService.verifyPhone(
@@ -568,14 +457,8 @@ const InvoiceCenterPage = () => {
         return
       }
 
-      dpCache.set(CACHE_KEYS.invoiceOrderAuthCodeSend, {
-        data: Date.now(),
-        expire: {
-          type: DPCacheExpireType.MINUTES,
-          value: 1
-        }
-      })
-      setOrderAuthCountdown(ORDER_AUTH_CODE_SECONDS)
+      invoiceOrderAuth.markCodeSent()
+      setOrderAuthCountdown(invoiceOrderAuth.codeSeconds)
       showPendingToast('验证码已发送')
     } finally {
       setOrderAuthSending(false)
@@ -590,7 +473,7 @@ const InvoiceCenterPage = () => {
     const auth = orderAuth
     const requestId = ++orderAuthRequestId.current
     const normalizedValue = orderAuthValue.trim()
-    const validationMessage = getOrderAuthValidationMessage(
+    const validationMessage = invoiceOrderAuth.validateValue(
       auth,
       normalizedValue
     )
@@ -650,7 +533,10 @@ const InvoiceCenterPage = () => {
 
           if (applyOrderSearchResponse(result.response)) {
             if (result.shouldCache) {
-              cacheInvoiceOrderAuth(auth.waybillNumber, normalizedValue)
+              invoiceOrderAuth.rememberValue(
+                auth.waybillNumber,
+                normalizedValue
+              )
             }
             showPendingToast('验证通过')
           }
@@ -717,7 +603,7 @@ const InvoiceCenterPage = () => {
       return
     }
 
-    navigateToAppRoute(createInvoiceApplyUrl(order), {
+    navigateToAppRoute(createInvoiceOrderApplyUrl(order), {
       login: true
     })
   }
@@ -731,9 +617,7 @@ const InvoiceCenterPage = () => {
   }
 
   const handleApplySelectedECards = () => {
-    const selectedItems = ecards.filter(item =>
-      selectedECardIds.includes(item.id)
-    )
+    const selectedItems = getSelectedInvoiceECards(ecards, selectedECardIds)
 
     if (!selectedItems.length) {
       showPendingToast('请选择储值卡开票记录')
@@ -745,9 +629,10 @@ const InvoiceCenterPage = () => {
     })
   }
 
-  const selectedECardAmount = ecards
-    .filter(item => selectedECardIds.includes(item.id))
-    .reduce((total, item) => total + item.amount, 0)
+  const selectedECardAmount = useMemo(
+    () => getSelectedInvoiceECardAmount(ecards, selectedECardIds),
+    [ecards, selectedECardIds]
+  )
 
   const handleOpenHistoryDetail = (item: InvoiceHistoryView) => {
     navigateToAppRoute(createInvoiceDetailUrl(item), {
@@ -779,7 +664,7 @@ const InvoiceCenterPage = () => {
       onScrollToLower={handleLoadMore}
     >
       <InvoiceTabs
-        tabs={INVOICE_TABS}
+        tabs={INVOICE_CENTER_TABS}
         activeTab={tab}
         onChange={handleChangeTab}
       />

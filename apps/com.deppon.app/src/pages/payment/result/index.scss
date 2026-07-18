@@ -1,0 +1,6 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.payment-result-page {
+  flex: 1;
+  padding: $dp-space-48 $dp-page-horizontal-padding $dp-space-40;
+}

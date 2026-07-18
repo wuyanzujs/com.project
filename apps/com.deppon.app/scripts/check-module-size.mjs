@@ -17,17 +17,9 @@ const legacyBudgets = new Map([
   [
     'src/pages/express/index.tsx',
     {
-      max: 820,
+      max: 720,
       reason:
-        '寄件页承载页面级表单、报价、扫码上下文与模板入口编排；展示区已按职责拆为 components，当前冻结体量，避免为了行数机械拆分。'
-    }
-  ],
-  [
-    'src/pages/order/detail/index.tsx',
-    {
-      max: 900,
-      reason:
-        '订单详情页保留安全详情、公开轨迹、催单、预约上门和动作承接编排；路由解析与视图派生已拆出，当前冻结体量，避免职责重新回流。'
+        '寄件页保留页面级请求、表单状态、扫码上下文与模板入口编排；展示区已拆为 components，草稿变更规则已下沉 express.mutations，当前冻结体量。'
     }
   ],
   [
@@ -41,9 +33,9 @@ const legacyBudgets = new Map([
   [
     'src/pages/invoice/index/index.tsx',
     {
-      max: 880,
+      max: 780,
       reason:
-        '发票中心页承接可开票、储值卡、历史、抬头四个 tab，以及运单搜索、储值卡多选合并开票、身份校验弹层和扫码搜索的页面级流程，当前冻结体量。'
+        '发票中心页保留可开票、储值卡、历史、抬头四个 tab 的请求和交互编排；身份验证缓存、倒计时、校验和路由视图模型已拆出，当前冻结体量。'
     }
   ],
   [
@@ -92,22 +84,6 @@ const legacyBudgets = new Map([
         '网点查询页承接查询表单、列表操作、空结果寄件兜底和反馈 H5 入口，当前冻结体量，避免为了行数机械拆分。'
     }
   ],
-  [
-    'src/services/query/query.service.ts',
-    {
-      max: 620,
-      reason:
-        '查询域 service 覆盖收派范围、网点列表/详情和反馈 H5 参数归一，当前冻结体量。'
-    }
-  ],
-  [
-    'src/services/invoice/invoice.service.ts',
-    {
-      max: 500,
-      reason:
-        '发票 service 作为发票域统一门面，保留请求编排；历史、抬头、运单映射、储值卡规则已拆到独立模块。'
-    }
-  ]
 ])
 
 function toPosixPath(filePath) {

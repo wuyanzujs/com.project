@@ -1,16 +1,36 @@
+import {
+  createExpressCollectionDraft,
+  validateExpressCollection
+} from './collection.rules'
+import { createExpressDeliveryPointDraft } from './deliveryPoint.rules'
+import {
+  createExpressDeliveryPreferenceDraft,
+  validateExpressDeliveryPreference
+} from './deliveryPreference.rules'
+import {
+  createExpressInsuranceDraft,
+  validateExpressInsurance
+} from './insurance.rules'
+import { createExpressPackagingDraft } from './packaging.rules'
+import { validateExpressPickupTime } from './pickupTime.rules'
+import {
+  createExpressReturnBillDraft,
+  validateExpressReturnBill
+} from './valueAdded'
+import {
+  createExpressWarehouseDraft,
+  validateExpressWarehouse
+} from './warehouse.rules'
+
 import type { Contact } from '../contact'
 import type {
   ExpressContact,
-  ExpressContactTarget,
   ExpressDraft,
-  ExpressScanContext,
   ExpressValidationResult
 } from './types'
 
 const DEFAULT_GOODS_COUNT = 1
 const DEFAULT_GOODS_WEIGHT = 1
-const SCAN_CONTEXT_STALE_REASON = '扫码寄件信息变化，请重新获取价格'
-const SCAN_CONTEXT_CLEAR_REASON = '扫码寄件信息已移除，请重新获取价格'
 
 export function toFiniteNumber(value: number, fallback = 0) {
   return Number.isFinite(value) ? value : fallback
@@ -39,25 +59,30 @@ export function createExpressDraft(): ExpressDraft {
       count: DEFAULT_GOODS_COUNT,
       weight: DEFAULT_GOODS_WEIGHT,
       volume: 0,
-      insuredAmount: 0,
-      reviceMoneyAmount: 0
+      insuredAmount: 0
     },
+    insurance: createExpressInsuranceDraft(),
+    packaging: createExpressPackagingDraft(),
     service: {
       transportMode: '',
       deliveryMode: 'PICKNOTUPSTAIRS',
       paymentType: 'MP',
-      returnBillType: 'NO_RETURN_SIGNED',
-      reciveLoanType: '',
+      returnBill: createExpressReturnBillDraft(),
       passwordSigning: 'N',
       needContact: 'Y',
       privacyProtection: 'N'
     },
+    collection: createExpressCollectionDraft(),
+    deliveryPreference: createExpressDeliveryPreferenceDraft(),
+    deliveryPoint: createExpressDeliveryPointDraft(),
+    warehouse: createExpressWarehouseDraft(),
     pickup: {
       dispatch: 'Y',
       time: '',
-      type: 0,
+      type: 'NORMAL',
       stationCode: '',
-      stationName: ''
+      stationName: '',
+      nightNoticeAccepted: false
     },
     selectedProduct: null,
     couponNumber: '',
@@ -157,11 +182,28 @@ export function validateExpressContact(
 
 export function validateExpressDraft(
   draft: ExpressDraft,
-  options: { requireAgreement?: boolean; requireProduct?: boolean } = {}
+  options: {
+    requireAgreement?: boolean
+    requireProduct?: boolean
+    requireWarehouseScreening?: boolean
+  } = {}
 ): ExpressValidationResult {
   const messages: string[] = [
     ...validateExpressContact(draft.sender, '寄件人'),
-    ...validateExpressContact(draft.consignee, '收件人')
+    ...validateExpressContact(draft.consignee, '收件人'),
+    ...validateExpressInsurance(draft),
+    ...validateExpressCollection(draft.collection),
+    ...validateExpressReturnBill(
+      draft.service.returnBill,
+      draft.selectedProduct?.omsProductCode || draft.service.transportMode
+    ),
+    ...validateExpressPickupTime(draft),
+    ...validateExpressDeliveryPreference(draft, {
+      requireProduct: options.requireProduct
+    }),
+    ...validateExpressWarehouse(draft, {
+      requireScreening: options.requireWarehouseScreening
+    })
   ]
   const goodsName = trimText(draft.goods.name)
   const weight = toFiniteNumber(draft.goods.weight)
@@ -259,153 +301,19 @@ export function validateExpressPriceTimeDraft(
   }
 }
 
-function isSameRegion(
-  left: ExpressContact | null,
-  right: ExpressContact | null
-) {
-  if (!left || !right) {
-    return false
-  }
-
-  return (
-    left.province === right.province &&
-    left.city === right.city &&
-    left.county === right.county
-  )
-}
-
-export function resetSenderDependencies(draft: ExpressDraft): ExpressDraft {
-  return {
-    ...draft,
-    pickup: {
-      ...draft.pickup,
-      time: '',
-      endTime: undefined,
-      timeSlot: undefined,
-      stationCode: '',
-      stationName: '',
-      pickPeriodTime: undefined
-    },
-    selectedProduct: null,
-    quoteStaleReason: '寄件地址变化，请重新获取价格'
-  }
-}
-
-export function resetConsigneeDependencies(draft: ExpressDraft): ExpressDraft {
-  return {
-    ...draft,
-    selectedProduct: null,
-    quoteStaleReason: '收件地址变化，请重新获取价格'
-  }
-}
-
-export function markExpressQuoteStale(
-  draft: ExpressDraft,
-  reason: string
-): ExpressDraft {
-  return {
-    ...draft,
-    selectedProduct: null,
-    quoteStaleReason: reason
-  }
-}
-
-function normalizeExpressScanContext(
-  context: ExpressScanContext
-): ExpressScanContext | null {
-  const value = trimText(context.value)
-  const sceneId = trimText(context.sceneId)
-
-  if (
-    !value ||
-    value.toLowerCase() === 'null' ||
-    value.toLowerCase() === 'undefined'
-  ) {
-    return null
-  }
-
-  return {
-    role: context.role,
-    value,
-    sceneId: sceneId || undefined,
-    expressRole: context.expressRole
-  }
-}
-
-export function applyExpressScanContext(
-  draft: ExpressDraft,
-  context: ExpressScanContext
-): ExpressDraft {
-  const scanContext = normalizeExpressScanContext(context)
-
-  if (!scanContext) {
-    return {
-      ...draft,
-      scanContext: undefined
-    }
-  }
-
-  return {
-    ...draft,
-    scanContext,
-    selectedProduct: null,
-    agreementAccepted: false,
-    quoteStaleReason: SCAN_CONTEXT_STALE_REASON
-  }
-}
-
-export function clearExpressScanContext(draft: ExpressDraft): ExpressDraft {
-  if (!draft.scanContext) {
-    return draft
-  }
-
-  return {
-    ...draft,
-    scanContext: undefined,
-    selectedProduct: null,
-    agreementAccepted: false,
-    quoteStaleReason: SCAN_CONTEXT_CLEAR_REASON
-  }
-}
-
-export function setExpressContact(
-  draft: ExpressDraft,
-  target: ExpressContactTarget,
-  contact: ExpressContact
-): ExpressDraft {
-  const nextDraft = {
-    ...draft,
-    [target]: contact
-  }
-
-  return target === 'sender'
-    ? resetSenderDependencies(nextDraft)
-    : resetConsigneeDependencies(nextDraft)
-}
-
-export function swapExpressContacts(draft: ExpressDraft): ExpressDraft {
-  const nextDraft: ExpressDraft = {
-    ...draft,
-    sender: draft.consignee,
-    consignee: draft.sender,
-    selectedProduct: null,
-    quoteStaleReason: '收寄地址互换，请重新获取价格'
-  }
-
-  if (!isSameRegion(draft.sender, draft.consignee)) {
-    return {
-      ...nextDraft,
-      pickup: {
-        ...nextDraft.pickup,
-        time: '',
-        endTime: undefined,
-        timeSlot: undefined,
-        stationCode: '',
-        stationName: '',
-        pickPeriodTime: undefined
-      }
-    }
-  }
-
-  return nextDraft
-}
+export {
+  applyExpressPickupTime,
+  applyExpressScanContext,
+  clearExpressScanContext,
+  markExpressQuoteStale,
+  resetConsigneeDependencies,
+  resetSenderDependencies,
+  selectExpressProduct,
+  setExpressContact,
+  setExpressPrivacyProtection,
+  swapExpressContacts,
+  updateExpressCouponNumber,
+  updateExpressGoods,
+  updateExpressPickup,
+  updateExpressService
+} from './express.mutations'

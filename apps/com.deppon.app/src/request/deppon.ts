@@ -33,6 +33,7 @@ export interface DepponResponse<TResult = unknown> {
   locations?: Array<{ lng: number; lat: number }>
   authExpired?: boolean
   transportFailure?: boolean
+  sessionCookieSaved?: boolean
 }
 
 export interface DepponRequestOptions<
@@ -81,11 +82,11 @@ function createFallbackResponse<TResult>(
   }
 }
 
-function normalizeOwsResponse<TResult>(
+async function normalizeOwsResponse<TResult>(
   response: HttpResponse<unknown>,
   loginRequired: boolean,
   requestCookie: string
-): DepponResponse<TResult> {
+): Promise<DepponResponse<TResult>> {
   const data = response.data
   const dataStatus = isRecord(data) ? data.status : undefined
   const message =
@@ -98,9 +99,10 @@ function normalizeOwsResponse<TResult>(
     currentSession &&
     shouldEmitAuthExpiredEvent(loginRequired, response.statusCode, dataStatus)
 
-  if (currentSession && !authExpired) {
-    void saveSessionCookieFromResponse(response)
-  }
+  const sessionCookie =
+    currentSession && !authExpired
+      ? await saveSessionCookieFromResponse(response)
+      : ''
 
   if (
     currentSession &&
@@ -114,7 +116,7 @@ function normalizeOwsResponse<TResult>(
   }
 
   if (authExpired) {
-    void clearSessionCookie()
+    await clearSessionCookie()
     emitRequestEvent('authExpired', {
       url: response.url,
       statusCode: response.statusCode,
@@ -130,6 +132,7 @@ function normalizeOwsResponse<TResult>(
   const normalized: DepponResponse<TResult> = {
     ...(data as unknown as DepponResponse<TResult>),
     status: isDepponSuccessStatus(rawStatus),
+    sessionCookieSaved: Boolean(sessionCookie),
     ...(authExpired ? { authExpired: true } : {})
   }
 

@@ -199,6 +199,8 @@ export function normalizeConsigneeOrder(
 export function normalizeWaybillDetail(detail: WaybillDetailRaw): OrderDetail {
   return {
     ...detail,
+    signTime: detail.signTime ?? detail.signVoucherTime ?? null,
+    signVoucherTime: detail.signVoucherTime ?? detail.signTime ?? null,
     paymentType: detail.payment,
     goodsNumber: detail.pieces,
     totalVolume: detail.cubage,
@@ -264,8 +266,7 @@ export function createExpressDraftFromOrderDetail(
       count: Math.max(1, asNumber(order.goodsNumber, draft.goods.count)),
       weight: Math.max(1, asNumber(order.totalWeight, draft.goods.weight)),
       volume: Math.max(0, asNumber(order.totalVolume, draft.goods.volume)),
-      insuredAmount: Math.max(0, asNumber(order.insuredAmount)),
-      reviceMoneyAmount: Math.max(0, asNumber(order.reviceMoneyAmount))
+      insuredAmount: Math.max(0, asNumber(order.insuredAmount))
     },
     service: {
       ...draft.service,
@@ -277,12 +278,20 @@ export function createExpressDraftFromOrderDetail(
       paymentType: asExpressPaymentType(
         order.paymentType,
         draft.service.paymentType
-      ),
-      reciveLoanType: asExpressCollectionType(
-        order.reciveLoanType,
-        draft.service.reciveLoanType
       )
     },
+    collection: isReturn
+      ? draft.collection
+      : {
+          ...draft.collection,
+          type: asExpressCollectionType(
+            order.reciveLoanType,
+            draft.collection.type
+          ),
+          amount: Math.max(0, asNumber(order.reviceMoneyAmount)),
+          account: asText(order.reciveLoanAccount),
+          accountName: asText(order.reciveLoanAccountName)
+        },
     quoteStaleReason: isReturn
       ? '一键回寄，请重新获取价格'
       : '再来一单，请重新获取价格'

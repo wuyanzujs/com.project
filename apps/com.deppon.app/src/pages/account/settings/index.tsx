@@ -8,8 +8,8 @@ import { authService } from '../../../services/auth'
 import { AppPressable } from '../../../shared/components'
 import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import {
-  createLoginRedirectUrl,
-  hasValidSession
+  hasValidSession,
+  navigateToLogin
 } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppWebUrl } from '../../../shared/webview/appWeb'
@@ -98,7 +98,10 @@ const AccountSettingsPage = () => {
   })
 
   const handleLogin = () => {
-    navigateToAppRoute(createLoginRedirectUrl(APP_ROUTES.accountSettings))
+    navigateToLogin({
+      redirectUrl: APP_ROUTES.accountSettings,
+      message: false
+    })
   }
 
   const handleEntry = (entry: AccountEntry) => {

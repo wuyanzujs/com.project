@@ -182,6 +182,8 @@ export interface StationItem {
   lng: string
   lat: string
   distance: string
+  distanceKm: number | null
+  pickupSelf: boolean
   time: string
   source: 'Address' | 'City'
 }

@@ -1,0 +1,104 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.batch-recognition__input {
+  width: 100%;
+  min-height: 196px;
+  margin-top: 22px;
+  padding: 18px 20px;
+  color: $dp-color-text-heading;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.batch-recognition__summary {
+  margin-top: 16px;
+  padding: 16px;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.batch-recognition__summary-text,
+.batch-recognition__empty,
+.batch-recognized__text {
+  display: flex;
+  margin-top: 8px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.batch-recognition__carry {
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  margin-top: 16px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.batch-recognition__carry--disabled {
+  background: $dp-color-bg-muted;
+}
+
+.batch-recognition__carry-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.batch-recognition__carry-text--disabled {
+  color: $dp-color-text-supporting;
+}
+
+.batch-recognition__summary-text,
+.batch-recognition__empty {
+  margin-top: 0;
+}
+
+.batch-recognition__empty {
+  padding-top: 18px;
+}
+
+.batch-recognized {
+  margin-top: 16px;
+  padding: 18px;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-success-background-soft;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.batch-recognized--error {
+  border-color: $dp-color-danger-border-soft;
+}
+
+.batch-recognized__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.batch-recognized__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.batch-recognized__status {
+  padding: 6px 12px;
+  color: $dp-color-success-text-deep;
+  background: $dp-color-success-background;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-legal;
+  font-weight: $dp-font-weight-bold;
+}
+
+.batch-recognized__status--error {
+  color: $dp-color-danger-text;
+  background: $dp-color-danger-background-subtle;
+}

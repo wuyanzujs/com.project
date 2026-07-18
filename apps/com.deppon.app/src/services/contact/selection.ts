@@ -3,7 +3,7 @@ import type { Contact } from './types'
 export type ContactSelectionTarget = 'sender' | 'consignee'
 export type ContactSelectionMode = 'select' | 'manage'
 export type ContactSelectionSource =
-  'EXPRESS' | 'QUERY_PRICE' | 'INVOICE_DETAIL'
+  'EXPRESS' | 'QUERY_PRICE' | 'INVOICE_DETAIL' | 'BATCH'
 export type ContactSelectionReturnDelta = '1' | '2'
 
 export interface ContactSelectionParams {
@@ -38,7 +38,10 @@ function isContactSelectionSource(
   value: unknown
 ): value is ContactSelectionSource {
   return (
-    value === 'EXPRESS' || value === 'QUERY_PRICE' || value === 'INVOICE_DETAIL'
+    value === 'EXPRESS' ||
+    value === 'QUERY_PRICE' ||
+    value === 'INVOICE_DETAIL' ||
+    value === 'BATCH'
   )
 }
 

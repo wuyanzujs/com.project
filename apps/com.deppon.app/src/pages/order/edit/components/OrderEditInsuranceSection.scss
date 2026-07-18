@@ -1,0 +1,107 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-edit-insurance__header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.order-edit-insurance__header-content {
+  flex: 1;
+}
+
+.order-edit-insurance__summary {
+  display: flex;
+  margin-top: $dp-space-4;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-legal;
+  line-height: $dp-line-height-legal;
+}
+
+.order-edit-insurance__rules {
+  min-width: $dp-touch-target-min;
+  min-height: $dp-touch-target-min;
+  margin-left: $dp-space-8;
+}
+
+.order-edit-insurance__rules-text,
+.order-edit-insurance__clear-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-edit-insurance__amount-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: $dp-control-height-default;
+  margin-top: $dp-space-12;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.order-edit-insurance__amount-labels {
+  flex: 1;
+}
+
+.order-edit-insurance__label {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body-small;
+}
+
+.order-edit-insurance__limit {
+  display: flex;
+  margin-top: $dp-space-2;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-legal;
+}
+
+.order-edit-insurance__amount {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 260px;
+  min-height: $dp-touch-target-min;
+  padding: 0 $dp-space-12;
+  margin-left: $dp-space-12;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.order-edit-insurance__currency {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-edit-insurance__input {
+  flex: 1;
+  min-height: $dp-touch-target-min;
+  margin-left: $dp-space-6;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  text-align: right;
+}
+
+.order-edit-insurance__footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: $dp-touch-target-min;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.order-edit-insurance__notice {
+  flex: 1;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-legal;
+  line-height: $dp-line-height-legal;
+}
+
+.order-edit-insurance__clear {
+  min-width: $dp-touch-target-min;
+  min-height: $dp-touch-target-min;
+  margin-left: $dp-space-8;
+}

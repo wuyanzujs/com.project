@@ -1,0 +1,39 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-delivery-point-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: $dp-touch-target-min;
+  margin-top: $dp-space-8;
+  padding: $dp-space-8 0;
+  border-top-color: $dp-color-border-light;
+  border-top-width: $dp-border-width-hairline;
+}
+
+.express-delivery-point-field__content {
+  flex: 1;
+  padding-right: $dp-space-8;
+}
+
+.express-delivery-point-field__title {
+  display: flex;
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.express-delivery-point-field__summary {
+  display: flex;
+  margin-top: $dp-space-4;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.express-delivery-point-field__action {
+  margin-right: $dp-space-4;
+  color: $dp-color-brand;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}

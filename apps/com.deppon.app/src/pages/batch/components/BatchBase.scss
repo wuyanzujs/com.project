@@ -1,0 +1,75 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.batch-section {
+  margin: 20px 24px 0;
+  padding: 24px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.batch-section__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.batch-section__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.batch-section__hint {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+}
+
+.batch-sender {
+  display: flex;
+  min-height: 88px;
+  margin-top: 18px;
+  padding: 18px;
+  align-items: center;
+  justify-content: space-between;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-light;
+  border-radius: $dp-radius-sm;
+  border-width: 1px;
+}
+
+.batch-sender--empty {
+  background: $dp-color-brand-faint;
+  border-color: $dp-color-brand-border-subtle;
+}
+
+.batch-sender__content {
+  flex: 1;
+  padding-right: 16px;
+}
+
+.batch-sender__name,
+.batch-sender__empty-text {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.batch-sender__address {
+  margin-top: 8px;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.batch-inline-action {
+  min-width: 72px;
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+  text-align: center;
+}
+
+.batch-inline-action--danger {
+  color: $dp-color-danger-text;
+}

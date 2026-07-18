@@ -1,0 +1,73 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.customer-capability {
+  margin: $dp-space-md $dp-space-lg 0;
+  padding: $dp-card-padding;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}
+
+.customer-capability__header,
+.customer-capability__row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.customer-capability__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.customer-capability__status {
+  padding: $dp-space-8 $dp-space-16;
+  color: $dp-color-warning-text-dark;
+  background: $dp-color-warning-background-soft;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-body-small;
+  font-weight: $dp-font-weight-bold;
+}
+
+.customer-capability__status--active {
+  color: $dp-color-success-text-deep;
+  background: $dp-color-success-background;
+}
+
+.customer-capability__rows {
+  margin-top: $dp-space-12;
+}
+
+.customer-capability__row {
+  min-height: $dp-control-height-medium;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: $dp-border-width-hairline;
+}
+
+.customer-capability__label {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+}
+
+.customer-capability__value {
+  flex: 1;
+  margin-left: $dp-space-16;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+  text-align: right;
+}
+
+.customer-capability__empty,
+.customer-capability__message {
+  display: flex;
+  margin-top: $dp-space-12;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-body-small;
+}
+
+.customer-capability__message {
+  color: $dp-color-warning-text;
+}

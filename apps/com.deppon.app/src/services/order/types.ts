@@ -1,4 +1,7 @@
+import type { OrderModifyExtendField } from './order.edit.types'
 import type { AppWebSource } from '../../shared/webview/appWeb'
+
+export * from './order.edit.types'
 
 export type OrderRole = 'sender' | 'receive'
 export type OrderPaymentFilter = '' | 'MP' | 'FC' | 'CT'
@@ -503,12 +506,15 @@ export interface OrderDetail {
   orderClassName?: string
   orderStatus: string
   orderTime: string
+  signTime?: string | number | null
+  signVoucherTime?: string | number | null
   paymentType?: string
   goodsName?: string | null
   goodsNumber?: number
   totalWeight?: number
   totalVolume?: number
   totalFee?: number | null
+  insuredAmount?: number | string | null
   transportMode?: string
   deliveryType?: string
   contactName?: string | null
@@ -529,8 +535,21 @@ export interface OrderDetail {
   courierMobile?: string | null
   remark?: string | null
   modifyFlag?: boolean
+  productCodeFlag?: boolean
+  receiverLoanType?: string | null
+  receiverMoneyAmount?: number | string | null
+  reciveLoanType?: string | null
+  reviceMoneyAmount?: number | string | null
+  reciveLoanAccount?: string | null
+  reciveLoanAccountName?: string | null
   beginAcceptTime?: string | null
+  endAcceptTime?: string | null
+  pickPeriodTime?: number | string | null
+  channelType?: string | null
+  orderChannelType?: string | null
+  tableType?: string | number | null
   isPickupGoods?: boolean | 'Y' | 'N' | '1' | '0'
+  orderExtendFields?: OrderModifyExtendField[] | null
   [key: string]: unknown
 }
 
@@ -542,6 +561,8 @@ export interface WaybillDetailRaw {
   orderClassification: string
   orderStatus: string
   orderTime: string
+  signTime?: string | number | null
+  signVoucherTime?: string | number | null
   payment?: string
   paymentVisible?: boolean
   goodsName?: string
@@ -588,59 +609,6 @@ export interface OrderDeleteRequest {
   waybillNumber?: string | null
   orderNumber?: string | null
   sysCode: string
-}
-
-export interface OrderEditContact {
-  name: string
-  mobile: string
-  province: string
-  city: string
-  county: string
-  town: string
-  address: string
-}
-
-export interface OrderEditDraft {
-  orderNumber: string
-  sender: OrderEditContact
-  receiver: OrderEditContact
-  goodsName: string
-  goodsNumber: number
-  totalWeight: number
-  totalVolume: number
-  remark: string
-}
-
-export interface OrderModifyRequest {
-  orderNumber: string
-  contactName?: string
-  contactMobile?: string
-  contactProvince?: string
-  contactCity?: string
-  contactArea?: string
-  contactAddress?: string
-  receiverCustName?: string
-  receiverCustMobile?: string
-  receiverCustProvince?: string
-  receiverCustCity?: string
-  receiverCustArea?: string
-  receiverCustAddress?: string
-  goodsName?: string
-  goodsNumber?: number
-  totalWeight?: number
-  totalVolume?: number
-  remark?: string
-}
-
-export interface OrderEditValidationResult {
-  valid: boolean
-  messages: string[]
-}
-
-export interface OrderModifyPreview {
-  changed: boolean
-  changedFields: string[]
-  request: OrderModifyRequest
 }
 
 export interface WaybillTrackItem {

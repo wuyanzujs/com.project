@@ -1,3 +1,12 @@
+import type {
+  ExpressPackageInfo,
+  ExpressPackageLtlType,
+  ExpressPackagingDraft,
+  ExpressUnpackageLtlInfo
+} from './packaging.types'
+
+export type * from './packaging.types'
+
 export type ExpressFlag = 'Y' | 'N'
 export type ExpressPaymentType = 'MP' | 'PAY_ARIIVE' | 'MONTH_PAY'
 export type ExpressDeliveryMode =
@@ -11,7 +20,24 @@ export type ExpressReturnBillType =
   | 'CUSTOMER_SIGNED_FAX'
   | 'CUSTOMER_SIGNED_ORIGINAL'
   | 'RETURNBILL_TYPE_ONLINE'
+  | 'ORIGINAL_ONLINE'
+export type ExpressReturnBillRequirement =
+  | 'R1'
+  | 'R2'
+  | 'R3'
+  | 'R4'
+  | 'R5'
+  | 'R6'
+  | 'R7'
+  | 'R8'
 export type ExpressCollectionType = '' | 'NORMAL' | 'INTRADAY'
+export type ExpressPickupTimeType = 'NORMAL' | 'NIGHT'
+export type ExpressPickupTimeOpeningType = ExpressPickupTimeType | 'DISABLE'
+export type ExpressDeliveryPreferenceType =
+  | ''
+  | 'SCHEDULED'
+  | 'NOTIFY_SENDER'
+  | 'NOTIFY_RECEIVER'
 export type ExpressProductCode =
   | ''
   | 'PACKAGE'
@@ -26,10 +52,35 @@ export type ExpressProductCode =
   | 'XJTH'
   | 'DJTH'
   | 'YTY'
+  | 'YTYDS'
+  | 'JZKH'
+  | 'JZQY_LONG'
+  | 'JZZH'
+  | 'NJZZH'
+  | 'NZBRH'
+  | 'NFLF'
+  | 'NLRF'
+
+export type ExpressProductRole =
+  | ''
+  | 'EXP'
+  | 'CONTRACT'
+  | 'UNIVERSAL'
+  | 'DRIVER_QR_CODE'
+export type ExpressProductSwitch =
+  | 'OLD'
+  | 'EXP'
+  | 'CONTRACT'
+  | 'UNIVERSAL'
+export type ExpressProductUpgradeResult = 'N' | 'OLD' | 'NEW'
+export type ExpressProductCollectMode = 'BZLS'
+export type ExpressProductDeliveryMode = 'ZDZT' | 'BZPS'
 
 export type ExpressContactTarget = 'sender' | 'consignee'
 
-export type ExpressInsuranceRuleType = 'NORMAL' | 'QEB' | 'SXB'
+export type ExpressInsuranceType = 'NORMAL' | 'QEB' | 'SXB'
+export type ExpressInsuranceRuleType = ExpressInsuranceType
+export type ExpressInsurancePriceSubtype = 'QEB' | 'SXB' | 'YSB'
 
 export interface ExpressContact {
   id?: string
@@ -51,18 +102,88 @@ export interface ExpressGoods {
   weight: number
   volume: number
   insuredAmount: number
-  reviceMoneyAmount: number
+}
+
+export interface ExpressInsuranceCapability {
+  inputKey: string
+  fragile: boolean
+  worryFree: boolean
+  disabled: boolean
+}
+
+export interface ExpressInsuranceDraft {
+  type: ExpressInsuranceType
+  limit: number
+  capability: ExpressInsuranceCapability
+}
+
+export interface ExpressReturnBillDraft {
+  type: ExpressReturnBillType
+  requirements: ExpressReturnBillRequirement[]
+  customRequirement: string
+  returnCount: number
+  fileCode: string
 }
 
 export interface ExpressServiceOptions {
   transportMode: ExpressProductCode
   deliveryMode: ExpressDeliveryMode
   paymentType: ExpressPaymentType
-  returnBillType: ExpressReturnBillType
-  reciveLoanType: ExpressCollectionType
+  returnBill: ExpressReturnBillDraft
   passwordSigning: ExpressFlag
   needContact: ExpressFlag
   privacyProtection: ExpressFlag
+}
+
+export interface ExpressCollectionDraft {
+  type: ExpressCollectionType
+  amount: number
+  account: string
+  accountName: string
+  limit: number
+  agreementAccepted: boolean
+}
+
+export interface ExpressDeliveryPreferenceDraft {
+  type: ExpressDeliveryPreferenceType
+  scheduledWindow: string
+  unavailableDates: string[]
+  availabilityKey: string
+}
+
+export interface ExpressDeliveryPointDraft {
+  code: string
+  name: string
+}
+
+export type ExpressWarehouseType = '' | '1' | '2' | '3' | '4' | '5' | '6'
+export type ExpressWarehouseWay = '' | 'APSF' | 'AGXSF'
+export type ExpressWarehouseScreeningType = 0 | 1 | 2 | 3 | 4
+
+export interface ExpressWarehouseFile {
+  previewPath: string
+}
+
+export interface ExpressWarehouseScreening {
+  inputKey: string
+  type: ExpressWarehouseScreeningType
+  reason: string
+  depotType: ExpressWarehouseType
+  autoSelected: boolean
+  acknowledged: boolean
+}
+
+export interface ExpressWarehouseDraft {
+  enabled: boolean
+  warehouseNo: string
+  warehouseTime: string
+  fileList: ExpressWarehouseFile[]
+  warehouseType: ExpressWarehouseType
+  deliverWarehouseWay: ExpressWarehouseWay
+  warehouseProcess: string
+  warehouseCode: string
+  warehouseRemark: string
+  screening: ExpressWarehouseScreening
 }
 
 export interface ExpressPickup {
@@ -70,10 +191,20 @@ export interface ExpressPickup {
   time: string
   endTime?: string
   timeSlot?: string
-  type: 0
+  type: ExpressPickupTimeType
   stationCode: string
   stationName: string
   pickPeriodTime?: number
+  nightCapability?: ExpressPickupNightCapability
+  nightNoticeAccepted: boolean
+}
+
+export interface ExpressPickupNightCapability {
+  addressKey: string
+  enabled: boolean
+  startTime: string
+  endTime: string
+  checkedAt: number
 }
 
 export interface ExpressPriceDetail {
@@ -82,7 +213,6 @@ export interface ExpressPriceDetail {
   caculateFee: number
   discountFee?: string | number
 }
-
 export interface ExpressProductQuote {
   productName: string
   producteCode?: string
@@ -94,6 +224,8 @@ export interface ExpressProductQuote {
   label: string
   totalfee: number | null
   detail: ExpressPriceDetail[] | null
+  discount?: Array<{ marketCode: string; reduceFee: number }> | null
+  couponRankType?: string
   billWeight: number | null
 }
 
@@ -117,7 +249,13 @@ export interface ExpressDraft {
   sender: ExpressContact | null
   consignee: ExpressContact | null
   goods: ExpressGoods
+  insurance: ExpressInsuranceDraft
+  packaging: ExpressPackagingDraft
   service: ExpressServiceOptions
+  collection: ExpressCollectionDraft
+  deliveryPreference: ExpressDeliveryPreferenceDraft
+  deliveryPoint: ExpressDeliveryPointDraft
+  warehouse: ExpressWarehouseDraft
   pickup: ExpressPickup
   selectedProduct: ExpressProductQuote | null
   couponNumber: string
@@ -125,32 +263,6 @@ export interface ExpressDraft {
   agreementAccepted: boolean
   quoteStaleReason: string
   scanContext?: ExpressScanContext
-}
-
-export interface ExpressInsuranceRuleTableRow {
-  cells: string[]
-  tone?: 'normal' | 'warning'
-}
-
-export interface ExpressInsuranceRuleTable {
-  title: string
-  headers: string[]
-  rows: ExpressInsuranceRuleTableRow[]
-  note?: string
-}
-
-export interface ExpressInsuranceRuleSection {
-  title: string
-  content: string[]
-  table?: ExpressInsuranceRuleTable
-}
-
-export interface ExpressInsuranceRuleView {
-  type: ExpressInsuranceRuleType
-  title: string
-  summary: string
-  badgeText: string
-  sections: ExpressInsuranceRuleSection[]
 }
 
 export interface ExpressValidationResult {
@@ -210,6 +322,54 @@ export interface ExpressGoodsLabelRequest {
   arriveCountyName?: string
 }
 
+export interface ExpressProductPointRequest {
+  productCode: 'DCZP'
+  contactAddressDetail: string
+  receiverCustAddressDetail: string
+}
+
+export interface ExpressProductSwitchRequest {
+  customerCode: string
+  contactAddressDetail: string
+  receiverCustAddressDetail: string
+  ifExistContract: 0 | 1
+}
+
+export interface ExpressProductUpgradeRequest {
+  customerCode: string
+  isOffSiteTransfer: ExpressFlag
+  pilotType: 'CUSTOMER_REGION'
+  departProvinceName: string
+  departCityName: string
+  departCountyName: string
+  arriveProvinceName: string
+  arriveCityName: string
+  arriveCountyName: string
+}
+
+export interface ExpressProductCustomerCapability {
+  customerCode: string
+  monthlyEnabled: boolean
+  contractEnabled: boolean
+  insuranceLimit: number | null
+}
+
+export interface ExpressProductAvailability {
+  customer: ExpressProductCustomerCapability
+  dczpAvailable: boolean
+  goodsHasBattery: boolean
+  insuranceCapability: ExpressInsuranceCapability
+  isOffSiteTransfer: ExpressFlag
+  passProductCode: ExpressProductRole
+  productSwitch: ExpressProductSwitch
+  recommendDczp: boolean
+}
+
+export interface ExpressQuoteResult {
+  availability: ExpressProductAvailability
+  products: ExpressProductQuote[]
+}
+
 export type ExpressGoodsCheckStatus = 'ok' | 'risk' | 'unknown' | 'forbid'
 
 export interface ExpressGoodsCheckResult {
@@ -229,7 +389,7 @@ export interface ExpressFreightRequest {
   originalsaddress: string
   shipperAddress: string
   reciveLoanType: '' | 'R1' | 'R3'
-  returnBillType: 'NONE' | 'FAX' | 'ORIGINAL' | 'ONLINE'
+  returnBillType: 'NONE' | 'FAX' | 'ORIGINAL' | 'ONLINE' | 'ORIGINAL_ONLINE'
   receiveMethod: '' | 'DELIVER_NOUP' | 'SELF_PICKUP' | 'DELIVER_UP' | 'LARGE_DELIVER_UP'
   reviceMoneyAmount: number
   totalVolume: number
@@ -242,10 +402,30 @@ export interface ExpressFreightRequest {
   customerMobile?: string
   pickUpToDoor: boolean
   passwordSigning: ExpressFlag
-  passProductCode: ExpressProductCode
+  passProductCode: ExpressProductRole
+  isRecommendDczp?: ExpressFlag
+  collectMode?: ExpressProductCollectMode
+  deliveryMode?: ExpressProductDeliveryMode
+  isOffSiteTransfer: ExpressFlag
+  packageInfoList?: ExpressPackageInfo[]
+  nightAccept: ExpressFlag
+  nightDelivery: '' | 'Y'
+  appointmentDelivery: '' | 'Y'
+  notifyIsDeliver?: 'N'
+  isWarehousingService: ExpressFlag
+  deliverWarehouseWay?: Exclude<ExpressWarehouseWay, ''>
+  warehouseCode?: string
+  warehouseProcess?: string
+  jcType?: Exclude<ExpressWarehouseType, ''>
   customerCode?: string
   customerMonthly?: '0' | '1'
   customerContract?: '0' | '1'
+  sxb?: 'Y'
+  fullCoverage?: 'Y'
+  isFragileArticles?: 'Y'
+  packageLtlType: ExpressPackageLtlType
+  unpackingNonWoodPackagingNumber: number
+  unpackingWoodPackagingNumber: number
 }
 
 export interface ExpressPickupTimeRequest {
@@ -266,12 +446,28 @@ export interface ExpressPickupTimeRequest {
   originalsStreet?: string
   priceTimeProductCode?: ExpressProductCode
   source: 0
+  nightOpening?: ExpressFlag
+  nightStartTime?: string
+  nightEndTime?: string
+}
+
+export interface ExpressPickupNightRequest {
+  province: string
+  city: string
+  county: string
+  address: string
+}
+
+export interface ExpressPickupNightResponse {
+  startTime?: string
+  endTime?: string
+  nightPickUpEnable?: boolean
 }
 
 export interface ExpressPickupTimeOpeningDate {
   time: string
   text: string
-  type: 'NORMAL' | 'NIGHT' | 'DISABLE'
+  type: ExpressPickupTimeOpeningType
 }
 
 export interface ExpressPickupTimeOpening {
@@ -291,13 +487,30 @@ export interface ExpressPickupTimeResponse {
   openingList: ExpressPickupTimeOpening[]
   blankOpeningList?: ExpressPickupTimeOpening[]
   nightOpeningList?: ExpressPickupTimeOpening[]
+  nightCapability?: ExpressPickupNightCapability
+}
+
+export interface ExpressDeliveryAppointmentRequest {
+  goodsWeight: number
+  goodsVolume: number
+  provinceName: string
+  cityName: string
+  areaName: string
+  address: string
+}
+
+export interface ExpressDeliveryAppointmentResponse {
+  deptCode: string
+  orderCityDelivery: boolean
+  orderCityTomorrow: boolean
+  appointmentDelivery: boolean
 }
 
 export interface ExpressInsurancePriceRequest {
   pricingEntryCode: 'BF'
   productCode: ExpressProductCode
   statements: number[] | string[]
-  subType: string
+  subType: ExpressInsurancePriceSubtype
   weight: number
   volume: number
 }
@@ -330,9 +543,34 @@ export interface ExpressFilterRequest {
 }
 
 export interface ExpressFilterResponse {
-  reason: string
-  type: 0 | 1 | 2 | 3 | 4
-  depotType?: string
+  reason?: string | null
+  type?: ExpressWarehouseScreeningType | string | number | null
+  depotType?: ExpressWarehouseType | string | null
+}
+
+export interface ExpressWarehouseStagingPayload {
+  fileList: ExpressWarehouseFile[]
+  warehouseNo: string
+  warehouseTime: string
+  warehouseType: ExpressWarehouseType
+  deliverWarehouseWay: ExpressWarehouseWay
+  warehouseProcess: string
+  warehouseCode: string
+  warehouseRemark: string
+}
+
+export interface ExpressWarehouseStagingRequest {
+  code: ExpressProductCode
+  params: ExpressFreightRequest
+  warehouse: {
+    isWarehousingService: ExpressFlag
+    payload: ExpressWarehouseStagingPayload
+  }
+}
+
+export interface ExpressWarehouseStageResult {
+  stagingId: string
+  uri: string
 }
 
 export interface ExpressReceiveOrder {
@@ -356,6 +594,7 @@ export interface ExpressReceiveOrder {
   couponNumber: string
   encryptInfo: ExpressFlag
   remark: string
+  packing?: string
   isRecieveGoods: 0 | 1
   reviceMoneyAmount: number
   insuredAmount: number
@@ -369,12 +608,34 @@ export interface ExpressReceiveOrder {
   returnRequirement: string
   customReturnRequirement: string
   pickPeriodTime?: number
+  currentFirstTime?: ExpressFlag
+  orderExtendFields?: ExpressOrderExtendField[]
+  newOrderExtendFields?: ExpressOrderExtendField[]
+}
+
+export interface ExpressOrderExtendField {
+  key: string
+  value: string | number
+}
+
+export interface ExpressDeliveryToWarehouse {
+  isWarehousingService: ExpressFlag
+  appointmentEntryCode: string
+  appointmentTime: string
+  appointmentUrl: string[]
+  warehouseType?: Exclude<ExpressWarehouseType, ''>
+  deliverWarehouseWay?: Exclude<ExpressWarehouseWay, ''>
+  warehouseProcess?: string
 }
 
 export interface CreateExpressOrderRequest {
   contactIdList: string[]
+  packageInfoList?: ExpressPackageInfo[]
+  unpackageLtlInfo?: ExpressUnpackageLtlInfo
+  deliveryToWarehouse?: ExpressDeliveryToWarehouse
   isAgreement?: ExpressFlag
   isContact: ExpressFlag
+  batch?: boolean
   clientChannel: string
   contactName: string
   contactMobile: string

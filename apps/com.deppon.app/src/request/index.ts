@@ -88,10 +88,15 @@ function normalizeResponse(
   url: string,
   method: RequestMethod
 ): HttpResponse<unknown> {
+  const responseRecord = response as Taro.request.SuccessCallbackResult<any> & {
+    headers?: unknown
+  }
+
   return {
     data: response.data,
     statusCode: response.statusCode,
-    headers: response.header ?? {},
+    headers: response.header ?? responseRecord.headers ?? {},
+    fallbackHeaders: responseRecord.headers,
     cookies: response.cookies,
     url,
     method
@@ -115,7 +120,8 @@ export async function request<TResult = unknown, TData = unknown>(
       header: headers,
       timeout: options.timeout ?? runtimeTimeout,
       dataType: options.dataType,
-      responseType: options.responseType
+      responseType: options.responseType,
+      credentials: options.credentials ?? 'include'
     })
 
     response = normalizeResponse(taroResponse, url, method)

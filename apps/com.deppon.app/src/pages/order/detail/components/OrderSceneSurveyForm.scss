@@ -1,0 +1,167 @@
+@use '../../../../styles/_tokens.scss' as *;
+
+.order-scene-survey__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-scene-survey__score-options {
+  display: flex;
+  flex-direction: row;
+  margin-top: $dp-space-lg;
+}
+
+.order-scene-survey__score {
+  height: $dp-control-height-default;
+  margin-right: $dp-space-xs;
+  align-items: center;
+  justify-content: center;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-control;
+  border-width: $dp-border-width-hairline;
+}
+
+.order-scene-survey__score--selected {
+  background: $dp-color-warning-background-subtle;
+  border-color: $dp-color-warning-border;
+}
+
+.order-scene-survey__score--last {
+  margin-right: 0;
+}
+
+.order-scene-survey__score-value {
+  margin-top: $dp-space-xxs;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.order-scene-survey__score-title {
+  margin-top: $dp-space-sm;
+  color: $dp-color-warning-text;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body-large;
+  text-align: center;
+}
+
+.order-scene-survey__chips,
+.order-scene-survey__nps-scores {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: $dp-space-md;
+}
+
+.order-scene-survey__chip {
+  min-height: $dp-control-height-compact;
+  margin-right: $dp-space-xs;
+  margin-bottom: $dp-space-xs;
+  padding-right: $dp-space-sm;
+  padding-left: $dp-space-sm;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-control;
+  border-width: $dp-border-width-hairline;
+}
+
+.order-scene-survey__chip--selected {
+  background: $dp-color-brand-soft;
+  border-color: $dp-color-brand-border-soft;
+}
+
+.order-scene-survey__chip-text {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.order-scene-survey__chip-text--selected {
+  color: $dp-color-brand;
+  font-weight: $dp-font-weight-bold;
+}
+
+.order-scene-survey__field-head,
+.order-scene-survey__nps-scale-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order-scene-survey__field-head {
+  margin-top: $dp-space-md;
+}
+
+.order-scene-survey__field-title,
+.order-scene-survey__subquestion {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body-large;
+}
+
+.order-scene-survey__field-count,
+.order-scene-survey__nps-scale-head {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.order-scene-survey__textarea {
+  width: 100%;
+  min-height: 140px;
+  margin-top: $dp-space-xs;
+  padding: $dp-space-sm;
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-radius: $dp-radius-control;
+  border-width: $dp-border-width-hairline;
+}
+
+.order-scene-survey__validation {
+  min-height: $dp-line-height-caption;
+  margin-top: $dp-space-xs;
+  margin-bottom: $dp-space-sm;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.order-scene-survey__nps-scale-head {
+  margin-top: $dp-space-lg;
+}
+
+.order-scene-survey__nps-score {
+  width: 16.666%;
+  height: $dp-control-height-compact;
+  padding: $dp-space-xxs;
+  background: $dp-color-bg-subtle;
+  border-color: $dp-color-border-default;
+  border-width: $dp-border-width-hairline;
+}
+
+.order-scene-survey__nps-score--selected {
+  background: $dp-color-brand-soft;
+  border-color: $dp-color-brand;
+}
+
+.order-scene-survey__nps-score-text {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body-large;
+}
+
+.order-scene-survey__nps-score-text--selected {
+  color: $dp-color-brand;
+}
+
+.order-scene-survey__subquestion {
+  margin-top: $dp-space-lg;
+}

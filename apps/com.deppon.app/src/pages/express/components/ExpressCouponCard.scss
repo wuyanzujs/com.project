@@ -1,0 +1,67 @@
+@use '../../../styles/_tokens.scss' as *;
+
+.express-coupon-card {
+  margin-bottom: $dp-space-14;
+  padding: $dp-space-8 $dp-space-20;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-card;
+}
+
+.express-coupon-card__header,
+.express-coupon-card__open {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.express-coupon-card__open {
+  flex: 1;
+  min-width: 0;
+  min-height: $dp-touch-target-min;
+}
+
+.express-coupon-card__icon {
+  align-items: center;
+  justify-content: center;
+  width: $dp-space-48;
+  height: $dp-space-48;
+  margin-right: $dp-space-12;
+  background: $dp-color-brand-muted;
+  border-radius: $dp-radius-control;
+}
+
+.express-coupon-card__heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.express-coupon-card__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body;
+}
+
+.express-coupon-card__summary,
+.express-coupon-card__message {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+
+.express-coupon-card__summary {
+  margin-top: $dp-space-4;
+}
+
+.express-coupon-card__refresh {
+  align-items: center;
+  justify-content: center;
+  min-width: $dp-touch-target-min;
+  min-height: $dp-touch-target-min;
+  margin-left: $dp-space-8;
+}
+
+.express-coupon-card__message {
+  display: flex;
+  padding: 0 0 $dp-space-8 $dp-space-64;
+}

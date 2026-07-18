@@ -1,0 +1,92 @@
+@use '../../../../../styles/_tokens.scss' as *;
+
+.template-meta-editor__label {
+  display: flex;
+  color: $dp-color-text-primary;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-meta-editor__label--mode {
+  margin-top: $dp-space-20;
+}
+
+.template-meta-editor__input {
+  height: $dp-control-height-default;
+  padding: 0 $dp-space-16;
+  margin-top: $dp-space-10;
+  color: $dp-color-text-primary;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-meta-editor__count {
+  display: flex;
+  margin-top: $dp-space-4;
+  color: $dp-color-text-muted;
+  font-size: $dp-font-size-caption;
+  text-align: right;
+}
+
+.template-meta-editor__segment,
+.template-meta-editor__actions {
+  display: flex;
+  flex-direction: row;
+}
+
+.template-meta-editor__segment {
+  padding: $dp-space-4;
+  margin-top: $dp-space-10;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.template-meta-editor__segment-item {
+  flex: 1;
+  min-height: $dp-control-height-compact;
+  border-radius: $dp-radius-sm;
+}
+
+.template-meta-editor__segment-item--active {
+  background: $dp-color-bg-card;
+}
+
+.template-meta-editor__segment-text {
+  color: $dp-color-text-secondary;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-meta-editor__segment-text--active {
+  color: $dp-color-brand;
+}
+
+.template-meta-editor__actions {
+  width: 100%;
+}
+
+.template-meta-editor__button {
+  flex: 1;
+  min-height: $dp-control-height-default;
+  margin-left: $dp-space-8;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-sm;
+}
+
+.template-meta-editor__button--quiet {
+  margin-right: $dp-space-8;
+  margin-left: 0;
+  background: $dp-color-bg-muted;
+}
+
+.template-meta-editor__button-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+.template-meta-editor__button-text--quiet {
+  color: $dp-color-text-primary;
+}

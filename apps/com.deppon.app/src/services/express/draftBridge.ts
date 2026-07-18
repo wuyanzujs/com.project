@@ -1,3 +1,15 @@
+import { normalizeExpressDeliveryPointDraft } from './deliveryPoint.rules'
+import { normalizeExpressInsuranceDraft } from './insurance.rules'
+import {
+  createExpressPackagingDraft,
+  normalizeExpressPackagingDraft
+} from './packaging.rules'
+import { normalizeExpressReturnBillDraft } from './valueAdded'
+import {
+  normalizeExpressWarehouseDraft,
+  resetExpressWarehouseInput
+} from './warehouse.rules'
+
 import type { ExpressDraft, ExpressProductQuote } from './types'
 
 export type ExpressDraftBridgeSource =
@@ -26,8 +38,31 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
     sender: draft.sender ? { ...draft.sender } : null,
     consignee: draft.consignee ? { ...draft.consignee } : null,
     goods: { ...draft.goods },
-    service: { ...draft.service },
-    pickup: { ...draft.pickup },
+    insurance: normalizeExpressInsuranceDraft(
+      draft.insurance,
+      draft.selectedProduct?.omsProductCode || draft.service.transportMode
+    ),
+    packaging: normalizeExpressPackagingDraft(draft.packaging),
+    service: {
+      ...draft.service,
+      returnBill: normalizeExpressReturnBillDraft(draft.service.returnBill)
+    },
+    collection: { ...draft.collection },
+    deliveryPreference: {
+      ...draft.deliveryPreference,
+      unavailableDates: [...draft.deliveryPreference.unavailableDates]
+    },
+    deliveryPoint: normalizeExpressDeliveryPointDraft(
+      draft.deliveryPoint,
+      draft.service.deliveryMode
+    ),
+    warehouse: normalizeExpressWarehouseDraft(draft.warehouse),
+    pickup: {
+      ...draft.pickup,
+      nightCapability: draft.pickup.nightCapability
+        ? { ...draft.pickup.nightCapability }
+        : undefined
+    },
     selectedProduct: draft.selectedProduct
       ? { ...draft.selectedProduct }
       : null,
@@ -35,10 +70,22 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
   }
 }
 
+function clearWarehouseForBridge(draft: ExpressDraft) {
+  return resetExpressWarehouseInput(draft.warehouse, {
+    clearService: true
+  })
+}
+
 export const expressDraftBridge = {
   carryFromQueryPrice(draft: ExpressDraft, product: ExpressProductQuote) {
+    const currentProductCode =
+      draft.selectedProduct?.omsProductCode || draft.service.transportMode
     const nextDraft = cloneDraft({
       ...draft,
+      warehouse:
+        currentProductCode === product.omsProductCode
+          ? draft.warehouse
+          : resetExpressWarehouseInput(draft.warehouse),
       selectedProduct: product,
       agreementAccepted: false,
       quoteStaleReason: ''
@@ -55,6 +102,8 @@ export const expressDraftBridge = {
   carryFromOrderResend(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
+      packaging: createExpressPackagingDraft(),
+      warehouse: clearWarehouseForBridge(draft),
       selectedProduct: null,
       agreementAccepted: false,
       quoteStaleReason: draft.quoteStaleReason || '再来一单，请重新获取价格'
@@ -87,6 +136,7 @@ export const expressDraftBridge = {
   carryFromGoodsQuery(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
+      warehouse: resetExpressWarehouseInput(draft.warehouse),
       selectedProduct: null,
       agreementAccepted: false,
       quoteStaleReason: draft.quoteStaleReason || '货物名称变化，请重新获取价格'
@@ -103,6 +153,8 @@ export const expressDraftBridge = {
   carryFromBatchRecognition(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
+      packaging: createExpressPackagingDraft(),
+      warehouse: clearWarehouseForBridge(draft),
       selectedProduct: null,
       agreementAccepted: false,
       quoteStaleReason: draft.quoteStaleReason || '批量识别带入，请重新获取价格'
@@ -119,6 +171,8 @@ export const expressDraftBridge = {
   carryFromScanQrCode(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
+      packaging: createExpressPackagingDraft(),
+      warehouse: clearWarehouseForBridge(draft),
       selectedProduct: null,
       agreementAccepted: false,
       quoteStaleReason:
@@ -136,6 +190,8 @@ export const expressDraftBridge = {
   carryFromDispatchQuery(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
+      packaging: createExpressPackagingDraft(),
+      warehouse: clearWarehouseForBridge(draft),
       selectedProduct: null,
       agreementAccepted: false,
       quoteStaleReason:
@@ -153,6 +209,8 @@ export const expressDraftBridge = {
   carryFromCourier(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
+      packaging: createExpressPackagingDraft(),
+      warehouse: clearWarehouseForBridge(draft),
       selectedProduct: null,
       agreementAccepted: false,
       quoteStaleReason:
@@ -170,6 +228,8 @@ export const expressDraftBridge = {
   carryFromTemplate(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
+      packaging: createExpressPackagingDraft(),
+      warehouse: clearWarehouseForBridge(draft),
       selectedProduct: null,
       agreementAccepted: false,
       quoteStaleReason:

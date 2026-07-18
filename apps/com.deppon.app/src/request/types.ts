@@ -10,12 +10,14 @@ export type RequestMethod =
   | 'CONNECT'
 
 export type RequestHeaders = Record<string, string>
+export type RequestCredentialsMode = 'include' | 'omit' | 'same-origin'
 
 export interface HttpResponse<T = unknown> {
   data: T
   statusCode: number
-  headers: Record<string, unknown>
-  cookies?: string[]
+  headers: unknown
+  fallbackHeaders?: unknown
+  cookies?: unknown
   url: string
   method: RequestMethod
 }
@@ -36,6 +38,7 @@ export interface RequestOptions<TData = unknown, TResult = unknown> {
   skipAuth?: boolean
   dataType?: string
   responseType?: 'text' | 'arraybuffer'
+  credentials?: RequestCredentialsMode
   validateStatus?: (statusCode: number) => boolean
   transformResponse?: ResponseTransformer<TResult>
 }

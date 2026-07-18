@@ -23,6 +23,8 @@ pnpm check:app-runtime-config
 pnpm check:app-native-env
 ```
 
+`pnpm verify:app` 只执行静态质量门禁，不生成 RN bundle 或原生安装包；Android/iOS bundle 与原生打包由发布者显式执行。
+
 ## CI
 
 `.github/workflows/app-quality.yml` 会在 push 和 pull request 时执行：

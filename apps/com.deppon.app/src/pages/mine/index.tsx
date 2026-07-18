@@ -18,8 +18,8 @@ import { AppPage } from '../../shared/components'
 import AppTabBar from '../../shared/components/AppTabBar'
 import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
 import {
-  createLoginRedirectUrl,
-  hasValidSession
+  hasValidSession,
+  navigateToLogin
 } from '../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
@@ -68,7 +68,10 @@ const MinePage = () => {
   })
 
   const handleLogin = () => {
-    navigateToAppRoute(createLoginRedirectUrl(APP_ROUTES.mine))
+    navigateToLogin({
+      redirectUrl: APP_ROUTES.mine,
+      message: false
+    })
   }
 
   const handleAccountSettings = () => {

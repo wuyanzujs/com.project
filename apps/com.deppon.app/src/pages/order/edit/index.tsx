@@ -4,18 +4,29 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 import { useMemo, useRef, useState } from 'react'
 
 import { OrderEditActions } from './components/OrderEditActions'
+import { OrderEditCollectionSection } from './components/OrderEditCollectionSection'
 import { OrderEditContactSection } from './components/OrderEditContactSection'
 import { OrderEditGoodsSection } from './components/OrderEditGoodsSection'
 import { OrderEditIdentity } from './components/OrderEditIdentity'
+import { OrderEditInsuranceSection } from './components/OrderEditInsuranceSection'
 import { OrderEditLoadState } from './components/OrderEditLoadState'
 import { OrderEditMessage } from './components/OrderEditMessage'
+import { OrderEditPackagingSection } from './components/OrderEditPackagingSection'
+import { OrderEditScheduleSection } from './components/OrderEditScheduleSection'
+import { useOrderEditCollection } from './hooks/useOrderEditCollection'
+import { useOrderEditSchedule } from './hooks/useOrderEditSchedule'
+import { expressInsuranceRules } from '../../../services/express'
 import {
   buildOrderModifyRequest,
   createOrderEditDraft,
+  getOrderEditUnavailableMessage,
   orderEditService,
   orderService,
+  updateOrderEditPackagingCount,
+  updateOrderEditInsuranceAmount,
   validateOrderEditDraft
 } from '../../../services/order'
+import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
@@ -40,6 +51,12 @@ const OrderEditPage = () => {
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const loadingRef = useRef(false)
+  const loadedOrderRef = useRef('')
+  const collectionController = useOrderEditCollection({
+    orderNumber,
+    setDraft
+  })
+  const scheduleController = useOrderEditSchedule({ draft, setDraft })
   const editUrl = useMemo(
     () => createAppRouteUrl(APP_ROUTES.orderEdit, { orderNumber }),
     [orderNumber]
@@ -53,8 +70,12 @@ const OrderEditPage = () => {
     [draft, origin]
   )
 
-  const loadOrder = async () => {
+  const loadOrder = async (force = false) => {
     if (loadingRef.current) {
+      return
+    }
+
+    if (!force && loadedOrderRef.current === orderNumber) {
       return
     }
 
@@ -68,6 +89,7 @@ const OrderEditPage = () => {
     }
 
     loadingRef.current = true
+    loadedOrderRef.current = orderNumber
     setLoading(true)
     setErrorMessage('')
 
@@ -81,13 +103,14 @@ const OrderEditPage = () => {
         return
       }
 
-      if (
-        Number(response.result.orderClassification) !== 0 ||
-        response.result.modifyFlag === false
-      ) {
+      const unavailableMessage = getOrderEditUnavailableMessage(
+        response.result
+      )
+
+      if (unavailableMessage) {
         setDraft(null)
         setOrigin(null)
-        setErrorMessage('当前订单状态不支持修改')
+        setErrorMessage(unavailableMessage)
         return
       }
 
@@ -95,6 +118,10 @@ const OrderEditPage = () => {
 
       setDraft(nextDraft)
       setOrigin(nextDraft)
+
+      if (nextDraft.collection.enabled) {
+        void collectionController.onRefreshCapability()
+      }
     } finally {
       loadingRef.current = false
       setLoading(false)
@@ -102,7 +129,7 @@ const OrderEditPage = () => {
   }
 
   useDidShow(() => {
-    loadOrder()
+    void loadOrder()
   })
 
   const updateDraft = (patch: Partial<OrderEditDraft>) => {
@@ -122,6 +149,36 @@ const OrderEditPage = () => {
               ...current[role],
               ...patch
             }
+          }
+        : current
+    )
+    setErrorMessage('')
+  }
+
+  const updateInsuranceAmount = (value: string) => {
+    setDraft(current =>
+      current
+        ? {
+            ...current,
+            insurance: updateOrderEditInsuranceAmount(
+              current.insurance,
+              value
+            )
+          }
+        : current
+    )
+    setErrorMessage('')
+  }
+
+  const updatePackagingCount = (value: number) => {
+    setDraft(current =>
+      current
+        ? {
+            ...current,
+            packaging: updateOrderEditPackagingCount(
+              current.packaging,
+              value
+            )
           }
         : current
     )
@@ -189,7 +246,7 @@ const OrderEditPage = () => {
         errorMessage={errorMessage}
         hasDraft={!!draft}
         loading={loading}
-        onReload={loadOrder}
+        onReload={() => void loadOrder(true)}
       />
 
       {draft && (
@@ -206,6 +263,27 @@ const OrderEditPage = () => {
             onChange={patch => updateContact('receiver', patch)}
           />
           <OrderEditGoodsSection draft={draft} onChange={updateDraft} />
+          <OrderEditPackagingSection
+            packaging={draft.packaging}
+            onCountChange={updatePackagingCount}
+          />
+          <OrderEditScheduleSection
+            controller={scheduleController}
+            draft={draft}
+          />
+          <OrderEditInsuranceSection
+            insurance={draft.insurance}
+            onAmountChange={updateInsuranceAmount}
+            onOpenRules={() =>
+              navigateToAppRoute(
+                expressInsuranceRules.createRuleRoute('NORMAL')
+              )
+            }
+          />
+          <OrderEditCollectionSection
+            collection={draft.collection}
+            controller={collectionController}
+          />
 
           {!!errorMessage && (
             <OrderEditMessage message={errorMessage} />

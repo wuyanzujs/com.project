@@ -1,4 +1,5 @@
 export * from './auth.api'
+export * from './login.rules'
 export * from './auth.service'
 export * from './session'
 export * from './sessionIdentity'

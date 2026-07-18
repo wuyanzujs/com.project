@@ -13,6 +13,7 @@ import { AppPressable, AppFormField } from '../../../shared/components'
 import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
 import { APP_ROUTES } from '../../../shared/navigation/routes'
 import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
+import { useContactAddressIntegrity } from '../hooks/useContactAddressIntegrity'
 
 import type { Contact } from '../../../services/contact'
 
@@ -39,6 +40,8 @@ const ContactEditPage = () => {
   const [analyzing, setAnalyzing] = useState(false)
   const [refiningAddress, setRefiningAddress] = useState(false)
   const [saving, setSaving] = useState(false)
+  const { checkingKey, checkAddressIntegrity } =
+    useContactAddressIntegrity()
   const validation = useMemo(() => validateContact(contact), [contact])
   const contactEditUrl = useMemo(
     () => createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams),
@@ -186,7 +189,7 @@ const ContactEditPage = () => {
   }
 
   const handleSave = async () => {
-    if (!ensureContactEditAccess()) {
+    if (!ensureContactEditAccess() || saving || checkingKey) {
       return
     }
 
@@ -201,6 +204,15 @@ const ContactEditPage = () => {
     setSaving(true)
 
     try {
+      const integrityAction = await checkAddressIntegrity(contact, {
+        confirmText: '继续修改',
+        cancelText: '仍然保存'
+      })
+
+      if (integrityAction !== 'continue') {
+        return
+      }
+
       const response = await contactService.save(contact)
 
       if (!response.status) {

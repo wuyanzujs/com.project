@@ -8,8 +8,7 @@ import { APP_NATIVE_TOKENS } from '../../../styles/nativeTokens'
 
 import type {
   ExpressDraft,
-  ExpressGoodsItem,
-  ExpressInsuranceQuote
+  ExpressGoodsItem
 } from '../../../services/express'
 
 import './ExpressGoodsSection.scss'
@@ -19,15 +18,9 @@ interface ExpressGoodsSectionProps {
   goodsLoading: boolean
   goodsMessage: string
   goodsSuggestions: ExpressGoodsItem[]
-  insuranceLoading: boolean
-  insuranceMessage: string
-  insuranceQuote: ExpressInsuranceQuote | null
   onGoodsChange: (patch: Partial<ExpressDraft['goods']>) => void
   onGoodsNameInput: (value: string) => void
-  onInsuranceGoodsChange: (patch: Partial<ExpressDraft['goods']>) => void
-  onOpenInsuranceRules: () => void
   onQueryGoodsNames: () => void
-  onQueryInsurancePrice: () => void
   onSelectGoodsName: (item: ExpressGoodsItem) => void
 }
 
@@ -35,14 +28,6 @@ function parseNumber(value: string, fallback = 0) {
   const parsed = Number(value)
 
   return Number.isFinite(parsed) ? parsed : fallback
-}
-
-function getMoneyText(value: number) {
-  if (!Number.isFinite(value)) {
-    return '¥0'
-  }
-
-  return Number.isInteger(value) ? `¥${value}` : `¥${value.toFixed(2)}`
 }
 
 function getGoodsCategoryText(item: ExpressGoodsItem) {
@@ -54,15 +39,9 @@ export function ExpressGoodsSection({
   goodsLoading,
   goodsMessage,
   goodsSuggestions,
-  insuranceLoading,
-  insuranceMessage,
-  insuranceQuote,
   onGoodsChange,
   onGoodsNameInput,
-  onInsuranceGoodsChange,
-  onOpenInsuranceRules,
   onQueryGoodsNames,
-  onQueryInsurancePrice,
   onSelectGoodsName
 }: ExpressGoodsSectionProps) {
   const [expanded, setExpanded] = useState(false)
@@ -136,7 +115,7 @@ export function ExpressGoodsSection({
                 type='digit'
                 value={String(goods.weight)}
                 onInput={event =>
-                  onInsuranceGoodsChange({
+                  onGoodsChange({
                     weight: parseNumber(event.detail.value, 0)
                   })
                 }
@@ -157,68 +136,20 @@ export function ExpressGoodsSection({
             </View>
           </View>
 
-          <View className='express-field-grid'>
-            <View className='express-field express-field--grid'>
-              <Text className='express-field__label'>体积 m³</Text>
-              <Input
-                className='express-input'
-                placeholder='选填'
-                style={{ minHeight: APP_NATIVE_TOKENS.touch.minimum }}
-                type='digit'
-                value={String(goods.volume || '')}
-                onInput={event =>
-                  onInsuranceGoodsChange({
-                    volume: parseNumber(event.detail.value, 0)
-                  })
-                }
-              />
-            </View>
-            <View className='express-field express-field--grid express-field--grid-right'>
-              <View className='express-field__row'>
-                <Text className='express-field__label'>保价金额</Text>
-                <View className='express-field__actions'>
-                  <AppPressable
-                    accessibilityLabel='查看保价规则'
-                    className='express-field__button express-field__button--compact'
-                    onPress={onOpenInsuranceRules}
-                  >
-                    <Text className='express-field__button-text'>规则</Text>
-                  </AppPressable>
-                  <AppPressable
-                    accessibilityLabel='试算保价费用'
-                    className='express-field__button express-field__button--compact'
-                    onPress={onQueryInsurancePrice}
-                  >
-                    <Text className='express-field__button-text'>
-                      {insuranceLoading ? '试算中' : '试算'}
-                    </Text>
-                  </AppPressable>
-                </View>
-              </View>
-              <Input
-                className='express-input'
-                placeholder='0'
-                style={{ minHeight: APP_NATIVE_TOKENS.touch.minimum }}
-                type='digit'
-                value={String(goods.insuredAmount || '')}
-                onInput={event =>
-                  onInsuranceGoodsChange({
-                    insuredAmount: parseNumber(event.detail.value, 0)
-                  })
-                }
-              />
-              {insuranceQuote && (
-                <Text className='express-insurance-message'>
-                  {insuranceQuote.name || '保价费'}约
-                  {getMoneyText(insuranceQuote.price)}
-                </Text>
-              )}
-              {insuranceMessage && (
-                <Text className='express-insurance-message express-insurance-message--error'>
-                  {insuranceMessage}
-                </Text>
-              )}
-            </View>
+          <View className='express-field'>
+            <Text className='express-field__label'>体积 m³</Text>
+            <Input
+              className='express-input'
+              placeholder='选填'
+              style={{ minHeight: APP_NATIVE_TOKENS.touch.minimum }}
+              type='digit'
+              value={String(goods.volume || '')}
+              onInput={event =>
+                onGoodsChange({
+                  volume: parseNumber(event.detail.value, 0)
+                })
+              }
+            />
           </View>
         </>
       ) : null}

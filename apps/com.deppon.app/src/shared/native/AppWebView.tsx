@@ -9,6 +9,7 @@ interface AppWebViewProps {
   onError: () => void
   onLoadEnd: () => void
   onLoadStart: () => void
+  onMessage?: (data: string) => void
   onShouldStartLoad: (url: string) => boolean
 }
 
@@ -25,6 +26,7 @@ export function AppWebView({
   onError,
   onLoadEnd,
   onLoadStart,
+  onMessage,
   onShouldStartLoad
 }: AppWebViewProps) {
   return (
@@ -40,6 +42,7 @@ export function AppWebView({
       onHttpError={onError}
       onLoadEnd={onLoadEnd}
       onLoadStart={onLoadStart}
+      onMessage={event => onMessage?.(event.nativeEvent.data)}
       onShouldStartLoadWithRequest={(request) =>
         onShouldStartLoad(request.url)
       }

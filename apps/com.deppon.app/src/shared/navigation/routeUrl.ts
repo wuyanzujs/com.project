@@ -11,6 +11,28 @@ export type RouteQueryValue =
 export type RouteQueryParams = Record<string, unknown>
 export type AppRouteUrl = AppRoutePath | `${AppRoutePath}?${string}`
 
+export function normalizeAppRouteUrlParam(value?: string) {
+  if (!value) {
+    return ''
+  }
+
+  if (value.startsWith('/pages/')) {
+    return value
+  }
+
+  if (!/^%2Fpages%2F/i.test(value)) {
+    return ''
+  }
+
+  try {
+    const decoded = decodeURIComponent(value)
+
+    return decoded.startsWith('/pages/') ? decoded : ''
+  } catch {
+    return ''
+  }
+}
+
 function stringifyRouteValue(value: unknown): string {
   if (Array.isArray(value)) {
     return stringifyRouteValue(value[0])
