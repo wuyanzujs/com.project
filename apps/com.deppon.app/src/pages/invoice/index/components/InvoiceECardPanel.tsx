@@ -1,10 +1,11 @@
 import { Text, View } from '@tarojs/components'
 
+import type { InvoiceECardView } from '@/services/invoice'
+import { AppPressable } from '@/shared/components'
+
 import { InvoiceSummary } from './InvoiceCenterControls'
 import { InvoiceEmpty } from './InvoiceCenterStates'
-import { AppPressable } from '../../../../shared/components'
 
-import type { InvoiceECardView } from '../../../../services/invoice'
 
 import './InvoiceECardPanel.scss'
 
@@ -43,7 +44,7 @@ export function InvoiceECardPanel(props: {
       />
 
       <View className='invoice-ecard-content'>
-        {props.ecards.map((item) => {
+        {props.ecards.map(item => {
           const selected = props.selectedIds.includes(item.id)
 
           return (
@@ -73,7 +74,9 @@ export function InvoiceECardPanel(props: {
               </View>
               <View className='invoice-ecard-card__actions'>
                 <AppPressable
-                  accessibilityLabel={selected ? '取消选择储值卡' : '选择储值卡'}
+                  accessibilityLabel={
+                    selected ? '取消选择储值卡' : '选择储值卡'
+                  }
                   className={
                     selected
                       ? 'invoice-ecard-card__button invoice-ecard-card__button--ghost'

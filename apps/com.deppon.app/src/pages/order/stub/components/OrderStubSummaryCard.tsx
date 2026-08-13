@@ -1,9 +1,10 @@
 import { Text, View } from '@tarojs/components'
 
-import { OrderStubParty } from './OrderStubParty'
-import { AppCard, AppPressable } from '../../../../shared/components'
+import type { OrderStubView } from '@/services/order'
+import { AppCard, AppPressable } from '@/shared/components'
 
-import type { OrderStubView } from '../../../../services/order'
+import { OrderStubParty } from './OrderStubParty'
+
 
 import './OrderStubSummaryCard.scss'
 

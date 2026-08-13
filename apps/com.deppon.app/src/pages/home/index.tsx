@@ -3,28 +3,29 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useRef } from 'react'
 
-import Banner from './components/banner'
-import Menu from './components/menu'
-import { HOME_QUICK_ACTIONS } from './home.data'
 import {
   applyExpressScanContext,
   createExpressDraft,
   expressDraftBridge
-} from '../../services/express'
-import { privacyService } from '../../services/privacy'
-import { AppPage, AppPressable } from '../../shared/components'
-import { AppIcon } from '../../shared/components/AppIcon'
-import AppTabBar from '../../shared/components/AppTabBar'
-import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
-import { APP_ROUTES } from '../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
-import { getNativeCapabilityErrorMessage } from '../../shared/platform/capabilities'
-import { dialPhone } from '../../shared/platform/phone'
-import { scanAppCode } from '../../shared/platform/scan'
-import { APP_STYLE_COLORS } from '../../styles/nativeTokens'
+} from '@/services/express'
+import { privacyService } from '@/services/privacy'
+import { AppPage, AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import AppTabBar from '@/shared/components/AppTabBar'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import type { AppRoutePath } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
+import { dialPhone } from '@/shared/platform/phone'
+import { scanAppCode } from '@/shared/platform/scan'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
+
+import Banner from './components/banner'
+import Menu from './components/menu'
+import { HOME_QUICK_ACTIONS } from './home.data'
 
 import type { HomeQuickAction } from './home.data'
-import type { AppRoutePath } from '../../shared/navigation/routes'
 
 import './index.scss'
 import './content.scss'
@@ -68,11 +69,7 @@ const HomePage = () => {
         return
       }
 
-      if (
-        result.reason === 'sendQrCode' &&
-        result.role &&
-        result.value
-      ) {
+      if (result.reason === 'sendQrCode' && result.role && result.value) {
         expressDraftBridge.carryFromScanQrCode(
           applyExpressScanContext(createExpressDraft(), {
             role: result.role,
@@ -154,7 +151,8 @@ const HomePage = () => {
         <Banner onPress={() => handleNavigate(APP_ROUTES.express)} />
 
         <View className='home-primary-actions'>
-          <AppPressable flex
+          <AppPressable
+            flex
             accessibilityLabel='寄快递'
             block
             className='home-primary-action'
@@ -171,7 +169,8 @@ const HomePage = () => {
             </View>
           </AppPressable>
           <View className='home-primary-actions__divider' />
-          <AppPressable flex
+          <AppPressable
+            flex
             accessibilityLabel='发物流'
             block
             className='home-primary-action'
@@ -194,36 +193,52 @@ const HomePage = () => {
         <Menu actions={HOME_QUICK_ACTIONS} onSelect={handleQuickAction} />
 
         <View className='home-support-bar'>
-          <AppPressable flex
+          <AppPressable
+            flex
             accessibilityLabel='拨打 95353'
             className='home-support-bar__item'
             onPress={handleServicePhone}
           >
-            <AppIcon color={APP_STYLE_COLORS.text.heading} name='phone' size={24} />
+            <AppIcon
+              color={APP_STYLE_COLORS.text.heading}
+              name='phone'
+              size={24}
+            />
             <Text className='home-support-bar__text'>95353</Text>
           </AppPressable>
           <View className='home-support-bar__divider' />
-          <AppPressable flex
+          <AppPressable
+            flex
             accessibilityLabel='在线客服'
             className='home-support-bar__item'
             onPress={() => handleNavigate(APP_ROUTES.supportCenter)}
           >
-            <AppIcon color={APP_STYLE_COLORS.text.heading} name='headphones' size={24} />
+            <AppIcon
+              color={APP_STYLE_COLORS.text.heading}
+              name='headphones'
+              size={24}
+            />
             <Text className='home-support-bar__text'>在线客服</Text>
           </AppPressable>
           <View className='home-support-bar__divider' />
-          <AppPressable flex
+          <AppPressable
+            flex
             accessibilityLabel='企业服务'
             className='home-support-bar__item'
             onPress={() => handleNavigate(APP_ROUTES.customerCenter)}
           >
-            <AppIcon color={APP_STYLE_COLORS.text.heading} name='contact' size={24} />
+            <AppIcon
+              color={APP_STYLE_COLORS.text.heading}
+              name='contact'
+              size={24}
+            />
             <Text className='home-support-bar__text'>企业服务</Text>
           </AppPressable>
         </View>
 
         <View className='home-query-bar'>
-          <AppPressable flex
+          <AppPressable
+            flex
             accessibilityLabel='服务查询'
             block
             className='home-query-bar__main'

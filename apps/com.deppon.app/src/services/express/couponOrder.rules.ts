@@ -1,4 +1,4 @@
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
 import type {
   ExpressCouponFee,
@@ -123,12 +123,7 @@ export function createExpressCouponQueryRequest(
     consignee.county
   ])
 
-  if (
-    !mobile ||
-    !arriveProvinceName ||
-    !sendAnAddress ||
-    !receivesAnAddress
-  ) {
+  if (!mobile || !arriveProvinceName || !sendAnAddress || !receivesAnAddress) {
     return null
   }
 

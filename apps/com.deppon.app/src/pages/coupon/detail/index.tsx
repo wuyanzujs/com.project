@@ -3,20 +3,20 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useState } from 'react'
 
-import { couponService } from '../../../services/coupon'
+import { couponService } from '@/services/coupon'
+import type { CouponDetailView, CouponStatus } from '@/services/coupon'
 import {
   createExpressDraft,
   expressDraftBridge,
   expressDraftStorage,
   markExpressQuoteStale
-} from '../../../services/express'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
+} from '@/services/express'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
-import type { CouponDetailView, CouponStatus } from '../../../services/coupon'
 
 import './index.scss'
 import './content.scss'
@@ -255,7 +255,9 @@ const CouponDetailPage = () => {
             </Text>
           </AppPressable>
           <AppPressable
-            accessibilityLabel={canUse ? '去使用优惠券' : STATUS_TEXT[routeStatus]}
+            accessibilityLabel={
+              canUse ? '去使用优惠券' : STATUS_TEXT[routeStatus]
+            }
             allowDisabledPress={!canUse}
             disabled={!canUse}
             className={
@@ -328,7 +330,9 @@ const CouponDetailPage = () => {
         </View>
       )}
 
-      {loading && <Text className='coupon-detail-loading'>正在加载优惠券详情...</Text>}
+      {loading && (
+        <Text className='coupon-detail-loading'>正在加载优惠券详情...</Text>
+      )}
     </ScrollView>
   )
 }

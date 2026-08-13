@@ -1,8 +1,7 @@
 import { Text, View } from '@tarojs/components'
 
-import { createPaymentFeeSummary } from '../../../../services/payment'
-
-import type { PaymentItem } from '../../../../services/payment'
+import { createPaymentFeeSummary } from '@/services/payment'
+import type { PaymentItem } from '@/services/payment'
 
 import './PaymentFeeRows.scss'
 
@@ -26,7 +25,7 @@ const PaymentFeeRows = (props: PaymentFeeRowsProps) => {
   return (
     <View className='payment-fees'>
       <Text className='payment-fees__title'>费用明细</Text>
-      {summary.rows.map((row) => (
+      {summary.rows.map(row => (
         <View className='payment-fee-row' key={row.key}>
           <Text className='payment-fee-row__label'>{row.label}</Text>
           <Text

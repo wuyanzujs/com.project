@@ -1,9 +1,10 @@
 import { Text, View } from '@tarojs/components'
 
-import { OrderDetailSection } from './OrderDetailSection'
-import { AppPressable } from '../../../../shared/components'
+import type { OrderDetailActionView } from '@/services/order'
+import { AppPressable } from '@/shared/components'
 
-import type { OrderDetailActionView } from '../../../../services/order'
+import { OrderDetailSection } from './OrderDetailSection'
+
 
 import './OrderServiceActions.scss'
 
@@ -48,7 +49,9 @@ export function OrderServiceActions({
           </Text>
           <View className='order-service-action__content'>
             <View className='order-service-action__top'>
-              <Text className='order-service-action__title'>{action.title}</Text>
+              <Text className='order-service-action__title'>
+                {action.title}
+              </Text>
               {action.badgeText ? (
                 <Text className='order-service-action__badge'>
                   {action.badgeText}

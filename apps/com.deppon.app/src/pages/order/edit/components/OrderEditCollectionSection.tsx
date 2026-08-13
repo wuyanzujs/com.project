@@ -7,15 +7,12 @@ import {
   normalizeOrderEditCollectionAmountInput,
   ORDER_EDIT_COLLECTION_OPTIONS,
   parseOrderEditCollectionAmount
-} from '../../../../services/order'
-import { AppPressable } from '../../../../shared/components'
-import { AppIcon } from '../../../../shared/components/AppIcon'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../../styles/nativeTokens'
+} from '@/services/order'
+import type { OrderEditCollectionDraft } from '@/services/order'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-import type { OrderEditCollectionDraft } from '../../../../services/order'
 import type { OrderEditCollectionController } from '../hooks/useOrderEditCollection'
 
 import './OrderEditCollectionSection.scss'
@@ -216,8 +213,7 @@ export function OrderEditCollectionSection({
             </AppPressable>
           </View>
 
-          {controller.capabilityLoading ||
-          controller.capabilityMessage ? (
+          {controller.capabilityLoading || controller.capabilityMessage ? (
             <View className='order-edit-collection-message'>
               <Text className='order-edit-collection-message__text'>
                 {controller.capabilityLoading

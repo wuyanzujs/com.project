@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { courierApi } from './courier.api'
 import {
   isAlreadyBoundCourierMessage,
@@ -12,7 +14,6 @@ import type {
   CourierDetailView,
   CourierView
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 function normalizeCourierNo(value?: string | null) {
   return (value ?? '').trim()

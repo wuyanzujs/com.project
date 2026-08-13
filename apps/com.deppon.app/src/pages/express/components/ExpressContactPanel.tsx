@@ -1,18 +1,15 @@
 import { Text, View } from '@tarojs/components'
 
-import { getExpressContactFullAddress } from '../../../services/express'
-import { AppPressable } from '../../../shared/components'
-import { AppIcon } from '../../../shared/components/AppIcon'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
-
+import { getExpressContactFullAddress } from '@/services/express'
 import type {
   ExpressContact,
   ExpressContactTarget,
   ExpressDraft
-} from '../../../services/express'
+} from '@/services/express'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
+
 
 import './ExpressContactPanel.scss'
 

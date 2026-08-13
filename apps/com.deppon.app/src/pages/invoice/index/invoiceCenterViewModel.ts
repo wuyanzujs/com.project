@@ -1,13 +1,13 @@
-import { getInvoiceECardTotalAmount } from '../../../services/invoice'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-
+import { getInvoiceECardTotalAmount } from '@/services/invoice'
 import type {
   InvoiceECardView,
   InvoiceHistoryView,
   InvoiceOrderView,
   InvoiceTab
-} from '../../../services/invoice'
+} from '@/services/invoice'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+
 
 export interface InvoiceCenterTabItem {
   label: string

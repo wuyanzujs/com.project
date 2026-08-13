@@ -7,15 +7,15 @@ import {
   contactSelection,
   contactService,
   getContactFullAddress
-} from '../../../services/contact'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-import { useContactAddressIntegrity } from '../hooks/useContactAddressIntegrity'
+} from '@/services/contact'
+import type { Contact } from '@/services/contact'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
-import type { Contact } from '../../../services/contact'
+import { useContactAddressIntegrity } from '../hooks/useContactAddressIntegrity'
 
 
 import './index.scss'
@@ -43,8 +43,7 @@ const ContactListPage = () => {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [processingContactId, setProcessingContactId] = useState('')
-  const { checkingKey, checkAddressIntegrity } =
-    useContactAddressIntegrity()
+  const { checkingKey, checkAddressIntegrity } = useContactAddressIntegrity()
   const contactListUrl = useMemo(
     () => createAppRouteUrl(APP_ROUTES.contactList, selectionParams),
     [selectionParams]
@@ -64,7 +63,7 @@ const ContactListPage = () => {
         ? '选择后会回填到价格时效页，并触发对应报价依赖清理。'
         : selectionParams.source === 'BATCH'
           ? '选择后会回填为批量寄件发货人。'
-        : '选择后会回填到寄件页，并触发对应报价和取件依赖清理。'
+          : '选择后会回填到寄件页，并触发对应报价和取件依赖清理。'
 
   const loadContacts = useCallback(
     async (nextPage = 1, nextKeyword = keyword) => {
@@ -290,14 +289,20 @@ const ContactListPage = () => {
           value={keyword}
           onInput={event => setKeyword(event.detail.value)}
         />
-        <AppPressable className='contact-list-search__button' onPress={handleSearch}>
+        <AppPressable
+          className='contact-list-search__button'
+          onPress={handleSearch}
+        >
           <Text className='contact-list-search__button-text'>搜索</Text>
         </AppPressable>
       </View>
 
       <View className='contact-list-toolbar'>
         <Text className='contact-list-toolbar__title'>常用地址</Text>
-        <AppPressable className='contact-list-toolbar__button' onPress={handleCreate}>
+        <AppPressable
+          className='contact-list-toolbar__button'
+          onPress={handleCreate}
+        >
           <Text className='contact-list-toolbar__button-text'>新增</Text>
         </AppPressable>
       </View>
@@ -330,7 +335,8 @@ const ContactListPage = () => {
             </AppPressable>
             <View className='contact-card__footer'>
               {selectionParams.mode === 'manage' && (
-                <AppPressable contentElement='text'
+                <AppPressable
+                  contentElement='text'
                   className={
                     contact.defaultAddress === '1'
                       ? 'contact-card__action contact-card__action--disabled'
@@ -341,14 +347,16 @@ const ContactListPage = () => {
                   {contact.defaultAddress === '1' ? '默认地址' : '设为默认'}
                 </AppPressable>
               )}
-              <AppPressable contentElement='text'
+              <AppPressable
+                contentElement='text'
                 className='contact-card__action'
                 onPress={() => handleEdit(contact)}
               >
                 编辑
               </AppPressable>
               {selectionParams.mode === 'manage' && (
-                <AppPressable contentElement='text'
+                <AppPressable
+                  contentElement='text'
                   className='contact-card__action contact-card__action--danger'
                   onPress={() => handleDelete(contact)}
                 >
@@ -356,7 +364,8 @@ const ContactListPage = () => {
                 </AppPressable>
               )}
               {selectionParams.mode === 'select' && (
-                <AppPressable contentElement='text'
+                <AppPressable
+                  contentElement='text'
                   className='contact-card__action contact-card__action--primary'
                   disabled={!!checkingKey}
                   onPress={() => handleSelect(contact)}

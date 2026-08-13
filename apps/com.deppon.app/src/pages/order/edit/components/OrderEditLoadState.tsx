@@ -1,7 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
-
+import { AppPressable } from '@/shared/components'
 
 import './OrderEditLoadState.scss'
 
@@ -24,7 +23,10 @@ export function OrderEditLoadState(props: OrderEditLoadStateProps) {
           <Text className='order-edit-empty__title'>
             {props.errorMessage || '暂无法修改订单'}
           </Text>
-          <AppPressable className='order-edit-empty__button' onPress={props.onReload}>
+          <AppPressable
+            className='order-edit-empty__button'
+            onPress={props.onReload}
+          >
             <Text className='order-edit-empty__button-text'>重新加载</Text>
           </AppPressable>
         </View>

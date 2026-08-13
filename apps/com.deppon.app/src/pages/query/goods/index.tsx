@@ -8,19 +8,18 @@ import {
   expressDraftBridge,
   expressDraftStorage,
   markExpressQuoteStale
-} from '../../../services/express'
-import { goodsQueryService } from '../../../services/goods'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-
+} from '@/services/express'
+import { goodsQueryService } from '@/services/goods'
 import type {
   GoodsCheckResult,
   GoodsCheckStatus,
   GoodsHistoryItem,
   GoodsSuggestionView
-} from '../../../services/goods'
+} from '@/services/goods'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
 
 import './index.scss'
@@ -217,7 +216,7 @@ const QueryGoodsPage = () => {
           className='query-goods-input'
           placeholder='如文件、服饰、电子配件'
           value={keyword}
-          onInput={(event) => {
+          onInput={event => {
             setKeyword(event.detail.value)
             setResult(null)
             setMessage('')
@@ -233,7 +232,8 @@ const QueryGoodsPage = () => {
               {searching ? '搜索中' : '搜索推荐'}
             </Text>
           </AppPressable>
-          <AppPressable flex
+          <AppPressable
+            flex
             className='query-goods-primary-button'
             onPress={() => checkGoodsName(keyword)}
           >
@@ -289,11 +289,15 @@ const QueryGoodsPage = () => {
         <View className='query-goods-section'>
           <View className='query-goods-section__head'>
             <Text className='query-goods-section__title'>最近查询</Text>
-            <AppPressable contentElement='text' className='query-goods-link' onPress={handleClearHistory}>
+            <AppPressable
+              contentElement='text'
+              className='query-goods-link'
+              onPress={handleClearHistory}
+            >
               清空
             </AppPressable>
           </View>
-          {history.map((item) => (
+          {history.map(item => (
             <AppPressable
               className='query-goods-history'
               key={`${item.goodsName}-${item.checkedAt}`}
@@ -322,9 +326,7 @@ const QueryGoodsPage = () => {
               <Text className='query-goods-result__name'>
                 {result.goodsName}
               </Text>
-              <Text className='query-goods-result__title'>
-                {result.title}
-              </Text>
+              <Text className='query-goods-result__title'>{result.title}</Text>
             </View>
             <Text className={getStatusClassName(result.status)}>
               {getStatusText(result.status)}

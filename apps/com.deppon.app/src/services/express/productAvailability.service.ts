@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { expressApi } from './express.api'
 import {
   createExpressGoodsLabelRequest,
@@ -18,7 +20,6 @@ import type {
   ExpressProductCustomerCapability,
   ExpressProductUpgradeResult
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 function getSuccessfulResponse<TResult>(
   result: PromiseSettledResult<DepponResponse<TResult> | null>
@@ -101,7 +102,7 @@ export async function queryExpressProductAvailability(draft: ExpressDraft) {
             ? false
             : undefined,
       goodsLabels: goodsLabelResponse
-        ? goodsLabelResponse.result ?? []
+        ? (goodsLabelResponse.result ?? [])
         : undefined,
       upgradeResult: upgradeResponse?.result ?? undefined
     })

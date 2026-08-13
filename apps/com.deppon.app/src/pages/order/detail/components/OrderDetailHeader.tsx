@@ -1,9 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
-import {
-  AppPageHeader,
-  AppPressable
-} from '../../../../shared/components'
+import { AppPageHeader, AppPressable } from '@/shared/components'
 
 import './OrderDetailHeader.scss'
 

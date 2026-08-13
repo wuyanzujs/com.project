@@ -4,10 +4,7 @@ import { useMemo } from 'react'
 
 import QRCode from 'qrcode'
 
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../../styles/nativeTokens'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './QRCodeMatrix.scss'
 

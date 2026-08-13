@@ -1,11 +1,9 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import type { Contact, ContactAddressCheckRequest } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 export type ContactAddressIntegrityKind =
-  | 'pass'
-  | 'review'
-  | 'unavailable'
-  | 'blocked'
+  'pass' | 'review' | 'unavailable' | 'blocked'
 
 export interface ContactAddressIntegrityOutcome {
   kind: ContactAddressIntegrityKind

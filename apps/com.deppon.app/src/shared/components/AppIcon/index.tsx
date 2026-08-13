@@ -45,10 +45,7 @@ import {
   type LucideProps
 } from 'lucide-react-native'
 
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 const APP_ICONS = {
   badgeCheck: BadgeCheck,

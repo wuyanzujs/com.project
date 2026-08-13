@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import {
   buildOrderEditPickupNightRequest,
   buildOrderEditPickupTimeRequest,
@@ -9,7 +11,6 @@ import { normalizeOrderEditPickupTimeResponse } from './order.edit.schedule.opti
 import { createServiceFailure } from '../serviceResponse'
 
 import type { OrderEditDraft, OrderEditPickupTimeResponse } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 export async function queryOrderEditPickupTimes(
   draft: OrderEditDraft
@@ -24,9 +25,7 @@ export async function queryOrderEditPickupTimes(
 
   if (!capability) {
     try {
-      const response = await orderEditScheduleApi.queryPickupNight(
-        nightRequest
-      )
+      const response = await orderEditScheduleApi.queryPickupNight(nightRequest)
 
       capability = createOrderEditPickupNightCapability(
         draft,

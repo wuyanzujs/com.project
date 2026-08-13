@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "224cf66690bc3963",
+        "id": "05a9b7921ae1a539",
         "type": "tabs",
         "children": [
           {
-            "id": "c4ff57163dad4993",
+            "id": "aa5f5134bcfbde39",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "css-governance-plan.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "css-governance-plan"
+              "title": "新标签页"
             }
           }
         ]
@@ -94,7 +90,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "rn-refactor-plan.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +99,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "rn-refactor-plan 的反向链接列表"
+              "title": "反向链接"
             }
           },
           {
@@ -183,16 +178,18 @@
       "bases:新建数据库": false
     }
   },
-  "active": "c4ff57163dad4993",
+  "active": "93b16cf0f1de514f",
   "lastOpenFiles": [
+    "未命名.base",
+    "未命名.canvas",
     "project-reading-guide.md",
     "rn-refactor-plan.md",
+    "css-governance-plan.md",
     "plans/2026-07-11-css-full-governance.md",
     "plans/2026-07-11-css-gate-dual-mode-design.md",
     "plans/2026-07-11-css-gate-dual-mode.md",
     "interfaces/06-查询工具/04-按地址查网点.md",
     "plans",
-    "css-governance-plan.md",
     "interfaces/07-订单/29-修改订单.md",
     "interfaces/07-订单/28-取消关注运单.md",
     "interfaces/07-订单/27-关注运单.md",
@@ -211,7 +208,6 @@
     "interfaces/05-寄件下单/04-查询价格时效.md",
     "interfaces/05-寄件下单/01-创建寄件订单.md",
     "interfaces/04-地址簿/00-模块总览.md",
-    "interfaces/03-实名隐私签收/06-公安实名认证.md",
     "interfaces/14-WebView承接",
     "interfaces/13-打印",
     "interfaces/12-客户与客服",

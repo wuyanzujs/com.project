@@ -5,17 +5,17 @@ import {
   ORDER_EVALUATION_SUGGESTION_MAX_LENGTH,
   ORDER_EVALUATION_TITLES,
   getOrderEvaluationLabels
-} from '../../../../services/order'
-import { AppPressable } from '../../../../shared/components'
-import { AppIcon } from '../../../../shared/components/AppIcon'
-import { APP_STYLE_COLORS } from '../../../../styles/nativeTokens'
-
+} from '@/services/order'
 import type {
   OrderEvaluationDraft,
   OrderEvaluationLevel,
   OrderEvaluationRecordType,
   OrderEvaluationValidation
-} from '../../../../services/order'
+} from '@/services/order'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
+
 
 import './OrderEvaluationForm.scss'
 
@@ -27,10 +27,7 @@ export function OrderEvaluationForm(props: {
   onLabelToggle: (label: string) => void
   onSuggestionChange: (suggestion: string) => void
 }) {
-  const labels = getOrderEvaluationLabels(
-    props.recordType,
-    props.draft.level
-  )
+  const labels = getOrderEvaluationLabels(props.recordType, props.draft.level)
 
   return (
     <>

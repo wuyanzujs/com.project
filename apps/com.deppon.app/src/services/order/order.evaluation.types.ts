@@ -1,5 +1,6 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import type { OrderRole } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 export type OrderEvaluationLevel = 1 | 2 | 3 | 4 | 5
 export type OrderEvaluationRecordType = 'DELIVERY' | 'COLLECTION'
@@ -40,8 +41,7 @@ export interface OrderEvaluationQueryResultRaw {
   evaluateCourierMessage: OrderEvaluationPendingCourierRaw | null
 }
 
-export interface OrderEvaluationQueryResponse
-  extends DepponResponse<OrderEvaluationQueryResultRaw> {
+export interface OrderEvaluationQueryResponse extends DepponResponse<OrderEvaluationQueryResultRaw> {
   code?: string
 }
 

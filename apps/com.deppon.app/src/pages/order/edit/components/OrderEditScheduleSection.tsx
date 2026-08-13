@@ -3,15 +3,12 @@ import { ScrollView, Text, View } from '@tarojs/components'
 import {
   ORDER_EDIT_DELIVERY_OPTIONS,
   ORDER_EDIT_NIGHT_PICKUP_NOTICE
-} from '../../../../services/order'
-import { AppPressable } from '../../../../shared/components'
-import { AppIcon } from '../../../../shared/components/AppIcon'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../../styles/nativeTokens'
+} from '@/services/order'
+import type { OrderEditDraft } from '@/services/order'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-import type { OrderEditDraft } from '../../../../services/order'
 import type { OrderEditScheduleController } from '../hooks/useOrderEditSchedule'
 
 import './OrderEditSection.scss'
@@ -159,9 +156,7 @@ export function OrderEditScheduleSection({
                   }
                   key={option.value}
                   selected={selected}
-                  onPress={() =>
-                    controller.onDeliveryModeChange(option.value)
-                  }
+                  onPress={() => controller.onDeliveryModeChange(option.value)}
                 >
                   <Text className='order-edit-schedule__delivery-label'>
                     {option.label}

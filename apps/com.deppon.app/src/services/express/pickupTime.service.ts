@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { expressApi } from './express.api'
 import { validateExpressContact } from './express.draft'
 import { buildPickupTimeRequest } from './express.payload'
@@ -10,7 +12,6 @@ import {
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type { ExpressDraft, ExpressPickupTimeResponse } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 export async function queryExpressPickupTime(
   draft: ExpressDraft
@@ -49,9 +50,6 @@ export async function queryExpressPickupTime(
 
   return {
     ...response,
-    result: normalizeExpressPickupTimeResponse(
-      response.result,
-      nightCapability
-    )
+    result: normalizeExpressPickupTimeResponse(response.result, nightCapability)
   }
 }

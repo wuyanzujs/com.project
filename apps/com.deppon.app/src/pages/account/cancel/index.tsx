@@ -3,16 +3,12 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useEffect, useState } from 'react'
 
-import { accountService } from '../../../services/account'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import {
-  hasValidSession,
-  navigateToLogin
-} from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-
-import type { AccountOverviewView } from '../../../services/account'
+import { accountService } from '@/services/account'
+import type { AccountOverviewView } from '@/services/account'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { hasValidSession, navigateToLogin } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
 
 
 import './index.scss'
@@ -42,7 +38,7 @@ const AccountCancelPage = () => {
     }
 
     const timer = setTimeout(() => {
-      setCountDown((current) => Math.max(current - 1, 0))
+      setCountDown(current => Math.max(current - 1, 0))
     }, 1000)
 
     return () => clearTimeout(timer)
@@ -163,11 +159,14 @@ const AccountCancelPage = () => {
             type='number'
             maxlength={6}
             value={code}
-            onInput={(event) =>
+            onInput={event =>
               setCode(event.detail.value.replace(/\D/g, '').slice(0, 6))
             }
           />
-          <AppPressable className='account-cancel-code__button' onPress={handleSendSms}>
+          <AppPressable
+            className='account-cancel-code__button'
+            onPress={handleSendSms}
+          >
             <Text className='account-cancel-code__button-text'>
               {sending
                 ? '发送中'
@@ -181,7 +180,7 @@ const AccountCancelPage = () => {
 
       <AppPressable
         className='account-cancel-agreement'
-        onPress={() => setAccepted((current) => !current)}
+        onPress={() => setAccepted(current => !current)}
       >
         <View
           className={

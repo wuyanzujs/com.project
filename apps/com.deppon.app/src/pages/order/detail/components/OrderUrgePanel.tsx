@@ -1,15 +1,12 @@
 import { Text, View } from '@tarojs/components'
 
-import {
-  AppDialog,
-  AppPressable
-} from '../../../../shared/components'
-
 import type {
   OrderDetailActionView,
   OrderDetailUrgePanelView,
   OrderUrgeButtonRaw
-} from '../../../../services/order'
+} from '@/services/order'
+import { AppDialog, AppPressable } from '@/shared/components'
+
 
 import './OrderUrgePanel.scss'
 
@@ -42,8 +39,7 @@ export function OrderUrgePanel(props: {
       <View className='order-urge-card__actions'>
         {props.panel.menus.map(menu => {
           const primary = menu.buttonCode === 'FOLLOW_UP'
-          const label =
-            props.urging && primary ? '提交中' : menu.buttonName
+          const label = props.urging && primary ? '提交中' : menu.buttonName
 
           return (
             <AppPressable

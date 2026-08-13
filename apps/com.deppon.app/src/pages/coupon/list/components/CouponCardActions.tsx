@@ -1,8 +1,8 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
+import type { CouponCardView } from '@/services/coupon'
+import { AppPressable } from '@/shared/components'
 
-import type { CouponCardView } from '../../../../services/coupon'
 
 import './CouponCardActions.scss'
 

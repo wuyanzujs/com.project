@@ -1,3 +1,6 @@
+import type { DepponResponse } from '@/request/deppon'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+
 import {
   buildExpressDeliveryAppointmentRequest,
   isExpressScheduledDeliveryProductSupported
@@ -27,15 +30,12 @@ import {
 } from './insurance.rules'
 import { queryExpressPickupTime } from './pickupTime.service'
 import { createExpressGoodsLabelRequest } from './productAvailability.rules'
-import {
-  queryExpressProductAvailability
-} from './productAvailability.service'
+import { queryExpressProductAvailability } from './productAvailability.service'
 import { validateExpressWarehouseScreeningForSubmit } from './warehouse.rules'
 import {
   queryExpressWarehouseScreening,
   stageExpressWarehouse
 } from './warehouse.service'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type {
@@ -52,7 +52,7 @@ import type {
   ExpressProductQuote,
   ExpressQuoteResult
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
+
 
 function getResponseFailureMessage(response: DepponResponse<unknown>) {
   return response.message || '校验失败，请稍后再试'
@@ -292,7 +292,9 @@ export const expressService = {
       !trimText(draft.consignee.address)
     ) {
       return Promise.resolve(
-        createFailure<ExpressDeliveryAppointmentResponse>('请先填写完整收件地址')
+        createFailure<ExpressDeliveryAppointmentResponse>(
+          '请先填写完整收件地址'
+        )
       )
     }
 

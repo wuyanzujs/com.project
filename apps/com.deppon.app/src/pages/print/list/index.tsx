@@ -3,25 +3,25 @@ import { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useMemo, useRef, useState } from 'react'
 
-import { PrintListControls } from './components/PrintListControls'
-import { PrintListStates } from './components/PrintListStates'
-import { PrintOrderCard } from './components/PrintOrderCard'
 import {
   DEFAULT_PRINT_DATE_RANGE_KEY,
   mergePrintOrderPages,
   printService
-} from '../../../services/print'
-import { LatestRequestCoordinator } from '../../../shared/async/latestRequest'
-import { AppPage } from '../../../shared/components'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-
+} from '@/services/print'
 import type {
   PrintDateRangeKey,
   PrintListCounts,
   PrintOrderListItem,
   PrintSearchType
-} from '../../../services/print'
+} from '@/services/print'
+import { LatestRequestCoordinator } from '@/shared/async/latestRequest'
+import { AppPage } from '@/shared/components'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+
+import { PrintListControls } from './components/PrintListControls'
+import { PrintListStates } from './components/PrintListStates'
+import { PrintOrderCard } from './components/PrintOrderCard'
 
 import './index.scss'
 
@@ -201,11 +201,7 @@ const PrintListPage = () => {
   }
 
   return (
-    <AppPage
-      className='print-list-shell'
-      safeArea='top'
-      statusBar='dark'
-    >
+    <AppPage className='print-list-shell' safeArea='top' statusBar='dark'>
       <View className='print-list-page'>
         <PrintListControls
           countMessage={countMessage}

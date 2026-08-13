@@ -3,21 +3,17 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useState } from 'react'
 
-import { CACHE_KEYS, DPCacheExpireType, dpCache } from '../../../cache'
-import { invoiceService } from '../../../services/invoice'
-import { AppPressable } from '../../../shared/components'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
+import { CACHE_KEYS, DPCacheExpireType, dpCache } from '@/cache'
+import { invoiceService } from '@/services/invoice'
+import type { InvoicePreviewFile, InvoicePreviewView } from '@/services/invoice'
+import { AppPressable } from '@/shared/components'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import {
   copyTextToClipboard,
   downloadAppFile,
   getNativeCapabilityErrorMessage,
   openAppFile
-} from '../../../shared/platform'
-
-import type {
-  InvoicePreviewFile,
-  InvoicePreviewView
-} from '../../../services/invoice'
+} from '@/shared/platform'
 
 
 import './index.scss'
@@ -38,8 +34,8 @@ function decodeRouteParam(value?: string) {
 const InvoicePreviewPage = () => {
   const router = useRouter()
   const applyNo = decodeRouteParam(router.params.id || router.params.applyNo)
-  const title = decodeRouteParam(router.params.title || router.params.name)
-    || '电子发票'
+  const title =
+    decodeRouteParam(router.params.title || router.params.name) || '电子发票'
   const routeEmail = decodeRouteParam(router.params.email)
   const [preview, setPreview] = useState<InvoicePreviewView | null>(null)
   const [loadedApplyNo, setLoadedApplyNo] = useState('')
@@ -258,8 +254,8 @@ const InvoicePreviewPage = () => {
               maxlength={50}
               placeholder='请输入接收邮箱'
               value={email}
-              onBlur={(event) => setEmail(event.detail.value.trim())}
-              onInput={(event) => setEmail(event.detail.value)}
+              onBlur={event => setEmail(event.detail.value.trim())}
+              onInput={event => setEmail(event.detail.value)}
             />
             <AppPressable
               className={

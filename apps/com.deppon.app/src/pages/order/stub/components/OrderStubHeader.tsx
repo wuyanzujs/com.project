@@ -1,10 +1,7 @@
-import { AppPageHeader } from '../../../../shared/components'
+import { AppPageHeader } from '@/shared/components'
 import './OrderStubHeader.scss'
 
-export function OrderStubHeader(props: {
-  title?: string
-  subtitle?: string
-}) {
+export function OrderStubHeader(props: { title?: string; subtitle?: string }) {
   return (
     <AppPageHeader
       className='order-stub-header'

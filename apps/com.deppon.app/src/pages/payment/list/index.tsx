@@ -3,26 +3,26 @@ import { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useRef, useState } from 'react'
 
-import { PaymentCard } from './components/PaymentCard'
-import { PaymentListControls } from './components/PaymentListControls'
-import { PaymentListStates } from './components/PaymentListStates'
 import {
   createPaymentCheckoutUrl,
   createPaymentEvaluateWebUri,
   paymentService
-} from '../../../services/payment'
-import { LatestRequestCoordinator } from '../../../shared/async/latestRequest'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-import { createAppWebUrl } from '../../../shared/webview/appWeb'
-
+} from '@/services/payment'
 import type {
   PaymentItem,
   PaymentListStatus,
   PaymentRole
-} from '../../../services/payment'
+} from '@/services/payment'
+import { LatestRequestCoordinator } from '@/shared/async/latestRequest'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+
+import { PaymentCard } from './components/PaymentCard'
+import { PaymentListControls } from './components/PaymentListControls'
+import { PaymentListStates } from './components/PaymentListStates'
 
 import './index.scss'
 

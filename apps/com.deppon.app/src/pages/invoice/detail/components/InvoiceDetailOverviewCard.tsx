@@ -1,15 +1,12 @@
 import { Text, View } from '@tarojs/components'
 
-import {
-  AppCard,
-  AppPressable,
-  AppStatusTag
-} from '../../../../shared/components'
+import type { InvoiceHistoryView } from '@/services/invoice'
+import { AppCard, AppPressable, AppStatusTag } from '@/shared/components'
+import type { AppStatusTagTone } from '@/shared/components'
+
 import { getInvoiceDetailMoneyText } from '../invoiceDetailView'
 import { InvoiceDetailRow } from './InvoiceDetailRow'
 
-import type { InvoiceHistoryView } from '../../../../services/invoice'
-import type { AppStatusTagTone } from '../../../../shared/components'
 
 import './InvoiceDetailOverviewCard.scss'
 

@@ -1,16 +1,14 @@
 import { Text, View } from '@tarojs/components'
 
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
-import { AppSafeAreaView } from '../../native'
-import { navigateToAppRoute } from '../../navigation/appNavigation'
-import { APP_MAIN_NAVIGATION } from '../../navigation/routes'
+import { AppSafeAreaView } from '@/shared/native'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { APP_MAIN_NAVIGATION } from '@/shared/navigation/routes'
+import type { AppMainRouteName } from '@/shared/navigation/routes'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
+
 import { AppIcon } from '../AppIcon'
 import { AppPressable } from '../AppPressable'
 
-import type { AppMainRouteName } from '../../navigation/routes'
 
 import './index.scss'
 
@@ -46,7 +44,8 @@ const AppTabBar = ({ active }: AppTabBarProps) => {
             const isActive = item.name === active
 
             return (
-              <AppPressable flex
+              <AppPressable
+                flex
                 accessibilityLabel={item.title}
                 className='app-tab-bar__item'
                 key={item.name}

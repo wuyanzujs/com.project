@@ -1,6 +1,6 @@
 import { Input, Text, View } from '@tarojs/components'
 
-import type { OrderEditContact } from '../../../../services/order'
+import type { OrderEditContact } from '@/services/order'
 
 import './OrderEditContactSection.scss'
 import './OrderEditSection.scss'

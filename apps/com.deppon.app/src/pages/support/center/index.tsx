@@ -3,19 +3,18 @@ import Taro from '@tarojs/taro'
 
 import { useEffect, useState } from 'react'
 
-import { supportService } from '../../../services/support'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
+import { supportService } from '@/services/support'
+import type { SupportEntryView } from '@/services/support'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
 import {
   getNativeCapabilityErrorMessage,
   isNativeCapabilityError
-} from '../../../shared/platform/capabilities'
-import { dialPhone, PhoneNumberError } from '../../../shared/platform/phone'
-import { createAppWebUrl } from '../../../shared/webview/appWeb'
-
-import type { SupportEntryView } from '../../../services/support'
+} from '@/shared/platform/capabilities'
+import { dialPhone, PhoneNumberError } from '@/shared/platform/phone'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
 
 
 import './index.scss'
@@ -68,10 +67,7 @@ const SupportCenterPage = () => {
     }
 
     const uri = entry.webPath
-      ? supportService.createSecureWebUri(
-          entry.webPath,
-          entry.webParamSource
-        )
+      ? supportService.createSecureWebUri(entry.webPath, entry.webParamSource)
       : entry.webUri
 
     navigateToAppRoute(
@@ -156,13 +152,13 @@ const SupportCenterPage = () => {
         </AppPressable>
       </View>
 
-      {sections.map((section) => (
+      {sections.map(section => (
         <View className='support-section' key={section.title}>
           <View className='support-section__head'>
             <Text className='support-section__title'>{section.title}</Text>
             <Text className='support-section__summary'>{section.summary}</Text>
           </View>
-          {section.entries.map((entry) => (
+          {section.entries.map(entry => (
             <AppPressable
               className={getEntryClassName(entry)}
               key={entry.id}

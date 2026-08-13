@@ -4,13 +4,6 @@ import Taro, { useDidShow } from '@tarojs/taro'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
-  BatchConsigneeSection,
-  BatchFooter,
-  BatchRecognitionSection,
-  BatchSenderSection,
-  BatchSettingsSection
-} from './components/BatchSections'
-import {
   BATCH_MAX_CONSIGNEE_COUNT,
   applyBatchQuoteResults,
   batchDraftStorage,
@@ -22,24 +15,31 @@ import {
   mapContactToBatchContact,
   resetBatchQuotes,
   updateBatchConsigneeGoods
-} from '../../services/batch'
-import { contactSelection } from '../../services/contact'
-import { expressDraftStorage } from '../../services/express'
-import { AppPage, AppPressable } from '../../shared/components'
-import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
-import {
-  ensureAuthenticated,
-  hasValidSession
-} from '../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
-import { copyTextToClipboard } from '../../shared/platform/clipboard'
-
+} from '@/services/batch'
 import type {
   BatchConsigneeDraft,
   BatchDraft,
   BatchEntryActionView
-} from '../../services/batch'
+} from '@/services/batch'
+import { contactSelection } from '@/services/contact'
+import { expressDraftStorage } from '@/services/express'
+import { AppPage, AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import {
+  ensureAuthenticated,
+  hasValidSession
+} from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { copyTextToClipboard } from '@/shared/platform/clipboard'
+
+import {
+  BatchConsigneeSection,
+  BatchFooter,
+  BatchRecognitionSection,
+  BatchSenderSection,
+  BatchSettingsSection
+} from './components/BatchSections'
 
 import './index.scss'
 import './content.scss'
@@ -47,9 +47,10 @@ import './messages.scss'
 
 const BatchPage = () => {
   const entry = useMemo(() => batchService.getEntryView(), [])
-  const [draft, setDraft] = useState<BatchDraft>(() =>
-    batchDraftStorage.restore() ??
-    createBatchDraftFromExpressDraft(expressDraftStorage.restore())
+  const [draft, setDraft] = useState<BatchDraft>(
+    () =>
+      batchDraftStorage.restore() ??
+      createBatchDraftFromExpressDraft(expressDraftStorage.restore())
   )
   const [recognitionText, setRecognitionText] = useState('')
   const [quoteLoading, setQuoteLoading] = useState(false)
@@ -61,10 +62,7 @@ const BatchPage = () => {
     () => batchService.recognizeAddressText(recognitionText),
     [recognitionText]
   )
-  const validation = useMemo(
-    () => batchService.validateDraft(draft),
-    [draft]
-  )
+  const validation = useMemo(() => batchService.validateDraft(draft), [draft])
   const submitValidation = useMemo(
     () => batchService.validateSubmitDraft(draft),
     [draft]
@@ -343,15 +341,13 @@ const BatchPage = () => {
         <BatchConsigneeSection
           consignees={draft.consignees}
           maxCount={BATCH_MAX_CONSIGNEE_COUNT}
-          onGoodsChange={(index, patch) =>
-            {
-              quoteRequestVersion.current += 1
-              setQuoteMessage('货物信息已更新，请重新获取价格')
-              setDraft(current =>
-                updateBatchConsigneeGoods(current, index, patch)
-              )
-            }
-          }
+          onGoodsChange={(index, patch) => {
+            quoteRequestVersion.current += 1
+            setQuoteMessage('货物信息已更新，请重新获取价格')
+            setDraft(current =>
+              updateBatchConsigneeGoods(current, index, patch)
+            )
+          }}
           onRemove={handleRemoveConsignee}
         />
 
@@ -371,9 +367,7 @@ const BatchPage = () => {
           onNeedContactChange={needContact => {
             quoteRequestVersion.current += 1
             setQuoteMessage('联系设置已更新，请重新获取价格')
-            setDraft(current =>
-              resetBatchQuotes({ ...current, needContact })
-            )
+            setDraft(current => resetBatchQuotes({ ...current, needContact }))
           }}
         />
 

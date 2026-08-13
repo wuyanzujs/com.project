@@ -2,13 +2,19 @@ import { useDidShow } from '@tarojs/taro'
 
 import { useMemo, useState } from 'react'
 
+import { orderService } from '@/services/order'
+import type {
+  OrderDetail,
+  OrderDetailActionView,
+  OrderStubEntryView,
+  WaybillTrackItem
+} from '@/services/order'
+import { paymentService } from '@/services/payment'
+import type { PaymentSummary } from '@/services/payment'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+
 import { useOrderPickupSchedule } from './useOrderPickupSchedule'
 import { useOrderSubscription } from './useOrderSubscription'
-import {
-  orderService
-} from '../../../../services/order'
-import { paymentService } from '../../../../services/payment'
-import { ensureAuthenticated } from '../../../../shared/navigation/authGuard'
 import {
   createOrderDetailViewModel,
   getOrderDetailRole,
@@ -16,13 +22,7 @@ import {
   type OrderDetailRouteParams
 } from '../orderDetailViewModel'
 
-import type {
-  OrderDetail,
-  OrderDetailActionView,
-  OrderStubEntryView,
-  WaybillTrackItem
-} from '../../../../services/order'
-import type { PaymentSummary } from '../../../../services/payment'
+
 import type { OrderDetailUrgePanelState } from '../components/OrderUrgePanel'
 
 export function useOrderDetailData(routeParams: OrderDetailRouteParams) {

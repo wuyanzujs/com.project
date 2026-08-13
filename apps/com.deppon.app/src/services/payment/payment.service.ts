@@ -1,6 +1,8 @@
+import type { DepponResponse } from '@/request/deppon'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+import { appendRouteQuery } from '@/shared/navigation/routeUrl'
+
 import { paymentApi } from './payment.api'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
-import { appendRouteQuery } from '../../shared/navigation/routeUrl'
 import { authService } from '../auth'
 import { createServiceFailure } from '../serviceResponse'
 
@@ -15,7 +17,7 @@ import type {
   QueryUnpaidPaymentListOptions,
   QueryUnpaidPaymentOptions
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
+
 
 const DEFAULT_PAYMENT_RANGE_DAYS = 30
 const PAID_PAYMENT_RANGE_DAYS = 180
@@ -117,7 +119,7 @@ export function createPaymentEvaluateWebUri(
 export function createPaymentWaybillQuery(value?: string | null) {
   const waybillNumbers = String(value ?? '')
     .split(/[,，\s]+/)
-    .map((item) => item.trim())
+    .map(item => item.trim())
     .filter(Boolean)
 
   if (waybillNumbers.length > 1) {
@@ -196,7 +198,7 @@ function createPaymentSummary(
 }
 
 function filterUnsupportedPayments(items: PaymentItem[]) {
-  return items.filter((item) => item.isJdPay !== 'Y').map(normalizePaymentItem)
+  return items.filter(item => item.isJdPay !== 'Y').map(normalizePaymentItem)
 }
 
 function normalizePaymentList(items: PaymentItem[], status: PaymentListStatus) {
@@ -313,11 +315,7 @@ export const paymentService = {
 
     return {
       ...response,
-      result: createPaymentSummary(
-        waybillNumber,
-        normalItems,
-        disabledReason
-      )
+      result: createPaymentSummary(waybillNumber, normalItems, disabledReason)
     }
   }
 }

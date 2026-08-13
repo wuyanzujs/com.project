@@ -2,12 +2,9 @@ import { Text, View } from '@tarojs/components'
 
 import type { PropsWithChildren } from 'react'
 
-import { AppPressable } from '../../../shared/components'
-import { AppIcon } from '../../../shared/components/AppIcon'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './ExpressSection.scss'
 

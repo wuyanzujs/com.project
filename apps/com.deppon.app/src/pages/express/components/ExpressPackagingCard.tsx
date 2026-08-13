@@ -2,7 +2,6 @@ import { Image, Text, View } from '@tarojs/components'
 
 import { useMemo, useState } from 'react'
 
-import { ExpressSection } from './ExpressSection'
 import {
   EXPRESS_CARTON_OPTIONS,
   EXPRESS_UNPACKING_OPTIONS,
@@ -10,19 +9,17 @@ import {
   getExpressCartonOption,
   getExpressUnpackingOption,
   getExpressWoodenPackagingOption
-} from '../../../services/express'
-import { AppPressable } from '../../../shared/components'
-import { AppIcon } from '../../../shared/components/AppIcon'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
-
+} from '@/services/express'
 import type {
   ExpressPackagingDraft,
   ExpressUnpackingCode,
   ExpressWoodenPackagingCode
-} from '../../../services/express'
+} from '@/services/express'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
+
+import { ExpressSection } from './ExpressSection'
 
 import './ExpressPackagingCard.scss'
 import './ExpressPackagingGroups.scss'

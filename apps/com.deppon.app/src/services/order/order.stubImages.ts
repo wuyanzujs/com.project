@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { orderApi } from './order.api'
 import {
   getDetailWaybillNumber,
@@ -13,7 +15,6 @@ import type {
   OrderStubImagesView,
   OrderStubImageView
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 const EXPRESS_SERVICE_IMAGE_SCENES: Record<OrderServiceImageScene, string> = {
   1: 'RETURNBILLTYPE_FAX',
@@ -41,7 +42,7 @@ function normalizeImageUrls(value: unknown): string[] {
   }
 
   const urls = value
-    .map((item) => {
+    .map(item => {
       if (typeof item !== 'string') {
         return ''
       }
@@ -124,7 +125,7 @@ function normalizePackageImageUrls(value: unknown) {
     .list
 
   return normalizeImageUrls(
-    Array.isArray(list) ? list.map((item) => item.savePath || '') : []
+    Array.isArray(list) ? list.map(item => item.savePath || '') : []
   )
 }
 
@@ -234,7 +235,7 @@ export async function queryOrderStubImages(
       woodenPackageResponse,
       homeExchangeResponse,
       pickupServiceResponse
-    ].find((item) => !!item?.message)?.message || ''
+    ].find(item => !!item?.message)?.message || ''
   const groups = [
     createOrderStubImageGroup(
       'pickup',

@@ -2,17 +2,14 @@ import { Input, Text, View } from '@tarojs/components'
 
 import { useEffect, useState } from 'react'
 
-import { AppDialog, AppPressable } from '../../../shared/components'
-import { AppIcon } from '../../../shared/components/AppIcon'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
+import type { CouponCardView, CouponStatus } from '@/services/coupon'
+import { AppDialog, AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-import type { CouponCardView, CouponStatus } from '../../../services/coupon'
 import type { ExpressCouponController } from '../hooks/useExpressCoupons'
 
 import './ExpressCouponCard.scss'
@@ -141,10 +138,7 @@ export function ExpressCouponCard({
     setManualCode(couponNumber)
   }, [couponNumber, visible])
 
-  const handleOpenDetail = (
-    coupon: CouponCardView,
-    status: CouponStatus
-  ) => {
+  const handleOpenDetail = (coupon: CouponCardView, status: CouponStatus) => {
     setVisible(false)
     navigateToAppRoute(
       createAppRouteUrl(APP_ROUTES.couponDetail, {
@@ -257,7 +251,9 @@ export function ExpressCouponCard({
               setVisible(false)
             }}
           >
-            <Text className='express-coupon-dialog__clear-text'>不使用优惠券</Text>
+            <Text className='express-coupon-dialog__clear-text'>
+              不使用优惠券
+            </Text>
           </AppPressable>
         ) : null}
 
@@ -268,13 +264,17 @@ export function ExpressCouponCard({
             className='express-coupon-dialog__login'
             onPress={controller.onLogin}
           >
-            <Text className='express-coupon-dialog__login-text'>登录后查询我的优惠券</Text>
+            <Text className='express-coupon-dialog__login-text'>
+              登录后查询我的优惠券
+            </Text>
           </AppPressable>
         ) : null}
 
         {controller.available.length ? (
           <View className='express-coupon-dialog__section'>
-            <Text className='express-coupon-dialog__section-title'>可用优惠券</Text>
+            <Text className='express-coupon-dialog__section-title'>
+              可用优惠券
+            </Text>
             {controller.available.map(coupon => (
               <CouponOption
                 coupon={coupon}
@@ -290,7 +290,9 @@ export function ExpressCouponCard({
 
         {controller.unavailable.length ? (
           <View className='express-coupon-dialog__section'>
-            <Text className='express-coupon-dialog__section-title'>暂不可用</Text>
+            <Text className='express-coupon-dialog__section-title'>
+              暂不可用
+            </Text>
             {controller.unavailable.map(coupon => (
               <CouponOption
                 coupon={coupon}

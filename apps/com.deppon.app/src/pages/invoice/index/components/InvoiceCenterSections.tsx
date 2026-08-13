@@ -1,17 +1,15 @@
 import { Text, View } from '@tarojs/components'
 
-import {
-  InvoiceSearchBar,
-  InvoiceSummary
-} from './InvoiceCenterControls'
-import { InvoiceEmpty } from './InvoiceCenterStates'
-import { AppPressable } from '../../../../shared/components'
-
 import type {
   InvoiceHistoryView,
   InvoiceOrderView,
   InvoiceTaxpayerView
-} from '../../../../services/invoice'
+} from '@/services/invoice'
+import { AppPressable } from '@/shared/components'
+
+import { InvoiceSearchBar, InvoiceSummary } from './InvoiceCenterControls'
+import { InvoiceEmpty } from './InvoiceCenterStates'
+
 
 import './InvoiceCenterCards.scss'
 
@@ -62,7 +60,7 @@ export function InvoiceOrdersPanel(props: {
       />
 
       <View className='invoice-content'>
-        {props.orders.map((item) => (
+        {props.orders.map(item => (
           <View className='invoice-card' key={item.id || item.waybillNumber}>
             <View className='invoice-card__top'>
               <Text className='invoice-card__number'>
@@ -99,7 +97,9 @@ export function InvoiceOrdersPanel(props: {
             )}
             <View className='invoice-card__actions'>
               <AppPressable
-                accessibilityLabel={item.canApply ? '申请发票' : item.statusText}
+                accessibilityLabel={
+                  item.canApply ? '申请发票' : item.statusText
+                }
                 allowDisabledPress={!item.canApply}
                 disabled={!item.canApply}
                 className={
@@ -164,7 +164,7 @@ export function InvoiceHistoryPanel(props: {
       />
 
       <View className='invoice-content'>
-        {props.history.map((item) => (
+        {props.history.map(item => (
           <View className='invoice-card' key={item.id}>
             <View className='invoice-card__top'>
               <Text className='invoice-card__number'>{item.title}</Text>
@@ -253,7 +253,7 @@ export function InvoiceTaxpayersPanel(props: {
         onAction={props.onManage}
       />
 
-      {props.taxpayers.map((item) => (
+      {props.taxpayers.map(item => (
         <View className='invoice-card' key={item.id}>
           <View className='invoice-card__top'>
             <Text className='invoice-card__number'>{item.name || '--'}</Text>

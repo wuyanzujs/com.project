@@ -2,12 +2,13 @@ import { Input, Text, View } from '@tarojs/components'
 
 import { useMemo, useState } from 'react'
 
-import { ExpressSection } from './ExpressSection'
-import { createExpressInsuranceView } from '../../../services/express'
-import { AppPressable } from '../../../shared/components'
-import { APP_NATIVE_TOKENS } from '../../../styles/nativeTokens'
+import { createExpressInsuranceView } from '@/services/express'
+import type { ExpressDraft } from '@/services/express'
+import { AppPressable } from '@/shared/components'
+import { APP_NATIVE_TOKENS } from '@/styles/nativeTokens'
 
-import type { ExpressDraft } from '../../../services/express'
+import { ExpressSection } from './ExpressSection'
+
 import type { ExpressInsuranceController } from '../hooks/useExpressInsurance'
 
 import './ExpressInsuranceCard.scss'
@@ -81,7 +82,9 @@ export function ExpressInsuranceCard({
                     {option.label}
                   </Text>
                   {option.recommended && !option.disabled ? (
-                    <Text className='express-insurance-option__badge'>推荐</Text>
+                    <Text className='express-insurance-option__badge'>
+                      推荐
+                    </Text>
                   ) : null}
                 </View>
                 <Text className='express-insurance-option__summary'>
@@ -107,9 +110,7 @@ export function ExpressInsuranceCard({
               style={{ minHeight: APP_NATIVE_TOKENS.touch.minimum }}
               type='number'
               value={String(view.amount || '')}
-              onInput={event =>
-                controller.onAmountChange(event.detail.value)
-              }
+              onInput={event => controller.onAmountChange(event.detail.value)}
             />
           </View>
 

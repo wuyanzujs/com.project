@@ -5,11 +5,11 @@ import { useEffect, useState } from 'react'
 import {
   getOrderEditInsuranceSummary,
   normalizeOrderEditInsuranceAmountInput
-} from '../../../../services/order'
-import { AppPressable } from '../../../../shared/components'
-import { APP_NATIVE_TOKENS } from '../../../../styles/nativeTokens'
+} from '@/services/order'
+import type { OrderEditInsuranceDraft } from '@/services/order'
+import { AppPressable } from '@/shared/components'
+import { APP_NATIVE_TOKENS } from '@/styles/nativeTokens'
 
-import type { OrderEditInsuranceDraft } from '../../../../services/order'
 
 import './OrderEditInsuranceSection.scss'
 import './OrderEditSection.scss'
@@ -35,9 +35,7 @@ export function OrderEditInsuranceSection({
     insurance.amount > 0
 
   useEffect(() => {
-    setAmountText(
-      insurance.amount > 0 ? String(insurance.amount) : ''
-    )
+    setAmountText(insurance.amount > 0 ? String(insurance.amount) : '')
   }, [insurance.amount])
 
   const handleAmountInput = (value: string) => {

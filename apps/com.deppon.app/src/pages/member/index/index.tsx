@@ -3,23 +3,19 @@ import { useDidShow } from '@tarojs/taro'
 
 import { useState } from 'react'
 
-import { memberService } from '../../../services/member'
-import { AppPressable,
-  AppPage,
-  AppStatusTag
-} from '../../../shared/components'
-import AppTabBar from '../../../shared/components/AppTabBar'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppWebUrl } from '../../../shared/webview/appWeb'
-
+import { memberService } from '@/services/member'
 import type {
   MemberBenefitView,
   MemberOverviewView,
   MemberWebAction
-} from '../../../services/member'
-import type { AppWebSource } from '../../../shared/webview/appWeb'
+} from '@/services/member'
+import { AppPressable, AppPage, AppStatusTag } from '@/shared/components'
+import AppTabBar from '@/shared/components/AppTabBar'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+import type { AppWebSource } from '@/shared/webview/appWeb'
 
 import './index.scss'
 import './content.scss'
@@ -178,7 +174,10 @@ const MemberCenterPage = () => {
             {overview?.svipMessage || '更多权益由福利中心承接'}
           </Text>
           <View className='member-actions'>
-            <AppPressable className='member-action' onPress={() => handleOpenWelfare()}>
+            <AppPressable
+              className='member-action'
+              onPress={() => handleOpenWelfare()}
+            >
               <Text className='member-action__text'>
                 {overview?.svipButtonText || '查看权益'}
               </Text>

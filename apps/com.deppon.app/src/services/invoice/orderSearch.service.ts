@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { invoiceApi } from './invoice.api'
 import { normalizeInvoiceOrder } from './order.mapper'
 import { createServiceFailure as createFailure } from '../serviceResponse'
@@ -12,7 +14,6 @@ import type {
   InvoiceOrderRaw,
   InvoiceOrderSearchView
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 function normalizeText(value?: string | number | null) {
   return String(value ?? '').trim()

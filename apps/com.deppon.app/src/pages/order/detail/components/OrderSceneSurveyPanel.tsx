@@ -1,17 +1,14 @@
 import { Text, View } from '@tarojs/components'
 
-import { OrderNpsSurveyForm } from './OrderNpsSurveyForm'
-import { OrderSceneScoreForm } from './OrderSceneScoreForm'
-import {
-  AppButton,
-  AppDialog,
-  AppPressable
-} from '../../../../shared/components'
-
 import type {
   OrderSceneSurveyItem,
   OrderSceneSurveySubmitInput
-} from '../../../../services/order'
+} from '@/services/order'
+import { AppButton, AppDialog, AppPressable } from '@/shared/components'
+
+import { OrderNpsSurveyForm } from './OrderNpsSurveyForm'
+import { OrderSceneScoreForm } from './OrderSceneScoreForm'
+
 
 import './OrderSceneSurveyPanel.scss'
 
@@ -59,12 +56,12 @@ export function OrderSceneSurveyPanel(props: {
     return null
   }
 
-  const progress = props.total > 1
-    ? `第 ${props.position} 项，共 ${props.total} 项`
-    : '匿名问卷'
-  const unavailableHint = props.failedCount > 0
-    ? `，另有 ${props.failedCount} 项暂未加载`
-    : ''
+  const progress =
+    props.total > 1
+      ? `第 ${props.position} 项，共 ${props.total} 项`
+      : '匿名问卷'
+  const unavailableHint =
+    props.failedCount > 0 ? `，另有 ${props.failedCount} 项暂未加载` : ''
   const description = props.completed
     ? `本次可填写的问卷已经完成${unavailableHint}`
     : `${progress}${unavailableHint}`

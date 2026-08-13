@@ -3,14 +3,13 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useMemo, useState } from 'react'
 
-import { expressDraftStorage } from '../../../../services/express'
-import { templateService } from '../../../../services/template'
-import { AppPressable } from '../../../../shared/components'
-import { navigateToAppRoute } from '../../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../../shared/navigation/routes'
-
-import type { ExpressDraft } from '../../../../services/express'
+import { expressDraftStorage } from '@/services/express'
+import type { ExpressDraft } from '@/services/express'
+import { templateService } from '@/services/template'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
 
 
 import './index.scss'
@@ -131,7 +130,8 @@ const ExpressTemplateCreatePage = () => {
         <Text className='template-create-section__title'>默认模板</Text>
         <View className='template-create-segment'>
           {([2, 1] as const).map(value => (
-            <AppPressable flex
+            <AppPressable
+              flex
               className={
                 defaultFlag === value
                   ? 'template-create-segment__item template-create-segment__item--active'

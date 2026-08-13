@@ -1,4 +1,5 @@
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+
 import {
   getExpressContactRegion,
   getNowText,
@@ -108,7 +109,7 @@ export function buildBatchCreateOrderRequest(
   const scanOrderFields = getScanOrderFields(draft.scanContext)
   const contactIdList = [
     draft.sender.id,
-    ...draft.consignees.map((item) => item.contact?.id)
+    ...draft.consignees.map(item => item.contact?.id)
   ].filter((id): id is string => !!id)
 
   return {
@@ -130,7 +131,7 @@ export function buildBatchCreateOrderRequest(
     pickupManId: scanOrderFields.pickupManId,
     dispatchFlag: draft.pickup.dispatch,
     passwordSigning: 'N',
-    receive: draft.consignees.map((item) =>
+    receive: draft.consignees.map(item =>
       buildReceiveOrder(item, draft, pickupTime)
     )
   }

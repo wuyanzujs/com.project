@@ -1,11 +1,8 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
+import type { StationQueryType, StationSubType } from '@/services/query'
+import { AppPressable } from '@/shared/components'
 
-import type {
-  StationQueryType,
-  StationSubType
-} from '../../../../services/query'
 
 import './StationQueryFilters.scss'
 

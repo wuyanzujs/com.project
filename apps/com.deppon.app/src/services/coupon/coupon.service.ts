@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { couponApi } from './coupon.api'
 import { createServiceFailure } from '../serviceResponse'
 
@@ -9,7 +11,6 @@ import type {
   CouponListResult,
   CouponStatus
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 const WEEKDAY_TEXT: Record<string, string> = {
   Sunday: '日',
@@ -145,7 +146,7 @@ function getUsageTimeText(fitWeek?: string | null) {
 
   const weekdays = fitWeek
     .split(',')
-    .map((item) => WEEKDAY_TEXT[item.trim()])
+    .map(item => WEEKDAY_TEXT[item.trim()])
     .filter(Boolean)
     .join('')
 
@@ -196,17 +197,15 @@ function createTags(
   usageTimeText: string,
   labelText: string
 ) {
-  return [
-    labelText,
-    usageTimeText,
-    ...(coupon.fitCouponTagList ?? [])
-  ].filter(Boolean).slice(0, 4)
+  return [labelText, usageTimeText, ...(coupon.fitCouponTagList ?? [])]
+    .filter(Boolean)
+    .slice(0, 4)
 }
 
 function splitDescription(value?: string | null) {
   return (value ?? '')
     .split('\n')
-    .map((item) => item.trim())
+    .map(item => item.trim())
     .filter(Boolean)
 }
 
@@ -252,9 +251,7 @@ export function createCouponDetailView(raw: {
     }
   }
 
-  const limits = (raw.limit ?? [])
-    .map((item) => item.trim())
-    .filter(Boolean)
+  const limits = (raw.limit ?? []).map(item => item.trim()).filter(Boolean)
   const descriptions = splitDescription(raw.couponDescribe)
   const fitProduct = (raw.fitProduct ?? '').trim()
   const couponCode = (raw.couponCode ?? '').trim()
@@ -268,10 +265,10 @@ export function createCouponDetailView(raw: {
     consigneeAddresses,
     hasDetail: Boolean(
       fitProduct ||
-        limits.length ||
-        descriptions.length ||
-        senderAddresses.length ||
-        consigneeAddresses.length
+      limits.length ||
+      descriptions.length ||
+      senderAddresses.length ||
+      consigneeAddresses.length
     )
   }
 }
@@ -368,5 +365,15 @@ export const couponService = {
       ...response,
       result: createCouponDetailView(response.result)
     }
+  },
+
+  async queryExpireCount(): Promise<number> {
+    const response = await couponApi.queryExpireCouponCount()
+
+    if (!response.status || !response.result) {
+      return 0
+    }
+
+    return toFiniteNumber(response.result, 0)
   }
 }

@@ -1,7 +1,33 @@
 import { ScrollView } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+
+import { contactSelection } from '@/services/contact'
+import {
+  clearExpressScanContext,
+  createExpressScanContextView,
+  createExpressDraft,
+  expressDraftBridge,
+  expressDraftStorage,
+  expressPrivacyStorage,
+  mapContactToExpressContact,
+  setExpressContact,
+  setExpressPrivacyProtection,
+  swapExpressContacts,
+  updateExpressPickup,
+  updateExpressService
+} from '@/services/express'
+import type {
+  ExpressDraft,
+  ExpressMonthlyPayView,
+  ExpressProductQuote
+} from '@/services/express'
+import { AppPage } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
 
 import { ExpressContactPanel } from './components/ExpressContactPanel'
 import { ExpressCouponCard } from './components/ExpressCouponCard'
@@ -18,52 +44,15 @@ import { useExpressCollection } from './hooks/useExpressCollection'
 import { useExpressCoupons } from './hooks/useExpressCoupons'
 import { useExpressDeliveryPoint } from './hooks/useExpressDeliveryPoint'
 import { useExpressDeliveryPreference } from './hooks/useExpressDeliveryPreference'
+import { useExpressEntryNavigation } from './hooks/useExpressEntryNavigation'
+import { useExpressGoods } from './hooks/useExpressGoods'
 import { useExpressInsurance } from './hooks/useExpressInsurance'
+import { useExpressMonthlyPay } from './hooks/useExpressMonthlyPay'
 import { useExpressPickupTime } from './hooks/useExpressPickupTime'
 import { useExpressQuote } from './hooks/useExpressQuote'
 import { useExpressReturnBill } from './hooks/useExpressReturnBill'
+import { useExpressSubmit } from './hooks/useExpressSubmit'
 import { useExpressWarehouse } from './hooks/useExpressWarehouse'
-import { contactSelection } from '../../services/contact'
-import { customerService } from '../../services/customer'
-import {
-  createExpressMonthlyPayView,
-  createExpressScanContextView,
-  createExpressDraft,
-  clearExpressScanContext,
-  expressDraftBridge,
-  expressDraftStorage,
-  expressPrivacyStorage,
-  expressService,
-  mapContactToExpressContact,
-  setExpressContact,
-  setExpressPrivacyProtection,
-  swapExpressContacts,
-  updateExpressGoods,
-  updateExpressPackaging,
-  updateExpressPickup,
-  updateExpressService,
-  validateExpressDraft
-} from '../../services/express'
-import { templateService } from '../../services/template'
-import { AppPage } from '../../shared/components'
-import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
-import {
-  ensureAuthenticated,
-  hasValidSession
-} from '../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
-import { createAppWebUrl } from '../../shared/webview/appWeb'
-
-import type { CustomerCenterView } from '../../services/customer'
-import type {
-  ExpressDraft,
-  ExpressGoodsItem,
-  ExpressMonthlyPayView,
-  ExpressPackagingDraft,
-  ExpressPaymentType,
-  ExpressProductQuote
-} from '../../services/express'
 
 import './index.scss'
 
@@ -81,20 +70,7 @@ function createInitialDraft() {
 
 const ExpressPage = () => {
   const [draft, setDraft] = useState<ExpressDraft>(() => createInitialDraft())
-  const [goodsSuggestions, setGoodsSuggestions] = useState<ExpressGoodsItem[]>(
-    []
-  )
-  const [goodsLoading, setGoodsLoading] = useState(false)
-  const [goodsMessage, setGoodsMessage] = useState('')
-  const [monthlyCustomer, setMonthlyCustomer] =
-    useState<CustomerCenterView | null>(null)
-  const [monthlyCustomerLoading, setMonthlyCustomerLoading] = useState(false)
-  const [monthlyCustomerChecked, setMonthlyCustomerChecked] = useState(false)
-  const [monthlyCustomerMessage, setMonthlyCustomerMessage] = useState('')
-  const [submiting, setSubmiting] = useState(false)
-  const [submitMessage, setSubmitMessage] = useState('')
-  const goodsQueryVersion = useRef(0)
-  const monthlyCustomerVersion = useRef(0)
+
   const insuranceController = useExpressInsurance({ draft, setDraft })
   const {
     onQuery: handleQuote,
@@ -121,7 +97,6 @@ const ExpressPage = () => {
     restoreQuotes,
     setDraft
   })
-
   const collectionController = useExpressCollection({ setDraft })
   const deliveryPointController = useExpressDeliveryPoint({ draft, setDraft })
   const pickupTimeController = useExpressPickupTime({ draft, setDraft })
@@ -130,80 +105,26 @@ const ExpressPage = () => {
     setDraft
   })
   const warehouseController = useExpressWarehouse({ draft, setDraft })
-  const validation = useMemo(
-    () =>
-      validateExpressDraft(draft, {
-        requireAgreement: true,
-        requireProduct: true
-      }),
-    [draft]
+
+  const updateService = useCallback(
+    (patch: Partial<ExpressDraft['service']>) => {
+      setDraft(current => updateExpressService(current, patch))
+    },
+    []
   )
-  const monthlyPayView = useMemo(
-    () =>
-      createExpressMonthlyPayView({
-        paymentType: draft.service.paymentType,
-        customer: monthlyCustomer,
-        loading: monthlyCustomerLoading,
-        checked: monthlyCustomerChecked,
-        errorMessage: monthlyCustomerMessage
-      }),
-    [
-      draft.service.paymentType,
-      monthlyCustomer,
-      monthlyCustomerChecked,
-      monthlyCustomerLoading,
-      monthlyCustomerMessage
-    ]
-  )
-  useEffect(() => {
-    expressDraftStorage.save(draft)
-    setSubmitMessage('')
-  }, [draft])
 
-  const loadMonthlyCustomer = useCallback(async () => {
-    const requestVersion = monthlyCustomerVersion.current + 1
-
-    monthlyCustomerVersion.current = requestVersion
-    setMonthlyCustomerChecked(true)
-
-    if (!hasValidSession()) {
-      setMonthlyCustomer(null)
-      setMonthlyCustomerLoading(false)
-      setMonthlyCustomerMessage('请先登录后确认客户编码')
-      return
-    }
-
-    setMonthlyCustomerLoading(true)
-    setMonthlyCustomerMessage('')
-
-    try {
-      const response = await customerService.queryCustomerCenter()
-
-      if (monthlyCustomerVersion.current !== requestVersion) {
-        return
-      }
-
-      if (!response.status || !response.result) {
-        setMonthlyCustomer(null)
-        setMonthlyCustomerMessage(response.message || '暂未获取到客户信息')
-        return
-      }
-
-      setMonthlyCustomer(response.result)
-    } finally {
-      if (monthlyCustomerVersion.current === requestVersion) {
-        setMonthlyCustomerLoading(false)
-      }
-    }
+  const updatePickup = useCallback((patch: Partial<ExpressDraft['pickup']>) => {
+    setDraft(current => updateExpressPickup(current, patch))
   }, [])
 
-  useEffect(() => {
-    if (draft.service.paymentType !== 'MONTH_PAY') {
-      return
-    }
+  const goods = useExpressGoods({ draft, setDraft, restoreQuotes })
+  const monthlyPay = useExpressMonthlyPay({ draft, updateService })
+  const submit = useExpressSubmit({ draft, warehouseController })
+  const entryNav = useExpressEntryNavigation({ draft })
 
-    void loadMonthlyCustomer()
-  }, [draft.service.paymentType, loadMonthlyCustomer])
+  useEffect(() => {
+    expressDraftStorage.save(draft)
+  }, [draft])
 
   useDidShow(() => {
     const carriedDraft = expressDraftBridge.consume()
@@ -238,7 +159,7 @@ const ExpressPage = () => {
     const selection = contactSelection.consumeSelection()
 
     if (draft.service.paymentType === 'MONTH_PAY') {
-      void loadMonthlyCustomer()
+      void monthlyPay.loadMonthlyCustomer()
     }
 
     if (!selection) {
@@ -254,123 +175,16 @@ const ExpressPage = () => {
     )
   })
 
-  const updateGoods = (patch: Partial<ExpressDraft['goods']>) => {
-    setDraft(current => updateExpressGoods(current, patch))
-  }
-
-  const handlePackagingChange = (patch: Partial<ExpressPackagingDraft>) => {
-    restoreQuotes([])
-    setDraft(current => updateExpressPackaging(current, patch))
-  }
-
-  const handleGoodsNameInput = (value: string) => {
-    goodsQueryVersion.current += 1
-    setGoodsSuggestions([])
-    setGoodsMessage('')
-    updateGoods({ name: value })
-  }
-
-  const handleQueryGoodsNames = async () => {
-    const keyword = draft.goods.name.trim()
-
-    if (!keyword) {
-      setGoodsSuggestions([])
-      setGoodsMessage('')
-      Taro.showToast({
-        title: '请输入货物名称关键词',
-        icon: 'none'
-      })
-      return
-    }
-
-    if (goodsLoading) {
-      return
-    }
-
-    const requestVersion = goodsQueryVersion.current + 1
-
-    goodsQueryVersion.current = requestVersion
-    setGoodsLoading(true)
-    setGoodsMessage('')
-
-    try {
-      const response = await expressService.queryGoodsNames(keyword, 1, 8)
-
-      if (goodsQueryVersion.current !== requestVersion) {
-        return
-      }
-
-      if (!response.status) {
-        const message = response.message || '暂未获取到品名推荐'
-
-        setGoodsSuggestions([])
-        setGoodsMessage(message)
-        Taro.showToast({
-          title: message,
-          icon: 'none'
-        })
-        return
-      }
-
-      const suggestions =
-        response.result?.list?.filter(item => !!item.productKeyWord) ?? []
-
-      setGoodsSuggestions(suggestions)
-      setGoodsMessage(
-        suggestions.length ? '' : '未找到匹配品名，可继续手动填写'
-      )
-    } finally {
-      if (goodsQueryVersion.current === requestVersion) {
-        setGoodsLoading(false)
-      }
-    }
-  }
-
-  const handleSelectGoodsName = (item: ExpressGoodsItem) => {
-    updateGoods({ name: item.productKeyWord })
-    setGoodsSuggestions([])
-    setGoodsMessage('')
-  }
-
-  const updateService = (patch: Partial<ExpressDraft['service']>) => {
-    setDraft(current => updateExpressService(current, patch))
-  }
-
-  const updatePickup = (patch: Partial<ExpressDraft['pickup']>) => {
-    setDraft(current => updateExpressPickup(current, patch))
-  }
-
-  const handlePaymentTypeSelect = (paymentType: ExpressPaymentType) => {
-    updateService({ paymentType })
-
-    if (paymentType === 'MONTH_PAY') {
-      void loadMonthlyCustomer()
-    }
-  }
-
-  const handleOpenMonthlyPayAction = (view: ExpressMonthlyPayView) => {
-    navigateToAppRoute(createAppWebUrl({ source: view.actionSource }), {
-      login: true,
-      message: '请先登录后处理客户编码'
-    })
-  }
-
-  const setPrivacyProtection = (
-    value: ExpressDraft['service']['privacyProtection']
-  ) => {
-    setDraft(current => setExpressPrivacyProtection(current, value))
-  }
-
   const handlePrivacyProtectionChange = (
     value: ExpressDraft['service']['privacyProtection']
   ) => {
     if (value === 'N') {
-      setPrivacyProtection(value)
+      setDraft(current => setExpressPrivacyProtection(current, value))
       return
     }
 
     if (expressPrivacyStorage.hasConfirmed()) {
-      setPrivacyProtection(value)
+      setDraft(current => setExpressPrivacyProtection(current, value))
       return
     }
 
@@ -385,7 +199,7 @@ const ExpressPage = () => {
         }
 
         expressPrivacyStorage.confirm()
-        setPrivacyProtection(value)
+        setDraft(current => setExpressPrivacyProtection(current, value))
       }
     })
   }
@@ -393,7 +207,6 @@ const ExpressPage = () => {
   const handleContactSelect = (target: 'sender' | 'consignee') => {
     const params = contactSelection.createParams(target)
     const url = createAppRouteUrl(APP_ROUTES.contactList, params)
-
     navigateToAppRoute(url, { login: true })
   }
 
@@ -402,7 +215,6 @@ const ExpressPage = () => {
       returnDelta: '1'
     })
     const url = createAppRouteUrl(APP_ROUTES.contactEdit, params)
-
     navigateToAppRoute(url, { login: true })
   }
 
@@ -410,131 +222,11 @@ const ExpressPage = () => {
     setDraft(current => swapExpressContacts(current))
   }
 
-  const handleOpenTemplates = () => {
-    navigateToAppRoute(APP_ROUTES.expressTemplateList, {
-      login: true
+  const handleOpenMonthlyPayAction = (view: ExpressMonthlyPayView) => {
+    navigateToAppRoute(createAppWebUrl({ source: view.actionSource }), {
+      login: true,
+      message: '请先登录后处理客户编码'
     })
-  }
-
-  const handleOpenRealName = () => {
-    navigateToAppRoute(APP_ROUTES.realNameCenter, { login: true })
-  }
-
-  const handleOpenBatch = () => {
-    navigateToAppRoute(APP_ROUTES.batchExpress, { login: true })
-  }
-
-  const handleOpenHelp = () => {
-    navigateToAppRoute(APP_ROUTES.supportCenter)
-  }
-
-  const handleOpenStations = () => {
-    navigateToAppRoute(APP_ROUTES.stationQuery)
-  }
-
-  const handleSaveTemplate = () => {
-    if (!hasValidSession()) {
-      ensureAuthenticated({
-        redirectUrl: APP_ROUTES.express,
-        message: '请先登录后保存寄件模板'
-      })
-      return
-    }
-
-    const message = templateService.stageDraft(draft)
-
-    if (message) {
-      Taro.showToast({
-        title: message,
-        icon: 'none'
-      })
-      return
-    }
-
-    navigateToAppRoute(APP_ROUTES.expressTemplateCreate, {
-      login: true
-    })
-  }
-
-  const handleSubmit = async () => {
-    if (submiting) {
-      return
-    }
-
-    setSubmitMessage('')
-
-    if (!validation.valid) {
-      Taro.showToast({
-        title: validation.messages[0],
-        icon: 'none'
-      })
-      return
-    }
-
-    if (!hasValidSession()) {
-      await expressDraftStorage.preserveForLogin(draft)
-      ensureAuthenticated({
-        redirectUrl: APP_ROUTES.express,
-        replace: true,
-        message: '请先登录后提交订单'
-      })
-      return
-    }
-
-    setSubmiting(true)
-
-    try {
-      const preparation = await warehouseController.prepareForSubmit()
-
-      if (!preparation || !preparation.proceed) {
-        return
-      }
-
-      const preparedValidation = validateExpressDraft(preparation.draft, {
-        requireAgreement: true,
-        requireProduct: true,
-        requireWarehouseScreening: true
-      })
-
-      if (!preparedValidation.valid) {
-        Taro.showToast({
-          title: preparedValidation.messages[0],
-          icon: 'none'
-        })
-        return
-      }
-
-      const response = await expressService.submitDraft(preparation.draft)
-
-      if (!response.status || !response.result) {
-        const message = response.message || '提交失败，请稍后重试'
-
-        setSubmitMessage(message)
-        Taro.showToast({
-          title: message,
-          icon: 'none'
-        })
-        return
-      }
-
-      const orderNumber = response.result.orderNumbers?.[0] || ''
-      const waybillNumber =
-        response.result.waybillNumber ||
-        response.result.waybillNumbers?.[0] ||
-        ''
-
-      expressDraftStorage.clear()
-
-      navigateToAppRoute(
-        createAppRouteUrl(APP_ROUTES.expressSuccess, {
-          orderNumber,
-          waybillNumber
-        }),
-        { login: true }
-      )
-    } finally {
-      setSubmiting(false)
-    }
   }
 
   return (
@@ -543,9 +235,9 @@ const ExpressPage = () => {
         <ExpressSubmitBar
           priceText={getProductPriceText(draft.selectedProduct)}
           quoteLoading={quoteStatus === 'loading'}
-          submitting={submiting}
+          submitting={submit.submiting}
           onQuote={handleQuote}
-          onSubmit={handleSubmit}
+          onSubmit={submit.handleSubmit}
         />
       }
       keyboardAvoiding
@@ -559,11 +251,11 @@ const ExpressPage = () => {
               ? getProductPriceText(draft.selectedProduct)
               : ''
           }
-          onOpenBatch={handleOpenBatch}
-          onOpenHelp={handleOpenHelp}
-          onOpenRealName={handleOpenRealName}
-          onOpenTemplates={handleOpenTemplates}
-          onSaveTemplate={handleSaveTemplate}
+          onOpenBatch={entryNav.handleOpenBatch}
+          onOpenHelp={entryNav.handleOpenHelp}
+          onOpenRealName={entryNav.handleOpenRealName}
+          onOpenTemplates={entryNav.handleOpenTemplates}
+          onSaveTemplate={entryNav.handleSaveTemplate}
         />
 
         <ExpressContactPanel
@@ -579,28 +271,25 @@ const ExpressPage = () => {
           pickupTimeController={pickupTimeController}
           onModeChange={dispatch => updatePickup({ dispatch })}
           onNeedContactChange={needContact => updateService({ needContact })}
-          onOpenStations={handleOpenStations}
+          onOpenStations={entryNav.handleOpenStations}
         />
 
         <ExpressGoodsSection
           goods={draft.goods}
-          goodsLoading={goodsLoading}
-          goodsMessage={goodsMessage}
-          goodsSuggestions={goodsSuggestions}
-          onGoodsChange={updateGoods}
-          onGoodsNameInput={handleGoodsNameInput}
-          onQueryGoodsNames={handleQueryGoodsNames}
-          onSelectGoodsName={handleSelectGoodsName}
+          goodsLoading={goods.goodsLoading}
+          goodsMessage={goods.goodsMessage}
+          goodsSuggestions={goods.goodsSuggestions}
+          onGoodsChange={goods.updateGoods}
+          onGoodsNameInput={goods.handleGoodsNameInput}
+          onQueryGoodsNames={goods.handleQueryGoodsNames}
+          onSelectGoodsName={goods.handleSelectGoodsName}
         />
 
-        <ExpressInsuranceCard
-          controller={insuranceController}
-          draft={draft}
-        />
+        <ExpressInsuranceCard controller={insuranceController} draft={draft} />
 
         <ExpressPackagingCard
           packaging={draft.packaging}
-          onChange={handlePackagingChange}
+          onChange={goods.handlePackagingChange}
         />
 
         <ExpressServiceSection
@@ -609,7 +298,7 @@ const ExpressPage = () => {
           deliveryPreference={draft.deliveryPreference}
           deliveryPreferenceController={deliveryPreferenceController}
           deliveryPoint={draft.deliveryPoint}
-          monthlyPayView={monthlyPayView}
+          monthlyPayView={monthlyPay.monthlyPayView}
           scanContextView={createExpressScanContextView(draft.scanContext)}
           selectedProduct={draft.selectedProduct}
           service={draft.service}
@@ -618,7 +307,7 @@ const ExpressPage = () => {
           onClearScanContext={() => setDraft(clearExpressScanContext)}
           onOpenDeliveryPoints={deliveryPointController.onOpen}
           onMonthlyPayAction={handleOpenMonthlyPayAction}
-          onPaymentTypeSelect={handlePaymentTypeSelect}
+          onPaymentTypeSelect={monthlyPay.handlePaymentTypeSelect}
           onReturnBillChange={returnBillController.onChange}
           onOpenReturnBillCloudSign={returnBillController.onOpenCloudSign}
           onPrivacyProtectionChange={handlePrivacyProtectionChange}
@@ -644,8 +333,10 @@ const ExpressPage = () => {
         <ExpressOrderOptionsSection
           agreementAccepted={draft.agreementAccepted}
           remark={draft.remark}
-          submitMessage={submitMessage}
-          validationMessages={validation.valid ? [] : validation.messages}
+          submitMessage={submit.submitMessage}
+          validationMessages={
+            submit.validation.valid ? [] : submit.validation.messages
+          }
           onRemarkInput={value =>
             setDraft(current => ({
               ...current,

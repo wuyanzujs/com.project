@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { invoiceApi } from './invoice.api'
 import { normalizeInvoiceECard } from './invoice.ecard'
 import { normalizeHistory } from './invoice.history'
@@ -18,7 +20,6 @@ import type {
   InvoiceOrderListResponse,
   InvoiceOrderView
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 const DEFAULT_ORDER_RANGE_MONTHS = 3
 const DEFAULT_HISTORY_RANGE_MONTHS = 12

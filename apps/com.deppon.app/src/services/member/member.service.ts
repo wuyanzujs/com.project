@@ -1,5 +1,7 @@
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
-import { appendRouteQuery } from '../../shared/navigation/routeUrl'
+import type { DepponResponse } from '@/request/deppon'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+import { appendRouteQuery } from '@/shared/navigation/routeUrl'
+
 import { authService } from '../auth'
 import { memberApi } from './member.api'
 
@@ -10,7 +12,6 @@ import type {
   MemberSvipRaw,
   MemberWebAction
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 const MEMBER_MAS_PATHS: Record<MemberWebAction, string> = {
   MEMBER_CENTER: '/member/home',

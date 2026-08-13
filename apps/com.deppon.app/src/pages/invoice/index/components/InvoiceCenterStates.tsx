@@ -1,6 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
-import type { InvoiceTab } from '../../../../services/invoice'
+import type { InvoiceTab } from '@/services/invoice'
 
 import './InvoiceCenterStates.scss'
 

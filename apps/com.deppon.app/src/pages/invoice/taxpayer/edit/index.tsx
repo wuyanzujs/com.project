@@ -3,15 +3,15 @@ import Taro, { useRouter } from '@tarojs/taro'
 
 import { useEffect, useState } from 'react'
 
-import { invoiceService } from '../../../../services/invoice'
-import { AppPressable, AppFormField } from '../../../../shared/components'
-
+import { invoiceService } from '@/services/invoice'
 import type {
   InvoiceTaxpayerForm,
   InvoiceTaxpayerMatch,
   InvoiceTaxpayerType,
   InvoiceTaxpayerView
-} from '../../../../services/invoice'
+} from '@/services/invoice'
+import { AppPressable, AppFormField } from '@/shared/components'
+
 
 import './index.scss'
 import './content.scss'
@@ -66,7 +66,7 @@ const InvoiceTaxpayerEditPage = () => {
   }, [router.params.data])
 
   const updateForm = (patch: Partial<InvoiceTaxpayerForm>) => {
-    setForm((current) => ({
+    setForm(current => ({
       ...current,
       ...patch
     }))
@@ -186,8 +186,9 @@ const InvoiceTaxpayerEditPage = () => {
       <View className='invoice-taxpayer-edit-section'>
         <Text className='invoice-taxpayer-edit-section__title'>抬头类型</Text>
         <View className='invoice-taxpayer-edit-chips'>
-          {TAXPAYER_TYPE_OPTIONS.map((item) => (
-            <AppPressable flex
+          {TAXPAYER_TYPE_OPTIONS.map(item => (
+            <AppPressable
+              flex
               className={
                 item.value === form.customerType
                   ? 'invoice-taxpayer-edit-chip invoice-taxpayer-edit-chip--active'
@@ -228,16 +229,16 @@ const InvoiceTaxpayerEditPage = () => {
             maxlength={100}
             placeholder='请输入发票抬头'
             value={form.name}
-            onBlur={(event) =>
+            onBlur={event =>
               updateForm({ name: cleanInput(event.detail.value) })
             }
-            onInput={(event) => updateForm({ name: event.detail.value })}
+            onInput={event => updateForm({ name: event.detail.value })}
           />
         </View>
 
         {matches.length > 0 && (
           <View className='invoice-taxpayer-edit-matches'>
-            {matches.map((item) => (
+            {matches.map(item => (
               <AppPressable
                 className='invoice-taxpayer-edit-match'
                 key={`${item.taxName}-${item.taxNo}`}
@@ -300,30 +301,34 @@ const InvoiceTaxpayerEditPage = () => {
         <View className='invoice-taxpayer-edit-section'>
           <Text className='invoice-taxpayer-edit-section__title'>单位信息</Text>
           <View className='invoice-taxpayer-edit-field'>
-            <Text className='invoice-taxpayer-edit-field__label'>纳税人地址</Text>
+            <Text className='invoice-taxpayer-edit-field__label'>
+              纳税人地址
+            </Text>
             <Input
               className='invoice-taxpayer-edit-input'
               maxlength={50}
               placeholder='请输入纳税人地址'
               value={form.address}
-              onBlur={(event) =>
+              onBlur={event =>
                 updateForm({ address: cleanInput(event.detail.value) })
               }
-              onInput={(event) => updateForm({ address: event.detail.value })}
+              onInput={event => updateForm({ address: event.detail.value })}
             />
           </View>
 
           <View className='invoice-taxpayer-edit-field'>
-            <Text className='invoice-taxpayer-edit-field__label'>纳税人电话</Text>
+            <Text className='invoice-taxpayer-edit-field__label'>
+              纳税人电话
+            </Text>
             <Input
               className='invoice-taxpayer-edit-input'
               maxlength={20}
               placeholder='请输入纳税人电话'
               value={form.phone}
-              onBlur={(event) =>
+              onBlur={event =>
                 updateForm({ phone: cleanInput(event.detail.value) })
               }
-              onInput={(event) => updateForm({ phone: event.detail.value })}
+              onInput={event => updateForm({ phone: event.detail.value })}
             />
           </View>
 
@@ -334,10 +339,10 @@ const InvoiceTaxpayerEditPage = () => {
               maxlength={50}
               placeholder='请输入开户银行'
               value={form.bank}
-              onBlur={(event) =>
+              onBlur={event =>
                 updateForm({ bank: cleanInput(event.detail.value) })
               }
-              onInput={(event) => updateForm({ bank: event.detail.value })}
+              onInput={event => updateForm({ bank: event.detail.value })}
             />
           </View>
 
@@ -349,12 +354,10 @@ const InvoiceTaxpayerEditPage = () => {
               placeholder='请输入银行账号'
               type='number'
               value={form.bankAccount}
-              onBlur={(event) =>
+              onBlur={event =>
                 updateForm({ bankAccount: cleanInput(event.detail.value) })
               }
-              onInput={(event) =>
-                updateForm({ bankAccount: event.detail.value })
-              }
+              onInput={event => updateForm({ bankAccount: event.detail.value })}
             />
           </View>
         </View>
@@ -367,7 +370,10 @@ const InvoiceTaxpayerEditPage = () => {
       )}
 
       <View className='invoice-taxpayer-edit-actions'>
-        <AppPressable className='invoice-taxpayer-edit-submit' onPress={handleSave}>
+        <AppPressable
+          className='invoice-taxpayer-edit-submit'
+          onPress={handleSave}
+        >
           <Text className='invoice-taxpayer-edit-submit__text'>
             {saving ? '保存中' : '保存'}
           </Text>

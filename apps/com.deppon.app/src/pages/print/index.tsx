@@ -3,11 +3,10 @@ import Taro, { useRouter } from '@tarojs/taro'
 
 import { useMemo } from 'react'
 
-import { printService } from '../../services/print'
-import { AppPressable } from '../../shared/components'
-import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
-
-import type { PrintCenterActionView } from '../../services/print'
+import { printService } from '@/services/print'
+import type { PrintCenterActionView } from '@/services/print'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 
 
 import './index.scss'
@@ -114,7 +113,7 @@ const PrintCenterPage = () => {
         <View className='print-section__head'>
           <Text className='print-section__title'>打印服务</Text>
         </View>
-        {center.actions.map((action) => (
+        {center.actions.map(action => (
           <AppPressable
             className={getActionClassName(action)}
             key={action.key}
@@ -140,7 +139,6 @@ const PrintCenterPage = () => {
           </View>
         ))}
       </View>
-
     </ScrollView>
   )
 }

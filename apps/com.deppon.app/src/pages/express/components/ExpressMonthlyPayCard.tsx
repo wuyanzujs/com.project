@@ -1,8 +1,8 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../shared/components'
+import type { ExpressMonthlyPayView } from '@/services/express'
+import { AppPressable } from '@/shared/components'
 
-import type { ExpressMonthlyPayView } from '../../../services/express'
 
 import './ExpressMonthlyPayCard.scss'
 

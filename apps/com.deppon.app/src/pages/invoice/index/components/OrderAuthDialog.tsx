@@ -1,12 +1,9 @@
 import { Input, Text, View } from '@tarojs/components'
 
-import {
-  AppDialog,
-  AppPressable
-} from '../../../../shared/components'
-import { APP_NATIVE_TOKENS } from '../../../../styles/nativeTokens'
+import type { InvoiceOrderAuthChallenge } from '@/services/invoice'
+import { AppDialog, AppPressable } from '@/shared/components'
+import { APP_NATIVE_TOKENS } from '@/styles/nativeTokens'
 
-import type { InvoiceOrderAuthChallenge } from '../../../../services/invoice'
 
 import './OrderAuthDialog.scss'
 

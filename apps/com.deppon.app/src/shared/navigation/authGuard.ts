@@ -1,10 +1,11 @@
 import Taro from '@tarojs/taro'
 
+import { getCurrentEcoToken } from '@/services/auth'
+
 import { dispatchAppRouteAsync } from './navigationRuntime'
 import { APP_LOGIN_ROUTE_PATHS } from './routeRegistry'
 import { APP_ROUTES } from './routes'
 import { createAppRouteUrl, createRouteQuery } from './routeUrl'
-import { getCurrentEcoToken } from '../../services/auth'
 
 import type { AppRoutePath } from './routes'
 
@@ -163,10 +164,7 @@ export function ensureCurrentRouteAuthenticated() {
   const currentUrl = getCurrentRouteUrl('')
   const pathname = getRoutePathname(currentUrl)
 
-  if (
-    !pathname ||
-    !APP_LOGIN_ROUTE_PATHS.includes(pathname as AppRoutePath)
-  ) {
+  if (!pathname || !APP_LOGIN_ROUTE_PATHS.includes(pathname as AppRoutePath)) {
     return true
   }
 

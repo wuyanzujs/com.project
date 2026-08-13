@@ -9,15 +9,12 @@ import {
   ORDER_EDIT_PACKAGING_MAX_COUNT,
   ORDER_EDIT_PACKAGING_MIN_COUNT,
   ORDER_EDIT_PACKAGING_UNIT_FEE
-} from '../../../../services/order'
-import { AppPressable } from '../../../../shared/components'
-import { AppIcon } from '../../../../shared/components/AppIcon'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../../styles/nativeTokens'
+} from '@/services/order'
+import type { OrderEditPackagingDraft } from '@/services/order'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-import type { OrderEditPackagingDraft } from '../../../../services/order'
 
 import './OrderEditPackagingSection.scss'
 import './OrderEditSection.scss'

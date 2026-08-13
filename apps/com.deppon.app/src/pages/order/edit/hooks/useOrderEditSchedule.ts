@@ -19,13 +19,12 @@ import {
   isOrderEditDeliveryModeVisible,
   queryOrderEditPickupTimes,
   selectOrderEditPickupTime
-} from '../../../../services/order'
-
+} from '@/services/order'
 import type {
   OrderEditDeliveryMode,
   OrderEditDraft,
   OrderEditPickupTimeResponse
-} from '../../../../services/order'
+} from '@/services/order'
 
 interface UseOrderEditScheduleOptions {
   draft: OrderEditDraft | null
@@ -159,7 +158,7 @@ export function useOrderEditSchedule({
   const selectedDate = getOrderEditPickupDate(pickup?.time ?? '')
   const selectedTime =
     response && pickup
-      ? findOrderEditPickupTimeSelection(response, pickup)?.time ?? ''
+      ? (findOrderEditPickupTimeSelection(response, pickup)?.time ?? '')
       : ''
 
   const handleDateChange = (date: string) => {
@@ -223,8 +222,7 @@ export function useOrderEditSchedule({
     onTimeChange: handleTimeChange,
     selectedDate,
     selectedTime,
-    showNightNotice:
-      pickup?.type === 'NIGHT' && !pickup.nightNoticeAccepted
+    showNightNotice: pickup?.type === 'NIGHT' && !pickup.nightNoticeAccepted
   }
 }
 

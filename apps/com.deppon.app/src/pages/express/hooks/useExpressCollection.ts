@@ -8,22 +8,19 @@ import {
   useState
 } from 'react'
 
-import { customerService } from '../../../services/customer'
+import { customerService } from '@/services/customer'
 import {
   clearExpressCollection,
   parseExpressCollectionAmount,
   updateExpressCollectionDetails,
   updateExpressCollectionPricing
-} from '../../../services/express'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { hasValidSession } from '../../../shared/navigation/authGuard'
-import { createAppWebUrl } from '../../../shared/webview/appWeb'
-import { appWebMessageBridge } from '../../../shared/webview/appWebMessage'
+} from '@/services/express'
+import type { ExpressCollectionType, ExpressDraft } from '@/services/express'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { hasValidSession } from '@/shared/navigation/authGuard'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+import { appWebMessageBridge } from '@/shared/webview/appWebMessage'
 
-import type {
-  ExpressCollectionType,
-  ExpressDraft
-} from '../../../services/express'
 
 interface UseExpressCollectionOptions {
   setDraft: Dispatch<SetStateAction<ExpressDraft>>

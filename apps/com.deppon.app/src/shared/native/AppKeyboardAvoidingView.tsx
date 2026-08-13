@@ -1,13 +1,8 @@
 import type { PropsWithChildren } from 'react'
 
-import {
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  View
-} from 'react-native'
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native'
 
-import { APP_NATIVE_TOKENS } from '../../styles/nativeTokens'
+import { APP_NATIVE_TOKENS } from '@/styles/nativeTokens'
 
 interface AppKeyboardAvoidingViewProps extends PropsWithChildren {
   enabled?: boolean

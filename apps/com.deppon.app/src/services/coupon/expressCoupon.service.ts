@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { couponService } from './coupon.service'
 import { expressCouponApi } from './expressCoupon.api'
 import { createServiceFailure } from '../serviceResponse'
@@ -6,7 +8,6 @@ import type {
   ExpressCouponQueryRequest,
   ExpressCouponQueryResult
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 export const expressCouponService = {
   async queryOrderCoupons(
@@ -16,9 +17,7 @@ export const expressCouponService = {
       const response = await expressCouponApi.queryOrderCoupons(request)
 
       if (!response.status) {
-        return createServiceFailure(
-          response.message || '暂未获取到可用优惠券'
-        )
+        return createServiceFailure(response.message || '暂未获取到可用优惠券')
       }
 
       const available = Array.isArray(response.result?.available)

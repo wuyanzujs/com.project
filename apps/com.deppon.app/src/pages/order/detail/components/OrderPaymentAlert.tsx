@@ -1,8 +1,8 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
+import type { PaymentSummary } from '@/services/payment'
+import { AppPressable } from '@/shared/components'
 
-import type { PaymentSummary } from '../../../../services/payment'
 
 import './OrderPaymentAlert.scss'
 
@@ -36,7 +36,11 @@ export function OrderPaymentAlert({
       </View>
       <AppPressable
         accessibilityLabel={
-          paying ? '支付处理中' : summary.canPay ? '支付订单费用' : '订单费用暂不可付'
+          paying
+            ? '支付处理中'
+            : summary.canPay
+              ? '支付订单费用'
+              : '订单费用暂不可付'
         }
         className={
           summary.canPay

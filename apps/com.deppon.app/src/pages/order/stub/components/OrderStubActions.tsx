@@ -1,6 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
+import { AppPressable } from '@/shared/components'
 
 import './OrderStubActions.scss'
 

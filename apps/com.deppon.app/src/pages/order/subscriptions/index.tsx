@@ -3,14 +3,13 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useRef, useState } from 'react'
 
-import { orderSubscriptionService } from '../../../services/order'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-
-import type { WaybillSubscriptionView } from '../../../services/order'
+import { orderSubscriptionService } from '@/services/order'
+import type { WaybillSubscriptionView } from '@/services/order'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
 
 import './index.scss'

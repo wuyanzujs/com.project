@@ -3,14 +3,13 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
-import { invoiceService } from '../../../services/invoice'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-
-import type { InvoiceTaxpayerView } from '../../../services/invoice'
+import { invoiceService } from '@/services/invoice'
+import type { InvoiceTaxpayerView } from '@/services/invoice'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
 
 import './index.scss'
@@ -97,7 +96,7 @@ const InvoiceTaxpayerListPage = () => {
       return
     }
 
-    setTaxpayers((current) => current.filter((next) => next.id !== item.id))
+    setTaxpayers(current => current.filter(next => next.id !== item.id))
     Taro.showToast({
       title: '删除成功',
       icon: 'none'
@@ -119,9 +118,9 @@ const InvoiceTaxpayerListPage = () => {
       return
     }
 
-    setTaxpayers((current) =>
+    setTaxpayers(current =>
       current
-        .map((next) => ({
+        .map(next => ({
           ...next,
           isDefault:
             next.id === item.id
@@ -147,13 +146,16 @@ const InvoiceTaxpayerListPage = () => {
             共 {taxpayers.length} 条，最多建议保留 20 条
           </Text>
         </View>
-        <AppPressable className='invoice-taxpayer-toolbar__button' onPress={handleCreate}>
+        <AppPressable
+          className='invoice-taxpayer-toolbar__button'
+          onPress={handleCreate}
+        >
           <Text className='invoice-taxpayer-toolbar__button-text'>新增</Text>
         </AppPressable>
       </View>
 
       <View className='invoice-taxpayer-content'>
-        {taxpayers.map((item) => (
+        {taxpayers.map(item => (
           <View className='invoice-taxpayer-card' key={item.id}>
             <View className='invoice-taxpayer-card__top'>
               <Text className='invoice-taxpayer-card__title'>

@@ -1,10 +1,12 @@
-import { queryApi } from './query.api'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
-import { APP_ROUTES } from '../../shared/navigation/routes'
+import type { DepponResponse } from '@/request/deppon'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+import { APP_ROUTES } from '@/shared/navigation/routes'
 import {
   appendRouteQuery,
   createAppRouteUrl
-} from '../../shared/navigation/routeUrl'
+} from '@/shared/navigation/routeUrl'
+
+import { queryApi } from './query.api'
 import { getCurrentUser } from '../auth'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 import { resolveDispatchAddress } from './query.dispatch'
@@ -21,7 +23,7 @@ import type {
   StationQueryResult,
   StationQueryType
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
+
 
 const DEFAULT_STATION_PAGE_SIZE = 100
 const STATION_FEEDBACK_WEB_PATH = '/depponmobile/survey/noStarEvaluate'
@@ -92,14 +94,12 @@ function getStationPrimaryCode(item: Pick<StationItem, 'code' | 'id'>) {
 export function getStationPrimaryPhone(value?: string | null) {
   const candidates = normalizeText(value)
     .split(/[,，;；、\s/]+/)
-    .map((item) => item.trim())
+    .map(item => item.trim())
     .filter(Boolean)
 
   return (
-    candidates.find((item) =>
-      /^(\+?\d{5,20}|\d{3,4}-?\d{7,14})$/.test(item)
-    ) ||
-    candidates.find((item) => /\d{5,}/.test(item)) ||
+    candidates.find(item => /^(\+?\d{5,20}|\d{3,4}-?\d{7,14})$/.test(item)) ||
+    candidates.find(item => /\d{5,}/.test(item)) ||
     normalizeText(value)
   )
 }

@@ -9,15 +9,12 @@ import {
   maskExpressCollectionAccount,
   normalizeExpressCollectionAmountInput,
   parseExpressCollectionAmount
-} from '../../../services/express'
-import { AppPressable } from '../../../shared/components'
-import { AppIcon } from '../../../shared/components/AppIcon'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
+} from '@/services/express'
+import type { ExpressDraft } from '@/services/express'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-import type { ExpressDraft } from '../../../services/express'
 import type { ExpressCollectionController } from '../hooks/useExpressCollection'
 
 import './ExpressCollectionCard.scss'
@@ -181,7 +178,9 @@ export function ExpressCollectionCard({
           </AppPressable>
 
           <View className='express-collection__fee-row'>
-            <Text className='express-collection__fee-label'>预计代收手续费</Text>
+            <Text className='express-collection__fee-label'>
+              预计代收手续费
+            </Text>
             <Text className='express-collection__fee-value'>
               {formatMoney(collectionFee)}
             </Text>
@@ -225,8 +224,7 @@ export function ExpressCollectionCard({
             </AppPressable>
           </View>
 
-          {(controller.capabilityLoading ||
-            controller.capabilityMessage) && (
+          {(controller.capabilityLoading || controller.capabilityMessage) && (
             <View className='express-collection-message'>
               <Text className='express-collection-message__text'>
                 {controller.capabilityLoading

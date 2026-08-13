@@ -2,15 +2,13 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { type Dispatch, type SetStateAction, useCallback } from 'react'
 
-import {
-  updateExpressDeliveryPoint
-} from '../../../services/express'
-import { stationSelection } from '../../../services/query'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
+import { updateExpressDeliveryPoint } from '@/services/express'
+import type { ExpressDraft } from '@/services/express'
+import { stationSelection } from '@/services/query'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
-import type { ExpressDraft } from '../../../services/express'
 
 interface UseExpressDeliveryPointOptions {
   draft: ExpressDraft

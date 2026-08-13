@@ -3,8 +3,7 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useCallback, useMemo, useState } from 'react'
 
-import { OrderEvaluationForm } from './components/OrderEvaluationForm'
-import { getCurrentUser } from '../../../services/auth'
+import { getCurrentUser } from '@/services/auth'
 import {
   applyOrderEvaluationSubmission,
   createOrderEvaluationDraft,
@@ -15,7 +14,12 @@ import {
   updateOrderEvaluationLevel,
   updateOrderEvaluationSuggestion,
   validateOrderEvaluationDraft
-} from '../../../services/order'
+} from '@/services/order'
+import type {
+  OrderDetail,
+  OrderEvaluationView,
+  OrderRole
+} from '@/services/order'
 import {
   AppButton,
   AppEmptyState,
@@ -23,18 +27,14 @@ import {
   AppPage,
   AppPageHeader,
   AppStatusTag
-} from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-import { createAppWebUrl } from '../../../shared/webview/appWeb'
+} from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
 
-import type {
-  OrderDetail,
-  OrderEvaluationView,
-  OrderRole
-} from '../../../services/order'
+import { OrderEvaluationForm } from './components/OrderEvaluationForm'
 
 import './content.scss'
 
@@ -59,24 +59,16 @@ function parseRouteParams(
 const OrderEvaluationPage = () => {
   const router = useRouter()
   const routeParams = useMemo(
-    () =>
-      parseRouteParams(
-        router.params as Record<string, string | undefined>
-      ),
+    () => parseRouteParams(router.params as Record<string, string | undefined>),
     [router.params]
   )
   const [detail, setDetail] = useState<OrderDetail | null>(null)
-  const [evaluation, setEvaluation] = useState<OrderEvaluationView | null>(
-    null
-  )
+  const [evaluation, setEvaluation] = useState<OrderEvaluationView | null>(null)
   const [draft, setDraft] = useState(() => createOrderEvaluationDraft())
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const validation = useMemo(
-    () => validateOrderEvaluationDraft(draft),
-    [draft]
-  )
+  const validation = useMemo(() => validateOrderEvaluationDraft(draft), [draft])
 
   const loadEvaluation = useCallback(async () => {
     if (!routeParams.waybillNumber && !routeParams.orderNumber) {
@@ -124,15 +116,12 @@ const OrderEvaluationPage = () => {
   }, [routeParams])
 
   useDidShow(() => {
-    const redirectUrl = createAppRouteUrl(
-      APP_ROUTES.orderEvaluation,
-      {
-        orderNumber: routeParams.orderNumber,
-        waybillNumber: routeParams.waybillNumber,
-        role: routeParams.role,
-        source: routeParams.source
-      }
-    )
+    const redirectUrl = createAppRouteUrl(APP_ROUTES.orderEvaluation, {
+      orderNumber: routeParams.orderNumber,
+      waybillNumber: routeParams.waybillNumber,
+      role: routeParams.role,
+      source: routeParams.source
+    })
 
     if (ensureAuthenticated({ redirectUrl, replace: true })) {
       void loadEvaluation()

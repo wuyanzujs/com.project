@@ -1,9 +1,9 @@
 import { ScrollView, Text, View } from '@tarojs/components'
 
-import { EXPRESS_NIGHT_PICKUP_NOTICE } from '../../../services/express'
-import { AppPressable } from '../../../shared/components'
+import { EXPRESS_NIGHT_PICKUP_NOTICE } from '@/services/express'
+import type { ExpressDraft } from '@/services/express'
+import { AppPressable } from '@/shared/components'
 
-import type { ExpressDraft } from '../../../services/express'
 import type { ExpressPickupTimeController } from '../hooks/useExpressPickupTime'
 
 import './ExpressPickupTimeCard.scss'
@@ -47,10 +47,7 @@ export function ExpressPickupTimeCard({
       {controller.dateOptions.length ? (
         <View className='express-pickup-time-card__content'>
           <Text className='express-pickup-time-card__label'>日期</Text>
-          <ScrollView
-            className='express-pickup-time-card__scroll'
-            scrollX
-          >
+          <ScrollView className='express-pickup-time-card__scroll' scrollX>
             <View className='express-pickup-time-card__track'>
               {controller.dateOptions.map(option => (
                 <AppPressable

@@ -1,10 +1,11 @@
 import { Text } from '@tarojs/components'
 
+import { getExpressQuoteKey } from '@/services/express'
+import type { ExpressProductQuote } from '@/services/express'
+
 import { QueryPriceProductCard } from './QueryPriceProductCard'
 import { QueryPriceSection } from './QueryPriceSection'
-import { getExpressQuoteKey } from '../../../../services/express'
 
-import type { ExpressProductQuote } from '../../../../services/express'
 
 import './QueryPriceResultsState.scss'
 

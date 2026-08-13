@@ -1,5 +1,6 @@
+import type { AppWebSource } from '@/shared/webview/appWeb'
+
 import type { OrderModifyExtendField } from './order.edit.types'
-import type { AppWebSource } from '../../shared/webview/appWeb'
 
 export * from './order.edit.types'
 

@@ -1,4 +1,4 @@
-import { depponHttp } from '../../request/deppon'
+import { depponHttp } from '@/request/deppon'
 
 import type {
   ECardBalanceRaw,
@@ -19,7 +19,10 @@ export const ecardApi = {
   },
 
   createECardPreviewLink(data: Pick<ECardLinkRequest, 'sysCode'>) {
-    return depponHttp.post<ECardLinkResponse, Pick<ECardLinkRequest, 'sysCode'>>(
+    return depponHttp.post<
+      ECardLinkResponse,
+      Pick<ECardLinkRequest, 'sysCode'>
+    >(
       '/gwapi/onlineService/eco/online/prestore/getPmcPreStoreVisitorPage',
       data,
       {

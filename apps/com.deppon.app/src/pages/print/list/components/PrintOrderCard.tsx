@@ -1,11 +1,8 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppStatusTag } from '../../../../shared/components'
+import type { PrintOrderListItem, PrintSearchType } from '@/services/print'
+import { AppStatusTag } from '@/shared/components'
 
-import type {
-  PrintOrderListItem,
-  PrintSearchType
-} from '../../../../services/print'
 
 import './PrintOrderCard.scss'
 

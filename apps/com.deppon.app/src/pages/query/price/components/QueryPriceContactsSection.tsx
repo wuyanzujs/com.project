@@ -1,13 +1,11 @@
 import { Text } from '@tarojs/components'
 
+import type { ExpressContact, ExpressContactTarget } from '@/services/express'
+import { AppPressable } from '@/shared/components'
+
 import { QueryPriceContactForm } from './QueryPriceContactForm'
 import { QueryPriceSection } from './QueryPriceSection'
-import { AppPressable } from '../../../../shared/components'
 
-import type {
-  ExpressContact,
-  ExpressContactTarget
-} from '../../../../services/express'
 
 import './QueryPriceContactsSection.scss'
 

@@ -1,11 +1,8 @@
 import { Input, Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
+import type { PaymentListStatus, PaymentRole } from '@/services/payment'
+import { AppPressable } from '@/shared/components'
 
-import type {
-  PaymentListStatus,
-  PaymentRole
-} from '../../../../services/payment'
 
 import './PaymentListControls.scss'
 
@@ -51,7 +48,8 @@ export function PaymentListControls(props: PaymentListControlsProps) {
     <>
       <View className='payment-status-tabs'>
         {PAYMENT_STATUS_TABS.map(tab => (
-          <AppPressable flex
+          <AppPressable
+            flex
             accessibilityLabel={tab.label}
             className={
               tab.value === props.status

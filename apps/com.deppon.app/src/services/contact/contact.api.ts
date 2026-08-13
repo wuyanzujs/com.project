@@ -1,4 +1,4 @@
-import { depponHttp } from '../../request/deppon'
+import { depponHttp } from '@/request/deppon'
 
 import type {
   Contact,
@@ -39,9 +39,12 @@ export const contactApi = {
   },
 
   deleteContacts(ids: string[]) {
-    return depponHttp.post('/gwapi/userService/eco/user/contact/secure/deleteContact', {
-      ids
-    })
+    return depponHttp.post(
+      '/gwapi/userService/eco/user/contact/secure/deleteContact',
+      {
+        ids
+      }
+    )
   },
 
   batchDeleteContact(deleteType: number) {
@@ -132,14 +135,10 @@ export const contactApi = {
     return depponHttp.post<
       Contact,
       { address: string; lat: number; lng: number }
-    >(
-      '/gwapi/userService/eco/user/contact/addressMinDistanceAnalysis',
-      data,
-      {
-        login: false,
-        loading: false,
-        timeout: 3000
-      }
-    )
+    >('/gwapi/userService/eco/user/contact/addressMinDistanceAnalysis', data, {
+      login: false,
+      loading: false,
+      timeout: 3000
+    })
   }
 }

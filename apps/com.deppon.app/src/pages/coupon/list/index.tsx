@@ -3,6 +3,22 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useMemo, useRef, useState } from 'react'
 
+import { couponService } from '@/services/coupon'
+import type { CouponCardView, CouponStatus } from '@/services/coupon'
+import {
+  createExpressDraft,
+  expressDraftBridge,
+  expressDraftStorage,
+  markExpressQuoteStale
+} from '@/services/express'
+import { memberService } from '@/services/member'
+import { LatestRequestCoordinator } from '@/shared/async/latestRequest'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+
 import { CouponCard } from './components/CouponCard'
 import { CouponExchangeBar } from './components/CouponExchangeBar'
 import { CouponListStates } from './components/CouponListStates'
@@ -11,22 +27,6 @@ import {
   type CouponTabItem
 } from './components/CouponStatusTabs'
 import { CouponSummary } from './components/CouponSummary'
-import { couponService } from '../../../services/coupon'
-import {
-  createExpressDraft,
-  expressDraftBridge,
-  expressDraftStorage,
-  markExpressQuoteStale
-} from '../../../services/express'
-import { memberService } from '../../../services/member'
-import { LatestRequestCoordinator } from '../../../shared/async/latestRequest'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-import { createAppWebUrl } from '../../../shared/webview/appWeb'
-
-import type { CouponCardView, CouponStatus } from '../../../services/coupon'
 
 import './index.scss'
 

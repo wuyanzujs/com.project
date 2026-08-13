@@ -1,15 +1,15 @@
 import { Input, Text, Textarea, View } from '@tarojs/components'
 
-import { getBatchContactKey } from '../../../services/batch'
-import { AppPressable } from '../../../shared/components'
-
+import { getBatchContactKey } from '@/services/batch'
 import type {
   BatchAddressRecognitionResult,
   BatchConsigneeDraft,
   BatchContact,
   BatchDraft,
   BatchGoodsDraft
-} from '../../../services/batch'
+} from '@/services/batch'
+import { AppPressable } from '@/shared/components'
+
 
 import './BatchSections.scss'
 
@@ -105,14 +105,16 @@ export function BatchRecognitionSection({
       <Textarea
         className='batch-recognition__input'
         maxlength={2000}
-        placeholder={'每行一票，例如：\n李四 13900139000 广东省 深圳市 南山区 科技园科苑路200号 文件'}
+        placeholder={
+          '每行一票，例如：\n李四 13900139000 广东省 深圳市 南山区 科技园科苑路200号 文件'
+        }
         value={text}
         onInput={event => onTextChange(event.detail.value)}
       />
       <View className='batch-recognition__summary'>
         <Text className='batch-recognition__summary-text'>
-          共 {recognition.totalLines} 行，可用 {recognition.acceptedCount} 行，异常{' '}
-          {recognition.rejectedCount}
+          共 {recognition.totalLines} 行，可用 {recognition.acceptedCount}{' '}
+          行，异常 {recognition.rejectedCount}
           {recognition.ignoredCount
             ? `，超出上限忽略 ${recognition.ignoredCount} 行`
             : ''}

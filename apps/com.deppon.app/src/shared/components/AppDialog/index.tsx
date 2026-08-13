@@ -3,15 +3,12 @@ import { ScrollView, Text, View } from '@tarojs/components'
 import type { PropsWithChildren, ReactNode } from 'react'
 
 import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
-import {
   AppKeyboardAvoidingView,
   AppNativeModal,
   AppNativePressable,
   AppSafeAreaView
-} from '../../native'
+} from '@/shared/native'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './index.scss'
 

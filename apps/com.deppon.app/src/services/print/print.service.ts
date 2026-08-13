@@ -1,5 +1,7 @@
-import { APP_ROUTES } from '../../shared/navigation/routes'
-import { APP_NATIVE_CAPABILITIES } from '../../shared/platform/capabilities'
+import type { DepponResponse } from '@/request/deppon'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { APP_NATIVE_CAPABILITIES } from '@/shared/platform/capabilities'
+
 import { createServiceFailure } from '../serviceResponse'
 import { PRINT_LIST_ENDPOINT, printApi } from './print.api'
 import { normalizePrintListResult } from './print.mapper'
@@ -21,7 +23,6 @@ import type {
   QueryPrintCountsOptions,
   QueryPrintListOptions
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 const DEFAULT_PRINT_PAGE_SIZE = 10
 

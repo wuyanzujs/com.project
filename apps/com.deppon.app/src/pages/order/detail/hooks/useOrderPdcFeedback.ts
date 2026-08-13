@@ -5,12 +5,8 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   createOrderPdcFeedbackContext,
   orderPdcFeedbackService
-} from '../../../../services/order'
-
-import type {
-  OrderDetail,
-  OrderPdcFeedbackResult
-} from '../../../../services/order'
+} from '@/services/order'
+import type { OrderDetail, OrderPdcFeedbackResult } from '@/services/order'
 
 export function useOrderPdcFeedback(options: {
   detail: OrderDetail | null

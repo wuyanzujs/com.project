@@ -1,9 +1,6 @@
 import { StatusBar } from 'react-native'
 
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../styles/nativeTokens'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 interface AppStatusBarProps {
   backgroundColor?: string

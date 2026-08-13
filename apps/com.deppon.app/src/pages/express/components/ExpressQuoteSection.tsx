@@ -1,13 +1,10 @@
 import { Text, View } from '@tarojs/components'
 
-import { ExpressSection } from './ExpressSection'
-import { createExpressProductQuoteView } from '../../../services/express'
-import { AppPressable } from '../../../shared/components'
+import { createExpressProductQuoteView } from '@/services/express'
+import type { ExpressDraft, ExpressProductQuote } from '@/services/express'
+import { AppPressable } from '@/shared/components'
 
-import type {
-  ExpressDraft,
-  ExpressProductQuote
-} from '../../../services/express'
+import { ExpressSection } from './ExpressSection'
 
 import './ExpressQuoteSection.scss'
 

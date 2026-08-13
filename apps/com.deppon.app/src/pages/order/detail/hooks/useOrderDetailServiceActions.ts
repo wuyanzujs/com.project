@@ -2,18 +2,20 @@ import Taro from '@tarojs/taro'
 
 import { useState } from 'react'
 
-import { orderService } from '../../../../services/order'
-import { navigateToAppRoute } from '../../../../shared/navigation/appNavigation'
-import { createAppWebUrl } from '../../../../shared/webview/appWeb'
-
-import type { OrderDetailDialHandler, UseOrderDetailActionsOptions } from './useOrderDetailActions'
+import { orderService } from '@/services/order'
 import type {
   OrderDetailActionView,
   OrderUrgeButtonRaw
-} from '../../../../services/order'
+} from '@/services/order'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
 
-export interface UseOrderDetailServiceActionsOptions
-  extends UseOrderDetailActionsOptions {
+import type {
+  OrderDetailDialHandler,
+  UseOrderDetailActionsOptions
+} from './useOrderDetailActions'
+
+export interface UseOrderDetailServiceActionsOptions extends UseOrderDetailActionsOptions {
   handleDial: OrderDetailDialHandler
 }
 

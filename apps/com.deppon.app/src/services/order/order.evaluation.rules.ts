@@ -1,7 +1,8 @@
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+
 import { createOrderDetailWebUri } from './order.detailRules'
 import { getOrderEvaluationLabels } from './order.evaluation.catalog'
-import { APP_ROUTES } from '../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
 
 import type {
   OrderEvaluationContext,
@@ -168,9 +169,7 @@ export function createOrderEvaluationView(
     courierCompany: pendingCourier?.courierType === 'JD' ? 'JD' : 'DP',
     committed,
     averageLevel: normalizeAverageLevel(result.avgStarLevel),
-    level: committed
-      ? normalizeLevel(evaluatedDetail?.starLevel)
-      : 5,
+    level: committed ? normalizeLevel(evaluatedDetail?.starLevel) : 5,
     label: committed ? normalizeText(evaluatedDetail?.evaluateCode) : ''
   }
 }

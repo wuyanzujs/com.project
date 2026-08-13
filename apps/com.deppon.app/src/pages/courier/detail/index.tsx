@@ -3,17 +3,16 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
-import { courierService } from '../../../services/courier'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-import { getNativeCapabilityErrorMessage } from '../../../shared/platform/capabilities'
-import { PhoneNumberError, dialPhone } from '../../../shared/platform/phone'
-import { APP_STYLE_COLORS } from '../../../styles/nativeTokens'
-
-import type { CourierDetailView } from '../../../services/courier'
+import { courierService } from '@/services/courier'
+import type { CourierDetailView } from '@/services/courier'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
+import { PhoneNumberError, dialPhone } from '@/shared/platform/phone'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 
 import './index.scss'
@@ -208,7 +207,8 @@ const CourierDetailPage = () => {
       {detail && (
         <>
           <View className='courier-detail-actions'>
-            <AppPressable flex
+            <AppPressable
+              flex
               className='courier-detail-action courier-detail-action--quiet'
               onPress={handleDial}
             >
@@ -216,7 +216,8 @@ const CourierDetailPage = () => {
                 联系
               </Text>
             </AppPressable>
-            <AppPressable flex
+            <AppPressable
+              flex
               className='courier-detail-action courier-detail-action--quiet'
               onPress={handleBinding}
             >
@@ -230,7 +231,11 @@ const CourierDetailPage = () => {
                       : '重试状态'}
               </Text>
             </AppPressable>
-            <AppPressable flex className='courier-detail-action' onPress={handleExpress}>
+            <AppPressable
+              flex
+              className='courier-detail-action'
+              onPress={handleExpress}
+            >
               <Text className='courier-detail-action__text'>找他寄件</Text>
             </AppPressable>
           </View>
@@ -300,7 +305,10 @@ const CourierDetailPage = () => {
           <Text className='courier-detail-empty__title'>
             {errorMessage || '未查询到快递员信息'}
           </Text>
-          <AppPressable className='courier-detail-empty__button' onPress={loadDetail}>
+          <AppPressable
+            className='courier-detail-empty__button'
+            onPress={loadDetail}
+          >
             <Text className='courier-detail-empty__button-text'>重新加载</Text>
           </AppPressable>
         </View>

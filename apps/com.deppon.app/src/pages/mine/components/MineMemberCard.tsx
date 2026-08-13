@@ -1,12 +1,10 @@
 import { Image, Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../shared/components'
-import {
-  getMemberLevelAsset,
-  getMemberRightsCount
-} from '../mine.model'
+import type { MemberOverviewView } from '@/services/member'
+import { AppPressable } from '@/shared/components'
 
-import type { MemberOverviewView } from '../../../services/member'
+import { getMemberLevelAsset, getMemberRightsCount } from '../mine.model'
+
 
 import './MineMemberCard.scss'
 

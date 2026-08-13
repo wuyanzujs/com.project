@@ -3,20 +3,18 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
-import { ecardService } from '../../../services/ecard'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppWebUrl } from '../../../shared/webview/appWeb'
-
+import { ecardService } from '@/services/ecard'
 import type {
   ECardCenterUrlOptions,
   ECardOverviewView,
   ECardTargetPage
-} from '../../../services/ecard'
-import type { AppWebSource } from '../../../shared/webview/appWeb'
-
+} from '@/services/ecard'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+import type { AppWebSource } from '@/shared/webview/appWeb'
 
 import './index.scss'
 import './content.scss'
@@ -189,7 +187,7 @@ const ECardCenterPage = () => {
 
       <View className='ecard-actions'>
         <Text className='ecard-actions__title'>E 卡服务</Text>
-        {ECARD_ACTIONS.map((item) => (
+        {ECARD_ACTIONS.map(item => (
           <AppPressable
             className='ecard-action-row'
             key={item.source}
@@ -221,8 +219,11 @@ const ECardCenterPage = () => {
           </Text>
         </View>
 
-        {(overview?.promotions ?? []).map((item) => (
-          <View className='ecard-promotion' key={`${item.title}-${item.summary}`}>
+        {(overview?.promotions ?? []).map(item => (
+          <View
+            className='ecard-promotion'
+            key={`${item.title}-${item.summary}`}
+          >
             <Text className='ecard-promotion__title'>{item.title}</Text>
             <Text className='ecard-promotion__summary'>{item.summary}</Text>
           </View>
@@ -241,7 +242,8 @@ const ECardCenterPage = () => {
       <View className='ecard-footer'>
         <Text className='ecard-footer__title'>使用说明</Text>
         <Text className='ecard-footer__summary'>
-          储值卡可用于符合规则的运费和增值服务费。是否支持抵扣、支付密码和充值活动，以 E 卡页面和后端校验为准。
+          储值卡可用于符合规则的运费和增值服务费。是否支持抵扣、支付密码和充值活动，以
+          E 卡页面和后端校验为准。
         </Text>
       </View>
     </ScrollView>

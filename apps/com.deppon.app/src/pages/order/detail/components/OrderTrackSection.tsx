@@ -1,8 +1,9 @@
 import { Text, View } from '@tarojs/components'
 
+import type { WaybillTrackItem } from '@/services/order'
+
 import { OrderDetailSection } from './OrderDetailSection'
 
-import type { WaybillTrackItem } from '../../../../services/order'
 
 import './OrderTrackSection.scss'
 

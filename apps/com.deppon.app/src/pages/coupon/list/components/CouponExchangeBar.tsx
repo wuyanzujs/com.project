@@ -1,6 +1,6 @@
 import { Input, Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
+import { AppPressable } from '@/shared/components'
 import './CouponExchangeBar.scss'
 
 interface CouponExchangeBarProps {

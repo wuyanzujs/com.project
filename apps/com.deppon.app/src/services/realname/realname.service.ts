@@ -1,5 +1,7 @@
+import type { DepponResponse } from '@/request/deppon'
+import { verifyRealName } from '@/shared/platform/realName'
+
 import { realNameApi } from './realname.api'
-import { verifyRealName } from '../../shared/platform/realName'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type {
@@ -7,10 +9,22 @@ import type {
   RealNameAuthView,
   RealNameValidationResult
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
+
 
 const ID_CARD_WEIGHTS = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
-const ID_CARD_CHECK_CODES = ['1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2']
+const ID_CARD_CHECK_CODES = [
+  '1',
+  '0',
+  'X',
+  '9',
+  '8',
+  '7',
+  '6',
+  '5',
+  '4',
+  '3',
+  '2'
+]
 
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
@@ -201,7 +215,9 @@ export const realNameService = {
 
     const rawResult = authResult.rawResult
     const idCardAuthData =
-      rawResult && typeof rawResult === 'object' && 'idCardAuthData' in rawResult
+      rawResult &&
+      typeof rawResult === 'object' &&
+      'idCardAuthData' in rawResult
         ? String(rawResult.idCardAuthData || '')
         : ''
 

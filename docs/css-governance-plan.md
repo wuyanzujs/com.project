@@ -265,6 +265,24 @@ View.order-detail-card {
 - 新页面 SCSS 建议不超过 300 行，共享组件 SCSS 建议不超过 180 行。
 - 旧巨型文件先冻结体量，随业务切片拆分，不为行数机械拆文件。
 
+### 7.1 SCSS 引用路径规范
+
+SCSS 文件引用其他 SCSS（如 `_tokens.scss`）时，路径写法遵循以下规则：
+
+- **编译层（Taro RN）**：`@tarojs/rn-style-transformer` 支持 `@/` 别名，映射关系来自 `config/index.ts` 的 `alias: { '@': src }`。所以 `@use '@/styles/_tokens.scss' as *;` 在 Taro 编译时能正常解析。
+- **编辑器层（VSCode）**：VSCode 内置 SCSS 语言服务**不读取** `config/index.ts`、`tsconfig.json` 或任何 webpack 别名配置，因此直接写 `@use '@/styles/_tokens.scss'` 时编辑器会报"找不到文件"、Ctrl+点击无法跳转。这是 VSCode 官方限制，不是配置错误。
+- **推荐写法**：SCSS 内统一使用相对路径引用 token，例如 `@use '../../styles/_tokens.scss' as *;`，与全项目既有 40+ 个 SCSS 文件一致，编辑器开箱即用、无额外依赖。
+- **可选写法（需扩展）**：若坚持使用 `@/` 别名且需要编辑器跳转，安装 VSCode 扩展 `SCSS Alias`（marketplace ID `wanderlima.vscode-scss-alias`），并配置 `.vscode/settings.json`：
+
+  ```json
+  "vscodeScssAlias.aliases": {
+    "@": "apps/com.deppon.app/src"
+  }
+  ```
+
+  安装后在命令面板执行 `SCSS Alias: Reload Aliases`。注意扩展只接管编辑器跳转，不影响编译。
+- **禁止**：SCSS 中混用两种写法；同一文件内不要既出现相对路径又出现 `@/`。
+
 ## 8. 自动治理闭环
 
 本次已经建立两层检查。

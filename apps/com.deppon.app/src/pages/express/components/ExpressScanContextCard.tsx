@@ -1,8 +1,8 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppCard, AppPressable } from '../../../shared/components'
+import type { ExpressScanContextView } from '@/services/express'
+import { AppCard, AppPressable } from '@/shared/components'
 
-import type { ExpressScanContextView } from '../../../services/express'
 
 import './ExpressScanContextCard.scss'
 

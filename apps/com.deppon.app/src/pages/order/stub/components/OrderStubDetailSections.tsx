@@ -1,12 +1,10 @@
 import { Text, View } from '@tarojs/components'
 
-import { OrderStubSection } from './OrderStubSection'
-import { AppPressable } from '../../../../shared/components'
+import type { OrderStubFieldView, OrderStubView } from '@/services/order'
+import { AppPressable } from '@/shared/components'
 
-import type {
-  OrderStubFieldView,
-  OrderStubView
-} from '../../../../services/order'
+import { OrderStubSection } from './OrderStubSection'
+
 
 import './OrderStubDetailSections.scss'
 

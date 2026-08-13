@@ -3,17 +3,16 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
-import { courierService } from '../../../services/courier'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-import { getNativeCapabilityErrorMessage } from '../../../shared/platform/capabilities'
-import { PhoneNumberError, dialPhone } from '../../../shared/platform/phone'
-import { scanAppCode } from '../../../shared/platform/scan'
-
-import type { CourierView } from '../../../services/courier'
+import { courierService } from '@/services/courier'
+import type { CourierView } from '@/services/courier'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
+import { PhoneNumberError, dialPhone } from '@/shared/platform/phone'
+import { scanAppCode } from '@/shared/platform/scan'
 
 
 import './index.scss'

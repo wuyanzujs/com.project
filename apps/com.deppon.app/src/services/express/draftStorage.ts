@@ -1,3 +1,7 @@
+import { preserveAccountScopedCacheForLogin } from '@/cache/accountScope'
+import { DPCacheExpireType, dpCache } from '@/cache/dpCache'
+import { CACHE_KEYS } from '@/cache/keys'
+
 import { normalizeExpressCollectionDraft } from './collection.rules'
 import { normalizeExpressDeliveryPointDraft } from './deliveryPoint.rules'
 import { normalizeExpressDeliveryPreferenceDraft } from './deliveryPreference.rules'
@@ -7,9 +11,6 @@ import { normalizeExpressPackagingDraft } from './packaging.rules'
 import { normalizeExpressPickup } from './pickupTime.rules'
 import { normalizeExpressReturnBillDraft } from './valueAdded'
 import { normalizeExpressWarehouseDraft } from './warehouse.rules'
-import { preserveAccountScopedCacheForLogin } from '../../cache/accountScope'
-import { DPCacheExpireType, dpCache } from '../../cache/dpCache'
-import { CACHE_KEYS } from '../../cache/keys'
 
 import type {
   ExpressDraft,

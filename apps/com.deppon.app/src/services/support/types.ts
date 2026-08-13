@@ -1,5 +1,5 @@
-import type { AppRoutePath } from '../../shared/navigation/routes'
-import type { AppWebSource } from '../../shared/webview/appWeb'
+import type { AppRoutePath } from '@/shared/navigation/routes'
+import type { AppWebSource } from '@/shared/webview/appWeb'
 
 export type SupportEntryKind = 'web' | 'phone' | 'route' | 'pending'
 

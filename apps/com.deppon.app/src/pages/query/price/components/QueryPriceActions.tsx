@@ -1,7 +1,8 @@
 import { Text } from '@tarojs/components'
 
+import { AppPressable } from '@/shared/components'
+
 import { QueryPriceSection } from './QueryPriceSection'
-import { AppPressable } from '../../../../shared/components'
 
 import './QueryPriceActions.scss'
 

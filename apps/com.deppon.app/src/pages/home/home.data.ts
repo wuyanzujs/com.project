@@ -1,4 +1,4 @@
-import { APP_ROUTES, type AppRoutePath } from '../../shared/navigation/routes'
+import { APP_ROUTES, type AppRoutePath } from '@/shared/navigation/routes'
 
 export interface HomeQuickAction {
   key: string

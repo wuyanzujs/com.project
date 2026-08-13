@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { orderNpsSurveyService } from './order.npsSurvey.service'
 import { orderSceneSurveyService } from './order.sceneSurvey.service'
 
@@ -7,12 +9,8 @@ import type {
   OrderSceneSurveyQueryResult,
   OrderSceneSurveySubmitInput
 } from './order.sceneSurvey.types'
-import type { DepponResponse } from '../../request/deppon'
 
-async function queryPlanItem(
-  context: OrderSceneSurveyContext,
-  index: number
-) {
+async function queryPlanItem(context: OrderSceneSurveyContext, index: number) {
   const plan = context.plan[index]
 
   return plan.kind === 'NPS'
@@ -37,10 +35,7 @@ export const orderSceneSurveyOrchestrator = {
         result.value.result
       ) {
         items.push(result.value.result)
-      } else if (
-        result.status === 'rejected' ||
-        !result.value.status
-      ) {
+      } else if (result.status === 'rejected' || !result.value.status) {
         failedCount += 1
       }
     }

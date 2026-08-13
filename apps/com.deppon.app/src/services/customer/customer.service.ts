@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { customerApi } from './customer.api'
 import { createServiceFailure } from '../serviceResponse'
 
@@ -9,7 +11,6 @@ import type {
   CustomerCenterView,
   CustomerInfoRaw
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
@@ -169,10 +170,7 @@ async function queryCustomerOverview(): Promise<
       : null
   const capability =
     capabilityResponse.status && capabilityResponse.result
-      ? createCustomerCapabilitySummary(
-          capabilityResponse.result,
-          customer
-        )
+      ? createCustomerCapabilitySummary(capabilityResponse.result, customer)
       : null
   const warning = [
     customerResponse.status ? '' : customerResponse.message,

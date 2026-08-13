@@ -687,7 +687,76 @@ url: /depponmobile/h5/index#/queryPackagePages/service/detail/index?value=COLLEC
 - 完整 `verify:static` 已再次通过：TypeScript、ESLint、Stylelint、62/62 样式治理、日常/严格样式门禁、RN boundary、路由、模块体积、runtime config、197/197 业务规则和 platform build config 全部通过。
 - 未执行 Taro build、RN bundle、Gradle、Xcode 或安装包验证。用户打包后需核对真实后端 `status/message/transportFailure/authExpired` 组合、两组弹窗按钮语义、选择桥返回层级和网络降级提示。
 
-## 33. 下一对话目标提示词
+## 33. 本次续作：巨石拆分 + legacy 收紧 + 优惠券过期计数
+
+生成日期：2026-08-13。基线提交 `c172125`（day07，2026-07-18），工作区 src 干净，业务规则 197/197，样式 212 SCSS/16199 行。本次在干净基线上完成 4 个切片，全程不执行打包验证。
+
+### 33.1 巨石拆分：发票中心页
+
+- `pages/invoice/index/index.tsx` 从 745 行降至 310 行，退出 780 legacy 预算。
+- 新建 `pages/invoice/index/hooks/` 目录，抽出 6 个 hook：
+  - `useInvoiceOrderAuth`（215 行）：验证码流程、倒计时、发码/确认/关闭三 handler。
+  - `useInvoiceOrders`（176 行）：可开票运单加载、搜索、扫码、清除。
+  - `useInvoiceHistory`（113 行）：开票历史加载、搜索、扫码、清除。
+  - `useInvoiceECards`（113 行）：储值卡加载、多选、金额计算、申请。
+  - `useInvoiceTaxpayers`（45 行）：抬头加载。
+  - `useInvoiceTabCoordinator`（143 行）：4 tab 调度、切换、分页加载更多。
+- `applyOrderSearchResponse` 作为协调函数留在主文件，通过 ref 传给 auth hook 和 orders hook，避免循环依赖。orders 的 list/page state 提到主文件由 hook 通过 setter 回写。
+
+### 33.2 巨石拆分：寄件页
+
+- `pages/express/index.tsx` 从 667 行降至 361 行，退出 720 legacy 预算。
+- 新建 4 个 hook：
+  - `useExpressGoods`（149 行）：品名查询编排、版本号竞态、包装变更。
+  - `useExpressMonthlyPay`（125 行）：月结客户加载、版本号竞态、paymentType 联动、月结视图。
+  - `useExpressSubmit`（141 行）：提交编排、warehouse 二次校验、登录保留、跳转成功页。draft 变化时清空提交消息。
+  - `useExpressEntryNavigation`（86 行）：6 个路由入口（模板/实名/批量/帮助/网点/保存模板）。
+
+### 33.3 清理僵尸 legacy 豁免
+
+- `check-module-size.mjs` 的 `legacyBudgets` 从 9 条删到 2 条。
+- 删除 5 条僵尸豁免（文件已瘦身到默认 420 以内）：invoice/detail(391)、order/stub(252)、payment/list(270)、query/price(217)、query/stations(331)。
+- 删除 2 条已完成拆分的豁免：express/index(361)、invoice/index(310)。
+- 保留 2 条边缘豁免：order/list(447, max 460)、invoice/apply(462, max 500)。
+
+### 33.4 优惠券即将过期计数
+
+- 新增 `couponApi.queryExpireCouponCount`：POST `/gwapi/couponService/eco/coupon/new/secure/queryExpireCoupon`，`login: false`，返回 `number`。
+- `couponService.queryExpireCount` 归一为非负整数，失败返回 0。
+- "我的"页 `QUICK_ENTRIES` 新增"优惠券"入口（路由 `couponList`，`login: true`）。
+- `MineEntryGrids` 改为接受 `quickEntries` props，支持动态 badge。
+- `pages/mine/index.tsx` 在 `refreshUser` 中并发查询过期计数，`couponExpireCount > 0` 时展示 `"{n}张快过期"` 徽标。
+
+### 33.5 已确认完整实现的能力
+
+本轮审计确认以下能力已端到端实现，无需重复迁移：
+- 订单催单（urge）：API + 上下文派生 + 用例编排 + 面板弹窗 + 提交刷新全链路。
+- 账号注销（cancelAccount）：验证码发送 + 注销提交 + 清会话 + 跳转。
+- 发票动作（作废/改址/取消/邮件）：service + 详情页 UI + 权限标志位。
+- 营业部电话、通知派送、拦截作废、运单合同明细、下单拦截均已实现。
+
+### 33.6 静态验证证据
+
+- TypeScript：通过。
+- ESLint：通过（0 错误 0 警告）。
+- RN boundary：通过。
+- 路由注册表：通过。
+- 模块体积：通过（legacy 从 9 条降到 2 条）。
+- runtime config：通过。
+- 业务规则：197/197 通过（不回归）。
+- 严格样式门禁：通过（212 SCSS，债务 0）。
+- platform build config：通过。
+- `git diff --check`：仅有 LF/CRLF 提示，无空白错误。
+- 未执行 Taro build、RN bundle、Gradle、Xcode 或安装包验证。
+
+### 33.7 用户需运行时确认的事项
+
+1. 在 Android/iOS 上确认发票中心 4 tab 切换、分页加载、验证码流程行为与拆分前一致。
+2. 在 Android/iOS 上确认寄件页品名查询、月结客户、提交流程行为与拆分前一致。
+3. 使用测试账号确认 `queryExpireCoupon` 返回真实过期券数量，"我的"页优惠券徽标正确展示/隐藏。
+4. 确认"我的"页"优惠券"入口跳转到优惠券列表页正常。
+
+## 34. 下一对话目标提示词
 
 ```text
 /goal 继续完成 D:\codeSpace\com.project 的 Taro RN App 重构。参考项目是 D:\10531845\Desktop\CZH-DEV\mp-taro3，但不能照搬旧小程序页面、Redux 巨石状态或小程序 API，必须按当前项目已有的 pages/services/shared/cache 分层继续做高级前端重构。
@@ -698,7 +767,7 @@ url: /depponmobile/h5/index#/queryPackagePages/service/detail/index?value=COLLEC
 3. D:\codeSpace\com.project\docs\rn-refactor-plan.md
 4. 当前 git status 和相关源码
 
-当前工作区有大量连续重构中的未提交改动，必须在现状上继续，禁止 reset、checkout、删除未跟踪文件或回滚既有改动。先核对交付文档中的静态门禁结果，再对照旧项目审计剩余业务，选择下一个边界完整、可验证的业务切片继续实现。不要重复已完成的 RN 登录原生会话/回跳与认证 WebView 收口、面单打印待打印/已打印只读列表、联系人地址完整性校验、寄件模板元数据编辑、批量寄、收银台、订单详情拆分、发票拆分、寄件代收货款、预约/通知派送、夜间揽收、送货进仓、普通纸箱包装、寄件木包装、寄件拆包装、寄件产品点城市/融合/升级与 DCZP 推荐、收件自提服务点、寄件保价类型与动态额度、寄件可用优惠券查询与选择、订单改单代收货款、订单改单基础保价、改单上门时间/送货方式、订单改单打包服务件数、客户能力摘要、客服售后记录/理赔进度入口、签收 PDC 反馈、原生服务评价和动态场景问卷/NPS。
+当前工作区有大量连续重构中的未提交改动，必须在现状上继续，禁止 reset、checkout、删除未跟踪文件或回滚既有改动。先核对交付文档中的静态门禁结果，再对照旧项目审计剩余业务，选择下一个边界完整、可验证的业务切片继续实现。不要重复已完成的 RN 登录原生会话/回跳与认证 WebView 收口、面单打印待打印/已打印只读列表、联系人地址完整性校验、寄件模板元数据编辑、批量寄、收银台、订单详情拆分、发票拆分、寄件代收货款、预约/通知派送、夜间揽收、送货进仓、普通纸箱包装、寄件木包装、寄件拆包装、寄件产品点城市/融合/升级与 DCZP 推荐、收件自提服务点、寄件保价类型与动态额度、寄件可用优惠券查询与选择、订单改单代收货款、订单改单基础保价、改单上门时间/送货方式、订单改单打包服务件数、客户能力摘要、客服售后记录/理赔进度入口、签收 PDC 反馈、原生服务评价、动态场景问卷/NPS、订单催单、账号注销、发票动作（作废/改址/取消/邮件）、营业部电话、通知派送、拦截作废运单、运单合同明细、下单拦截、优惠券即将过期计数、发票中心页拆分（6 hook）、寄件页拆分（4 hook）、legacy 预算收紧（9→2 条）。
 
 强制规则：项目只打包 RN App，不维护小程序；业务代码不得直接调用小程序 API、DOM/H5 API、Taro RN unsupported API 或 RN Native API；同步 storage API 禁用；端能力必须通过 shared/platform、shared/native 或 cache facade；RN 样式优先 Flex 并遵守现有 token/CSS 严格门禁。页面确实自然复杂时不必机械拆分，但新增职责必须有清晰边界。
 

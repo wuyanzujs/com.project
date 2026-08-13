@@ -1,13 +1,10 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../shared/components'
-import { AppIcon } from '../../../shared/components/AppIcon'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
+import type { ExpressDraft } from '@/services/express'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-import type { ExpressDraft } from '../../../services/express'
 import type { ExpressWarehouseController } from '../hooks/useExpressWarehouse'
 
 import './ExpressWarehouseCard.scss'
@@ -38,9 +35,7 @@ function getWarehouseDetails(warehouse: ExpressDraft['warehouse']) {
       : warehouse.deliverWarehouseWay === 'APSF'
         ? '按票收费'
         : '',
-    warehouse.fileList.length
-      ? `${warehouse.fileList.length} 个预约附件`
-      : '',
+    warehouse.fileList.length ? `${warehouse.fileList.length} 个预约附件` : '',
     warehouse.warehouseRemark
   ]
     .filter(Boolean)

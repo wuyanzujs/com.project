@@ -3,21 +3,17 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useState } from 'react'
 
-import { accountService } from '../../../services/account'
-import { authService } from '../../../services/auth'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import {
-  hasValidSession,
-  navigateToLogin
-} from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppWebUrl } from '../../../shared/webview/appWeb'
-import { APP_STYLE_COLORS } from '../../../styles/nativeTokens'
-
-import type { AccountOverviewView } from '../../../services/account'
-import type { AppRoutePath } from '../../../shared/navigation/routes'
-import type { AppWebSource } from '../../../shared/webview/appWeb'
+import { accountService } from '@/services/account'
+import type { AccountOverviewView } from '@/services/account'
+import { authService } from '@/services/auth'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { hasValidSession, navigateToLogin } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import type { AppRoutePath } from '@/shared/navigation/routes'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+import type { AppWebSource } from '@/shared/webview/appWeb'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 
 import './index.scss'
@@ -131,7 +127,7 @@ const AccountSettingsPage = () => {
       content: '退出后，本机将清除当前登录态，但不会注销账号。',
       confirmText: '退出',
       confirmColor: APP_STYLE_COLORS.status.dangerTextStrong,
-      success: async (res) => {
+      success: async res => {
         if (!res.confirm) {
           return
         }
@@ -177,7 +173,10 @@ const AccountSettingsPage = () => {
         </View>
 
         {!overview.loggedIn && (
-          <AppPressable className='account-settings-login' onPress={handleLogin}>
+          <AppPressable
+            className='account-settings-login'
+            onPress={handleLogin}
+          >
             <Text className='account-settings-login__text'>去登录</Text>
           </AppPressable>
         )}
@@ -201,7 +200,7 @@ const AccountSettingsPage = () => {
 
       <View className='account-settings-section'>
         <Text className='account-settings-section__title'>安全与隐私</Text>
-        {ACCOUNT_ENTRIES.map((entry) => (
+        {ACCOUNT_ENTRIES.map(entry => (
           <AppPressable
             className='account-settings-entry'
             key={entry.title}
@@ -223,7 +222,10 @@ const AccountSettingsPage = () => {
       {overview.loggedIn && (
         <View className='account-settings-section'>
           <Text className='account-settings-section__title'>账号操作</Text>
-          <AppPressable className='account-settings-danger' onPress={handleLogout}>
+          <AppPressable
+            className='account-settings-danger'
+            onPress={handleLogout}
+          >
             <Text className='account-settings-danger__title'>
               {logouting ? '退出中' : '退出登录'}
             </Text>

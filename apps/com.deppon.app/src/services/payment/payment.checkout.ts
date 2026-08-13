@@ -1,14 +1,16 @@
-import { paymentApi } from './payment.api'
-import { getPaymentItemAmount } from './payment.service'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
-import { APP_ROUTES } from '../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
+import type { DepponResponse } from '@/request/deppon'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 import {
   getNativeCapabilityErrorMessage,
   isNativeCapabilityError,
   isNativeCapabilityReady
-} from '../../shared/platform/capabilities'
-import { payWithApp } from '../../shared/platform/payment'
+} from '@/shared/platform/capabilities'
+import { payWithApp } from '@/shared/platform/payment'
+
+import { paymentApi } from './payment.api'
+import { getPaymentItemAmount } from './payment.service'
 import { authService } from '../auth'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
@@ -25,7 +27,7 @@ import type {
   PaymentOrder,
   SubmitPaymentCheckoutOptions
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
+
 
 export const APP_PAYMENT_UNAVAILABLE_MESSAGE = '当前版本暂不支持在线支付'
 
@@ -133,9 +135,7 @@ export function createPaymentCheckoutView(
   }
 }
 
-export function createPaymentCheckoutUrl(
-  options: PaymentCheckoutRouteOptions
-) {
+export function createPaymentCheckoutUrl(options: PaymentCheckoutRouteOptions) {
   return createAppRouteUrl(APP_ROUTES.paymentCheckout, {
     waybillNumber: normalizeText(options.waybillNumber),
     role: options.role,
@@ -238,9 +238,7 @@ export function normalizePaymentCommand(
 function getPaymentUserId() {
   const user = authService.getCachedUser()
 
-  return normalizeText(
-    user?.id || user?.originalOpenId || user?.openId || ''
-  )
+  return normalizeText(user?.id || user?.originalOpenId || user?.openId || '')
 }
 
 async function cancelPaymentOrder(order: PaymentOrder | null) {

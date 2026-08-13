@@ -8,14 +8,15 @@ import {
   contactService,
   createEmptyContact,
   validateContact
-} from '../../../services/contact'
-import { AppPressable, AppFormField } from '../../../shared/components'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
+} from '@/services/contact'
+import type { Contact } from '@/services/contact'
+import { AppPressable, AppFormField } from '@/shared/components'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+
 import { useContactAddressIntegrity } from '../hooks/useContactAddressIntegrity'
 
-import type { Contact } from '../../../services/contact'
 
 import './index.scss'
 import './content.scss'
@@ -40,8 +41,7 @@ const ContactEditPage = () => {
   const [analyzing, setAnalyzing] = useState(false)
   const [refiningAddress, setRefiningAddress] = useState(false)
   const [saving, setSaving] = useState(false)
-  const { checkingKey, checkAddressIntegrity } =
-    useContactAddressIntegrity()
+  const { checkingKey, checkAddressIntegrity } = useContactAddressIntegrity()
   const validation = useMemo(() => validateContact(contact), [contact])
   const contactEditUrl = useMemo(
     () => createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams),

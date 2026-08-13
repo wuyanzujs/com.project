@@ -3,13 +3,12 @@ import { useLoad, useRouter } from '@tarojs/taro'
 
 import { useMemo, useState } from 'react'
 
-import { getOrderIdentityText, orderService } from '../../../services/order'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-
-import type { OrderDetail } from '../../../services/order'
+import { getOrderIdentityText, orderService } from '@/services/order'
+import type { OrderDetail } from '@/services/order'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
 
 import './index.scss'
@@ -89,10 +88,17 @@ const ExpressSuccessPage = () => {
       </View>
 
       <View className='express-success-actions'>
-        <AppPressable className='express-success-secondary' onPress={handleContinue}>
+        <AppPressable
+          className='express-success-secondary'
+          onPress={handleContinue}
+        >
           <Text className='express-success-secondary__text'>继续寄件</Text>
         </AppPressable>
-        <AppPressable flex className='express-success-primary' onPress={handleViewDetail}>
+        <AppPressable
+          flex
+          className='express-success-primary'
+          onPress={handleViewDetail}
+        >
           <Text className='express-success-primary__text'>查看详情</Text>
         </AppPressable>
       </View>

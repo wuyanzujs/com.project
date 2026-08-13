@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { orderApi } from './order.api'
 import { getOrderClassLabel } from './order.mapper'
 import { createServiceFailure } from '../serviceResponse'
@@ -7,7 +9,6 @@ import type {
   WaybillSubscriptionRaw,
   WaybillSubscriptionView
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 function normalizeText(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''

@@ -3,11 +3,7 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useMemo, useState } from 'react'
 
-import { QueryPriceActions } from './components/QueryPriceActions'
-import { QueryPriceContactsSection } from './components/QueryPriceContactsSection'
-import { QueryPriceGoodsSection } from './components/QueryPriceGoodsSection'
-import { QueryPriceResultsState } from './components/QueryPriceResultsState'
-import { contactSelection } from '../../../services/contact'
+import { contactSelection } from '@/services/contact'
 import {
   createExpressDraft,
   expressDraftBridge,
@@ -17,18 +13,22 @@ import {
   setExpressContact,
   swapExpressContacts,
   validateExpressPriceTimeDraft
-} from '../../../services/express'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-
+} from '@/services/express'
 import type {
   ExpressContact,
   ExpressContactTarget,
   ExpressDeliveryMode,
   ExpressDraft,
   ExpressProductQuote
-} from '../../../services/express'
+} from '@/services/express'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+
+import { QueryPriceActions } from './components/QueryPriceActions'
+import { QueryPriceContactsSection } from './components/QueryPriceContactsSection'
+import { QueryPriceGoodsSection } from './components/QueryPriceGoodsSection'
+import { QueryPriceResultsState } from './components/QueryPriceResultsState'
 
 import './index.scss'
 
@@ -76,7 +76,7 @@ const QueryPricePage = () => {
       return
     }
 
-    setDraft((current) =>
+    setDraft(current =>
       setExpressContact(
         current,
         selection.target,
@@ -89,7 +89,7 @@ const QueryPricePage = () => {
     target: ExpressContactTarget,
     patch: Partial<ExpressContact>
   ) => {
-    setDraft((current) => {
+    setDraft(current => {
       const contact = current[target] ?? createEmptyPriceContact(target)
 
       return setExpressContact(current, target, {
@@ -100,7 +100,7 @@ const QueryPricePage = () => {
   }
 
   const updateGoods = (patch: Partial<ExpressDraft['goods']>) => {
-    setDraft((current) =>
+    setDraft(current =>
       markExpressQuoteStale(
         {
           ...current,
@@ -128,7 +128,7 @@ const QueryPricePage = () => {
   }
 
   const handleSwapContacts = () => {
-    setDraft((current) => swapExpressContacts(current))
+    setDraft(current => swapExpressContacts(current))
   }
 
   const handleDeliveryChange = (deliveryMode: ExpressDeliveryMode) => {

@@ -1,12 +1,11 @@
 import { useState } from 'react'
 
-import { orderService } from '../../../../services/order'
-
+import { orderService } from '@/services/order'
 import type {
   OrderDetail,
   OrderDetailActionOptions,
   OrderPickupScheduleView
-} from '../../../../services/order'
+} from '@/services/order'
 
 function getFirstSelection(schedule: OrderPickupScheduleView) {
   const firstDate = schedule.dates[0]

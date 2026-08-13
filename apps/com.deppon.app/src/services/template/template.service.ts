@@ -1,4 +1,6 @@
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
+import type { DepponResponse } from '@/request/deppon'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+
 import { expressDraftBridge } from '../express/draftBridge'
 import { createServiceFailure } from '../serviceResponse'
 import { templateApi } from './template.api'
@@ -13,7 +15,6 @@ import {
   validateTemplateMeta
 } from './template.mapper'
 
-import type { DepponResponse } from '../../request/deppon'
 import type { ExpressDraft } from '../express'
 import type { ExpressTemplateDraftMeta, ExpressTemplateView } from './types'
 

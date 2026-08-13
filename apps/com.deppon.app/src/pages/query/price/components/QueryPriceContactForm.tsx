@@ -1,12 +1,8 @@
 import { Input, Text, View } from '@tarojs/components'
 
-import { getExpressContactFullAddress } from '../../../../services/express'
-import { AppPressable } from '../../../../shared/components'
-
-import type {
-  ExpressContact,
-  ExpressContactTarget
-} from '../../../../services/express'
+import { getExpressContactFullAddress } from '@/services/express'
+import type { ExpressContact, ExpressContactTarget } from '@/services/express'
+import { AppPressable } from '@/shared/components'
 
 
 import './QueryPriceContactForm.scss'
@@ -37,18 +33,20 @@ export function QueryPriceContactForm(props: QueryPriceContactFormProps) {
           </View>
           <Text className='query-price-contact__title'>{props.title}</Text>
         </View>
-        <AppPressable contentElement='text' className='query-price-link' onPress={props.onSelect}>
+        <AppPressable
+          contentElement='text'
+          className='query-price-link'
+          onPress={props.onSelect}
+        >
           地址簿
         </AppPressable>
       </View>
 
-      {props.contact.province &&
-        props.contact.city &&
-        props.contact.county && (
-          <Text className='query-price-contact__summary'>
-            {getExpressContactFullAddress(props.contact)}
-          </Text>
-        )}
+      {props.contact.province && props.contact.city && props.contact.county && (
+        <Text className='query-price-contact__summary'>
+          {getExpressContactFullAddress(props.contact)}
+        </Text>
+      )}
 
       <View className='query-price-grid'>
         <Input

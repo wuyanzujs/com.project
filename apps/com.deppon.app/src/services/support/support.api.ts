@@ -1,4 +1,4 @@
-import { depponHttp } from '../../request/deppon'
+import { depponHttp } from '@/request/deppon'
 
 export const supportApi = {
   fetchSwitchConfig<TResult>(switchKey: string, loading = false) {

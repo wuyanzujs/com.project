@@ -5,10 +5,7 @@ import type { ReactNode } from 'react'
 
 import type { InputProps } from '@tarojs/components'
 
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './index.scss'
 
@@ -109,7 +106,9 @@ export function AppFormField({
           onFocus={() => setFocused(true)}
           onInput={event => onChange(event.detail.value)}
         />
-        {trailing ? <View className='app-form-field__trailing'>{trailing}</View> : null}
+        {trailing ? (
+          <View className='app-form-field__trailing'>{trailing}</View>
+        ) : null}
       </View>
       {error ? <Text className='app-form-field__error'>{error}</Text> : null}
       {!error && helper ? (

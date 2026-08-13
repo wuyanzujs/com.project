@@ -1,8 +1,8 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
+import type { OrderStubPartyView } from '@/services/order'
+import { AppPressable } from '@/shared/components'
 
-import type { OrderStubPartyView } from '../../../../services/order'
 
 import './OrderStubParty.scss'
 

@@ -8,20 +8,17 @@ import {
   useState
 } from 'react'
 
-import { customerService } from '../../../../services/customer'
+import { customerService } from '@/services/customer'
 import {
   clearOrderEditCollection,
   parseOrderEditCollectionAmount,
   updateOrderEditCollection
-} from '../../../../services/order'
-import { navigateToAppRoute } from '../../../../shared/navigation/appNavigation'
-import { createAppWebUrl } from '../../../../shared/webview/appWeb'
-import { appWebMessageBridge } from '../../../../shared/webview/appWebMessage'
+} from '@/services/order'
+import type { OrderEditCollectionType, OrderEditDraft } from '@/services/order'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+import { appWebMessageBridge } from '@/shared/webview/appWebMessage'
 
-import type {
-  OrderEditCollectionType,
-  OrderEditDraft
-} from '../../../../services/order'
 
 interface UseOrderEditCollectionOptions {
   orderNumber: string
@@ -53,10 +50,7 @@ export function useOrderEditCollection({
         current
           ? {
               ...current,
-              collection: updateOrderEditCollection(
-                current.collection,
-                patch
-              )
+              collection: updateOrderEditCollection(current.collection, patch)
             }
           : current
       )

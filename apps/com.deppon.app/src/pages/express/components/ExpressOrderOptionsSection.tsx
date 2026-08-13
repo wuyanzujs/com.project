@@ -2,12 +2,9 @@ import { Input, Text, View } from '@tarojs/components'
 
 import { useState } from 'react'
 
-import { AppPressable } from '../../../shared/components'
-import { AppIcon } from '../../../shared/components/AppIcon'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './ExpressOrderOptionsSection.scss'
 
@@ -33,9 +30,7 @@ export function ExpressOrderOptionsSection({
   return (
     <View className='express-order-options'>
       <AppPressable
-        accessibilityLabel={
-          remarkExpanded ? '收起备注输入' : '展开备注输入'
-        }
+        accessibilityLabel={remarkExpanded ? '收起备注输入' : '展开备注输入'}
         block
         className='express-order-options__entry'
         layout='row-start'

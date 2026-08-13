@@ -1,3 +1,6 @@
+import type { DepponResponse } from '@/request/deppon'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+
 import { orderApi } from './order.api'
 import {
   createRouteUrl,
@@ -7,7 +10,6 @@ import {
 } from './order.detailRules'
 import { formatAmount } from './order.display'
 import { asNumber } from './order.mapper'
-import { createAppWebUrl } from '../../shared/webview/appWeb'
 
 import type {
   OrderContractStatus,
@@ -17,7 +19,7 @@ import type {
   OrderStubPackageFeeItemView,
   OrderStubPackageFeeView
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
+
 
 const ORDER_CONTRACT_STATUS_LABELS: Record<string, string> = {
   SENT: '合同签署中',
@@ -75,7 +77,9 @@ function createOrderStubDocumentView(
       : '到达派送环节收件人签署单据后，可查看带签名的签收回单。',
     actionText: canPreview ? '查看合同' : '暂不可查看',
     canPreview,
-    route: canPreview ? createContractPreviewRoute(fileCode, waybillNumber) : '',
+    route: canPreview
+      ? createContractPreviewRoute(fileCode, waybillNumber)
+      : '',
     fileCode,
     waybillNumber
   }
@@ -161,7 +165,7 @@ function getOrderPackageCharge(order: OrderDetail) {
   const serviceChargeList = Array.isArray(order.serviceChargeList)
     ? order.serviceChargeList
     : []
-  const pickCharge = serviceChargeList.find((item) => {
+  const pickCharge = serviceChargeList.find(item => {
     return (
       !!item &&
       typeof item === 'object' &&
@@ -270,7 +274,7 @@ export async function queryOrderStubPackageFee(
     )
   }
 
-  ;(detail.waybillPackageList ?? []).forEach((item) => {
+  ;(detail.waybillPackageList ?? []).forEach(item => {
     if (!item.thirdClassName || !item.calcAmount) {
       return
     }
@@ -311,7 +315,7 @@ export async function queryOrderStubPackageFee(
   }
 
   const groups = [woodenGroup, cartonGroup].filter(
-    (group) => group.items.length > 0
+    group => group.items.length > 0
   )
 
   return {

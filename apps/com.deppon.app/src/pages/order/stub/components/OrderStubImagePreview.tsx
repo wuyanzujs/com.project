@@ -1,14 +1,11 @@
 import { Image, Text, View } from '@tarojs/components'
 
-import {
-  AppDialog,
-  AppPressable
-} from '../../../../shared/components'
-
 import type {
   OrderStubImageGroupView,
   OrderStubImageView
-} from '../../../../services/order'
+} from '@/services/order'
+import { AppDialog, AppPressable } from '@/shared/components'
+
 
 import './OrderStubImagePreview.scss'
 

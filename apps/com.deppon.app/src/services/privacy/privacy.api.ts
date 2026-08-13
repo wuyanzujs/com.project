@@ -1,9 +1,6 @@
-import { depponHttp } from '../../request/deppon'
+import { depponHttp } from '@/request/deppon'
 
-import type {
-  PrivacyBehaviorRequest,
-  PrivacyVersionResponse
-} from './types'
+import type { PrivacyBehaviorRequest, PrivacyVersionResponse } from './types'
 
 export const privacyApi = {
   queryPrivacyVersion(loading = false) {

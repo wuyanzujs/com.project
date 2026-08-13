@@ -3,23 +3,22 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useRef, useState } from 'react'
 
-import { TemplateMetaEditor } from './components/TemplateMetaEditor'
 import {
   applyTemplateMetadataUpdate,
   EXPRESS_TEMPLATE_LIMIT,
   templateService
-} from '../../../../services/template'
-import { AppPressable } from '../../../../shared/components'
-import { navigateToAppRoute } from '../../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../../shared/navigation/routes'
-import { APP_STYLE_COLORS } from '../../../../styles/nativeTokens'
-
+} from '@/services/template'
 import type {
   ExpressTemplateDraftMeta,
   ExpressTemplateView
-} from '../../../../services/template'
+} from '@/services/template'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
+import { TemplateMetaEditor } from './components/TemplateMetaEditor'
 
 import './index.scss'
 import './content.scss'
@@ -195,133 +194,136 @@ const ExpressTemplateListPage = () => {
   return (
     <>
       <ScrollView className='template-list-page' scrollY>
-      <View className='template-list-toolbar'>
-        <Text className='template-list-toolbar__summary'>
-          已保存 {templates.length}/{EXPRESS_TEMPLATE_LIMIT}
-        </Text>
-        <AppPressable
-          className='template-list-toolbar__button template-list-toolbar__button--quiet'
-          onPress={loadTemplates}
-        >
-          <Text className='template-list-toolbar__text template-list-toolbar__text--quiet'>
-            {loading ? '同步中' : '刷新'}
+        <View className='template-list-toolbar'>
+          <Text className='template-list-toolbar__summary'>
+            已保存 {templates.length}/{EXPRESS_TEMPLATE_LIMIT}
           </Text>
-        </AppPressable>
-        <AppPressable className='template-list-toolbar__button' onPress={handleCreate}>
-          <Text className='template-list-toolbar__text'>新建模板</Text>
-        </AppPressable>
-      </View>
-
-      <View className='template-list-content'>
-        {templates.map(template => (
-          <View className='template-card' key={template.id}>
-            <View className='template-card__head'>
-              <Image className='template-card__image' src={TEMPLATE_IMAGE} />
-              <View className='template-card__head-body'>
-                <View className='template-card__title-row'>
-                  <Text className='template-card__title'>{template.name}</Text>
-                  {template.isDefault && (
-                    <Text className='template-card__badge'>默认</Text>
-                  )}
-                </View>
-                <Text className='template-card__goods'>
-                  {template.goodsText} · {template.weightText}
-                </Text>
-              </View>
-            </View>
-
-            <View className='template-card__route'>
-              <View className='template-card__contact'>
-                <Text className='template-card__contact-label'>寄</Text>
-                <Text className='template-card__contact-value'>
-                  {template.senderText}
-                </Text>
-              </View>
-              <Text className='template-card__route-arrow'>→</Text>
-              <View className='template-card__contact template-card__contact--end'>
-                <Text className='template-card__contact-label template-card__contact-label--receive'>
-                  收
-                </Text>
-                <Text className='template-card__contact-value'>
-                  {template.receiverText}
-                </Text>
-              </View>
-            </View>
-
-            {!!template.tags.length && (
-              <View className='template-card__tags'>
-                {template.tags.map(tag => (
-                  <Text className='template-card__tag' key={tag}>
-                    {tag}
-                  </Text>
-                ))}
-              </View>
-            )}
-
-            <View className='template-card__actions'>
-              <AppPressable
-                className='template-card__button template-card__button--danger'
-                onPress={() => handleDelete(template)}
-              >
-                <Text className='template-card__button-text template-card__button-text--danger'>
-                  删除
-                </Text>
-              </AppPressable>
-              <AppPressable
-                className='template-card__button template-card__button--quiet'
-                onPress={() => {
-                  if (!processingId) setEditingTemplate(template)
-                }}
-              >
-                <Text className='template-card__button-text template-card__button-text--quiet'>
-                  编辑信息
-                </Text>
-              </AppPressable>
-              <AppPressable
-                className='template-card__button template-card__button--quiet'
-                onPress={() => handleSetDefault(template)}
-              >
-                <Text className='template-card__button-text template-card__button-text--quiet'>
-                  {processingId === template.id
-                    ? '处理中'
-                    : template.isDefault
-                      ? '取消默认'
-                      : '设为默认'}
-                </Text>
-              </AppPressable>
-              <AppPressable
-                className='template-card__button'
-                onPress={() => handleUse(template)}
-              >
-                <Text className='template-card__button-text'>使用模板</Text>
-              </AppPressable>
-            </View>
-          </View>
-        ))}
-
-        {!templates.length && !loading && (
-          <View className='template-list-empty'>
-            <Image
-              className='template-list-empty__image'
-              src={TEMPLATE_IMAGE}
-            />
-            <Text className='template-list-empty__title'>
-              {errorMessage || '暂无寄件模板'}
+          <AppPressable
+            className='template-list-toolbar__button template-list-toolbar__button--quiet'
+            onPress={loadTemplates}
+          >
+            <Text className='template-list-toolbar__text template-list-toolbar__text--quiet'>
+              {loading ? '同步中' : '刷新'}
             </Text>
-            <AppPressable
-              className='template-list-empty__button'
-              onPress={handleCreate}
-            >
-              <Text className='template-list-empty__button-text'>去新建</Text>
-            </AppPressable>
-          </View>
-        )}
+          </AppPressable>
+          <AppPressable
+            className='template-list-toolbar__button'
+            onPress={handleCreate}
+          >
+            <Text className='template-list-toolbar__text'>新建模板</Text>
+          </AppPressable>
+        </View>
+
+        <View className='template-list-content'>
+          {templates.map(template => (
+            <View className='template-card' key={template.id}>
+              <View className='template-card__head'>
+                <Image className='template-card__image' src={TEMPLATE_IMAGE} />
+                <View className='template-card__head-body'>
+                  <View className='template-card__title-row'>
+                    <Text className='template-card__title'>
+                      {template.name}
+                    </Text>
+                    {template.isDefault && (
+                      <Text className='template-card__badge'>默认</Text>
+                    )}
+                  </View>
+                  <Text className='template-card__goods'>
+                    {template.goodsText} · {template.weightText}
+                  </Text>
+                </View>
+              </View>
+
+              <View className='template-card__route'>
+                <View className='template-card__contact'>
+                  <Text className='template-card__contact-label'>寄</Text>
+                  <Text className='template-card__contact-value'>
+                    {template.senderText}
+                  </Text>
+                </View>
+                <Text className='template-card__route-arrow'>→</Text>
+                <View className='template-card__contact template-card__contact--end'>
+                  <Text className='template-card__contact-label template-card__contact-label--receive'>
+                    收
+                  </Text>
+                  <Text className='template-card__contact-value'>
+                    {template.receiverText}
+                  </Text>
+                </View>
+              </View>
+
+              {!!template.tags.length && (
+                <View className='template-card__tags'>
+                  {template.tags.map(tag => (
+                    <Text className='template-card__tag' key={tag}>
+                      {tag}
+                    </Text>
+                  ))}
+                </View>
+              )}
+
+              <View className='template-card__actions'>
+                <AppPressable
+                  className='template-card__button template-card__button--danger'
+                  onPress={() => handleDelete(template)}
+                >
+                  <Text className='template-card__button-text template-card__button-text--danger'>
+                    删除
+                  </Text>
+                </AppPressable>
+                <AppPressable
+                  className='template-card__button template-card__button--quiet'
+                  onPress={() => {
+                    if (!processingId) setEditingTemplate(template)
+                  }}
+                >
+                  <Text className='template-card__button-text template-card__button-text--quiet'>
+                    编辑信息
+                  </Text>
+                </AppPressable>
+                <AppPressable
+                  className='template-card__button template-card__button--quiet'
+                  onPress={() => handleSetDefault(template)}
+                >
+                  <Text className='template-card__button-text template-card__button-text--quiet'>
+                    {processingId === template.id
+                      ? '处理中'
+                      : template.isDefault
+                        ? '取消默认'
+                        : '设为默认'}
+                  </Text>
+                </AppPressable>
+                <AppPressable
+                  className='template-card__button'
+                  onPress={() => handleUse(template)}
+                >
+                  <Text className='template-card__button-text'>使用模板</Text>
+                </AppPressable>
+              </View>
+            </View>
+          ))}
+
+          {!templates.length && !loading && (
+            <View className='template-list-empty'>
+              <Image
+                className='template-list-empty__image'
+                src={TEMPLATE_IMAGE}
+              />
+              <Text className='template-list-empty__title'>
+                {errorMessage || '暂无寄件模板'}
+              </Text>
+              <AppPressable
+                className='template-list-empty__button'
+                onPress={handleCreate}
+              >
+                <Text className='template-list-empty__button-text'>去新建</Text>
+              </AppPressable>
+            </View>
+          )}
         </View>
       </ScrollView>
       <TemplateMetaEditor
-        saving={Boolean(
-          editingTemplate && processingId === editingTemplate.id
-        )}
+        saving={Boolean(editingTemplate && processingId === editingTemplate.id)}
         template={editingTemplate}
         onClose={() => setEditingTemplate(null)}
         onSave={handleSaveMetadata}

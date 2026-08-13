@@ -1,13 +1,13 @@
 import { Text, View } from '@tarojs/components'
 
-import { OrderDetailSection } from './OrderDetailSection'
 import {
   getOrderReceiverAddress,
   getOrderSenderAddress
-} from '../../../../services/order'
-import { AppPressable } from '../../../../shared/components'
+} from '@/services/order'
+import type { OrderDetail } from '@/services/order'
+import { AppPressable } from '@/shared/components'
 
-import type { OrderDetail } from '../../../../services/order'
+import { OrderDetailSection } from './OrderDetailSection'
 
 import './OrderAddressSection.scss'
 

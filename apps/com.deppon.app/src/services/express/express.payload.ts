@@ -1,3 +1,5 @@
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+
 import { getExpressDeliveryPointOrderFields } from './deliveryPoint.rules'
 import {
   createExpressDeliveryOrderFields,
@@ -43,7 +45,6 @@ import {
   createExpressWarehouseOrderFields,
   createExpressWarehouseQuoteFields
 } from './warehouse.payload'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 
 import type {
   CreateExpressOrderRequest,
@@ -60,7 +61,9 @@ import type {
 const DEFAULT_GOODS_COUNT = 1
 const DEFAULT_GOODS_WEIGHT = 1
 
-function getPpcDeliveryMode(deliveryMode: ExpressDraft['service']['deliveryMode']) {
+function getPpcDeliveryMode(
+  deliveryMode: ExpressDraft['service']['deliveryMode']
+) {
   switch (deliveryMode) {
     case 'PICKSELF':
       return 'SELF_PICKUP'
@@ -327,13 +330,12 @@ export function buildCreateOrderRequest(
     draft.service.returnBill,
     selectedProductCode
   )
-  const returnBillOrderFields = isExpressCloudSignType(returnBill.type) &&
-    returnBill.fileCode
-    ? [{ key: 'fileCode', value: returnBill.fileCode }]
-    : []
+  const returnBillOrderFields =
+    isExpressCloudSignType(returnBill.type) && returnBill.fileCode
+      ? [{ key: 'fileCode', value: returnBill.fileCode }]
+      : []
   const returnBillQuantityFields =
-    isExpressPaperReturnBillType(returnBill.type) &&
-    returnBill.returnCount > 1
+    isExpressPaperReturnBillType(returnBill.type) && returnBill.returnCount > 1
       ? [{ key: 'returnBillQty', value: returnBill.returnCount }]
       : []
   const insuranceOrderFields = createExpressInsuranceOrderFields(
@@ -407,8 +409,7 @@ export function buildCreateOrderRequest(
         receivingToPoint: deliveryPointOrderFields.receivingToPoint,
         receivingToPointName: deliveryPointOrderFields.receivingToPointName,
         waybillNumber: '',
-        appointmentDeliveryTime:
-          deliveryOrderFields.appointmentDeliveryTime,
+        appointmentDeliveryTime: deliveryOrderFields.appointmentDeliveryTime,
         returnRequirement: getExpressReturnBillRequirementText(returnBill),
         customReturnRequirement: returnBill.customRequirement,
         pickPeriodTime: draft.pickup.pickPeriodTime,

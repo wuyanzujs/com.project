@@ -1,9 +1,8 @@
 import { Text, View } from '@tarojs/components'
 
-import { createExpressProductQuoteView } from '../../../../services/express'
-import { AppPressable } from '../../../../shared/components'
-
-import type { ExpressProductQuote } from '../../../../services/express'
+import { createExpressProductQuoteView } from '@/services/express'
+import type { ExpressProductQuote } from '@/services/express'
+import { AppPressable } from '@/shared/components'
 
 
 import './QueryPriceProductCard.scss'
@@ -20,7 +19,7 @@ export function QueryPriceProductCard({
   const view = createExpressProductQuoteView(product)
   const feeText = view.feeRows
     .slice(0, 3)
-    .map((row) => `${row.name} ¥${row.amount}`)
+    .map(row => `${row.name} ¥${row.amount}`)
     .join(' · ')
 
   return (

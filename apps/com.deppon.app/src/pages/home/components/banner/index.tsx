@@ -1,6 +1,6 @@
 import { Image } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
+import { AppPressable } from '@/shared/components'
 import './index.scss'
 
 interface BannerProps {

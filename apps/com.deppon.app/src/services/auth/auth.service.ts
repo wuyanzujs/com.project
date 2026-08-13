@@ -1,3 +1,5 @@
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+
 import { authApi } from './auth.api'
 import { createAppSmsLoginRequest } from './login.rules'
 import {
@@ -7,7 +9,6 @@ import {
   recoverCurrentEcoToken,
   saveCurrentUser
 } from './session'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 
 import type { AppUser } from './types'
 

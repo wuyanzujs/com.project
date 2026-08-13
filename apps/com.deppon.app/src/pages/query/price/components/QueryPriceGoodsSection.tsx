@@ -1,12 +1,9 @@
 import { Input, Text, View } from '@tarojs/components'
 
-import { QueryPriceSection } from './QueryPriceSection'
-import { AppPressable } from '../../../../shared/components'
+import type { ExpressDeliveryMode, ExpressDraft } from '@/services/express'
+import { AppPressable } from '@/shared/components'
 
-import type {
-  ExpressDeliveryMode,
-  ExpressDraft
-} from '../../../../services/express'
+import { QueryPriceSection } from './QueryPriceSection'
 
 
 import './QueryPriceFormFields.scss'
@@ -57,9 +54,7 @@ export function QueryPriceGoodsSection(props: QueryPriceGoodsSectionProps) {
           className='query-price-input'
           placeholder='如文件、服饰、配件'
           value={props.draft.goods.name}
-          onInput={event =>
-            props.onGoodsChange({ name: event.detail.value })
-          }
+          onInput={event => props.onGoodsChange({ name: event.detail.value })}
         />
       </View>
 

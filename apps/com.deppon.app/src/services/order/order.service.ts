@@ -1,3 +1,6 @@
+import type { DepponResponse } from '@/request/deppon'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+
 import { orderApi } from './order.api'
 import { createOrderDetailActions } from './order.detailActions'
 import {
@@ -9,10 +12,7 @@ import {
   resolveOrderUrgeMenuAction,
   submitOrderUrge
 } from './order.detailUseCases'
-import {
-  dispatchOrderPickup,
-  queryOrderPickupSchedule
-} from './order.dispatch'
+import { dispatchOrderPickup, queryOrderPickupSchedule } from './order.dispatch'
 import {
   getOrderClassLabel,
   normalizeConsigneeOrder,
@@ -25,7 +25,6 @@ import {
   queryOrderStubPackageFee
 } from './order.stubAssets'
 import { createOrderStubEntry, createOrderStubView } from './order.stubView'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type {
@@ -35,7 +34,7 @@ import type {
   OrderRole,
   WaybillTrackListResponse
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
+
 
 export {
   createExpressDraftFromOrderDetail,
@@ -270,7 +269,9 @@ export const orderService = {
     waybillNumber?: string | null
   }) {
     if (!data.orderNumber && !data.waybillNumber) {
-      return Promise.resolve(createFailure<boolean>('缺少订单号或运单号，无法删除'))
+      return Promise.resolve(
+        createFailure<boolean>('缺少订单号或运单号，无法删除')
+      )
     }
 
     return orderApi.deleteOrder({

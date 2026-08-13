@@ -1,13 +1,10 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../shared/components'
-import { AppIcon } from '../../../shared/components/AppIcon'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
+import type { ExpressDraft } from '@/services/express'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-import type { ExpressDraft } from '../../../services/express'
 
 import './ExpressDeliveryPointField.scss'
 
@@ -24,7 +21,9 @@ export function ExpressDeliveryPointField({
 
   return (
     <AppPressable
-      accessibilityLabel={selected ? '更换收件自提服务点' : '选择收件自提服务点'}
+      accessibilityLabel={
+        selected ? '更换收件自提服务点' : '选择收件自提服务点'
+      }
       block
       className='express-delivery-point-field'
       layout='row-start'

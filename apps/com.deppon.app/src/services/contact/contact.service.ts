@@ -1,6 +1,7 @@
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+
 import { createContactAddressCheckRequest } from './contact.addressIntegrity'
 import { contactApi } from './contact.api'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 
 import type {
   Contact,
@@ -305,7 +306,9 @@ export const contactService = {
     })
   },
 
-  queryAddressHints(contact: Pick<Contact, 'province' | 'city' | 'county' | 'address'>) {
+  queryAddressHints(
+    contact: Pick<Contact, 'province' | 'city' | 'county' | 'address'>
+  ) {
     return contactApi.queryAddressHints({
       province: contact.province,
       city: contact.city,
@@ -322,7 +325,9 @@ export const contactService = {
     })
   },
 
-  checkAddressDetail(contact: Pick<Contact, 'province' | 'city' | 'county' | 'address'>) {
+  checkAddressDetail(
+    contact: Pick<Contact, 'province' | 'city' | 'county' | 'address'>
+  ) {
     return contactApi.checkAddressDetail(
       createContactAddressCheckRequest(contact)
     )

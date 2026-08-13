@@ -3,6 +3,8 @@ import { useRouter } from '@tarojs/taro'
 
 import { useMemo } from 'react'
 
+import { getOrderIdentityText } from '@/services/order'
+
 import { OrderAddressSection } from './components/OrderAddressSection'
 import {
   OrderDetailFooterActions,
@@ -27,7 +29,6 @@ import { useOrderDetailData } from './hooks/useOrderDetailData'
 import { useOrderPdcFeedback } from './hooks/useOrderPdcFeedback'
 import { useOrderSceneSurvey } from './hooks/useOrderSceneSurvey'
 import { getOrderDetailRouteParams } from './orderDetailViewModel'
-import { getOrderIdentityText } from '../../../services/order'
 
 import './index.scss'
 
@@ -97,12 +98,12 @@ const OrderDetailPage = () => {
         data.publicTrackMode &&
         !data.loading &&
         !data.tracks.length && (
-        <OrderDetailEmpty
-          title={data.errorMessage || '未查询到物流轨迹'}
-          buttonText='返回首页'
-          onPress={actions.handleBackToList}
-        />
-      )}
+          <OrderDetailEmpty
+            title={data.errorMessage || '未查询到物流轨迹'}
+            buttonText='返回首页'
+            onPress={actions.handleBackToList}
+          />
+        )}
 
       {data.loading && !data.detail && (
         <OrderDetailLoading publicTrackMode={data.publicTrackMode} />

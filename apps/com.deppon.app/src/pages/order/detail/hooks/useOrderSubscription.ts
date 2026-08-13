@@ -5,7 +5,7 @@ import { useCallback, useMemo, useState } from 'react'
 import {
   createOrderSubscriptionAction,
   orderSubscriptionService
-} from '../../../../services/order'
+} from '@/services/order'
 
 export function useOrderSubscription() {
   const [subscribed, setSubscribed] = useState<boolean | null>(null)

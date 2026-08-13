@@ -1,12 +1,8 @@
 import { Text, View } from '@tarojs/components'
 
-import {
-  AppButton,
-  AppEmptyState,
-  AppLoadingState
-} from '../../../../shared/components'
+import type { PrintSearchType } from '@/services/print'
+import { AppButton, AppEmptyState, AppLoadingState } from '@/shared/components'
 
-import type { PrintSearchType } from '../../../../services/print'
 
 import './PrintListStates.scss'
 

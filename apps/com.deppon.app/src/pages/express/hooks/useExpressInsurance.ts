@@ -14,14 +14,14 @@ import {
   expressService,
   normalizeExpressInsuranceAmount,
   updateExpressInsurance
-} from '../../../services/express'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-
+} from '@/services/express'
 import type {
   ExpressDraft,
   ExpressInsuranceQuote,
   ExpressInsuranceType
-} from '../../../services/express'
+} from '@/services/express'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+
 
 interface UseExpressInsuranceOptions {
   draft: ExpressDraft
@@ -142,6 +142,4 @@ export function useExpressInsurance({
   }
 }
 
-export type ExpressInsuranceController = ReturnType<
-  typeof useExpressInsurance
->
+export type ExpressInsuranceController = ReturnType<typeof useExpressInsurance>

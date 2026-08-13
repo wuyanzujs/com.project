@@ -1,8 +1,9 @@
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 import {
   appendRouteQuery,
   createRouteQuery
-} from '../../shared/navigation/routeUrl'
+} from '@/shared/navigation/routeUrl'
+
 import { getCurrentEcoToken } from '../auth'
 
 import type { OrderDetail, OrderRole } from './types'
@@ -154,5 +155,7 @@ export function isReceiverDetail(order: OrderDetail, role?: OrderRole) {
 }
 
 export function isSignedOrder(order: OrderDetail) {
-  return getOrderClass(order) === 2 || getOrderStatusText(order).includes('签收')
+  return (
+    getOrderClass(order) === 2 || getOrderStatusText(order).includes('签收')
+  )
 }

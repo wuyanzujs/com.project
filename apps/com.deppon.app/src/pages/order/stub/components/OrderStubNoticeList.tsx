@@ -1,6 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
-import type { OrderStubView } from '../../../../services/order'
+import type { OrderStubView } from '@/services/order'
 
 import './OrderStubNoticeList.scss'
 

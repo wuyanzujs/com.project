@@ -3,6 +3,19 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useMemo, useState } from 'react'
 
+import { orderService } from '@/services/order'
+import type {
+  OrderStubDocumentView,
+  OrderStubImagesView,
+  OrderStubPackageFeeView,
+  OrderStubView
+} from '@/services/order'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { copyTextToClipboard } from '@/shared/platform/clipboard'
+
 import { OrderStubActions } from './components/OrderStubActions'
 import { OrderStubDetailSections } from './components/OrderStubDetailSections'
 import { OrderStubDocumentSection } from './components/OrderStubDocumentSection'
@@ -16,20 +29,9 @@ import {
   OrderStubLoadingState
 } from './components/OrderStubPageState'
 import { OrderStubSummaryCard } from './components/OrderStubSummaryCard'
-import { orderService } from '../../../services/order'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-import { copyTextToClipboard } from '../../../shared/platform/clipboard'
 
 import type { OrderStubImagePreviewState } from './components/OrderStubImagePreview'
-import type {
-  OrderStubDocumentView,
-  OrderStubImagesView,
-  OrderStubPackageFeeView,
-  OrderStubView
-} from '../../../services/order'
+
 
 import './index.scss'
 
@@ -79,8 +81,9 @@ const OrderStubPage = () => {
   const [stub, setStub] = useState<OrderStubView | null>(null)
   const [images, setImages] = useState<OrderStubImagesView | null>(null)
   const [document, setDocument] = useState<OrderStubDocumentView | null>(null)
-  const [packageFee, setPackageFee] =
-    useState<OrderStubPackageFeeView | null>(null)
+  const [packageFee, setPackageFee] = useState<OrderStubPackageFeeView | null>(
+    null
+  )
   const [loading, setLoading] = useState(false)
   const [imagesLoading, setImagesLoading] = useState(false)
   const [previewImage, setPreviewImage] =
@@ -219,10 +222,7 @@ const OrderStubPage = () => {
             sections={stub.sections}
             onCopy={handleCopy}
           />
-          <OrderStubGoodsSupplement
-            packageFee={packageFee}
-            size={stub.size}
-          />
+          <OrderStubGoodsSupplement packageFee={packageFee} size={stub.size} />
           <OrderStubImageEvidence
             images={images}
             loading={imagesLoading}
@@ -235,10 +235,7 @@ const OrderStubPage = () => {
             onOpen={handleOpenDocument}
           />
           <OrderStubNoticeList notices={stub.notices} />
-          <OrderStubActions
-            onBack={handleBackToDetail}
-            onRefresh={loadStub}
-          />
+          <OrderStubActions onBack={handleBackToDetail} onRefresh={loadStub} />
           <OrderStubImagePreview
             preview={previewImage}
             onClose={() => setPreviewImage(null)}

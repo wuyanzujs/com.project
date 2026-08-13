@@ -1,14 +1,14 @@
 import { Input, Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
-import { AppIcon } from '../../../../shared/components/AppIcon'
-import { APP_STYLE_COLORS } from '../../../../styles/nativeTokens'
-
 import type {
   OrderPaymentFilter,
   OrderRole,
   OrderStatusFilter
-} from '../../../../services/order'
+} from '@/services/order'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
+
 
 import './OrderListTabsSearch.scss'
 import './OrderListFilters.scss'
@@ -155,7 +155,8 @@ export function OrderRoleTabs(props: {
   return (
     <View className='order-tabs'>
       {ORDER_TABS.map(tab => (
-        <AppPressable flex
+        <AppPressable
+          flex
           accessibilityLabel={tab.label}
           className={
             tab.value === props.role
@@ -176,14 +177,16 @@ export function OrderRoleTabs(props: {
           </Text>
         </AppPressable>
       ))}
-      <AppPressable flex
+      <AppPressable
+        flex
         accessibilityLabel='待支付'
         className='order-tab'
         onPress={props.onOpenPayment}
       >
         <Text className='order-tab__text'>待支付</Text>
       </AppPressable>
-      <AppPressable flex
+      <AppPressable
+        flex
         accessibilityLabel='关注运单'
         className='order-tab'
         onPress={props.onOpenSubscriptions}
@@ -204,7 +207,11 @@ export function OrderSearchBar(props: {
   return (
     <View className='order-search'>
       <View className='order-search__field'>
-        <AppIcon color={APP_STYLE_COLORS.text.placeholder} name='search' size={25} />
+        <AppIcon
+          color={APP_STYLE_COLORS.text.placeholder}
+          name='search'
+          size={25}
+        />
         <Input
           className='order-search__input'
           placeholder='运单号/姓名/手机/城市查询'
@@ -217,7 +224,11 @@ export function OrderSearchBar(props: {
           className='order-search__submit'
           onPress={props.onSearch}
         >
-          <AppIcon color={APP_STYLE_COLORS.text.supporting} name='scan' size={24} />
+          <AppIcon
+            color={APP_STYLE_COLORS.text.supporting}
+            name='scan'
+            size={24}
+          />
         </AppPressable>
       </View>
       <AppPressable

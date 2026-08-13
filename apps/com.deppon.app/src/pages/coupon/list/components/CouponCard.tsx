@@ -1,8 +1,9 @@
 import { Text, View } from '@tarojs/components'
 
+import type { CouponCardView } from '@/services/coupon'
+
 import { CouponCardActions } from './CouponCardActions'
 
-import type { CouponCardView } from '../../../../services/coupon'
 
 import './CouponCard.scss'
 
@@ -12,11 +13,7 @@ interface CouponCardProps {
   onUse: (coupon: CouponCardView) => void
 }
 
-export function CouponCard({
-  coupon,
-  onOpenDetail,
-  onUse
-}: CouponCardProps) {
+export function CouponCard({ coupon, onOpenDetail, onUse }: CouponCardProps) {
   return (
     <View className='coupon-card'>
       {coupon.labelText && (

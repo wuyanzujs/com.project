@@ -1,6 +1,8 @@
+import type { DepponResponse } from '@/request/deppon'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+
 import { buildBatchCreateOrderRequest } from './batch.payload'
 import { quoteBatchDraft } from './batch.quote.service'
-import { APP_ROUTES } from '../../shared/navigation/routes'
 import { expressApi } from '../express/express.api'
 import { createServiceFailure as createFailureResponse } from '../serviceResponse'
 
@@ -14,10 +16,7 @@ import type {
   BatchSubmitSummary,
   BatchValidationResult
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
-import type {
-  CreateExpressOrderResponse
-} from '../express/types'
+import type { CreateExpressOrderResponse } from '../express/types'
 
 export const BATCH_MAX_CONSIGNEE_COUNT = 10
 export const BATCH_EXCEL_URL =
@@ -62,16 +61,13 @@ function isCompleteContact(contact: BatchContact) {
     contact.city,
     contact.county,
     contact.address
-  ].every((value) => !!normalizeText(value))
+  ].every(value => !!normalizeText(value))
 }
 
 function createAddressKey(contact: BatchContact) {
-  return [
-    contact.province,
-    contact.city,
-    contact.county,
-    contact.address
-  ].map(normalizeText).join('|')
+  return [contact.province, contact.city, contact.county, contact.address]
+    .map(normalizeText)
+    .join('|')
 }
 
 function splitBatchAddressLine(line: string) {
@@ -155,18 +151,17 @@ function createRecognizedConsignee(
 export function recognizeBatchAddressText(
   value: string
 ): BatchAddressRecognitionResult {
-  const lines = value
-    .split(/\r?\n/)
-    .map(normalizeText)
-    .filter(Boolean)
-  const items = lines.slice(0, BATCH_MAX_CONSIGNEE_COUNT).map((line, index) =>
-    createRecognizedConsignee(index + 1, line, splitBatchAddressLine(line))
-  )
+  const lines = value.split(/\r?\n/).map(normalizeText).filter(Boolean)
+  const items = lines
+    .slice(0, BATCH_MAX_CONSIGNEE_COUNT)
+    .map((line, index) =>
+      createRecognizedConsignee(index + 1, line, splitBatchAddressLine(line))
+    )
 
   return {
     totalLines: lines.length,
-    acceptedCount: items.filter((item) => item.status === 'ready').length,
-    rejectedCount: items.filter((item) => item.status === 'error').length,
+    acceptedCount: items.filter(item => item.status === 'ready').length,
+    rejectedCount: items.filter(item => item.status === 'error').length,
     ignoredCount: Math.max(0, lines.length - BATCH_MAX_CONSIGNEE_COUNT),
     items
   }
@@ -175,7 +170,9 @@ export function recognizeBatchAddressText(
 function isSpecialRegion(province?: string | null) {
   const value = normalizeText(province)
 
-  return value.includes('香港') || value.includes('澳门') || value.includes('台湾')
+  return (
+    value.includes('香港') || value.includes('澳门') || value.includes('台湾')
+  )
 }
 
 export function shouldBlockSpecialRegionBatchOrder(
@@ -227,7 +224,11 @@ export function validateBatchDraft(
     const item = draft.consignees[index]
 
     if (!item.contact || !isCompleteContact(item.contact)) {
-      return createFailure('consignee', `第 ${index + 1} 个收货人信息不完整`, index)
+      return createFailure(
+        'consignee',
+        `第 ${index + 1} 个收货人信息不完整`,
+        index
+      )
     }
 
     if (!isValidContactPhone(item.contact.mobile)) {

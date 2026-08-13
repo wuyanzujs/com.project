@@ -1,8 +1,8 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
+import type { OrderPickupScheduleView } from '@/services/order'
+import { AppPressable } from '@/shared/components'
 
-import type { OrderPickupScheduleView } from '../../../../services/order'
 
 import './OrderPickupScheduleOptions.scss'
 

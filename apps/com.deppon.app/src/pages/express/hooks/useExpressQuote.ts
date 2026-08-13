@@ -15,13 +15,10 @@ import {
   expressService,
   selectDefaultExpressQuote,
   selectExpressProduct
-} from '../../../services/express'
-import { useLatestRequestRunner } from '../../../shared/async/useLatestRequest'
+} from '@/services/express'
+import type { ExpressDraft, ExpressProductQuote } from '@/services/express'
+import { useLatestRequestRunner } from '@/shared/async/useLatestRequest'
 
-import type {
-  ExpressDraft,
-  ExpressProductQuote
-} from '../../../services/express'
 
 interface UseExpressQuoteOptions {
   draft: ExpressDraft
@@ -35,9 +32,9 @@ export function useExpressQuote({
   onProductChange
 }: UseExpressQuoteOptions) {
   const [quotes, setQuotes] = useState<ExpressProductQuote[]>([])
-  const [status, setStatus] = useState<
-    'idle' | 'loading' | 'done' | 'error'
-  >('idle')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>(
+    'idle'
+  )
   const requestKey = createExpressQuoteRequestKey(draft)
   const latestDraft = useRef(draft)
   const latestRequestKey = useRef(requestKey)

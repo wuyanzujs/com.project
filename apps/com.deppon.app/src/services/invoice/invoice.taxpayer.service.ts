@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { invoiceApi } from './invoice.api'
 import {
   createFormFromTaxpayer,
@@ -17,7 +19,6 @@ import type {
   InvoiceTaxpayerType,
   InvoiceTaxpayerView
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 export const invoiceTaxpayerService = {
   createTaxpayerForm: createFormFromTaxpayer,

@@ -1,37 +1,38 @@
 import { ScrollView } from '@tarojs/components'
 import { useDidShow } from '@tarojs/taro'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
+import { authService, maskMobile } from '@/services/auth'
+import type { AppUser } from '@/services/auth'
+import { contactSelection } from '@/services/contact'
+import { couponService } from '@/services/coupon'
+import { memberService } from '@/services/member'
+import type { MemberOverviewView } from '@/services/member'
+import { AppPage } from '@/shared/components'
+import AppTabBar from '@/shared/components/AppTabBar'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+
+import { hasValidSession, navigateToLogin } from '@/shared/navigation/authGuard'
 import { MineEntryGrids } from './components/MineEntryGrids'
 import { MineHero } from './components/MineHero'
 import { MineMemberCard } from './components/MineMemberCard'
 import { MineOrderShortcuts } from './components/MineOrderShortcuts'
 import {
   EMPTY_ORDER_COUNTS,
+  QUICK_ENTRIES,
   queryMineOrderCounts
 } from './mine.model'
-import { authService, maskMobile } from '../../services/auth'
-import { contactSelection } from '../../services/contact'
-import { memberService } from '../../services/member'
-import { AppPage } from '../../shared/components'
-import AppTabBar from '../../shared/components/AppTabBar'
-import { navigateToAppRoute } from '../../shared/navigation/appNavigation'
-import {
-  hasValidSession,
-  navigateToLogin
-} from '../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
-import { createAppWebUrl } from '../../shared/webview/appWeb'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
 
 import type {
   MineEntry,
   MineOrderCounts,
   MineOrderShortcut
 } from './mine.model'
-import type { AppUser } from '../../services/auth'
-import type { MemberOverviewView } from '../../services/member'
+
 
 import './index.scss'
 
@@ -42,24 +43,29 @@ const MinePage = () => {
   const [member, setMember] = useState<MemberOverviewView | null>(null)
   const [orderCounts, setOrderCounts] =
     useState<MineOrderCounts>(EMPTY_ORDER_COUNTS)
+  const [couponExpireCount, setCouponExpireCount] = useState(0)
 
   const refreshUser = async () => {
     if (!hasValidSession()) {
       setUser(null)
       setMember(null)
       setOrderCounts(EMPTY_ORDER_COUNTS)
+      setCouponExpireCount(0)
       return
     }
 
-    const [nextUser, memberResponse, nextOrderCounts] = await Promise.all([
-      authService.bootstrapUser(),
-      memberService.queryOverview(),
-      queryMineOrderCounts()
-    ])
+    const [nextUser, memberResponse, nextOrderCounts, expireCount] =
+      await Promise.all([
+        authService.bootstrapUser(),
+        memberService.queryOverview(),
+        queryMineOrderCounts(),
+        couponService.queryExpireCount()
+      ])
 
     setUser(nextUser ?? authService.getCachedUser())
     setMember(memberResponse.result ?? null)
     setOrderCounts(nextOrderCounts)
+    setCouponExpireCount(expireCount)
   }
 
   useDidShow(() => {
@@ -118,6 +124,18 @@ const MinePage = () => {
   const profileName = user?.mobile ? maskMobile(user.mobile) : '点击注册/登录'
   const levelCode = member?.levelCode ?? 0
 
+  const quickEntries = useMemo(() => {
+    if (!couponExpireCount) {
+      return QUICK_ENTRIES
+    }
+
+    return QUICK_ENTRIES.map(entry =>
+      entry.title === '优惠券'
+        ? { ...entry, badge: `${couponExpireCount}张快过期` }
+        : entry
+    )
+  }, [couponExpireCount])
+
   return (
     <AppPage
       className='mine-page-shell'
@@ -145,7 +163,7 @@ const MinePage = () => {
           onSelect={handleOrderShortcut}
         />
 
-        <MineEntryGrids onSelect={handleEntry} />
+        <MineEntryGrids quickEntries={quickEntries} onSelect={handleEntry} />
       </ScrollView>
     </AppPage>
   )

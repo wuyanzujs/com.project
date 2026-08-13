@@ -1,4 +1,4 @@
-import { depponHttp } from '../../request/deppon'
+import { depponHttp } from '@/request/deppon'
 
 export const ORDER_PDC_FEEDBACK_API_ENDPOINTS = {
   query: '/gwapi/commentService/eco/comment/secure/queryFeedback',

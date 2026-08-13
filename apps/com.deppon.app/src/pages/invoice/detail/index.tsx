@@ -3,29 +3,27 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useState } from 'react'
 
+import { CACHE_KEYS, DPCacheExpireType, dpCache } from '@/cache'
+import { contactSelection, getContactFullAddress } from '@/services/contact'
+import type { Contact } from '@/services/contact'
+import { invoiceService } from '@/services/invoice'
+import type {
+  InvoiceHistoryView,
+  InvoiceHistoryWaybillView
+} from '@/services/invoice'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
+
+
 import { InvoiceDetailOverviewCard } from './components/InvoiceDetailOverviewCard'
 import {
   InvoiceDetailLoadingState,
   InvoiceDetailMissingState
 } from './components/InvoiceDetailStates'
 import { InvoiceDetailSupplementarySections } from './components/InvoiceDetailSupplementarySections'
-import { CACHE_KEYS, DPCacheExpireType, dpCache } from '../../../cache'
-import {
-  contactSelection,
-  getContactFullAddress
-} from '../../../services/contact'
-import { invoiceService } from '../../../services/invoice'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-import { APP_STYLE_COLORS } from '../../../styles/nativeTokens'
-
-import type { Contact } from '../../../services/contact'
-import type {
-  InvoiceHistoryView,
-  InvoiceHistoryWaybillView
-} from '../../../services/invoice'
 
 import './index.scss'
 

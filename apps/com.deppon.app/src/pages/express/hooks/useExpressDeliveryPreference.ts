@@ -21,13 +21,13 @@ import {
   getExpressScheduledTimeWindow,
   isExpressScheduledDeliveryProductSupported,
   updateExpressDeliveryPreference
-} from '../../../services/express'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-
+} from '@/services/express'
 import type {
   ExpressDeliveryPreferenceType,
   ExpressDraft
-} from '../../../services/express'
+} from '@/services/express'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+
 
 interface UseExpressDeliveryPreferenceOptions {
   draft: ExpressDraft
@@ -38,8 +38,7 @@ function confirmWarehouseReplacement() {
   return new Promise<boolean>(resolve => {
     Taro.showModal({
       title: '切换送货服务',
-      content:
-        '派送偏好和送货进仓不能同时选择，继续后将清除送货进仓信息。',
+      content: '派送偏好和送货进仓不能同时选择，继续后将清除送货进仓信息。',
       confirmText: '继续选择',
       cancelText: '取消',
       success: result => resolve(Boolean(result.confirm)),
@@ -166,17 +165,14 @@ export function useExpressDeliveryPreference({
           return current
         }
 
-        return updateExpressDeliveryPreference(
-          clearExpressWarehouse(current),
-          {
-            type: 'SCHEDULED',
-            scheduledWindow: createExpressScheduledWindow(
-              firstDate.value,
-              firstTime.value
-            ),
-            availabilityKey: requestKey
-          }
-        )
+        return updateExpressDeliveryPreference(clearExpressWarehouse(current), {
+          type: 'SCHEDULED',
+          scheduledWindow: createExpressScheduledWindow(
+            firstDate.value,
+            firstTime.value
+          ),
+          availabilityKey: requestKey
+        })
       })
       setAvailabilityMessage('当前地址支持定时派送，费用以重新报价为准')
     } catch {

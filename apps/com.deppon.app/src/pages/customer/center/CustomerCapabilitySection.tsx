@@ -1,6 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
-import type { CustomerCapabilitySummaryView } from '../../../services/customer'
+import type { CustomerCapabilitySummaryView } from '@/services/customer'
 
 import './CustomerCapabilitySection.scss'
 
@@ -35,11 +35,7 @@ export function CustomerCapabilitySection({
               : 'customer-capability__status'
           }
         >
-          {loading
-            ? '同步中'
-            : capability?.available
-              ? '已同步'
-              : '待确认'}
+          {loading ? '同步中' : capability?.available ? '已同步' : '待确认'}
         </Text>
       </View>
 

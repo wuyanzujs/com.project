@@ -1,3 +1,6 @@
+import type { DepponResponse } from '@/request/deppon'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+
 import { orderApi } from './order.api'
 import {
   getOrderNumberField,
@@ -6,7 +9,6 @@ import {
   isServicePointOrder,
   isWaitAllotOrder
 } from './order.detailRules'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 import { createServiceFailure } from '../serviceResponse'
 
 import type {
@@ -19,7 +21,7 @@ import type {
   OrderPickupSlotView
 } from './order.dispatch.types'
 import type { OrderDetail, OrderDetailActionOptions } from './types'
-import type { DepponResponse } from '../../request/deppon'
+
 
 const PICKUP_TIME_SOURCE = 4 as const
 

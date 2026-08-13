@@ -1,3 +1,5 @@
+import { APP_ROUTES } from '@/shared/navigation/routes'
+
 import {
   createRouteUrl,
   getDetailWaybillNumber,
@@ -16,7 +18,6 @@ import {
   toDisplayText
 } from './order.display'
 import { getOrderClassLabel } from './order.mapper'
-import { APP_ROUTES } from '../../shared/navigation/routes'
 
 import type {
   OrderDetail,
@@ -103,9 +104,7 @@ function getOrderStubParty(
   order: OrderDetail
 ): OrderStubPartyView {
   const isSender = role === 'sender'
-  const name = toDisplayText(
-    isSender ? order.contactName : order.receiverName
-  )
+  const name = toDisplayText(isSender ? order.contactName : order.receiverName)
   const mobile = isSender ? order.contactMobile : order.receiverMobile
   const address = isSender
     ? getOrderSenderAddress(order)
@@ -225,10 +224,7 @@ function createOrderStubBasicSection(order: OrderDetail) {
 
   return createOrderStubSection('货物信息', [
     createOrderStubField('货物名称', order.goodsName),
-    createOrderStubField(
-      '货物件数',
-      formatMeasure(order.goodsNumber, '件')
-    ),
+    createOrderStubField('货物件数', formatMeasure(order.goodsNumber, '件')),
     createOrderStubField('货物重量', formatMeasure(order.totalWeight, 'kg')),
     createOrderStubField('货物体积', formatMeasure(order.totalVolume, 'm³')),
     createOptionalOrderStubField(
@@ -260,7 +256,7 @@ function createOrderStubChargeSection(order: OrderDetail) {
     ? order.serviceChargeList
     : []
   const serviceFields = serviceChargeList
-    .map((item) => {
+    .map(item => {
       if (!item || typeof item !== 'object') {
         return null
       }
@@ -336,14 +332,16 @@ function createOrderStubNotices(order: OrderDetail): OrderStubNoticeView[] {
   ) {
     notices.push({
       title: '隐私保护',
-      content: '此单包含隐私保护信息，页面会按后端返回和 App 规则隐藏部分内容。',
+      content:
+        '此单包含隐私保护信息，页面会按后端返回和 App 规则隐藏部分内容。',
       tone: 'warning'
     })
   }
 
   notices.push({
     title: '存根范围',
-    content: '首期展示结构化订单存根、照片凭证和电子合同状态；合同完成后可通过受控 WebView 查看，保存下载后续由 App 文件能力承接。',
+    content:
+      '首期展示结构化订单存根、照片凭证和电子合同状态；合同完成后可通过受控 WebView 查看，保存下载后续由 App 文件能力承接。',
     tone: 'info'
   })
 
@@ -354,7 +352,7 @@ function createOrderStubSizeView(order: OrderDetail) {
   const rawSize = getOrderTextField(order, ['goodsSize'])
   const parts = rawSize
     .split('+')
-    .map((item) => item.trim())
+    .map(item => item.trim())
     .filter(Boolean)
 
   if (!parts.length) {

@@ -2,14 +2,11 @@ import { Input, Text, View } from '@tarojs/components'
 
 import { useState } from 'react'
 
-import { ExpressSection } from './ExpressSection'
-import { AppPressable } from '../../../shared/components'
-import { APP_NATIVE_TOKENS } from '../../../styles/nativeTokens'
+import type { ExpressDraft, ExpressGoodsItem } from '@/services/express'
+import { AppPressable } from '@/shared/components'
+import { APP_NATIVE_TOKENS } from '@/styles/nativeTokens'
 
-import type {
-  ExpressDraft,
-  ExpressGoodsItem
-} from '../../../services/express'
+import { ExpressSection } from './ExpressSection'
 
 import './ExpressGoodsSection.scss'
 

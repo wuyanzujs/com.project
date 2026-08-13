@@ -3,18 +3,7 @@ import Taro, { useRouter } from '@tarojs/taro'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { StationQueryFilters } from './components/StationQueryFilters'
-import { StationQueryResults } from './components/StationQueryResults'
-import { queryService, stationSelection } from '../../../services/query'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-import { getNativeCapabilityErrorMessage } from '../../../shared/platform/capabilities'
-import { openMapLocation } from '../../../shared/platform/map'
-import { PhoneNumberError, dialPhone } from '../../../shared/platform/phone'
-import { createAppWebUrl } from '../../../shared/webview/appWeb'
-
+import { queryService, stationSelection } from '@/services/query'
 import type {
   DispatchAddress,
   StationItem,
@@ -22,7 +11,18 @@ import type {
   StationQueryResult,
   StationQueryType,
   StationSubType
-} from '../../../services/query'
+} from '@/services/query'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
+import { openMapLocation } from '@/shared/platform/map'
+import { PhoneNumberError, dialPhone } from '@/shared/platform/phone'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+
+import { StationQueryFilters } from './components/StationQueryFilters'
+import { StationQueryResults } from './components/StationQueryResults'
 
 import './index.scss'
 import './content.scss'
@@ -88,32 +88,35 @@ const QueryStationsPage = () => {
     })
   }
 
-  const runQuery = useCallback(async (query: StationQueryOptions) => {
-    setLoading(true)
-    setErrorMessage('')
-    setResult(null)
+  const runQuery = useCallback(
+    async (query: StationQueryOptions) => {
+      setLoading(true)
+      setErrorMessage('')
+      setResult(null)
 
-    try {
-      const response = await queryService.queryStations(query)
+      try {
+        const response = await queryService.queryStations(query)
 
-      if (!response.status || !response.result) {
-        setErrorMessage(response.message || '暂未查询到网点')
-        return
+        if (!response.status || !response.result) {
+          setErrorMessage(response.message || '暂未查询到网点')
+          return
+        }
+
+        applyResolvedAddress(response.result.address)
+        setResult(
+          selectionParams
+            ? stationSelection.filterResult(
+                selectionParams.source,
+                response.result
+              )
+            : response.result
+        )
+      } finally {
+        setLoading(false)
       }
-
-      applyResolvedAddress(response.result.address)
-      setResult(
-        selectionParams
-          ? stationSelection.filterResult(
-              selectionParams.source,
-              response.result
-            )
-          : response.result
-      )
-    } finally {
-      setLoading(false)
-    }
-  }, [applyResolvedAddress, selectionParams])
+    },
+    [applyResolvedAddress, selectionParams]
+  )
 
   const handleQuery = () => {
     if (!loading) {
@@ -262,7 +265,7 @@ const QueryStationsPage = () => {
           className='query-stations-input'
           placeholder='粘贴完整地址，或下方手动填写'
           value={rawText}
-          onInput={(event) => setRawText(event.detail.value)}
+          onInput={event => setRawText(event.detail.value)}
         />
 
         <View className='query-stations-grid'>
@@ -270,13 +273,13 @@ const QueryStationsPage = () => {
             className='query-stations-input query-stations-input--grid'
             placeholder='省'
             value={province}
-            onInput={(event) => setProvince(event.detail.value)}
+            onInput={event => setProvince(event.detail.value)}
           />
           <Input
             className='query-stations-input query-stations-input--grid query-stations-input--right'
             placeholder='市'
             value={city}
-            onInput={(event) => setCity(event.detail.value)}
+            onInput={event => setCity(event.detail.value)}
           />
         </View>
 
@@ -285,24 +288,20 @@ const QueryStationsPage = () => {
             className='query-stations-input query-stations-input--grid'
             placeholder='区/县'
             value={county}
-            onInput={(event) => setCounty(event.detail.value)}
+            onInput={event => setCounty(event.detail.value)}
           />
           <Input
             className='query-stations-input query-stations-input--grid query-stations-input--right'
             placeholder='详细地址，可选'
             value={address}
-            onInput={(event) => setAddress(event.detail.value)}
+            onInput={event => setAddress(event.detail.value)}
           />
         </View>
       </View>
 
       <AppPressable className='query-stations-submit' onPress={handleQuery}>
         <Text className='query-stations-submit__text'>
-          {loading
-            ? '查询中...'
-            : selectionMode
-              ? '查询自提网点'
-              : '查询网点'}
+          {loading ? '查询中...' : selectionMode ? '查询自提网点' : '查询网点'}
         </Text>
       </AppPressable>
 

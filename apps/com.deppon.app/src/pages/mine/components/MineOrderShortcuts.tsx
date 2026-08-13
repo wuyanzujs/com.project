@@ -1,12 +1,10 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../shared/components'
+import { AppPressable } from '@/shared/components'
+
 import { ORDER_SHORTCUTS } from '../mine.model'
 
-import type {
-  MineOrderCounts,
-  MineOrderShortcut
-} from '../mine.model'
+import type { MineOrderCounts, MineOrderShortcut } from '../mine.model'
 
 import './MineOrderShortcuts.scss'
 
@@ -24,7 +22,8 @@ export function MineOrderShortcuts({
   return (
     <View className='mine-shortcuts'>
       {ORDER_SHORTCUTS.map(entry => (
-        <AppPressable flex
+        <AppPressable
+          flex
           accessibilityLabel={entry.title}
           block
           className='mine-shortcut'

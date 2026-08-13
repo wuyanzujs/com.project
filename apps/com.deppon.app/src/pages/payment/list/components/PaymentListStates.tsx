@@ -1,6 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
-import type { PaymentListStatus } from '../../../../services/payment'
+import type { PaymentListStatus } from '@/services/payment'
 
 import './PaymentListStates.scss'
 
@@ -18,9 +18,7 @@ export function PaymentListStates(props: PaymentListStatesProps) {
         <View className='payment-empty'>
           <Text className='payment-empty__title'>
             {props.errorMessage ||
-              (props.status === 'PAID'
-                ? '暂无支付记录'
-                : '暂无待支付运单')}
+              (props.status === 'PAID' ? '暂无支付记录' : '暂无待支付运单')}
           </Text>
           <Text className='payment-empty__summary'>
             {props.status === 'PAID'

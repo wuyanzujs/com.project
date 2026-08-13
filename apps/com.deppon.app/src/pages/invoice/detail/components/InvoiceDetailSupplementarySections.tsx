@@ -1,13 +1,14 @@
 import { Input, Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
-import { getInvoiceDetailMoneyText } from '../invoiceDetailView'
-import { InvoiceDetailRow } from './InvoiceDetailRow'
-
 import type {
   InvoiceHistoryView,
   InvoiceHistoryWaybillView
-} from '../../../../services/invoice'
+} from '@/services/invoice'
+import { AppPressable } from '@/shared/components'
+
+import { getInvoiceDetailMoneyText } from '../invoiceDetailView'
+import { InvoiceDetailRow } from './InvoiceDetailRow'
+
 
 import './InvoiceDetailSupplementarySections.scss'
 
@@ -78,11 +79,7 @@ export function InvoiceDetailSupplementarySections({
                     .join(' ') || '--'
                 }
               />
-              <InvoiceDetailRow
-                address
-                label='收票地址'
-                value={addressText}
-              />
+              <InvoiceDetailRow address label='收票地址' value={addressText} />
             </>
           ) : (
             <View className='invoice-detail-empty-block'>

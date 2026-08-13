@@ -1,5 +1,7 @@
+import type { DepponResponse } from '@/request/deppon'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+
 import { ecardApi } from './ecard.api'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 import { createServiceFailure } from '../serviceResponse'
 
 import type {
@@ -9,7 +11,7 @@ import type {
   ECardPromotionRaw,
   ECardTargetPage
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
+
 
 function toFiniteNumber(value: unknown) {
   const numberValue = Number(value)
@@ -27,7 +29,7 @@ function normalizeText(value?: string | null) {
 
 function normalizePromotions(raw?: ECardPromotionRaw | null) {
   return (raw?.configList ?? [])
-    .map((item) => {
+    .map(item => {
       const title = normalizeText(item.rechargeAmountDesc)
       const summary = normalizeText(item.discountAmountDesc)
 
@@ -60,7 +62,8 @@ export function createECardLinkRequest(
   const postmanId = normalizeOptionalText(options.postmanId)
   const activityCode = normalizeOptionalText(options.activityCode)
 
-  request.source = normalizeOptionalText(options.targetSource) || 'APP_ECARD_CENTER'
+  request.source =
+    normalizeOptionalText(options.targetSource) || 'APP_ECARD_CENTER'
 
   if (type) {
     request.type = type

@@ -8,18 +8,15 @@ import {
   getExpressReturnBillOptions,
   isExpressCloudSignType,
   isExpressPaperReturnBillType
-} from '../../../services/express'
-import { AppPressable } from '../../../shared/components'
-import { AppIcon } from '../../../shared/components/AppIcon'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
-
+} from '@/services/express'
 import type {
   ExpressReturnBillDraft,
   ExpressReturnBillRequirement
-} from '../../../services/express'
+} from '@/services/express'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
+
 
 import './ExpressReturnBillCard.scss'
 
@@ -237,7 +234,9 @@ export function ExpressReturnBillCard({
               <View className='express-return-bill__cloud-content'>
                 <Text className='express-return-bill__label'>电子云签</Text>
                 <Text className='express-return-bill__cloud-status'>
-                  {returnBill.fileCode ? '已完成签署，可继续下单' : '尚未完成签署'}
+                  {returnBill.fileCode
+                    ? '已完成签署，可继续下单'
+                    : '尚未完成签署'}
                 </Text>
               </View>
               <AppIcon

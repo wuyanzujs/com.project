@@ -13,24 +13,24 @@ import {
   paymentService,
   selectPaymentCheckoutItems,
   validatePaymentCheckout
-} from '../../../services/payment'
+} from '@/services/payment'
+import type {
+  PaymentCheckoutSource,
+  PaymentItem,
+  PaymentRole
+} from '@/services/payment'
 import {
   AppButton,
   AppEmptyState,
   AppLoadingState,
   AppPage,
   AppStatusTag
-} from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
+} from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
-import type {
-  PaymentCheckoutSource,
-  PaymentItem,
-  PaymentRole
-} from '../../../services/payment'
 
 import './index.scss'
 import './content.scss'
@@ -56,10 +56,7 @@ function parseRouteParams(
 const PaymentCheckoutPage = () => {
   const router = useRouter()
   const routeParams = useMemo(
-    () =>
-      parseRouteParams(
-        router.params as Record<string, string | undefined>
-      ),
+    () => parseRouteParams(router.params as Record<string, string | undefined>),
     [router.params]
   )
   const [items, setItems] = useState<PaymentItem[]>([])
@@ -190,11 +187,7 @@ const PaymentCheckoutPage = () => {
 
   return (
     <AppPage footer={footer} safeArea='bottom' surface='page'>
-      <ScrollView
-        className='payment-checkout-page'
-        scrollY
-        style={{ flex: 1 }}
-      >
+      <ScrollView className='payment-checkout-page' scrollY style={{ flex: 1 }}>
         <View className='payment-checkout-header'>
           <Text className='payment-checkout-header__title'>确认支付信息</Text>
           <Text className='payment-checkout-header__summary'>
@@ -221,7 +214,9 @@ const PaymentCheckoutPage = () => {
           <>
             <View className='payment-checkout-section'>
               <View className='payment-checkout-section__head'>
-                <Text className='payment-checkout-section__title'>支付明细</Text>
+                <Text className='payment-checkout-section__title'>
+                  支付明细
+                </Text>
                 <Text className='payment-checkout-section__hint'>
                   共 {checkout.count} 笔
                 </Text>

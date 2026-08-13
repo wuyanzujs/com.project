@@ -3,20 +3,19 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useMemo, useState } from 'react'
 
-import { CACHE_KEYS, dpCache } from '../../../cache'
-import { invoiceService } from '../../../services/invoice'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-
+import { CACHE_KEYS, dpCache } from '@/cache'
+import { invoiceService } from '@/services/invoice'
 import type {
   InvoiceApplyBillCategory,
   InvoiceECardView,
   InvoiceOrderView,
   InvoiceTaxpayerView
-} from '../../../services/invoice'
+} from '@/services/invoice'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
 
 import './index.scss'
@@ -75,16 +74,19 @@ function getMoneyText(value: number) {
 
 const InvoiceApplyPage = () => {
   const router = useRouter()
-  const order = useMemo(() => parseOrder(router.params.order), [
-    router.params.order
-  ])
-  const ecards = useMemo(() => parseECards(router.params.ecards), [
-    router.params.ecards
-  ])
+  const order = useMemo(
+    () => parseOrder(router.params.order),
+    [router.params.order]
+  )
+  const ecards = useMemo(
+    () => parseECards(router.params.ecards),
+    [router.params.ecards]
+  )
   const applyMode = order ? 'order' : ecards.length ? 'ecard' : 'empty'
   const [taxpayers, setTaxpayers] = useState<InvoiceTaxpayerView[]>([])
-  const [selectedTaxpayerId, setSelectedTaxpayerId] =
-    useState<number | null>(null)
+  const [selectedTaxpayerId, setSelectedTaxpayerId] = useState<number | null>(
+    null
+  )
   const [billCategory, setBillCategory] =
     useState<InvoiceApplyBillCategory>('06')
   const [email, setEmail] = useState(
@@ -97,7 +99,7 @@ const InvoiceApplyPage = () => {
   const [message, setMessage] = useState('')
 
   const selectedTaxpayer =
-    taxpayers.find((item) => item.id === selectedTaxpayerId) ?? null
+    taxpayers.find(item => item.id === selectedTaxpayerId) ?? null
   const preview =
     applyMode === 'order' && order
       ? invoiceService.createApplyPreview({
@@ -121,7 +123,7 @@ const InvoiceApplyPage = () => {
   const applyAmount = preview?.amount ?? order?.amount ?? 0
   const billCategoryOptions =
     applyMode === 'ecard'
-      ? BILL_CATEGORY_OPTIONS.filter((item) => item.value === '06')
+      ? BILL_CATEGORY_OPTIONS.filter(item => item.value === '06')
       : BILL_CATEGORY_OPTIONS
 
   const loadTaxpayers = async () => {
@@ -143,7 +145,7 @@ const InvoiceApplyPage = () => {
 
       setTaxpayers(response.result)
       const defaultTaxpayer =
-        response.result.find((item) => item.isDefault) ?? response.result[0]
+        response.result.find(item => item.isDefault) ?? response.result[0]
 
       if (defaultTaxpayer && !selectedTaxpayerId) {
         setSelectedTaxpayerId(defaultTaxpayer.id)
@@ -251,7 +253,9 @@ const InvoiceApplyPage = () => {
             className='invoice-apply-empty__button'
             onPress={() => navigateToAppRoute(APP_ROUTES.invoiceCenter)}
           >
-            <Text className='invoice-apply-empty__button-text'>返回发票中心</Text>
+            <Text className='invoice-apply-empty__button-text'>
+              返回发票中心
+            </Text>
           </AppPressable>
         </View>
       </View>
@@ -291,7 +295,7 @@ const InvoiceApplyPage = () => {
         <View className='invoice-apply-section__head'>
           <Text className='invoice-apply-section__title'>发票类型</Text>
         </View>
-        {billCategoryOptions.map((item) => (
+        {billCategoryOptions.map(item => (
           <AppPressable
             className={
               item.value === billCategory
@@ -339,7 +343,7 @@ const InvoiceApplyPage = () => {
           </AppPressable>
         </View>
 
-        {taxpayers.map((item) => (
+        {taxpayers.map(item => (
           <AppPressable
             className={
               item.id === selectedTaxpayerId
@@ -381,8 +385,8 @@ const InvoiceApplyPage = () => {
             className='invoice-apply-input'
             placeholder='请输入电子发票接收邮箱'
             value={email}
-            onBlur={(event) => setEmail(event.detail.value.trim())}
-            onInput={(event) => setEmail(event.detail.value)}
+            onBlur={event => setEmail(event.detail.value.trim())}
+            onInput={event => setEmail(event.detail.value)}
           />
         </View>
         <View className='invoice-apply-field'>
@@ -392,7 +396,7 @@ const InvoiceApplyPage = () => {
             maxlength={16}
             placeholder='选填'
             value={unit}
-            onInput={(event) => setUnit(event.detail.value)}
+            onInput={event => setUnit(event.detail.value)}
           />
         </View>
         <View className='invoice-apply-field'>
@@ -402,7 +406,7 @@ const InvoiceApplyPage = () => {
             maxlength={80}
             placeholder='选填，展示在发票备注中'
             value={remark}
-            onInput={(event) => setRemark(event.detail.value)}
+            onInput={event => setRemark(event.detail.value)}
           />
         </View>
       </View>

@@ -13,13 +13,12 @@ import {
   createExpressPickupDateOptions,
   expressService,
   selectExpressPickupTime
-} from '../../../services/express'
-
+} from '@/services/express'
 import type {
   ExpressDraft,
   ExpressPickupTimeResponse,
   ExpressPickupTimeSelection
-} from '../../../services/express'
+} from '@/services/express'
 
 interface UseExpressPickupTimeOptions {
   draft: ExpressDraft
@@ -161,9 +160,10 @@ export function useExpressPickupTime({
 
   const handleDateChange = (date: string) => {
     const dateOption = dateOptions.find(option => option.value === date)
-    const selection = dateOption?.timeOptions.find(
-      option => !option.disabled && option.type === 'NORMAL'
-    ) ?? dateOption?.timeOptions.find(option => !option.disabled)
+    const selection =
+      dateOption?.timeOptions.find(
+        option => !option.disabled && option.type === 'NORMAL'
+      ) ?? dateOption?.timeOptions.find(option => !option.disabled)
 
     if (!selection) {
       return
@@ -189,9 +189,7 @@ export function useExpressPickupTime({
   const selectedTimeOption = getSelection(
     response,
     selectedDate,
-    draft.pickup.time
-      .replace(`${selectedDate} `, '')
-      .trim()
+    draft.pickup.time.replace(`${selectedDate} `, '').trim()
   )
 
   return {

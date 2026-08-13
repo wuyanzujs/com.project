@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { orderApi } from './order.api'
 import {
   createOrderUrgeContext,
@@ -20,7 +22,6 @@ import type {
   OrderInvalidWaybillResult,
   OrderUrgeButtonRaw
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 const WAYBILL_MODIFY_WEB_PATH = '/depponmobile/mow/order/modifyNew/index'
 const INVALID_TO_MODIFY_MESSAGE =
@@ -71,9 +72,7 @@ export async function queryOrderUrgeAction(
   return {
     kind: 'urge',
     title: button.buttonName || (isProgress ? '催单进度' : '我要催单'),
-    summary: isProgress
-      ? '查看当前催单处理进度'
-      : '催促当前订单尽快处理',
+    summary: isProgress ? '查看当前催单处理进度' : '催促当前订单尽快处理',
     target: 'urge',
     tone: 'warning',
     badgeText: isProgress ? '进度' : '催单',
@@ -101,10 +100,7 @@ export async function queryOrderUrgePanel(
 
   return {
     ...response,
-    result: createUrgePanel(
-      response.result.speech,
-      response.result.buttonList
-    )
+    result: createUrgePanel(response.result.speech, response.result.buttonList)
   }
 }
 
@@ -133,7 +129,8 @@ export function resolveOrderUrgeMenuAction(
 
   if (menu.buttonCode === 'VIEW_PROGRESS') {
     const webUri =
-      action.webUri || (action.urge ? createUrgeProgressWebUri(action.urge) : '')
+      action.webUri ||
+      (action.urge ? createUrgeProgressWebUri(action.urge) : '')
 
     if (!webUri) {
       return {

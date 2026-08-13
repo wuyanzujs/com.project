@@ -2,31 +2,32 @@ import Taro from '@tarojs/taro'
 
 import { useState } from 'react'
 
-import { useOrderDetailServiceActions } from './useOrderDetailServiceActions'
-import { expressDraftBridge } from '../../../../services/express'
+import { expressDraftBridge } from '@/services/express'
 import {
   createExpressDraftFromOrderDetail,
   getOrderCopyNumber,
   orderService
-} from '../../../../services/order'
-import { createPaymentCheckoutUrl } from '../../../../services/payment'
-import { navigateToAppRoute } from '../../../../shared/navigation/appNavigation'
-import { APP_ROUTES } from '../../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../../shared/navigation/routeUrl'
-import { getNativeCapabilityErrorMessage } from '../../../../shared/platform/capabilities'
-import { copyTextToClipboard } from '../../../../shared/platform/clipboard'
-import { PhoneNumberError, dialPhone } from '../../../../shared/platform/phone'
-import { createAppWebUrl } from '../../../../shared/webview/appWeb'
-import { getOrderDetailRouteUrl } from '../orderDetailViewModel'
-
-import type { useOrderPickupSchedule } from './useOrderPickupSchedule'
+} from '@/services/order'
 import type {
   OrderDetail,
   OrderDetailActionView,
   OrderRole,
   OrderStubEntryView
-} from '../../../../services/order'
-import type { PaymentSummary } from '../../../../services/payment'
+} from '@/services/order'
+import { createPaymentCheckoutUrl } from '@/services/payment'
+import type { PaymentSummary } from '@/services/payment'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
+import { copyTextToClipboard } from '@/shared/platform/clipboard'
+import { PhoneNumberError, dialPhone } from '@/shared/platform/phone'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+
+import { getOrderDetailRouteUrl } from '../orderDetailViewModel'
+import { useOrderDetailServiceActions } from './useOrderDetailServiceActions'
+
+import type { useOrderPickupSchedule } from './useOrderPickupSchedule'
 import type { OrderDetailUrgePanelState } from '../components/OrderUrgePanel'
 import type { OrderDetailRouteParams } from '../orderDetailViewModel'
 

@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native'
 import { WebView } from 'react-native-webview'
 
-import { APP_STYLE_COLORS } from '../../styles/nativeTokens'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 interface AppWebViewProps {
   authenticated: boolean
@@ -43,9 +43,7 @@ export function AppWebView({
       onLoadEnd={onLoadEnd}
       onLoadStart={onLoadStart}
       onMessage={event => onMessage?.(event.nativeEvent.data)}
-      onShouldStartLoadWithRequest={(request) =>
-        onShouldStartLoad(request.url)
-      }
+      onShouldStartLoadWithRequest={request => onShouldStartLoad(request.url)}
     />
   )
 }

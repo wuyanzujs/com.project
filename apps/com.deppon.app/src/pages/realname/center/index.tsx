@@ -3,16 +3,16 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
-import { realNameService } from '../../../services/realname'
-import { AppPressable, AppFormField } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { getNativeCapabilityErrorMessage } from '../../../shared/platform/capabilities'
-import { createAppWebUrl } from '../../../shared/webview/appWeb'
-import { APP_STYLE_COLORS } from '../../../styles/nativeTokens'
+import { realNameService } from '@/services/realname'
+import type { RealNameAuthView } from '@/services/realname'
+import { AppPressable, AppFormField } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-import type { RealNameAuthView } from '../../../services/realname'
 
 import './index.scss'
 import './content.scss'
@@ -24,8 +24,9 @@ const REAL_NAME_NOTICES = [
 ]
 
 const RealNameCenterPage = () => {
-  const [realNameInfo, setRealNameInfo] =
-    useState<RealNameAuthView | null>(null)
+  const [realNameInfo, setRealNameInfo] = useState<RealNameAuthView | null>(
+    null
+  )
   const [name, setName] = useState('')
   const [idCardNo, setIdCardNo] = useState('')
   const [loading, setLoading] = useState(false)
@@ -127,7 +128,7 @@ const RealNameCenterPage = () => {
       content: '删除后，寄件时需重新出示身份证件供快递员核验。',
       confirmText: '确认删除',
       confirmColor: APP_STYLE_COLORS.status.dangerTextStrong,
-      success: async (res) => {
+      success: async res => {
         if (!res.confirm) {
           return
         }
@@ -247,7 +248,11 @@ const RealNameCenterPage = () => {
                 {loading ? '刷新中' : '刷新'}
               </Text>
             </AppPressable>
-            <AppPressable flex className='real-name-card__danger-button' onPress={handleDelete}>
+            <AppPressable
+              flex
+              className='real-name-card__danger-button'
+              onPress={handleDelete}
+            >
               <Text className='real-name-card__danger-button-text'>
                 {deleting ? '删除中' : '删除实名'}
               </Text>
@@ -311,7 +316,10 @@ const RealNameCenterPage = () => {
                 使用国家网络身份认证服务完成身份核验。
               </Text>
             </View>
-            <AppPressable className='real-name-native__button' onPress={handleNativeAuth}>
+            <AppPressable
+              className='real-name-native__button'
+              onPress={handleNativeAuth}
+            >
               <Text className='real-name-native__button-text'>
                 {nativeAuthing ? '授权中' : '去授权'}
               </Text>

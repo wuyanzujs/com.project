@@ -3,17 +3,15 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
-import { authService } from '../../../services/auth'
-import { privacyService } from '../../../services/privacy'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppWebUrl } from '../../../shared/webview/appWeb'
-
-import type { PrivacyStatusView } from '../../../services/privacy'
-import type { AppWebSource } from '../../../shared/webview/appWeb'
-
+import { authService } from '@/services/auth'
+import { privacyService } from '@/services/privacy'
+import type { PrivacyStatusView } from '@/services/privacy'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+import type { AppWebSource } from '@/shared/webview/appWeb'
 
 import './index.scss'
 import './content.scss'
@@ -58,8 +56,9 @@ const PRIVACY_LINKS: PrivacyLink[] = [
 ]
 
 const PrivacySettingsPage = () => {
-  const [privacyStatus, setPrivacyStatus] =
-    useState<PrivacyStatusView | null>(null)
+  const [privacyStatus, setPrivacyStatus] = useState<PrivacyStatusView | null>(
+    null
+  )
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -217,7 +216,7 @@ const PrivacySettingsPage = () => {
 
       <View className='privacy-links'>
         <Text className='privacy-links__title'>协议与清单</Text>
-        {PRIVACY_LINKS.map((item) => (
+        {PRIVACY_LINKS.map(item => (
           <AppPressable
             className='privacy-link'
             key={item.source}
@@ -242,7 +241,11 @@ const PrivacySettingsPage = () => {
             {loading ? '同步中' : '同步状态'}
           </Text>
         </AppPressable>
-        <AppPressable flex className='privacy-actions__primary' onPress={handleSaveAgreement}>
+        <AppPressable
+          flex
+          className='privacy-actions__primary'
+          onPress={handleSaveAgreement}
+        >
           <Text className='privacy-actions__primary-text'>
             {saving ? '处理中' : '同意最新条款'}
           </Text>

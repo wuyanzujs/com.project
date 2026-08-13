@@ -2,7 +2,7 @@ import type { PropsWithChildren } from 'react'
 
 import { Pressable, StyleSheet, type PressableProps } from 'react-native'
 
-import { APP_NATIVE_TOKENS } from '../../styles/nativeTokens'
+import { APP_NATIVE_TOKENS } from '@/styles/nativeTokens'
 
 interface AppNativePressableProps extends PropsWithChildren {
   accessibilityLabel?: string

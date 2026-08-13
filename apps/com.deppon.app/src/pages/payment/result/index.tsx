@@ -3,12 +3,12 @@ import { useRouter } from '@tarojs/taro'
 
 import { useMemo } from 'react'
 
-import { AppButton, AppPage } from '../../../shared/components'
-import { AppIcon } from '../../../shared/components/AppIcon'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-import { APP_STYLE_COLORS } from '../../../styles/nativeTokens'
+import { AppButton, AppPage } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './index.scss'
 import './content.scss'
@@ -29,9 +29,7 @@ const PaymentResultPage = () => {
   const router = useRouter()
   const result = useMemo(
     () =>
-      parseResultParams(
-        router.params as Record<string, string | undefined>
-      ),
+      parseResultParams(router.params as Record<string, string | undefined>),
     [router.params]
   )
 

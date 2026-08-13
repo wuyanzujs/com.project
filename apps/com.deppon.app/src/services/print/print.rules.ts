@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import type {
   PrintDateRangeKey,
   PrintDateRangeOption,
@@ -6,7 +8,6 @@ import type {
   PrintOrderListItem,
   PrintSearchType
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 const PRINT_DATE_RANGE_DEFINITIONS: ReadonlyArray<{
   key: PrintDateRangeKey
@@ -74,9 +75,7 @@ export function getPrintDateRange(
   )
 }
 
-function getResponseCount(
-  response?: DepponResponse<PrintListResponse> | null
-) {
+function getResponseCount(response?: DepponResponse<PrintListResponse> | null) {
   if (!response?.status || !response.result) {
     return null
   }

@@ -3,6 +3,23 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useMemo, useRef, useState } from 'react'
 
+import { expressInsuranceRules } from '@/services/express'
+import {
+  buildOrderModifyRequest,
+  createOrderEditDraft,
+  getOrderEditUnavailableMessage,
+  orderEditService,
+  orderService,
+  updateOrderEditPackagingCount,
+  updateOrderEditInsuranceAmount,
+  validateOrderEditDraft
+} from '@/services/order'
+import type { OrderEditContact, OrderEditDraft } from '@/services/order'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+
 import { OrderEditActions } from './components/OrderEditActions'
 import { OrderEditCollectionSection } from './components/OrderEditCollectionSection'
 import { OrderEditContactSection } from './components/OrderEditContactSection'
@@ -15,23 +32,6 @@ import { OrderEditPackagingSection } from './components/OrderEditPackagingSectio
 import { OrderEditScheduleSection } from './components/OrderEditScheduleSection'
 import { useOrderEditCollection } from './hooks/useOrderEditCollection'
 import { useOrderEditSchedule } from './hooks/useOrderEditSchedule'
-import { expressInsuranceRules } from '../../../services/express'
-import {
-  buildOrderModifyRequest,
-  createOrderEditDraft,
-  getOrderEditUnavailableMessage,
-  orderEditService,
-  orderService,
-  updateOrderEditPackagingCount,
-  updateOrderEditInsuranceAmount,
-  validateOrderEditDraft
-} from '../../../services/order'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
-
-import type { OrderEditContact, OrderEditDraft } from '../../../services/order'
 
 import './index.scss'
 
@@ -103,9 +103,7 @@ const OrderEditPage = () => {
         return
       }
 
-      const unavailableMessage = getOrderEditUnavailableMessage(
-        response.result
-      )
+      const unavailableMessage = getOrderEditUnavailableMessage(response.result)
 
       if (unavailableMessage) {
         setDraft(null)
@@ -160,10 +158,7 @@ const OrderEditPage = () => {
       current
         ? {
             ...current,
-            insurance: updateOrderEditInsuranceAmount(
-              current.insurance,
-              value
-            )
+            insurance: updateOrderEditInsuranceAmount(current.insurance, value)
           }
         : current
     )
@@ -175,10 +170,7 @@ const OrderEditPage = () => {
       current
         ? {
             ...current,
-            packaging: updateOrderEditPackagingCount(
-              current.packaging,
-              value
-            )
+            packaging: updateOrderEditPackagingCount(current.packaging, value)
           }
         : current
     )
@@ -285,9 +277,7 @@ const OrderEditPage = () => {
             controller={collectionController}
           />
 
-          {!!errorMessage && (
-            <OrderEditMessage message={errorMessage} />
-          )}
+          {!!errorMessage && <OrderEditMessage message={errorMessage} />}
 
           <OrderEditActions
             disabled={submitting || !preview?.changed}

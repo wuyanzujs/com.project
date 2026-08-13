@@ -1,8 +1,8 @@
 import { Image, Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
+import type { OrderListItem } from '@/services/order'
+import { AppPressable } from '@/shared/components'
 
-import type { OrderListItem } from '../../../../services/order'
 
 import './OrderListCards.scss'
 

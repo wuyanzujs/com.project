@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { queryApi } from './query.api'
 import { contactService } from '../contact'
 import { createServiceFailure as createFailure } from '../serviceResponse'
@@ -13,7 +15,6 @@ import type {
   LogisticsDispatchItem,
   LogisticsDispatchResponse
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 const DISPATCH_RANGE_NAMES: Record<string, string> = {
   DELIVERY_NATURE_QJPS: '全境派送',
@@ -86,9 +87,7 @@ function createAddressFromAnalysis(
   }
 }
 
-function normalizeLogisticsStreet(
-  item: LogisticsDispatchItem
-): DispatchStreet {
+function normalizeLogisticsStreet(item: LogisticsDispatchItem): DispatchStreet {
   return {
     streetName: item.villageName,
     streetCode: item.villageCode
@@ -131,8 +130,8 @@ function normalizeExpressGroups(
   list: ExpressDispatchItem[] = []
 ): DispatchRangeGroup[] {
   return list
-    .filter((item) => item.rangeTypeDesc?.length)
-    .map((item) => ({
+    .filter(item => item.rangeTypeDesc?.length)
+    .map(item => ({
       name:
         normalizeText(item.rangeTypeName) ||
         DISPATCH_RANGE_NAMES[item.rangeTypeCode] ||
@@ -150,8 +149,8 @@ function findMatchedStreetCode(
     return ''
   }
 
-  const group = groups.find((item) =>
-    item.streetList.some((street) => street.streetName === matchedStreet)
+  const group = groups.find(item =>
+    item.streetList.some(street => street.streetName === matchedStreet)
   )
 
   return group?.code || ''
@@ -175,7 +174,7 @@ function createDispatchHint(
     return '当前详细地址可能暂不支持派送'
   }
 
-  if (groups.some((group) => SERVICEABLE_RANGE_CODES.has(group.code))) {
+  if (groups.some(group => SERVICEABLE_RANGE_CODES.has(group.code))) {
     return '当前区域可寄收，可继续预约寄件'
   }
 
@@ -189,7 +188,7 @@ function canCreateExpress(groups: DispatchRangeGroup[], matchedStreet: string) {
     return false
   }
 
-  return groups.some((group) => SERVICEABLE_RANGE_CODES.has(group.code))
+  return groups.some(group => SERVICEABLE_RANGE_CODES.has(group.code))
 }
 
 export async function resolveDispatchAddress(
@@ -236,25 +235,25 @@ export async function queryDispatchRange(
   const address = addressResponse.result
   const groupsResponsePromise =
     productType === 'EXPRESS'
-      ? queryApi.queryExpressDispatch({
-          cityCode: address.cityCode,
-          countyCode: address.countyCode
-        }).then((response) => ({
-          status: response.status,
-          message: response.message,
-          groups: response.result
-            ? normalizeExpressGroups(response.result.deliveryList ?? [])
-            : []
-        }))
-      : queryApi.queryLogisticsDispatch(address.countyCode).then(
-          (response) => ({
+      ? queryApi
+          .queryExpressDispatch({
+            cityCode: address.cityCode,
+            countyCode: address.countyCode
+          })
+          .then(response => ({
             status: response.status,
             message: response.message,
             groups: response.result
-              ? normalizeLogisticsGroups(response.result)
+              ? normalizeExpressGroups(response.result.deliveryList ?? [])
               : []
-          })
-        )
+          }))
+      : queryApi.queryLogisticsDispatch(address.countyCode).then(response => ({
+          status: response.status,
+          message: response.message,
+          groups: response.result
+            ? normalizeLogisticsGroups(response.result)
+            : []
+        }))
 
   const [groupsResponse, streetResponse] = await Promise.all([
     groupsResponsePromise,

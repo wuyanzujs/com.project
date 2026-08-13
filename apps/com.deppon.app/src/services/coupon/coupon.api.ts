@@ -1,4 +1,4 @@
-import { depponHttp } from '../../request/deppon'
+import { depponHttp } from '@/request/deppon'
 
 import type {
   CouponDetailRaw,
@@ -16,6 +16,17 @@ export const couponApi = {
       data,
       {
         loading
+      }
+    )
+  },
+
+  queryExpireCouponCount(loading = false) {
+    return depponHttp.post<number>(
+      '/gwapi/couponService/eco/coupon/new/secure/queryExpireCoupon',
+      undefined,
+      {
+        loading,
+        login: false
       }
     )
   },

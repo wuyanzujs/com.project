@@ -2,19 +2,19 @@ import Taro from '@tarojs/taro'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { getCurrentUser } from '../../../../services/auth'
+import { getCurrentUser } from '@/services/auth'
 import {
   createOrderSceneSurveyContext,
   orderSceneSurveyOrchestrator
-} from '../../../../services/order'
-import { APP_RUNTIME_CONFIG } from '../../../../shared/config/runtime'
-
+} from '@/services/order'
 import type {
   OrderDetail,
   OrderRole,
   OrderSceneSurveyItem,
   OrderSceneSurveySubmitInput
-} from '../../../../services/order'
+} from '@/services/order'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+
 
 export function useOrderSceneSurvey(options: {
   detail: OrderDetail | null
@@ -125,10 +125,7 @@ export function useOrderSceneSurvey(options: {
         input
       )
 
-      if (
-        generationRef.current !== generation ||
-        context.key !== contextKey
-      ) {
+      if (generationRef.current !== generation || context.key !== contextKey) {
         return
       }
 

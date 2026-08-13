@@ -2,15 +2,12 @@ import { Text, View } from '@tarojs/components'
 
 import { useState, type PropsWithChildren } from 'react'
 
-import { AppNativePressable } from '../../native'
+import { AppNativePressable } from '@/shared/native'
 import './index.scss'
 
 export type AppPressableVariant = 'plain' | 'surface' | 'ghost'
 export type AppPressableLayout =
-  | 'center'
-  | 'row-start'
-  | 'row-center'
-  | 'column-start'
+  'center' | 'row-start' | 'row-center' | 'column-start'
 
 export interface AppPressableProps extends PropsWithChildren {
   accessibilityLabel?: string

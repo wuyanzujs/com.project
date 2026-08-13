@@ -1,4 +1,4 @@
-import { CACHE_KEYS, DPCacheExpireType, dpCache } from '../../cache'
+import { CACHE_KEYS, DPCacheExpireType, dpCache } from '@/cache'
 
 interface ExpressPrivacyConfirmCache {
   confirmedAt: number

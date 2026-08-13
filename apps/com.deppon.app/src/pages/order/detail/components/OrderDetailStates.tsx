@@ -1,8 +1,4 @@
-import {
-  AppButton,
-  AppEmptyState,
-  AppLoadingState
-} from '../../../../shared/components'
+import { AppButton, AppEmptyState, AppLoadingState } from '@/shared/components'
 
 import './OrderDetailStates.scss'
 

@@ -1,8 +1,8 @@
 import { Input, Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
+import type { InvoiceTab } from '@/services/invoice'
+import { AppPressable } from '@/shared/components'
 
-import type { InvoiceTab } from '../../../../services/invoice'
 
 import './InvoiceCenterControls.scss'
 

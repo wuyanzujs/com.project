@@ -1,12 +1,13 @@
 import { Text, View } from '@tarojs/components'
 
-import { OrderStubSection } from './OrderStubSection'
-
 import type {
   OrderStubPackageFeeGroupView,
   OrderStubPackageFeeView,
   OrderStubView
-} from '../../../../services/order'
+} from '@/services/order'
+
+import { OrderStubSection } from './OrderStubSection'
+
 
 import './OrderStubGoodsSupplement.scss'
 

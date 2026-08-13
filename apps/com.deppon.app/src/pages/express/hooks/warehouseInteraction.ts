@@ -4,20 +4,16 @@ import {
   createExpressWarehouseInputKey,
   rejectExpressWarehouse,
   updateExpressWarehouse
-} from '../../../services/express'
-import { appWebMessageBridge } from '../../../shared/webview/appWebMessage'
-
+} from '@/services/express'
 import type {
   ExpressDraft,
   ExpressWarehouseScreening
-} from '../../../services/express'
+} from '@/services/express'
+import { appWebMessageBridge } from '@/shared/webview/appWebMessage'
+
 
 export type ExpressWarehouseScreeningDecision =
-  | 'PROCEED'
-  | 'ACKNOWLEDGE'
-  | 'ENABLE'
-  | 'REJECT'
-  | 'CANCEL'
+  'PROCEED' | 'ACKNOWLEDGE' | 'ENABLE' | 'REJECT' | 'CANCEL'
 
 export function consumeExpressWarehouseResult(draft: ExpressDraft) {
   const result = appWebMessageBridge.consumeWarehouse()
@@ -106,7 +102,8 @@ export async function resolveExpressWarehouseScreeningDecision(
 
   const acknowledged = await showExpressWarehouseConfirmation(
     '进仓提示',
-    screening.reason || '当前订单存在进仓风险，请确认已了解相关费用和预约要求。',
+    screening.reason ||
+      '当前订单存在进仓风险，请确认已了解相关费用和预约要求。',
     '我知道了',
     '暂不提交'
   )

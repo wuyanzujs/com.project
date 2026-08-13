@@ -1,14 +1,12 @@
 import { Text, View } from '@tarojs/components'
 
-import { ExpressPickupTimeCard } from './ExpressPickupTimeCard'
-import { AppPressable } from '../../../shared/components'
-import { AppIcon } from '../../../shared/components/AppIcon'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
+import type { ExpressDraft, ExpressFlag } from '@/services/express'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-import type { ExpressDraft, ExpressFlag } from '../../../services/express'
+import { ExpressPickupTimeCard } from './ExpressPickupTimeCard'
+
 import type { ExpressPickupTimeController } from '../hooks/useExpressPickupTime'
 
 import './ExpressPickupSection.scss'

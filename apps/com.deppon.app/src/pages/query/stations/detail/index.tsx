@@ -3,15 +3,14 @@ import Taro, { useRouter } from '@tarojs/taro'
 
 import { useEffect, useState } from 'react'
 
-import { queryService } from '../../../../services/query'
-import { AppPressable } from '../../../../shared/components'
-import { navigateToAppRoute } from '../../../../shared/navigation/appNavigation'
-import { getNativeCapabilityErrorMessage } from '../../../../shared/platform/capabilities'
-import { openMapLocation } from '../../../../shared/platform/map'
-import { PhoneNumberError, dialPhone } from '../../../../shared/platform/phone'
-import { createAppWebUrl } from '../../../../shared/webview/appWeb'
-
-import type { StationDetailView } from '../../../../services/query'
+import { queryService } from '@/services/query'
+import type { StationDetailView } from '@/services/query'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
+import { openMapLocation } from '@/shared/platform/map'
+import { PhoneNumberError, dialPhone } from '@/shared/platform/phone'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
 
 
 import './index.scss'
@@ -208,23 +207,28 @@ const QueryStationDetailPage = () => {
           </View>
 
           <View className='station-detail-actions'>
-            <AppPressable flex
+            <AppPressable
+              flex
               className='station-detail-action station-detail-action--outline'
               onPress={handleFeedback}
             >
               <Text className='station-detail-action__outline-text'>反馈</Text>
             </AppPressable>
-            <AppPressable flex
+            <AppPressable
+              flex
               className='station-detail-action station-detail-action--outline'
               onPress={handleOpenMap}
             >
               <Text className='station-detail-action__outline-text'>导航</Text>
             </AppPressable>
-            <AppPressable flex
+            <AppPressable
+              flex
               className='station-detail-action station-detail-action--primary'
               onPress={handleDial}
             >
-              <Text className='station-detail-action__primary-text'>拨打电话</Text>
+              <Text className='station-detail-action__primary-text'>
+                拨打电话
+              </Text>
             </AppPressable>
           </View>
 

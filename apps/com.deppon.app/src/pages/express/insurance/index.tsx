@@ -3,14 +3,13 @@ import { useRouter } from '@tarojs/taro'
 
 import { useMemo, useState } from 'react'
 
-import { expressInsuranceRules } from '../../../services/express'
-import { AppPressable } from '../../../shared/components'
-
+import { expressInsuranceRules } from '@/services/express'
 import type {
   ExpressInsuranceRuleTable,
   ExpressInsuranceRuleTableRow,
   ExpressInsuranceRuleType
-} from '../../../services/express'
+} from '@/services/express'
+import { AppPressable } from '@/shared/components'
 
 
 import './index.scss'

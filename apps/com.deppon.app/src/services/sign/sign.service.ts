@@ -1,8 +1,9 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { signApi } from './sign.api'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type { SignCodeView, UserSignCodeRaw } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()

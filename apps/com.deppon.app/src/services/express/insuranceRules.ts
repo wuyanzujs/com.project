@@ -1,5 +1,5 @@
-import { APP_ROUTES } from '../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../shared/navigation/routeUrl'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
 import type { ExpressInsuranceRuleView } from './insuranceRule.types'
 import type { ExpressInsuranceRuleType } from './types'
@@ -159,7 +159,7 @@ function normalizeRuleType(value?: string): ExpressInsuranceRuleType {
 
 export const expressInsuranceRules = {
   getRuleTypes() {
-    return Object.values(RULES).map((item) => ({
+    return Object.values(RULES).map(item => ({
       type: item.type,
       title: item.title,
       badgeText: item.badgeText

@@ -10,23 +10,23 @@ import {
   useState
 } from 'react'
 
-import { expressCouponService } from '../../../services/coupon'
+import { expressCouponService } from '@/services/coupon'
+import type { CouponCardView } from '@/services/coupon'
 import {
   EXPRESS_COUPON_AUTO_QUERY_DELAY_MS,
   createExpressCouponQueryRequest,
   createExpressCouponRequestKey,
   expressDraftStorage,
   updateExpressCouponNumber
-} from '../../../services/express'
-import { useLatestRequestRunner } from '../../../shared/async/useLatestRequest'
+} from '@/services/express'
+import type { ExpressDraft } from '@/services/express'
+import { useLatestRequestRunner } from '@/shared/async/useLatestRequest'
 import {
   ensureAuthenticated,
   hasValidSession
-} from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
+} from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
 
-import type { CouponCardView } from '../../../services/coupon'
-import type { ExpressDraft } from '../../../services/express'
 
 interface UseExpressCouponsOptions {
   draft: ExpressDraft
@@ -42,13 +42,10 @@ export function useExpressCoupons({
   const [available, setAvailable] = useState<CouponCardView[]>([])
   const [unavailable, setUnavailable] = useState<CouponCardView[]>([])
   const [message, setMessage] = useState('')
-  const [status, setStatus] = useState<
-    'idle' | 'loading' | 'done' | 'error'
-  >('idle')
-  const request = useMemo(
-    () => createExpressCouponQueryRequest(draft),
-    [draft]
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>(
+    'idle'
   )
+  const request = useMemo(() => createExpressCouponQueryRequest(draft), [draft])
   const requestKey = createExpressCouponRequestKey(draft)
   const mountedRef = useRef(true)
   const autoQueryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -113,10 +110,7 @@ export function useExpressCoupons({
         currentKey,
         () => expressCouponService.queryOrderCoupons(currentRequest),
         response => {
-          if (
-            !mountedRef.current ||
-            latestRequestKey.current !== currentKey
-          ) {
+          if (!mountedRef.current || latestRequestKey.current !== currentKey) {
             return
           }
 
@@ -132,9 +126,7 @@ export function useExpressCoupons({
           setUnavailable(response.result.unavailable)
           setStatus('done')
           setMessage(
-            response.result.available.length
-              ? ''
-              : '当前订单暂无可用优惠券'
+            response.result.available.length ? '' : '当前订单暂无可用优惠券'
           )
         }
       )
@@ -179,12 +171,7 @@ export function useExpressCoupons({
         autoQueryTimerRef.current = null
       }
     }
-  }, [
-    clearAutoQueryTimer,
-    handleQuery,
-    invalidateLatestRequest,
-    requestKey
-  ])
+  }, [clearAutoQueryTimer, handleQuery, invalidateLatestRequest, requestKey])
 
   useEffect(
     () => () => {

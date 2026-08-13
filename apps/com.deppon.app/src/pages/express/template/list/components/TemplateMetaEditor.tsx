@@ -2,12 +2,11 @@ import { Input, Text, View } from '@tarojs/components'
 
 import { useEffect, useState } from 'react'
 
-import { AppDialog, AppPressable } from '../../../../../shared/components'
-
 import type {
   ExpressTemplateDraftMeta,
   ExpressTemplateView
-} from '../../../../../services/template'
+} from '@/services/template'
+import { AppDialog, AppPressable } from '@/shared/components'
 
 import './TemplateMetaEditor.scss'
 
@@ -44,7 +43,8 @@ export function TemplateMetaEditor({
 
   const footer = (
     <View className='template-meta-editor__actions'>
-      <AppPressable flex
+      <AppPressable
+        flex
         accessibilityLabel='取消修改模板信息'
         className='template-meta-editor__button template-meta-editor__button--quiet'
         disabled={saving}
@@ -54,7 +54,8 @@ export function TemplateMetaEditor({
           取消
         </Text>
       </AppPressable>
-      <AppPressable flex
+      <AppPressable
+        flex
         accessibilityLabel='保存模板信息'
         className='template-meta-editor__button'
         disabled={saving}
@@ -94,7 +95,8 @@ export function TemplateMetaEditor({
           const selected = defaultFlag === value
 
           return (
-            <AppPressable flex
+            <AppPressable
+              flex
               accessibilityLabel={value === 1 ? '设为默认模板' : '设为普通模板'}
               className={
                 selected

@@ -1,6 +1,6 @@
 import { Image, Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../shared/components'
+import { AppPressable } from '@/shared/components'
 import './MineHero.scss'
 
 interface MineHeroProps {
@@ -23,7 +23,8 @@ export function MineHero({
         mode='scaleToFill'
         src='https://ca.deppon.com.cn/ows/assets/center2412/14.png'
       />
-      <AppPressable flex
+      <AppPressable
+        flex
         accessibilityLabel='打开个人设置'
         block
         className='mine-profile'

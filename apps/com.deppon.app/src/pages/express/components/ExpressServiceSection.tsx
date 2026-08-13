@@ -2,6 +2,21 @@ import { Text, View } from '@tarojs/components'
 
 import { useState } from 'react'
 
+import {
+  getExpressReturnBillOption,
+  getExpressDeliveryPreferenceOption
+} from '@/services/express'
+import type {
+  ExpressDeliveryMode,
+  ExpressDraft,
+  ExpressMonthlyPayView,
+  ExpressPaymentType,
+  ExpressScanContextView
+} from '@/services/express'
+import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
+
 import { ExpressCollectionCard } from './ExpressCollectionCard'
 import { ExpressDeliveryPointField } from './ExpressDeliveryPointField'
 import { ExpressDeliveryPreferenceCard } from './ExpressDeliveryPreferenceCard'
@@ -10,24 +25,7 @@ import { ExpressReturnBillCard } from './ExpressReturnBillCard'
 import { ExpressScanContextCard } from './ExpressScanContextCard'
 import { ExpressSection } from './ExpressSection'
 import { ExpressWarehouseCard } from './ExpressWarehouseCard'
-import {
-  getExpressReturnBillOption,
-  getExpressDeliveryPreferenceOption
-} from '../../../services/express'
-import { AppPressable } from '../../../shared/components'
-import { AppIcon } from '../../../shared/components/AppIcon'
-import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
 
-import type {
-  ExpressDeliveryMode,
-  ExpressDraft,
-  ExpressMonthlyPayView,
-  ExpressPaymentType,
-  ExpressScanContextView
-} from '../../../services/express'
 import type { ExpressCollectionController } from '../hooks/useExpressCollection'
 import type { ExpressDeliveryPreferenceController } from '../hooks/useExpressDeliveryPreference'
 import type { ExpressWarehouseController } from '../hooks/useExpressWarehouse'

@@ -1,16 +1,13 @@
 import { Text, View } from '@tarojs/components'
 
-import PaymentFeeRows from './PaymentFeeRows'
 import {
   getPaymentItemAmount,
   getPaymentOrderTypeLabel
-} from '../../../../services/payment'
-import { AppPressable, AppStatusTag } from '../../../../shared/components'
+} from '@/services/payment'
+import type { PaymentItem, PaymentListStatus } from '@/services/payment'
+import { AppPressable, AppStatusTag } from '@/shared/components'
 
-import type {
-  PaymentItem,
-  PaymentListStatus
-} from '../../../../services/payment'
+import PaymentFeeRows from './PaymentFeeRows'
 
 import './PaymentCard.scss'
 

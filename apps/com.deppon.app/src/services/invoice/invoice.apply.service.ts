@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import {
   cancelInvoiceApply,
   modifyInvoiceAddress,
@@ -13,10 +15,7 @@ import {
   createECardApplyPreview,
   createECardApplySubmitPayload
 } from './invoice.ecard'
-import {
-  normalizeHistoryWaybills,
-  normalizePreview
-} from './invoice.history'
+import { normalizeHistoryWaybills, normalizePreview } from './invoice.history'
 import { normalizeText } from './invoice.shared'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
@@ -34,7 +33,6 @@ import type {
   InvoicePreviewView,
   InvoiceSendEmailRequest
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
 import type { Contact } from '../contact'
 
 type InvoiceAddressContact = Pick<

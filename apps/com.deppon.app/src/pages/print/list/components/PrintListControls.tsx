@@ -1,13 +1,13 @@
 import { ScrollView, Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
-
 import type {
   PrintDateRangeKey,
   PrintDateRangeOption,
   PrintListCounts,
   PrintSearchType
-} from '../../../../services/print'
+} from '@/services/print'
+import { AppPressable } from '@/shared/components'
+
 
 import './PrintListControls.scss'
 
@@ -48,7 +48,8 @@ export function PrintListControls(props: PrintListControlsProps) {
           const active = tab.value === props.status
 
           return (
-            <AppPressable flex
+            <AppPressable
+              flex
               accessibilityLabel={`${tab.label} ${getCount(
                 props.counts,
                 tab.value
@@ -126,7 +127,9 @@ export function PrintListControls(props: PrintListControlsProps) {
         <Text className='print-list-summary__label'>
           {props.status === '1' ? '待打印订单' : '已打印订单'}
         </Text>
-        <Text className='print-list-summary__count'>共 {props.totalRows} 单</Text>
+        <Text className='print-list-summary__count'>
+          共 {props.totalRows} 单
+        </Text>
       </View>
 
       {!!props.countMessage && (

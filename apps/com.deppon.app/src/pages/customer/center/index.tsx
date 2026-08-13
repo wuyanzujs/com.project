@@ -3,21 +3,20 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useMemo, useState } from 'react'
 
-import { CustomerCapabilitySection } from './CustomerCapabilitySection'
-import { customerService } from '../../../services/customer'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { copyTextToClipboard } from '../../../shared/platform/clipboard'
-import { createAppWebUrl } from '../../../shared/webview/appWeb'
-
+import { customerService } from '@/services/customer'
 import type {
   CustomerCapabilitySummaryView,
   CustomerCenterView
-} from '../../../services/customer'
-import type { AppWebSource } from '../../../shared/webview/appWeb'
+} from '@/services/customer'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { copyTextToClipboard } from '@/shared/platform/clipboard'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+import type { AppWebSource } from '@/shared/webview/appWeb'
 
+import { CustomerCapabilitySection } from './CustomerCapabilitySection'
 
 import './index.scss'
 import './content.scss'
@@ -107,9 +106,7 @@ const CustomerCenterPage = () => {
       setCustomer(response.result.customer)
       setCapability(response.result.capability)
       setCapabilityMessage(response.result.warning)
-      setErrorMessage(
-        response.result.customer ? '' : response.result.warning
-      )
+      setErrorMessage(response.result.customer ? '' : response.result.warning)
     } finally {
       setLoading(false)
     }
@@ -211,7 +208,10 @@ const CustomerCenterPage = () => {
         </View>
 
         <View className='customer-actions'>
-          <AppPressable className='customer-action customer-action--ghost' onPress={loadCustomer}>
+          <AppPressable
+            className='customer-action customer-action--ghost'
+            onPress={loadCustomer}
+          >
             <Text className='customer-action__text customer-action__text--ghost'>
               {loading ? '同步中' : '刷新'}
             </Text>
@@ -224,7 +224,7 @@ const CustomerCenterPage = () => {
 
       <View className='customer-section'>
         <Text className='customer-section__title'>客户服务</Text>
-        {customerWebActions.map((item) => (
+        {customerWebActions.map(item => (
           <AppPressable
             className='customer-link'
             key={item.source}

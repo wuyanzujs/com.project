@@ -1,3 +1,5 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { mapBatchContactToExpressContact } from './batch.draft'
 import { expressApi } from '../express/express.api'
 import { createExpressDraft } from '../express/express.draft'
@@ -5,12 +7,7 @@ import { buildFreightRequest } from '../express/express.payload'
 import { normalizeExpressReturnBillDraft } from '../express/valueAdded'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
-import type {
-  BatchConsigneeDraft,
-  BatchDraft,
-  BatchQuoteItem
-} from './types'
-import type { DepponResponse } from '../../request/deppon'
+import type { BatchConsigneeDraft, BatchDraft, BatchQuoteItem } from './types'
 import type { ExpressDraft, ExpressProductQuote } from '../express/types'
 
 function createQuoteDraft(

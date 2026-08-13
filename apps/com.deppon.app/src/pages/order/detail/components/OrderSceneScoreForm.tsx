@@ -8,19 +8,16 @@ import {
   ORDER_SCENE_SURVEY_SCORE_TITLES,
   getOrderSceneScoreLabels,
   validateOrderSceneScoreDraft
-} from '../../../../services/order'
-import {
-  AppButton,
-  AppPressable
-} from '../../../../shared/components'
-import { AppIcon } from '../../../../shared/components/AppIcon'
-import { APP_STYLE_COLORS } from '../../../../styles/nativeTokens'
-
+} from '@/services/order'
 import type {
   OrderSceneScoreDraft,
   OrderSceneSurveyItem,
   OrderSceneSurveyScore
-} from '../../../../services/order'
+} from '@/services/order'
+import { AppButton, AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
+
 
 import './OrderSceneSurveyForm.scss'
 

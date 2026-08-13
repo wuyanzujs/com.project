@@ -1,9 +1,6 @@
-import { depponHttp } from '../../request/deppon'
+import { depponHttp } from '@/request/deppon'
 
-import type {
-  ExpressCouponQueryRaw,
-  ExpressCouponQueryRequest
-} from './types'
+import type { ExpressCouponQueryRaw, ExpressCouponQueryRequest } from './types'
 
 export const expressCouponApi = {
   queryOrderCoupons(data: ExpressCouponQueryRequest, loading = false) {

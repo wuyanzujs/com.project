@@ -1,8 +1,8 @@
-import { canDeleteOrder } from '../../../services/order'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-import { createAppRouteUrl } from '../../../shared/navigation/routeUrl'
+import { canDeleteOrder } from '@/services/order'
+import type { OrderDetail, OrderRole } from '@/services/order'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
-import type { OrderDetail, OrderRole } from '../../../services/order'
 
 export type OrderDetailViewMode = 'public' | 'secure'
 

@@ -1,6 +1,6 @@
 import { Input, Text, Textarea, View } from '@tarojs/components'
 
-import type { OrderEditDraft } from '../../../../services/order'
+import type { OrderEditDraft } from '@/services/order'
 
 import './OrderEditGoodsSection.scss'
 import './OrderEditSection.scss'

@@ -1,4 +1,4 @@
-import { depponHttp } from '../../request/deppon'
+import { depponHttp } from '@/request/deppon'
 
 import type {
   CreateExpressOrderRequest,
@@ -70,15 +70,11 @@ export const expressApi = {
     return depponHttp.post<
       ExpressProductUpgradeResult,
       ExpressProductUpgradeRequest
-    >(
-      '/gwapi/pricetimeService/eco/pricetime/queryPointCityByAddress',
-      data,
-      {
-        loading: false,
-        login: false,
-        timeout: 3000
-      }
-    )
+    >('/gwapi/pricetimeService/eco/pricetime/queryPointCityByAddress', data, {
+      loading: false,
+      login: false,
+      timeout: 3000
+    })
   },
 
   queryPickupTime(data: ExpressPickupTimeRequest, loading = true) {
@@ -96,14 +92,10 @@ export const expressApi = {
     return depponHttp.post<
       ExpressPickupNightResponse,
       ExpressPickupNightRequest
-    >(
-      '/gwapi/queryService/eco/query/range/matchFeatureAoi',
-      data,
-      {
-        loading: false,
-        timeout: 3000
-      }
-    )
+    >('/gwapi/queryService/eco/query/range/matchFeatureAoi', data, {
+      loading: false,
+      timeout: 3000
+    })
   },
 
   queryDeliveryAppointment(data: ExpressDeliveryAppointmentRequest) {
@@ -194,13 +186,9 @@ export const expressApi = {
     return depponHttp.post<
       CreateExpressOrderResponse,
       CreateExpressOrderRequest
-    >(
-      '/gwapi/orderService/eco/order/mysql/createOrder',
-      data,
-      {
-        loading
-      }
-    )
+    >('/gwapi/orderService/eco/order/mysql/createOrder', data, {
+      loading
+    })
   },
 
   queryOrderDetail(data: ExpressOrderDetailRequest, loading = true) {

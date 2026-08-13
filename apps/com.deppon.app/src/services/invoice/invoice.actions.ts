@@ -1,10 +1,11 @@
+import type { DepponResponse } from '@/request/deppon'
+
 import { invoiceApi } from './invoice.api'
 import { normalizeText } from './invoice.shared'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type { Contact } from '../contact'
 import type { InvoiceBasicRequest, InvoiceModifyAddressRequest } from './types'
-import type { DepponResponse } from '../../request/deppon'
 
 type InvoiceAddressContact = Pick<
   Contact,

@@ -1,4 +1,4 @@
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
 import type {
   OrderDetail,
@@ -136,9 +136,7 @@ export function createOrderEditScheduleDraft(
   return {
     deliveryMode: normalizeOrderEditDeliveryMode(detail.deliveryType),
     initialInputKey: createScheduleInputKey(input, productCode),
-    orderChannel: normalizeText(
-      detail.channelType ?? detail.orderChannelType
-    ),
+    orderChannel: normalizeText(detail.channelType ?? detail.orderChannelType),
     productCode,
     tableType: normalizeText(detail.tableType),
     waybillNumber: normalizeText(detail.waybillNumber),
@@ -313,11 +311,14 @@ export function isOrderEditNightPickupTimeValid(
     return true
   }
 
-  return selected >= Date.UTC(
-    beijingNow.getUTCFullYear(),
-    beijingNow.getUTCMonth(),
-    beijingNow.getUTCDate() + 1,
-    6
+  return (
+    selected >=
+    Date.UTC(
+      beijingNow.getUTCFullYear(),
+      beijingNow.getUTCMonth(),
+      beijingNow.getUTCDate() + 1,
+      6
+    )
   )
 }
 
@@ -354,10 +355,7 @@ export function validateOrderEditSchedule(
     }
   }
 
-  if (
-    isOrderEditDeliveryModeVisible(draft) &&
-    !draft.schedule.deliveryMode
-  ) {
+  if (isOrderEditDeliveryModeVisible(draft) && !draft.schedule.deliveryMode) {
     messages.push('请选择送货方式')
   }
 
@@ -371,13 +369,11 @@ export function createOrderEditScheduleRequestDiff(
   const request: Partial<OrderModifyRequest> = {}
   const changedFields: string[] = []
   const pickupChanged =
-    draft.schedule.pickup.time.trim() !==
-      origin.schedule.pickup.time.trim() ||
+    draft.schedule.pickup.time.trim() !== origin.schedule.pickup.time.trim() ||
     draft.schedule.pickup.type !== origin.schedule.pickup.type
 
   if (
-    draft.schedule.pickup.time.trim() !==
-    origin.schedule.pickup.time.trim()
+    draft.schedule.pickup.time.trim() !== origin.schedule.pickup.time.trim()
   ) {
     request.beginAcceptTime = draft.schedule.pickup.time.trim()
 

@@ -1,12 +1,12 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppPressable } from '../../../../shared/components'
-
 import type {
   StationItem,
   StationQueryResult,
   StationSelectionParams
-} from '../../../../services/query'
+} from '@/services/query'
+import { AppPressable } from '@/shared/components'
+
 
 import './StationQueryResults.scss'
 
@@ -26,11 +26,7 @@ function getStationKey(item: StationItem) {
 }
 
 function getFullRegion(result: StationQueryResult) {
-  return [
-    result.address.province,
-    result.address.city,
-    result.address.county
-  ]
+  return [result.address.province, result.address.city, result.address.county]
     .filter(Boolean)
     .join('-')
 }

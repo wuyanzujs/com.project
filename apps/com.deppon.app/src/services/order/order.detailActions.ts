@@ -1,3 +1,5 @@
+import { APP_ROUTES } from '@/shared/navigation/routes'
+
 import {
   createOrderDetailWebUri,
   createRouteUrl,
@@ -21,7 +23,6 @@ import {
 import { canScheduleOrderPickup } from './order.dispatch'
 import { getOrderEditUnavailableMessage } from './order.edit'
 import { createOrderEvaluationRoute } from './order.evaluation.rules'
-import { APP_ROUTES } from '../../shared/navigation/routes'
 
 import type {
   OrderDetail,

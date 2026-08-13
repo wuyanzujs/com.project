@@ -1,4 +1,5 @@
-import type { AppRoutePath } from '../../shared/navigation/routes'
+import type { AppRoutePath } from '@/shared/navigation/routes'
+
 import type {
   ExpressCollectionType,
   ExpressDeliveryMode,
@@ -10,10 +11,7 @@ import type {
 } from '../express/types'
 
 export type BatchEntryActionKind =
-  | 'singleExpress'
-  | 'addressRecognition'
-  | 'excelImport'
-  | 'print'
+  'singleExpress' | 'addressRecognition' | 'excelImport' | 'print'
 
 export type BatchEntryActionStatus = 'ready' | 'copy' | 'pending'
 

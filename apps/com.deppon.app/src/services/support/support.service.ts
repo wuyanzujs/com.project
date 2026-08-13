@@ -1,8 +1,9 @@
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { appendRouteQuery } from '@/shared/navigation/routeUrl'
+import { APP_WEB_TARGETS } from '@/shared/webview/appWeb'
+
 import { supportApi } from './support.api'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
-import { APP_ROUTES } from '../../shared/navigation/routes'
-import { appendRouteQuery } from '../../shared/navigation/routeUrl'
-import { APP_WEB_TARGETS } from '../../shared/webview/appWeb'
 import { getCurrentEcoToken } from '../auth'
 
 import type {
@@ -34,7 +35,9 @@ function mapSurveyConfigToEntry(
   return {
     id: `survey-${index}`,
     title: index === 0 ? '体验调研' : `体验调研 ${index + 1}`,
-    summary: item.image ? '参与服务体验问卷，帮助我们优化 App 服务。' : '参与服务体验问卷。',
+    summary: item.image
+      ? '参与服务体验问卷，帮助我们优化 App 服务。'
+      : '参与服务体验问卷。',
     kind: 'web',
     tone: 'primary',
     badgeText: index === 0 ? 'HOT' : '问卷',

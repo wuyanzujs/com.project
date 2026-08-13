@@ -1,5 +1,7 @@
+import type { DepponResponse } from '@/request/deppon'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+
 import { accountApi } from './account.api'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 import {
   authService,
   clearAppSession,
@@ -10,7 +12,7 @@ import {
 import { createServiceFailure } from '../serviceResponse'
 
 import type { AccountOverviewView } from './types'
-import type { DepponResponse } from '../../request/deppon'
+
 
 function getSystemCode() {
   return APP_RUNTIME_CONFIG.systemCode

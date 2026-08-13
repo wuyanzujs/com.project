@@ -7,18 +7,17 @@ import {
   createAddressOnlyExpressContact,
   createExpressDraft,
   expressDraftBridge
-} from '../../../services/express'
-import { queryService } from '../../../services/query'
-import { AppPressable } from '../../../shared/components'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { APP_ROUTES } from '../../../shared/navigation/routes'
-
+} from '@/services/express'
+import { queryService } from '@/services/query'
 import type {
   DispatchAddress,
   DispatchProductType,
   DispatchRangeGroup,
   DispatchRangeResult
-} from '../../../services/query'
+} from '@/services/query'
+import { AppPressable } from '@/shared/components'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { APP_ROUTES } from '@/shared/navigation/routes'
 
 
 import './index.scss'
@@ -53,8 +52,7 @@ function getFullRegion(address: DispatchAddress | null) {
 }
 
 const QueryDispatchPage = () => {
-  const [productType, setProductType] =
-    useState<DispatchProductType>('EXPRESS')
+  const [productType, setProductType] = useState<DispatchProductType>('EXPRESS')
   const [rawText, setRawText] = useState('')
   const [province, setProvince] = useState('')
   const [city, setCity] = useState('')
@@ -141,7 +139,7 @@ const QueryDispatchPage = () => {
   return (
     <ScrollView className='query-dispatch-page' scrollY>
       <View className='query-dispatch-tabs'>
-        {DISPATCH_PRODUCT_OPTIONS.map((option) => (
+        {DISPATCH_PRODUCT_OPTIONS.map(option => (
           <AppPressable
             className={
               option.value === productType
@@ -176,7 +174,7 @@ const QueryDispatchPage = () => {
           className='query-dispatch-input'
           placeholder='粘贴完整地址，例如：上海市青浦区徐泾镇明珠路'
           value={rawText}
-          onInput={(event) => setRawText(event.detail.value)}
+          onInput={event => setRawText(event.detail.value)}
         />
 
         <View className='query-dispatch-grid'>
@@ -184,13 +182,13 @@ const QueryDispatchPage = () => {
             className='query-dispatch-input query-dispatch-input--grid'
             placeholder='省'
             value={province}
-            onInput={(event) => setProvince(event.detail.value)}
+            onInput={event => setProvince(event.detail.value)}
           />
           <Input
             className='query-dispatch-input query-dispatch-input--grid query-dispatch-input--right'
             placeholder='市'
             value={city}
-            onInput={(event) => setCity(event.detail.value)}
+            onInput={event => setCity(event.detail.value)}
           />
         </View>
 
@@ -199,13 +197,13 @@ const QueryDispatchPage = () => {
             className='query-dispatch-input query-dispatch-input--grid'
             placeholder='区/县'
             value={county}
-            onInput={(event) => setCounty(event.detail.value)}
+            onInput={event => setCounty(event.detail.value)}
           />
           <Input
             className='query-dispatch-input query-dispatch-input--grid query-dispatch-input--right'
             placeholder='乡镇/详细地址'
             value={address}
-            onInput={(event) => setAddress(event.detail.value)}
+            onInput={event => setAddress(event.detail.value)}
           />
         </View>
       </View>
@@ -244,7 +242,7 @@ const QueryDispatchPage = () => {
             <Text className='query-dispatch-hint__text'>{result.hint}</Text>
           </View>
 
-          {result.groups.map((group) => (
+          {result.groups.map(group => (
             <View className='query-dispatch-group' key={group.code}>
               <Text className='query-dispatch-group__title'>{group.name}</Text>
               <View className='query-dispatch-streets'>
@@ -278,7 +276,10 @@ const QueryDispatchPage = () => {
           ))}
 
           {result.canCreateExpress && (
-            <AppPressable className='query-dispatch-express' onPress={handleGoExpress}>
+            <AppPressable
+              className='query-dispatch-express'
+              onPress={handleGoExpress}
+            >
               <Text className='query-dispatch-express__text'>去寄件</Text>
             </AppPressable>
           )}

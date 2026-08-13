@@ -2,7 +2,7 @@ import type { PropsWithChildren } from 'react'
 
 import { Modal } from 'react-native'
 
-import { APP_NATIVE_TOKENS } from '../../styles/nativeTokens'
+import { APP_NATIVE_TOKENS } from '@/styles/nativeTokens'
 
 interface AppNativeModalProps extends PropsWithChildren {
   visible: boolean

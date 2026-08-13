@@ -12,13 +12,10 @@ import {
   updateOrderNpsCategory,
   updateOrderNpsContent,
   updateOrderNpsScore
-} from '../../../../services/order'
-import {
-  AppButton,
-  AppPressable
-} from '../../../../shared/components'
+} from '@/services/order'
+import type { OrderNpsDraft } from '@/services/order'
+import { AppButton, AppPressable } from '@/shared/components'
 
-import type { OrderNpsDraft } from '../../../../services/order'
 
 import './OrderSceneSurveyForm.scss'
 
@@ -27,10 +24,7 @@ export function OrderNpsSurveyForm(props: {
   onSubmit: (draft: OrderNpsDraft) => void
 }) {
   const [draft, setDraft] = useState(() => createOrderNpsDraft())
-  const catalog = useMemo(
-    () => getOrderNpsCatalog(draft.score),
-    [draft.score]
-  )
+  const catalog = useMemo(() => getOrderNpsCatalog(draft.score), [draft.score])
   const category = catalog?.options.find(
     option => option.text === draft.category
   )

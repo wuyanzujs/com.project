@@ -1,8 +1,9 @@
-import { CACHE_KEYS, DPCacheExpireType, dpCache } from '../../cache'
+import { CACHE_KEYS, DPCacheExpireType, dpCache } from '@/cache'
+import type { DepponResponse } from '@/request/deppon'
+
 import { expressService } from '../express'
 import { createServiceFailure } from '../serviceResponse'
 
-import type { DepponResponse } from '../../request/deppon'
 import type { ExpressGoodsItem } from '../express'
 import type {
   GoodsCheckInput,
@@ -105,7 +106,7 @@ function dedupeSuggestions(
 ): GoodsSuggestionView[] {
   const seen = new Set<string>()
 
-  return suggestions.filter((item) => {
+  return suggestions.filter(item => {
     const key = item.name.toLowerCase()
 
     if (!key || seen.has(key)) {
@@ -135,7 +136,7 @@ function saveHistoryItem(result: GoodsCheckResult) {
   const current = getHistory()
   const next = [
     toHistoryItem(result),
-    ...current.filter((item) => item.goodsName !== result.goodsName)
+    ...current.filter(item => item.goodsName !== result.goodsName)
   ].slice(0, GOODS_HISTORY_LIMIT)
 
   dpCache.set<GoodsHistoryItem[]>(CACHE_KEYS.goodsQueryHistory, {

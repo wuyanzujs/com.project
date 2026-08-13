@@ -1,9 +1,10 @@
 import { ScrollView, Text, View } from '@tarojs/components'
 
-import { OrderPickupScheduleOptions } from './OrderPickupScheduleOptions'
-import { AppPressable } from '../../../../shared/components'
+import type { OrderPickupScheduleView } from '@/services/order'
+import { AppPressable } from '@/shared/components'
 
-import type { OrderPickupScheduleView } from '../../../../services/order'
+import { OrderPickupScheduleOptions } from './OrderPickupScheduleOptions'
+
 
 import './OrderPickupSchedulePanel.scss'
 
@@ -60,9 +61,7 @@ export function OrderPickupSchedulePanel(props: {
         </ScrollView>
 
         <AppPressable
-          accessibilityLabel={
-            props.submitting ? '正在提交预约' : '确认预约'
-          }
+          accessibilityLabel={props.submitting ? '正在提交预约' : '确认预约'}
           block
           className={
             props.selectedTime

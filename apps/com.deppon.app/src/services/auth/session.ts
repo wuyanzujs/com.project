@@ -1,21 +1,22 @@
-import {
-  createAppUserIdentity,
-  shouldClearAccountScopedCache
-} from './sessionIdentity'
-import { clearAccountScopedCache } from '../../cache/accountScope'
-import { CACHE_KEYS } from '../../cache/keys'
+import { clearAccountScopedCache } from '@/cache/accountScope'
+import { CACHE_KEYS } from '@/cache/keys'
 import {
   getJsonStorageValue,
   removeStorageValue,
   setJsonStorageValue
-} from '../../cache/storage'
+} from '@/cache/storage'
 import {
   clearSessionCookie,
   getEcoToken,
   recoverSessionCookie
-} from '../../request/cookieJar'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
-import { appWebMessageBridge } from '../../shared/webview/appWebMessage'
+} from '@/request/cookieJar'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+import { appWebMessageBridge } from '@/shared/webview/appWebMessage'
+
+import {
+  createAppUserIdentity,
+  shouldClearAccountScopedCache
+} from './sessionIdentity'
 
 import type { AppUser } from './types'
 

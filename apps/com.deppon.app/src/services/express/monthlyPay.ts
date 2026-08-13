@@ -1,14 +1,13 @@
+import type { AppWebSource } from '@/shared/webview/appWeb'
+
 import type { CustomerCenterView } from '../customer'
 import type { ExpressPaymentType } from './types'
-import type { AppWebSource } from '../../shared/webview/appWeb'
 
 export type ExpressMonthlyPayTone = 'info' | 'success' | 'warning'
 
 export type ExpressMonthlyPayActionSource = Extract<
   AppWebSource,
-  | 'CUSTOMER_BIND'
-  | 'CUSTOMER_CENTER'
-  | 'CUSTOMER_MONTHLY_CENTER'
+  'CUSTOMER_BIND' | 'CUSTOMER_CENTER' | 'CUSTOMER_MONTHLY_CENTER'
 >
 
 export interface ExpressMonthlyPayView {

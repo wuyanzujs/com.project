@@ -1,5 +1,7 @@
+import type { DepponResponse } from '@/request/deppon'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
+
 import { privacyApi } from './privacy.api'
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
 import { getCurrentEcoToken } from '../auth'
 import { createServiceFailure } from '../serviceResponse'
 
@@ -9,7 +11,7 @@ import type {
   PrivacyStatusView,
   PrivacyVersionResponse
 } from './types'
-import type { DepponResponse } from '../../request/deppon'
+
 
 function createPrivacyBehaviorRequest(): PrivacyBehaviorRequest {
   return {
@@ -113,7 +115,9 @@ export const privacyService = {
     )
 
     if (!response.status) {
-      return createServiceFailure(response.message || '同意条款失败，请稍后再试')
+      return createServiceFailure(
+        response.message || '同意条款失败，请稍后再试'
+      )
     }
 
     return response

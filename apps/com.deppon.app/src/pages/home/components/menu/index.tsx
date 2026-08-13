@@ -2,9 +2,9 @@ import { Image, Swiper, SwiperItem, Text, View } from '@tarojs/components'
 
 import { useMemo, useState } from 'react'
 
-import { AppPressable } from '../../../../shared/components'
+import type { HomeQuickAction } from '@/pages/home/home.data'
+import { AppPressable } from '@/shared/components'
 
-import type { HomeQuickAction } from '../../home.data'
 
 import './index.scss'
 
@@ -64,7 +64,9 @@ const Menu = ({ actions, onSelect }: MenuProps) => {
                   </Text>
                   {action.badge && (
                     <View className='home-menu__badge'>
-                      <Text className='home-menu__badge-text'>{action.badge}</Text>
+                      <Text className='home-menu__badge-text'>
+                        {action.badge}
+                      </Text>
                     </View>
                   )}
                 </AppPressable>

@@ -10,6 +10,19 @@ import {
 } from 'react'
 
 import {
+  acknowledgeExpressWarehouseScreening,
+  applyExpressWarehouseScreening,
+  createExpressWarehouseInputKey,
+  expressService,
+  rejectExpressWarehouse,
+  updateExpressWarehouse
+} from '@/services/express'
+import type { ExpressDraft } from '@/services/express'
+import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
+import { ensureAuthenticated } from '@/shared/navigation/authGuard'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+
+import {
   consumeExpressWarehouseResult,
   createExpressWarehouseStageKey,
   expectExpressWarehouseResult,
@@ -17,19 +30,6 @@ import {
   resolveExpressWarehouseScreeningDecision,
   showExpressWarehouseConfirmation
 } from './warehouseInteraction'
-import {
-  acknowledgeExpressWarehouseScreening,
-  applyExpressWarehouseScreening,
-  createExpressWarehouseInputKey,
-  expressService,
-  rejectExpressWarehouse,
-  updateExpressWarehouse
-} from '../../../services/express'
-import { navigateToAppRoute } from '../../../shared/navigation/appNavigation'
-import { ensureAuthenticated } from '../../../shared/navigation/authGuard'
-import { createAppWebUrl } from '../../../shared/webview/appWeb'
-
-import type { ExpressDraft } from '../../../services/express'
 
 interface UseExpressWarehouseOptions {
   draft: ExpressDraft
@@ -106,9 +106,8 @@ export function useExpressWarehouse({
       setScreeningMessage('正在识别送货进仓规则')
 
       try {
-        const response = await expressService.queryWarehouseScreening(
-          targetDraft
-        )
+        const response =
+          await expressService.queryWarehouseScreening(targetDraft)
 
         if (
           requestVersion.current !== version ||
@@ -130,10 +129,7 @@ export function useExpressWarehouse({
               return current
             }
 
-            const nextDraft = applyExpressWarehouseScreening(
-              current,
-              screening
-            )
+            const nextDraft = applyExpressWarehouseScreening(current, screening)
 
             latestDraft.current = nextDraft
             return nextDraft
@@ -297,8 +293,8 @@ export function useExpressWarehouse({
     }
   }
 
-  const prepareForSubmit = useCallback(
-    async (): Promise<ExpressWarehouseSubmitPreparation | null> => {
+  const prepareForSubmit =
+    useCallback(async (): Promise<ExpressWarehouseSubmitPreparation | null> => {
       const screening = await queryScreening(latestDraft.current, {
         apply: false
       })
@@ -309,9 +305,7 @@ export function useExpressWarehouse({
 
       let currentDraft = latestDraft.current
 
-      if (
-        createExpressWarehouseInputKey(currentDraft) !== screening.inputKey
-      ) {
+      if (createExpressWarehouseInputKey(currentDraft) !== screening.inputKey) {
         setScreeningMessage('寄件信息已变化，请重新确认送货进仓')
         return null
       }
@@ -321,10 +315,7 @@ export function useExpressWarehouse({
         screening
       )
 
-      if (
-        currentDraft.selectedProduct &&
-        !preparedDraft.selectedProduct
-      ) {
+      if (currentDraft.selectedProduct && !preparedDraft.selectedProduct) {
         latestDraft.current = preparedDraft
         setDraft(preparedDraft)
         setScreeningMessage('送货进仓规则已更新，请重新获取产品价格')
@@ -346,10 +337,7 @@ export function useExpressWarehouse({
           return null
         }
 
-        preparedDraft = applyExpressWarehouseScreening(
-          currentDraft,
-          screening
-        )
+        preparedDraft = applyExpressWarehouseScreening(currentDraft, screening)
       }
 
       if (decision === 'CANCEL') {
@@ -376,9 +364,7 @@ export function useExpressWarehouse({
       latestDraft.current = preparedDraft
       setDraft(preparedDraft)
       return { draft: preparedDraft, proceed: true }
-    },
-    [queryScreening, setDraft]
-  )
+    }, [queryScreening, setDraft])
 
   return {
     inputKey,

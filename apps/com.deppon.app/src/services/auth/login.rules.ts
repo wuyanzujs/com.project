@@ -1,8 +1,11 @@
-import { APP_RUNTIME_CONFIG } from '../../shared/config/runtime'
+import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
 import type { LoginRegisterRecord, LoginRequest } from './types'
 
-const EMPTY_REGISTER_RECORD: Omit<LoginRegisterRecord, 'registerPage' | 'sysCode'> = {
+const EMPTY_REGISTER_RECORD: Omit<
+  LoginRegisterRecord,
+  'registerPage' | 'sysCode'
+> = {
   lanuchScene: '',
   lanuchPage: '',
   marketClass: '',

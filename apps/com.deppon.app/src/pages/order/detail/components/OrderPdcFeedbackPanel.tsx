@@ -1,8 +1,8 @@
 import { Text, View } from '@tarojs/components'
 
-import { AppDialog, AppPressable } from '../../../../shared/components'
+import type { OrderPdcFeedbackResult } from '@/services/order'
+import { AppDialog, AppPressable } from '@/shared/components'
 
-import type { OrderPdcFeedbackResult } from '../../../../services/order'
 
 import './OrderPdcFeedbackPanel.scss'
 
@@ -54,7 +54,9 @@ export function OrderPdcFeedbackPanel(props: {
           onPress={() => submit('N')}
         >
           <Text className='order-pdc-feedback__option-title'>否</Text>
-          <Text className='order-pdc-feedback__option-summary'>暂未收到货物</Text>
+          <Text className='order-pdc-feedback__option-summary'>
+            暂未收到货物
+          </Text>
         </AppPressable>
       </View>
       <AppPressable

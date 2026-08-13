@@ -5,14 +5,11 @@ import { type PropsWithChildren, type ReactNode } from 'react'
 import { type Edge } from 'react-native-safe-area-context'
 
 import {
-  APP_NATIVE_TOKENS,
-  APP_STYLE_COLORS
-} from '../../../styles/nativeTokens'
-import {
   AppKeyboardAvoidingView,
   AppSafeAreaView,
   AppStatusBar
-} from '../../native'
+} from '@/shared/native'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './index.scss'
 
@@ -57,11 +54,7 @@ export function AppPage({
       edges={[...SAFE_AREA_EDGES[safeArea]]}
     >
       <View
-        className={[
-          'app-page',
-          `app-page--${surface}`,
-          className
-        ]
+        className={['app-page', `app-page--${surface}`, className]
           .filter(Boolean)
           .join(' ')}
       >

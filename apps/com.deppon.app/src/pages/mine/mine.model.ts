@@ -1,16 +1,11 @@
-import { orderService } from '../../services/order'
-import { paymentService } from '../../services/payment'
-import { APP_ROUTES } from '../../shared/navigation/routes'
-
-import type { AppRoutePath } from '../../shared/navigation/routes'
-import type { AppWebSource } from '../../shared/webview/appWeb'
+import { orderService } from '@/services/order'
+import { paymentService } from '@/services/payment'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import type { AppRoutePath } from '@/shared/navigation/routes'
+import type { AppWebSource } from '@/shared/webview/appWeb'
 
 export type MineOrderCountKey =
-  | 'all'
-  | 'pickup'
-  | 'payment'
-  | 'transit'
-  | 'signed'
+  'all' | 'pickup' | 'payment' | 'transit' | 'signed'
 
 export type MineOrderCounts = Record<MineOrderCountKey, number | null>
 
@@ -50,6 +45,12 @@ export const QUICK_ENTRIES: MineEntry[] = [
     title: '地址簿',
     image: 'https://ca.deppon.com.cn/ows/assets/center2412/17.png',
     route: APP_ROUTES.contactList
+  },
+  {
+    title: '优惠券',
+    image: 'https://ca.deppon.com.cn/ows/assets/center2412/10.png',
+    route: APP_ROUTES.couponList,
+    login: true
   },
   {
     title: '偏好设置',

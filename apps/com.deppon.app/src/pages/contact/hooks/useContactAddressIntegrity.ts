@@ -5,14 +5,10 @@ import { useCallback, useRef, useState } from 'react'
 import {
   contactService,
   resolveContactAddressIntegrity
-} from '../../../services/contact'
+} from '@/services/contact'
+import type { Contact } from '@/services/contact'
 
-import type { Contact } from '../../../services/contact'
-
-export type ContactAddressIntegrityAction =
-  | 'continue'
-  | 'review'
-  | 'blocked'
+export type ContactAddressIntegrityAction = 'continue' | 'review' | 'blocked'
 
 interface ContactAddressIntegrityOptions {
   cancelText: string
