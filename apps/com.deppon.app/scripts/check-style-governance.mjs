@@ -83,7 +83,7 @@ const printSummary = snapshot => {
     `[style-governance] 业务 SCSS ${summary.scssFiles} 个，共 ${summary.lines} 行，token 接入 ${summary.tokenFiles} 个（${adoption}%）`
   )
   console.log(
-    `[style-governance] 存量：颜色 ${summary.rawColors}，字号 ${summary.rawFontSizes}，行高 ${summary.rawLineHeights}，圆角 ${summary.rawRadii}，字重 ${summary.rawFontWeights}`
+    `[style-governance] 存量：颜色 ${summary.rawColors}，字号 ${summary.rawFontSizes}，行高 ${summary.rawLineHeights}，圆角 ${summary.rawRadii}，字重 ${summary.rawFontWeights}，间距 ${summary.rawSpaces}`
   )
   console.log(
     `[style-governance] Native 颜色 ${summary.nativeColors}，父样式导入 ${summary.parentStyleImports}，legacy 全局类文件 ${summary.legacyGlobalClassFiles}，原生点击控件 ${summary.nativeClickHandlers}`
@@ -142,7 +142,8 @@ if (mode === 'report') {
           metrics.rawFontSizes +
           metrics.rawLineHeights +
           metrics.rawRadii +
-          metrics.rawFontWeights,
+          metrics.rawFontWeights +
+          metrics.rawSpaces,
         lines: metrics.lines
       }))
       .sort((left, right) => right.debt - left.debt || right.lines - left.lines)

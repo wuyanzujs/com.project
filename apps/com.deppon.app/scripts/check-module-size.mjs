@@ -29,7 +29,7 @@ const legacyBudgets = new Map([
       reason:
         '发票申请页复用同一套抬头、邮箱和提交流程承接运单开票与储值卡开票，当前冻结体量。'
     }
-  ],
+  ]
 ])
 
 function toPosixPath(filePath) {

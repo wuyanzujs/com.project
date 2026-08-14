@@ -195,7 +195,6 @@ function checkNativeReleaseLanes() {
     )
   }
 
-
   if (!iosFastfile.includes('iOS release is disabled until signing')) {
     violations.push(
       '在锁文件和签名流水线就绪前，iOS Fastlane release 必须显式禁用。'

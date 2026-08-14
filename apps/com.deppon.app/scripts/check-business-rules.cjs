@@ -15,8 +15,7 @@ globalThis.__APP_RUNTIME_CONFIG__ = {
   webBaseURL: 'https://owstest.deppon.com',
   serviceWebURL:
     'https://osstest.deppon.com.cn/dzfront/web/home?showChat=true&layout=true',
-  memberWebURL:
-    'https://mastest.deppon.com.cn/cms-h5/h5.html#/welfare-center',
+  memberWebURL: 'https://mastest.deppon.com.cn/cms-h5/h5.html#/welfare-center',
   webAllowedHosts: [
     'owstest.deppon.com',
     'ows.deppon.com',
@@ -41,6 +40,24 @@ require('ts-node').register({
   }
 })
 
+// ts-node transpileOnly does not honour tsconfig "paths"; resolve "@/*"
+// aliases manually so service modules can import shared code via "@/...".
+const path = require('node:path')
+const Module = require('node:module')
+const appSrcRoot = path.join(__dirname, '..', 'src')
+const originalResolveFilename = Module._resolveFilename
+Module._resolveFilename = function (request, parent, ...rest) {
+  if (request.startsWith('@/')) {
+    return originalResolveFilename.call(
+      this,
+      path.join(appSrcRoot, request.slice(2)),
+      parent,
+      ...rest
+    )
+  }
+  return originalResolveFilename.call(this, request, parent, ...rest)
+}
+
 const TaroModule = require('@tarojs/taro')
 const Taro = TaroModule.default ?? TaroModule
 
@@ -63,9 +80,7 @@ const {
   expressCouponService,
   validateCouponExchangeCode
 } = require('../src/services/coupon')
-const {
-  expressCouponApi
-} = require('../src/services/coupon/expressCoupon.api')
+const { expressCouponApi } = require('../src/services/coupon/expressCoupon.api')
 const {
   isAlreadyBoundCourierMessage,
   normalizeCourier
@@ -314,9 +329,7 @@ const {
 const {
   invoiceTaxpayerService
 } = require('../src/services/invoice/invoice.taxpayer.service')
-const {
-  invoiceService
-} = require('../src/services/invoice/invoice.service')
+const { invoiceService } = require('../src/services/invoice/invoice.service')
 const {
   createMemberMasUrl,
   createMemberWelfareUrl
@@ -578,7 +591,9 @@ const {
   isSameAppUser,
   shouldClearAccountScopedCache
 } = require('../src/services/auth/sessionIdentity')
-const { sanitizeAppRouteUrl } = require('../src/shared/navigation/appNavigation')
+const {
+  sanitizeAppRouteUrl
+} = require('../src/shared/navigation/appNavigation')
 const {
   dispatchAppRoute,
   dispatchAppRouteAsync
@@ -841,11 +856,11 @@ const tests = [
       })
 
       assert.equal(
-        tokenViolations.some((message) => message.includes('固定 token')),
+        tokenViolations.some(message => message.includes('固定 token')),
         true
       )
       assert.equal(
-        userInfoViolations.some((message) => message.includes('用户名或密码')),
+        userInfoViolations.some(message => message.includes('用户名或密码')),
         true
       )
     }
@@ -957,10 +972,7 @@ const tests = [
         fileCode: ''
       })
       assert.equal(getExpressReturnBillPpcType('NO_RETURN_SIGNED'), 'NONE')
-      assert.equal(
-        getExpressReturnBillPpcType('CUSTOMER_SIGNED_FAX'),
-        'FAX'
-      )
+      assert.equal(getExpressReturnBillPpcType('CUSTOMER_SIGNED_FAX'), 'FAX')
       assert.equal(
         getExpressReturnBillPpcType('CUSTOMER_SIGNED_ORIGINAL'),
         'ORIGINAL'
@@ -975,9 +987,12 @@ const tests = [
       )
       assert.equal(isExpressCloudSignType('RETURNBILL_TYPE_ONLINE'), true)
       assert.equal(isExpressCloudSignType('CUSTOMER_SIGNED_FAX'), false)
-      assert.equal(getExpressReturnBillOptions('DCZP').some(item =>
-        isExpressCloudSignType(item.value)
-      ), false)
+      assert.equal(
+        getExpressReturnBillOptions('DCZP').some(item =>
+          isExpressCloudSignType(item.value)
+        ),
+        false
+      )
     }
   },
   {
@@ -1063,7 +1078,10 @@ const tests = [
       }
       const paperRequest = buildCreateOrderRequest(paperDraft)
 
-      assert.equal(paperRequest.receive[0].returnBillType, 'CUSTOMER_SIGNED_ORIGINAL')
+      assert.equal(
+        paperRequest.receive[0].returnBillType,
+        'CUSTOMER_SIGNED_ORIGINAL'
+      )
       assert.equal(
         paperRequest.receive[0].orderExtendFields.some(
           field => field.key === 'returnBillQty' && field.value === 2
@@ -1102,7 +1120,10 @@ const tests = [
       }
       const cloudRequest = buildCreateOrderRequest(cloudDraft)
 
-      assert.equal(cloudRequest.receive[0].returnBillType, 'RETURNBILL_TYPE_ONLINE')
+      assert.equal(
+        cloudRequest.receive[0].returnBillType,
+        'RETURNBILL_TYPE_ONLINE'
+      )
       assert.equal(cloudRequest.receive[0].returnRequirement, '')
       assert.equal(cloudRequest.receive[0].customReturnRequirement, '')
       assert.deepEqual(
@@ -1122,10 +1143,7 @@ const tests = [
         buildCreateOrderRequest(dcCloudDraft).receive[0].returnBillType,
         'NO_RETURN_SIGNED'
       )
-      assert.equal(
-        buildFreightRequest(dcCloudDraft).returnBillType,
-        'NONE'
-      )
+      assert.equal(buildFreightRequest(dcCloudDraft).returnBillType, 'NONE')
 
       const switchedToOnline = updateExpressReturnBillDraft(
         paperDraft.service.returnBill,
@@ -1165,7 +1183,10 @@ const tests = [
         'APP'
       )
 
-      assert.equal(saved.template.addedService.returnBillType, 'ORIGINAL_ONLINE')
+      assert.equal(
+        saved.template.addedService.returnBillType,
+        'ORIGINAL_ONLINE'
+      )
       assert.equal(saved.template.addedService.returnRequirement, 'R2')
       assert.equal('fileCode' in saved.template.addedService, false)
 
@@ -1404,10 +1425,7 @@ const tests = [
       }
       const fetchHeadersWithSetCookie = {
         getSetCookie() {
-          return [
-            'foo=bar; Path=/',
-            'ECO_TOKEN=rn-set-cookie-token; Path=/'
-          ]
+          return ['foo=bar; Path=/', 'ECO_TOKEN=rn-set-cookie-token; Path=/']
         }
       }
 
@@ -1420,9 +1438,7 @@ const tests = [
         'rn-token'
       )
       assert.equal(
-        extractEcoToken(
-          getSetCookieFromHeaders(fetchHeadersWithSetCookie)
-        ),
+        extractEcoToken(getSetCookieFromHeaders(fetchHeadersWithSetCookie)),
         'rn-set-cookie-token'
       )
       assert.equal(
@@ -1522,9 +1538,7 @@ const tests = [
         assert.deepEqual(readUrls, [
           'https://owstest.deppon.com/gwapi/user/login'
         ])
-        assert.deepEqual(writtenCookies, [
-          'ECO_TOKEN=native-login-token;'
-        ])
+        assert.deepEqual(writtenCookies, ['ECO_TOKEN=native-login-token;'])
 
         await removeStorageValue(CACHE_KEYS.cookie)
         assert.equal(
@@ -1678,10 +1692,15 @@ const tests = [
     name: 'navigation does not rewrite an explicit login route to mine',
     run() {
       assert.equal(
-        sanitizeAppRouteUrl('/pages/login/index?redirectUrl=%2Fpages%2Fmine%2Findex'),
+        sanitizeAppRouteUrl(
+          '/pages/login/index?redirectUrl=%2Fpages%2Fmine%2Findex'
+        ),
         '/pages/login/index?redirectUrl=%2Fpages%2Fmine%2Findex'
       )
-      assert.equal(sanitizeAppRouteUrl('https://example.com'), '/pages/mine/index')
+      assert.equal(
+        sanitizeAppRouteUrl('https://example.com'),
+        '/pages/mine/index'
+      )
     }
   },
   {
@@ -2143,9 +2162,7 @@ const tests = [
           async read() {
             readCount += 1
 
-            return readCount >= 3
-              ? 'ECO_TOKEN=delayed-native-token;'
-              : ''
+            return readCount >= 3 ? 'ECO_TOKEN=delayed-native-token;' : ''
           },
           async write() {
             return true
@@ -2226,10 +2243,7 @@ const tests = [
 
       await clearAccountScopedCache({ preserveLoginReturnDrafts: true })
 
-      assert.equal(
-        getStorageValue(expressDraftKey),
-        'anonymous-express-draft'
-      )
+      assert.equal(getStorageValue(expressDraftKey), 'anonymous-express-draft')
       assert.equal(getStorageValue(historyKey), '')
 
       await clearAccountScopedCache()
@@ -2250,10 +2264,7 @@ const tests = [
         '{"mobile":"13800138000"}'
       )
       await setStorageValue(CACHE_KEYS.userSession, 'legacy-session')
-      await setStorageValue(
-        CACHE_KEYS.expressPrivacyConfirm,
-        'device-consent'
-      )
+      await setStorageValue(CACHE_KEYS.expressPrivacyConfirm, 'device-consent')
 
       const warehouseMessage = JSON.stringify({
         event: 'SEND_WAREHOUSE',
@@ -2291,11 +2302,9 @@ const tests = [
         true
       )
       assert.equal(
-        appWebMessageBridge.stage(
-          'EXPRESS_WAREHOUSE',
-          warehouseMessage,
-          { stagingId: 'SESSION-PENDING-STAGE' }
-        ).handled,
+        appWebMessageBridge.stage('EXPRESS_WAREHOUSE', warehouseMessage, {
+          stagingId: 'SESSION-PENDING-STAGE'
+        }).handled,
         true
       )
 
@@ -2310,11 +2319,9 @@ const tests = [
         true
       )
       assert.equal(
-        appWebMessageBridge.stage(
-          'EXPRESS_WAREHOUSE',
-          warehouseMessage,
-          { stagingId: 'SESSION-CLEAR-STAGE' }
-        ).handled,
+        appWebMessageBridge.stage('EXPRESS_WAREHOUSE', warehouseMessage, {
+          stagingId: 'SESSION-CLEAR-STAGE'
+        }).handled,
         true
       )
 
@@ -2550,10 +2557,7 @@ const tests = [
         ),
         '/pages/order/detail/index?keyword=A%26B%3DC'
       )
-      assert.equal(
-        normalizeAppRouteUrlParam('https%3A%2F%2Fexample.com'),
-        ''
-      )
+      assert.equal(normalizeAppRouteUrlParam('https%3A%2F%2Fexample.com'), '')
     }
   },
   {
@@ -2756,10 +2760,7 @@ const tests = [
         const failed = await customerService.queryCustomerOverview()
 
         assert.equal(failed.status, false)
-        assert.equal(
-          failed.message,
-          '客户接口暂不可用；额度接口暂不可用'
-        )
+        assert.equal(failed.message, '客户接口暂不可用；额度接口暂不可用')
       } finally {
         customerApi.queryCustomerInfo = originalInfo
         customerApi.queryCustomerCapability = originalCapability
@@ -2807,18 +2808,13 @@ const tests = [
         }
       )
       assert.equal(
-        appWebMessageBridge.stage(
-          'CUSTOMER_CENTER',
-          message
-        ).handled,
+        appWebMessageBridge.stage('CUSTOMER_CENTER', message).handled,
         false
       )
       assert.equal(
-        appWebMessageBridge.stage(
-          'EXPRESS_COLLECTION_ACCOUNT',
-          message,
-          { messageContext: 'EXPRESS_DRAFT' }
-        ).handled,
+        appWebMessageBridge.stage('EXPRESS_COLLECTION_ACCOUNT', message, {
+          messageContext: 'EXPRESS_DRAFT'
+        }).handled,
         false
       )
       assert.equal(
@@ -2826,19 +2822,15 @@ const tests = [
         true
       )
       assert.equal(
-        appWebMessageBridge.stage(
-          'EXPRESS_COLLECTION_ACCOUNT',
-          message,
-          { messageContext: 'ORDER_EDIT:ORDER_001' }
-        ).handled,
+        appWebMessageBridge.stage('EXPRESS_COLLECTION_ACCOUNT', message, {
+          messageContext: 'ORDER_EDIT:ORDER_001'
+        }).handled,
         false
       )
       assert.deepEqual(
-        appWebMessageBridge.stage(
-          'EXPRESS_COLLECTION_ACCOUNT',
-          message,
-          { messageContext: 'EXPRESS_DRAFT' }
-        ),
+        appWebMessageBridge.stage('EXPRESS_COLLECTION_ACCOUNT', message, {
+          messageContext: 'EXPRESS_DRAFT'
+        }),
         {
           handled: true,
           closeAfterReceive: true
@@ -2865,27 +2857,21 @@ const tests = [
         true
       )
       assert.equal(
-        appWebMessageBridge.stage(
-          'EXPRESS_COLLECTION_ACCOUNT',
-          message,
-          { messageContext: 'ORDER_EDIT:ORDER_001' }
-        ).handled,
+        appWebMessageBridge.stage('EXPRESS_COLLECTION_ACCOUNT', message, {
+          messageContext: 'ORDER_EDIT:ORDER_001'
+        }).handled,
         false
       )
       assert.equal(
-        appWebMessageBridge.stage(
-          'ORDER_EDIT_COLLECTION_ACCOUNT',
-          message,
-          { messageContext: 'ORDER_EDIT:ORDER_002' }
-        ).handled,
+        appWebMessageBridge.stage('ORDER_EDIT_COLLECTION_ACCOUNT', message, {
+          messageContext: 'ORDER_EDIT:ORDER_002'
+        }).handled,
         false
       )
       assert.equal(
-        appWebMessageBridge.stage(
-          'ORDER_EDIT_COLLECTION_ACCOUNT',
-          message,
-          { messageContext: 'ORDER_EDIT:ORDER_001' }
-        ).handled,
+        appWebMessageBridge.stage('ORDER_EDIT_COLLECTION_ACCOUNT', message, {
+          messageContext: 'ORDER_EDIT:ORDER_001'
+        }).handled,
         true
       )
       assert.equal(
@@ -2939,11 +2925,8 @@ const tests = [
       appWebMessageBridge.clear()
       assert.equal(appWebMessageBridge.expectOnlineSign(context), true)
       assert.equal(
-        appWebMessageBridge.stage(
-          'CUSTOMER_CENTER',
-          validMessage,
-          context
-        ).handled,
+        appWebMessageBridge.stage('CUSTOMER_CENTER', validMessage, context)
+          .handled,
         false
       )
       assert.equal(
@@ -2973,13 +2956,10 @@ const tests = [
         ),
         { handled: true, closeAfterReceive: true }
       )
-      assert.deepEqual(
-        appWebMessageBridge.consumeOnlineSign(context),
-        {
-          context,
-          fileCode: 'FILE-CLOUD-001'
-        }
-      )
+      assert.deepEqual(appWebMessageBridge.consumeOnlineSign(context), {
+        context,
+        fileCode: 'FILE-CLOUD-001'
+      })
       assert.equal(appWebMessageBridge.consumeOnlineSign(context), null)
 
       assert.equal(appWebMessageBridge.expectOnlineSign(context), true)
@@ -3440,10 +3420,10 @@ const tests = [
           address: '明珠路100号'
         }
       )
-      assert.deepEqual(
-        resolveContactAddressIntegrity({ status: true }),
-        { kind: 'pass', message: '' }
-      )
+      assert.deepEqual(resolveContactAddressIntegrity({ status: true }), {
+        kind: 'pass',
+        message: ''
+      })
       assert.deepEqual(
         resolveContactAddressIntegrity({
           status: false,
@@ -3820,10 +3800,9 @@ const tests = [
         assert.equal(response.result.available[0].canUse, true)
         assert.equal(response.result.unavailable.length, 1)
         assert.equal(response.result.unavailable[0].canUse, false)
-        assert.deepEqual(
-          response.result.unavailable[0].raw.useLimit,
-          ['当前产品不可用']
-        )
+        assert.deepEqual(response.result.unavailable[0].raw.useLimit, [
+          '当前产品不可用'
+        ])
       } finally {
         expressCouponApi.queryOrderCoupons = originalQueryOrderCoupons
       }
@@ -4075,10 +4054,7 @@ const tests = [
       assert.equal(freightRequest.packageLtlType, '')
       assert.equal(freightRequest.unpackingWoodPackagingNumber, 0)
       assert.equal(freightRequest.unpackingNonWoodPackagingNumber, 0)
-      assert.deepEqual(
-        freightRequest.packageInfoList,
-        expectedPackageInfoList
-      )
+      assert.deepEqual(freightRequest.packageInfoList, expectedPackageInfoList)
       assert.deepEqual(orderRequest.packageInfoList, expectedPackageInfoList)
       assert.deepEqual(orderRequest.unpackageLtlInfo, {
         unpackingNonWoodPackagingNumber: 0,
@@ -4140,13 +4116,7 @@ const tests = [
         },
         packaging: {
           cartonCode: 'ZX_DP_04',
-          woodenCodes: [
-            'WOOD_02',
-            'WOOD_03',
-            'WOOD_04',
-            'WOOD_01',
-            'WOOD_02'
-          ],
+          woodenCodes: ['WOOD_02', 'WOOD_03', 'WOOD_04', 'WOOD_01', 'WOOD_02'],
           unpackingCodes: []
         }
       }
@@ -4299,10 +4269,7 @@ const tests = [
         unpackingCodes: ['UNPACKING_02']
       })
       assert.equal(updated.selectedProduct, null)
-      assert.equal(
-        updated.quoteStaleReason,
-        '包装服务变化，请重新获取价格'
-      )
+      assert.equal(updated.quoteStaleReason, '包装服务变化，请重新获取价格')
       assert.equal(source.packaging.cartonCode, '')
       assert.deepEqual(source.packaging.woodenCodes, [])
       assert.deepEqual(source.packaging.unpackingCodes, [])
@@ -4519,10 +4486,7 @@ const tests = [
 
       assert.equal(draft.collection.amount, 125.56)
       assert.equal(draft.selectedProduct, null)
-      assert.equal(
-        draft.quoteStaleReason,
-        '代收货款信息变化，请重新获取价格'
-      )
+      assert.equal(draft.quoteStaleReason, '代收货款信息变化，请重新获取价格')
 
       draft = updateExpressCollectionDetails(draft, {
         account: ' 6222 0000 1234 ',
@@ -4598,17 +4562,14 @@ const tests = [
         ...createValidExpressDraft(),
         selectedProduct: product
       }
-      let draft = updateExpressDeliveryPreference(
-        baseDraft,
-        {
-          type: 'SCHEDULED',
-          scheduledWindow: createExpressScheduledWindow(
-            '2026-07-16',
-            '14:00-16:00'
-          ),
-          availabilityKey: createExpressDeliveryAvailabilityKey(baseDraft)
-        }
-      )
+      let draft = updateExpressDeliveryPreference(baseDraft, {
+        type: 'SCHEDULED',
+        scheduledWindow: createExpressScheduledWindow(
+          '2026-07-16',
+          '14:00-16:00'
+        ),
+        availabilityKey: createExpressDeliveryAvailabilityKey(baseDraft)
+      })
 
       assert.equal(draft.selectedProduct, null)
       assert.equal(draft.quoteStaleReason, '派送偏好变化，请重新获取价格')
@@ -4618,13 +4579,18 @@ const tests = [
       const freightRequest = buildFreightRequest(draft)
       const orderRequest = buildCreateOrderRequest(draft)
 
-      assert.deepEqual(validateExpressDeliveryPreference(draft, {
-        requireProduct: true
-      }), [])
+      assert.deepEqual(
+        validateExpressDeliveryPreference(draft, {
+          requireProduct: true
+        }),
+        []
+      )
       assert.equal(freightRequest.appointmentDelivery, 'Y')
       assert.equal(freightRequest.nightDelivery, '')
-      assert.equal(orderRequest.receive[0].appointmentDeliveryTime,
-        '2026-07-16 14:00-16:00')
+      assert.equal(
+        orderRequest.receive[0].appointmentDeliveryTime,
+        '2026-07-16 14:00-16:00'
+      )
       assert.deepEqual(orderRequest.receive[0].orderExtendFields, [
         { key: 'isAppointmentDeliver', value: 'Y' },
         { key: 'nightAccept', value: 'N' }
@@ -5013,18 +4979,18 @@ const tests = [
 
       assert.equal(selected.pickup.type, 'NIGHT')
       assert.equal(selected.pickup.nightNoticeAccepted, true)
-      assert.deepEqual(validateExpressPickupTime(selected, {
-        now: beforeCutoff
-      }), [])
+      assert.deepEqual(
+        validateExpressPickupTime(selected, {
+          now: beforeCutoff
+        }),
+        []
+      )
       assert.equal(
         isExpressNightPickupTimeValid(selected.pickup.time, atCutoff),
         false
       )
       assert.equal(
-        isExpressNightPickupTimeValid(
-          '2026-07-14 06:00-08:00',
-          atCutoff
-        ),
+        isExpressNightPickupTimeValid('2026-07-14 06:00-08:00', atCutoff),
         true
       )
       assert.equal(
@@ -5096,10 +5062,7 @@ const tests = [
       }
       const quickRequest = buildCreateOrderRequest(quickDraft)
 
-      assert.equal(
-        quickRequest.receive[0].beginAcceptTime,
-        '下单后 1 小时内'
-      )
+      assert.equal(quickRequest.receive[0].beginAcceptTime, '下单后 1 小时内')
       assert.equal(quickRequest.receive[0].currentFirstTime, 'Y')
       assert.deepEqual(quickRequest.receive[0].orderExtendFields, [
         { key: 'nightAccept', value: 'N' }
@@ -5112,14 +5075,11 @@ const tests = [
     name: 'express draft bridge isolates nested night pickup capability',
     run() {
       const draft = createValidExpressDraft()
-      const capability = createExpressPickupNightCapability(
-        draft,
-        {
-          nightPickUpEnable: true,
-          startTime: '18:00:00',
-          endTime: '23:00:00'
-        }
-      )
+      const capability = createExpressPickupNightCapability(draft, {
+        nightPickUpEnable: true,
+        startTime: '18:00:00',
+        endTime: '23:00:00'
+      })
       const source = {
         ...draft,
         pickup: {
@@ -5159,10 +5119,7 @@ const tests = [
       const staged = templateDraftBridge.consume()
 
       assert.notEqual(carried.insurance, source.insurance)
-      assert.notEqual(
-        carried.insurance.capability,
-        source.insurance.capability
-      )
+      assert.notEqual(carried.insurance.capability, source.insurance.capability)
       assert.notEqual(staged.insurance.capability, source.insurance.capability)
       assert.notEqual(carried.insurance.capability.inputKey, 'mutated')
       assert.equal(carried.insurance.limit, 750000)
@@ -5189,10 +5146,7 @@ const tests = [
         '服务方式变化，请重新获取价格'
       )
       assert.equal(pickupDraft.pickup.dispatch, 'N')
-      assert.equal(
-        pickupDraft.quoteStaleReason,
-        '取件方式变化，请重新获取价格'
-      )
+      assert.equal(pickupDraft.quoteStaleReason, '取件方式变化，请重新获取价格')
 
       const preferenceDraft = updateExpressDeliveryPreference(draft, {
         type: 'NOTIFY_SENDER'
@@ -5269,7 +5223,10 @@ const tests = [
       assert.equal(swappedDraft.consignee.name, '张三')
       assert.equal(swappedDraft.pickup.time, '')
       assert.equal(swappedDraft.pickup.stationCode, '')
-      assert.equal(swappedDraft.quoteStaleReason, '收寄地址互换，请重新获取价格')
+      assert.equal(
+        swappedDraft.quoteStaleReason,
+        '收寄地址互换，请重新获取价格'
+      )
 
       const senderUpdated = setExpressContact(
         createValidExpressDraft(),
@@ -5281,7 +5238,10 @@ const tests = [
       )
       assert.equal(senderUpdated.selectedProduct, null)
       assert.equal(senderUpdated.pickup.time, '')
-      assert.equal(senderUpdated.quoteStaleReason, '寄件地址变化，请重新获取价格')
+      assert.equal(
+        senderUpdated.quoteStaleReason,
+        '寄件地址变化，请重新获取价格'
+      )
     }
   },
   {
@@ -6481,7 +6441,7 @@ const tests = [
         message: '',
         result: { orderFlag: 'Y' }
       })
-      expressApi.createOrder = async (request) => {
+      expressApi.createOrder = async request => {
         createCallCount += 1
         return {
           status: true,
@@ -6774,10 +6734,7 @@ const tests = [
       assert.equal(result.list[0].waybillNumber, 'DPK123456789')
       assert.equal(result.list[0].recipientPhone, '138****8000')
       assert.equal(result.list[0].address, '上海市青浦区明珠路100号')
-      assert.equal(
-        createPrintRecipientAddress('', '', '', ''),
-        '地址信息暂缺'
-      )
+      assert.equal(createPrintRecipientAddress('', '', '', ''), '地址信息暂缺')
       assert.equal(
         normalizePrintListResult(
           {
@@ -7213,13 +7170,10 @@ const tests = [
           source: 'PAYMENT_LIST'
         }).includes('detailNo=PAY_DETAIL_001')
       )
-      assert.deepEqual(
-        normalizePaymentCommand({ payStatus: 'PAY_SUCCESS' }),
-        {
-          kind: 'settled',
-          transactionId: undefined
-        }
-      )
+      assert.deepEqual(normalizePaymentCommand({ payStatus: 'PAY_SUCCESS' }), {
+        kind: 'settled',
+        transactionId: undefined
+      })
       assert.equal(
         normalizePaymentCommand({ orderInfo: 'alipay-order' }).channel,
         'alipay'
@@ -7392,17 +7346,11 @@ const tests = [
       assert.equal(parseInvoiceCenterTab('history'), 'history')
       assert.equal(parseInvoiceCenterTab('unknown'), 'orders')
       assert.equal(
-        getInvoiceOrderAuthValidationMessage(
-          { authType: '02' },
-          '123'
-        ),
+        getInvoiceOrderAuthValidationMessage({ authType: '02' }, '123'),
         '请输入付款人手机号后四位'
       )
       assert.equal(
-        getInvoiceOrderAuthValidationMessage(
-          { authType: '04' },
-          '123456'
-        ),
+        getInvoiceOrderAuthValidationMessage({ authType: '04' }, '123456'),
         ''
       )
       assert.equal(calculateInvoiceOrderAuthCountdown(1000, 30500), 31)
@@ -7424,7 +7372,10 @@ const tests = [
         invoiceService.submitApplyDraft,
         invoiceApplyService.submitApplyDraft
       )
-      assert.equal(invoiceService.queryPreview, invoiceApplyService.queryPreview)
+      assert.equal(
+        invoiceService.queryPreview,
+        invoiceApplyService.queryPreview
+      )
       assert.equal(invoiceService.queryOrders, invoiceCenterService.queryOrders)
       assert.equal(
         invoiceService.queryHistory,
@@ -7870,9 +7821,7 @@ const tests = [
         blankOpeningList: [
           {
             date: '2026-07-15',
-            dateList: [
-              { time: '14:00', text: '14:00-16:00', type: 'DISABLE' }
-            ]
+            dateList: [{ time: '14:00', text: '14:00-16:00', type: 'DISABLE' }]
           }
         ]
       })
@@ -7881,10 +7830,15 @@ const tests = [
 
       assert.equal(options.length, 1)
       assert.equal(
-        items.some(item => item.type === 'NORMAL' && item.text.includes('小时')),
+        items.some(
+          item => item.type === 'NORMAL' && item.text.includes('小时')
+        ),
         false
       )
-      assert.equal(items.some(item => item.type === 'NIGHT'), true)
+      assert.equal(
+        items.some(item => item.type === 'NIGHT'),
+        true
+      )
       assert.equal(
         options[0].timeOptions.find(item => item.time === '14:00').disabled,
         true
@@ -7938,9 +7892,7 @@ const tests = [
         openingList: [
           {
             date: '2026-07-15',
-            dateList: [
-              { time: '20:00', text: '20:00-21:00', type: 'NIGHT' }
-            ]
+            dateList: [{ time: '20:00', text: '20:00-21:00', type: 'NIGHT' }]
           }
         ],
         nightCapability: capability
@@ -7977,9 +7929,7 @@ const tests = [
         openingList: [
           {
             date: '2026-07-16',
-            dateList: [
-              { time: '10:00', text: '10:00-12:00', type: 'NORMAL' }
-            ]
+            dateList: [{ time: '10:00', text: '10:00-12:00', type: 'NORMAL' }]
           }
         ],
         nightCapability: capability
@@ -8018,10 +7968,7 @@ const tests = [
       }
       const diff = createOrderEditScheduleRequestDiff(changed, origin)
 
-      assert.deepEqual(diff.changedFields, [
-        '期望上门时间',
-        '送货方式'
-      ])
+      assert.deepEqual(diff.changedFields, ['期望上门时间', '送货方式'])
       assert.deepEqual(diff.request, {
         beginAcceptTime: '2026-07-15 20:00',
         channelType: 'VISITING_SERVICE',
@@ -8104,10 +8051,7 @@ const tests = [
         origin
       )
 
-      assert.deepEqual(preview.changedFields, [
-        '保价金额',
-        '期望上门时间'
-      ])
+      assert.deepEqual(preview.changedFields, ['保价金额', '期望上门时间'])
       assert.deepEqual(preview.request.orderExtendFields, [
         { key: 'insuranceSource', value: '' },
         { key: 'nightAccept', value: 'Y' },
@@ -8274,10 +8218,9 @@ const tests = [
 
       assert.deepEqual(draft.packaging, { count: 4 })
       assert.equal(normalizeOrderEditPackagingCountInput('00a12'), '12')
-      assert.deepEqual(
-        updateOrderEditPackagingCount(draft.packaging, 1000),
-        { count: ORDER_EDIT_PACKAGING_MAX_COUNT }
-      )
+      assert.deepEqual(updateOrderEditPackagingCount(draft.packaging, 1000), {
+        count: ORDER_EDIT_PACKAGING_MAX_COUNT
+      })
       assert.equal(
         getOrderEditPackagingFee(draft.packaging),
         4 * ORDER_EDIT_PACKAGING_UNIT_FEE
@@ -8344,9 +8287,7 @@ const tests = [
         createOrderDetail({
           transportMode: 'PACKAGE',
           insuredAmount: '1200',
-          orderExtendFields: [
-            { key: 'insuranceSource', value: 'USER' }
-          ]
+          orderExtendFields: [{ key: 'insuranceSource', value: 'USER' }]
         })
       )
 
@@ -8403,10 +8344,7 @@ const tests = [
       )
       assert.equal(locked.lockedType, 'QEB')
       assert.equal(locked.editable, false)
-      assert.deepEqual(
-        updateOrderEditInsuranceAmount(locked, '5000'),
-        locked
-      )
+      assert.deepEqual(updateOrderEditInsuranceAmount(locked, '5000'), locked)
 
       const worryFree = createOrderEditInsuranceDraft(
         createOrderDetail({
@@ -8439,13 +8377,13 @@ const tests = [
         ...origin,
         insurance: changedInsurance
       }
-      const changedPreview = buildOrderModifyRequest(
-        changedDraft,
-        origin
-      )
+      const changedPreview = buildOrderModifyRequest(changedDraft, origin)
 
       assert.equal(changedInsurance.amount, 2500.13)
-      assert.equal(isOrderEditInsuranceChanged(changedInsurance, origin.insurance), true)
+      assert.equal(
+        isOrderEditInsuranceChanged(changedInsurance, origin.insurance),
+        true
+      )
       assert.deepEqual(changedPreview.changedFields, ['保价金额'])
       assert.deepEqual(changedPreview.request, {
         orderNumber: 'ORDER_001',
@@ -8488,9 +8426,7 @@ const tests = [
       assert.deepEqual(freePreview.request, {
         orderNumber: 'ORDER_001',
         insuredAmount: 2000,
-        orderExtendFields: [
-          { key: 'insuranceSource', value: 'DEFAULT' }
-        ]
+        orderExtendFields: [{ key: 'insuranceSource', value: 'DEFAULT' }]
       })
     }
   },
@@ -8651,13 +8587,9 @@ const tests = [
       })
 
       assert.ok(
-        invalidCollection.messages.includes(
-          '代收货款金额不能超过 1000000 元'
-        )
+        invalidCollection.messages.includes('代收货款金额不能超过 1000000 元')
       )
-      assert.ok(
-        invalidCollection.messages.includes('请选择代收货款收款账户')
-      )
+      assert.ok(invalidCollection.messages.includes('请选择代收货款收款账户'))
       assert.ok(
         invalidCollection.messages.includes('请阅读并同意代收货款服务协议')
       )
@@ -8667,9 +8599,7 @@ const tests = [
       })
 
       assert.ok(
-        invalidPackaging.messages.includes(
-          '打包服务件数须为 0 到 999 的整数'
-        )
+        invalidPackaging.messages.includes('打包服务件数须为 0 到 999 的整数')
       )
       assert.ok(validation.messages.includes('请填写正确的货物重量'))
       assert.ok(validation.messages.includes('请填写正确的货物体积'))
@@ -8810,11 +8740,7 @@ const tests = [
         null
       )
       assert.equal(
-        createOrderPdcFeedbackContext(
-          signedOrder,
-          'PDC_KDYZJO',
-          true
-        ),
+        createOrderPdcFeedbackContext(signedOrder, 'PDC_KDYZJO', true),
         null
       )
     }
@@ -9030,9 +8956,7 @@ const tests = [
         code: 'T0101',
         title: '请选择主要原因',
         kind: 'LABEL',
-        labels: [
-          { id: 'LABEL_01', name: '服务专业', min: 4, max: 5 }
-        ]
+        labels: [{ id: 'LABEL_01', name: '服务专业', min: 4, max: 5 }]
       }
       const draft = {
         score: 5,
@@ -9126,20 +9050,15 @@ const tests = [
         labelContent,
         personType: 'consignee'
       })
-      assert.deepEqual(
-        updateOrderNpsScore(draft, 8),
-        {
-          score: 8,
-          category: '',
-          reasons: [],
-          content: ''
-        }
-      )
+      assert.deepEqual(updateOrderNpsScore(draft, 8), {
+        score: 8,
+        category: '',
+        reasons: [],
+        content: ''
+      })
       assert.deepEqual(ORDER_NPS_SURVEY_API_ENDPOINTS, {
-        query:
-          '/gwapi/commentService/eco/comment/queryCustomerQuestionnaire',
-        submit:
-          '/gwapi/commentService/eco/comment/addCustomerQuestionnaire'
+        query: '/gwapi/commentService/eco/comment/queryCustomerQuestionnaire',
+        submit: '/gwapi/commentService/eco/comment/addCustomerQuestionnaire'
       })
     }
   },
@@ -9282,7 +9201,10 @@ const tests = [
   {
     name: 'order evaluation normalizes pending and committed courier identity',
     run() {
-      const context = createOrderEvaluationContext(createOrderDetail(), 'sender')
+      const context = createOrderEvaluationContext(
+        createOrderDetail(),
+        'sender'
+      )
       const pending = createOrderEvaluationView(
         context,
         {
@@ -9381,7 +9303,10 @@ const tests = [
   {
     name: 'order evaluation draft resets labels and maps validated submit payload',
     run() {
-      const context = createOrderEvaluationContext(createOrderDetail(), 'sender')
+      const context = createOrderEvaluationContext(
+        createOrderDetail(),
+        'sender'
+      )
       const view = createOrderEvaluationView(
         context,
         {
@@ -9425,10 +9350,7 @@ const tests = [
         evaluationLabels: ['服务态度好']
       })
       assert.equal(applyOrderEvaluationSubmission(view, draft).committed, true)
-      assert.deepEqual(
-        updateOrderEvaluationLevel(draft, 4).selectedLabels,
-        []
-      )
+      assert.deepEqual(updateOrderEvaluationLevel(draft, 4).selectedLabels, [])
     }
   },
   {
@@ -9440,11 +9362,7 @@ const tests = [
         role: 'sender'
       }).find(item => item.kind === 'evaluate')
       const senderFallback = new URL(
-        createOrderEvaluationFallbackWebUri(
-          order,
-          'sender',
-          '13800138000'
-        ),
+        createOrderEvaluationFallbackWebUri(order, 'sender', '13800138000'),
         'https://owstest.deppon.com'
       )
       const receiverFallback = new URL(
@@ -9464,13 +9382,10 @@ const tests = [
       assert.equal(senderFallback.searchParams.get('scene'), 'S0505')
       assert.equal(senderFallback.searchParams.get('channel'), 'APP')
       assert.equal(receiverFallback.searchParams.get('scene'), 'S0907')
-      assert.deepEqual(
-        JSON.parse(senderFallback.searchParams.get('rowData')),
-        [
-          { field: 'orderNumber', data: 'ORDER_001' },
-          { field: 'waybillNumber', data: 'DPK123456789' }
-        ]
-      )
+      assert.deepEqual(JSON.parse(senderFallback.searchParams.get('rowData')), [
+        { field: 'orderNumber', data: 'ORDER_001' },
+        { field: 'waybillNumber', data: 'DPK123456789' }
+      ])
     }
   },
   {
@@ -9754,12 +9669,12 @@ const tests = [
         warningScreening
       )
       assert.ok(
-        validateExpressWarehouse(screenedWarningDraft, { requireScreening: true })
-          .includes('请确认进仓提示')
+        validateExpressWarehouse(screenedWarningDraft, {
+          requireScreening: true
+        }).includes('请确认进仓提示')
       )
-      const acknowledgedDraft = acknowledgeExpressWarehouseScreening(
-        screenedWarningDraft
-      )
+      const acknowledgedDraft =
+        acknowledgeExpressWarehouseScreening(screenedWarningDraft)
       assert.deepEqual(
         validateExpressWarehouse(acknowledgedDraft, { requireScreening: true }),
         []
@@ -9787,14 +9702,12 @@ const tests = [
 
       assert.equal(riskScreening.acknowledged, false)
       assert.ok(
-        validateExpressWarehouse(screenedRiskDraft, { requireScreening: true })
-          .includes('高风险进仓提示')
+        validateExpressWarehouse(screenedRiskDraft, {
+          requireScreening: true
+        }).includes('高风险进仓提示')
       )
 
-      const repeatedScreening = createExpressWarehouseScreening(
-        draft,
-        response
-      )
+      const repeatedScreening = createExpressWarehouseScreening(draft, response)
 
       assert.equal(repeatedScreening.autoSelected, false)
       assert.equal(repeatedScreening.acknowledged, true)
@@ -9818,8 +9731,7 @@ const tests = [
       }
 
       assert.equal(
-        createExpressWarehouseScreening(belowThreshold, response)
-          .autoSelected,
+        createExpressWarehouseScreening(belowThreshold, response).autoSelected,
         false
       )
     }
@@ -9856,11 +9768,7 @@ const tests = [
         omsProductCode: 'DEAP'
       })
 
-      for (const changed of [
-        addressChanged,
-        goodsChanged,
-        productChanged
-      ]) {
+      for (const changed of [addressChanged, goodsChanged, productChanged]) {
         assert.equal(changed.warehouse.screening.inputKey, '')
         assert.equal(isExpressWarehouseScreeningCurrent(changed), false)
       }
@@ -10135,8 +10043,7 @@ const tests = [
         warehouseCode: ' WH-CODE-001 ',
         warehouseRemark: ' 工作日进仓 '
       }
-      const createMessage = (event, args) =>
-        JSON.stringify({ event, args })
+      const createMessage = (event, args) => JSON.stringify({ event, args })
       const enabledMessage = createMessage('SEND_WAREHOUSE', {
         isWarehousingService: 'Y',
         payload: JSON.stringify(payload)
@@ -10170,16 +10077,11 @@ const tests = [
         { handled: false, closeAfterReceive: false }
       )
       assert.equal(appWebMessageBridge.consumeWarehouse(), null)
+      assert.equal(appWebMessageBridge.expectWarehouse(enabledContext), true)
       assert.equal(
-        appWebMessageBridge.expectWarehouse(enabledContext),
-        true
-      )
-      assert.equal(
-        appWebMessageBridge.stage(
-          'EXPRESS_WAREHOUSE',
-          enabledMessage,
-          { stagingId: 'WAREHOUSE-STAGE-OTHER' }
-        ).handled,
+        appWebMessageBridge.stage('EXPRESS_WAREHOUSE', enabledMessage, {
+          stagingId: 'WAREHOUSE-STAGE-OTHER'
+        }).handled,
         false
       )
       assert.equal(
@@ -10247,10 +10149,7 @@ const tests = [
         stagingId: 'WAREHOUSE-STAGE-DISABLED'
       }
 
-      assert.equal(
-        appWebMessageBridge.expectWarehouse(disabledContext),
-        true
-      )
+      assert.equal(appWebMessageBridge.expectWarehouse(disabledContext), true)
       assert.equal(
         appWebMessageBridge.stage(
           'EXPRESS_WAREHOUSE',
@@ -10397,7 +10296,13 @@ const tests = [
       const draft = createValidExpressDraft()
 
       try {
-        for (const result of [null, {}, { type: null }, { type: 5 }, { type: '03' }]) {
+        for (const result of [
+          null,
+          {},
+          { type: null },
+          { type: 5 },
+          { type: '03' }
+        ]) {
           expressApi.filterOrder = async () => ({ status: true, result })
 
           const response = await queryExpressWarehouseScreening(draft)
@@ -10505,20 +10410,11 @@ const tests = [
         assert.equal(capturedRequest.params.warehouseCode, 'WH-CODE-001')
         assert.equal(capturedRequest.params.jcType, '3')
 
-        const uri = new URL(
-          response.result.uri,
-          'https://owstest.deppon.com'
-        )
+        const uri = new URL(response.result.uri, 'https://owstest.deppon.com')
 
-        assert.equal(
-          uri.pathname,
-          '/depponmobile/mow/send/warehouse/index'
-        )
+        assert.equal(uri.pathname, '/depponmobile/mow/send/warehouse/index')
         assert.equal(uri.searchParams.get('warehouseId'), 'STAGE 001')
-        assert.equal(
-          uri.searchParams.get('ecoToken'),
-          'warehouse-token+/='
-        )
+        assert.equal(uri.searchParams.get('ecoToken'), 'warehouse-token+/=')
         assert.equal(uri.searchParams.get('source'), 'APP')
       } finally {
         expressApi.stageWarehouse = originalStageWarehouse
@@ -10550,7 +10446,7 @@ async function runTests() {
   console.log(`Business rule check passed: ${tests.length} cases`)
 }
 
-runTests().catch((error) => {
+runTests().catch(error => {
   console.error(error)
   process.exit(1)
 })

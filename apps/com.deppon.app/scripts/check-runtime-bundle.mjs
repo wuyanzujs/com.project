@@ -44,7 +44,7 @@ function findSourceMaps(directory) {
     return []
   }
 
-  return readdirSync(directory).flatMap((entry) => {
+  return readdirSync(directory).flatMap(entry => {
     const filePath = path.join(directory, entry)
 
     if (statSync(filePath).isDirectory()) {

@@ -37,7 +37,7 @@ function getRouteDefinitions() {
   }
 
   return [...listMatch[1].matchAll(/\{([\s\S]*?)\}/g)]
-    .map((match) => {
+    .map(match => {
       const block = match[1]
       const name = block.match(/name:\s*'([^']+)'/)?.[1] ?? ''
       const pagePath = block.match(/path:\s*'([^']+)'/)?.[1] ?? ''
@@ -49,7 +49,7 @@ function getRouteDefinitions() {
         loginRequired: /loginRequired:\s*true/.test(block)
       }
     })
-    .filter((item) => item.name || item.path)
+    .filter(item => item.name || item.path)
 }
 
 function hasDuplicate(values) {
@@ -62,10 +62,10 @@ function checkRouteDefinitions(routes) {
     return
   }
 
-  const names = routes.map((item) => item.name)
-  const paths = routes.map((item) => item.path)
+  const names = routes.map(item => item.name)
+  const paths = routes.map(item => item.path)
 
-  if (routes.some((item) => !item.name || !item.path)) {
+  if (routes.some(item => !item.name || !item.path)) {
     addViolation('routeRegistry.ts 中每个路由都必须声明 name 和 path。')
   }
 
@@ -86,7 +86,7 @@ function checkRouteDefinitions(routes) {
     }
   }
 
-  const mainRouteNames = routes.filter((item) => item.main).map((item) => item.name)
+  const mainRouteNames = routes.filter(item => item.main).map(item => item.name)
   const expectedMainRoutes = ['home', 'orderList', 'memberCenter', 'mine']
 
   if (mainRouteNames.join(',') !== expectedMainRoutes.join(',')) {
@@ -95,11 +95,11 @@ function checkRouteDefinitions(routes) {
     )
   }
 
-  if (!routes.some((item) => item.name === 'login')) {
+  if (!routes.some(item => item.name === 'login')) {
     addViolation('routeRegistry.ts 必须声明 login 路由。')
   }
 
-  if (!routes.some((item) => item.loginRequired)) {
+  if (!routes.some(item => item.loginRequired)) {
     addViolation('routeRegistry.ts 至少需要一个 loginRequired 受保护路由。')
   }
 }
@@ -118,7 +118,9 @@ function checkDerivedConsumers() {
   }
 
   if (!appNavigation.includes('APP_LOGIN_ROUTE_PATHS')) {
-    addViolation('appNavigation.ts 的登录守卫必须从 APP_LOGIN_ROUTE_PATHS 派生。')
+    addViolation(
+      'appNavigation.ts 的登录守卫必须从 APP_LOGIN_ROUTE_PATHS 派生。'
+    )
   }
 }
 

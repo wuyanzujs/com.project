@@ -118,13 +118,9 @@ const nativeIdentityChecks = [
 ]
 const rnBehaviorContractChecks = [
   {
-    filePath: path.join(
-      appRoot,
-      'src/shared/native/AppFormScrollView.tsx'
-    ),
+    filePath: path.join(appRoot, 'src/shared/native/AppFormScrollView.tsx'),
     expected: "keyboardShouldPersistTaps='handled'",
-    message:
-      '表单滚动容器必须保证键盘开启时按钮点击仍能交给业务 handler。'
+    message: '表单滚动容器必须保证键盘开启时按钮点击仍能交给业务 handler。'
   },
   {
     filePath: path.join(appRoot, 'src/pages/login/index.tsx'),
@@ -139,10 +135,7 @@ const rnBehaviorContractChecks = [
       'RN OWS 请求必须显式携带原生 cookie credentials，不能依赖 fetch 默认值。'
   },
   {
-    filePath: path.join(
-      appRoot,
-      'src/shared/native/AppSessionCookie.ts'
-    ),
+    filePath: path.join(appRoot, 'src/shared/native/AppSessionCookie.ts'),
     expected: "from '@preeternal/react-native-cookie-manager'",
     message:
       'RN ECO_TOKEN 必须通过 shared/native cookie facade 同步，业务层不能猜测 Set-Cookie。'
@@ -150,20 +143,17 @@ const rnBehaviorContractChecks = [
   {
     filePath: path.join(appRoot, 'src/request/cookieJar.ts'),
     expected: 'recoverSessionCookie',
-    message:
-      'RN 登录必须保留原生 cookie 异步写入后的有界恢复入口。'
+    message: 'RN 登录必须保留原生 cookie 异步写入后的有界恢复入口。'
   },
   {
     filePath: path.join(appRoot, 'src/pages/web/index.tsx'),
     expected: 'requiresAppWebLogin(target, hasValidSession())',
-    message:
-      '认证 WebView 必须在页面渲染前动态检查 App 登录态。'
+    message: '认证 WebView 必须在页面渲染前动态检查 App 登录态。'
   },
   {
     filePath: path.join(appRoot, 'src/pages/web/index.tsx'),
     expected: 'ensureAuthenticated({',
-    message:
-      '认证 WebView 必须通过统一登录守卫保存当前 App 路由并回跳。'
+    message: '认证 WebView 必须通过统一登录守卫保存当前 App 路由并回跳。'
   },
   {
     filePath: path.join(
@@ -177,14 +167,12 @@ const rnBehaviorContractChecks = [
   {
     filePath: path.join(appRoot, 'src/pages/contact/list/index.tsx'),
     expected: 'checkAddressIntegrity(contact',
-    message:
-      '选择地址前必须执行统一地址完整性决策，保留修改或继续使用语义。'
+    message: '选择地址前必须执行统一地址完整性决策，保留修改或继续使用语义。'
   },
   {
     filePath: path.join(appRoot, 'src/pages/contact/edit/index.tsx'),
     expected: 'checkAddressIntegrity(contact',
-    message:
-      '保存地址前必须执行统一地址完整性决策，不能只做本地字段校验。'
+    message: '保存地址前必须执行统一地址完整性决策，不能只做本地字段校验。'
   },
   {
     filePath: path.join(
@@ -204,8 +192,7 @@ const rnBehaviorContractChecks = [
   {
     filePath: path.join(appRoot, 'src/pages/print/list/index.tsx'),
     expected: 'printService.queryList',
-    message:
-      '打印订单页必须通过 print service 查询，不能直接调用领域 API。'
+    message: '打印订单页必须通过 print service 查询，不能直接调用领域 API。'
   }
 ]
 const nativeFacadeRelativePathPrefixes = [
@@ -307,10 +294,8 @@ const forbiddenPatterns = [
     allowRelativePathPrefixes: ['src/shared/navigation/']
   },
   {
-    pattern:
-      /(?:from\s+|require\(\s*)['"`][^'"`]*services\/[^'"`]*\.api['"`]/g,
-    message:
-      '页面和 shared 层不能绕过 service facade 直接调用领域 API。',
+    pattern: /(?:from\s+|require\(\s*)['"`][^'"`]*services\/[^'"`]*\.api['"`]/g,
+    message: '页面和 shared 层不能绕过 service facade 直接调用领域 API。',
     allowRelativePathPrefixes: ['src/services/']
   },
   {
@@ -412,10 +397,8 @@ const forbiddenPatterns = [
     fileExtensions: ['.scss']
   },
   {
-    pattern:
-      /\b(?:repeating-)?(?:linear|radial|conic)-gradient\s*\(/gi,
-    message:
-      'RN 样式禁止 gradient，请使用 Image 或可跨端渲染的视觉资产。',
+    pattern: /\b(?:repeating-)?(?:linear|radial|conic)-gradient\s*\(/gi,
+    message: 'RN 样式禁止 gradient，请使用 Image 或可跨端渲染的视觉资产。',
     fileExtensions: ['.scss']
   },
   {

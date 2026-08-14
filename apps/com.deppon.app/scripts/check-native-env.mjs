@@ -1,8 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import {
-  existsSync,
-  readFileSync
-} from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
@@ -25,7 +22,7 @@ function getLocalAndroidSdkPath() {
   const content = readFileSync(localPropertiesPath, 'utf8')
   const sdkLine = content
     .split(/\r?\n/)
-    .find((line) => line.trim().startsWith('sdk.dir='))
+    .find(line => line.trim().startsWith('sdk.dir='))
 
   if (!sdkLine) {
     return ''
@@ -99,10 +96,17 @@ const javaFromPath = commandExists('java')
 const javacFromPath = commandExists('javac')
 const javaHomeBin = javaHome ? path.join(javaHome, 'bin') : ''
 const javaHomeHasJava = javaHome
-  ? existsSync(path.join(javaHomeBin, process.platform === 'win32' ? 'java.exe' : 'java'))
+  ? existsSync(
+      path.join(javaHomeBin, process.platform === 'win32' ? 'java.exe' : 'java')
+    )
   : false
 const javaHomeHasJavac = javaHome
-  ? existsSync(path.join(javaHomeBin, process.platform === 'win32' ? 'javac.exe' : 'javac'))
+  ? existsSync(
+      path.join(
+        javaHomeBin,
+        process.platform === 'win32' ? 'javac.exe' : 'javac'
+      )
+    )
   : false
 
 addCheck(
@@ -175,9 +179,15 @@ if (resolvedAndroidSdk) {
 addCheck(
   'Gradle wrapper',
   existsSync(
-    path.join(androidRoot, process.platform === 'win32' ? 'gradlew.bat' : 'gradlew')
+    path.join(
+      androidRoot,
+      process.platform === 'win32' ? 'gradlew.bat' : 'gradlew'
+    )
   ),
-  path.join(androidRoot, process.platform === 'win32' ? 'gradlew.bat' : 'gradlew')
+  path.join(
+    androidRoot,
+    process.platform === 'win32' ? 'gradlew.bat' : 'gradlew'
+  )
 )
 
 if (process.platform === 'darwin') {
@@ -196,7 +206,11 @@ if (process.platform === 'darwin') {
       ? xcodeVersion.split(/\r?\n/).join(', ')
       : '需要完整 Xcode，并确保 xcodebuild 和 xcrun simctl 指向 Xcode Developer 目录。'
   )
-  addCheck('CocoaPods', commandExists('pod'), '需要 pod install 支持 iOS 原生依赖。')
+  addCheck(
+    'CocoaPods',
+    commandExists('pod'),
+    '需要 pod install 支持 iOS 原生依赖。'
+  )
 } else {
   addCheck(
     'iOS build host',
@@ -206,7 +220,9 @@ if (process.platform === 'darwin') {
   )
 }
 
-const failedRequiredChecks = checks.filter((item) => item.required && !item.passed)
+const failedRequiredChecks = checks.filter(
+  item => item.required && !item.passed
+)
 
 for (const item of checks) {
   const marker = item.passed ? 'OK' : item.required ? 'FAIL' : 'SKIP'
