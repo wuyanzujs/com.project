@@ -124,10 +124,7 @@ export function hydrateSessionCookie(url: string) {
 }
 
 export function recoverSessionCookie(url: string) {
-  return hydrateSessionCookieWithAttempts(
-    url,
-    SESSION_COOKIE_RECOVERY_ATTEMPTS
-  )
+  return hydrateSessionCookieWithAttempts(url, SESSION_COOKIE_RECOVERY_ATTEMPTS)
 }
 
 export function getResponseSetCookie(

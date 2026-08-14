@@ -47,10 +47,7 @@ export function updateOrderNpsScore(draft: OrderNpsDraft, score: number) {
   }
 }
 
-export function updateOrderNpsCategory(
-  draft: OrderNpsDraft,
-  category: string
-) {
+export function updateOrderNpsCategory(draft: OrderNpsDraft, category: string) {
   const catalog = getOrderNpsCatalog(draft.score)
 
   if (!catalog?.options.some(option => option.text === category)) {

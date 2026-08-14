@@ -123,9 +123,7 @@ export function maskExpressCollectionAccount(value?: string | null) {
   return `**** ${account.slice(-4)}`
 }
 
-export function getExpressCollectionFee(
-  product?: ExpressProductQuote | null
-) {
+export function getExpressCollectionFee(product?: ExpressProductQuote | null) {
   const detail = product?.detail?.find(item => {
     const code = normalizeText(item.priceEntryCode).toUpperCase()
     const name = normalizeText(item.priceEntryName)
@@ -138,9 +136,7 @@ export function getExpressCollectionFee(
     : null
 }
 
-export function validateExpressCollection(
-  collection: ExpressCollectionDraft
-) {
+export function validateExpressCollection(collection: ExpressCollectionDraft) {
   const normalized = normalizeExpressCollectionDraft(collection)
 
   if (!normalized.type) {

@@ -125,9 +125,7 @@ export function updateOrderEditInsuranceAmount(
   }
 }
 
-export function validateOrderEditInsurance(
-  insurance: OrderEditInsuranceDraft
-) {
+export function validateOrderEditInsurance(insurance: OrderEditInsuranceDraft) {
   if (!insurance.editable) {
     return []
   }

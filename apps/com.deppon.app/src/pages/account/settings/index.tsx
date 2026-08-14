@@ -15,7 +15,6 @@ import { createAppWebUrl } from '@/shared/webview/appWeb'
 import type { AppWebSource } from '@/shared/webview/appWeb'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-
 import './index.scss'
 import './content.scss'
 

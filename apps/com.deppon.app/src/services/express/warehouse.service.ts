@@ -20,7 +20,6 @@ import type {
   ExpressWarehouseStageResult
 } from './types'
 
-
 const WAREHOUSE_WEB_PATH = APP_WEB_TARGETS.EXPRESS_WAREHOUSE.url
 
 function hasValidScreeningResult(

@@ -127,8 +127,8 @@ export const EXPRESS_CARTON_OPTIONS: ExpressCartonOption[] = [
   }
 ]
 
-export const EXPRESS_WOODEN_PACKAGING_OPTIONS:
-  ExpressWoodenPackagingOption[] = [
+export const EXPRESS_WOODEN_PACKAGING_OPTIONS: ExpressWoodenPackagingOption[] =
+  [
     {
       code: 'WOOD_03',
       name: '木架',

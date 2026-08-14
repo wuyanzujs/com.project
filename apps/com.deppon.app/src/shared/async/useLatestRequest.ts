@@ -48,13 +48,10 @@ export function useLatestRequestRunner(
     [coordinator, onFinish, onStart]
   )
 
-  const invalidateLatestRequest = useCallback(
-    () => {
-      coordinator.invalidate()
-      onFinish()
-    },
-    [coordinator, onFinish]
-  )
+  const invalidateLatestRequest = useCallback(() => {
+    coordinator.invalidate()
+    onFinish()
+  }, [coordinator, onFinish])
 
   return {
     invalidateLatestRequest,

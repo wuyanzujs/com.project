@@ -96,7 +96,7 @@ export function getSetCookieFromHeaders(headers: unknown): string {
 
   const headerRecord = headers as Record<string, unknown>
   const headerKey = Object.keys(headerRecord).find(
-    (key) => key.toLowerCase() === 'set-cookie'
+    key => key.toLowerCase() === 'set-cookie'
   )
 
   if (!headerKey) {

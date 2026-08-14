@@ -74,7 +74,7 @@ export function createECardApplyPreview(
 
   if (!draft.ecards.length) {
     message = '请选择储值卡开票记录'
-  } else if (draft.ecards.some((item) => !item.id)) {
+  } else if (draft.ecards.some(item => !item.id)) {
     message = '储值卡记录缺少打款编码'
   } else if (!draft.taxpayer) {
     message = '请选择发票抬头'
@@ -87,7 +87,7 @@ export function createECardApplyPreview(
   }
 
   return {
-    waybillNumber: draft.ecards.map((item) => item.id).join(','),
+    waybillNumber: draft.ecards.map(item => item.id).join(','),
     amount,
     billCategoryText: '电子普票',
     taxpayerName: draft.taxpayer?.name || '',
@@ -107,7 +107,7 @@ export function createECardApplySubmitPayload(
   const includeCompanyInfo = taxpayer?.customerType === '1'
 
   return {
-    TaskDetailList: draft.ecards.map((item) => ({
+    TaskDetailList: draft.ecards.map(item => ({
       orderNo: item.id,
       sourceBillNo: item.id,
       amount: toFiniteNumber(item.amount),
@@ -128,10 +128,10 @@ export function createECardApplySubmitPayload(
       taxNo: taxpayer?.taxNumber ?? '',
       taxName: taxpayer?.name ?? '',
       customerType: taxpayer?.customerType ?? '0',
-      taxTelephone: includeCompanyInfo ? taxpayer?.phone ?? '' : '',
-      taxAddress: includeCompanyInfo ? taxpayer?.address ?? '' : '',
-      taxBankName: includeCompanyInfo ? taxpayer?.bank ?? '' : '',
-      taxBankNumber: includeCompanyInfo ? taxpayer?.bankAccount ?? '' : '',
+      taxTelephone: includeCompanyInfo ? (taxpayer?.phone ?? '') : '',
+      taxAddress: includeCompanyInfo ? (taxpayer?.address ?? '') : '',
+      taxBankName: includeCompanyInfo ? (taxpayer?.bank ?? '') : '',
+      taxBankNumber: includeCompanyInfo ? (taxpayer?.bankAccount ?? '') : '',
       openAmount: amount,
       totalAmount: amount,
       open_amount: amount,

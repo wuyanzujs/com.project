@@ -39,15 +39,10 @@ export interface OrderEditPackagingDraft {
 }
 
 export type OrderEditDeliveryMode =
-  | ''
-  | 'PICKNOTUPSTAIRS'
-  | 'PICKUPSTAIRS'
-  | 'PICKSELF'
+  '' | 'PICKNOTUPSTAIRS' | 'PICKUPSTAIRS' | 'PICKSELF'
 
 export type OrderEditPickupTimeType = 'NORMAL' | 'NIGHT'
-export type OrderEditPickupOpeningType =
-  | OrderEditPickupTimeType
-  | 'DISABLE'
+export type OrderEditPickupOpeningType = OrderEditPickupTimeType | 'DISABLE'
 
 export interface OrderEditPickupNightCapability {
   addressKey: string

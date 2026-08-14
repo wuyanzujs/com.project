@@ -64,12 +64,10 @@ function getChargeItemRow(item: PaymentChargeItem) {
   )
 }
 
-export function createPaymentFeeSummary(
-  item: PaymentItem
-): PaymentFeeSummary {
+export function createPaymentFeeSummary(item: PaymentItem): PaymentFeeSummary {
   const serviceRows: PaymentFeeRow[] = []
   const favorFeeFromDetail =
-    item.basicFeeDetail?.find((detail) => detail.feeAttribute === 'favorFee')
+    item.basicFeeDetail?.find(detail => detail.feeAttribute === 'favorFee')
       ?.feeMoney ?? item.favorFee
 
   for (const field of PAYMENT_SERVICE_FEE_FIELDS) {
@@ -85,13 +83,13 @@ export function createPaymentFeeSummary(
   }
 
   const interceptFee = item.incrementFeeDetail?.find(
-    (detail) => detail.feeAttribute === 'interceptFee'
+    detail => detail.feeAttribute === 'interceptFee'
   )
   const interceptAmount = toPaymentAmount(interceptFee?.feeMoney)
 
   if (interceptAmount > 0) {
     const transferIndex = serviceRows.findIndex(
-      (row) => row.key === 'transferFee'
+      row => row.key === 'transferFee'
     )
 
     if (transferIndex >= 0) {

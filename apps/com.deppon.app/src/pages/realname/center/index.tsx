@@ -13,7 +13,6 @@ import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-
 import './index.scss'
 import './content.scss'
 

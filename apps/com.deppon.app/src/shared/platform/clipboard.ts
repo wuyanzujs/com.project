@@ -11,7 +11,7 @@ export function copyTextToClipboard(value: string) {
     Taro.setClipboardData({
       data,
       success: () => resolve(),
-      fail: (error) => reject(error)
+      fail: error => reject(error)
     })
   })
 }

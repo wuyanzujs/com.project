@@ -12,8 +12,11 @@ import type { MemberOverviewView } from '@/services/member'
 import { AppPage } from '@/shared/components'
 import AppTabBar from '@/shared/components/AppTabBar'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
-
 import { hasValidSession, navigateToLogin } from '@/shared/navigation/authGuard'
+import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+
 import { MineEntryGrids } from './components/MineEntryGrids'
 import { MineHero } from './components/MineHero'
 import { MineMemberCard } from './components/MineMemberCard'
@@ -23,16 +26,12 @@ import {
   QUICK_ENTRIES,
   queryMineOrderCounts
 } from './mine.model'
-import { APP_ROUTES } from '@/shared/navigation/routes'
-import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
-import { createAppWebUrl } from '@/shared/webview/appWeb'
 
 import type {
   MineEntry,
   MineOrderCounts,
   MineOrderShortcut
 } from './mine.model'
-
 
 import './index.scss'
 

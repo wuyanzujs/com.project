@@ -1,10 +1,7 @@
 import { NativeCapabilityError, ensureNativeCapability } from './capabilities'
 
 export type AppNotificationScene =
-  | 'orderStatus'
-  | 'pickupReminder'
-  | 'paymentReminder'
-  | 'marketing'
+  'orderStatus' | 'pickupReminder' | 'paymentReminder' | 'marketing'
 
 export interface RequestNotificationOptions {
   source: string

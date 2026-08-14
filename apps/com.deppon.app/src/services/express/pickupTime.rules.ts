@@ -92,8 +92,7 @@ export function normalizeExpressPickup(
       ? value?.pickPeriodTime
       : undefined,
     nightCapability: normalizeNightCapability(value?.nightCapability),
-    nightNoticeAccepted:
-      type === 'NIGHT' && value?.nightNoticeAccepted === true
+    nightNoticeAccepted: type === 'NIGHT' && value?.nightNoticeAccepted === true
   }
 }
 
@@ -185,10 +184,7 @@ export function selectExpressPickupTime(
 }
 
 export function acceptExpressNightPickupNotice(draft: ExpressDraft) {
-  if (
-    draft.pickup.type !== 'NIGHT' ||
-    draft.pickup.nightNoticeAccepted
-  ) {
+  if (draft.pickup.type !== 'NIGHT' || draft.pickup.nightNoticeAccepted) {
     return draft
   }
 
@@ -258,9 +254,7 @@ export function validateExpressPickupTime(
   options: { now?: Date } = {}
 ) {
   if (draft.pickup.dispatch !== 'Y') {
-    return draft.pickup.type === 'NIGHT'
-      ? ['自送服务点不能选择夜间揽收']
-      : []
+    return draft.pickup.type === 'NIGHT' ? ['自送服务点不能选择夜间揽收'] : []
   }
 
   if (draft.pickup.type !== 'NIGHT') {
@@ -272,10 +266,7 @@ export function validateExpressPickupTime(
   }
 
   const now = options.now ?? new Date()
-  const capability = getFreshExpressPickupNightCapability(
-    draft,
-    now.getTime()
-  )
+  const capability = getFreshExpressPickupNightCapability(draft, now.getTime())
 
   if (!capability?.enabled) {
     return ['夜间揽收能力已失效，请重新获取取件时间']

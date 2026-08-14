@@ -16,7 +16,6 @@ import {
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
-
 interface UseExpressSubmitParams {
   draft: ExpressDraft
   warehouseController: {

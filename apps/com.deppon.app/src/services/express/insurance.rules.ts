@@ -60,9 +60,7 @@ export function createExpressInsuranceCapability(
 ): ExpressInsuranceCapability {
   return {
     inputKey: createExpressInsuranceCapabilityKey(draft),
-    fragile: labels.some(
-      label => label.goodsRemarkCode === 'fragile_articles'
-    ),
+    fragile: labels.some(label => label.goodsRemarkCode === 'fragile_articles'),
     worryFree: labels.some(
       label => label.goodsRemarkCode === 'worry_free_protection'
     ),
@@ -147,10 +145,10 @@ export function isExpressInsuranceCapabilityCurrent(
 
   return Boolean(
     current &&
-      current.inputKey === next.inputKey &&
-      current.fragile === next.fragile &&
-      current.worryFree === next.worryFree &&
-      current.disabled === next.disabled
+    current.inputKey === next.inputKey &&
+    current.fragile === next.fragile &&
+    current.worryFree === next.worryFree &&
+    current.disabled === next.disabled
   )
 }
 
@@ -244,16 +242,16 @@ export function validateExpressInsurance(
   }
 
   if ((type === 'QEB' || type === 'SXB' || policy.required) && amount <= 0) {
-    messages.push(policy.required ? '当前产品必须填写保价金额' : '请填写保价金额')
+    messages.push(
+      policy.required ? '当前产品必须填写保价金额' : '请填写保价金额'
+    )
   }
 
   const limit = getExpressInsuranceLimit(draft, capability)
 
   if (amount > limit) {
     messages.push(
-      type === 'SXB'
-        ? `省心保最高保价${limit}元`
-        : `保价金额最高为${limit}元`
+      type === 'SXB' ? `省心保最高保价${limit}元` : `保价金额最高为${limit}元`
     )
   }
 
@@ -337,10 +335,7 @@ export function createExpressInsuranceOrderFields(
     insuranceType = 4
   } else if (draft.insurance.type === 'SXB' && policy.supportsSxb) {
     insuranceType = 1
-  } else if (
-    draft.insurance.type === 'QEB' &&
-    policy.supportsFullCoverage
-  ) {
+  } else if (draft.insurance.type === 'QEB' && policy.supportsFullCoverage) {
     insuranceType = 0
   }
 
@@ -374,9 +369,7 @@ export function applyExpressInsuranceCapability(
     ? 0
     : draft.goods.insuredAmount
   const nextLimit =
-    limit === undefined
-      ? draft.insurance.limit
-      : normalizePositiveNumber(limit)
+    limit === undefined ? draft.insurance.limit : normalizePositiveNumber(limit)
 
   return {
     ...draft,

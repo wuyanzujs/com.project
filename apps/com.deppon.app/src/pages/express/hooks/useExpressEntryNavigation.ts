@@ -11,7 +11,6 @@ import {
 } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 
-
 interface UseExpressEntryNavigationParams {
   draft: ExpressDraft
 }

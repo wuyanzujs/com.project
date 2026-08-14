@@ -17,7 +17,6 @@ import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
 import { useContactAddressIntegrity } from '../hooks/useContactAddressIntegrity'
 
-
 import './index.scss'
 import './content.scss'
 

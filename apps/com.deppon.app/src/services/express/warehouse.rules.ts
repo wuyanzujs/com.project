@@ -13,10 +13,7 @@ import type {
 const AUTO_SELECT_WEIGHT = 100
 const LEGACY_LTL_PRODUCT_CODES = new Set(['JZKH', 'JZQY_LONG'])
 
-type WarehouseDraftInput = Omit<
-  Partial<ExpressWarehouseDraft>,
-  'screening'
-> & {
+type WarehouseDraftInput = Omit<Partial<ExpressWarehouseDraft>, 'screening'> & {
   screening?: Partial<ExpressWarehouseScreening> | null
 }
 
@@ -42,9 +39,7 @@ export function normalizeExpressWarehouseType(
   value: unknown
 ): ExpressWarehouseType {
   const normalized = normalizeText(value)
-  return /^[1-6]$/.test(normalized)
-    ? (normalized as ExpressWarehouseType)
-    : ''
+  return /^[1-6]$/.test(normalized) ? (normalized as ExpressWarehouseType) : ''
 }
 
 export function normalizeExpressWarehouseWay(
@@ -62,8 +57,7 @@ export function normalizeExpressWarehouseScreeningType(
     : 0
 }
 
-export function createExpressWarehouseScreeningDraft():
-  ExpressWarehouseScreening {
+export function createExpressWarehouseScreeningDraft(): ExpressWarehouseScreening {
   return {
     inputKey: '',
     type: 0,

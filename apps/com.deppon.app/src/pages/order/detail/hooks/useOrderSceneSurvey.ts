@@ -15,7 +15,6 @@ import type {
 } from '@/services/order'
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
-
 export function useOrderSceneSurvey(options: {
   detail: OrderDetail | null
   role: OrderRole

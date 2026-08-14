@@ -15,7 +15,6 @@ import {
   openAppFile
 } from '@/shared/platform'
 
-
 import './index.scss'
 import './content.scss'
 

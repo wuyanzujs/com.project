@@ -20,7 +20,6 @@ import type {
   OrderStubPackageFeeView
 } from './types'
 
-
 const ORDER_CONTRACT_STATUS_LABELS: Record<string, string> = {
   SENT: '合同签署中',
   REJECT: '合同已拒签',

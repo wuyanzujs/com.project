@@ -3,12 +3,7 @@ import { Text, View } from '@tarojs/components'
 import './index.scss'
 
 export type AppStatusTagTone =
-  | 'neutral'
-  | 'brand'
-  | 'info'
-  | 'success'
-  | 'warning'
-  | 'danger'
+  'neutral' | 'brand' | 'info' | 'success' | 'warning' | 'danger'
 
 export interface AppStatusTagProps {
   className?: string

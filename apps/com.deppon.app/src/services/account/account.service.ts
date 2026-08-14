@@ -13,7 +13,6 @@ import { createServiceFailure } from '../serviceResponse'
 
 import type { AccountOverviewView } from './types'
 
-
 function getSystemCode() {
   return APP_RUNTIME_CONFIG.systemCode
 }

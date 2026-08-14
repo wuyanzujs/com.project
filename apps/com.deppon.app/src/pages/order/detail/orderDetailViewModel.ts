@@ -3,7 +3,6 @@ import type { OrderDetail, OrderRole } from '@/services/order'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
-
 export type OrderDetailViewMode = 'public' | 'secure'
 
 export interface OrderDetailRouteParams {

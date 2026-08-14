@@ -42,9 +42,7 @@ export function normalizeExpressWoodenPackagingCodes(
     value
       .map(code => (typeof code === 'string' ? code.trim() : ''))
       .filter(code =>
-        EXPRESS_WOODEN_PACKAGING_CODES.has(
-          code as ExpressWoodenPackagingCode
-        )
+        EXPRESS_WOODEN_PACKAGING_CODES.has(code as ExpressWoodenPackagingCode)
       )
   )
 
@@ -63,9 +61,7 @@ export function normalizeExpressUnpackingCodes(
   const selectedCodes = new Set(
     value
       .map(code => (typeof code === 'string' ? code.trim() : ''))
-      .filter(code =>
-        EXPRESS_UNPACKING_CODES.has(code as ExpressUnpackingCode)
-      )
+      .filter(code => EXPRESS_UNPACKING_CODES.has(code as ExpressUnpackingCode))
   )
 
   return EXPRESS_UNPACKING_OPTIONS.map(option => option.code).filter(code =>
@@ -117,10 +113,7 @@ export function updateExpressPackaging(
   if (
     packaging.cartonCode === currentPackaging.cartonCode &&
     areCodeListsEqual(packaging.woodenCodes, currentPackaging.woodenCodes) &&
-    areCodeListsEqual(
-      packaging.unpackingCodes,
-      currentPackaging.unpackingCodes
-    )
+    areCodeListsEqual(packaging.unpackingCodes, currentPackaging.unpackingCodes)
   ) {
     return draft
   }

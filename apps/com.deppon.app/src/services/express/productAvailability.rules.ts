@@ -153,7 +153,7 @@ export function resolveExpressProductCustomerCapability(
       customerCode: scanCustomerCode,
       monthlyEnabled: matchesAccount && source?.monthlyEnabled === true,
       contractEnabled: matchesAccount && source?.contractEnabled === true,
-      insuranceLimit: matchesAccount ? source?.insuranceLimit ?? null : null
+      insuranceLimit: matchesAccount ? (source?.insuranceLimit ?? null) : null
     }
   }
 
@@ -224,9 +224,7 @@ export function createExpressProductAvailability(
   const goodsHasBattery = hasExpressBatteryGoodsLabel(input.goodsLabels ?? [])
   const dczpAvailable = input.dczpAvailable === true
   const recommendDczp =
-    supportsExpressDczpRecommendation(draft) &&
-    dczpAvailable &&
-    goodsHasBattery
+    supportsExpressDczpRecommendation(draft) && dczpAvailable && goodsHasBattery
 
   return {
     customer,

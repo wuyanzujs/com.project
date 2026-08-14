@@ -57,7 +57,9 @@ export function getExpressQuotePriceText(
 }
 
 export function getExpressQuoteTimeText(product: ExpressProductQuote) {
-  return product.daysFormat || product.days || product.arriveDate || '时效待确认'
+  return (
+    product.daysFormat || product.days || product.arriveDate || '时效待确认'
+  )
 }
 
 export function getExpressQuoteBillWeightText(product: ExpressProductQuote) {

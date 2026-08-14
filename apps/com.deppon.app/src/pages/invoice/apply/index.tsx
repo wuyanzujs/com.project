@@ -17,7 +17,6 @@ import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
-
 import './index.scss'
 import './content.scss'
 

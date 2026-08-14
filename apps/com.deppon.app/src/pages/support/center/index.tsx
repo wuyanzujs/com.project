@@ -16,7 +16,6 @@ import {
 import { dialPhone, PhoneNumberError } from '@/shared/platform/phone'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 
-
 import './index.scss'
 import './content.scss'
 

@@ -33,5 +33,5 @@ export function emitRequestEvent(
     return
   }
 
-  handlers.forEach((handler) => handler(payload))
+  handlers.forEach(handler => handler(payload))
 }

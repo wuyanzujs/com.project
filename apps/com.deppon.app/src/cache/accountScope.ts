@@ -41,9 +41,9 @@ export async function clearAccountScopedCache(
   }
 
   const results = await Promise.all(
-    ACCOUNT_SCOPED_STORAGE_KEYS
-      .filter(key => !preservedKeys.has(key))
-      .map(key => removeStorageValue(key))
+    ACCOUNT_SCOPED_STORAGE_KEYS.filter(key => !preservedKeys.has(key)).map(
+      key => removeStorageValue(key)
+    )
   )
 
   return results.every(Boolean)

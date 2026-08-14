@@ -1,7 +1,4 @@
-import type {
-  ExpressDeliveryPointDraft,
-  ExpressDraft
-} from './types'
+import type { ExpressDeliveryPointDraft, ExpressDraft } from './types'
 import type { StationItem } from '../query/types'
 
 const DELIVERY_POINT_STALE_REASON = '自提服务点变化，请重新获取价格'

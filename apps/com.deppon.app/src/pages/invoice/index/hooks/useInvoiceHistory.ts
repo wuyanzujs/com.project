@@ -9,7 +9,6 @@ import { INVOICE_PAGE_SIZE } from './latestRequestTypes'
 
 import type { LatestRequestRunner } from './latestRequestTypes'
 
-
 interface UseInvoiceHistoryParams {
   runLatestRequest: LatestRequestRunner
   setErrorMessage: (next: string) => void

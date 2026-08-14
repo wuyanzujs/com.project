@@ -49,7 +49,10 @@ export function createRouteQuery(params: RouteQueryParams) {
   return Object.entries(params)
     .map(([key, value]) => [key, stringifyRouteValue(value)] as const)
     .filter(([, value]) => value !== '')
-    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .map(
+      ([key, value]) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+    )
     .join('&')
 }
 

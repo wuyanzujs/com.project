@@ -74,9 +74,7 @@ export function getOrderEvaluationLabels(
   level: OrderEvaluationLevel
 ): readonly string[] {
   if (recordType === 'COLLECTION') {
-    return level === 5
-      ? COLLECTION_POSITIVE_LABELS
-      : COLLECTION_NEGATIVE_LABELS
+    return level === 5 ? COLLECTION_POSITIVE_LABELS : COLLECTION_NEGATIVE_LABELS
   }
 
   return level === 5 ? DELIVERY_POSITIVE_LABELS : DELIVERY_NEGATIVE_LABELS

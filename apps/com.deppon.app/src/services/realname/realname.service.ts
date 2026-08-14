@@ -10,7 +10,6 @@ import type {
   RealNameValidationResult
 } from './types'
 
-
 const ID_CARD_WEIGHTS = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
 const ID_CARD_CHECK_CODES = [
   '1',

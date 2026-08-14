@@ -16,15 +16,45 @@ export interface ExpressDeliveryTimeWindowOption {
   night: boolean
 }
 
-export const EXPRESS_DELIVERY_TIME_WINDOWS:
-  ExpressDeliveryTimeWindowOption[] = [
-  { value: '09:00-12:00', label: '09:00-12:00', feeText: '预计 ¥5', night: false },
-  { value: '12:00-14:00', label: '12:00-14:00', feeText: '预计 ¥5', night: false },
-  { value: '14:00-16:00', label: '14:00-16:00', feeText: '预计 ¥5', night: false },
-  { value: '16:00-18:00', label: '16:00-18:00', feeText: '预计 ¥5', night: false },
-  { value: '18:00-21:00', label: '18:00-21:00', feeText: '预计 ¥5', night: false },
-  { value: '21:00-23:59', label: '21:00-23:59', feeText: '预计 ¥150', night: true }
-]
+export const EXPRESS_DELIVERY_TIME_WINDOWS: ExpressDeliveryTimeWindowOption[] =
+  [
+    {
+      value: '09:00-12:00',
+      label: '09:00-12:00',
+      feeText: '预计 ¥5',
+      night: false
+    },
+    {
+      value: '12:00-14:00',
+      label: '12:00-14:00',
+      feeText: '预计 ¥5',
+      night: false
+    },
+    {
+      value: '14:00-16:00',
+      label: '14:00-16:00',
+      feeText: '预计 ¥5',
+      night: false
+    },
+    {
+      value: '16:00-18:00',
+      label: '16:00-18:00',
+      feeText: '预计 ¥5',
+      night: false
+    },
+    {
+      value: '18:00-21:00',
+      label: '18:00-21:00',
+      feeText: '预计 ¥5',
+      night: false
+    },
+    {
+      value: '21:00-23:59',
+      label: '21:00-23:59',
+      feeText: '预计 ¥150',
+      night: true
+    }
+  ]
 
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
@@ -83,8 +113,8 @@ export function isExpressScheduledDeliveryWindow(value: string) {
 
   return Boolean(
     match &&
-      isExpressDeliveryDateTextValid(match[1]) &&
-      EXPRESS_DELIVERY_TIME_WINDOWS.some(option => option.value === match[2])
+    isExpressDeliveryDateTextValid(match[1]) &&
+    EXPRESS_DELIVERY_TIME_WINDOWS.some(option => option.value === match[2])
   )
 }
 

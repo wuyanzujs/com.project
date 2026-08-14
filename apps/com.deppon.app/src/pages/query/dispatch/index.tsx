@@ -19,7 +19,6 @@ import { AppPressable } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 
-
 import './index.scss'
 import './content.scss'
 

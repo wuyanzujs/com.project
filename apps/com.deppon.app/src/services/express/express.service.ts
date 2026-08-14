@@ -53,7 +53,6 @@ import type {
   ExpressQuoteResult
 } from './types'
 
-
 function getResponseFailureMessage(response: DepponResponse<unknown>) {
   return response.message || '校验失败，请稍后再试'
 }

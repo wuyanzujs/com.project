@@ -17,8 +17,7 @@ export interface OrderEditPickupTimeSelection {
   type: OrderEditPickupOpeningType
 }
 
-export interface OrderEditPickupTimeOption
-  extends OrderEditPickupTimeSelection {
+export interface OrderEditPickupTimeOption extends OrderEditPickupTimeSelection {
   label: string
   disabled: boolean
   night: boolean
@@ -97,8 +96,7 @@ export function normalizeOrderEditPickupTimeResponse(
         date,
         dateList: hasNightQuickPickup
           ? dateList.filter(
-              item =>
-                item.type !== 'NORMAL' || !item.text.includes('小时')
+              item => item.type !== 'NORMAL' || !item.text.includes('小时')
             )
           : dateList
       }

@@ -12,7 +12,6 @@ import type {
   ECardTargetPage
 } from './types'
 
-
 function toFiniteNumber(value: unknown) {
   const numberValue = Number(value)
 

@@ -11,7 +11,6 @@ import type {
 } from '@/services/express'
 import { AppPressable } from '@/shared/components'
 
-
 import './index.scss'
 import './content.scss'
 

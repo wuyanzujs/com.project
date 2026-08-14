@@ -22,7 +22,6 @@ import type {
 } from './order.dispatch.types'
 import type { OrderDetail, OrderDetailActionOptions } from './types'
 
-
 const PICKUP_TIME_SOURCE = 4 as const
 
 function hasPickedUpGoods(order: OrderDetail) {

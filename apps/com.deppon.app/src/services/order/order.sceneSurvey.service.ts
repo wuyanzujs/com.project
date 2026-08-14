@@ -56,9 +56,7 @@ export const orderSceneSurveyService = {
     const definitionResponse = await orderSceneSurveyApi.queryDefinition(
       plan.code
     )
-    const firstQuestion = Array.isArray(
-      definitionResponse.result?.questionList
-    )
+    const firstQuestion = Array.isArray(definitionResponse.result?.questionList)
       ? definitionResponse.result.questionList[0]
       : undefined
     const item = normalizeOrderSceneSurveyQuestion(plan, firstQuestion)
@@ -92,11 +90,7 @@ export const orderSceneSurveyService = {
     item: OrderSceneSurveyItem,
     labelId: string
   ) {
-    const request = createOrderSceneLabelSubmitRequest(
-      context,
-      item,
-      labelId
-    )
+    const request = createOrderSceneLabelSubmitRequest(context, item, labelId)
 
     return request
       ? orderSceneSurveyApi.submit(request)

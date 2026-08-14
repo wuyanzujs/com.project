@@ -100,9 +100,7 @@ export interface OrderNpsSubmitInput {
 }
 
 export type OrderSceneSurveySubmitInput =
-  | OrderSceneLabelSubmitInput
-  | OrderSceneScoreSubmitInput
-  | OrderNpsSubmitInput
+  OrderSceneLabelSubmitInput | OrderSceneScoreSubmitInput | OrderNpsSubmitInput
 
 export interface OrderNpsCatalogOption {
   text: string

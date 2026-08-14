@@ -12,7 +12,6 @@ import type {
   PrivacyVersionResponse
 } from './types'
 
-
 function createPrivacyBehaviorRequest(): PrivacyBehaviorRequest {
   return {
     sysCode: APP_RUNTIME_CONFIG.systemCode,

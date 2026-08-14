@@ -28,7 +28,6 @@ import type {
 } from '@/services/express'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 
-
 interface UseExpressDeliveryPreferenceOptions {
   draft: ExpressDraft
   setDraft: Dispatch<SetStateAction<ExpressDraft>>

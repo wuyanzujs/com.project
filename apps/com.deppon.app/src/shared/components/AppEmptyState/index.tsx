@@ -35,7 +35,9 @@ export function AppEmptyState({
         .filter(Boolean)
         .join(' ')}
     >
-      {visual ? <View className='app-empty-state__visual'>{visual}</View> : null}
+      {visual ? (
+        <View className='app-empty-state__visual'>{visual}</View>
+      ) : null}
       <Text
         className={[
           'app-empty-state__title',

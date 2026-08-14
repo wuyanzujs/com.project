@@ -39,15 +39,13 @@ export function AppPageHeader({
 }: AppPageHeaderProps) {
   return (
     <View
-      className={[
-        'app-page-header',
-        `app-page-header--${surface}`,
-        className
-      ]
+      className={['app-page-header', `app-page-header--${surface}`, className]
         .filter(Boolean)
         .join(' ')}
     >
-      {leading ? <View className='app-page-header__leading'>{leading}</View> : null}
+      {leading ? (
+        <View className='app-page-header__leading'>{leading}</View>
+      ) : null}
       <View
         className={['app-page-header__content', contentClassName]
           .filter(Boolean)

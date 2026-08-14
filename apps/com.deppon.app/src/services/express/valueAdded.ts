@@ -48,8 +48,8 @@ export const expressReturnBillOptions: ExpressReturnBillOption[] = [
   }
 ]
 
-export const expressReturnBillRequirementOptions:
-  ExpressReturnBillRequirementOption[] = [
+export const expressReturnBillRequirementOptions: ExpressReturnBillRequirementOption[] =
+  [
     { code: 'R1', label: '签名' },
     { code: 'R2', label: '盖章' },
     { code: 'R3', label: '签身份证号' },
@@ -172,9 +172,12 @@ export function normalizeExpressReturnBillDraft(
 
   return {
     type,
-    requirements: type === 'RETURNBILL_TYPE_ONLINE'
-      ? []
-      : normalizeRequirements(source.requirements ?? source.returnRequirement),
+    requirements:
+      type === 'RETURNBILL_TYPE_ONLINE'
+        ? []
+        : normalizeRequirements(
+            source.requirements ?? source.returnRequirement
+          ),
     customRequirement:
       type === 'RETURNBILL_TYPE_ONLINE'
         ? ''
@@ -271,7 +274,9 @@ export function validateExpressReturnBill(
     normalizeText(draft.customRequirement).length >
     EXPRESS_RETURN_BILL_CUSTOM_MAX_LENGTH
   ) {
-    messages.push(`其他签收要求不能超过${EXPRESS_RETURN_BILL_CUSTOM_MAX_LENGTH}个字`)
+    messages.push(
+      `其他签收要求不能超过${EXPRESS_RETURN_BILL_CUSTOM_MAX_LENGTH}个字`
+    )
   }
 
   if (

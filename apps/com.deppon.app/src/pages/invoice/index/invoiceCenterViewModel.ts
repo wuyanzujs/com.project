@@ -8,7 +8,6 @@ import type {
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
-
 export interface InvoiceCenterTabItem {
   label: string
   value: InvoiceTab

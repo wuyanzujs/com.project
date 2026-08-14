@@ -18,7 +18,6 @@ import type {
   QueryUnpaidPaymentOptions
 } from './types'
 
-
 const DEFAULT_PAYMENT_RANGE_DAYS = 30
 const PAID_PAYMENT_RANGE_DAYS = 180
 const DEFAULT_PAGE_SIZE = 10

@@ -10,7 +10,6 @@ import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { hasValidSession, navigateToLogin } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 
-
 import './index.scss'
 import './content.scss'
 

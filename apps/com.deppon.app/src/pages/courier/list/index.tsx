@@ -14,7 +14,6 @@ import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
 import { PhoneNumberError, dialPhone } from '@/shared/platform/phone'
 import { scanAppCode } from '@/shared/platform/scan'
 
-
 import './index.scss'
 import './content.scss'
 

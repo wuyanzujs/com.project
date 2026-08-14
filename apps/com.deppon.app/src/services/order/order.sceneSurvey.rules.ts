@@ -13,11 +13,7 @@ import type { OrderDetail, OrderRole } from './types'
 export const ORDER_SCENE_SURVEY_WINDOW_MS = 7 * 24 * 60 * 60 * 1000
 export const ORDER_SCENE_SURVEY_CONTENT_MAX_LENGTH = 100
 export const ORDER_SCENE_SURVEY_SCORES: OrderSceneSurveyScore[] = [
-  1,
-  2,
-  3,
-  4,
-  5
+  1, 2, 3, 4, 5
 ]
 export const ORDER_SCENE_SURVEY_SCORE_TITLES: Record<
   OrderSceneSurveyScore,
@@ -148,10 +144,7 @@ function getScenePlan(options: {
   if (orderClass === 1) {
     const orderTime = parseOrderSceneSurveyTime(detail.orderTime)
 
-    if (
-      orderTime === null ||
-      !isWithinSurveyWindow(orderTime, now)
-    ) {
+    if (orderTime === null || !isWithinSurveyWindow(orderTime, now)) {
       return []
     }
 
@@ -193,12 +186,7 @@ export function createOrderSceneSurveyContext(options: {
   const waybillNumber = detail?.waybillNumber?.trim() ?? ''
   const childChannel = options.childChannel.trim()
 
-  if (
-    !detail ||
-    options.publicTrackMode ||
-    !waybillNumber ||
-    !childChannel
-  ) {
+  if (!detail || options.publicTrackMode || !waybillNumber || !childChannel) {
     return null
   }
 
@@ -229,8 +217,7 @@ export function createOrderSceneSurveyContext(options: {
       mobile,
       childChannel,
       planKey
-    ]
-      .join('|'),
+    ].join('|'),
     waybillNumber,
     mobile,
     childChannel,

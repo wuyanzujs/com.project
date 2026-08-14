@@ -21,7 +21,6 @@ import { hasValidSession } from '@/shared/navigation/authGuard'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 import { appWebMessageBridge } from '@/shared/webview/appWebMessage'
 
-
 interface UseExpressCollectionOptions {
   setDraft: Dispatch<SetStateAction<ExpressDraft>>
 }

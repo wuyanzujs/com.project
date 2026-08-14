@@ -9,7 +9,6 @@ import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 import { AppIcon } from '../AppIcon'
 import { AppPressable } from '../AppPressable'
 
-
 import './index.scss'
 
 interface AppTabBarProps {

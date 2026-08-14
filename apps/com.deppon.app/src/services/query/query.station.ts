@@ -24,7 +24,6 @@ import type {
   StationQueryType
 } from './types'
 
-
 const DEFAULT_STATION_PAGE_SIZE = 100
 const STATION_FEEDBACK_WEB_PATH = '/depponmobile/survey/noStarEvaluate'
 

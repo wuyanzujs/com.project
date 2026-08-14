@@ -39,7 +39,7 @@ export function AppButton({
   trailing,
   variant = 'primary'
 }: AppButtonProps) {
-  const currentLabel = loading ? loadingLabel ?? label : label
+  const currentLabel = loading ? (loadingLabel ?? label) : label
 
   return (
     <AppPressable
@@ -68,7 +68,9 @@ export function AppButton({
       >
         {currentLabel}
       </Text>
-      {trailing ? <View className='app-button__trailing'>{trailing}</View> : null}
+      {trailing ? (
+        <View className='app-button__trailing'>{trailing}</View>
+      ) : null}
     </AppPressable>
   )
 }

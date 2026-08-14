@@ -101,11 +101,15 @@ export function normalizeInvoiceOrder(item: InvoiceOrderRaw): InvoiceOrderView {
     senderText: [
       truncateText(normalizeText(item.departurecity), 6),
       truncateText(normalizeText(item.consignorContacts), 8)
-    ].filter(Boolean).join(' '),
+    ]
+      .filter(Boolean)
+      .join(' '),
     consigneeText: [
       truncateText(normalizeText(item.arrivalcity), 6),
       truncateText(normalizeText(item.consignee), 8)
-    ].filter(Boolean).join(' '),
+    ]
+      .filter(Boolean)
+      .join(' '),
     amount: toFiniteNumber(item.unbilledAmount ?? item.unbillAmount),
     unverAmount: toFiniteNumber(item.unverAmount),
     unpaidAmount: toFiniteNumber(item.unPayAmount),

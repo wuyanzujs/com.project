@@ -9,7 +9,6 @@ import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
-
 interface UseExpressDeliveryPointOptions {
   draft: ExpressDraft
   setDraft: Dispatch<SetStateAction<ExpressDraft>>

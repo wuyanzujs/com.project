@@ -35,7 +35,6 @@ import type {
   WaybillTrackListResponse
 } from './types'
 
-
 export {
   createExpressDraftFromOrderDetail,
   getOrderClassLabel

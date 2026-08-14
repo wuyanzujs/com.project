@@ -28,7 +28,6 @@ import type {
   SubmitPaymentCheckoutOptions
 } from './types'
 
-
 export const APP_PAYMENT_UNAVAILABLE_MESSAGE = '当前版本暂不支持在线支付'
 
 function normalizeText(value?: string | null) {

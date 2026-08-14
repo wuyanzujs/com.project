@@ -372,7 +372,8 @@ export function resolveAppWebTarget(
   const routeUri = decodeRouteValue(params.uri || params.url)
   const rawUrl = routeUri || knownTarget?.url || ''
   const url = toAbsoluteWebUrl(rawUrl)
-  const title = decodeRouteValue(params.title) || knownTarget?.title || '服务承接'
+  const title =
+    decodeRouteValue(params.title) || knownTarget?.title || '服务承接'
   const auth =
     params.auth === undefined
       ? knownTarget?.auth !== false

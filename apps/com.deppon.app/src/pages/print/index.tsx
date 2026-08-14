@@ -8,7 +8,6 @@ import type { PrintCenterActionView } from '@/services/print'
 import { AppPressable } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 
-
 import './index.scss'
 import './content.scss'
 

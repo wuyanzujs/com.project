@@ -10,7 +10,6 @@ import type {
 } from '@/services/express'
 import { hasValidSession } from '@/shared/navigation/authGuard'
 
-
 interface UseExpressMonthlyPayParams {
   draft: ExpressDraft
   updateService: (patch: Partial<ExpressDraft['service']>) => void

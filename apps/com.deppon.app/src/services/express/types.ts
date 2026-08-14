@@ -10,11 +10,7 @@ export type * from './packaging.types'
 export type ExpressFlag = 'Y' | 'N'
 export type ExpressPaymentType = 'MP' | 'PAY_ARIIVE' | 'MONTH_PAY'
 export type ExpressDeliveryMode =
-  | ''
-  | 'PICKNOTUPSTAIRS'
-  | 'PICKSELF'
-  | 'PICKUPSTAIRS'
-  | 'BIGUPSTAIRS'
+  '' | 'PICKNOTUPSTAIRS' | 'PICKSELF' | 'PICKUPSTAIRS' | 'BIGUPSTAIRS'
 export type ExpressReturnBillType =
   | 'NO_RETURN_SIGNED'
   | 'CUSTOMER_SIGNED_FAX'
@@ -22,22 +18,12 @@ export type ExpressReturnBillType =
   | 'RETURNBILL_TYPE_ONLINE'
   | 'ORIGINAL_ONLINE'
 export type ExpressReturnBillRequirement =
-  | 'R1'
-  | 'R2'
-  | 'R3'
-  | 'R4'
-  | 'R5'
-  | 'R6'
-  | 'R7'
-  | 'R8'
+  'R1' | 'R2' | 'R3' | 'R4' | 'R5' | 'R6' | 'R7' | 'R8'
 export type ExpressCollectionType = '' | 'NORMAL' | 'INTRADAY'
 export type ExpressPickupTimeType = 'NORMAL' | 'NIGHT'
 export type ExpressPickupTimeOpeningType = ExpressPickupTimeType | 'DISABLE'
 export type ExpressDeliveryPreferenceType =
-  | ''
-  | 'SCHEDULED'
-  | 'NOTIFY_SENDER'
-  | 'NOTIFY_RECEIVER'
+  '' | 'SCHEDULED' | 'NOTIFY_SENDER' | 'NOTIFY_RECEIVER'
 export type ExpressProductCode =
   | ''
   | 'PACKAGE'
@@ -62,16 +48,8 @@ export type ExpressProductCode =
   | 'NLRF'
 
 export type ExpressProductRole =
-  | ''
-  | 'EXP'
-  | 'CONTRACT'
-  | 'UNIVERSAL'
-  | 'DRIVER_QR_CODE'
-export type ExpressProductSwitch =
-  | 'OLD'
-  | 'EXP'
-  | 'CONTRACT'
-  | 'UNIVERSAL'
+  '' | 'EXP' | 'CONTRACT' | 'UNIVERSAL' | 'DRIVER_QR_CODE'
+export type ExpressProductSwitch = 'OLD' | 'EXP' | 'CONTRACT' | 'UNIVERSAL'
 export type ExpressProductUpgradeResult = 'N' | 'OLD' | 'NEW'
 export type ExpressProductCollectMode = 'BZLS'
 export type ExpressProductDeliveryMode = 'ZDZT' | 'BZPS'
@@ -230,11 +208,7 @@ export interface ExpressProductQuote {
 }
 
 export type ExpressScanRole =
-  | 'pickupManId'
-  | 'driverId'
-  | 'acceptDept'
-  | 'businessCode'
-  | 'shipperNumber'
+  'pickupManId' | 'driverId' | 'acceptDept' | 'businessCode' | 'shipperNumber'
 
 export type ExpressScanExpressRole = 'PARTNER'
 
@@ -304,7 +278,8 @@ export type ExpressGoodsLabelType =
   | 'limitation_insure'
   | 'worry_free_protection'
 
-export type ExpressGoodsDisplayType = null | 'alert' | 'tips' | 'addprice' | 'forbid'
+export type ExpressGoodsDisplayType =
+  null | 'alert' | 'tips' | 'addprice' | 'forbid'
 
 export interface ExpressGoodsLabel {
   tip: string
@@ -390,7 +365,8 @@ export interface ExpressFreightRequest {
   shipperAddress: string
   reciveLoanType: '' | 'R1' | 'R3'
   returnBillType: 'NONE' | 'FAX' | 'ORIGINAL' | 'ONLINE' | 'ORIGINAL_ONLINE'
-  receiveMethod: '' | 'DELIVER_NOUP' | 'SELF_PICKUP' | 'DELIVER_UP' | 'LARGE_DELIVER_UP'
+  receiveMethod:
+    '' | 'DELIVER_NOUP' | 'SELF_PICKUP' | 'DELIVER_UP' | 'LARGE_DELIVER_UP'
   reviceMoneyAmount: number
   totalVolume: number
   totalWeight: number

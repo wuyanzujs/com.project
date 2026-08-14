@@ -4,8 +4,7 @@ export interface AppWebCollectionAccount {
 }
 
 export type AppWebCollectionAccountSource =
-  | 'EXPRESS_COLLECTION_ACCOUNT'
-  | 'ORDER_EDIT_COLLECTION_ACCOUNT'
+  'EXPRESS_COLLECTION_ACCOUNT' | 'ORDER_EDIT_COLLECTION_ACCOUNT'
 
 export interface AppWebCollectionAccountContext {
   source: AppWebCollectionAccountSource
@@ -215,9 +214,7 @@ function isSafeWarehouseFileUrl(value: string) {
   }
 }
 
-function normalizeWarehouseFiles(
-  value: unknown
-): AppWebWarehouseFile[] | null {
+function normalizeWarehouseFiles(value: unknown): AppWebWarehouseFile[] | null {
   if (value === undefined) {
     return []
   }
@@ -300,9 +297,7 @@ function parseWarehousePayload(value: unknown) {
   const warehouseNo = normalizeBoundedText(payload.warehouseNo, 128)
   const warehouseTime = normalizeBoundedText(payload.warehouseTime, 64)
   const warehouseType = normalizeWarehouseType(payload.warehouseType)
-  const deliverWarehouseWay = normalizeWarehouseWay(
-    payload.deliverWarehouseWay
-  )
+  const deliverWarehouseWay = normalizeWarehouseWay(payload.deliverWarehouseWay)
   const warehouseProcess = normalizeBoundedText(payload.warehouseProcess, 512)
   const warehouseCode = normalizeBoundedText(payload.warehouseCode, 128)
   const warehouseRemark = normalizeBoundedText(payload.warehouseRemark, 500)
@@ -364,9 +359,7 @@ function normalizeWarehouseMessage(
   const isWarehousingService = args.isWarehousingService
 
   if (
-    argKeys.some(
-      key => key !== 'isWarehousingService' && key !== 'payload'
-    ) ||
+    argKeys.some(key => key !== 'isWarehousingService' && key !== 'payload') ||
     !hasOwn(args, 'isWarehousingService') ||
     (isWarehousingService !== 'Y' && isWarehousingService !== 'N')
   ) {
@@ -462,10 +455,7 @@ export const appWebMessageBridge = {
     context?: AppWebMessageStageContext
   ): AppWebMessageStageResult {
     if (source === 'EXPRESS_RETURN_BILL_CLOUD_SIGN') {
-      const messageContext = normalizeBoundedText(
-        context?.messageContext,
-        256
-      )
+      const messageContext = normalizeBoundedText(context?.messageContext, 256)
 
       if (
         !expectedOnlineSignContext ||
@@ -529,10 +519,7 @@ export const appWebMessageBridge = {
       return createUnhandledStageResult()
     }
 
-    const messageContext = normalizeBoundedText(
-      context?.messageContext,
-      256
-    )
+    const messageContext = normalizeBoundedText(context?.messageContext, 256)
 
     if (
       !expectedCollectionAccountContext ||

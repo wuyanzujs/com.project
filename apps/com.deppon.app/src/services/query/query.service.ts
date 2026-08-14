@@ -1,7 +1,4 @@
-import {
-  queryDispatchRange,
-  resolveDispatchAddress
-} from './query.dispatch'
+import { queryDispatchRange, resolveDispatchAddress } from './query.dispatch'
 import {
   createStationDetailRoute,
   createStationFeedbackWebUri,

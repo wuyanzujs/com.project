@@ -119,9 +119,7 @@ export function updateOrderEditCollection(
   })
 }
 
-export function clearOrderEditCollection(
-  collection: OrderEditCollectionDraft
-) {
+export function clearOrderEditCollection(collection: OrderEditCollectionDraft) {
   return normalizeOrderEditCollection({
     enabled: false,
     type: 'NORMAL',
@@ -164,10 +162,7 @@ export function validateOrderEditCollection(
 export type OrderEditCollectionRequestFields = Required<
   Pick<
     OrderModifyRequest,
-    | 'reciveLoanType'
-    | 'reviceMoneyAmount'
-    | 'accountName'
-    | 'reciveLoanAccount'
+    'reciveLoanType' | 'reviceMoneyAmount' | 'accountName' | 'reciveLoanAccount'
   >
 >
 

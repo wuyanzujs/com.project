@@ -32,7 +32,6 @@ import { OrderStubSummaryCard } from './components/OrderStubSummaryCard'
 
 import type { OrderStubImagePreviewState } from './components/OrderStubImagePreview'
 
-
 import './index.scss'
 
 interface OrderStubRouteParams {

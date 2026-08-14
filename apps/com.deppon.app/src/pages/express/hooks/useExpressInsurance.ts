@@ -22,7 +22,6 @@ import type {
 } from '@/services/express'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 
-
 interface UseExpressInsuranceOptions {
   draft: ExpressDraft
   setDraft: Dispatch<SetStateAction<ExpressDraft>>

@@ -14,7 +14,6 @@ import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
 import { PhoneNumberError, dialPhone } from '@/shared/platform/phone'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-
 import './index.scss'
 import './content.scss'
 

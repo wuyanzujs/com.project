@@ -72,9 +72,7 @@ export function updateOrderEditPackagingCount(
   return count === packaging.count ? packaging : { count }
 }
 
-export function validateOrderEditPackaging(
-  packaging: OrderEditPackagingDraft
-) {
+export function validateOrderEditPackaging(packaging: OrderEditPackagingDraft) {
   const count = packaging.count
 
   if (
@@ -83,17 +81,13 @@ export function validateOrderEditPackaging(
     count < 0 ||
     count > ORDER_EDIT_PACKAGING_MAX_COUNT
   ) {
-    return [
-      `打包服务件数须为 0 到 ${ORDER_EDIT_PACKAGING_MAX_COUNT} 的整数`
-    ]
+    return [`打包服务件数须为 0 到 ${ORDER_EDIT_PACKAGING_MAX_COUNT} 的整数`]
   }
 
   return []
 }
 
-export function getOrderEditPackagingFee(
-  packaging: OrderEditPackagingDraft
-) {
+export function getOrderEditPackagingFee(packaging: OrderEditPackagingDraft) {
   return (
     normalizeOrderEditPackagingCount(packaging.count) *
     ORDER_EDIT_PACKAGING_UNIT_FEE

@@ -11,23 +11,13 @@ export type ExpressCartonCode =
   | 'ZX_DP_07'
 
 export type ExpressWoodenPackagingCode =
-  | 'WOOD_03'
-  | 'WOOD_04'
-  | 'WOOD_01'
-  | 'WOOD_02'
+  'WOOD_03' | 'WOOD_04' | 'WOOD_01' | 'WOOD_02'
 
 export type ExpressUnpackingCode = 'UNPACKING_01' | 'UNPACKING_02'
 export type ExpressPackageLtlType =
-  | ''
-  | 'WOOD_PACKAGE'
-  | 'UN_PACKAGE'
-  | 'WOOD_PACKAGE,UN_PACKAGE'
+  '' | 'WOOD_PACKAGE' | 'UN_PACKAGE' | 'WOOD_PACKAGE,UN_PACKAGE'
 export type ExpressOrderPackageCode =
-  | Exclude<ExpressCartonCode, ''>
-  | 'SJ'
-  | 'BG'
-  | 'SP'
-  | 'NSP'
+  Exclude<ExpressCartonCode, ''> | 'SJ' | 'BG' | 'SP' | 'NSP'
 
 export interface ExpressPackagingDraft {
   cartonCode: ExpressCartonCode

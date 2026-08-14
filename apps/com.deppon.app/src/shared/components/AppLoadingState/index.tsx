@@ -19,7 +19,11 @@ export function AppLoadingState({
 }: AppLoadingStateProps) {
   return (
     <View
-      className={['app-loading-state', `app-loading-state--${layout}`, className]
+      className={[
+        'app-loading-state',
+        `app-loading-state--${layout}`,
+        className
+      ]
         .filter(Boolean)
         .join(' ')}
       role='status'

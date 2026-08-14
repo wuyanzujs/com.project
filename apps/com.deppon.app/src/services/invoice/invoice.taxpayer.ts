@@ -76,7 +76,7 @@ export function validateTaxpayer(form: InvoiceTaxpayerForm) {
     return '发票抬头过长，请删减信息'
   }
 
-  if (sensitiveWords.some((item) => name.includes(item))) {
+  if (sensitiveWords.some(item => name.includes(item))) {
     return '抬头信息可能无法通过审核，请确认填写信息真实有效'
   }
 
@@ -104,4 +104,3 @@ export function validateTaxpayer(form: InvoiceTaxpayerForm) {
 
   return ''
 }
-

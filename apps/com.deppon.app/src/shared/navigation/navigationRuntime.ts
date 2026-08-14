@@ -53,7 +53,7 @@ function getCurrentRoutePathname() {
 }
 
 function delayNavigationConfirmation() {
-  return new Promise<void>((resolve) => {
+  return new Promise<void>(resolve => {
     setTimeout(resolve, NAVIGATION_CONFIRM_INTERVAL_MS)
   })
 }

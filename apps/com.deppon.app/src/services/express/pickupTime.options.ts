@@ -96,8 +96,7 @@ export function normalizeExpressPickupTimeResponse(
         date,
         dateList: hasNightQuickPickup
           ? dateList.filter(
-              item =>
-                item.type !== 'NORMAL' || !item.text.includes('小时')
+              item => item.type !== 'NORMAL' || !item.text.includes('小时')
             )
           : dateList
       }

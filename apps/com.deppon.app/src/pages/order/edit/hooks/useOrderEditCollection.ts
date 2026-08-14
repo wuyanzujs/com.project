@@ -19,7 +19,6 @@ import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 import { appWebMessageBridge } from '@/shared/webview/appWebMessage'
 
-
 interface UseOrderEditCollectionOptions {
   orderNumber: string
   setDraft: Dispatch<SetStateAction<OrderEditDraft | null>>

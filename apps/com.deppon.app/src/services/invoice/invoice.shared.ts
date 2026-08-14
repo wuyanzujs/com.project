@@ -9,10 +9,9 @@ export function toFiniteNumber(value: unknown) {
 }
 
 export function getFieldLength(value: string) {
-  return value.split('').reduce(
-    (total, char) => total + (char.charCodeAt(0) > 255 ? 2 : 1),
-    0
-  )
+  return value
+    .split('')
+    .reduce((total, char) => total + (char.charCodeAt(0) > 255 ? 2 : 1), 0)
 }
 
 function pad(value: number) {
@@ -30,4 +29,3 @@ export function formatDateTime(date: Date) {
 export function truncateText(value: string, maxLength: number) {
   return value.length > maxLength ? `${value.slice(0, maxLength)}...` : value
 }
-

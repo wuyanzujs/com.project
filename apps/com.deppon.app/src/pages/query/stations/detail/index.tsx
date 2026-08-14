@@ -12,7 +12,6 @@ import { openMapLocation } from '@/shared/platform/map'
 import { PhoneNumberError, dialPhone } from '@/shared/platform/phone'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 
-
 import './index.scss'
 import './content.scss'
 

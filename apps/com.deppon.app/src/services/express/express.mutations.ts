@@ -1,6 +1,4 @@
-import {
-  createExpressDeliveryPointDraft
-} from './deliveryPoint.rules'
+import { createExpressDeliveryPointDraft } from './deliveryPoint.rules'
 import {
   createExpressDeliveryAvailabilityKey,
   createExpressDeliveryPreferenceDraft
@@ -47,9 +45,7 @@ function clearPickupSelection(
     stationCode: '',
     stationName: '',
     pickPeriodTime: undefined,
-    nightCapability: clearNightCapability
-      ? undefined
-      : pickup.nightCapability,
+    nightCapability: clearNightCapability ? undefined : pickup.nightCapability,
     nightNoticeAccepted: false
   }
 }
@@ -136,10 +132,9 @@ export function updateExpressService(
   const warehouseInputChanged =
     (patch.transportMode !== undefined &&
       patch.transportMode !== draft.service.transportMode) ||
-      (patch.deliveryMode !== undefined &&
+    (patch.deliveryMode !== undefined &&
       patch.deliveryMode !== draft.service.deliveryMode)
-  const nextTransportMode =
-    patch.transportMode ?? draft.service.transportMode
+  const nextTransportMode = patch.transportMode ?? draft.service.transportMode
   const nextService = {
     ...draft.service,
     ...patch,
@@ -261,10 +256,7 @@ export function selectExpressProduct(
     ...draft,
     selectedProduct: product,
     service: nextService,
-    insurance: normalizeExpressInsuranceDraft(
-      draft.insurance,
-      nextProductCode
-    ),
+    insurance: normalizeExpressInsuranceDraft(draft.insurance, nextProductCode),
     warehouse:
       currentProductCode === nextProductCode
         ? draft.warehouse

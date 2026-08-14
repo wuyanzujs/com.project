@@ -11,10 +11,7 @@ const REQUIRED_PRODUCTS = new Set<ExpressProductCode>([
 ])
 
 const FREE_PRODUCTS = new Set<ExpressProductCode>(['NFLF', 'NLRF'])
-const LOGISTICS_PRODUCTS = new Set<ExpressProductCode>([
-  'JZKH',
-  'JZQY_LONG'
-])
+const LOGISTICS_PRODUCTS = new Set<ExpressProductCode>(['JZKH', 'JZQY_LONG'])
 const SXB_BLOCKED_PRODUCTS = new Set<ExpressProductCode>([
   ...REQUIRED_PRODUCTS,
   ...FREE_PRODUCTS,
@@ -32,7 +29,6 @@ export function getExpressInsuranceProductPolicy(
     free,
     cancel: !required && !free,
     supportsFullCoverage: !LOGISTICS_PRODUCTS.has(productCode),
-    supportsSxb:
-      Boolean(productCode) && !SXB_BLOCKED_PRODUCTS.has(productCode)
+    supportsSxb: Boolean(productCode) && !SXB_BLOCKED_PRODUCTS.has(productCode)
   }
 }

@@ -11,7 +11,6 @@ import type {
 } from '@/services/express'
 import { appWebMessageBridge } from '@/shared/webview/appWebMessage'
 
-
 export type ExpressWarehouseScreeningDecision =
   'PROCEED' | 'ACKNOWLEDGE' | 'ENABLE' | 'REJECT' | 'CANCEL'
 

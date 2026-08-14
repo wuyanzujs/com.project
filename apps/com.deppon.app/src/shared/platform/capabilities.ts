@@ -63,7 +63,9 @@ export class NativeCapabilityError extends Error {
   readonly capability: NativeCapability
 
   constructor(capability: NativeCapability) {
-    super(`Native capability "${capability}" has not been wired for App runtime.`)
+    super(
+      `Native capability "${capability}" has not been wired for App runtime.`
+    )
     this.name = 'NativeCapabilityError'
     this.capability = capability
     Object.setPrototypeOf(this, NativeCapabilityError.prototype)

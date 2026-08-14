@@ -17,7 +17,6 @@ import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-
 import { InvoiceDetailOverviewCard } from './components/InvoiceDetailOverviewCard'
 import {
   InvoiceDetailLoadingState,

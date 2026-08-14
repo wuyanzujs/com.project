@@ -164,12 +164,7 @@ export interface PaymentOrder {
 }
 
 export type PaymentBackendStatus =
-  | 'PAYING'
-  | 'CREATE'
-  | 'PAY_FAILED'
-  | 'PAY_SUCCESS'
-  | 'CANCELED'
-  | 'LATER_PAY'
+  'PAYING' | 'CREATE' | 'PAY_FAILED' | 'PAY_SUCCESS' | 'CANCELED' | 'LATER_PAY'
 
 export interface PaymentConfirmResponse {
   payStatus?: PaymentBackendStatus

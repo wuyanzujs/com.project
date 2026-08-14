@@ -1,8 +1,5 @@
 import { ensureAuthenticated } from './authGuard'
-import {
-  dispatchAppRoute,
-  dispatchAppRouteAsync
-} from './navigationRuntime'
+import { dispatchAppRoute, dispatchAppRouteAsync } from './navigationRuntime'
 import { APP_LOGIN_ROUTE_PATHS } from './routeRegistry'
 import { APP_MAIN_NAVIGATION, APP_ROUTES } from './routes'
 
@@ -15,7 +12,7 @@ export interface NavigateToAppRouteOptions {
   replace?: boolean
 }
 
-const MAIN_ROUTE_PATHS = APP_MAIN_NAVIGATION.map((item) => item.path)
+const MAIN_ROUTE_PATHS = APP_MAIN_NAVIGATION.map(item => item.path)
 
 function getRoutePathname(url: string) {
   return url.split('?')[0]
@@ -41,8 +38,7 @@ function shouldRequireLogin(url: string, options: NavigateToAppRouteOptions) {
   const pathname = getRoutePathname(url)
 
   return (
-    options.login ||
-    APP_LOGIN_ROUTE_PATHS.includes(pathname as AppRoutePath)
+    options.login || APP_LOGIN_ROUTE_PATHS.includes(pathname as AppRoutePath)
   )
 }
 

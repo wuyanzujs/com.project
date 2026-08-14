@@ -5,7 +5,6 @@ import { useMemo, useState } from 'react'
 import type { HomeQuickAction } from '@/pages/home/home.data'
 import { AppPressable } from '@/shared/components'
 
-
 import './index.scss'
 
 const PAGE_SIZE = 12

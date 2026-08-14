@@ -35,7 +35,6 @@ import { OrderSupportFloat } from './components/OrderSupportFloat'
 
 import type { OrderDateRangeDays } from './components/OrderListSections'
 
-
 import './index.scss'
 
 const PAGE_SIZE = 10

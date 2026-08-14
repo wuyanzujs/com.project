@@ -5,7 +5,8 @@ const DETRACTOR_CATALOG: OrderNpsCatalog = {
   options: [
     {
       text: '揽收服务',
-      title: '请问在“揽收服务”方面，您不愿意推荐德邦快递的原因是？（最多可选三项）',
+      title:
+        '请问在“揽收服务”方面，您不愿意推荐德邦快递的原因是？（最多可选三项）',
       maxSelections: 3,
       options: [
         '不上门取件',
@@ -20,7 +21,8 @@ const DETRACTOR_CATALOG: OrderNpsCatalog = {
     },
     {
       text: '派送服务',
-      title: '请问在“派送服务”方面，您不愿意推荐德邦快递的原因是？（最多可选三项）',
+      title:
+        '请问在“派送服务”方面，您不愿意推荐德邦快递的原因是？（最多可选三项）',
       maxSelections: 3,
       options: [
         '小哥服务态度差',
@@ -36,7 +38,8 @@ const DETRACTOR_CATALOG: OrderNpsCatalog = {
     },
     {
       text: '货物丢失/破损',
-      title: '请问在“货物丢失/破损”方面，您不愿意推荐德邦快递的原因是？（最多可选三项）',
+      title:
+        '请问在“货物丢失/破损”方面，您不愿意推荐德邦快递的原因是？（最多可选三项）',
       maxSelections: 3,
       options: [
         '包装脏了',
@@ -92,7 +95,8 @@ const DETRACTOR_CATALOG: OrderNpsCatalog = {
     },
     {
       text: '系统设计',
-      title: '请问在“系统设计”方面，您不愿意推荐德邦快递的原因是？（最多可选三项）',
+      title:
+        '请问在“系统设计”方面，您不愿意推荐德邦快递的原因是？（最多可选三项）',
       maxSelections: 3,
       options: [
         '卡顿/闪退/报错/没反应',
@@ -113,7 +117,8 @@ const PASSIVE_CATALOG: OrderNpsCatalog = {
   options: [
     {
       text: '揽收服务',
-      title: '请问在“揽收服务”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
+      title:
+        '请问在“揽收服务”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
       maxSelections: 3,
       options: [
         '上门取件',
@@ -128,7 +133,8 @@ const PASSIVE_CATALOG: OrderNpsCatalog = {
     },
     {
       text: '派送服务',
-      title: '请问在“派送服务”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
+      title:
+        '请问在“派送服务”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
       maxSelections: 3,
       options: [
         '小哥服务态度好',
@@ -144,7 +150,8 @@ const PASSIVE_CATALOG: OrderNpsCatalog = {
     },
     {
       text: '货物安全',
-      title: '请问在“货物安全”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
+      title:
+        '请问在“货物安全”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
       maxSelections: 3,
       options: [
         '包装保持干净',
@@ -157,7 +164,8 @@ const PASSIVE_CATALOG: OrderNpsCatalog = {
     },
     {
       text: '价格',
-      title: '请问在“价格”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
+      title:
+        '请问在“价格”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
       maxSelections: 3,
       options: [
         '不会乱收费',
@@ -170,7 +178,8 @@ const PASSIVE_CATALOG: OrderNpsCatalog = {
     },
     {
       text: '时效',
-      title: '请问在“时效”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
+      title:
+        '请问在“时效”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
       maxSelections: 3,
       options: [
         '比其他快递公司的时效快',
@@ -184,7 +193,8 @@ const PASSIVE_CATALOG: OrderNpsCatalog = {
     },
     {
       text: '售后（客服/理赔）',
-      title: '请问在“售后”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
+      title:
+        '请问在“售后”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
       maxSelections: 3,
       options: [
         '智能客服好用',
@@ -200,7 +210,8 @@ const PASSIVE_CATALOG: OrderNpsCatalog = {
     },
     {
       text: '系统设计',
-      title: '请问在“系统设计”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
+      title:
+        '请问在“系统设计”方面，我们在以下哪些地方做的更好会使您更愿意推荐德邦快递呢？（最多可选三项）',
       maxSelections: 3,
       options: [
         '系统不会卡顿/闪退/报错/没反应',

@@ -31,10 +31,7 @@ export const ACCOUNT_SCOPED_CACHE_KEYS = [
 
 export const ACCOUNT_SCOPED_STORAGE_KEYS = Array.from(
   new Set(
-    ACCOUNT_SCOPED_CACHE_KEYS.flatMap((key) => [
-      key,
-      createCacheStorageKey(key)
-    ])
+    ACCOUNT_SCOPED_CACHE_KEYS.flatMap(key => [key, createCacheStorageKey(key)])
   )
 )
 

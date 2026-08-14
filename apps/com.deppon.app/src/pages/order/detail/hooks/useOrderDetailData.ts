@@ -22,7 +22,6 @@ import {
   type OrderDetailRouteParams
 } from '../orderDetailViewModel'
 
-
 import type { OrderDetailUrgePanelState } from '../components/OrderUrgePanel'
 
 export function useOrderDetailData(routeParams: OrderDetailRouteParams) {

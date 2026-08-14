@@ -40,7 +40,10 @@ export function createApplyPreview(
     message = '缺少开票运单号'
   } else if (!draft.taxpayer) {
     message = '请选择发票抬头'
-  } else if (draft.billCategory === '13' && draft.taxpayer.customerType !== '1') {
+  } else if (
+    draft.billCategory === '13' &&
+    draft.taxpayer.customerType !== '1'
+  ) {
     message = '电子专票需要选择单位抬头'
   } else if (draft.billCategory === '13' && !draft.order.electronSupported) {
     message = '当前运单暂未开通电子专票'
@@ -99,10 +102,10 @@ export function createApplySubmitPayload(
       taxNo: taxpayer?.taxNumber ?? '',
       taxName: taxpayer?.name ?? '',
       customerType: taxpayer?.customerType ?? '0',
-      taxTelephone: includeCompanyInfo ? taxpayer?.phone ?? '' : '',
-      taxAddress: includeCompanyInfo ? taxpayer?.address ?? '' : '',
-      taxBankName: includeCompanyInfo ? taxpayer?.bank ?? '' : '',
-      taxBankNumber: includeCompanyInfo ? taxpayer?.bankAccount ?? '' : '',
+      taxTelephone: includeCompanyInfo ? (taxpayer?.phone ?? '') : '',
+      taxAddress: includeCompanyInfo ? (taxpayer?.address ?? '') : '',
+      taxBankName: includeCompanyInfo ? (taxpayer?.bank ?? '') : '',
+      taxBankNumber: includeCompanyInfo ? (taxpayer?.bankAccount ?? '') : '',
       openAmount,
       totalAmount: openAmount,
       open_amount: openAmount,
