@@ -1,26 +1,13 @@
 import { Input, ScrollView, Text, View } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 
-import {
-  createExpressDraft,
-  expressDraftBridge,
-  expressDraftStorage,
-  markExpressQuoteStale
-} from '@/services/express'
 import { goodsQueryService } from '@/services/goods'
-import type {
-  GoodsCheckResult,
-  GoodsCheckStatus,
-  GoodsHistoryItem,
-  GoodsSuggestionView
-} from '@/services/goods'
+import type { GoodsCheckStatus, GoodsSuggestionView } from '@/services/goods'
 import { AppPressable } from '@/shared/components'
-import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
-import { APP_ROUTES } from '@/shared/navigation/routes'
-import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
+import { useGoodsQuery } from './hooks/useGoodsQuery'
 
 import './index.scss'
 import './content.scss'
@@ -66,141 +53,24 @@ function formatHistoryTime(value: number) {
 
 const QueryGoodsPage = () => {
   const hotGoods = useMemo(() => goodsQueryService.getHotGoods(), [])
-  const [keyword, setKeyword] = useState('')
-  const [suggestions, setSuggestions] = useState<GoodsSuggestionView[]>([])
-  const [history, setHistory] = useState<GoodsHistoryItem[]>(() =>
-    goodsQueryService.getHistory()
-  )
-  const [result, setResult] = useState<GoodsCheckResult | null>(null)
-  const [message, setMessage] = useState('')
-  const [searching, setSearching] = useState(false)
-  const [checking, setChecking] = useState(false)
-  const canCarryToExpress = !!result?.canExpress
-
-  const showToast = (title: string) => {
+  const showToast = useCallback((title: string) => {
     Taro.showToast({
       title,
       icon: 'none'
     })
-  }
+  }, [])
 
-  const checkGoodsName = async (goodsName: string) => {
-    const nextName = goodsName.trim()
-
-    if (!nextName) {
-      showToast('请输入货物名称')
-      return
-    }
-
-    if (checking) {
-      return
-    }
-
-    setChecking(true)
-    setMessage('')
-
-    try {
-      const response = await goodsQueryService.checkGoods({
-        goodsName: nextName
-      })
-
-      if (!response.status || !response.result) {
-        const nextMessage = response.message || '暂未完成货物校验'
-
-        setResult(null)
-        setMessage(nextMessage)
-        showToast(nextMessage)
-        return
-      }
-
-      setKeyword(response.result.goodsName)
-      setResult(response.result)
-      setSuggestions([])
-      setHistory(goodsQueryService.getHistory())
-    } finally {
-      setChecking(false)
-    }
-  }
-
-  const handleSearch = async () => {
-    const nextKeyword = keyword.trim()
-
-    if (!nextKeyword) {
-      showToast('请输入货物名称关键词')
-      return
-    }
-
-    if (searching) {
-      return
-    }
-
-    setSearching(true)
-    setMessage('')
-    setResult(null)
-
-    try {
-      const response = await goodsQueryService.searchGoods(nextKeyword)
-
-      if (!response.status || !response.result) {
-        const nextMessage = response.message || '暂未获取到品名推荐'
-
-        setSuggestions([])
-        setMessage(nextMessage)
-        showToast(nextMessage)
-        return
-      }
-
-      setSuggestions(response.result)
-      setMessage(response.result.length ? '' : '未找到匹配品名，可直接校验')
-    } finally {
-      setSearching(false)
-    }
-  }
+  const goods = useGoodsQuery(showToast)
+  const canCarryToExpress = !!goods.result?.canExpress
 
   const handleSuggestionSelect = (item: GoodsSuggestionView) => {
-    setKeyword(item.name)
-    checkGoodsName(item.name)
+    goods.setKeyword(item.name)
+    goods.checkGoodsName(item.name)
   }
 
-  const handleHistorySelect = (item: GoodsHistoryItem) => {
-    setKeyword(item.goodsName)
-    checkGoodsName(item.goodsName)
-  }
-
-  const handleClearHistory = () => {
-    goodsQueryService.clearHistory()
-    setHistory([])
-  }
-
-  const handleCarryToExpress = () => {
-    if (!result) {
-      showToast('请先校验货物名称')
-      return
-    }
-
-    if (!result.canExpress) {
-      showToast('该货物暂不支持寄递')
-      return
-    }
-
-    const draft = expressDraftStorage.restore() ?? createExpressDraft()
-    const nextDraft = markExpressQuoteStale(
-      {
-        ...draft,
-        goods: {
-          ...draft.goods,
-          name: result.goodsName
-        }
-      },
-      '货物名称来自违禁品查询，请重新获取价格'
-    )
-
-    expressDraftBridge.carryFromGoodsQuery(nextDraft)
-    navigateToAppRoute(
-      createAppRouteUrl(APP_ROUTES.express, {
-        source: 'GOODS_QUERY'
-      })
-    )
+  const handleHistorySelect = (item: { goodsName: string }) => {
+    goods.setKeyword(item.goodsName)
+    goods.checkGoodsName(item.goodsName)
   }
 
   return (
@@ -209,48 +79,48 @@ const QueryGoodsPage = () => {
         <View className='query-goods-section__head'>
           <Text className='query-goods-section__title'>品名</Text>
           <Text className='query-goods-section__hint'>
-            {checking ? '校验中' : searching ? '搜索中' : '必填'}
+            {goods.checking ? '校验中' : goods.searching ? '搜索中' : '必填'}
           </Text>
         </View>
         <Input
           className='query-goods-input'
           placeholder='如文件、服饰、电子配件'
-          value={keyword}
+          value={goods.keyword}
           onInput={event => {
-            setKeyword(event.detail.value)
-            setResult(null)
-            setMessage('')
+            goods.setKeyword(event.detail.value)
+            goods.setResult(null)
+            goods.setMessage('')
           }}
         />
         <View className='query-goods-actions'>
           <AppPressable
             flex
             className='query-goods-outline-button'
-            onPress={handleSearch}
+            onPress={goods.handleSearch}
           >
             <Text className='query-goods-outline-button__text'>
-              {searching ? '搜索中' : '搜索推荐'}
+              {goods.searching ? '搜索中' : '搜索推荐'}
             </Text>
           </AppPressable>
           <AppPressable
             flex
             className='query-goods-primary-button'
-            onPress={() => checkGoodsName(keyword)}
+            onPress={() => goods.checkGoodsName(goods.keyword)}
           >
             <Text className='query-goods-primary-button__text'>
-              {checking ? '校验中' : '校验货物'}
+              {goods.checking ? '校验中' : '校验货物'}
             </Text>
           </AppPressable>
         </View>
-        {!!message && (
-          <Text className='query-goods-message__text'>{message}</Text>
+        {!!goods.message && (
+          <Text className='query-goods-message__text'>{goods.message}</Text>
         )}
       </View>
 
-      {suggestions.length > 0 && (
+      {goods.suggestions.length > 0 && (
         <View className='query-goods-section'>
           <Text className='query-goods-section__title'>推荐品名</Text>
-          {suggestions.map((item, index) => (
+          {goods.suggestions.map((item, index) => (
             <AppPressable
               className='query-goods-suggestion'
               key={getSuggestionKey(item, index)}
@@ -285,19 +155,19 @@ const QueryGoodsPage = () => {
         </View>
       </View>
 
-      {history.length > 0 && (
+      {goods.history.length > 0 && (
         <View className='query-goods-section'>
           <View className='query-goods-section__head'>
             <Text className='query-goods-section__title'>最近查询</Text>
             <AppPressable
               contentElement='text'
               className='query-goods-link'
-              onPress={handleClearHistory}
+              onPress={goods.handleClearHistory}
             >
               清空
             </AppPressable>
           </View>
-          {history.map(item => (
+          {goods.history.map(item => (
             <AppPressable
               className='query-goods-history'
               key={`${item.goodsName}-${item.checkedAt}`}
@@ -319,24 +189,28 @@ const QueryGoodsPage = () => {
         </View>
       )}
 
-      {result && (
-        <View className={getResultClassName(result.status)}>
+      {goods.result && (
+        <View className={getResultClassName(goods.result.status)}>
           <View className='query-goods-result__head'>
             <View>
               <Text className='query-goods-result__name'>
-                {result.goodsName}
+                {goods.result.goodsName}
               </Text>
-              <Text className='query-goods-result__title'>{result.title}</Text>
+              <Text className='query-goods-result__title'>
+                {goods.result.title}
+              </Text>
             </View>
-            <Text className={getStatusClassName(result.status)}>
-              {getStatusText(result.status)}
+            <Text className={getStatusClassName(goods.result.status)}>
+              {getStatusText(goods.result.status)}
             </Text>
           </View>
-          <Text className='query-goods-result__message'>{result.message}</Text>
+          <Text className='query-goods-result__message'>
+            {goods.result.message}
+          </Text>
 
-          {result.labels.length > 0 && (
+          {goods.result.labels.length > 0 && (
             <View className='query-goods-labels'>
-              {result.labels.map((label, index) => (
+              {goods.result.labels.map((label, index) => (
                 <View
                   className='query-goods-label'
                   key={`${label.goodsRemarkCode}-${index}`}
@@ -355,7 +229,7 @@ const QueryGoodsPage = () => {
                 ? 'query-goods-express'
                 : 'query-goods-express query-goods-express--disabled'
             }
-            onPress={handleCarryToExpress}
+            onPress={goods.handleCarryToExpress}
           >
             <Text className='query-goods-express__text'>带入寄件</Text>
           </AppPressable>

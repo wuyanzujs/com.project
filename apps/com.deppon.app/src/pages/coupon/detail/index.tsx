@@ -1,22 +1,15 @@
 import { ScrollView, Text, View } from '@tarojs/components'
-import Taro, { useDidShow, useRouter } from '@tarojs/taro'
+import { useRouter } from '@tarojs/taro'
 
-import { useState } from 'react'
+import { useMemo } from 'react'
 
-import { couponService } from '@/services/coupon'
-import type { CouponDetailView, CouponStatus } from '@/services/coupon'
-import {
-  createExpressDraft,
-  expressDraftBridge,
-  expressDraftStorage,
-  markExpressQuoteStale
-} from '@/services/express'
+import type { CouponStatus } from '@/services/coupon'
 import { AppPressable } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
-import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
+import { useCouponDetail } from './hooks/useCouponDetail'
 
 import './index.scss'
 import './content.scss'
@@ -130,49 +123,19 @@ const CouponDetailPage = () => {
   const couponCode = getRouteParam(rawCouponCode).trim()
   const routeStatus = normalizeStatus(getRouteParam(router.params.status))
   const canUse = routeStatus === 'USABLE' || routeStatus === 'AVAILABLE'
-  const [detail, setDetail] = useState<CouponDetailView | null>(null)
-  const [loadedCode, setLoadedCode] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState('')
+  const routeUrl = useMemo(
+    () => createCouponDetailRoute(couponCode, routeStatus),
+    [couponCode, routeStatus]
+  )
 
-  const loadDetail = async () => {
-    if (!couponCode || loading) {
-      return
-    }
-
-    setLoading(true)
-    setMessage('')
-
-    try {
-      const response = await couponService.queryCouponDetail(couponCode)
-
-      if (!response.status || !response.result) {
-        setDetail(null)
-        setMessage(response.message || '暂未获取到优惠券详情')
-        return
-      }
-
-      setDetail(response.result)
-      setLoadedCode(couponCode)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useDidShow(() => {
-    if (
-      !ensureAuthenticated({
-        redirectUrl: createCouponDetailRoute(couponCode, routeStatus),
-        replace: true
-      })
-    ) {
-      return
-    }
-
-    if (couponCode && loadedCode !== couponCode) {
-      loadDetail()
-    }
+  const coupon = useCouponDetail({
+    couponCode,
+    routeStatus,
+    canUse,
+    routeUrl
   })
+
+  const displayCode = coupon.detail?.code || couponCode
 
   const handleBackToList = () => {
     navigateToAppRoute(APP_ROUTES.couponList, {
@@ -180,32 +143,6 @@ const CouponDetailPage = () => {
       replace: true
     })
   }
-
-  const handleUseCoupon = () => {
-    if (!canUse) {
-      Taro.showToast({
-        title: STATUS_TEXT[routeStatus],
-        icon: 'none'
-      })
-      return
-    }
-
-    const currentDraft = expressDraftStorage.restore() ?? createExpressDraft()
-    const nextDraft = markExpressQuoteStale(
-      {
-        ...currentDraft,
-        couponNumber: displayCode
-      },
-      '优惠券变化，请重新获取价格'
-    )
-
-    expressDraftBridge.carryFromCoupon(nextDraft)
-    navigateToAppRoute(APP_ROUTES.express, {
-      login: true
-    })
-  }
-
-  const displayCode = detail?.code || couponCode
 
   if (!couponCode) {
     return (
@@ -265,7 +202,7 @@ const CouponDetailPage = () => {
                 ? 'coupon-detail-action'
                 : 'coupon-detail-action coupon-detail-action--disabled'
             }
-            onPress={handleUseCoupon}
+            onPress={coupon.handleUseCoupon}
           >
             <Text
               className={
@@ -280,7 +217,7 @@ const CouponDetailPage = () => {
         </View>
       </View>
 
-      {detail && !detail.hasDetail && (
+      {coupon.detail && !coupon.detail.hasDetail && (
         <View className='coupon-detail-notice'>
           <Text className='coupon-detail-notice__title'>暂无更多规则</Text>
           <Text className='coupon-detail-notice__summary'>
@@ -289,40 +226,40 @@ const CouponDetailPage = () => {
         </View>
       )}
 
-      {detail && (
+      {coupon.detail && (
         <>
           <DetailField
             title='适用产品'
-            value={detail.fitProduct}
+            value={coupon.detail.fitProduct}
             emptyText='不限产品或以结算页为准'
           />
           <DetailSection
             title='发货地'
-            items={detail.senderAddresses}
+            items={coupon.detail.senderAddresses}
             emptyText='不限发货地或以结算页为准'
           />
           <DetailSection
             title='收货地'
-            items={detail.consigneeAddresses}
+            items={coupon.detail.consigneeAddresses}
             emptyText='不限收货地或以结算页为准'
           />
           <DetailSection
             title='使用限制'
-            items={detail.limits}
+            items={coupon.detail.limits}
             emptyText='暂无额外限制'
           />
           <DetailSection
             title='使用说明'
-            items={detail.descriptions}
+            items={coupon.detail.descriptions}
             emptyText='暂无使用说明'
           />
         </>
       )}
 
-      {!detail && !loading && (
+      {!coupon.detail && !coupon.loading && (
         <View className='coupon-detail-empty-block'>
           <Text className='coupon-detail-empty-block__title'>
-            {message || '暂未获取到优惠券详情'}
+            {coupon.message || '暂未获取到优惠券详情'}
           </Text>
           <Text className='coupon-detail-empty-block__summary'>
             可返回列表刷新后再次进入。
@@ -330,7 +267,7 @@ const CouponDetailPage = () => {
         </View>
       )}
 
-      {loading && (
+      {coupon.loading && (
         <Text className='coupon-detail-loading'>正在加载优惠券详情...</Text>
       )}
     </ScrollView>

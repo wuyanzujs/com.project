@@ -1,7 +1,7 @@
 import { Input, ScrollView, Text, Textarea, View } from '@tarojs/components'
 import Taro, { useLoad, useRouter } from '@tarojs/taro'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import {
   contactSelection,
@@ -15,8 +15,8 @@ import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
+import { useContactAddressActions } from '../hooks/useContactAddressActions'
 import { useContactAddressIntegrity } from '../hooks/useContactAddressIntegrity'
-
 
 import './index.scss'
 import './content.scss'
@@ -37,9 +37,6 @@ const ContactEditPage = () => {
   const [contact, setContact] = useState<Contact>(() =>
     createEmptyContact(getRoleByTarget(selectionParams.target))
   )
-  const [analysisText, setAnalysisText] = useState('')
-  const [analyzing, setAnalyzing] = useState(false)
-  const [refiningAddress, setRefiningAddress] = useState(false)
   const [saving, setSaving] = useState(false)
   const { checkingKey, checkAddressIntegrity } = useContactAddressIntegrity()
   const validation = useMemo(() => validateContact(contact), [contact])
@@ -47,11 +44,20 @@ const ContactEditPage = () => {
     () => createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams),
     [selectionParams]
   )
-  const ensureContactEditAccess = () =>
-    ensureAuthenticated({
-      redirectUrl: contactEditUrl,
-      replace: true
-    })
+  const ensureContactEditAccess = useCallback(
+    () =>
+      ensureAuthenticated({
+        redirectUrl: contactEditUrl,
+        replace: true
+      }),
+    [contactEditUrl]
+  )
+
+  const addressActions = useContactAddressActions({
+    contact,
+    setContact,
+    ensureAccess: ensureContactEditAccess
+  })
 
   useLoad(() => {
     if (!ensureContactEditAccess()) {
@@ -73,119 +79,6 @@ const ContactEditPage = () => {
       ...current,
       ...patch
     }))
-  }
-
-  const handleAnalyze = async () => {
-    if (!ensureContactEditAccess() || analyzing) {
-      return
-    }
-
-    const value = analysisText.trim()
-
-    if (!value) {
-      Taro.showToast({
-        title: '请先粘贴地址文本',
-        icon: 'none'
-      })
-      return
-    }
-
-    setAnalyzing(true)
-
-    try {
-      const response = await contactService.analyze(value)
-
-      if (!response.status || !response.result) {
-        Taro.showToast({
-          title: response.message || '识别失败，请手动填写',
-          icon: 'none'
-        })
-        return
-      }
-
-      const analysis = response.result
-
-      setContact(current =>
-        contactService.applyAnalysisToContact(current, analysis)
-      )
-      Taro.showToast({
-        title: '识别成功，请核对',
-        icon: 'none'
-      })
-    } finally {
-      setAnalyzing(false)
-    }
-  }
-
-  const handleRefineAddress = async () => {
-    if (!ensureContactEditAccess() || refiningAddress) {
-      return
-    }
-
-    if (!contact.address.trim()) {
-      Taro.showToast({
-        title: '请先填写详细地址',
-        icon: 'none'
-      })
-      return
-    }
-
-    setRefiningAddress(true)
-
-    try {
-      if (contact.province && contact.city && contact.county) {
-        const hintResponse = await contactService.queryAddressHints(contact)
-        const hints = (hintResponse.result || [])
-          .map(contactService.parseAddressHint)
-          .filter(item => item.address)
-          .slice(0, 6)
-
-        if (hintResponse.status && hints.length) {
-          const selected = await Taro.showActionSheet({
-            itemList: hints.map(contactService.getAddressHintLabel)
-          }).catch(() => null)
-
-          if (!selected) {
-            return
-          }
-
-          const hint = hints[selected.tapIndex]
-
-          if (hint) {
-            setContact(current =>
-              contactService.applyAddressHintToContact(current, hint)
-            )
-            Taro.showToast({
-              title: '已应用地址候选，请核对',
-              icon: 'none'
-            })
-          }
-          return
-        }
-      }
-
-      const response = await contactService.analyze4(contact.address, contact)
-
-      if (!response.status || !response.result) {
-        Taro.showToast({
-          title: response.message || '暂未识别到更准确地址',
-          icon: 'none'
-        })
-        return
-      }
-
-      const analysis = response.result
-
-      setContact(current =>
-        contactService.applyAnalysis4ToContact(current, analysis)
-      )
-      Taro.showToast({
-        title: '地址已补全，请核对',
-        icon: 'none'
-      })
-    } finally {
-      setRefiningAddress(false)
-    }
   }
 
   const handleSave = async () => {
@@ -248,10 +141,10 @@ const ContactEditPage = () => {
           <Text className='contact-edit-analysis__title'>智能识别</Text>
           <AppPressable
             className='contact-edit-analysis__button'
-            onPress={handleAnalyze}
+            onPress={addressActions.handleAnalyze}
           >
             <Text className='contact-edit-analysis__button-text'>
-              {analyzing ? '识别中' : '识别'}
+              {addressActions.analyzing ? '识别中' : '识别'}
             </Text>
           </AppPressable>
         </View>
@@ -259,8 +152,8 @@ const ContactEditPage = () => {
           className='contact-edit-analysis__input'
           maxlength={240}
           placeholder='姓名 手机号 省市区 详细地址'
-          value={analysisText}
-          onInput={event => setAnalysisText(event.detail.value)}
+          value={addressActions.analysisText}
+          onInput={event => addressActions.setAnalysisText(event.detail.value)}
         />
       </View>
 
@@ -346,10 +239,10 @@ const ContactEditPage = () => {
           </Text>
           <AppPressable
             className='contact-edit-address-tools__button'
-            onPress={handleRefineAddress}
+            onPress={addressActions.handleRefineAddress}
           >
             <Text className='contact-edit-address-tools__button-text'>
-              {refiningAddress ? '补全中' : '补全地址'}
+              {addressActions.refiningAddress ? '补全中' : '补全地址'}
             </Text>
           </AppPressable>
         </View>

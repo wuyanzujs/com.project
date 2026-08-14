@@ -6,12 +6,12 @@ import { useEffect, useState } from 'react'
 import { invoiceService } from '@/services/invoice'
 import type {
   InvoiceTaxpayerForm,
-  InvoiceTaxpayerMatch,
   InvoiceTaxpayerType,
   InvoiceTaxpayerView
 } from '@/services/invoice'
 import { AppPressable, AppFormField } from '@/shared/components'
 
+import { useTaxpayerActions, useTaxpayerType } from './hooks/useTaxpayerActions'
 
 import './index.scss'
 import './content.scss'
@@ -51,10 +51,20 @@ const InvoiceTaxpayerEditPage = () => {
   const [form, setForm] = useState<InvoiceTaxpayerForm>(() =>
     invoiceService.createTaxpayerForm()
   )
-  const [matches, setMatches] = useState<InvoiceTaxpayerMatch[]>([])
-  const [matching, setMatching] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [message, setMessage] = useState('')
+
+  const updateForm = (patch: Partial<InvoiceTaxpayerForm>) => {
+    setForm(current => ({
+      ...current,
+      ...patch
+    }))
+  }
+
+  const actions = useTaxpayerActions({ form, updateForm })
+  const { handleChangeType } = useTaxpayerType(
+    form,
+    updateForm,
+    actions.setMatches
+  )
 
   useEffect(() => {
     const taxpayer = parseTaxpayer(router.params.data)
@@ -64,116 +74,6 @@ const InvoiceTaxpayerEditPage = () => {
       title: taxpayer?.id ? '编辑抬头' : '新增抬头'
     })
   }, [router.params.data])
-
-  const updateForm = (patch: Partial<InvoiceTaxpayerForm>) => {
-    setForm(current => ({
-      ...current,
-      ...patch
-    }))
-    setMessage('')
-  }
-
-  const handleChangeType = (customerType: InvoiceTaxpayerType) => {
-    updateForm({
-      customerType,
-      taxNumber: customerType === '0' ? '' : form.taxNumber
-    })
-    setMatches([])
-  }
-
-  const handleMatch = async () => {
-    if (form.customerType !== '1') {
-      Taro.showToast({
-        title: '仅单位抬头支持联想',
-        icon: 'none'
-      })
-      return
-    }
-
-    if (!form.name.trim() || form.name.trim().length <= 3) {
-      Taro.showToast({
-        title: '请输入至少4个字的单位抬头',
-        icon: 'none'
-      })
-      return
-    }
-
-    setMatching(true)
-
-    try {
-      const response = await invoiceService.queryTaxpayerMatches(
-        form.name,
-        form.customerType
-      )
-
-      if (!response.status || !response.result?.length) {
-        setMatches([])
-        Taro.showToast({
-          title: response.message || '暂无匹配抬头',
-          icon: 'none'
-        })
-        return
-      }
-
-      setMatches(response.result)
-    } finally {
-      setMatching(false)
-    }
-  }
-
-  const handleSelectMatch = (item: InvoiceTaxpayerMatch) => {
-    updateForm({
-      name: item.taxName,
-      taxNumber: item.taxNo,
-      address: item.taxAddress,
-      phone: item.taxTelephone,
-      bank: item.taxBankName,
-      bankAccount: item.taxBankNumber
-    })
-    setMatches([])
-  }
-
-  const handleSave = async () => {
-    if (saving) {
-      return
-    }
-
-    const validationMessage = invoiceService.validateTaxpayer(form)
-
-    if (validationMessage) {
-      setMessage(validationMessage)
-      Taro.showToast({
-        title: validationMessage,
-        icon: 'none'
-      })
-      return
-    }
-
-    setSaving(true)
-
-    try {
-      const response = await invoiceService.saveTaxpayer(form)
-
-      if (!response.status) {
-        setMessage(response.message || '保存失败')
-        Taro.showToast({
-          title: response.message || '保存失败',
-          icon: 'none'
-        })
-        return
-      }
-
-      Taro.showToast({
-        title: form.id ? '修改成功' : '新增成功',
-        icon: 'none'
-      })
-      setTimeout(() => {
-        Taro.navigateBack()
-      }, 500)
-    } finally {
-      setSaving(false)
-    }
-  }
 
   return (
     <ScrollView className='invoice-taxpayer-edit-page' scrollY>
@@ -217,10 +117,10 @@ const InvoiceTaxpayerEditPage = () => {
             </Text>
             <AppPressable
               className='invoice-taxpayer-edit-field__button'
-              onPress={handleMatch}
+              onPress={actions.handleMatch}
             >
               <Text className='invoice-taxpayer-edit-field__button-text'>
-                {matching ? '匹配中' : '联想'}
+                {actions.matching ? '匹配中' : '联想'}
               </Text>
             </AppPressable>
           </View>
@@ -236,13 +136,13 @@ const InvoiceTaxpayerEditPage = () => {
           />
         </View>
 
-        {matches.length > 0 && (
+        {actions.matches.length > 0 && (
           <View className='invoice-taxpayer-edit-matches'>
-            {matches.map(item => (
+            {actions.matches.map(item => (
               <AppPressable
                 className='invoice-taxpayer-edit-match'
                 key={`${item.taxName}-${item.taxNo}`}
-                onPress={() => handleSelectMatch(item)}
+                onPress={() => actions.handleSelectMatch(item)}
               >
                 <Text className='invoice-taxpayer-edit-match__title'>
                   {item.taxName}
@@ -363,19 +263,21 @@ const InvoiceTaxpayerEditPage = () => {
         </View>
       )}
 
-      {message && (
+      {actions.message && (
         <View className='invoice-taxpayer-edit-message'>
-          <Text className='invoice-taxpayer-edit-message__text'>{message}</Text>
+          <Text className='invoice-taxpayer-edit-message__text'>
+            {actions.message}
+          </Text>
         </View>
       )}
 
       <View className='invoice-taxpayer-edit-actions'>
         <AppPressable
           className='invoice-taxpayer-edit-submit'
-          onPress={handleSave}
+          onPress={actions.handleSave}
         >
           <Text className='invoice-taxpayer-edit-submit__text'>
-            {saving ? '保存中' : '保存'}
+            {actions.saving ? '保存中' : '保存'}
           </Text>
         </AppPressable>
       </View>

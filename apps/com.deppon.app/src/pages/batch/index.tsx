@@ -1,14 +1,12 @@
 import { ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
   BATCH_MAX_CONSIGNEE_COUNT,
-  applyBatchQuoteResults,
   batchDraftStorage,
   batchService,
-  createBatchSubmitSummary,
   createBatchConsigneeFromRecognition,
   createBatchDraftFromExpressDraft,
   getBatchContactKey,
@@ -25,10 +23,6 @@ import { contactSelection } from '@/services/contact'
 import { expressDraftStorage } from '@/services/express'
 import { AppPage, AppPressable } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
-import {
-  ensureAuthenticated,
-  hasValidSession
-} from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 import { copyTextToClipboard } from '@/shared/platform/clipboard'
@@ -40,6 +34,8 @@ import {
   BatchSenderSection,
   BatchSettingsSection
 } from './components/BatchSections'
+import { useBatchQuote } from './hooks/useBatchQuote'
+import { useBatchSubmit } from './hooks/useBatchSubmit'
 
 import './index.scss'
 import './content.scss'
@@ -53,11 +49,6 @@ const BatchPage = () => {
       createBatchDraftFromExpressDraft(expressDraftStorage.restore())
   )
   const [recognitionText, setRecognitionText] = useState('')
-  const [quoteLoading, setQuoteLoading] = useState(false)
-  const [quoteMessage, setQuoteMessage] = useState('')
-  const [submiting, setSubmiting] = useState(false)
-  const [submitMessage, setSubmitMessage] = useState('')
-  const quoteRequestVersion = useRef(0)
   const recognition = useMemo(
     () => batchService.recognizeAddressText(recognitionText),
     [recognitionText]
@@ -67,6 +58,20 @@ const BatchPage = () => {
     () => batchService.validateSubmitDraft(draft),
     [draft]
   )
+
+  const showToast = useCallback((title: string) => {
+    Taro.showToast({
+      title,
+      icon: 'none'
+    })
+  }, [])
+
+  const quote = useBatchQuote({ draft, setDraft, validation, showToast })
+  const submit = useBatchSubmit({
+    draft,
+    submitValidation,
+    showToast
+  })
 
   useEffect(() => {
     void batchDraftStorage.save(draft)
@@ -85,16 +90,9 @@ const BatchPage = () => {
         sender: mapContactToBatchContact(selection.contact)
       })
     )
-    quoteRequestVersion.current += 1
-    setQuoteMessage('发货人已更新，请重新获取价格')
+    quote.quoteRequestVersion.current += 1
+    quote.setQuoteMessage('发货人已更新，请重新获取价格')
   })
-
-  const showToast = (title: string) => {
-    Taro.showToast({
-      title,
-      icon: 'none'
-    })
-  }
 
   const handleAction = async (action: BatchEntryActionView) => {
     if (action.key === 'addressRecognition') {
@@ -167,8 +165,8 @@ const BatchPage = () => {
         ...uniqueAdditions.slice(0, remaining)
       ]
     }))
-    quoteRequestVersion.current += 1
-    setQuoteMessage('收货清单已更新，请获取价格')
+    quote.quoteRequestVersion.current += 1
+    quote.setQuoteMessage('收货清单已更新，请获取价格')
   }
 
   const handleRemoveConsignee = (index: number) => {
@@ -178,108 +176,7 @@ const BatchPage = () => {
         (_, itemIndex) => itemIndex !== index
       )
     }))
-    quoteRequestVersion.current += 1
-  }
-
-  const handleQuote = async () => {
-    if (quoteLoading) {
-      return
-    }
-
-    if (!validation.valid) {
-      showToast(validation.message)
-      return
-    }
-
-    const requestVersion = quoteRequestVersion.current + 1
-
-    quoteRequestVersion.current = requestVersion
-    setQuoteLoading(true)
-    setQuoteMessage('')
-
-    try {
-      const response = await batchService.quoteDraft(draft)
-
-      if (quoteRequestVersion.current !== requestVersion) {
-        return
-      }
-
-      if (!response.status || !response.result) {
-        const message = response.message || '批量价格获取失败，请稍后重试'
-
-        setQuoteMessage(message)
-        showToast(message)
-        return
-      }
-
-      setDraft(current =>
-        applyBatchQuoteResults(current, response.result ?? [])
-      )
-      setQuoteMessage(`已获取 ${response.result.length} 票产品价格`)
-    } finally {
-      setQuoteLoading(false)
-    }
-  }
-
-  const handleSubmit = async () => {
-    if (submiting) {
-      return
-    }
-
-    setSubmitMessage('')
-
-    if (!submitValidation.valid) {
-      showToast(submitValidation.message)
-      return
-    }
-
-    if (!hasValidSession()) {
-      await batchDraftStorage.preserveForLogin(draft)
-      ensureAuthenticated({
-        redirectUrl: APP_ROUTES.batchExpress,
-        replace: true,
-        message: '请先登录后提交批量订单'
-      })
-      return
-    }
-
-    setSubmiting(true)
-
-    try {
-      const response = await batchService.submitDraft(draft)
-
-      if (!response.status || !response.result) {
-        const message = response.message || '批量订单提交失败，请稍后重试'
-
-        setSubmitMessage(message)
-        showToast(message)
-        return
-      }
-
-      const summary = createBatchSubmitSummary(response.result)
-
-      if (summary.status === 'failure') {
-        setSubmitMessage(summary.message)
-        showToast(summary.message)
-        return
-      }
-
-      if (summary.status === 'partial') {
-        await Taro.showModal({
-          title: '部分订单未创建',
-          content: summary.message,
-          showCancel: false,
-          confirmText: '查看订单'
-        })
-      } else {
-        showToast(summary.message)
-      }
-
-      void batchDraftStorage.clear()
-      navigateToAppRoute(APP_ROUTES.orderList, { login: true })
-    } finally {
-      setSubmiting(false)
-    }
+    quote.quoteRequestVersion.current += 1
   }
 
   return (
@@ -287,10 +184,10 @@ const BatchPage = () => {
       footer={
         <BatchFooter
           count={draft.consignees.length}
-          quoteLoading={quoteLoading}
-          submitting={submiting}
-          onQuote={handleQuote}
-          onSubmit={handleSubmit}
+          quoteLoading={quote.quoteLoading}
+          submitting={submit.submiting}
+          onQuote={quote.handleQuote}
+          onSubmit={submit.handleSubmit}
         />
       }
       keyboardAvoiding
@@ -342,8 +239,8 @@ const BatchPage = () => {
           consignees={draft.consignees}
           maxCount={BATCH_MAX_CONSIGNEE_COUNT}
           onGoodsChange={(index, patch) => {
-            quoteRequestVersion.current += 1
-            setQuoteMessage('货物信息已更新，请重新获取价格')
+            quote.quoteRequestVersion.current += 1
+            quote.setQuoteMessage('货物信息已更新，请重新获取价格')
             setDraft(current =>
               updateBatchConsigneeGoods(current, index, patch)
             )
@@ -355,8 +252,8 @@ const BatchPage = () => {
           needContact={draft.needContact}
           pickup={draft.pickup}
           onDispatchChange={dispatch => {
-            quoteRequestVersion.current += 1
-            setQuoteMessage('寄件设置已更新，请重新获取价格')
+            quote.quoteRequestVersion.current += 1
+            quote.setQuoteMessage('寄件设置已更新，请重新获取价格')
             setDraft(current =>
               resetBatchQuotes({
                 ...current,
@@ -365,21 +262,25 @@ const BatchPage = () => {
             )
           }}
           onNeedContactChange={needContact => {
-            quoteRequestVersion.current += 1
-            setQuoteMessage('联系设置已更新，请重新获取价格')
+            quote.quoteRequestVersion.current += 1
+            quote.setQuoteMessage('联系设置已更新，请重新获取价格')
             setDraft(current => resetBatchQuotes({ ...current, needContact }))
           }}
         />
 
-        {quoteMessage && (
+        {quote.quoteMessage && (
           <View className='batch-quote-message'>
-            <Text className='batch-quote-message__text'>{quoteMessage}</Text>
+            <Text className='batch-quote-message__text'>
+              {quote.quoteMessage}
+            </Text>
           </View>
         )}
 
-        {submitMessage && (
+        {submit.submitMessage && (
           <View className='batch-submit-message'>
-            <Text className='batch-submit-message__text'>{submitMessage}</Text>
+            <Text className='batch-submit-message__text'>
+              {submit.submitMessage}
+            </Text>
           </View>
         )}
 
