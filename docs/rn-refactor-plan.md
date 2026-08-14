@@ -20,21 +20,21 @@
 
 业务模块迁移判断：
 
-| 模块 | 业务含义 | 迁移判断 |
-| --- | --- | --- |
-| `home` | 首页、运营位、寄件入口、查询入口、营销弹窗、隐私协议、新客券 | 可迁，但要 App 化：首页做主入口，不照搬订阅、收藏和分享逻辑。 |
-| `send/express` | 核心寄件下单巨石页：地址、产品、价格、优惠、取件、增值服务、实名、支付 | 首期核心，但必须拆分重构。 |
-| `order/list` | 查快递、寄/收件订单、待支付、关注、搜索、筛选 | 首期主链路。 |
-| `order/detail` | 轨迹、地图、快递员、签收、复制单号、电子存根、货物补充明细、照片凭证、单据票证、催单、通知派送、拦截作废、收件方式、联系营业部、评价、支付入口、修改/售后入口 | 已迁基础详情、轨迹、电子存根、只读凭证、支付提示、售后快捷动作、原生服务评价和动态场景问卷/NPS；地图和完整售后状态机后置。 |
-| `center` | 我的、订单统计、地址簿、发票、客服、客户中心、会员、设置入口 | 首期做 App 我的页骨架，并拆出客服中心、客户中心等 App 化页面。 |
-| `login` / `user` | 登录、绑定、实名、签收码、注销 | 登录必须先迁；签收码读能力和实名签收登记进入首期，完整实名核验后置。 |
-| `contact` | 地址簿、地址编辑、智能解析、委托寄件联系人 | 首期迁地址簿基础能力。 |
-| `query` | 服务查询、价格时效、收派范围、网点、货物/禁寄查询 | 价格时效、收派范围、网点列表/详情和货物/禁寄查询进入首期；地图导航能力仍走 App 原生 facade 后置接入。 |
-| `pay` | 运单支付、收银台、PDA 支付、E 卡、支付状态 | 首期保留支付入口/待支付展示，并提供 E 卡读中心和 H5 承接；真实支付等原生能力 ready 后接入。 |
-| `coupon` / `member` / `memberService` | 优惠券、会员、SVIP、营销权益 | 优惠券个人列表/兑换/详情、会员等级/SVIP 摘要和福利中心 WebView 承接进入首期；会员支付、营销弹窗和订阅消息后置。 |
-| `invoice` | 发票、抬头、申请、预览、支付 | 发票读中心、可开票运单号搜索、抬头管理、普通运单电子票提交、历史电子票预览和发送邮箱进入首期；支付、E 卡开票和纸票邮寄后置拆分。 |
-| `batch` / `ai` / `print` / `pda` | 批量、AI 下单、蓝牙打印、签收/PDA | 高风险，后置。 |
-| `common` / `web` | 协议、图片、状态页、投诉、理赔、WebView 承接 | WebView 和客服中心进入首期；投诉/理赔先 H5 承接，复杂售后状态机后置。 |
+| 模块                                  | 业务含义                                                                                                                                                      | 迁移判断                                                                                                                         |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `home`                                | 首页、运营位、寄件入口、查询入口、营销弹窗、隐私协议、新客券                                                                                                  | 可迁，但要 App 化：首页做主入口，不照搬订阅、收藏和分享逻辑。                                                                    |
+| `send/express`                        | 核心寄件下单巨石页：地址、产品、价格、优惠、取件、增值服务、实名、支付                                                                                        | 首期核心，但必须拆分重构。                                                                                                       |
+| `order/list`                          | 查快递、寄/收件订单、待支付、关注、搜索、筛选                                                                                                                 | 首期主链路。                                                                                                                     |
+| `order/detail`                        | 轨迹、地图、快递员、签收、复制单号、电子存根、货物补充明细、照片凭证、单据票证、催单、通知派送、拦截作废、收件方式、联系营业部、评价、支付入口、修改/售后入口 | 已迁基础详情、轨迹、电子存根、只读凭证、支付提示、售后快捷动作、原生服务评价和动态场景问卷/NPS；地图和完整售后状态机后置。       |
+| `center`                              | 我的、订单统计、地址簿、发票、客服、客户中心、会员、设置入口                                                                                                  | 首期做 App 我的页骨架，并拆出客服中心、客户中心等 App 化页面。                                                                   |
+| `login` / `user`                      | 登录、绑定、实名、签收码、注销                                                                                                                                | 登录必须先迁；签收码读能力和实名签收登记进入首期，完整实名核验后置。                                                             |
+| `contact`                             | 地址簿、地址编辑、智能解析、委托寄件联系人                                                                                                                    | 首期迁地址簿基础能力。                                                                                                           |
+| `query`                               | 服务查询、价格时效、收派范围、网点、货物/禁寄查询                                                                                                             | 价格时效、收派范围、网点列表/详情和货物/禁寄查询进入首期；地图导航能力仍走 App 原生 facade 后置接入。                            |
+| `pay`                                 | 运单支付、收银台、PDA 支付、E 卡、支付状态                                                                                                                    | 首期保留支付入口/待支付展示，并提供 E 卡读中心和 H5 承接；真实支付等原生能力 ready 后接入。                                      |
+| `coupon` / `member` / `memberService` | 优惠券、会员、SVIP、营销权益                                                                                                                                  | 优惠券个人列表/兑换/详情、会员等级/SVIP 摘要和福利中心 WebView 承接进入首期；会员支付、营销弹窗和订阅消息后置。                  |
+| `invoice`                             | 发票、抬头、申请、预览、支付                                                                                                                                  | 发票读中心、可开票运单号搜索、抬头管理、普通运单电子票提交、历史电子票预览和发送邮箱进入首期；支付、E 卡开票和纸票邮寄后置拆分。 |
+| `batch` / `ai` / `print` / `pda`      | 批量、AI 下单、蓝牙打印、签收/PDA                                                                                                                             | 高风险，后置。                                                                                                                   |
+| `common` / `web`                      | 协议、图片、状态页、投诉、理赔、WebView 承接                                                                                                                  | WebView 和客服中心进入首期；投诉/理赔先 H5 承接，复杂售后状态机后置。                                                            |
 
 配置和工具层同样重要：`config/send.ts`、`config/product.ts`、`config/order.ts` 是业务枚举和规则核心；`utils/send.ts`、`utils/order.ts`、`utils/contact.ts`、`utils/cache.ts` 中的纯业务规则可抽取，但小程序 UI、生命周期、授权和跳转逻辑不迁。
 
@@ -119,18 +119,18 @@
 
 参考项目中的平台能力数量级：
 
-| 能力 | 数量级 | RN App 迁移方向 |
-| --- | ---: | --- |
-| `Taro.scanCode` | 7 处 | 原生相机扫码 facade，统一返回 `result/type`。 |
-| `Taro.getLocation` | 6 处 | App 权限 + 原生定位，明确坐标系转换。 |
-| 支付 | 微信支付 7 处，支付宝支付 5 处 | 微信/支付宝 App SDK bridge，统一 `pay({ channel, payload })`。 |
-| `Taro.navigateToMiniProgram` | 17 处 | 微信小程序拉起、支付宝 scheme 或 H5/App 内兜底。 |
-| `Taro.requestSubscribeMessage` | 6 处 | App push、站内信、短信或服务通知替代。 |
-| 小程序分享/开放能力按钮 | 多处 `useShareAppMessage`、`openType=share/getPhoneNumber` | App 分享、登录、客服等 SDK facade，不能直接迁小程序组件开放能力。 |
-| `Taro.uploadFile/downloadFile` | 上传 13 处，下载 5 处 | FormData 上传本地 URI，下载到 cache/document，再预览或系统打开。 |
-| `Taro.makePhoneCall` | 24 处 | `Linking.openURL('tel:...')` 封装。 |
-| `wx.*` / `my.*` | 业务直接 `wx.*` 2 处，`my.*` 14 处 | 按能力替换，实名、授权、地址、文件选择和支付需单独确认。 |
-| `process.env.TARO_ENV` | 252 处 | 改为 App runtime/channel/capability 矩阵。 |
+| 能力                           |                                                     数量级 | RN App 迁移方向                                                   |
+| ------------------------------ | ---------------------------------------------------------: | ----------------------------------------------------------------- |
+| `Taro.scanCode`                |                                                       7 处 | 原生相机扫码 facade，统一返回 `result/type`。                     |
+| `Taro.getLocation`             |                                                       6 处 | App 权限 + 原生定位，明确坐标系转换。                             |
+| 支付                           |                             微信支付 7 处，支付宝支付 5 处 | 微信/支付宝 App SDK bridge，统一 `pay({ channel, payload })`。    |
+| `Taro.navigateToMiniProgram`   |                                                      17 处 | 微信小程序拉起、支付宝 scheme 或 H5/App 内兜底。                  |
+| `Taro.requestSubscribeMessage` |                                                       6 处 | App push、站内信、短信或服务通知替代。                            |
+| 小程序分享/开放能力按钮        | 多处 `useShareAppMessage`、`openType=share/getPhoneNumber` | App 分享、登录、客服等 SDK facade，不能直接迁小程序组件开放能力。 |
+| `Taro.uploadFile/downloadFile` |                                      上传 13 处，下载 5 处 | FormData 上传本地 URI，下载到 cache/document，再预览或系统打开。  |
+| `Taro.makePhoneCall`           |                                                      24 处 | `Linking.openURL('tel:...')` 封装。                               |
+| `wx.*` / `my.*`                |                         业务直接 `wx.*` 2 处，`my.*` 14 处 | 按能力替换，实名、授权、地址、文件选择和支付需单独确认。          |
+| `process.env.TARO_ENV`         |                                                     252 处 | 改为 App runtime/channel/capability 矩阵。                        |
 
 当前 App 已新增 `scripts/check-rn-boundaries.mjs` 作为自动门禁：
 
@@ -285,10 +285,10 @@ shared/platform/
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
+| 能力           | 端点                                               |
+| -------------- | -------------------------------------------------- |
 | 发送注销验证码 | `/gwapi/messageService/eco/message/sendSmsMessage` |
-| 注销账号 | `/gwapi/userService/eco/user/secure/cancel` |
+| 注销账号       | `/gwapi/userService/eco/user/secure/cancel`        |
 
 ## RealName 首期切片
 
@@ -311,11 +311,11 @@ shared/platform/
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
-| 查询实名状态 | `/gwapi/userService/eco/user/secure/queryRealNameAuth` |
-| 提交/删除身份证实名 | `/gwapi/userService/eco/user/secure/realNameAuth` |
-| 网络身份认证凭证 | `/gwapi/userService/eco/user/idVerification/bizSeq` |
+| 能力                 | 端点                                                         |
+| -------------------- | ------------------------------------------------------------ |
+| 查询实名状态         | `/gwapi/userService/eco/user/secure/queryRealNameAuth`       |
+| 提交/删除身份证实名  | `/gwapi/userService/eco/user/secure/realNameAuth`            |
+| 网络身份认证凭证     | `/gwapi/userService/eco/user/idVerification/bizSeq`          |
 | 网络身份认证结果提交 | `/gwapi/userService/eco/user/idVerification/authByNetworkId` |
 
 后置能力：
@@ -346,11 +346,11 @@ shared/platform/
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
+| 能力         | 端点                                                          |
+| ------------ | ------------------------------------------------------------- |
 | 查询隐私版本 | `/gwapi/userService/eco/user/secure/queryUserPrivacyBehavior` |
-| 保存隐私确认 | `/gwapi/userService/eco/user/secure/userPrivacyBehavior` |
-| 撤销隐私确认 | `/gwapi/userService/eco/user/secure/cancelPrivacyBehavior` |
+| 保存隐私确认 | `/gwapi/userService/eco/user/secure/userPrivacyBehavior`      |
+| 撤销隐私确认 | `/gwapi/userService/eco/user/secure/cancelPrivacyBehavior`    |
 
 ## Contact 首期切片
 
@@ -514,27 +514,27 @@ type ContactSelectMode = 'select' | 'manage'
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
-| 价格时效 | `/gwapi/pricetimeService/eco/pricetime/queryPriceTime` |
-| DCZP 产品点城市 | `/gwapi/pricetimeService/eco/pricetime/queryPointCityByProduct` |
-| 产品融合开关 | `/gwapi/pricetimeService/eco/pricetime/queryNewProductPointCity` |
-| 产品升级开关 | `/gwapi/pricetimeService/eco/pricetime/queryPointCityByAddress` |
-| 收件自提服务点 | `/gwapi/queryService/eco/query/branch/stationSearch`（`matchtypes: ['expressPickup']`） |
-| 夜间揽收范围 | `/gwapi/queryService/eco/query/range/matchFeatureAoi` |
-| 取件时间（含夜揽切片） | `/gwapi/orderService/eco/order/dispatchTime/dispatchTimeByDeptCode` |
-| 货物品名 | `/gwapi/onlineService/eco/online/cargo/queryCargoInfo` |
-| 货物标签 | `/gwapi/orderService/eco/order/queryGoodsRemark` |
-| 保价费用 | `/gwapi/pricetimeService/eco/fixedProtection/queryFixedProtection` |
-| 客户代收/保价额度 | `/gwapi/userService/eco/user/secure/customerLabel` |
-| 寄件可用优惠券 | `/gwapi/couponService/eco/coupon/new/secure/queryCouponOrder` |
-| 定时派送范围 | `/gwapi/onlineService/eco/online/print/order/secure/canOrderCityDelivery` |
-| 下单筛单 | `/gwapi/orderService/eco/order/sieveOrder/tips` |
-| 送货进仓信息暂存 | `/gwapi/queryService/eco/query/staging/secure/setStaging` |
-| 是否可下单 | `/gwapi/orderService/eco/order/secure/queryIsCanCreateOrder` |
-| 创建订单 | `/gwapi/orderService/eco/order/mysql/createOrder` |
-| 订单详情 | `/gwapi/orderService/eco/order/secure/orderDetail` |
-| 取消订单 | `/gwapi/orderService/eco/order/secure/revokeOrder` |
+| 能力                   | 端点                                                                                    |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| 价格时效               | `/gwapi/pricetimeService/eco/pricetime/queryPriceTime`                                  |
+| DCZP 产品点城市        | `/gwapi/pricetimeService/eco/pricetime/queryPointCityByProduct`                         |
+| 产品融合开关           | `/gwapi/pricetimeService/eco/pricetime/queryNewProductPointCity`                        |
+| 产品升级开关           | `/gwapi/pricetimeService/eco/pricetime/queryPointCityByAddress`                         |
+| 收件自提服务点         | `/gwapi/queryService/eco/query/branch/stationSearch`（`matchtypes: ['expressPickup']`） |
+| 夜间揽收范围           | `/gwapi/queryService/eco/query/range/matchFeatureAoi`                                   |
+| 取件时间（含夜揽切片） | `/gwapi/orderService/eco/order/dispatchTime/dispatchTimeByDeptCode`                     |
+| 货物品名               | `/gwapi/onlineService/eco/online/cargo/queryCargoInfo`                                  |
+| 货物标签               | `/gwapi/orderService/eco/order/queryGoodsRemark`                                        |
+| 保价费用               | `/gwapi/pricetimeService/eco/fixedProtection/queryFixedProtection`                      |
+| 客户代收/保价额度      | `/gwapi/userService/eco/user/secure/customerLabel`                                      |
+| 寄件可用优惠券         | `/gwapi/couponService/eco/coupon/new/secure/queryCouponOrder`                           |
+| 定时派送范围           | `/gwapi/onlineService/eco/online/print/order/secure/canOrderCityDelivery`               |
+| 下单筛单               | `/gwapi/orderService/eco/order/sieveOrder/tips`                                         |
+| 送货进仓信息暂存       | `/gwapi/queryService/eco/query/staging/secure/setStaging`                               |
+| 是否可下单             | `/gwapi/orderService/eco/order/secure/queryIsCanCreateOrder`                            |
+| 创建订单               | `/gwapi/orderService/eco/order/mysql/createOrder`                                       |
+| 订单详情               | `/gwapi/orderService/eco/order/secure/orderDetail`                                      |
+| 取消订单               | `/gwapi/orderService/eco/order/secure/revokeOrder`                                      |
 
 后置能力：
 
@@ -603,14 +603,14 @@ APP_RUNTIME_CONFIG.omsChannel
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
-| 地址乡镇匹配 | `/gwapi/queryService/eco/query/addressImagineTown` |
-| 快递收派范围 | `/gwapi/queryService/eco/query/range/queryAddressImagine` |
+| 能力         | 端点                                                          |
+| ------------ | ------------------------------------------------------------- |
+| 地址乡镇匹配 | `/gwapi/queryService/eco/query/addressImagineTown`            |
+| 快递收派范围 | `/gwapi/queryService/eco/query/range/queryAddressImagine`     |
 | 零担收派范围 | `/gwapi/queryService/eco/query/logisticsRange/queryAreaRange` |
-| 地址网点查询 | `/gwapi/queryService/eco/query/branch/stationSearch` |
-| 区县网点查询 | `/gwapi/queryService/eco/query/branch/queryDeptNet` |
-| 网点详情 | `/gwapi/queryService/eco/query/branch/queryDeptInfoByCode` |
+| 地址网点查询 | `/gwapi/queryService/eco/query/branch/stationSearch`          |
+| 区县网点查询 | `/gwapi/queryService/eco/query/branch/queryDeptNet`           |
+| 网点详情     | `/gwapi/queryService/eco/query/branch/queryDeptInfoByCode`    |
 
 后置能力：
 
@@ -638,10 +638,10 @@ APP_RUNTIME_CONFIG.omsChannel
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
-| 品名推荐 | `/gwapi/onlineService/eco/online/cargo/queryCargoInfo` |
-| 货物禁寄/风险提示 | `/gwapi/orderService/eco/order/queryGoodsRemark` |
+| 能力              | 端点                                                   |
+| ----------------- | ------------------------------------------------------ |
+| 品名推荐          | `/gwapi/onlineService/eco/online/cargo/queryCargoInfo` |
+| 货物禁寄/风险提示 | `/gwapi/orderService/eco/order/queryGoodsRemark`       |
 
 后置能力：
 
@@ -727,12 +727,12 @@ APP_RUNTIME_CONFIG.omsChannel
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
+| 能力         | 端点                                                         |
+| ------------ | ------------------------------------------------------------ |
 | 已关注快递员 | `/gwapi/onlineService/eco/online/courier/secure/courierList` |
-| 快递员详情 | `/gwapi/onlineService/eco/online/courier/secure/queryDetail` |
-| 关注快递员 | `/gwapi/onlineService/eco/online/courier/secure/binding` |
-| 取消关注 | `/gwapi/onlineService/eco/online/courier/secure/unBinding` |
+| 快递员详情   | `/gwapi/onlineService/eco/online/courier/secure/queryDetail` |
+| 关注快递员   | `/gwapi/onlineService/eco/online/courier/secure/binding`     |
+| 取消关注     | `/gwapi/onlineService/eco/online/courier/secure/unBinding`   |
 
 后置能力：
 
@@ -758,11 +758,11 @@ APP_RUNTIME_CONFIG.omsChannel
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
-| 查询模板 | `/gwapi/orderService/eco/orderTemplate/secure/queryOrderTemplate` |
+| 能力          | 端点                                                                  |
+| ------------- | --------------------------------------------------------------------- |
+| 查询模板      | `/gwapi/orderService/eco/orderTemplate/secure/queryOrderTemplate`     |
 | 保存/修改模板 | `/gwapi/orderService/eco/orderTemplate/secure/addModifyOrderTemplate` |
-| 删除模板 | `/gwapi/orderService/eco/orderTemplate/secure/deleteOrderTemplate` |
+| 删除模板      | `/gwapi/orderService/eco/orderTemplate/secure/deleteOrderTemplate`    |
 
 后置能力：
 
@@ -830,24 +830,25 @@ APP_RUNTIME_CONFIG.omsChannel
 
 关注运单端点：
 
-| 能力 | 端点 |
-| --- | --- |
-| 已关注列表 | `/gwapi/waybillService/eco/wayBill/subscribe/list/records` |
-| 查询关注状态 | `/gwapi/waybillService/eco/wayBill/subscribe/exist` |
-| 关注运单 | `/gwapi/waybillService/eco/wayBill/subscribe/submit` |
-| 取消关注 | `/gwapi/waybillService/eco/wayBill/subscribe/cancel` |
-| 修改待揽件订单 | `/gwapi/orderService/eco/order/secure/modifyOrder` |
-| 查询改单夜揽能力 | `/gwapi/queryService/eco/query/range/matchFeatureAoi` |
-| 查询改单上门时段 | `/gwapi/orderService/eco/order/dispatchTime/dispatchTimeByDeptCode` |
-| 查询签收 PDC 反馈状态 | `/gwapi/commentService/eco/comment/secure/queryFeedback` |
-| 提交签收 PDC 反馈 | `/gwapi/commentService/eco/comment/secure/submitFeedback` |
-| 查询订单服务评价 | `/gwapi/onlineService/eco/online/evaluate/secure/queryEvaluateDetail` |
-| 提交快递员服务评价 | `/gwapi/onlineService/eco/online/courier/evaluation/secure/commit` |
-| 查询场景评价状态 | `/gwapi/commentService/eco/comment/queryComment` |
-| 查询场景评价配置 | `/gwapi/commentService/eco/comment/queryCommentScene` |
-| 提交场景评价 | `/gwapi/commentService/eco/comment/insertComment` |
-| 查询 NPS 状态 | `/gwapi/commentService/eco/comment/queryCustomerQuestionnaire` |
-| 提交 NPS | `/gwapi/commentService/eco/comment/addCustomerQuestionnaire` |
+| 能力                  | 端点                                                                  |
+| --------------------- | --------------------------------------------------------------------- |
+| 已关注列表            | `/gwapi/waybillService/eco/wayBill/subscribe/list/records`            |
+| 查询关注状态          | `/gwapi/waybillService/eco/wayBill/subscribe/exist`                   |
+| 关注运单              | `/gwapi/waybillService/eco/wayBill/subscribe/submit`                  |
+| 取消关注              | `/gwapi/waybillService/eco/wayBill/subscribe/cancel`                  |
+| 修改待揽件订单        | `/gwapi/orderService/eco/order/secure/modifyOrder`                    |
+| 查询改单夜揽能力      | `/gwapi/queryService/eco/query/range/matchFeatureAoi`                 |
+| 查询改单上门时段      | `/gwapi/orderService/eco/order/dispatchTime/dispatchTimeByDeptCode`   |
+| 查询签收 PDC 反馈状态 | `/gwapi/commentService/eco/comment/secure/queryFeedback`              |
+| 提交签收 PDC 反馈     | `/gwapi/commentService/eco/comment/secure/submitFeedback`             |
+| 查询订单服务评价      | `/gwapi/onlineService/eco/online/evaluate/secure/queryEvaluateDetail` |
+| 提交快递员服务评价    | `/gwapi/onlineService/eco/online/courier/evaluation/secure/commit`    |
+| 查询场景评价状态      | `/gwapi/commentService/eco/comment/queryComment`                      |
+| 查询场景评价配置      | `/gwapi/commentService/eco/comment/queryCommentScene`                 |
+| 提交场景评价          | `/gwapi/commentService/eco/comment/insertComment`                     |
+| 查询 NPS 状态         | `/gwapi/commentService/eco/comment/queryCustomerQuestionnaire`        |
+| 提交 NPS              | `/gwapi/commentService/eco/comment/addCustomerQuestionnaire`          |
+
 - `pages/order/detail`：安全详情模式下已接入“再来一单/一键回寄”，由 `orderService.createExpressDraftFromOrderDetail` 将订单详情归一为新的寄件草稿，再通过 `expressDraftBridge` 带入寄件页；不会复用旧项目 Redux 重放状态。
 - `pages/order/detail`：安全详情模式下会按运单号查询最近一个月未核销费用，展示待支付金额提示；点击“去支付”进入统一 App 收银台，由收银台重新校验当前待支付明细。
 - `pages/order/detail/components/OrderDetailSections.tsx`：拆出头部、空态、轨迹、待支付提示、电子存根入口、运输信息和寄收信息等纯展示区块。
@@ -909,58 +910,58 @@ APP_RUNTIME_CONFIG.omsChannel
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
-| 寄件订单列表 | `/gwapi/orderService/eco/order/secure/orderList` |
-| 收件订单列表 | `/gwapi/waybillService/eco/wayBill/secure/receiveOrderList` |
-| 订单详情 | `/gwapi/orderService/eco/order/secure/orderDetail` |
-| 运单详情 | `/gwapi/waybillService/eco/wayBill/secure/queryNewWaybillDetail` |
-| 运单轨迹 | `/gwapi/trackService/eco/track/queryNewTrack` |
-| 取消订单 | `/gwapi/orderService/eco/order/secure/revokeOrder` |
-| 删除订单 | `/gwapi/orderService/eco/order/secure/removeOrder` |
-| 待支付费用 | `/gwapi/onlineService/eco/online/pay/pmc/secure/queryUnWriteOffList` |
-| 创建支付单 | `/gwapi/onlineService/eco/online/pay/pmc/secure/payCreate` |
-| 确认支付单 | `/gwapi/onlineService/eco/online/pay/pmc/secure/payConfirm` |
-| 取消支付单 | `/gwapi/onlineService/eco/online/pay/pmc/secure/payCancel` |
-| 催单按钮 | `/gwapi/onlineService/eco/online/complaint/secure/getUrgeButtons` |
-| 催单话术 | `/gwapi/onlineService/eco/online/complaint/secure/urgeOrder` |
-| 提交催单 | `/gwapi/orderService/eco/order/urgent/secure/v2/orderUrgent` |
-| 通知派送 | `/gwapi/waybillService/eco/waybill/modify/secure/modifyNotifyDeliver` |
-| 拦截作废 | `/gwapi/waybillService/eco/wayBill/secure/invalidWaybill` |
-| 营业部电话 | `/gwapi/queryService/eco/query/organizetion/deptTelephone` |
-| 取货/复磅照片 | `/gwapi/waybillService/eco/wayBill/secure/queryOpenBoxImages` |
-| 签收底单/送达照片 | `/gwapi/waybillService/eco/wayBill/secure/signCounterfoil` |
-| 拍照签收照片 | `/gwapi/waybillService/eco/wayBill/secure/querySignImages` |
-| 签回单照片 | `/gwapi/waybillService/eco/wayBill/secure/queryNewSignImages` |
-| 快递增值服务图片 | `/gwapi/waybillService/eco/wayBill/secure/queryWayBillImages` |
-| 零担增值服务图片 | `/gwapi/waybillService/eco/wayBill/secure/queryLtlWayBillImages` |
-| 送新取旧图片 | `/gwapi/waybillService/eco/wayBill/secure/queryHomeImages` |
-| 家装完工图片 | `/gwapi/waybillService/eco/wayBill/secure/powerOnTesting/signedImgs` |
-| 通电验机图片 | `/gwapi/waybillService/eco/wayBill/secure/powerOnTesting/exp/signedImgs` / `/gwapi/waybillService/eco/wayBill/secure/powerOnTesting/ltl/signedImgs` |
-| 木包装图片 | `/gwapi/waybillService/eco/wayBill/secure/getWoodPackagInfo` |
-| 包装费用明细 | `/gwapi/waybillService/eco/wayBill/secure/packagingFee` |
-| 电子合同状态 | `/gwapi/onlineService/eco/online/secure/queryContractDetail` |
-| 电子合同预览 | `/gwapi/onlineService/eco/online/secure/contractPreview` |
+| 能力              | 端点                                                                                                                                                |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 寄件订单列表      | `/gwapi/orderService/eco/order/secure/orderList`                                                                                                    |
+| 收件订单列表      | `/gwapi/waybillService/eco/wayBill/secure/receiveOrderList`                                                                                         |
+| 订单详情          | `/gwapi/orderService/eco/order/secure/orderDetail`                                                                                                  |
+| 运单详情          | `/gwapi/waybillService/eco/wayBill/secure/queryNewWaybillDetail`                                                                                    |
+| 运单轨迹          | `/gwapi/trackService/eco/track/queryNewTrack`                                                                                                       |
+| 取消订单          | `/gwapi/orderService/eco/order/secure/revokeOrder`                                                                                                  |
+| 删除订单          | `/gwapi/orderService/eco/order/secure/removeOrder`                                                                                                  |
+| 待支付费用        | `/gwapi/onlineService/eco/online/pay/pmc/secure/queryUnWriteOffList`                                                                                |
+| 创建支付单        | `/gwapi/onlineService/eco/online/pay/pmc/secure/payCreate`                                                                                          |
+| 确认支付单        | `/gwapi/onlineService/eco/online/pay/pmc/secure/payConfirm`                                                                                         |
+| 取消支付单        | `/gwapi/onlineService/eco/online/pay/pmc/secure/payCancel`                                                                                          |
+| 催单按钮          | `/gwapi/onlineService/eco/online/complaint/secure/getUrgeButtons`                                                                                   |
+| 催单话术          | `/gwapi/onlineService/eco/online/complaint/secure/urgeOrder`                                                                                        |
+| 提交催单          | `/gwapi/orderService/eco/order/urgent/secure/v2/orderUrgent`                                                                                        |
+| 通知派送          | `/gwapi/waybillService/eco/waybill/modify/secure/modifyNotifyDeliver`                                                                               |
+| 拦截作废          | `/gwapi/waybillService/eco/wayBill/secure/invalidWaybill`                                                                                           |
+| 营业部电话        | `/gwapi/queryService/eco/query/organizetion/deptTelephone`                                                                                          |
+| 取货/复磅照片     | `/gwapi/waybillService/eco/wayBill/secure/queryOpenBoxImages`                                                                                       |
+| 签收底单/送达照片 | `/gwapi/waybillService/eco/wayBill/secure/signCounterfoil`                                                                                          |
+| 拍照签收照片      | `/gwapi/waybillService/eco/wayBill/secure/querySignImages`                                                                                          |
+| 签回单照片        | `/gwapi/waybillService/eco/wayBill/secure/queryNewSignImages`                                                                                       |
+| 快递增值服务图片  | `/gwapi/waybillService/eco/wayBill/secure/queryWayBillImages`                                                                                       |
+| 零担增值服务图片  | `/gwapi/waybillService/eco/wayBill/secure/queryLtlWayBillImages`                                                                                    |
+| 送新取旧图片      | `/gwapi/waybillService/eco/wayBill/secure/queryHomeImages`                                                                                          |
+| 家装完工图片      | `/gwapi/waybillService/eco/wayBill/secure/powerOnTesting/signedImgs`                                                                                |
+| 通电验机图片      | `/gwapi/waybillService/eco/wayBill/secure/powerOnTesting/exp/signedImgs` / `/gwapi/waybillService/eco/wayBill/secure/powerOnTesting/ltl/signedImgs` |
+| 木包装图片        | `/gwapi/waybillService/eco/wayBill/secure/getWoodPackagInfo`                                                                                        |
+| 包装费用明细      | `/gwapi/waybillService/eco/wayBill/secure/packagingFee`                                                                                             |
+| 电子合同状态      | `/gwapi/onlineService/eco/online/secure/queryContractDetail`                                                                                        |
+| 电子合同预览      | `/gwapi/onlineService/eco/online/secure/contractPreview`                                                                                            |
 
 首期承接动作：
 
-| 能力 | 承接方式 |
-| --- | --- |
-| 在线客服 | `ORDER_DETAIL_SERVICE` + RN WebView |
-| 催单 | App 原生话术弹层 + `orderUrgent` |
-| 催单进度 | `/depponmobile/mow/order/urgeProgress` + RN WebView |
-| 通知派送 | App 原生确认弹层 + `modifyNotifyDeliver` |
-| 拦截作废 | App 原生强确认 + `invalidWaybill`，必要时引导修改运单 H5 |
-| 收件方式 | `/depponmobile/orderStayTmp` + RN WebView |
-| 联系营业部 | `shared/platform/phone.dialPhone` |
-| 复制单号 | `shared/platform/clipboard.copyTextToClipboard` |
-| 服务评价 | `APP_ROUTES.orderEvaluation` 原生页；失败时 `/depponmobile/survey/land` + RN WebView |
-| 投诉 | `/depponmobile/complaint/apply/index` + RN WebView |
-| 在线理赔 | `/depponmobile/h5/index#/claimPackagePages/index` + RN WebView |
-| 尺寸/包装费用 | App 原生只读明细 |
-| 电子合同预览 | `ORDER_STUB_CONTRACT_PREVIEW` + RN WebView |
-| 修改运单 | `/depponmobile/mow/order/modifyNew/index` + RN WebView |
-| 去开票 | `APP_ROUTES.invoiceCenter` |
+| 能力          | 承接方式                                                                             |
+| ------------- | ------------------------------------------------------------------------------------ |
+| 在线客服      | `ORDER_DETAIL_SERVICE` + RN WebView                                                  |
+| 催单          | App 原生话术弹层 + `orderUrgent`                                                     |
+| 催单进度      | `/depponmobile/mow/order/urgeProgress` + RN WebView                                  |
+| 通知派送      | App 原生确认弹层 + `modifyNotifyDeliver`                                             |
+| 拦截作废      | App 原生强确认 + `invalidWaybill`，必要时引导修改运单 H5                             |
+| 收件方式      | `/depponmobile/orderStayTmp` + RN WebView                                            |
+| 联系营业部    | `shared/platform/phone.dialPhone`                                                    |
+| 复制单号      | `shared/platform/clipboard.copyTextToClipboard`                                      |
+| 服务评价      | `APP_ROUTES.orderEvaluation` 原生页；失败时 `/depponmobile/survey/land` + RN WebView |
+| 投诉          | `/depponmobile/complaint/apply/index` + RN WebView                                   |
+| 在线理赔      | `/depponmobile/h5/index#/claimPackagePages/index` + RN WebView                       |
+| 尺寸/包装费用 | App 原生只读明细                                                                     |
+| 电子合同预览  | `ORDER_STUB_CONTRACT_PREVIEW` + RN WebView                                           |
+| 修改运单      | `/depponmobile/mow/order/modifyNew/index` + RN WebView                               |
+| 去开票        | `APP_ROUTES.invoiceCenter`                                                           |
 
 后置能力：
 
@@ -992,17 +993,17 @@ APP_RUNTIME_CONFIG.omsChannel
 
 首期承接入口：
 
-| 能力 | 承接方式 |
-| --- | --- |
-| 在线客服 | `APP_RUNTIME_CONFIG.serviceWebURL` + RN WebView |
-| 体验调研 | `APP_SURVEY_CONFIG_KEY` 配置 URL + RN WebView |
-| 投诉 | `/depponmobile/complaint/list` + RN WebView |
-| 投诉记录 | `/depponmobile/complaint/record` + RN WebView |
-| 在线理赔 | `/depponmobile/h5/index#/claimPackagePages/index` + RN WebView |
-| 理赔处理中 | `/depponmobile/h5/index#/claimPackagePages/list?tab=2` + RN WebView |
-| 理赔已完成 | `/depponmobile/h5/index#/claimPackagePages/list?tab=3` + RN WebView |
-| 95353 热线 | `shared/platform/phone.dialPhone` |
-| 收派范围 / 网点 / 价格时效 / 订单列表 | App 内已有 RN 页面 |
+| 能力                                  | 承接方式                                                            |
+| ------------------------------------- | ------------------------------------------------------------------- |
+| 在线客服                              | `APP_RUNTIME_CONFIG.serviceWebURL` + RN WebView                     |
+| 体验调研                              | `APP_SURVEY_CONFIG_KEY` 配置 URL + RN WebView                       |
+| 投诉                                  | `/depponmobile/complaint/list` + RN WebView                         |
+| 投诉记录                              | `/depponmobile/complaint/record` + RN WebView                       |
+| 在线理赔                              | `/depponmobile/h5/index#/claimPackagePages/index` + RN WebView      |
+| 理赔处理中                            | `/depponmobile/h5/index#/claimPackagePages/list?tab=2` + RN WebView |
+| 理赔已完成                            | `/depponmobile/h5/index#/claimPackagePages/list?tab=3` + RN WebView |
+| 95353 热线                            | `shared/platform/phone.dialPhone`                                   |
+| 收派范围 / 网点 / 价格时效 / 订单列表 | App 内已有 RN 页面                                                  |
 
 后置能力：
 
@@ -1032,19 +1033,19 @@ APP_RUNTIME_CONFIG.omsChannel
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
+| 能力             | 端点                                                |
+| ---------------- | --------------------------------------------------- |
 | 查询绑定客户信息 | `/gwapi/userService/eco/user/secure/selectCustName` |
-| 查询客户代收额度 | `/gwapi/userService/eco/user/secure/customerLabel` |
+| 查询客户代收额度 | `/gwapi/userService/eco/user/secure/customerLabel`  |
 
 首期承接 H5：
 
-| 能力 | URL |
-| --- | --- |
-| 客户中心 | `/depponmobile/mow/customer` |
-| 绑定客户编码 | `/depponmobile/mow/customer/bind` |
-| 月结中心 | `/depponmobile/mow/customer/dshkCenter` |
-| 号码保护 | `/depponmobile/h5/index#/partsPackagePages/customer/phoneProtect` |
+| 能力         | URL                                                               |
+| ------------ | ----------------------------------------------------------------- |
+| 客户中心     | `/depponmobile/mow/customer`                                      |
+| 绑定客户编码 | `/depponmobile/mow/customer/bind`                                 |
+| 月结中心     | `/depponmobile/mow/customer/dshkCenter`                           |
+| 号码保护     | `/depponmobile/h5/index#/partsPackagePages/customer/phoneProtect` |
 
 后置能力：
 
@@ -1074,11 +1075,11 @@ APP_RUNTIME_CONFIG.omsChannel
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
-| 判断是否有实名姓名 | `/gwapi/userService/eco/user/info/secure/hasRealName` |
-| 保存实名姓名 | `/gwapi/userService/eco/user/info/secure/updateRealName` |
-| 查询签收码 | `/gwapi/onlineService/eco/online/courier/secure/queryCustomerSignCodeInfo` |
+| 能力               | 端点                                                                       |
+| ------------------ | -------------------------------------------------------------------------- |
+| 判断是否有实名姓名 | `/gwapi/userService/eco/user/info/secure/hasRealName`                      |
+| 保存实名姓名       | `/gwapi/userService/eco/user/info/secure/updateRealName`                   |
+| 查询签收码         | `/gwapi/onlineService/eco/online/courier/secure/queryCustomerSignCodeInfo` |
 
 后置能力：
 
@@ -1107,13 +1108,13 @@ APP_RUNTIME_CONFIG.omsChannel
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
-| 生成 E 卡页面 | `/gwapi/onlineService/eco/online/prestore/secure/getPmcPrestorePage` |
-| 游客 E 卡页面 | `/gwapi/onlineService/eco/online/prestore/getPmcPreStoreVisitorPage` |
-| 查询 E 卡余额 | `/gwapi/memberService/eco/member/secure/getEcardBalance` |
-| 查询充值优惠 | `/gwapi/onlineService/eco/online/prestore/secure/queryRechargePromotions` |
-| 查询开通状态 | `/gwapi/memberService/eco/member/secure/openCard` |
+| 能力          | 端点                                                                      |
+| ------------- | ------------------------------------------------------------------------- |
+| 生成 E 卡页面 | `/gwapi/onlineService/eco/online/prestore/secure/getPmcPrestorePage`      |
+| 游客 E 卡页面 | `/gwapi/onlineService/eco/online/prestore/getPmcPreStoreVisitorPage`      |
+| 查询 E 卡余额 | `/gwapi/memberService/eco/member/secure/getEcardBalance`                  |
+| 查询充值优惠  | `/gwapi/onlineService/eco/online/prestore/secure/queryRechargePromotions` |
+| 查询开通状态  | `/gwapi/memberService/eco/member/secure/openCard`                         |
 
 后置能力：
 
@@ -1145,12 +1146,12 @@ APP_RUNTIME_CONFIG.omsChannel
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
-| 个人优惠券列表 | `/gwapi/couponService/eco/coupon/new/secure/queryNewCouponList` |
-| 兑换优惠券 | `/gwapi/couponService/eco/coupon/coupon/secure/exchangeCoupon` |
-| 优惠券详情 | `/gwapi/couponService/eco/coupon/new/secure/queryCouponDetail` |
-| 寄件上下文可用券 | `/gwapi/couponService/eco/coupon/new/secure/queryCouponOrder` |
+| 能力             | 端点                                                            |
+| ---------------- | --------------------------------------------------------------- |
+| 个人优惠券列表   | `/gwapi/couponService/eco/coupon/new/secure/queryNewCouponList` |
+| 兑换优惠券       | `/gwapi/couponService/eco/coupon/coupon/secure/exchangeCoupon`  |
+| 优惠券详情       | `/gwapi/couponService/eco/coupon/new/secure/queryCouponDetail`  |
+| 寄件上下文可用券 | `/gwapi/couponService/eco/coupon/new/secure/queryCouponOrder`   |
 
 ## Member 首期切片
 
@@ -1173,11 +1174,11 @@ APP_RUNTIME_CONFIG.omsChannel
 
 首期接入端点：
 
-| 能力 | 端点 |
-| --- | --- |
-| 会员等级 | `/gwapi/memberService/eco/member/grade/secure/weChatMiniMemberGrade` |
-| SVIP 最新信息 | `/gwapi/memberService/eco/member/grade/secure/getSvipNewestInfo` |
-| 会员 Web 临时 token | `/gwapi/userService/eco/user/token/secure/generateTmpToken` |
+| 能力                | 端点                                                                 |
+| ------------------- | -------------------------------------------------------------------- |
+| 会员等级            | `/gwapi/memberService/eco/member/grade/secure/weChatMiniMemberGrade` |
+| SVIP 最新信息       | `/gwapi/memberService/eco/member/grade/secure/getSvipNewestInfo`     |
+| 会员 Web 临时 token | `/gwapi/userService/eco/user/token/secure/generateTmpToken`          |
 
 ## Invoice 首期切片
 
@@ -1219,32 +1220,32 @@ APP_RUNTIME_CONFIG.omsChannel
 
 首期接入端点：
 
-| 能力 | path |
-| --- | --- |
-| 可开票运单 | `tradeQueryByCustomerCode` |
+| 能力                   | path                       |
+| ---------------------- | -------------------------- |
+| 可开票运单             | `tradeQueryByCustomerCode` |
 | 按运单号搜索可开票记录 | `tradeQueryBySourceBillNo` |
-| 运单付款人电话校验 | `checkSourcePaymentNumber` |
-| 发送运单开票校验验证码 | `sendCheckCode` |
-| 校验运单开票短信验证码 | `checkVerificationCode` |
-| 开票历史 | `queryInvoiceHistory` |
-| 按运单查询历史 | `queryApplyByWayBillNo` |
-| 查询发票包含运单 | `queryContainWaybill` |
-| 查询电子票预览 | `lookInvoice` |
-| 电子票发送邮箱 | `sendEmail` |
-| 发票抬头 | `queryTaxpayerInfo` |
-| 新增发票抬头 | `addTaxpayerInfo` |
-| 修改发票抬头 | `alterTaxpayerInfo` |
-| 删除发票抬头 | `deleteTaxpayerInfo` |
-| 企业抬头联想 | `queryCustomerTaxName` |
-| 普通运单电子票提交 | `addTaskInfoByEle` |
+| 运单付款人电话校验     | `checkSourcePaymentNumber` |
+| 发送运单开票校验验证码 | `sendCheckCode`            |
+| 校验运单开票短信验证码 | `checkVerificationCode`    |
+| 开票历史               | `queryInvoiceHistory`      |
+| 按运单查询历史         | `queryApplyByWayBillNo`    |
+| 查询发票包含运单       | `queryContainWaybill`      |
+| 查询电子票预览         | `lookInvoice`              |
+| 电子票发送邮箱         | `sendEmail`                |
+| 发票抬头               | `queryTaxpayerInfo`        |
+| 新增发票抬头           | `addTaxpayerInfo`          |
+| 修改发票抬头           | `alterTaxpayerInfo`        |
+| 删除发票抬头           | `deleteTaxpayerInfo`       |
+| 企业抬头联想           | `queryCustomerTaxName`     |
+| 普通运单电子票提交     | `addTaskInfoByEle`         |
 
 后置 path：
 
-| 能力 | path |
-| --- | --- |
-| E 卡开票提交 | `addPrepayCardTask` |
-| 纸票支付单查询 | `queryPayCode` |
-| 电子票下载 | 待接 App 文件下载和系统预览原生模块 |
+| 能力           | path                                |
+| -------------- | ----------------------------------- |
+| E 卡开票提交   | `addPrepayCardTask`                 |
+| 纸票支付单查询 | `queryPayCode`                      |
+| 电子票下载     | 待接 App 文件下载和系统预览原生模块 |
 
 本轮已验证：
 
@@ -1408,6 +1409,17 @@ pages: [
 - 登录成功、暂不登录、下单成功继续寄件、进入订单列表、订单详情返回主入口等路径统一复用该导航工具。
 - 登录关键导航会等待非空目标路由确认，但始终只 dispatch 一次；确认失败会提示并释放守卫，不再以第二次 redirect 制造竞态。守卫按 in-flight Promise 去重，不使用固定时间窗或小程序 `switchTab`。
 - 新增页面先登记 `shared/navigation/routeRegistry.ts`，再由注册表派生 Taro 页面列表、`APP_ROUTES`、主导航和登录守卫；页面内不要自行维护另一份路径白名单。
+
+#### 2026-08-13 地基加固与存量收敛
+
+本轮在 `c172125`（day07）干净基线上做存量巨石拆分和 legacy 收紧，不新增原生能力：
+
+- 发票中心页 `pages/invoice/index/index.tsx` 从 745 行降至 310 行，拆出 6 个 hook（orderAuth/orders/history/ecards/taxpayers/tabCoordinator），退出 780 legacy 预算。`applyOrderSearchResponse` 留在主文件作协调函数，通过 ref 传给 auth/orders hook 避免循环依赖。
+- 寄件页 `pages/express/index.tsx` 从 667 行降至 361 行，拆出 4 个 hook（goods/monthlyPay/submit/entryNavigation），退出 720 legacy 预算。提交消息清空逻辑移入 `useExpressSubmit` 的 effect。
+- `check-module-size.mjs` 的 `legacyBudgets` 从 9 条删到 2 条：删除 5 条僵尸豁免（invoice/detail、order/stub、payment/list、query/price、query/stations 均已 < 420 行）+ 2 条已完成拆分的豁免（express/index、invoice/index），仅保留 order/list(447) 和 invoice/apply(462) 两条边缘豁免。
+- 优惠券即将过期计数：新增 `couponApi.queryExpireCouponCount`（POST `/gwapi/couponService/eco/coupon/new/secure/queryExpireCoupon`，`login: false`，返回 `number`），"我的"页 `QUICK_ENTRIES` 新增优惠券入口并在过期计数 > 0 时展示徽标。
+- 审计确认催单、账号注销、发票动作（作废/改址/取消/邮件）、营业部电话、通知派送、拦截作废、运单合同明细、下单拦截均已端到端实现。
+- express/types.ts(691) 和 order/types.ts(634) 的子域拆分暂缓——交叉依赖复杂且未超 700 行 types 预算，后续新增类型接近上限时再按子域拆分。
 
 ### 第 3 阶段：原生能力接入
 
