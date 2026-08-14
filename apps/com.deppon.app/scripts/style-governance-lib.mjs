@@ -11,8 +11,12 @@ const STYLE_DEBT_FIELDS = [
   ['rawFontSizes', 'font-size 字面量'],
   ['rawLineHeights', 'line-height 字面量'],
   ['rawRadii', 'border-radius 字面量'],
-  ['rawFontWeights', 'font-weight 字面量']
+  ['rawFontWeights', 'font-weight 字面量'],
+  ['rawSpaces', '间距字面量']
 ]
+
+const SPACE_PROPERTY_PATTERN =
+  /^(?:padding|margin|gap|row-gap|column-gap)(?:-(?:top|right|bottom|left|inline|block|inline-start|inline-end|block-start|block-end))?$/
 
 const CSS_NAMED_COLORS = new Set(
   `aliceblue antiquewhite aqua aquamarine azure beige bisque black
@@ -57,8 +61,7 @@ const HEX_COLOR_PATTERN = /#[0-9a-f]{3,8}\b/gi
 const TOKEN_USE_PATTERN =
   /@use\s+['"](?:tokens|[^'"]*styles(?:\/(?:index|_?tokens)(?:\.scss)?)?)['"]/
 const RELIABLE_RN_STYLE_UNITS = new Set(['px', '%', 'deg'])
-const STYLE_DIMENSION_PATTERN =
-  /(^|[^#\w$-])-?(?:\d*\.)?\d+([a-z%]+)\b/gi
+const STYLE_DIMENSION_PATTERN = /(^|[^#\w$-])-?(?:\d*\.)?\d+([a-z%]+)\b/gi
 const PSEUDO_ELEMENT_PATTERN = /::[a-z][a-z0-9-]*/gi
 
 const normalizePath = value =>
@@ -538,14 +541,15 @@ const semanticFieldsForParameter = variable => {
   if (/(?:^|-)font-size$/.test(name)) fields.add('rawFontSizes')
   if (/(?:^|-)line-height$/.test(name)) fields.add('rawLineHeights')
   if (/(?:^|-)(?:border-)?radius$/.test(name)) fields.add('rawRadii')
+  if (/(?:^|-)(?:space|padding|margin|gap)$/.test(name)) fields.add('rawSpaces')
   if (/(?:^|-)font-weight$/.test(name)) fields.add('rawFontWeights')
   return fields
 }
 
 const variableReferences = value =>
   new Set(
-    [...value.matchAll(/(^|[^.])(\$[-_a-zA-Z][-_a-zA-Z0-9]*)/g)].map(
-      match => normalizeSassVariable(match[2])
+    [...value.matchAll(/(^|[^.])(\$[-_a-zA-Z][-_a-zA-Z0-9]*)/g)].map(match =>
+      normalizeSassVariable(match[2])
     )
   )
 
@@ -609,6 +613,8 @@ const getMixinDefinitions = (source, declarations, localVariables) =>
           )
         ) {
           addParameterField(contract, resolvedValue, 'rawRadii')
+        } else if (SPACE_PROPERTY_PATTERN.test(property)) {
+          addParameterField(contract, resolvedValue, 'rawSpaces')
         } else if (property === 'font-weight') {
           addParameterField(contract, resolvedValue, 'rawFontWeights')
         } else if (property === 'font') {
@@ -640,8 +646,7 @@ const findVisibleMixin = (definitions, inclusion) => {
   return definitions
     .filter(
       definition =>
-        definition.name.replaceAll('_', '-').toLowerCase() ===
-          normalizedName &&
+        definition.name.replaceAll('_', '-').toLowerCase() === normalizedName &&
         definition.index < inclusion.index &&
         isAncestorScope(definition.scope, inclusion.scope)
     )
@@ -690,6 +695,9 @@ const hasFontWeightLiteral = value =>
   (!value.includes('$') &&
     /^\s*(?:normal|bold|bolder|lighter)\s*$/i.test(value))
 
+const hasSpaceLiteral = value =>
+  hasNumericLiteral(value) && !/^-?0(?:px|%)?$/i.test(value.trim())
+
 const countStaticMixinValue = (metrics, fields, value, context, variables) => {
   // A color alias is charged at its literal declaration, matching ordinary
   // Sass variable consumers. Direct colors in an at-rule argument are charged
@@ -706,6 +714,9 @@ const countStaticMixinValue = (metrics, fields, value, context, variables) => {
   }
   if (fields.has('rawRadii') && hasNumericLiteral(resolvedValue)) {
     metrics.rawRadii += 1
+  }
+  if (fields.has('rawSpaces') && hasSpaceLiteral(resolvedValue)) {
+    metrics.rawSpaces += 1
   }
   if (fields.has('rawFontWeights') && hasFontWeightLiteral(resolvedValue)) {
     metrics.rawFontWeights += 1
@@ -727,6 +738,7 @@ export const analyzeStyleContent = content => {
   let rawLineHeights = 0
   let rawRadii = 0
   let rawFontWeights = 0
+  let rawSpaces = 0
 
   for (const declaration of declarations) {
     const { property, value } = declaration
@@ -758,6 +770,12 @@ export const analyzeStyleContent = content => {
     ) {
       rawRadii += 1
     }
+    if (
+      SPACE_PROPERTY_PATTERN.test(property) &&
+      hasSpaceLiteral(resolvedValue)
+    ) {
+      rawSpaces += 1
+    }
     if (property === 'font-weight' && hasFontWeightLiteral(resolvedValue)) {
       rawFontWeights += 1
     }
@@ -776,7 +794,8 @@ export const analyzeStyleContent = content => {
     rawFontSizes,
     rawLineHeights,
     rawRadii,
-    rawFontWeights
+    rawFontWeights,
+    rawSpaces
   }
 
   for (const definition of mixinDefinitions) {
@@ -814,7 +833,7 @@ export const analyzeStyleContent = content => {
       } else {
         parameter = parameters[positionalIndex.value]
         fields = parameter
-          ? contract.get(parameter.name) ?? new Set()
+          ? (contract.get(parameter.name) ?? new Set())
           : new Set()
         positionalIndex.value += 1
       }
@@ -881,10 +900,7 @@ const getUnsupportedStyleFailures = (content, file) => {
       }
     }
 
-    if (
-      file.startsWith('src/pages/') &&
-      declaration.property === 'elevation'
-    ) {
+    if (file.startsWith('src/pages/') && declaration.property === 'elevation') {
       failures.push(`${file} 页面样式禁止直接使用 elevation`)
     }
   }
@@ -1153,8 +1169,7 @@ export const scanNativeClickHandlers = source => {
         line: getLineNumber(source, eventOffset)
       })
     }
-    const spreadPattern =
-      /\{\s*\.\.\.\s*(?:\{[^}]*\}|[A-Za-z_$][\w$]*)/g
+    const spreadPattern = /\{\s*\.\.\.\s*(?:\{[^}]*\}|[A-Za-z_$][\w$]*)/g
     for (const match of maskedBody.matchAll(spreadPattern)) {
       if (!/\bon(?:Click|Tap)\b/.test(match[0])) continue
       handlers.push({
@@ -1257,9 +1272,10 @@ export const scanDirectReactNativePressables = source => {
 export const analyzeNativePressableContract = content => {
   const source = maskScriptTrivia(content)
   return {
-    minWidth: /\bminWidth\s*:\s*APP_NATIVE_TOKENS\s*\.\s*touch\s*\.\s*minimum\b/.test(
-      source
-    ),
+    minWidth:
+      /\bminWidth\s*:\s*APP_NATIVE_TOKENS\s*\.\s*touch\s*\.\s*minimum\b/.test(
+        source
+      ),
     minHeight:
       /\bminHeight\s*:\s*APP_NATIVE_TOKENS\s*\.\s*touch\s*\.\s*minimum\b/.test(
         source
@@ -1310,9 +1326,8 @@ export const analyzeNativeTouchMinimum = content => {
   const touchSource = readBraceBlock(objectSource, touchOpen)
   if (touchSource === null) return { minimum: null, isStatic44: false }
   const minimum =
-    /\bminimum\s*:\s*([+-]?(?:\d+(?:\.\d+)?|\.\d+))\b/.exec(
-      touchSource
-    )?.[1] ?? null
+    /\bminimum\s*:\s*([+-]?(?:\d+(?:\.\d+)?|\.\d+))\b/.exec(touchSource)?.[1] ??
+    null
 
   return {
     minimum: minimum === null ? null : Number(minimum),
@@ -1326,9 +1341,7 @@ export const getNativeTouchMinimumFailures = (
 ) =>
   analyzeNativeTouchMinimum(content).isStatic44
     ? []
-    : [
-        `${file} 的 APP_NATIVE_TOKENS.touch.minimum 必须声明为静态数值 44`
-      ]
+    : [`${file} 的 APP_NATIVE_TOKENS.touch.minimum 必须声明为静态数值 44`]
 
 const hasJsxMarkup = source => {
   const maskedSource = maskScriptTrivia(source)
@@ -1762,10 +1775,14 @@ const getPageComponentOwnershipFailures = (appRoot, scriptFiles) => {
     if (!hasJsxMarkup(source)) continue
     const hasLocalStyle = getScriptStyleSpecifiers(source).some(specifier => {
       const targetFile = resolveStyleSpecifier(appRoot, filePath, specifier)
+      if (!targetFile || path.extname(targetFile) !== '.scss') return false
+      const sourceDir = path.dirname(filePath)
+      const targetDir = path.dirname(targetFile)
+      if (targetDir === sourceDir) return true
+      // 文件夹式组件：允许引用组件目录根下的共享 SCSS
       return (
-        targetFile &&
-        path.extname(targetFile) === '.scss' &&
-        path.dirname(targetFile) === path.dirname(filePath)
+        path.basename(sourceDir) !== 'components' &&
+        path.dirname(sourceDir) === targetDir
       )
     })
     if (!hasLocalStyle) {
@@ -1816,7 +1833,9 @@ export const collectProjectSnapshot = appRoot => {
   const systemFailures = []
 
   systemFailures.push(...getPageIndexOwnershipFailures(appRoot, scssFiles))
-  systemFailures.push(...getPageComponentOwnershipFailures(appRoot, scriptFiles))
+  systemFailures.push(
+    ...getPageComponentOwnershipFailures(appRoot, scriptFiles)
+  )
 
   for (const filePath of scssFiles) {
     const file = relativePath(appRoot, filePath)
@@ -1828,7 +1847,10 @@ export const collectProjectSnapshot = appRoot => {
   for (const filePath of scriptFiles) {
     const file = relativePath(appRoot, filePath)
     const source = fs.readFileSync(filePath, 'utf8')
-    if (file.startsWith('src/pages/') && /\belevation\s*:/.test(maskScriptTrivia(source))) {
+    if (
+      file.startsWith('src/pages/') &&
+      /\belevation\s*:/.test(maskScriptTrivia(source))
+    ) {
       systemFailures.push(`${file} 页面原生样式禁止直接使用 elevation`)
     }
     if (file === 'src/shared/native/AppNativePressable.tsx') continue
@@ -1945,9 +1967,16 @@ const getLineLimit = (file, limits) =>
 
 const requiresTokenUsage = file => file !== 'src/app.scss'
 
+// rawSpaces 是新增的存量维度，当前 898 处间距字面量尚未清零。
+// strict 门禁暂只要求前 5 个已清零维度归零；间距走 daily 只降不增，
+// 待存量清零后再纳入 strict 判定。
+const STRICT_STYLE_FIELDS = STYLE_DEBT_FIELDS.filter(
+  ([field]) => field !== 'rawSpaces'
+)
+
 const isStrictStyle = (file, metrics, limits) =>
   (!requiresTokenUsage(file) || metrics.usesTokens) &&
-  STYLE_DEBT_FIELDS.every(([field]) => metrics[field] === 0) &&
+  STRICT_STYLE_FIELDS.every(([field]) => metrics[field] === 0) &&
   metrics.lines <= getLineLimit(file, limits)
 
 const itemKey = item =>
@@ -2129,7 +2158,7 @@ const compareStrictSnapshot = (current, baseline, failures) => {
     if (requiresTokenUsage(file) && !metrics.usesTokens) {
       failures.push(`${file} 必须引入 styles token`)
     }
-    for (const [field, label] of STYLE_DEBT_FIELDS) {
+    for (const [field, label] of STRICT_STYLE_FIELDS) {
       if (metrics[field] > 0) failures.push(`${file} 的 ${label}必须归零`)
     }
     const limit = getLineLimit(file, baseline.limits)
@@ -2332,8 +2361,12 @@ export const createNextBaseline = (current, previousBaseline) => {
       native: { files: sortedObject(Object.entries(current.native.files)) },
       architecture: {
         parentStyleImports: [...current.architecture.parentStyleImports],
-        legacyGlobalClassFiles: [...current.architecture.legacyGlobalClassFiles],
-        nativeClickHandlers: [...(current.architecture.nativeClickHandlers ?? [])]
+        legacyGlobalClassFiles: [
+          ...current.architecture.legacyGlobalClassFiles
+        ],
+        nativeClickHandlers: [
+          ...(current.architecture.nativeClickHandlers ?? [])
+        ]
       }
     }
   }
@@ -2369,6 +2402,7 @@ export const getSnapshotSummary = snapshot => {
       rawLineHeights: 0,
       rawRadii: 0,
       rawFontWeights: 0,
+      rawSpaces: 0,
       lines: 0,
       tokenFiles: 0
     }
@@ -2384,6 +2418,7 @@ export const getSnapshotSummary = snapshot => {
     nativeColors,
     parentStyleImports: snapshot.architecture.parentStyleImports.length,
     legacyGlobalClassFiles: snapshot.architecture.legacyGlobalClassFiles.length,
-    nativeClickHandlers: (snapshot.architecture.nativeClickHandlers ?? []).length
+    nativeClickHandlers: (snapshot.architecture.nativeClickHandlers ?? [])
+      .length
   }
 }

@@ -176,6 +176,7 @@ const cleanStyle = (overrides = {}) => ({
   rawLineHeights: 0,
   rawRadii: 0,
   rawFontWeights: 0,
+  rawSpaces: 0,
   usesTokens: true,
   lines: 20,
   ...overrides
@@ -459,6 +460,32 @@ test('analyzeStyleContent detects typography and radius literals', () => {
   assert.equal(metrics.rawLineHeights, 1)
   assert.equal(metrics.rawRadii, 1)
   assert.equal(metrics.rawFontWeights, 1)
+})
+
+test('analyzeStyleContent detects spacing literals', () => {
+  const metrics = analyzeStyleContent(`
+    .example {
+      padding: 24px;
+      margin-top: 20px;
+      gap: 12px;
+      padding: 0;
+      margin: 0;
+    }
+  `)
+
+  assert.equal(metrics.rawSpaces, 3)
+})
+
+test('analyzeStyleContent does not treat zero spacing as literals', () => {
+  const metrics = analyzeStyleContent(`
+    .example {
+      padding: 0;
+      margin: 0;
+      gap: 0;
+    }
+  `)
+
+  assert.equal(metrics.rawSpaces, 0)
 })
 
 test('analyzeStyleContent does not treat semantic font-weight tokens as literals', () => {
@@ -929,14 +956,10 @@ test('collectProjectSnapshot detects every supported parent style import form', 
 
 test('collectProjectSnapshot resolves Sass index partials in every path form', t => {
   const root = createProjectFixture(t, {
-    'src/pages/partial/_index.scss':
-      "@use '../../styles/tokens' as *;\n",
-    'src/pages/partial/components/Explicit.tsx':
-      "import '../_index.scss'\n",
-    'src/pages/partial/components/Extensionless.tsx':
-      "import '../_index'\n",
-    'src/pages/partial/components/Directory.tsx':
-      "import '..'\n",
+    'src/pages/partial/_index.scss': "@use '../../styles/tokens' as *;\n",
+    'src/pages/partial/components/Explicit.tsx': "import '../_index.scss'\n",
+    'src/pages/partial/components/Extensionless.tsx': "import '../_index'\n",
+    'src/pages/partial/components/Directory.tsx': "import '..'\n",
     'src/pages/partial/components/SassUse.scss': "@use '../_index';\n"
   })
 
@@ -1080,9 +1103,9 @@ test('native click handlers are tracked per file in daily and strict modes', () 
     false
   )
   assert.match(
-    compareSnapshot(unchanged, baseline(previous), { strict: true }).failures.join(
-      '\n'
-    ),
+    compareSnapshot(unchanged, baseline(previous), {
+      strict: true
+    }).failures.join('\n'),
     /不能直接绑定 onClick/
   )
 })
@@ -1162,12 +1185,24 @@ test('page index ownership keeps page orchestration small and excludes component
     'src/pages/example/components/shared.scss': `
       @use '../../../styles/tokens' as *;
       .shared { display: flex; }
+    `,
+    'src/pages/example/components/Shared.scss': `
+      @use '../../../styles/tokens' as *;
+      .shared-card { display: flex; }
+    `,
+    'src/pages/example/components/SharedConsumer/index.tsx': `
+      import { View } from '@tarojs/components'
+      import '../Shared.scss'
+      export const SharedConsumer = () => <View />
     `
   })
 
   const current = collectProjectSnapshot(root)
   const failures = current.systemFailures.join('\n')
-  assert.match(failures, /src\/pages\/example\/index\.scss.*顶级规则 6 个.*最多允许 4 个/)
+  assert.match(
+    failures,
+    /src\/pages\/example\/index\.scss.*顶级规则 6 个.*最多允许 4 个/
+  )
   assert.match(failures, /src\/pages\/example\/index\.scss.*顶级选择器禁止 BEM/)
   assert.doesNotMatch(failures, /components\/index\.scss.*最多允许/)
   assert.match(
@@ -1176,6 +1211,7 @@ test('page index ownership keeps page orchestration small and excludes component
   )
   assert.doesNotMatch(failures, /components\/Owned\.tsx/)
   assert.doesNotMatch(failures, /components\/helper\.tsx/)
+  assert.doesNotMatch(failures, /components\/SharedConsumer\.tsx/)
 })
 
 test('baseline update accepts debt reduction and rejects debt increase', () => {
@@ -1425,10 +1461,7 @@ test('CLI update writes a reduced baseline and is rejected in CI', t => {
     })
     assert.equal(ciUpdate.status, 1, `CI=${ciValue} 应拒绝更新基线`)
     assert.match(ciUpdate.stderr, /CI 环境禁止更新样式基线/)
-    assert.equal(
-      fs.readFileSync(fixture.baselinePath, 'utf8'),
-      beforeCiAttempt
-    )
+    assert.equal(fs.readFileSync(fixture.baselinePath, 'utf8'), beforeCiAttempt)
   }
 })
 
@@ -1504,7 +1537,9 @@ test('Android and iOS releases use the reusable baseline ratchet contract', () =
 
 test('formal verify includes the strict style gate', () => {
   const packageJson = JSON.parse(
-    fs.readFileSync(path.join(workspaceRoot, 'apps/com.deppon.app/package.json'))
+    fs.readFileSync(
+      path.join(workspaceRoot, 'apps/com.deppon.app/package.json')
+    )
   )
 
   assert.match(

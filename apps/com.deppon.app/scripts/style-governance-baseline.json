@@ -12,6 +12,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 1
       },
@@ -21,6 +22,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 12,
         "usesTokens": true,
         "lines": 167
       },
@@ -30,6 +32,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -39,6 +42,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 12,
         "usesTokens": true,
         "lines": 151
       },
@@ -48,6 +52,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -57,6 +62,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 6,
         "usesTokens": true,
         "lines": 75
       },
@@ -66,6 +72,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 15,
         "usesTokens": true,
         "lines": 128
       },
@@ -75,6 +82,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 5,
         "usesTokens": true,
         "lines": 66
       },
@@ -84,15 +92,17 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 10,
         "usesTokens": true,
         "lines": 104
       },
-      "src/pages/batch/components/BatchSections.scss": {
+      "src/pages/batch/components/BatchSections/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 5
       },
@@ -102,6 +112,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 20,
         "usesTokens": true,
         "lines": 232
       },
@@ -111,6 +122,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -120,6 +132,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 31
       },
@@ -129,6 +142,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 23,
         "usesTokens": true,
         "lines": 234
       },
@@ -138,6 +152,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 5
       },
@@ -147,6 +162,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 22,
         "usesTokens": true,
         "lines": 222
       },
@@ -156,6 +172,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 6
       },
@@ -165,6 +182,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 19,
         "usesTokens": true,
         "lines": 227
       },
@@ -174,60 +192,67 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 12
       },
-      "src/pages/coupon/list/components/CouponCard.scss": {
+      "src/pages/coupon/list/components/CouponCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 13,
         "usesTokens": true,
         "lines": 131
       },
-      "src/pages/coupon/list/components/CouponCardActions.scss": {
+      "src/pages/coupon/list/components/CouponCardActions/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 55
       },
-      "src/pages/coupon/list/components/CouponExchangeBar.scss": {
+      "src/pages/coupon/list/components/CouponExchangeBar/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 34
       },
-      "src/pages/coupon/list/components/CouponListStates.scss": {
+      "src/pages/coupon/list/components/CouponListStates/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 5,
         "usesTokens": true,
         "lines": 52
       },
-      "src/pages/coupon/list/components/CouponStatusTabs.scss": {
+      "src/pages/coupon/list/components/CouponStatusTabs/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 34
       },
-      "src/pages/coupon/list/components/CouponSummary.scss": {
+      "src/pages/coupon/list/components/CouponSummary/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 33
       },
@@ -237,6 +262,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 11
       },
@@ -246,6 +272,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 202
       },
@@ -255,6 +282,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 7
       },
@@ -264,6 +292,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 5,
         "usesTokens": true,
         "lines": 189
       },
@@ -273,6 +302,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 7
       },
@@ -282,6 +312,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 15,
         "usesTokens": true,
         "lines": 186
       },
@@ -291,6 +322,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 73
       },
@@ -300,6 +332,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -309,6 +342,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 13,
         "usesTokens": true,
         "lines": 166
       },
@@ -318,15 +352,17 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
-      "src/pages/express/components/ExpressCollectionCard.scss": {
+      "src/pages/express/components/ExpressCollectionCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 102
       },
@@ -336,24 +372,27 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 128
       },
-      "src/pages/express/components/ExpressContactPanel.scss": {
+      "src/pages/express/components/ExpressContactPanel/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
-        "lines": 21
+        "lines": 127
       },
-      "src/pages/express/components/ExpressCouponCard.scss": {
+      "src/pages/express/components/ExpressCouponCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 67
       },
@@ -363,6 +402,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 101
       },
@@ -372,78 +412,87 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 100
       },
-      "src/pages/express/components/ExpressDeliveryPointField.scss": {
+      "src/pages/express/components/ExpressDeliveryPointField/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 39
       },
-      "src/pages/express/components/ExpressDeliveryPreferenceCard.scss": {
+      "src/pages/express/components/ExpressDeliveryPreferenceCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 178
       },
-      "src/pages/express/components/ExpressGoodsSection.scss": {
+      "src/pages/express/components/ExpressGoodsSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 123
       },
-      "src/pages/express/components/ExpressHeader.scss": {
+      "src/pages/express/components/ExpressHeader/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 6,
         "usesTokens": true,
-        "lines": 15
+        "lines": 90
       },
-      "src/pages/express/components/ExpressInsuranceCard.scss": {
+      "src/pages/express/components/ExpressInsuranceCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 159
       },
-      "src/pages/express/components/ExpressMonthlyPayCard.scss": {
+      "src/pages/express/components/ExpressMonthlyPayCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 5,
         "usesTokens": true,
         "lines": 64
       },
-      "src/pages/express/components/ExpressOrderOptionsSection.scss": {
+      "src/pages/express/components/ExpressOrderOptionsSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 86
       },
-      "src/pages/express/components/ExpressPackagingCard.scss": {
+      "src/pages/express/components/ExpressPackagingCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 102
       },
@@ -453,87 +502,97 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 33
       },
-      "src/pages/express/components/ExpressPickupSection.scss": {
+      "src/pages/express/components/ExpressPickupSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 150
       },
-      "src/pages/express/components/ExpressPickupTimeCard.scss": {
+      "src/pages/express/components/ExpressPickupTimeCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 139
       },
-      "src/pages/express/components/ExpressQuoteSection.scss": {
+      "src/pages/express/components/ExpressQuoteSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 80
       },
-      "src/pages/express/components/ExpressReturnBillCard.scss": {
+      "src/pages/express/components/ExpressReturnBillCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 6,
         "usesTokens": true,
         "lines": 153
       },
-      "src/pages/express/components/ExpressScanContextCard.scss": {
+      "src/pages/express/components/ExpressScanContextCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 56
       },
-      "src/pages/express/components/ExpressSection.scss": {
+      "src/pages/express/components/ExpressSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 31
       },
-      "src/pages/express/components/ExpressServiceSection.scss": {
+      "src/pages/express/components/ExpressServiceSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 154
       },
-      "src/pages/express/components/ExpressSubmitBar.scss": {
+      "src/pages/express/components/ExpressSubmitBar/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 6,
         "usesTokens": true,
-        "lines": 19
+        "lines": 58
       },
-      "src/pages/express/components/ExpressWarehouseCard.scss": {
+      "src/pages/express/components/ExpressWarehouseCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 140
       },
@@ -543,6 +602,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -552,6 +612,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 15,
         "usesTokens": true,
         "lines": 195
       },
@@ -561,6 +622,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -570,6 +632,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 9,
         "usesTokens": true,
         "lines": 119
       },
@@ -579,6 +642,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -588,6 +652,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 5,
         "usesTokens": true,
         "lines": 143
       },
@@ -597,15 +662,17 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 13
       },
-      "src/pages/express/template/list/components/TemplateMetaEditor.scss": {
+      "src/pages/express/template/list/components/TemplateMetaEditor/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 92
       },
@@ -615,6 +682,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 7,
         "usesTokens": true,
         "lines": 264
       },
@@ -624,6 +692,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 7
       },
@@ -633,6 +702,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 11
       },
@@ -642,6 +712,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 7,
         "usesTokens": true,
         "lines": 97
       },
@@ -651,6 +722,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 11,
         "usesTokens": true,
         "lines": 129
       },
@@ -660,6 +732,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 5
       },
@@ -669,6 +742,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 23,
         "usesTokens": true,
         "lines": 269
       },
@@ -678,42 +752,47 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 11
       },
-      "src/pages/invoice/detail/components/InvoiceDetailOverviewCard.scss": {
+      "src/pages/invoice/detail/components/InvoiceDetailOverviewCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 6,
         "usesTokens": true,
         "lines": 89
       },
-      "src/pages/invoice/detail/components/InvoiceDetailRow.scss": {
+      "src/pages/invoice/detail/components/InvoiceDetailRow/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 36
       },
-      "src/pages/invoice/detail/components/InvoiceDetailStates.scss": {
+      "src/pages/invoice/detail/components/InvoiceDetailStates/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 5,
         "usesTokens": true,
         "lines": 47
       },
-      "src/pages/invoice/detail/components/InvoiceDetailSupplementarySections.scss": {
+      "src/pages/invoice/detail/components/InvoiceDetailSupplementarySections/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 11,
         "usesTokens": true,
         "lines": 135
       },
@@ -723,6 +802,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 11
       },
@@ -732,42 +812,47 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 11,
         "usesTokens": true,
         "lines": 153
       },
-      "src/pages/invoice/index/components/InvoiceCenterControls.scss": {
+      "src/pages/invoice/index/components/InvoiceCenterControls/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 11,
         "usesTokens": true,
         "lines": 142
       },
-      "src/pages/invoice/index/components/InvoiceCenterStates.scss": {
+      "src/pages/invoice/index/components/InvoiceCenterStates/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 33
       },
-      "src/pages/invoice/index/components/InvoiceECardPanel.scss": {
+      "src/pages/invoice/index/components/InvoiceECardPanel/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 9,
         "usesTokens": true,
         "lines": 100
       },
-      "src/pages/invoice/index/components/OrderAuthDialog.scss": {
+      "src/pages/invoice/index/components/OrderAuthDialog/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 6,
         "usesTokens": true,
         "lines": 118
       },
@@ -777,6 +862,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -786,6 +872,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 19,
         "usesTokens": true,
         "lines": 224
       },
@@ -795,6 +882,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 12
       },
@@ -804,6 +892,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 17,
         "usesTokens": true,
         "lines": 183
       },
@@ -813,6 +902,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 18,
         "usesTokens": true,
         "lines": 210
       },
@@ -822,6 +912,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -831,6 +922,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -840,6 +932,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 170
       },
@@ -849,6 +942,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 7
       },
@@ -858,6 +952,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 17,
         "usesTokens": true,
         "lines": 203
       },
@@ -867,42 +962,47 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 5
       },
-      "src/pages/mine/components/MineEntryGrids.scss": {
+      "src/pages/mine/components/MineEntryGrids/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 6,
         "usesTokens": true,
         "lines": 85
       },
-      "src/pages/mine/components/MineHero.scss": {
+      "src/pages/mine/components/MineHero/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 71
       },
-      "src/pages/mine/components/MineMemberCard.scss": {
+      "src/pages/mine/components/MineMemberCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 9,
         "usesTokens": true,
         "lines": 124
       },
-      "src/pages/mine/components/MineOrderShortcuts.scss": {
+      "src/pages/mine/components/MineOrderShortcuts/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 33
       },
@@ -912,6 +1012,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 6
       },
@@ -921,6 +1022,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 13,
         "usesTokens": true,
         "lines": 141
       },
@@ -930,87 +1032,97 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 6
       },
-      "src/pages/order/detail/components/OrderAddressSection.scss": {
+      "src/pages/order/detail/components/OrderAddressSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 61
       },
-      "src/pages/order/detail/components/OrderDetailActions.scss": {
+      "src/pages/order/detail/components/OrderDetailActions/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 60
       },
-      "src/pages/order/detail/components/OrderDetailHeader.scss": {
+      "src/pages/order/detail/components/OrderDetailHeader/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 45
       },
-      "src/pages/order/detail/components/OrderDetailSection.scss": {
+      "src/pages/order/detail/components/OrderDetailSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 27
       },
-      "src/pages/order/detail/components/OrderDetailStates.scss": {
+      "src/pages/order/detail/components/OrderDetailStates/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 5,
         "usesTokens": true,
         "lines": 39
       },
-      "src/pages/order/detail/components/OrderPaymentAlert.scss": {
+      "src/pages/order/detail/components/OrderPaymentAlert/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 56
       },
-      "src/pages/order/detail/components/OrderPdcFeedbackPanel.scss": {
+      "src/pages/order/detail/components/OrderPdcFeedbackPanel/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 74
       },
-      "src/pages/order/detail/components/OrderPickupScheduleOptions.scss": {
+      "src/pages/order/detail/components/OrderPickupScheduleOptions/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 81
       },
-      "src/pages/order/detail/components/OrderPickupSchedulePanel.scss": {
+      "src/pages/order/detail/components/OrderPickupSchedulePanel/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 114
       },
@@ -1020,60 +1132,67 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 167
       },
-      "src/pages/order/detail/components/OrderSceneSurveyPanel.scss": {
+      "src/pages/order/detail/components/OrderSceneSurveyPanel/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 71
       },
-      "src/pages/order/detail/components/OrderServiceActions.scss": {
+      "src/pages/order/detail/components/OrderServiceActions/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 6,
         "usesTokens": true,
         "lines": 87
       },
-      "src/pages/order/detail/components/OrderStubEntryCard.scss": {
+      "src/pages/order/detail/components/OrderStubEntryCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 5,
         "usesTokens": true,
         "lines": 52
       },
-      "src/pages/order/detail/components/OrderTrackSection.scss": {
+      "src/pages/order/detail/components/OrderTrackSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 44
       },
-      "src/pages/order/detail/components/OrderTransportSection.scss": {
+      "src/pages/order/detail/components/OrderTransportSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 82
       },
-      "src/pages/order/detail/components/OrderUrgePanel.scss": {
+      "src/pages/order/detail/components/OrderUrgePanel/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 78
       },
@@ -1083,15 +1202,17 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 7
       },
-      "src/pages/order/edit/components/OrderEditActions.scss": {
+      "src/pages/order/edit/components/OrderEditActions/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 42
       },
@@ -1101,87 +1222,97 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 115
       },
-      "src/pages/order/edit/components/OrderEditCollectionSection.scss": {
+      "src/pages/order/edit/components/OrderEditCollectionSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 102
       },
-      "src/pages/order/edit/components/OrderEditContactSection.scss": {
+      "src/pages/order/edit/components/OrderEditContactSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 15
       },
-      "src/pages/order/edit/components/OrderEditGoodsSection.scss": {
+      "src/pages/order/edit/components/OrderEditGoodsSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 34
       },
-      "src/pages/order/edit/components/OrderEditIdentity.scss": {
+      "src/pages/order/edit/components/OrderEditIdentity/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 9
       },
-      "src/pages/order/edit/components/OrderEditInsuranceSection.scss": {
+      "src/pages/order/edit/components/OrderEditInsuranceSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 107
       },
-      "src/pages/order/edit/components/OrderEditLoadState.scss": {
+      "src/pages/order/edit/components/OrderEditLoadState/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 42
       },
-      "src/pages/order/edit/components/OrderEditMessage.scss": {
+      "src/pages/order/edit/components/OrderEditMessage/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 9
       },
-      "src/pages/order/edit/components/OrderEditPackagingSection.scss": {
+      "src/pages/order/edit/components/OrderEditPackagingSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 125
       },
-      "src/pages/order/edit/components/OrderEditScheduleSection.scss": {
+      "src/pages/order/edit/components/OrderEditScheduleSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 169
       },
@@ -1191,6 +1322,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 58
       },
@@ -1200,15 +1332,17 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 7
       },
-      "src/pages/order/evaluation/components/OrderEvaluationForm.scss": {
+      "src/pages/order/evaluation/components/OrderEvaluationForm/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 120
       },
@@ -1218,15 +1352,17 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 76
       },
-      "src/pages/order/list/components/OrderListCards.scss": {
+      "src/pages/order/list/components/OrderListCards/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 13,
         "usesTokens": true,
         "lines": 162
       },
@@ -1236,6 +1372,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 10,
         "usesTokens": true,
         "lines": 109
       },
@@ -1245,15 +1382,17 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 7,
         "usesTokens": true,
         "lines": 91
       },
-      "src/pages/order/list/components/OrderSupportFloat.scss": {
+      "src/pages/order/list/components/OrderSupportFloat/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 23
       },
@@ -1263,114 +1402,127 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 5
       },
-      "src/pages/order/stub/components/OrderStubActions.scss": {
+      "src/pages/order/stub/components/OrderStubActions/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 47
       },
-      "src/pages/order/stub/components/OrderStubDetailSections.scss": {
+      "src/pages/order/stub/components/OrderStubDetailSections/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 58
       },
-      "src/pages/order/stub/components/OrderStubDocumentSection.scss": {
+      "src/pages/order/stub/components/OrderStubDocumentSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 69
       },
-      "src/pages/order/stub/components/OrderStubGoodsSupplement.scss": {
+      "src/pages/order/stub/components/OrderStubGoodsSupplement/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 99
       },
-      "src/pages/order/stub/components/OrderStubHeader.scss": {
+      "src/pages/order/stub/components/OrderStubHeader/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 22
       },
-      "src/pages/order/stub/components/OrderStubImageEvidence.scss": {
+      "src/pages/order/stub/components/OrderStubImageEvidence/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 69
       },
-      "src/pages/order/stub/components/OrderStubImagePreview.scss": {
+      "src/pages/order/stub/components/OrderStubImagePreview/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 60
       },
-      "src/pages/order/stub/components/OrderStubNoticeList.scss": {
+      "src/pages/order/stub/components/OrderStubNoticeList/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 29
       },
-      "src/pages/order/stub/components/OrderStubPageState.scss": {
+      "src/pages/order/stub/components/OrderStubPageState/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 41
       },
-      "src/pages/order/stub/components/OrderStubParty.scss": {
+      "src/pages/order/stub/components/OrderStubParty/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 83
       },
-      "src/pages/order/stub/components/OrderStubSection.scss": {
+      "src/pages/order/stub/components/OrderStubSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 34
       },
-      "src/pages/order/stub/components/OrderStubSummaryCard.scss": {
+      "src/pages/order/stub/components/OrderStubSummaryCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 100
       },
@@ -1380,6 +1532,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 7
       },
@@ -1389,6 +1542,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 6,
         "usesTokens": true,
         "lines": 208
       },
@@ -1398,6 +1552,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 7
       },
@@ -1407,6 +1562,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 146
       },
@@ -1416,42 +1572,47 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 6
       },
-      "src/pages/payment/list/components/PaymentCard.scss": {
+      "src/pages/payment/list/components/PaymentCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 12,
         "usesTokens": true,
         "lines": 141
       },
-      "src/pages/payment/list/components/PaymentFeeRows.scss": {
+      "src/pages/payment/list/components/PaymentFeeRows/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 36
       },
-      "src/pages/payment/list/components/PaymentListControls.scss": {
+      "src/pages/payment/list/components/PaymentListControls/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 10,
         "usesTokens": true,
         "lines": 139
       },
-      "src/pages/payment/list/components/PaymentListStates.scss": {
+      "src/pages/payment/list/components/PaymentListStates/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 33
       },
@@ -1461,6 +1622,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 8
       },
@@ -1470,6 +1632,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 73
       },
@@ -1479,6 +1642,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 6
       },
@@ -1488,6 +1652,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 16,
         "usesTokens": true,
         "lines": 187
       },
@@ -1497,33 +1662,37 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
-      "src/pages/print/list/components/PrintListControls.scss": {
+      "src/pages/print/list/components/PrintListControls/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 113
       },
-      "src/pages/print/list/components/PrintListStates.scss": {
+      "src/pages/print/list/components/PrintListStates/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 30
       },
-      "src/pages/print/list/components/PrintOrderCard.scss": {
+      "src/pages/print/list/components/PrintOrderCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 63
       },
@@ -1533,6 +1702,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 22
       },
@@ -1542,6 +1712,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 12,
         "usesTokens": true,
         "lines": 179
       },
@@ -1551,6 +1722,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -1560,6 +1732,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 16,
         "usesTokens": true,
         "lines": 203
       },
@@ -1569,6 +1742,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 7
       },
@@ -1578,6 +1752,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 21,
         "usesTokens": true,
         "lines": 272
       },
@@ -1587,33 +1762,37 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
-      "src/pages/query/price/components/QueryPriceActions.scss": {
+      "src/pages/query/price/components/QueryPriceActions/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 27
       },
-      "src/pages/query/price/components/QueryPriceContactForm.scss": {
+      "src/pages/query/price/components/QueryPriceContactForm/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 62
       },
-      "src/pages/query/price/components/QueryPriceContactsSection.scss": {
+      "src/pages/query/price/components/QueryPriceContactsSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 19
       },
@@ -1623,42 +1802,47 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 3,
         "usesTokens": true,
         "lines": 29
       },
-      "src/pages/query/price/components/QueryPriceGoodsSection.scss": {
+      "src/pages/query/price/components/QueryPriceGoodsSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 5,
         "usesTokens": true,
         "lines": 75
       },
-      "src/pages/query/price/components/QueryPriceProductCard.scss": {
+      "src/pages/query/price/components/QueryPriceProductCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 4,
         "usesTokens": true,
         "lines": 67
       },
-      "src/pages/query/price/components/QueryPriceResultsState.scss": {
+      "src/pages/query/price/components/QueryPriceResultsState/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 28
       },
-      "src/pages/query/price/components/QueryPriceSection.scss": {
+      "src/pages/query/price/components/QueryPriceSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 2,
         "usesTokens": true,
         "lines": 8
       },
@@ -1668,24 +1852,27 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
-      "src/pages/query/stations/components/StationQueryFilters.scss": {
+      "src/pages/query/stations/components/StationQueryFilters/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 6,
         "usesTokens": true,
         "lines": 51
       },
-      "src/pages/query/stations/components/StationQueryResults.scss": {
+      "src/pages/query/stations/components/StationQueryResults/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 13,
         "usesTokens": true,
         "lines": 150
       },
@@ -1695,6 +1882,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 10,
         "usesTokens": true,
         "lines": 112
       },
@@ -1704,6 +1892,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 13,
         "usesTokens": true,
         "lines": 164
       },
@@ -1713,6 +1902,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -1722,6 +1912,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -1731,6 +1922,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 48
       },
@@ -1740,6 +1932,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 19,
         "usesTokens": true,
         "lines": 234
       },
@@ -1749,15 +1942,17 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
-      "src/pages/sign/code/components/QRCodeMatrix.scss": {
+      "src/pages/sign/code/components/QRCodeMatrix/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 32
       },
@@ -1767,6 +1962,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 22,
         "usesTokens": true,
         "lines": 234
       },
@@ -1776,6 +1972,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -1785,6 +1982,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 17,
         "usesTokens": true,
         "lines": 200
       },
@@ -1794,6 +1992,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
       },
@@ -1803,6 +2002,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 5,
         "usesTokens": true,
         "lines": 59
       },
@@ -1812,6 +2012,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 11
       },
@@ -1821,6 +2022,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 53
       },
@@ -1830,6 +2032,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 35
       },
@@ -1839,6 +2042,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 56
       },
@@ -1848,6 +2052,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 49
       },
@@ -1857,6 +2062,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 84
       },
@@ -1866,6 +2072,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 39
       },
@@ -1875,6 +2082,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 29
       },
@@ -1884,6 +2092,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 51
       },
@@ -1893,8 +2102,9 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 17
+        "lines": 54
       },
       "src/shared/components/AppStatusTag/index.scss": {
         "rawColors": 0,
@@ -1902,6 +2112,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 1,
         "usesTokens": true,
         "lines": 67
       },
@@ -1911,6 +2122,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 42
       }
