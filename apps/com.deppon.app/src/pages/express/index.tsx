@@ -27,16 +27,22 @@ import { AppPage } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import {
+  getNativeCapabilityErrorMessage,
+  shareWithApp
+} from '@/shared/platform'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 
+import { ExpressBaseInfoCard } from './components/ExpressBaseInfoCard'
 import { ExpressContactPanel } from './components/ExpressContactPanel'
 import { ExpressCouponCard } from './components/ExpressCouponCard'
 import { ExpressGoodsSection } from './components/ExpressGoodsSection'
 import { ExpressHeader } from './components/ExpressHeader'
-import { ExpressInsuranceCard } from './components/ExpressInsuranceCard'
+import { ExpressNavBar } from './components/ExpressNavBar'
 import { ExpressOrderOptionsSection } from './components/ExpressOrderOptionsSection'
-import { ExpressPackagingCard } from './components/ExpressPackagingCard'
+import { ExpressPaymentRow } from './components/ExpressPaymentRow'
 import { ExpressPickupSection } from './components/ExpressPickupSection'
+import { ExpressPrivacyCard } from './components/ExpressPrivacyCard'
 import { ExpressQuoteSection } from './components/ExpressQuoteSection'
 import { ExpressServiceSection } from './components/ExpressServiceSection'
 import { ExpressSubmitBar } from './components/ExpressSubmitBar'
@@ -204,6 +210,29 @@ const ExpressPage = () => {
     })
   }
 
+  const handleShare = () => {
+    void shareWithApp({
+      source: 'EXPRESS_SUBMIT',
+      title: '德邦快递寄件',
+      description: '在线寄快递，1小时上门取件'
+    }).catch(error => {
+      Taro.showToast({
+        title: getNativeCapabilityErrorMessage(error),
+        icon: 'none'
+      })
+    })
+  }
+
+  const handleOpenPrivacyTerms = () => {
+    void Taro.showModal({
+      title: '信息加密说明',
+      content:
+        '开启后，纸质运单和德邦自助查单渠道（APP、小程序等）会对收寄双方姓名、电话、地址做隐藏处理，仅保留必要信息用于揽派。快递员仍可通过系统联系收寄方。',
+      showCancel: false,
+      confirmText: '我知道了'
+    })
+  }
+
   const handleContactSelect = (target: 'sender' | 'consignee') => {
     const params = contactSelection.createParams(target)
     const url = createAppRouteUrl(APP_ROUTES.contactList, params)
@@ -240,23 +269,14 @@ const ExpressPage = () => {
           onSubmit={submit.handleSubmit}
         />
       }
+      header={<ExpressNavBar title='寄快递' onShare={handleShare} />}
       keyboardAvoiding
-      safeArea='bottom'
+      safeArea='both'
+      statusBar='dark'
       surface='page'
     >
       <ScrollView className='express-page' scrollY style={{ flex: 1 }}>
-        <ExpressHeader
-          priceText={
-            draft.selectedProduct
-              ? getProductPriceText(draft.selectedProduct)
-              : ''
-          }
-          onOpenBatch={entryNav.handleOpenBatch}
-          onOpenHelp={entryNav.handleOpenHelp}
-          onOpenRealName={entryNav.handleOpenRealName}
-          onOpenTemplates={entryNav.handleOpenTemplates}
-          onSaveTemplate={entryNav.handleSaveTemplate}
-        />
+        <ExpressHeader onOpenRealName={entryNav.handleOpenRealName} />
 
         <ExpressContactPanel
           draft={draft}
@@ -266,6 +286,7 @@ const ExpressPage = () => {
         />
 
         <ExpressPickupSection
+          hasSenderAddress={Boolean(draft.sender)}
           needContact={draft.service.needContact}
           pickup={draft.pickup}
           pickupTimeController={pickupTimeController}
@@ -274,31 +295,42 @@ const ExpressPage = () => {
           onOpenStations={entryNav.handleOpenStations}
         />
 
-        <ExpressGoodsSection
-          goods={draft.goods}
-          goodsLoading={goods.goodsLoading}
-          goodsMessage={goods.goodsMessage}
-          goodsSuggestions={goods.goodsSuggestions}
-          onGoodsChange={goods.updateGoods}
-          onGoodsNameInput={goods.handleGoodsNameInput}
-          onQueryGoodsNames={goods.handleQueryGoodsNames}
-          onSelectGoodsName={goods.handleSelectGoodsName}
-        />
+        <ExpressBaseInfoCard>
+          <ExpressGoodsSection
+            plain
+            goods={draft.goods}
+            goodsLoading={goods.goodsLoading}
+            goodsMessage={goods.goodsMessage}
+            goodsSuggestions={goods.goodsSuggestions}
+            onGoodsChange={goods.updateGoods}
+            onGoodsNameInput={goods.handleGoodsNameInput}
+            onQueryGoodsNames={goods.handleQueryGoodsNames}
+            onSelectGoodsName={goods.handleSelectGoodsName}
+          />
 
-        <ExpressInsuranceCard controller={insuranceController} draft={draft} />
+          <ExpressPaymentRow
+            monthlyPayView={monthlyPay.monthlyPayView}
+            value={draft.service.paymentType}
+            onMonthlyPayAction={handleOpenMonthlyPayAction}
+            onSelect={monthlyPay.handlePaymentTypeSelect}
+          />
 
-        <ExpressPackagingCard
-          packaging={draft.packaging}
-          onChange={goods.handlePackagingChange}
-        />
+          <ExpressCouponCard
+            controller={couponController}
+            couponNumber={draft.couponNumber}
+          />
+        </ExpressBaseInfoCard>
 
         <ExpressServiceSection
           collection={draft.collection}
           collectionController={collectionController}
+          deliveryPoint={draft.deliveryPoint}
           deliveryPreference={draft.deliveryPreference}
           deliveryPreferenceController={deliveryPreferenceController}
-          deliveryPoint={draft.deliveryPoint}
-          monthlyPayView={monthlyPay.monthlyPayView}
+          draft={draft}
+          insuranceController={insuranceController}
+          packaging={draft.packaging}
+          remark={draft.remark}
           scanContextView={createExpressScanContextView(draft.scanContext)}
           selectedProduct={draft.selectedProduct}
           service={draft.service}
@@ -306,42 +338,42 @@ const ExpressPage = () => {
           warehouseController={warehouseController}
           onClearScanContext={() => setDraft(clearExpressScanContext)}
           onOpenDeliveryPoints={deliveryPointController.onOpen}
-          onMonthlyPayAction={handleOpenMonthlyPayAction}
-          onPaymentTypeSelect={monthlyPay.handlePaymentTypeSelect}
-          onReturnBillChange={returnBillController.onChange}
           onOpenReturnBillCloudSign={returnBillController.onOpenCloudSign}
-          onPrivacyProtectionChange={handlePrivacyProtectionChange}
-          onServiceChange={updateService}
-        />
-
-        <ExpressQuoteSection
-          pickup={draft.pickup}
-          quoteStaleReason={draft.quoteStaleReason}
-          quoteStatus={quoteStatus}
-          quotes={quotes}
-          selectedProduct={draft.selectedProduct}
-          onQueryPickupTime={pickupTimeController.onQuery}
-          onQuote={handleQuote}
-          onSelectProduct={handleSelectProduct}
-        />
-
-        <ExpressCouponCard
-          controller={couponController}
-          couponNumber={draft.couponNumber}
-        />
-
-        <ExpressOrderOptionsSection
-          agreementAccepted={draft.agreementAccepted}
-          remark={draft.remark}
-          submitMessage={submit.submitMessage}
-          validationMessages={
-            submit.validation.valid ? [] : submit.validation.messages
-          }
+          onPackagingChange={goods.handlePackagingChange}
           onRemarkInput={value =>
             setDraft(current => ({
               ...current,
               remark: value
             }))
+          }
+          onReturnBillChange={returnBillController.onChange}
+          onServiceChange={updateService}
+        />
+
+        {quotes.length > 0 || quoteStatus === 'loading' ? (
+          <ExpressQuoteSection
+            pickup={draft.pickup}
+            quoteStaleReason={draft.quoteStaleReason}
+            quoteStatus={quoteStatus}
+            quotes={quotes}
+            selectedProduct={draft.selectedProduct}
+            onQueryPickupTime={pickupTimeController.onQuery}
+            onQuote={handleQuote}
+            onSelectProduct={handleSelectProduct}
+          />
+        ) : null}
+
+        <ExpressPrivacyCard
+          value={draft.service.privacyProtection}
+          onChange={handlePrivacyProtectionChange}
+          onOpenTerms={handleOpenPrivacyTerms}
+        />
+
+        <ExpressOrderOptionsSection
+          agreementAccepted={draft.agreementAccepted}
+          submitMessage={submit.submitMessage}
+          validationMessages={
+            submit.validation.valid ? [] : submit.validation.messages
           }
           onToggleAgreement={() =>
             setDraft(current => ({

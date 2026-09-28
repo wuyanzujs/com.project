@@ -11,6 +11,7 @@ import './index.scss'
 interface ExpressSectionProps extends PropsWithChildren {
   expanded?: boolean
   hint?: string
+  plain?: boolean
   summary?: string
   title: string
   onHeaderPress?: () => void
@@ -20,6 +21,7 @@ export function ExpressSection({
   children,
   expanded = false,
   hint,
+  plain = false,
   summary,
   title,
   onHeaderPress
@@ -42,7 +44,11 @@ export function ExpressSection({
   )
 
   return (
-    <View className='express-section'>
+    <View
+      className={
+        plain ? 'express-section' : 'express-section express-section--card'
+      }
+    >
       {onHeaderPress ? (
         <AppPressable
           accessibilityLabel={expanded ? `收起${title}` : `展开${title}`}

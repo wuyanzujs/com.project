@@ -1,0 +1,44 @@
+@use '@/styles/_tokens.scss' as *;
+
+.express-privacy-card {
+  margin-bottom: $dp-space-14;
+  padding: $dp-space-16 $dp-space-20;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-card;
+}
+.express-privacy-card__head {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  min-height: $dp-control-height-compact;
+}
+.express-privacy-card__title {
+  flex: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+.express-privacy-card__desc {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: $dp-space-12;
+}
+.express-privacy-card__desc-text {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-body-small;
+}
+.express-privacy-card__terms {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.express-privacy-card__link {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-body-small;
+}

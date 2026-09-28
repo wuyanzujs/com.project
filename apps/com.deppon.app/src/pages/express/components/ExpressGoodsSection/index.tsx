@@ -19,8 +19,8 @@ interface ExpressGoodsSectionProps {
   onGoodsNameInput: (value: string) => void
   onQueryGoodsNames: () => void
   onSelectGoodsName: (item: ExpressGoodsItem) => void
+  plain?: boolean
 }
-
 function parseNumber(value: string, fallback = 0) {
   const parsed = Number(value)
 
@@ -39,19 +39,20 @@ export function ExpressGoodsSection({
   onGoodsChange,
   onGoodsNameInput,
   onQueryGoodsNames,
-  onSelectGoodsName
+  onSelectGoodsName,
+  plain = false
 }: ExpressGoodsSectionProps) {
   const [expanded, setExpanded] = useState(false)
-  const goodsSummary = [
-    goods.name || '请填写货物名称',
-    goods.weight > 0 ? `${goods.weight}kg` : '重量待填',
-    `${goods.count || 1}件`
-  ].join(' · ')
+  const goodsSummary =
+    goods.name && goods.weight > 0
+      ? [goods.name, `${goods.weight}kg`, `${goods.count || 1}件`].join(' · ')
+      : '请完善货物名称、重量'
 
   return (
     <ExpressSection
       expanded={expanded}
       hint='必填'
+      plain={plain}
       summary={goodsSummary}
       title='货物信息'
       onHeaderPress={() => setExpanded(current => !current)}

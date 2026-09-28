@@ -2,44 +2,7 @@
 
 .express-order-options {
   margin-bottom: $dp-space-14;
-  padding: $dp-space-8 $dp-space-20;
-  background: $dp-color-bg-card;
-  border-radius: $dp-radius-sm;
-}
-.express-order-options__entry {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  min-height: $dp-touch-target-min;
-  border-bottom-color: $dp-color-border-light;
-  border-bottom-width: $dp-border-width-hairline;
-}
-.express-order-options__edit {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  min-height: $dp-touch-target-min;
-  border-bottom-color: $dp-color-border-light;
-  border-bottom-width: $dp-border-width-hairline;
-}
-.express-order-options__label {
-  color: $dp-color-text-secondary;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-bold;
-}
-.express-order-options__summary {
-  flex: 1;
-  margin: 0 $dp-space-8 0 $dp-space-16;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-caption;
-  text-align: right;
-}
-.express-order-options__input {
-  flex: 1;
-  height: $dp-control-height-compact;
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-body;
-  line-height: $dp-line-height-field;
+  padding: 0 $dp-space-4;
 }
 .express-order-options__agreement {
   display: flex;
@@ -55,7 +18,7 @@
   height: $dp-space-32;
   margin-right: $dp-space-12;
   border-color: $dp-color-text-placeholder;
-  border-radius: $dp-radius-checkbox;
+  border-radius: $dp-radius-circle;
   border-width: $dp-border-width-hairline;
 }
 .express-order-options__checkbox--checked {
@@ -69,8 +32,8 @@
   text-align: center;
 }
 .express-order-options__agreement-text {
-  color: $dp-color-text-secondary;
-  font-size: $dp-font-size-caption;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-fine;
 }
 .express-order-options__validation {
   margin-top: $dp-space-8;

@@ -1,5 +1,4 @@
 @use '@/styles/_tokens.scss' as *;
-
 .express-contact-panel {
   margin-bottom: $dp-space-14;
   padding: $dp-space-12;
@@ -22,7 +21,6 @@
   flex-shrink: 1;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
   min-width: 0;
   padding: $dp-space-8 $dp-space-8 $dp-space-8 $dp-space-4;
 }
@@ -30,27 +28,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
   width: $dp-space-48;
   height: $dp-space-48;
   margin-right: $dp-space-12;
   border-radius: $dp-radius-8;
 }
 .express-contact-card__mark--sender {
-  background: $dp-color-brand-soft;
+  background: $dp-color-brand;
 }
 .express-contact-card__mark--consignee {
-  background: $dp-color-warning-background-soft;
+  background: $dp-color-warning;
 }
 .express-contact-card__mark-text {
-  color: $dp-color-text-heading;
+  color: $dp-color-text-inverse;
   font-size: $dp-font-size-label;
   font-weight: $dp-font-weight-bold;
   line-height: $dp-line-height-body;
   text-align: center;
-}
-.express-contact-card__mark-text--consignee {
-  color: $dp-color-warning-text;
 }
 .express-contact-card__content {
   flex: 1;
@@ -84,6 +78,13 @@
   font-size: $dp-font-size-body-small;
   line-height: $dp-line-height-body-small;
 }
+.express-contact-card__empty {
+  flex-shrink: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-body;
+}
 .express-contact-card__address-book {
   align-items: center;
   justify-content: center;
@@ -108,7 +109,6 @@
   display: flex;
   flex-shrink: 0;
   flex-direction: row;
-  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
   min-width: $dp-space-96;

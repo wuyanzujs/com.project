@@ -16,7 +16,7 @@ interface ExpressContactCardProps {
   contact: ExpressContact | null
   mark: '寄' | '收'
   markType: 'sender' | 'consignee'
-  placeholder: string
+  emptyText: string
   target: ExpressContactTarget
   onCreateContact: (target: ExpressContactTarget) => void
   onSelectContact: (target: ExpressContactTarget) => void
@@ -31,17 +31,16 @@ interface ExpressContactPanelProps {
 
 function ExpressContactCard({
   contact,
+  emptyText,
   mark,
   markType,
-  placeholder,
   target,
   onCreateContact,
   onSelectContact
 }: ExpressContactCardProps) {
-  const contentLabel = contact ? `编辑${placeholder}` : `新增${placeholder}`
-  const addressText = contact
-    ? getExpressContactFullAddress(contact)
-    : `请选择${placeholder.replace('人', '地址')}`
+  const contentLabel = contact
+    ? `编辑${mark === '寄' ? '寄件人' : '收件人'}`
+    : emptyText
 
   return (
     <View className={`express-contact-card express-contact-card--${markType}`}>
@@ -62,21 +61,27 @@ function ExpressContactCard({
           </Text>
         </View>
         <View className='express-contact-card__content'>
-          <View className='express-contact-card__identity'>
-            <Text className='express-contact-card__name'>
-              {contact?.name || placeholder}
-            </Text>
-            {contact ? (
-              <Text className='express-contact-card__mobile'>
-                {contact.mobile}
+          {contact ? (
+            <>
+              <View className='express-contact-card__identity'>
+                <Text className='express-contact-card__name' numberOfLines={1}>
+                  {contact.name}
+                </Text>
+                <Text className='express-contact-card__mobile'>
+                  {contact.mobile}
+                </Text>
+              </View>
+              <Text className='express-contact-card__address' numberOfLines={2}>
+                {getExpressContactFullAddress(contact)}
               </Text>
-            ) : null}
-          </View>
-          <Text className='express-contact-card__address'>{addressText}</Text>
+            </>
+          ) : (
+            <Text className='express-contact-card__empty'>{emptyText}</Text>
+          )}
         </View>
       </AppPressable>
       <AppPressable
-        accessibilityLabel={`从地址簿选择${placeholder}`}
+        accessibilityLabel={`从地址簿选择${mark === '寄' ? '寄件人' : '收件人'}`}
         className='express-contact-card__address-book'
         onPress={() => onSelectContact(target)}
       >
@@ -97,37 +102,42 @@ export function ExpressContactPanel({
   onSelectContact,
   onSwapContacts
 }: ExpressContactPanelProps) {
+  // 生产 App 只有寄收件都填好时才提供互换，空表单不展示这个入口。
+  const canSwap = Boolean(draft.sender && draft.consignee)
+
   return (
     <View className='express-contact-panel'>
       <ExpressContactCard
         contact={draft.sender}
+        emptyText='请选择寄件地址'
         mark='寄'
         markType='sender'
-        placeholder='寄件人'
         target='sender'
         onCreateContact={onCreateContact}
         onSelectContact={onSelectContact}
       />
-      <View className='express-contact-panel__swap-row'>
-        <AppPressable
-          accessibilityLabel='互换寄收件人'
-          className='express-swap'
-          layout='row-center'
-          onPress={onSwapContacts}
-        >
-          <AppIcon
-            color={APP_STYLE_COLORS.text.supporting}
-            name='chevronDown'
-            size={APP_NATIVE_TOKENS.icon.small}
-          />
-          <Text className='express-swap__text'>互换</Text>
-        </AppPressable>
-      </View>
+      {canSwap ? (
+        <View className='express-contact-panel__swap-row'>
+          <AppPressable
+            accessibilityLabel='互换寄收件人'
+            className='express-swap'
+            layout='row-center'
+            onPress={onSwapContacts}
+          >
+            <AppIcon
+              color={APP_STYLE_COLORS.text.supporting}
+              name='chevronDown'
+              size={APP_NATIVE_TOKENS.icon.small}
+            />
+            <Text className='express-swap__text'>互换</Text>
+          </AppPressable>
+        </View>
+      ) : null}
       <ExpressContactCard
         contact={draft.consignee}
+        emptyText='寄到哪里去'
         mark='收'
         markType='consignee'
-        placeholder='收件人'
         target='consignee'
         onCreateContact={onCreateContact}
         onSelectContact={onSelectContact}

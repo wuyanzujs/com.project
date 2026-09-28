@@ -1,63 +1,24 @@
-import { Input, Text, View } from '@tarojs/components'
-
-import { useState } from 'react'
+import { Text, View } from '@tarojs/components'
 
 import { AppPressable } from '@/shared/components'
-import { AppIcon } from '@/shared/components/AppIcon'
-import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './index.scss'
 
 interface ExpressOrderOptionsSectionProps {
   agreementAccepted: boolean
-  remark: string
   submitMessage: string
   validationMessages: string[]
-  onRemarkInput: (value: string) => void
   onToggleAgreement: () => void
 }
 
 export function ExpressOrderOptionsSection({
   agreementAccepted,
-  remark,
   submitMessage,
   validationMessages,
-  onRemarkInput,
   onToggleAgreement
 }: ExpressOrderOptionsSectionProps) {
-  const [remarkExpanded, setRemarkExpanded] = useState(false)
-
   return (
     <View className='express-order-options'>
-      <AppPressable
-        accessibilityLabel={remarkExpanded ? '收起备注输入' : '展开备注输入'}
-        block
-        className='express-order-options__entry'
-        layout='row-start'
-        onPress={() => setRemarkExpanded(current => !current)}
-      >
-        <Text className='express-order-options__label'>备注</Text>
-        <Text className='express-order-options__summary'>
-          {remark ? '已填写' : '选填'}
-        </Text>
-        <AppIcon
-          color={APP_STYLE_COLORS.text.supporting}
-          name={remarkExpanded ? 'chevronUp' : 'chevronDown'}
-          size={APP_NATIVE_TOKENS.icon.small}
-        />
-      </AppPressable>
-      {remarkExpanded ? (
-        <View className='express-order-options__edit'>
-          <Input
-            className='express-order-options__input'
-            placeholder='选填，交给快递员的信息'
-            style={{ minHeight: APP_NATIVE_TOKENS.touch.minimum }}
-            value={remark}
-            onInput={event => onRemarkInput(event.detail.value)}
-          />
-        </View>
-      ) : null}
-
       <AppPressable
         accessibilityLabel={
           agreementAccepted ? '取消同意电子运单协议' : '同意电子运单协议'
@@ -79,7 +40,7 @@ export function ExpressOrderOptionsSection({
           </Text>
         </View>
         <Text className='express-order-options__agreement-text'>
-          已阅读并同意电子运单协议
+          已阅读并同意《电子运单服务协议》
         </Text>
       </AppPressable>
 

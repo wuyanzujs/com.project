@@ -121,10 +121,18 @@ function getCouponSummary(
   }
 
   if (controller.available.length) {
-    return `${controller.available.length}张可用`
+    return `${controller.available.length}张待使用`
   }
 
   return controller.loginRequired ? '登录后可选' : '暂无可用'
+}
+
+// 有券可用或已选券时用红色角标，与生产 App 的优惠券行保持一致。
+function isCouponHighlighted(
+  controller: ExpressCouponController,
+  couponNumber: string
+) {
+  return Boolean(couponNumber) || controller.available.length > 0
 }
 
 export function ExpressCouponCard({
@@ -154,54 +162,45 @@ export function ExpressCouponCard({
     setVisible(false)
   }
 
-  return (
-    <View className='express-coupon-card'>
-      <View className='express-coupon-card__header'>
-        <AppPressable
-          accessibilityLabel='选择优惠券'
-          block
-          className='express-coupon-card__open'
-          layout='row-start'
-          onPress={() => setVisible(true)}
-        >
-          <View className='express-coupon-card__icon'>
-            <AppIcon
-              color={APP_STYLE_COLORS.brand.default}
-              name='ticket'
-              size={APP_NATIVE_TOKENS.icon.default}
-            />
-          </View>
-          <View className='express-coupon-card__heading'>
-            <Text className='express-coupon-card__title'>优惠券</Text>
-            <Text className='express-coupon-card__summary'>
-              {getCouponSummary(controller, couponNumber)}
-            </Text>
-          </View>
-          <AppIcon
-            color={APP_STYLE_COLORS.text.supporting}
-            name='chevronRight'
-            size={APP_NATIVE_TOKENS.icon.small}
-          />
-        </AppPressable>
-        {controller.requestReady && !controller.loginRequired ? (
-          <AppPressable
-            accessibilityLabel='刷新可用优惠券'
-            className='express-coupon-card__refresh'
-            onPress={controller.onRefresh}
-          >
-            <AppIcon
-              color={APP_STYLE_COLORS.text.secondary}
-              name='refresh'
-              size={APP_NATIVE_TOKENS.icon.small}
-            />
-          </AppPressable>
-        ) : null}
-      </View>
+  const summary = getCouponSummary(controller, couponNumber)
+  const highlighted = isCouponHighlighted(controller, couponNumber)
+  // 生产 App 只留一行提示：出错时提示错误，否则提示先补全收寄信息和货物。
+  const hintText = couponNumber
+    ? ''
+    : controller.status === 'error' && controller.message
+      ? controller.message
+      : '填写收寄信息和物品名称后点击使用'
 
-      {controller.message ? (
-        <Text className='express-coupon-card__message'>
-          {controller.message}
+  return (
+    <View className='express-coupon-row'>
+      <AppPressable
+        accessibilityLabel='选择优惠券'
+        block
+        className='express-coupon-row__entry'
+        layout='row-start'
+        onPress={() => setVisible(true)}
+      >
+        <Text className='express-coupon-row__label'>优惠券</Text>
+        <View className='express-coupon-row__spacer' />
+        <Text
+          className={
+            highlighted
+              ? 'express-coupon-row__badge express-coupon-row__badge--active'
+              : 'express-coupon-row__badge'
+          }
+          numberOfLines={1}
+        >
+          {summary}
         </Text>
+        <AppIcon
+          color={APP_STYLE_COLORS.text.supporting}
+          name='chevronRight'
+          size={APP_NATIVE_TOKENS.icon.small}
+        />
+      </AppPressable>
+
+      {hintText ? (
+        <Text className='express-coupon-row__hint'>{hintText}</Text>
       ) : null}
 
       <AppDialog

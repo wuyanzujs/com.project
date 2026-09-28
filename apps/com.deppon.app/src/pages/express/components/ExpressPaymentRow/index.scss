@@ -1,0 +1,38 @@
+@use '@/styles/_tokens.scss' as *;
+
+.express-payment-row {
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: $dp-border-width-hairline;
+}
+.express-payment-row__entry {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: $dp-control-height-large;
+}
+.express-payment-row__label {
+  flex-shrink: 0;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+.express-payment-row__badge {
+  flex-shrink: 0;
+  margin-left: $dp-space-12;
+  padding: $dp-space-1 $dp-space-8;
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-micro;
+  line-height: $dp-line-height-fine;
+  background: $dp-color-danger;
+  border-radius: $dp-radius-3;
+}
+.express-payment-row__value {
+  flex: 1;
+  margin: 0 $dp-space-8 0 $dp-space-12;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-semibold;
+  text-align: right;
+}

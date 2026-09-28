@@ -1,67 +1,43 @@
 @use '@/styles/_tokens.scss' as *;
 
-.express-coupon-card {
-  margin-bottom: $dp-space-14;
-  padding: $dp-space-8 $dp-space-20;
-  background: $dp-color-bg-card;
-  border-radius: $dp-radius-card;
-}
-
-.express-coupon-card__header,
-.express-coupon-card__open {
+.express-coupon-row__entry {
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
+  justify-content: flex-start;
+  min-height: $dp-control-height-large;
 }
-
-.express-coupon-card__open {
-  flex: 1;
-  min-width: 0;
-  min-height: $dp-touch-target-min;
-}
-
-.express-coupon-card__icon {
-  align-items: center;
-  justify-content: center;
-  width: $dp-space-48;
-  height: $dp-space-48;
-  margin-right: $dp-space-12;
-  background: $dp-color-brand-muted;
-  border-radius: $dp-radius-control;
-}
-
-.express-coupon-card__heading {
-  flex: 1;
-  min-width: 0;
-}
-
-.express-coupon-card__title {
+.express-coupon-row__label {
+  flex-shrink: 0;
   color: $dp-color-text-heading;
   font-size: $dp-font-size-body;
   font-weight: $dp-font-weight-bold;
-  line-height: $dp-line-height-body;
 }
-
-.express-coupon-card__summary,
-.express-coupon-card__message {
+.express-coupon-row__spacer {
+  flex: 1;
+  min-width: $dp-space-8;
+}
+.express-coupon-row__badge {
+  flex-shrink: 0;
+  margin-right: $dp-space-8;
   color: $dp-color-text-supporting;
-  font-size: $dp-font-size-caption;
-  line-height: $dp-line-height-caption;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-semibold;
 }
-
-.express-coupon-card__summary {
-  margin-top: $dp-space-4;
+.express-coupon-row__badge--active {
+  padding: $dp-space-1 $dp-space-8;
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-micro;
+  line-height: $dp-line-height-fine;
+  background: $dp-color-danger;
+  border-radius: $dp-radius-3;
 }
-
-.express-coupon-card__refresh {
-  align-items: center;
-  justify-content: center;
-  min-width: $dp-touch-target-min;
-  min-height: $dp-touch-target-min;
-  margin-left: $dp-space-8;
-}
-
-.express-coupon-card__message {
+.express-coupon-row__hint {
   display: flex;
-  padding: 0 0 $dp-space-8 $dp-space-64;
+  padding-bottom: $dp-space-8;
+  color: $dp-color-text-placeholder;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-fine;
+  text-align: right;
 }

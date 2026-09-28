@@ -15,6 +15,8 @@ export interface ExpressPickupSectionProps {
   pickup: ExpressDraft['pickup']
   pickupTimeController: ExpressPickupTimeController
   needContact: ExpressFlag
+  // 取件时段依赖寄件地址，生产 App 在未选寄件地址前不展示时间入口。
+  hasSenderAddress: boolean
   onModeChange: (dispatch: ExpressFlag) => void
   onNeedContactChange: (needContact: ExpressFlag) => void
   onOpenStations: () => void
@@ -29,6 +31,7 @@ export function ExpressPickupSection({
   pickup,
   pickupTimeController,
   needContact,
+  hasSenderAddress,
   onModeChange,
   onNeedContactChange,
   onOpenStations
@@ -84,36 +87,6 @@ export function ExpressPickupSection({
 
       {isDoorPickup ? (
         <View className='express-pickup-section__body'>
-          <AppPressable
-            accessibilityLabel={`期望上门时间${pickupTime}`}
-            block
-            className='express-pickup-section__row'
-            layout='row-start'
-            onPress={pickupTimeController.onQuery}
-          >
-            <AppIcon
-              color={APP_STYLE_COLORS.brand.default}
-              name='clock'
-              size={APP_NATIVE_TOKENS.icon.small}
-            />
-            <Text className='express-pickup-section__label'>期望上门时间</Text>
-            <Text className='express-pickup-section__value' numberOfLines={1}>
-              {pickupTime}
-            </Text>
-            <View className='express-pickup-section__chevron'>
-              <AppIcon
-                color={APP_STYLE_COLORS.text.supporting}
-                name='chevronDown'
-                size={APP_NATIVE_TOKENS.icon.small}
-              />
-            </View>
-          </AppPressable>
-
-          <ExpressPickupTimeCard
-            controller={pickupTimeController}
-            pickup={pickup}
-          />
-
           <View className='express-pickup-section__contact-row'>
             <View className='express-pickup-section__contact-label'>
               <Text className='express-pickup-section__label express-pickup-section__label--contact'>
@@ -149,6 +122,45 @@ export function ExpressPickupSection({
               })}
             </View>
           </View>
+
+          {hasSenderAddress ? (
+            <>
+              <AppPressable
+                accessibilityLabel={`期望上门时间${pickupTime}`}
+                block
+                className='express-pickup-section__row'
+                layout='row-start'
+                onPress={pickupTimeController.onQuery}
+              >
+                <AppIcon
+                  color={APP_STYLE_COLORS.brand.default}
+                  name='clock'
+                  size={APP_NATIVE_TOKENS.icon.small}
+                />
+                <Text className='express-pickup-section__label'>
+                  期望上门时间
+                </Text>
+                <Text
+                  className='express-pickup-section__value'
+                  numberOfLines={1}
+                >
+                  {pickupTime}
+                </Text>
+                <View className='express-pickup-section__chevron'>
+                  <AppIcon
+                    color={APP_STYLE_COLORS.text.supporting}
+                    name='chevronDown'
+                    size={APP_NATIVE_TOKENS.icon.small}
+                  />
+                </View>
+              </AppPressable>
+
+              <ExpressPickupTimeCard
+                controller={pickupTimeController}
+                pickup={pickup}
+              />
+            </>
+          ) : null}
         </View>
       ) : (
         <View className='express-pickup-section__body'>
