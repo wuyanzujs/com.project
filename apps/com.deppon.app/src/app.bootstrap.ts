@@ -40,7 +40,7 @@ export function bootstrapAppRuntime() {
           await clearAppSession()
         }
       } catch {
-        // Keep the cached session for recoverable transport failures.
+        // 传输失败可恢复时保留缓存会话，避免误清登录态。
       }
     }
 

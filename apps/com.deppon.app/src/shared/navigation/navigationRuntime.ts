@@ -1,5 +1,7 @@
 import Taro from '@tarojs/taro'
 
+import { APP_MAIN_NAVIGATION } from './routes'
+
 interface DispatchAppRouteOptions {
   failureMessage?: string
   onFailure?: () => void
@@ -20,6 +22,12 @@ interface PageLike {
 
 const NAVIGATION_CONFIRM_ATTEMPTS = 16
 const NAVIGATION_CONFIRM_INTERVAL_MS = 32
+const TAB_STACK_BACK_DELTA = 16
+const TAB_STACK_SETTLE_ATTEMPTS = 12
+
+const MAIN_ROUTE_PATHNAMES = APP_MAIN_NAVIGATION.map(item =>
+  getRoutePathname(item.path)
+)
 
 function reportNavigationFailure(options: DispatchAppRouteOptions) {
   options.onFailure?.()
@@ -32,7 +40,7 @@ function reportNavigationFailure(options: DispatchAppRouteOptions) {
 
     void Promise.resolve(toast).catch(() => undefined)
   } catch {
-    // Navigation recovery must not fail again when feedback is unavailable.
+    // 临时反馈不可用时，导航恢复流程也不能再抛错。
   }
 }
 
@@ -82,7 +90,72 @@ function isCurrentRoute(url: string) {
   return Boolean(currentPathname) && currentPathname === getRoutePathname(url)
 }
 
+interface AppRuntimeTabBarGlobal {
+  __taroAppConfig?: {
+    appConfig?: {
+      tabBar?: {
+        list?: unknown[]
+      }
+    }
+  }
+}
+
+// tab 容器只有在 app 配置声明了 tabBar 时才存在。入口早于该配置的
+// 构建产物会把主路由当普通栈页面，此时 switchTab 会静默失效。
+function isTabContainerEnabled() {
+  const list = (globalThis as AppRuntimeTabBarGlobal).__taroAppConfig?.appConfig
+    ?.tabBar?.list
+
+  return Array.isArray(list) && list.length > 0
+}
+
+function isMainRoutePathname(pathname: string) {
+  return MAIN_ROUTE_PATHNAMES.includes(pathname)
+}
+
+function isMainRouteUrl(url: string) {
+  return isMainRoutePathname(getRoutePathname(url))
+}
+
+function getCurrentPageCount() {
+  try {
+    return Taro.getCurrentPages().length
+  } catch {
+    return 0
+  }
+}
+
+// tab 页面位于 tab 容器内，必须通过 Taro.switchTab 到达：既不播放页面栈
+// 转场，也不会压入新页面。若容器上方还压着登录页/详情页，需要先把栈收回
+// 容器，因为 switchTab 是通过当前聚焦的导航器解析 tab 路由的。
+async function switchToMainRoute(url: string) {
+  const needsUnwind =
+    !isMainRoutePathname(getCurrentRoutePathname()) && getCurrentPageCount() > 1
+
+  if (needsUnwind) {
+    try {
+      await Taro.navigateBack({ delta: TAB_STACK_BACK_DELTA })
+    } catch {
+      // 栈已在根页面时 pop 会失败，此时直接切 tab 即可。
+    }
+
+    for (let attempt = 0; attempt < TAB_STACK_SETTLE_ATTEMPTS; attempt += 1) {
+      if (getCurrentPageCount() <= 1) {
+        break
+      }
+
+      await delayNavigationConfirmation()
+    }
+  }
+
+  return Taro.switchTab({ url })
+}
+
 function runAppNavigation(url: string, replace = false) {
+  if (isMainRouteUrl(url) && isTabContainerEnabled()) {
+    return switchToMainRoute(url)
+  }
+
   return replace ? Taro.redirectTo({ url }) : Taro.navigateTo({ url })
 }
 

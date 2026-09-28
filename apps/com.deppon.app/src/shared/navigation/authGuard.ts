@@ -124,7 +124,7 @@ export function navigateToLogin(options: LoginRedirectOptions = {}) {
 
       void Promise.resolve(toast).catch(() => undefined)
     } catch {
-      // Login navigation must continue when transient feedback is unavailable.
+      // 临时反馈不可用时，登录跳转流程仍需继续。
     }
   }
 
