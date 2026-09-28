@@ -15,17 +15,9 @@ const defaultBudgets = {
 
 const legacyBudgets = new Map([
   [
-    'src/pages/order/list/index.tsx',
-    {
-      max: 460,
-      reason:
-        '订单列表页承接筛选、分页、取消、删除、修改和再寄流程；展示组件与筛选组件已独立拆分，当前冻结页面编排体量，避免为了行数机械拆分。'
-    }
-  ],
-  [
     'src/pages/invoice/apply/index.tsx',
     {
-      max: 500,
+      max: 470,
       reason:
         '发票申请页复用同一套抬头、邮箱和提交流程承接运单开票与储值卡开票，当前冻结体量。'
     }

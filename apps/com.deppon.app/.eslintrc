@@ -6,7 +6,14 @@
   },
   "overrides": [
     {
-      "files": ["src/**/*.{ts,tsx}"],
+      "files": [
+        "src/**/*.{ts,tsx}",
+        "config/**/*.{ts,js,cjs,mjs}",
+        "scripts/**/*.{js,cjs,mjs}"
+      ],
+      "env": {
+        "node": true
+      },
       "parser": "@typescript-eslint/parser",
       "plugins": ["@typescript-eslint"],
       "rules": {
@@ -66,6 +73,20 @@
             "ignoreUrls": true
           }
         ]
+      }
+    },
+    {
+      "files": [
+        "config/**/*.{js,cjs}",
+        "scripts/**/*.{js,cjs}",
+        "*.config.js",
+        "*.cjs"
+      ],
+      "env": {
+        "node": true
+      },
+      "rules": {
+        "import/no-commonjs": "off"
       }
     }
   ]

@@ -1421,6 +1421,13 @@ pages: [
 - 审计确认催单、账号注销、发票动作（作废/改址/取消/邮件）、营业部电话、通知派送、拦截作废、运单合同明细、下单拦截均已端到端实现。
 - express/types.ts(691) 和 order/types.ts(634) 的子域拆分暂缓——交叉依赖复杂且未超 700 行 types 预算，后续新增类型接近上限时再按子域拆分。
 
+#### 2026-08-14 间距治理与存量页面清零
+
+- 样式治理库新增第 6 个债务维度 `rawSpaces`（间距字面量），照搬 `rawRadii` 模式：`SPACE_PROPERTY_PATTERN` 匹配 padding/margin/gap，`hasSpaceLiteral` 排除纯零。全量重建基线（212 SCSS，间距债务 898 处）。过渡期 strict 只判定前 5 维度，间距走 daily 只降不增。
+- 6 个偏大页面抽 hook 降至默认 420 预算以内：contact/edit(416→308, useContactAddressActions)、batch(411→307, useBatchQuote+useBatchSubmit)、invoice/taxpayer/edit(387→284, useTaxpayerActions)、query/goods(369→242, useGoodsQuery)、coupon/detail(341→277, useCouponDetail)、order/list(448→368, useOrderListData)。
+- `check-module-size.mjs` legacy 从 2 条清到 1 条：order/list 拆分后退出，invoice/apply(466) 保留 1 条边缘豁免 max 收紧到 470。
+- 修复预存的 `check-business-rules.cjs` ts-node `@/` 路径别名解析问题：在 register 后用 `Module._resolveFilename` hook 手动解析 `@/*`→`src/*`，不引入新依赖，business-rules 197/197 稳定通过。
+
 ### 第 3 阶段：原生能力接入
 
 - 扫码、定位、地图、相册/相机、文件上传、支付、分享、推送、埋点。

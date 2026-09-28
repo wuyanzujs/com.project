@@ -1,4 +1,4 @@
-import CookieManager from '@preeternal/react-native-cookie-manager'
+import CookieManager from '@react-native-cookies/cookies'
 
 const SESSION_COOKIE_NAME = 'ECO_TOKEN'
 const SESSION_COOKIE_EXPIRES = '1970-01-01T00:00:00.000Z'

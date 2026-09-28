@@ -757,7 +757,78 @@ url: /depponmobile/h5/index#/queryPackagePages/service/detail/index?value=COLLEC
 3. 使用测试账号确认 `queryExpireCoupon` 返回真实过期券数量，"我的"页优惠券徽标正确展示/隐藏。
 4. 确认"我的"页"优惠券"入口跳转到优惠券列表页正常。
 
-## 34. 下一对话目标提示词
+## 34. 本次续作：间距治理 + 存量页面拆分 + legacy 清零
+
+生成日期：2026-08-14。接续第 33 节工作区。本次完成间距字面量治理维度、6 个偏大页面拆分、legacy 预算从 2 条清到 1 条，并修复预存的 business-rules `@/` 路径别名解析问题。
+
+### 34.1 间距字面量治理（rawSpaces 维度）
+
+- `style-governance-lib.mjs` 新增第 6 个债务维度 `rawSpaces`（间距字面量），照搬 `rawRadii` 的"属性正则 + hasNumericLiteral"模式。
+- 新增 `SPACE_PROPERTY_PATTERN` 正则匹配 `padding/margin/gap` 及其子属性；新增 `hasSpaceLiteral` 谓词排除纯零（`padding: 0`/`margin: 0` 不计债务）。
+- 触点覆盖：`STYLE_DEBT_FIELDS`、主循环、`countStaticMixinValue`、`semanticFieldsForParameter`、`getMixinDefinitions`、`getSnapshotSummary`、`check-style-governance.mjs` 日志与 report 求和、`test.mjs` cleanStyle fixture + 2 个新测试用例。
+- 全量重建 `style-governance-baseline.json`（212 个 SCSS 文件，间距债务基线 898 处）。
+- 过渡期设计：`STRICT_STYLE_FIELDS`（不含 rawSpaces）用于 strict 判定，间距走 daily 只降不增；待存量清零后再纳入 strict。
+
+### 34.2 存量页面拆分
+
+6 个偏大页面抽 hook 降至默认 420 预算以内：
+
+| 页面 | 原行数 | 现行数 | 新增 hook |
+|---|---|---|---|
+| contact/edit | 416 | 308 | useContactAddressActions |
+| batch | 411 | 307 | useBatchQuote + useBatchSubmit |
+| invoice/taxpayer/edit | 387 | 284 | useTaxpayerActions + useTaxpayerType |
+| query/goods | 369 | 242 | useGoodsQuery |
+| coupon/detail | 341 | 277 | useCouponDetail |
+| order/list | 448 | 368 | useOrderListData |
+
+### 34.3 legacy 预算清零
+
+- `check-module-size.mjs` 的 `legacyBudgets` 从 2 条清到 1 条。
+- order/list 拆分后退出 460 legacy 预算（368 < 420）。
+- invoice/apply（466 行）保留 1 条边缘豁免，max 收紧到 470（原 500），走"只降不增"约束后续自然回落。
+
+### 34.4 预存修复：business-rules `@/` 路径别名解析
+
+- `check-business-rules.cjs` 的 ts-node 注册用 `skipProject: true` + `transpileOnly: true`，不读 tsconfig `paths`，导致 service 模块的 `@/` import 无法解析（预存问题，与 Node/ts-node 版本相关）。
+- 修复：在 ts-node register 后用 `Module._resolveFilename` hook 手动解析 `@/*` → `src/*`，不引入新依赖。
+- 修复后 business-rules 197/197 稳定通过。
+
+### 34.5 静态验证证据
+
+- TypeScript：通过。
+- ESLint：通过（0 错误；13 个 max-len warning 均在预存的 order.evaluation.types.ts 等，非本次引入）。
+- 样式治理测试：64/64 通过（原 62 + 间距 2）。
+- CSS 日常门禁：通过（间距 898 基线登记，只降不增）。
+- CSS 严格门禁：通过（间距暂不要求归零）。
+- RN boundary：通过。
+- 路由注册表：通过。
+- 模块体积：通过（legacy 2→1）。
+- runtime config：通过。
+- 业务规则：197/197 通过。
+- platform build config：通过。
+- 未执行 Taro build、RN bundle、Gradle、Xcode 或安装包验证。
+
+### 34.6 用户需运行时确认的事项
+
+1. 在 Android/iOS 确认联系人编辑、批量寄、发票抬头编辑、货物查询、优惠券详情、订单列表 6 个页面行为与拆分前一致。
+2. 确认间距治理不影响现有样式渲染（`padding: 0` 仍正常，间距字面量只是新增门禁维度）。
+
+### 34.7 工作区状态交接（2026-08-14 记录）
+
+本轮工作区在编写过程中被外部提交推进，交接时需注意：
+
+- **两轮续作的代码已通过多个 commit 固化**（截至 `f19566f`），包括：`7a7668b` 页面组件文件夹化、`4e22361` prettier 全仓统一格式化、`0fa40b8` 门禁脚本增强、`630159d` 依赖治理（@typescript-eslint 升级 v8 + 上移根 + 引入 husky/lint-staged）、`2be06c3` 页面内联逻辑抽 hooks、`f19566f` order/list 数据 hook。
+- **剩余未提交改动**（需在现状上继续，不要 reset/checkout/回滚）：
+  - `apps/com.deppon.app/scripts/check-module-size.mjs`：legacy 收紧到 1 条（invoice/apply max 470）。
+  - `apps/com.deppon.app/src/pages/order/list/index.tsx` + `hooks/useOrderListData.ts`：order/list 拆分后的 removeOrder 修正。
+  - `docs/handoffs/2026-07-13-rn-refactor-handoff.md`：第 34/35 节（本轮记录 + 下一轮方向）。
+  - `docs/rn-refactor-plan.md`：2026-08-14 记录。
+  - `.prettierignore`、`.zcode/plans/*`：工程/会话产物，非业务改动。
+- **工程环境变化**：已引入 husky + lint-staged，提交时会对暂存文件跑 lint/format 门禁；@typescript-eslint 已升级 v8。后续提交前需确认 lint-staged 配置与现有 `lint` 脚本兼容。
+- **下一轮方向已由用户拍板**：A 类纯业务优先（不依赖原生 SDK），见第 35 节提示词。
+
+## 35. 下一对话目标提示词
 
 ```text
 /goal 继续完成 D:\codeSpace\com.project 的 Taro RN App 重构。参考项目是 D:\10531845\Desktop\CZH-DEV\mp-taro3，但不能照搬旧小程序页面、Redux 巨石状态或小程序 API，必须按当前项目已有的 pages/services/shared/cache 分层继续做高级前端重构。
@@ -768,11 +839,26 @@ url: /depponmobile/h5/index#/queryPackagePages/service/detail/index?value=COLLEC
 3. D:\codeSpace\com.project\docs\rn-refactor-plan.md
 4. 当前 git status 和相关源码
 
-当前工作区有大量连续重构中的未提交改动，必须在现状上继续，禁止 reset、checkout、删除未跟踪文件或回滚既有改动。先核对交付文档中的静态门禁结果，再对照旧项目审计剩余业务，选择下一个边界完整、可验证的业务切片继续实现。不要重复已完成的 RN 登录原生会话/回跳与认证 WebView 收口、面单打印待打印/已打印只读列表、联系人地址完整性校验、寄件模板元数据编辑、批量寄、收银台、订单详情拆分、发票拆分、寄件代收货款、预约/通知派送、夜间揽收、送货进仓、普通纸箱包装、寄件木包装、寄件拆包装、寄件产品点城市/融合/升级与 DCZP 推荐、收件自提服务点、寄件保价类型与动态额度、寄件可用优惠券查询与选择、订单改单代收货款、订单改单基础保价、改单上门时间/送货方式、订单改单打包服务件数、客户能力摘要、客服售后记录/理赔进度入口、签收 PDC 反馈、原生服务评价、动态场景问卷/NPS、订单催单、账号注销、发票动作（作废/改址/取消/邮件）、营业部电话、通知派送、拦截作废运单、运单合同明细、下单拦截、优惠券即将过期计数、发票中心页拆分（6 hook）、寄件页拆分（4 hook）、legacy 预算收紧（9→2 条）。
+【本轮已确认方向（2026-08-14 用户拍板）】：下一轮优先做 A 类纯业务切片（不依赖原生 SDK），把参考项目剩余不依赖原生的能力迁完；原生能力接入（扫码/定位/支付）由用户并行确认 SDK 选型后另开一轮。
 
-强制规则：项目只打包 RN App，不维护小程序；业务代码不得直接调用小程序 API、DOM/H5 API、Taro RN unsupported API 或 RN Native API；同步 storage API 禁用；端能力必须通过 shared/platform、shared/native 或 cache facade；RN 样式优先 Flex 并遵守现有 token/CSS 严格门禁。页面确实自然复杂时不必机械拆分，但新增职责必须有清晰边界。
+【待迁移候选清单（A 类纯业务，按业务价值排序，实施前必须先派子代理重新审计确认边界，上次审计因 TPM 限制失败）】：
+1. 寄件扩展状态切片：委托书(trustExtra/trustSecret/trustPdfFile)、雪具(skiingPackage)、电视尺寸(tvSize)、海关(customs)、双人派送(doubleDelivery)、拍照签收(photoSign/photoPickup)、通电服务(poweredName/poweredCount/poweredCollect/poweredDelivery)、以旧换新(tradeInCount)、防爆/违禁(goodsContraband)。参考 send.ts:1995-2190。
+2. 快递员二维码名片/邀请：postman/qrCode（FetchPostmanQrcode postman.ts:165）。二维码生成+展示不依赖原生，保存相册依赖 CameraRoll(pending) 可后置。
+3. 营销活动承接页：activity（H5 承接，纯 WebView）。
+4. 转寄拦截交互页：sendService/resend。
+5. 海外/赔偿/投诉 H5 承接页：common/overseas、common/compensate、common/complaint（需在 appWeb.ts 登记 APP_WEB_TARGETS 来源）。
+6. 账单页：bill。
+7. 调研通用页：common/survey（现有仅订单场景问卷）。
+8. 接口域缺口（纯接口，不依赖原生）：postman.ts 未读消息/位置/评价、support.ts 通用调研、user.ts 隐私版本/关注公众号、send.ts 一物一码/协议签署/顺丰比价/常用模板推荐、invoice.ts 员工/合同判断。
+
+【依赖原生、本轮不做（用户确认 SDK 后另开）】：扫码(scanCode)、定位(getLocation)、地图(openLocation)、文件上传/下载、相册(chooseImage/saveImage)、支付(微信/支付宝)、订阅消息、跨小程序拉起。
+
+【已确认实现、不要重复】见第 33/34 节已完成清单，尤其注意：催单、账号注销、发票动作（作废/改址/取消/邮件）、营业部电话、通知派送、拦截作废、运单合同明细、下单拦截、优惠券过期计数均已端到端实现。
+
+强制规则：项目只打包 RN App，不维护小程序；业务代码不得直接调用小程序 API、DOM/H5 API、Taro RN unsupported API 或 RN Native API；同步 storage API 禁用；端能力必须通过 shared/platform、shared/native 或 cache facade；RN 样式优先 Flex 并遵守现有 token/CSS 严格门禁（含新增的间距 rawSpaces 维度）。页面确实自然复杂时不必机械拆分，但新增职责必须有清晰边界。
 
 Codex 不得执行 taro build、RN bundle、Gradle、Xcode、Android/iOS 打包或发布包验证。只运行 TypeScript、ESLint、Stylelint、业务规则、路由、模块体积、runtime config、RN boundary 等静态检查；打包由我执行，问题我会反馈。
 
 先分析并给出当前剩余能力审计和本轮切片计划，然后直接实施、补静态规则、更新 docs/rn-refactor-plan.md，并在本轮结束时说明改动、静态验证结果和仍需我运行时确认的事项。
 ```
+

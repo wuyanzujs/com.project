@@ -1,7 +1,7 @@
 import { ScrollView } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import { expressDraftBridge } from '@/services/express'
 import {
@@ -16,7 +16,6 @@ import type {
   OrderRole,
   OrderStatusFilter
 } from '@/services/order'
-import { LatestRequestCoordinator } from '@/shared/async/latestRequest'
 import { AppPage } from '@/shared/components'
 import AppTabBar from '@/shared/components/AppTabBar'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
@@ -32,12 +31,12 @@ import {
   OrderSearchBar
 } from './components/OrderListSections'
 import { OrderSupportFloat } from './components/OrderSupportFloat'
+import { useOrderListData } from './hooks/useOrderListData'
 
 import type { OrderDateRangeDays } from './components/OrderListSections'
 
 import './index.scss'
 
-const PAGE_SIZE = 10
 function getRouteToDetail(order: OrderListItem) {
   return createAppRouteUrl(APP_ROUTES.orderDetail, {
     orderNumber: order.orderNumber,
@@ -87,15 +86,8 @@ const OrderListPage = () => {
   const [paymentType, setPaymentType] = useState<OrderPaymentFilter>('')
   const [keyword, setKeyword] = useState('')
   const [filterVisible, setFilterVisible] = useState(false)
-  const [orders, setOrders] = useState<OrderListItem[]>([])
-  const [pageIndex, setPageIndex] = useState(1)
-  const [totalPage, setTotalPage] = useState(1)
-  const [totalRows, setTotalRows] = useState(0)
-  const [loading, setLoading] = useState(false)
   const [deletingOrderKey, setDeletingOrderKey] = useState('')
   const [resendingOrderKey, setResendingOrderKey] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
-  const requestCoordinator = useRef(new LatestRequestCoordinator()).current
   const ensureOrderListAccess = useCallback(
     () =>
       ensureAuthenticated({
@@ -105,78 +97,17 @@ const OrderListPage = () => {
     []
   )
 
-  const loadOrders = useCallback(
-    async (
-      nextPage = 1,
-      nextRole = role,
-      nextKeyword = keyword,
-      nextStatus = orderStatus,
-      nextPaymentType = paymentType,
-      nextRangeDays = rangeDays
-    ) => {
-      const requestToken = requestCoordinator.begin(
-        JSON.stringify([
-          nextPage,
-          nextRole,
-          nextKeyword,
-          nextStatus,
-          nextPaymentType,
-          nextRangeDays
-        ])
-      )
-
-      if (!requestToken) {
-        return
-      }
-
-      setLoading(true)
-      setErrorMessage('')
-
-      try {
-        const dateRange = orderService.getDateRange(nextRangeDays)
-        const response = await orderService.queryList({
-          role: nextRole,
-          pageIndex: nextPage,
-          pageSize: PAGE_SIZE,
-          keyword: nextKeyword,
-          orderStatus: nextStatus,
-          paymentType: nextPaymentType,
-          startTime: dateRange.startTime,
-          endTime: dateRange.endTime
-        })
-
-        if (!requestCoordinator.isLatest(requestToken)) {
-          return
-        }
-
-        if (!response.status || !response.result) {
-          setErrorMessage(response.message || '暂未获取到订单')
-          if (nextPage === 1) {
-            setOrders([])
-          }
-          return
-        }
-
-        setOrders(current =>
-          nextPage === 1
-            ? (response.result?.list ?? [])
-            : [...current, ...(response.result?.list ?? [])]
-        )
-        setPageIndex(response.result.pageIndex)
-        setTotalPage(response.result.totalPage)
-        setTotalRows(response.result.totalRows)
-      } finally {
-        if (requestCoordinator.finish(requestToken)) {
-          setLoading(false)
-        }
-      }
-    },
-    [keyword, orderStatus, paymentType, rangeDays, requestCoordinator, role]
-  )
+  const listData = useOrderListData({
+    role,
+    keyword,
+    orderStatus,
+    paymentType,
+    rangeDays
+  })
 
   useDidShow(() => {
     if (ensureOrderListAccess()) {
-      loadOrders(1)
+      listData.loadOrders(1)
     }
   })
 
@@ -186,9 +117,15 @@ const OrderListPage = () => {
     }
 
     setRole(nextRole)
-    setOrders([])
-    setPageIndex(1)
-    loadOrders(1, nextRole, keyword, orderStatus, paymentType, rangeDays)
+    listData.resetOrders()
+    listData.loadOrders(
+      1,
+      nextRole,
+      keyword,
+      orderStatus,
+      paymentType,
+      rangeDays
+    )
   }
 
   const handleChangeRange = (nextRangeDays: OrderDateRangeDays) => {
@@ -197,9 +134,15 @@ const OrderListPage = () => {
     }
 
     setRangeDays(nextRangeDays)
-    setOrders([])
-    setPageIndex(1)
-    loadOrders(1, role, keyword, orderStatus, paymentType, nextRangeDays)
+    listData.resetOrders()
+    listData.loadOrders(
+      1,
+      role,
+      keyword,
+      orderStatus,
+      paymentType,
+      nextRangeDays
+    )
   }
 
   const handleChangeStatus = (nextStatus: OrderStatusFilter) => {
@@ -208,9 +151,8 @@ const OrderListPage = () => {
     }
 
     setOrderStatus(nextStatus)
-    setOrders([])
-    setPageIndex(1)
-    loadOrders(1, role, keyword, nextStatus, paymentType, rangeDays)
+    listData.resetOrders()
+    listData.loadOrders(1, role, keyword, nextStatus, paymentType, rangeDays)
   }
 
   const handleChangePayment = (nextPaymentType: OrderPaymentFilter) => {
@@ -219,9 +161,15 @@ const OrderListPage = () => {
     }
 
     setPaymentType(nextPaymentType)
-    setOrders([])
-    setPageIndex(1)
-    loadOrders(1, role, keyword, orderStatus, nextPaymentType, rangeDays)
+    listData.resetOrders()
+    listData.loadOrders(
+      1,
+      role,
+      keyword,
+      orderStatus,
+      nextPaymentType,
+      rangeDays
+    )
   }
 
   const handleSearch = () => {
@@ -229,7 +177,8 @@ const OrderListPage = () => {
       return
     }
 
-    loadOrders(1, role, keyword, orderStatus, paymentType, rangeDays)
+    listData.resetOrders()
+    listData.loadOrders(1, role, keyword, orderStatus, paymentType, rangeDays)
   }
 
   const handleOpenPaymentList = () => {
@@ -249,11 +198,11 @@ const OrderListPage = () => {
       return
     }
 
-    if (loading || pageIndex >= totalPage) {
+    if (listData.loading || listData.pageIndex >= listData.totalPage) {
       return
     }
 
-    loadOrders(pageIndex + 1)
+    listData.loadOrders(listData.pageIndex + 1)
   }
 
   const handleOpenDetail = (order: OrderListItem) => {
@@ -325,10 +274,7 @@ const OrderListPage = () => {
       })
 
       if (response.status) {
-        setOrders(current =>
-          current.filter(item => getOrderActionKey(item) !== orderKey)
-        )
-        setTotalRows(current => Math.max(0, current - 1))
+        listData.removeOrder(item => getOrderActionKey(item) === orderKey)
       }
     } finally {
       setDeletingOrderKey('')
@@ -406,10 +352,10 @@ const OrderListPage = () => {
         onScrollToLower={handleLoadMore}
         scrollY
       >
-        {(orders.length > 0 || loading) && (
+        {(listData.orders.length > 0 || listData.loading) && (
           <OrderListSummary
             rangeDays={rangeDays}
-            totalRows={totalRows}
+            totalRows={listData.totalRows}
             onOpenPaymentList={handleOpenPaymentList}
             onOpenSubscriptions={handleOpenSubscriptions}
           />
@@ -425,11 +371,11 @@ const OrderListPage = () => {
               ? '近三个月没有我寄的快递'
               : '近三个月没有我收的快递'
           }
-          errorMessage={errorMessage}
+          errorMessage={listData.errorMessage}
           getOrderActionKey={getOrderActionKey}
           getResendActionText={getResendActionText}
-          loading={loading}
-          orders={orders}
+          loading={listData.loading}
+          orders={listData.orders}
           resendingOrderKey={resendingOrderKey}
           onCancelOrder={handleCancelOrder}
           onDeleteOrder={handleDeleteOrder}

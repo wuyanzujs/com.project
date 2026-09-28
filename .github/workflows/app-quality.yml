@@ -50,4 +50,4 @@ jobs:
           STYLE_GOVERNANCE_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
 
       - name: Check native environment
-        run: pnpm check:app-native-env
+        run: pnpm check:app-native-env:android

@@ -1,3 +1,2 @@
-import type { UserConfigExport } from "@tarojs/cli";
-export default {
-} satisfies UserConfigExport<'webpack5'>
+import type { UserConfigExport } from '@tarojs/cli'
+export default {} satisfies UserConfigExport<'webpack5'>

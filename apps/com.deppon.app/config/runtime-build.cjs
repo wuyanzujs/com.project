@@ -4,8 +4,7 @@ const DEFAULT_RUNTIME_CONFIG = {
   webBaseURL: 'https://owstest.deppon.com',
   serviceWebURL:
     'https://osstest.deppon.com.cn/dzfront/web/home?showChat=true&layout=true',
-  memberWebURL:
-    'https://mastest.deppon.com.cn/cms-h5/h5.html#/welfare-center',
+  memberWebURL: 'https://mastest.deppon.com.cn/cms-h5/h5.html#/welfare-center',
   webAllowedHosts: [
     'owstest.deppon.com',
     'ows.deppon.com',
@@ -83,7 +82,7 @@ function getAllowedHosts(env) {
     new Set(
       configuredHosts
         .split(',')
-        .map((item) => item.trim().toLowerCase())
+        .map(item => item.trim().toLowerCase())
         .filter(Boolean)
     )
   )
@@ -92,7 +91,7 @@ function getAllowedHosts(env) {
 function isForbiddenProductionHost(hostname) {
   const normalized = hostname.toLowerCase()
 
-  return PRODUCTION_FORBIDDEN_HOST_MARKERS.some((marker) =>
+  return PRODUCTION_FORBIDDEN_HOST_MARKERS.some(marker =>
     normalized.includes(marker)
   )
 }
@@ -106,8 +105,8 @@ function hasTokenLikeQueryParam(parsed) {
     searchParams.push(new URLSearchParams(hashValue.slice(hashQueryIndex + 1)))
   }
 
-  return searchParams.some((params) =>
-    Array.from(params.keys()).some((key) => /token/i.test(key))
+  return searchParams.some(params =>
+    Array.from(params.keys()).some(key => /token/i.test(key))
   )
 }
 
@@ -146,7 +145,7 @@ function validateRuntimeEnvironment(env = process.env) {
 
   if (production) {
     const missingVars = PRODUCTION_REQUIRED_VARS.filter(
-      (name) => !getEnvValue(env, name)
+      name => !getEnvValue(env, name)
     )
 
     if (missingVars.length) {
@@ -191,7 +190,10 @@ function validateRuntimeEnvironment(env = process.env) {
       violations.push(`${name} 不得在 URL 中配置固定用户名或密码。`)
     }
 
-    if (name !== 'APP_API_BASE_URL' && !allowedHosts.includes(parsed.hostname)) {
+    if (
+      name !== 'APP_API_BASE_URL' &&
+      !allowedHosts.includes(parsed.hostname)
+    ) {
       violations.push(`${name} 的 host 必须加入 APP_WEB_ALLOWED_HOSTS。`)
     }
 

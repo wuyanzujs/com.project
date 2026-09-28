@@ -116,6 +116,12 @@ jobs:
       - name: Verify production app
         run: pnpm verify:app
 
+      - name: Check native release environment
+        run: pnpm check:app-native-env:android
+
+      - name: Build production Android RN bundle
+        run: pnpm --filter com.deppon.app run bundle:android:production
+
       - name: Decode release keystore
         env:
           ANDROID_RELEASE_KEYSTORE_BASE64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}

@@ -1,2 +1,1 @@
-export PATH="apps/com.deppon.app/node_modules/.bin:$PATH"
-lint-staged
+pnpm exec lint-staged

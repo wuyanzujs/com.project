@@ -15,10 +15,10 @@
     "ios": "pnpm --filter com.deppon.app ios",
     "start:app": "pnpm --filter com.deppon.app start",
     "typecheck:app": "pnpm --filter com.deppon.app typecheck",
-    "lint:app": "pnpm --filter com.deppon.app exec eslint \"src/**/*.{ts,tsx}\"",
+    "lint:app": "pnpm --filter com.deppon.app lint",
     "lint:app:styles": "pnpm --filter com.deppon.app lint:styles",
     "test:app-style-governance": "pnpm --filter com.deppon.app test:style-governance",
-    "lint:app:fix": "pnpm --filter com.deppon.app exec eslint \"src/**/*.{ts,tsx}\" --fix",
+    "lint:app:fix": "pnpm --filter com.deppon.app lint:fix",
     "check:app-boundaries": "pnpm --filter com.deppon.app check:rn-boundaries",
     "check:app-styles": "pnpm --filter com.deppon.app check:styles",
     "check:app-styles:strict": "pnpm --filter com.deppon.app check:styles:strict",
@@ -30,7 +30,13 @@
     "check:app-business-rules": "pnpm --filter com.deppon.app check:business-rules",
     "check:app-platform-build": "pnpm --filter com.deppon.app check:platform-build",
     "check:app-native-env": "pnpm --filter com.deppon.app check:native-env",
-    "verify:app": "pnpm --filter com.deppon.app verify",
+    "check:app-native-env:android": "pnpm --filter com.deppon.app check:native-env:android",
+    "check:app-native-env:ios": "pnpm --filter com.deppon.app check:native-env:ios",
+    "format:config": "prettier --write package.json pnpm-workspace.yaml .prettierrc.cjs \".github/**/*.{yml,yaml}\" \"scripts/**/*.{js,cjs,mjs}\" apps/com.deppon.app/package.json \"apps/com.deppon.app/config/**/*.{ts,js,cjs,mjs}\" \"apps/com.deppon.app/scripts/**/*.{js,cjs,mjs}\" apps/com.deppon.app/babel.config.js apps/com.deppon.app/metro.config.js apps/com.deppon.app/.stylelintrc.cjs apps/com.deppon.app/tsconfig.json && prettier --write --parser json apps/com.deppon.app/.eslintrc apps/com.deppon.app/.watchmanconfig",
+    "format:config:check": "prettier --check package.json pnpm-workspace.yaml .prettierrc.cjs \".github/**/*.{yml,yaml}\" \"scripts/**/*.{js,cjs,mjs}\" apps/com.deppon.app/package.json \"apps/com.deppon.app/config/**/*.{ts,js,cjs,mjs}\" \"apps/com.deppon.app/scripts/**/*.{js,cjs,mjs}\" apps/com.deppon.app/babel.config.js apps/com.deppon.app/metro.config.js apps/com.deppon.app/.stylelintrc.cjs apps/com.deppon.app/tsconfig.json && prettier --check --parser json apps/com.deppon.app/.eslintrc apps/com.deppon.app/.watchmanconfig",
+    "check:repo-config": "node scripts/check-repo-config.mjs",
+    "verify:config": "pnpm run format:config:check && pnpm run check:repo-config",
+    "verify:app": "pnpm run verify:config && pnpm --filter com.deppon.app verify",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"
@@ -43,15 +49,21 @@
     "prettier": "^3.9.4"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
+    "apps/com.deppon.app/src/**/*.{ts,tsx,js,cjs,mjs}": [
+      "pnpm --filter com.deppon.app exec eslint --fix",
       "prettier --write"
     ],
-    "*.scss": [
-      "stylelint --fix",
+    "apps/com.deppon.app/{config,scripts}/**/*.{ts,tsx,js,cjs,mjs}": [
       "prettier --write"
     ],
-    "*.{json,md}": [
+    "apps/com.deppon.app/src/**/*.scss": [
+      "pnpm --filter com.deppon.app exec stylelint --fix",
+      "prettier --write"
+    ],
+    "**/*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ],
+    "{.prettierrc.cjs,apps/com.deppon.app/{babel.config.js,metro.config.js,.stylelintrc.cjs,.watchmanconfig}}": [
       "prettier --write"
     ]
   }

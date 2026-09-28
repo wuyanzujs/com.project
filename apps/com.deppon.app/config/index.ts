@@ -21,10 +21,8 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
     plugins: [],
     defineConstants: runtimeBuild.createRuntimeDefineConstants(process.env),
     copy: {
-      patterns: [
-      ],
-      options: {
-      }
+      patterns: [],
+      options: {}
     },
     framework: 'react',
     compiler: 'webpack5',
@@ -46,12 +44,12 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
         iosSourcemapOutput: './dist/sourcemaps/main.ios.map',
         // iosSourcemapSourcesRoot: '',
         // androidSourceMapUrl: '',
-        androidSourcemapOutput: './dist/sourcemaps/index.android.map',
+        androidSourcemapOutput: './dist/sourcemaps/index.android.map'
         // androidSourcemapSourcesRoot: '',
       },
       postcss: {
         cssModules: {
-          enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
+          enable: false // 默认为 false，如需使用 css modules 功能，则设为 true
         }
       }
     }

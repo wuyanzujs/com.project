@@ -29,6 +29,6 @@ const config = {
   }
 }
 
-module.exports = (async function (){
+module.exports = (async function () {
   return mergeConfig(getDefaultConfig(appRoot), await getMetroConfig(), config)
 })()

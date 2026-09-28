@@ -29,9 +29,6 @@ importers:
       '@babel/runtime':
         specifier: ^7.20.0
         version: 7.29.7
-      '@preeternal/react-native-cookie-manager':
-        specifier: 6.3.3
-        version: 6.3.3(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))(react@18.2.0)
       '@react-native-async-storage/async-storage':
         specifier: 1.21.0
         version: 1.21.0(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))
@@ -41,6 +38,9 @@ importers:
       '@react-native-community/slider':
         specifier: 4.4.2
         version: 4.4.2
+      '@react-native-cookies/cookies':
+        specifier: 6.2.1
+        version: 6.2.1(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))
       '@react-native-picker/picker':
         specifier: 2.6.1
         version: 2.6.1(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))(react@18.2.0)
@@ -98,6 +98,9 @@ importers:
       expo:
         specifier: 50.0.21
         version: 50.0.21(@babel/core@7.29.7)(@react-native/babel-preset@0.73.21(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7)))(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))(react@18.2.0)
+      expo-camera:
+        specifier: 14.1.3
+        version: 14.1.3(expo@50.0.21(@babel/core@7.29.7)(@react-native/babel-preset@0.73.21(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7)))(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))(react@18.2.0))
       lucide-react-native:
         specifier: ^0.468.0
         version: 0.468.0(react-native-svg@14.1.0(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))(react@18.2.0))(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))(react@18.2.0)
@@ -150,6 +153,9 @@ importers:
       '@react-native/babel-preset':
         specifier: ^0.73.18
         version: 0.73.21(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))
+      '@react-native/codegen':
+        specifier: 0.73.3
+        version: 0.73.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))
       '@react-native/metro-config':
         specifier: ^0.73.2
         version: 0.73.5(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))
@@ -1723,12 +1729,6 @@ packages:
       webpack-plugin-serve:
         optional: true
 
-  '@preeternal/react-native-cookie-manager@6.3.3':
-    resolution: {integrity: sha512-ddA3H7nbV0n/EdJ3ZXDd9GpT9jzhBiMrVeXftJf1mJ1gqyQnZ6d8EEd+k/lnjzfhqK6Z2kvXggCSpwAH991Gvw==}
-    peerDependencies:
-      react: '*'
-      react-native: '*'
-
   '@react-native-async-storage/async-storage@1.21.0':
     resolution: {integrity: sha512-JL0w36KuFHFCvnbOXRekqVAUplmOyT/OuCQkogo6X98MtpSaJOKEAeZnYO8JB0U/RIEixZaGI5px73YbRm/oag==}
     peerDependencies:
@@ -1818,6 +1818,12 @@ packages:
 
   '@react-native-community/slider@4.4.2':
     resolution: {integrity: sha512-D9bv+3Vd2gairAhnRPAghwccgEmoM7g562pm8i4qB3Esrms5mggF81G3UvCyc0w3jjtFHh8dpQkfEoKiP0NW/Q==}
+
+  '@react-native-cookies/cookies@6.2.1':
+    resolution: {integrity: sha512-D17wCA0DXJkGJIxkL74Qs9sZ3sA+c+kCoGmXVknW7bVw/W+Vv1m/7mWTNi9DLBZSRddhzYw8SU0aJapIaM/g5w==}
+    deprecated: This package is deprecated. Use @preeternal/react-native-cookie-manager or react-native-nitro-cookies instead.
+    peerDependencies:
+      react-native: '>= 0.60.2'
 
   '@react-native-picker/picker@2.6.1':
     resolution: {integrity: sha512-oJftvmLOj6Y6/bF4kPcK6L83yNBALGmqNYugf94BzP0FQGpHBwimVN2ygqkQ2Sn2ZU3pGUZMs0jV6+Gku2GyYg==}
@@ -10849,11 +10855,6 @@ snapshots:
       type-fest: 2.19.0
       webpack-dev-server: 4.15.2(webpack@5.108.4(@swc/core@1.3.96)(postcss@8.5.16))
 
-  '@preeternal/react-native-cookie-manager@6.3.3(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))(react@18.2.0)':
-    dependencies:
-      react: 18.2.0
-      react-native: 0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0)
-
   '@react-native-async-storage/async-storage@1.21.0(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))':
     dependencies:
       merge-options: 3.0.4
@@ -11029,6 +11030,11 @@ snapshots:
       react-native: 0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0)
 
   '@react-native-community/slider@4.4.2': {}
+
+  '@react-native-cookies/cookies@6.2.1(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))':
+    dependencies:
+      invariant: 2.2.4
+      react-native: 0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0)
 
   '@react-native-picker/picker@2.6.1(react-native@0.73.11(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(react@18.2.0))(react@18.2.0)':
     dependencies:
@@ -15956,7 +15962,7 @@ snapshots:
       '@babel/register': 7.29.7(@babel/core@7.29.7)
       babel-core: 7.0.0-bridge.0(@babel/core@7.29.7)
       colors: 1.4.0
-      flow-parser: 0.121.0
+      flow-parser: 0.206.0
       graceful-fs: 4.2.11
       micromatch: 3.1.10
       neo-async: 2.6.2

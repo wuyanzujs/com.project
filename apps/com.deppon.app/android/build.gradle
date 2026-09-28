@@ -23,9 +23,17 @@ buildscript {
 
 allprojects {
     repositories {
+        def expoCameraMaven = file("$rootDir/../node_modules/expo-camera/android/maven")
+
+        if (!expoCameraMaven.isDirectory()) {
+            throw new GradleException(
+                "expo-camera Android Maven repository is missing. Run pnpm install from the workspace root."
+            )
+        }
+
         maven {
-            // expo-camera bundles a custom com.google.android:cameraview
-            url "$rootDir/../node_modules/expo-camera/android/maven"
+            // expo-camera is direct because Gradle needs this repository while configuring the build.
+            url expoCameraMaven
         }
     }
 }

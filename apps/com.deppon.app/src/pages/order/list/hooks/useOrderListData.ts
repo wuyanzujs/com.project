@@ -34,6 +34,8 @@ interface UseOrderListDataResult {
     nextPaymentType?: OrderPaymentFilter,
     nextRangeDays?: number
   ) => Promise<void>
+  removeOrder: (predicate: (item: OrderListItem) => boolean) => void
+  resetOrders: () => void
 }
 
 export function useOrderListData({
@@ -120,6 +122,22 @@ export function useOrderListData({
     [keyword, orderStatus, paymentType, rangeDays, requestCoordinator, role]
   )
 
+  const removeOrder = useCallback(
+    (predicate: (item: OrderListItem) => boolean) => {
+      setOrders(current => current.filter(item => !predicate(item)))
+      setTotalRows(current => Math.max(0, current - 1))
+    },
+    []
+  )
+
+  const resetOrders = useCallback(() => {
+    setOrders([])
+    setPageIndex(1)
+    setTotalPage(1)
+    setTotalRows(0)
+    setErrorMessage('')
+  }, [])
+
   return {
     orders,
     pageIndex,
@@ -127,6 +145,8 @@ export function useOrderListData({
     totalRows,
     loading,
     errorMessage,
-    loadOrders
+    loadOrders,
+    removeOrder,
+    resetOrders
   }
 }
