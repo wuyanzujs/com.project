@@ -47,12 +47,6 @@ export const QUICK_ENTRIES: MineEntry[] = [
     route: APP_ROUTES.contactList
   },
   {
-    title: '优惠券',
-    image: 'https://ca.deppon.com.cn/ows/assets/center2412/10.png',
-    route: APP_ROUTES.couponList,
-    login: true
-  },
-  {
     title: '偏好设置',
     image: 'https://ca.deppon.com.cn/ows/assets/center2412/18.png',
     webSource: 'ACCOUNT_PREFERENCES',
@@ -125,6 +119,12 @@ export const SERVICE_ENTRIES: MineEntry[] = [
     route: APP_ROUTES.signCode
   },
   {
+    title: '入群有礼',
+    image: 'https://ca.deppon.com.cn/ows/center/22.png',
+    route: APP_ROUTES.memberCenter,
+    badge: '福利'
+  },
+  {
     title: '协议说明',
     image: 'https://ca.deppon.com.cn/ows/center/11.png',
     route: APP_ROUTES.privacySettings
@@ -161,12 +161,6 @@ export const SERVICE_ENTRIES: MineEntry[] = [
     webSource: 'CUSTOMER_PHONE_PROTECT',
     login: true,
     badge: '上新'
-  },
-  {
-    title: '入群有礼',
-    image: 'https://ca.deppon.com.cn/ows/center/22.png',
-    route: APP_ROUTES.memberCenter,
-    badge: '福利'
   }
 ]
 

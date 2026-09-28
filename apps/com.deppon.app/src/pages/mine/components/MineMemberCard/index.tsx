@@ -10,18 +10,19 @@ import './index.scss'
 interface MineMemberCardProps {
   levelCode: number
   member: MemberOverviewView | null
+  couponExpireCount?: number
   onOpen: () => void
 }
 
 export function MineMemberCard({
   levelCode,
   member,
+  couponExpireCount = 0,
   onOpen
 }: MineMemberCardProps) {
   return (
     <AppPressable
       accessibilityLabel='打开会员中心'
-      block
       className='mine-member-card'
       onPress={onOpen}
     >
@@ -54,7 +55,11 @@ export function MineMemberCard({
               mode='aspectFit'
               src='https://ca.deppon.com.cn/ows/assets/center2412/40.png'
             />
-            <Text className='mine-member-card__benefit-text'>优惠券</Text>
+            <Text className='mine-member-card__benefit-text'>
+              {couponExpireCount > 0
+                ? `优惠券(${couponExpireCount}张快过期)`
+                : '优惠券'}
+            </Text>
           </View>
           <View className='mine-member-card__benefit'>
             <Image

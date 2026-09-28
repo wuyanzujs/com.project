@@ -1,6 +1,7 @@
 @use '@/styles/_tokens.scss' as *;
 
 .mine-member-card {
+  align-items: stretch;
   margin: 8px 24px 0;
   overflow: hidden;
   border-radius: $dp-radius-feature-card;
@@ -52,7 +53,6 @@
 }
 
 .mine-member-card__growth {
-  display: flex;
   margin-top: 4px;
   color: $dp-color-text-member;
   font-size: $dp-font-size-body;

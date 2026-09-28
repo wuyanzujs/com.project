@@ -1,7 +1,7 @@
 import { ScrollView } from '@tarojs/components'
 import { useDidShow } from '@tarojs/taro'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import { authService, maskMobile } from '@/services/auth'
 import type { AppUser } from '@/services/auth'
@@ -123,18 +123,6 @@ const MinePage = () => {
   const profileName = user?.mobile ? maskMobile(user.mobile) : '点击注册/登录'
   const levelCode = member?.levelCode ?? 0
 
-  const quickEntries = useMemo(() => {
-    if (!couponExpireCount) {
-      return QUICK_ENTRIES
-    }
-
-    return QUICK_ENTRIES.map(entry =>
-      entry.title === '优惠券'
-        ? { ...entry, badge: `${couponExpireCount}张快过期` }
-        : entry
-    )
-  }, [couponExpireCount])
-
   return (
     <AppPage
       className='mine-page-shell'
@@ -150,11 +138,14 @@ const MinePage = () => {
           onOpenSupport={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
         />
 
-        <MineMemberCard
-          levelCode={levelCode}
-          member={member}
-          onOpen={() => navigateToAppRoute(APP_ROUTES.memberCenter)}
-        />
+        {user && (
+          <MineMemberCard
+            couponExpireCount={couponExpireCount}
+            levelCode={levelCode}
+            member={member}
+            onOpen={() => navigateToAppRoute(APP_ROUTES.memberCenter)}
+          />
+        )}
 
         <MineOrderShortcuts
           authenticated={Boolean(user)}
@@ -162,7 +153,7 @@ const MinePage = () => {
           onSelect={handleOrderShortcut}
         />
 
-        <MineEntryGrids quickEntries={quickEntries} onSelect={handleEntry} />
+        <MineEntryGrids quickEntries={QUICK_ENTRIES} onSelect={handleEntry} />
       </ScrollView>
     </AppPage>
   )

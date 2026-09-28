@@ -41,7 +41,9 @@ export function MineHero({
         />
         <View className='mine-profile__content'>
           <Text className='mine-profile__name'>{profileName}</Text>
-          <Text className='mine-profile__summary'>个人设置 ›</Text>
+          {authenticated && (
+            <Text className='mine-profile__summary'>个人设置 ›</Text>
+          )}
         </View>
       </AppPressable>
       <AppPressable
