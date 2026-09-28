@@ -1,89 +1,51 @@
 @use '@/styles/_tokens.scss' as *;
+@use '@/pages/login/fields.scss';
 
-.login-intro {
-  padding-top: $dp-space-sm;
+.login-hero {
+  padding: $dp-space-96 $dp-space-40 $dp-space-96;
+  background: $dp-color-brand-faint;
 }
 
-.login-intro__title {
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-page-title;
-  font-weight: $dp-font-weight-bold;
-  line-height: $dp-line-height-page-title;
-}
-
-.login-intro__summary {
-  margin-top: $dp-space-sm;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-body;
-  line-height: $dp-line-height-body;
-}
-
-.login-form {
-  margin-top: $dp-space-3xl;
-}
-
-.login-field {
+.login-hero__row {
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 102px;
-  border-bottom-color: $dp-color-border;
-  border-bottom-width: 1px;
 }
 
-.login-field--mobile {
-  margin-bottom: $dp-space-sm;
-}
-
-.login-field__prefix {
-  width: 96px;
+.login-hero__title {
   color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.login-hero__badge {
+  margin-left: $dp-space-16;
+  padding: $dp-space-2 $dp-space-16;
+  color: $dp-color-text-inverse;
   font-size: $dp-font-size-title;
-  font-weight: $dp-font-weight-semibold;
+  font-weight: $dp-font-weight-bold;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-lg;
 }
 
-.login-input {
-  flex: 1;
-  min-width: 0;
-  height: 80px;
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-title;
-  font-weight: $dp-font-weight-semibold;
-  line-height: $dp-line-height-auth-field;
+.login-hero__summary {
+  margin-top: $dp-space-16;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
 }
 
-.login-input__placeholder {
-  color: $dp-color-text-placeholder;
-  font-weight: $dp-font-weight-regular;
-}
-
-.login-input--code {
-  padding-right: $dp-space-sm;
-}
-
-.login-code-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 188px;
-  height: $dp-button-height-compact;
-  padding-left: $dp-space-sm;
-}
-
-.login-code-button__text {
-  color: $dp-color-brand-soft;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-semibold;
-}
-
-.login-code-button__text--active {
-  color: $dp-color-brand;
+.login-card {
+  margin-top: -$dp-space-48;
+  padding: $dp-space-48 $dp-space-40 $dp-space-80;
+  background: $dp-color-bg-card;
+  border-top-left-radius: $dp-radius-48;
+  border-top-right-radius: $dp-radius-48;
 }
 
 .login-agreement {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   margin-top: $dp-space-xl;
 }
 
@@ -94,9 +56,8 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  margin-top: 2px;
   border-color: $dp-color-border;
-  border-radius: $dp-radius-sm;
+  border-radius: $dp-radius-round;
   border-width: 2px;
 }
 
@@ -116,6 +77,7 @@
   flex: 1;
   flex-direction: row;
   flex-wrap: wrap;
+  align-items: center;
   margin-left: $dp-space-xs;
 }
 
@@ -130,7 +92,7 @@
 }
 
 .login-agreement__link {
-  color: $dp-color-brand;
+  color: $dp-color-text-heading;
   font-weight: $dp-font-weight-semibold;
 }
 
@@ -142,6 +104,10 @@
   margin-top: $dp-space-2xl;
   background: $dp-color-brand;
   border-radius: $dp-button-radius;
+}
+
+.login-submit--inactive {
+  background: $dp-color-brand-soft;
 }
 
 .login-submit__text {
@@ -158,13 +124,7 @@
   margin-top: $dp-space-sm;
 }
 
-.login-secondary__text,
-.login-note {
+.login-secondary__text {
   color: $dp-color-text-supporting;
   font-size: $dp-font-size-body;
-}
-
-.login-note {
-  margin-top: $dp-space-sm;
-  text-align: center;
 }

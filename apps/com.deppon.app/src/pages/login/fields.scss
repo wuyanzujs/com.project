@@ -1,0 +1,59 @@
+@use '@/styles/_tokens.scss' as *;
+
+.login-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 102px;
+  border-bottom-color: $dp-color-border;
+  border-bottom-width: 1px;
+}
+
+.login-field--mobile {
+  margin-bottom: $dp-space-sm;
+}
+
+.login-field__prefix {
+  width: 96px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-semibold;
+}
+
+.login-input {
+  flex: 1;
+  min-width: 0;
+  height: 80px;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-semibold;
+  line-height: $dp-line-height-auth-field;
+}
+
+.login-input__placeholder {
+  color: $dp-color-text-placeholder;
+  font-weight: $dp-font-weight-regular;
+}
+
+.login-input--code {
+  padding-right: $dp-space-sm;
+}
+
+.login-code-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 188px;
+  height: $dp-button-height-compact;
+  padding-left: $dp-space-sm;
+}
+
+.login-code-button__text {
+  color: $dp-color-brand-soft;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-semibold;
+}
+
+.login-code-button__text--active {
+  color: $dp-color-brand;
+}

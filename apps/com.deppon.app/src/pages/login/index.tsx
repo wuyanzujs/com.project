@@ -40,6 +40,12 @@ const LoginPage = () => {
   const targetUrl = redirectUrl || APP_ROUTES.mine
   const canSend =
     !sessionReady && isValidMobile(mobile) && !sending && countdown <= 0
+  const canSubmit =
+    !sessionReady &&
+    isValidMobile(mobile) &&
+    isValidSmsCode(smsCode) &&
+    agreementAccepted &&
+    !submitting
   const codeButtonLabel = sending
     ? '发送中'
     : countdown > 0
@@ -213,14 +219,17 @@ const LoginPage = () => {
   return (
     <AppKeyboardAvoidingView>
       <AppFormScrollView className='login-page' scrollY>
-        <View className='login-intro'>
-          <Text className='login-intro__title'>登录/注册</Text>
-          <Text className='login-intro__summary'>
-            欢迎使用德邦快递，竭诚为您服务！
+        <View className='login-hero'>
+          <View className='login-hero__row'>
+            <Text className='login-hero__title'>德邦快递</Text>
+            <Text className='login-hero__badge'>欢迎登录</Text>
+          </View>
+          <Text className='login-hero__summary'>
+            登录后即可寄件、查件、领取优惠
           </Text>
         </View>
 
-        <View className='login-form'>
+        <View className='login-card'>
           <View className='login-field login-field--mobile'>
             <Text className='login-field__prefix'>+86</Text>
             <Input
@@ -275,7 +284,7 @@ const LoginPage = () => {
               </Text>
             </AppPressable>
             <View className='login-agreement__content'>
-              <Text className='login-agreement__text'>我已阅读并同意</Text>
+              <Text className='login-agreement__text'>已阅读并同意</Text>
               <AppPressable
                 contentElement='text'
                 className='login-agreement__link'
@@ -283,7 +292,7 @@ const LoginPage = () => {
               >
                 《服务协议》
               </AppPressable>
-              <Text className='login-agreement__text'>和</Text>
+              <Text className='login-agreement__text'>与</Text>
               <AppPressable
                 contentElement='text'
                 className='login-agreement__link'
@@ -294,7 +303,15 @@ const LoginPage = () => {
             </View>
           </View>
 
-          <AppPressable className='login-submit' onPress={handleSubmit}>
+          <AppPressable
+            block
+            className={
+              canSubmit || sessionReady
+                ? 'login-submit'
+                : 'login-submit login-submit--inactive'
+            }
+            onPress={handleSubmit}
+          >
             <Text className='login-submit__text'>
               {submitting
                 ? sessionReady
@@ -302,15 +319,13 @@ const LoginPage = () => {
                   : '登录中'
                 : sessionReady
                   ? '返回原页面'
-                  : '登录'}
+                  : '立即登录'}
             </Text>
           </AppPressable>
 
           <AppPressable className='login-secondary' onPress={handleSkip}>
             <Text className='login-secondary__text'>暂不登录</Text>
           </AppPressable>
-
-          <Text className='login-note'>未注册手机号将自动创建账号</Text>
         </View>
       </AppFormScrollView>
     </AppKeyboardAvoidingView>
