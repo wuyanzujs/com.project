@@ -1,6 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
-import { useState, type PropsWithChildren } from 'react'
+import { useState, type CSSProperties, type PropsWithChildren } from 'react'
 
 import { AppNativePressable } from '@/shared/native'
 import './index.scss'
@@ -21,6 +21,11 @@ export interface AppPressableProps extends PropsWithChildren {
   layout?: AppPressableLayout
   selected?: boolean
   variant?: AppPressableVariant
+  /**
+   * Taro 编译会把调用方的静态 className 解析为 style prop 传入，
+   * 必须接收并渲染，否则调用方的样式会被整体丢弃。
+   */
+  style?: CSSProperties
   onLongPress?: () => void
   onPress?: () => void
 }
@@ -41,6 +46,7 @@ export function AppPressable({
   onLongPress,
   onPress,
   selected = false,
+  style,
   variant = 'plain'
 }: AppPressableProps) {
   const [pressed, setPressed] = useState(false)
@@ -59,7 +65,7 @@ export function AppPressable({
   const textClassName = classNames('app-pressable__text', className)
 
   return (
-    <View className={contentClassName}>
+    <View className={contentClassName} style={style}>
       {contentElement === 'text' ? (
         <Text className={textClassName}>{children}</Text>
       ) : (

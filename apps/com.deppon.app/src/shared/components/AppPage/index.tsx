@@ -20,6 +20,7 @@ export type AppPageSurface = 'page' | 'card' | 'brand-soft'
 export interface AppPageProps extends PropsWithChildren {
   className?: string
   footer?: ReactNode
+  header?: ReactNode
   keyboardAvoiding?: boolean
   safeArea?: AppPageSafeArea
   statusBar?: AppPageStatusBar
@@ -43,6 +44,7 @@ export function AppPage({
   children,
   className,
   footer,
+  header,
   keyboardAvoiding = false,
   safeArea = 'bottom',
   statusBar = 'none',
@@ -58,6 +60,7 @@ export function AppPage({
           .filter(Boolean)
           .join(' ')}
       >
+        {header ? <View className='app-page__header'>{header}</View> : null}
         <View className='app-page__content'>{children}</View>
         {footer ? <View className='app-page__footer'>{footer}</View> : null}
       </View>
