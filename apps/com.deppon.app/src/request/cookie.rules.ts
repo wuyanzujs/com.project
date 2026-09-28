@@ -46,7 +46,7 @@ export function getSetCookieFromHeaders(headers: unknown): string {
       return normalizedSetCookies
     }
   } catch {
-    // Fall back to the standard Headers.get API or a plain object.
+    // 解析失败时回退到标准 Headers.get API 或普通对象。
   }
 
   try {
@@ -57,7 +57,7 @@ export function getSetCookieFromHeaders(headers: unknown): string {
       return normalizedSetCookie
     }
   } catch {
-    // Fall back to the plain response header object used by other runtimes.
+    // 回退到其他运行时使用的普通响应头对象。
   }
 
   try {
@@ -74,7 +74,7 @@ export function getSetCookieFromHeaders(headers: unknown): string {
       return normalizedRawSetCookie
     }
   } catch {
-    // Fall back to the plain response header object used by other runtimes.
+    // 回退到其他运行时使用的普通响应头对象。
   }
 
   if (headersLike.map && typeof headersLike.map === 'object') {

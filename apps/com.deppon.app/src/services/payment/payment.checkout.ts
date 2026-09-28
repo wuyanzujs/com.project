@@ -248,7 +248,7 @@ async function cancelPaymentOrder(order: PaymentOrder | null) {
   try {
     await paymentApi.cancelOrder(createPaymentCancelRequest(order))
   } catch {
-    // The original payment error remains the actionable result for the user.
+    // 用户侧真正要处理的仍是原始支付错误，取消接口的失败可以忽略。
   }
 }
 
