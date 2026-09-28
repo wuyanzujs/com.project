@@ -7,7 +7,7 @@ import { AppPressable } from '@/shared/components'
 
 import './index.scss'
 
-const PAGE_SIZE = 12
+const PAGE_SIZE = 6
 
 interface MenuProps {
   actions: HomeQuickAction[]
@@ -36,39 +36,38 @@ const Menu = ({ actions, onSelect }: MenuProps) => {
           <SwiperItem className='home-menu__page' key={`page-${pageIndex}`}>
             <View className='home-menu__grid'>
               {page.map(action => (
-                <AppPressable
-                  accessibilityLabel={action.label}
-                  block
-                  className='home-menu__item'
-                  key={action.key}
-                  onPress={() => onSelect(action)}
-                >
-                  <Image
-                    className={
-                      action.imageSize === 'large'
-                        ? 'home-menu__image home-menu__image--large'
-                        : 'home-menu__image'
-                    }
-                    mode='aspectFit'
-                    src={action.image}
-                  />
-                  <Text
-                    className={
-                      action.imageSize === 'large'
-                        ? 'home-menu__label home-menu__label--large'
-                        : 'home-menu__label'
-                    }
+                <View className='home-menu__cell' key={action.key}>
+                  <AppPressable
+                    accessibilityLabel={action.label}
+                    block
+                    className='home-menu__item'
+                    onPress={() => onSelect(action)}
                   >
-                    {action.label}
-                  </Text>
-                  {action.badge && (
-                    <View className='home-menu__badge'>
-                      <Text className='home-menu__badge-text'>
-                        {action.badge}
-                      </Text>
+                    <View
+                      className={
+                        action.imageSize === 'large'
+                          ? 'home-menu__icon home-menu__icon--large'
+                          : 'home-menu__icon'
+                      }
+                    >
+                      <Image
+                        className={
+                          action.imageSize === 'large'
+                            ? 'home-menu__image home-menu__image--large'
+                            : 'home-menu__image'
+                        }
+                        mode='aspectFit'
+                        src={action.image}
+                      />
                     </View>
-                  )}
-                </AppPressable>
+                    <View className='home-menu__content'>
+                      <Text className='home-menu__label'>{action.label}</Text>
+                      {action.desc && (
+                        <Text className='home-menu__desc'>{action.desc}</Text>
+                      )}
+                    </View>
+                  </AppPressable>
+                </View>
               ))}
             </View>
           </SwiperItem>

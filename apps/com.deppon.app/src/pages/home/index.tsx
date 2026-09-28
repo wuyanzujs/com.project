@@ -223,7 +223,7 @@ const HomePage = () => {
           <View className='home-support-bar__divider' />
           <AppPressable
             flex
-            accessibilityLabel='企业服务'
+            accessibilityLabel='企业合作'
             className='home-support-bar__item'
             onPress={() => handleNavigate(APP_ROUTES.customerCenter)}
           >
@@ -232,7 +232,7 @@ const HomePage = () => {
               name='contact'
               size={24}
             />
-            <Text className='home-support-bar__text'>企业服务</Text>
+            <Text className='home-support-bar__text'>企业合作</Text>
           </AppPressable>
         </View>
 
@@ -246,7 +246,7 @@ const HomePage = () => {
           >
             <Text className='home-query-bar__title'>服务查询</Text>
             <Text className='home-query-bar__summary'>
-              网点/派送范围/收寄标准
+              网点/派送范围/收寄标准/企业合作
             </Text>
           </AppPressable>
           <AppPressable
