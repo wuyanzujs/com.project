@@ -9426,7 +9426,10 @@ const tests = [
   {
     name: 'order detail actions expose sender transit action set',
     run() {
-      const order = createOrderDetail()
+      // 投诉动作有 90 天下单时间窗，用相对时间避免夹具日期过期。
+      const order = createOrderDetail({
+        orderTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+      })
       const kinds = getActionKinds(
         createOrderDetailActions(order, {
           role: 'sender'
