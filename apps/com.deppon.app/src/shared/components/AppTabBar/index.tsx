@@ -58,7 +58,7 @@ const AppTabBar = ({ active }: AppTabBarProps) => {
                         : APP_STYLE_COLORS.text.heading
                     }
                     name={TAB_ICONS[item.name]}
-                    size={APP_NATIVE_TOKENS.icon.large}
+                    size={APP_NATIVE_TOKENS.icon.hero}
                     strokeWidth={
                       isActive
                         ? APP_NATIVE_TOKENS.icon.strokeActive

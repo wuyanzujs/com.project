@@ -21,20 +21,20 @@
   justify-content: center;
 }
 
+/* 图标盒跟图标等高：底栏高度由 $dp-tab-bar-height 兜底，触摸目标由整个 tab 项 */
+/* 承担，再撑一个最小热区反而会让图标缩小后在图标与文字之间留出空洞。 */
 .app-tab-bar__icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: $dp-touch-target-min;
-  min-height: $dp-touch-target-min;
   margin-bottom: $dp-space-1;
 }
 
 .app-tab-bar__text {
   color: $dp-color-text-heading;
-  font-size: $dp-font-size-caption;
+  font-size: $dp-font-size-label-small;
   font-weight: $dp-font-weight-regular;
-  line-height: $dp-line-height-caption;
+  line-height: $dp-line-height-label;
 }
 
 .app-tab-bar__text--active {

@@ -1,0 +1,111 @@
+@use '@/styles/_tokens.scss' as *;
+
+/* 弹窗：列表区灰底、白券卡 24 圆角，选中 3px 红描边加左上角标。 */
+.express-coupon-sheet__list {
+  background: $dp-color-coupon-list; padding-bottom: $dp-space-16;
+}
+.express-coupon-sheet__item {
+  padding: $dp-space-16 $dp-space-32 $dp-space-0;
+}
+.express-coupon-sheet__card {
+  position: relative; background: $dp-color-bg-card; border-radius: $dp-radius-24; border-width: 3px; border-style: solid; border-color: $dp-color-bg-card;
+}
+.express-coupon-sheet__card--selected {
+  border-color: $dp-color-danger-accent;
+}
+.express-coupon-sheet__ribbon {
+  position: absolute; top: -$dp-space-3; left: -$dp-space-3; z-index: 1; height: 40px; padding: $dp-space-0 $dp-space-16; border-top-left-radius: $dp-radius-24; border-bottom-right-radius: $dp-radius-24;
+}
+.express-coupon-sheet__ribbon--red {
+  background: $dp-color-danger-accent;
+}
+.express-coupon-sheet__ribbon--orange {
+  background: $dp-color-warning;
+}
+.express-coupon-sheet__ribbon-text {
+  color: $dp-color-text-inverse; font-size: $dp-font-size-micro; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-40;
+}
+.express-coupon-sheet__card-body {
+  display: flex; flex-direction: row; align-items: center; padding: $dp-space-32 $dp-space-0;
+}
+.express-coupon-sheet__left {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; width: 196px;
+}
+.express-coupon-sheet__fee {
+  display: flex; flex-direction: row; align-items: flex-end;
+}
+.express-coupon-sheet__fee-value {
+  color: $dp-color-danger-accent; font-size: $dp-font-size-coupon-amount; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-coupon-amount;
+}
+.express-coupon-sheet__fee-value--disabled {
+  color: $dp-color-text-subdued;
+}
+.express-coupon-sheet__fee-unit {
+  margin-bottom: $dp-space-12; color: $dp-color-danger-accent; font-size: $dp-font-size-title; line-height: $dp-line-height-40;
+}
+.express-coupon-sheet__fee-unit--disabled {
+  color: $dp-color-text-subdued;
+}
+.express-coupon-sheet__discount {
+  color: $dp-color-danger-accent; font-size: $dp-font-size-caption; line-height: $dp-line-height-32;
+}
+.express-coupon-sheet__divider {
+  align-self: stretch; margin: $dp-space-16 $dp-space-0; width: 2px; border-left-width: 2px; border-style: dashed; border-color: $dp-color-border;
+}
+.express-coupon-sheet__right {
+  display: flex; flex: 1; flex-direction: column; padding-left: $dp-space-20; padding-right: $dp-space-20;
+}
+.express-coupon-sheet__name {
+  color: $dp-color-text-heading; font-size: $dp-font-size-title; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-48;
+}
+.express-coupon-sheet__description {
+  margin-top: $dp-space-8; color: $dp-color-text-secondary; font-size: $dp-font-size-caption; line-height: $dp-line-height-32;
+}
+.express-coupon-sheet__meta {
+  display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-top: $dp-space-32;
+}
+.express-coupon-sheet__validity {
+  flex-shrink: 1; color: $dp-color-text-placeholder; font-size: $dp-font-size-body; line-height: $dp-line-height-36;
+}
+.express-coupon-sheet__detail {
+  flex-shrink: 0; display: flex; flex-direction: row; align-items: center;
+}
+.express-coupon-sheet__detail-text {
+  color: $dp-color-text-placeholder; font-size: $dp-font-size-body; line-height: $dp-line-height-36;
+}
+.express-coupon-sheet__detail-arrow {
+  width: $dp-space-24; height: $dp-space-24;
+}
+.express-coupon-sheet__note {
+  padding: $dp-space-0 $dp-space-32 $dp-space-16; color: $dp-color-danger-accent; font-size: $dp-font-size-caption; line-height: $dp-line-height-32;
+}
+.express-coupon-sheet__login {
+  align-items: center; justify-content: center; min-height: $dp-touch-target-min; margin: $dp-space-16 $dp-space-32 $dp-space-0; background: $dp-color-brand-muted; border-radius: $dp-radius-control;
+}
+.express-coupon-sheet__login-text {
+  color: $dp-color-brand; font-size: $dp-font-size-body; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-36;
+}
+.express-coupon-sheet__empty {
+  padding: $dp-space-80 $dp-space-32; color: $dp-color-text-supporting; font-size: $dp-font-size-label-large; line-height: $dp-line-height-42; text-align: center;
+}
+.express-coupon-sheet__end {
+  align-items: center; justify-content: center; height: 112px;
+}
+.express-coupon-sheet__end-text {
+  color: $dp-color-text-placeholder; font-size: $dp-font-size-label-large; line-height: $dp-line-height-42;
+}
+.express-coupon-sheet__actions {
+  display: flex; flex: 1; flex-direction: row; align-items: center;
+}
+.express-coupon-sheet__cancel {
+  display: flex; align-items: center; justify-content: center; width: 234px; height: 88px; margin-right: $dp-space-24; background: $dp-color-bg-card; border-radius: $dp-radius-44; border-width: 2px; border-style: solid; border-color: $dp-color-border-light;
+}
+.express-coupon-sheet__cancel-text {
+  color: $dp-color-text-secondary; font-size: $dp-font-size-title-large; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-48;
+}
+.express-coupon-sheet__confirm {
+  display: flex; flex: 1; align-items: center; justify-content: center; height: 88px; background: $dp-color-brand; border-radius: $dp-radius-44;
+}
+.express-coupon-sheet__confirm-text {
+  color: $dp-color-text-inverse; font-size: $dp-font-size-title-large; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-48;
+}

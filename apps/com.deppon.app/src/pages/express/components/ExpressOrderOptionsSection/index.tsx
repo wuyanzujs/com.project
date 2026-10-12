@@ -28,19 +28,23 @@ export function ExpressOrderOptionsSection({
         layout='row-start'
         onPress={onToggleAgreement}
       >
+        {/* 生产端是空心圆 radio：选中为白底 + 品牌色圆环 + 品牌色圆点。 */}
         <View
           className={
             agreementAccepted
-              ? 'express-order-options__checkbox express-order-options__checkbox--checked'
-              : 'express-order-options__checkbox'
+              ? 'express-order-options__radio express-order-options__radio--checked'
+              : 'express-order-options__radio'
           }
         >
-          <Text className='express-order-options__checkbox-text'>
-            {agreementAccepted ? '✓' : ''}
-          </Text>
+          {agreementAccepted ? (
+            <View className='express-order-options__radio-dot' />
+          ) : null}
         </View>
         <Text className='express-order-options__agreement-text'>
-          已阅读并同意《电子运单服务协议》
+          已读并同意
+        </Text>
+        <Text className='express-order-options__agreement-link'>
+          《电子运单服务协议》
         </Text>
       </AppPressable>
 

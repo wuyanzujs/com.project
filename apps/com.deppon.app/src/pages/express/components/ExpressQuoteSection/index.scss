@@ -1,80 +1,22 @@
 @use '@/styles/_tokens.scss' as *;
 
-.express-quote-action {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  min-height: $dp-touch-target-min;
-  padding: $dp-space-8 $dp-space-12;
-  background: $dp-color-brand-faint;
-  border-radius: $dp-radius-sm;
-}
-.express-quote-action__content {
-  flex: 1;
-  padding-right: $dp-space-12;
-}
-.express-quote-action__title {
-  display: flex;
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-bold;
-}
-.express-quote-action__summary {
-  display: flex;
-  margin-top: $dp-space-2;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-fine;
-  line-height: $dp-line-height-fine;
-}
-.express-quote-action__link {
-  color: $dp-color-brand;
-  font-size: $dp-font-size-caption;
-  font-weight: $dp-font-weight-bold;
-}
-.express-product-list {
-  margin-top: $dp-space-8;
-}
-.express-product {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  min-height: $dp-touch-target-min;
-  padding: $dp-space-10 $dp-space-12;
-  margin-bottom: $dp-space-8;
-  background: $dp-color-bg-subtle;
-  border-color: $dp-color-border-default;
-  border-radius: $dp-radius-sm;
-  border-width: $dp-border-width-hairline;
-}
-.express-product--active {
-  background: $dp-color-warning-background;
-  border-color: $dp-color-warning-emphasis;
-}
-.express-product__main {
-  flex: 1;
-  padding-right: $dp-space-12;
-}
-.express-product__name {
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-bold;
-}
-.express-product__desc {
-  display: flex;
-  margin-top: $dp-space-2;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-caption;
-}
-.express-product__meta {
-  display: flex;
-  margin-top: $dp-space-2;
-  color: $dp-color-text-placeholder;
-  font-size: $dp-font-size-legal;
-  line-height: $dp-line-height-legal;
-}
-.express-product__price {
-  color: $dp-color-warning-emphasis;
-  font-size: $dp-font-size-title;
-  font-weight: $dp-font-weight-bold;
-}
+/* 产品卡按整页生产截图 prod_scroll_coupon.png 量测（÷1.44）：卡 184×152、带 124×47、
+   勋章 30×29@(142,14)、时效行中心 74、价格中心 113；折尾为带上折卷曲单 View 近似，带实为渐变取底色。 */
+.express-quote-scroll { height: 168px; margin-top: $dp-space-8; }
+.express-quote-slot { width: 200px; height: 152px; margin-right: $dp-space-16; }
+.express-quote-card { position: relative; width: 184px; height: 152px; background: $dp-color-bg-card; border-color: $dp-color-quote-idle; border-radius: $dp-radius-16; border-width: $dp-border-width-hairline; }
+.express-quote-card--active { border-color: $dp-color-quote-active; border-width: 3px; }
+.express-quote-card__tail { position: absolute; left: 124px; top: 0; width: 60px; height: 18px; background: $dp-color-quote-active; border-bottom-left-radius: $dp-radius-16; border-top-right-radius: $dp-radius-16; }
+.express-quote-card__band { align-self: flex-start; align-items: center; width: 124px; height: 47px; background: $dp-color-quote-idle; border-bottom-right-radius: $dp-radius-24; border-top-left-radius: $dp-radius-16; }
+.express-quote-card__band--active { background: $dp-color-quote-active; }
+.express-quote-card__band-title { margin-left: $dp-space-24; color: $dp-color-text-ink; font-size: $dp-font-size-label-small; font-weight: $dp-font-weight-semibold; line-height: $dp-line-height-32; }
+.express-quote-card__band-title--active { color: $dp-color-text-inverse; }
+.express-quote-card__medal { position: absolute; left: 142px; top: 14px; width: 30px; height: 30px; }
+.express-quote-card__time { align-self: flex-start; margin-left: $dp-space-24; margin-top: $dp-space-12; color: $dp-color-brand; font-size: $dp-font-size-body-small; line-height: $dp-line-height-32; }
+.express-quote-card__price { display: flex; flex-direction: row; align-items: center; justify-content: center; height: $dp-line-height-40; margin-top: $dp-space-2; }
+.express-quote-card__price-mark { color: $dp-color-text-ink; font-size: $dp-font-size-body-small; line-height: $dp-line-height-40; }
+.express-quote-card__price-value { margin: $dp-space-0 $dp-space-2; color: $dp-color-text-ink; font-size: $dp-font-size-title; font-weight: $dp-font-weight-semibold; line-height: $dp-line-height-40; }
+.express-quote-status { display: flex; flex-direction: row; align-items: center; justify-content: space-between; min-height: $dp-touch-target-min; padding: $dp-space-8 $dp-space-12; background: $dp-color-brand-faint; border-radius: $dp-radius-sm; }
+.express-quote-status__text { flex: 1; color: $dp-color-text-supporting; font-size: $dp-font-size-caption; line-height: $dp-line-height-legal; }
+.express-quote-status__retry { align-items: center; justify-content: center; min-width: $dp-touch-target-min; min-height: $dp-control-height-compact; }
+.express-quote-status__retry-text { color: $dp-color-brand; font-size: $dp-font-size-caption; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-caption; }

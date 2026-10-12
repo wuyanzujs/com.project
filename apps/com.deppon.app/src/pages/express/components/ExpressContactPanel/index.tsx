@@ -1,21 +1,29 @@
-import { Text, View } from '@tarojs/components'
+import { Image, Text, View } from '@tarojs/components'
 
-import { getExpressContactFullAddress } from '@/services/express'
+import { getExpressContactFullAddress, maskExpressContactMobile } from '@/services/express'
 import type {
   ExpressContact,
   ExpressContactTarget,
   ExpressDraft
 } from '@/services/express'
 import { AppPressable } from '@/shared/components'
-import { AppIcon } from '@/shared/components/AppIcon'
-import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './index.scss'
+
+const CONTACT_IMAGES = {
+  sender: 'https://ca.deppon.com.cn/ows/assets/common/contact.png',
+  consignee: 'https://ca.deppon.com.cn/ows/assets/common/receive.png',
+  addressBook: 'https://ca.deppon.com.cn/ows/assets/contact/15.png',
+  // 圆形底与双向箭头一体的互换按钮图，与生产 App 同源。
+  reverse: 'https://ca.deppon.com.cn/ows/assets/common/reverse.png'
+}
 
 interface ExpressContactCardProps {
   contact: ExpressContact | null
   mark: '寄' | '收'
   markType: 'sender' | 'consignee'
+  /** 空态灰底：寄件人未填，或收件人未填且寄件人已填，双卡齐全时为白底。 */
+  background: boolean
   emptyText: string
   target: ExpressContactTarget
   onCreateContact: (target: ExpressContactTarget) => void
@@ -30,6 +38,7 @@ interface ExpressContactPanelProps {
 }
 
 function ExpressContactCard({
+  background,
   contact,
   emptyText,
   mark,
@@ -43,23 +52,21 @@ function ExpressContactCard({
     : emptyText
 
   return (
-    <View className={`express-contact-card express-contact-card--${markType}`}>
+    <View
+      className={`express-contact-card${background ? ' express-contact-card--bg' : ''}${contact ? ' express-contact-card--filled' : ''}`}
+    >
       <AppPressable
         accessibilityLabel={contentLabel}
-        className='express-contact-card__main'
+        className={`express-contact-card__main${contact ? ' express-contact-card__main--filled' : ''}`}
         flex
         layout='row-start'
         onPress={() => onCreateContact(target)}
       >
-        <View
-          className={`express-contact-card__mark express-contact-card__mark--${markType}`}
-        >
-          <Text
-            className={`express-contact-card__mark-text express-contact-card__mark-text--${markType}`}
-          >
-            {mark}
-          </Text>
-        </View>
+        <Image
+          className={`express-contact-card__mark${contact ? ' express-contact-card__mark--filled' : ''}`}
+          mode='aspectFit'
+          src={CONTACT_IMAGES[markType]}
+        />
         <View className='express-contact-card__content'>
           {contact ? (
             <>
@@ -68,7 +75,7 @@ function ExpressContactCard({
                   {contact.name}
                 </Text>
                 <Text className='express-contact-card__mobile'>
-                  {contact.mobile}
+                  {maskExpressContactMobile(contact.mobile)}
                 </Text>
               </View>
               <Text className='express-contact-card__address' numberOfLines={2}>
@@ -83,14 +90,20 @@ function ExpressContactCard({
       <AppPressable
         accessibilityLabel={`从地址簿选择${mark === '寄' ? '寄件人' : '收件人'}`}
         className='express-contact-card__address-book'
+        layout='row-start'
         onPress={() => onSelectContact(target)}
       >
-        <AppIcon
-          color={APP_STYLE_COLORS.text.secondary}
-          name='bookUser'
-          size={APP_NATIVE_TOKENS.icon.default}
-        />
-        <Text className='express-contact-card__address-book-text'>地址簿</Text>
+        <View className='express-contact-card__divider' />
+        <View className='express-contact-card__address-book-body'>
+          <Image
+            className='express-contact-card__address-book-icon'
+            mode='aspectFit'
+            src={CONTACT_IMAGES.addressBook}
+          />
+          <Text className='express-contact-card__address-book-text'>
+            地址簿
+          </Text>
+        </View>
       </AppPressable>
     </View>
   )
@@ -108,6 +121,7 @@ export function ExpressContactPanel({
   return (
     <View className='express-contact-panel'>
       <ExpressContactCard
+        background={!draft.sender}
         contact={draft.sender}
         emptyText='请选择寄件地址'
         mark='寄'
@@ -117,23 +131,21 @@ export function ExpressContactPanel({
         onSelectContact={onSelectContact}
       />
       {canSwap ? (
-        <View className='express-contact-panel__swap-row'>
-          <AppPressable
-            accessibilityLabel='互换寄收件人'
-            className='express-swap'
-            layout='row-center'
-            onPress={onSwapContacts}
-          >
-            <AppIcon
-              color={APP_STYLE_COLORS.text.supporting}
-              name='chevronDown'
-              size={APP_NATIVE_TOKENS.icon.small}
-            />
-            <Text className='express-swap__text'>互换</Text>
-          </AppPressable>
-        </View>
+        <AppPressable
+          accessibilityLabel='互换寄收件人'
+          className='express-contact-panel__reverse'
+          layout='center'
+          onPress={onSwapContacts}
+        >
+          <Image
+            className='express-contact-panel__reverse-icon'
+            mode='aspectFit'
+            src={CONTACT_IMAGES.reverse}
+          />
+        </AppPressable>
       ) : null}
       <ExpressContactCard
+        background={!draft.consignee && Boolean(draft.sender)}
         contact={draft.consignee}
         emptyText='寄到哪里去'
         mark='收'

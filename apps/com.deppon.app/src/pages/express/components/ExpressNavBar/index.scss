@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: space-between;
   min-height: $dp-control-height-large;
-  padding: 0 $dp-space-12;
+  padding: 0 $dp-space-4;
   background: $dp-color-bg-card;
 }
 .express-nav-bar__back {
@@ -19,7 +19,7 @@
 .express-nav-bar__title {
   flex: 1;
   color: $dp-color-text-heading;
-  font-size: $dp-font-size-title;
+  font-size: $dp-font-size-title-large;
   font-weight: $dp-font-weight-semibold;
   text-align: center;
 }
@@ -30,7 +30,7 @@
   min-height: $dp-touch-target-min;
 }
 .express-nav-bar__share-text {
-  margin-top: $dp-space-1;
+  margin-top: $dp-space-8;
   color: $dp-color-text-secondary;
   font-size: $dp-font-size-micro;
   line-height: $dp-line-height-fine;

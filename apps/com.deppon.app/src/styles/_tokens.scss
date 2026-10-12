@@ -30,6 +30,8 @@ $dp-color-info-background: #f0f9ff;
 $dp-color-info-border: #bae6fd;
 $dp-color-info-border-soft: #bfdbfe;
 $dp-color-info-background-strong: #dceeff;
+$dp-color-weather-background: #edf8ff;
+$dp-color-weather-text: #006eb8;
 
 $dp-color-success: #12b76a;
 $dp-color-success-emphasis: #16a34a;
@@ -52,6 +54,8 @@ $dp-color-warning-background: #fff7ed;
 $dp-color-warning-background-subtle: #fff3dc;
 $dp-color-warning-background-soft: #fef3c7;
 $dp-color-warning-border: #fed7aa;
+$dp-color-warning-surface: #ffeee3;
+$dp-color-warning-foreground: #ec8235;
 
 $dp-color-danger: #f04438;
 $dp-color-danger-accent: #f0484e;
@@ -81,6 +85,7 @@ $dp-color-bg-subtle: #f8fafc;
 $dp-color-bg-card: #ffffff;
 $dp-color-bg-card-compact: #fff;
 $dp-color-bg-muted: #eef2f6;
+$dp-color-bg-segment: #f1f1f1;
 $dp-color-bg-disabled: #f2f4f7;
 $dp-color-bg-track: #e2e2e2;
 $dp-color-border: #d0d5dd;
@@ -100,6 +105,28 @@ $dp-color-overlay-soft: rgba(22, 24, 26, 0.42);
 $dp-color-overlay: rgba(22, 24, 26, 0.48);
 $dp-color-overlay-strong: rgba(16, 24, 40, 0.48);
 $dp-color-overlay-heavy: rgba(22, 24, 26, 0.72);
+/* 寄快递页底部弹窗遮罩，生产截图量测值（白底压暗至 #bdbdbd）。 */
+$dp-color-overlay-sheet: rgba(0, 0, 0, 0.26);
+
+/* 付款方式弹窗：选中卡片描边与单选圆钮，生产截图量测值。 */
+$dp-color-picker-active: #00a0f2;
+$dp-color-picker-radio: #147dff;
+$dp-color-picker-tag-bg: #eaf5ff;
+
+/* 期望上门时间弹窗：左列日期底、夜间横幅渐变端与文字色，生产截图量测值。 */
+$dp-color-pickup-column: #f5f7fa;
+$dp-color-night-banner-text: #003c8d;
+$dp-color-night-banner-edge: #d6e1ff;
+
+/* 优惠券弹窗：列表区底色，生产截图量测值。 */
+$dp-color-coupon-list: #f7f7f7;
+
+/* 付款方式弹窗：生产为 #f2fbff→#f5f7fa 渐变，RN 取选项卡所在上部的主色作纯色近似。 */
+$dp-color-sheet-payment: #f2fbff;
+
+/* 产品价格时效卡：未选中浅紫描边/标题带、选中深藏青描边/标题带，生产截图量测值。 */
+$dp-color-quote-idle: #edefff;
+$dp-color-quote-active: #363b4d;
 
 $dp-font-size-micro: 18px;
 $dp-font-size-fine: 20px;
@@ -123,6 +150,8 @@ $dp-font-size-page-title: 42px;
 $dp-font-size-display: 44px;
 $dp-font-size-hero: 54px;
 $dp-font-size-hero-large: 56px;
+/* 优惠券弹窗左区大字面额（生产弹窗量测值）。 */
+$dp-font-size-coupon-amount: 68px;
 
 $dp-line-height-28: 28px;
 $dp-line-height-30: 30px;
@@ -165,6 +194,8 @@ $dp-line-height-option: $dp-line-height-72;
 $dp-line-height-auth-field: $dp-line-height-80;
 $dp-line-height-avatar: $dp-line-height-88;
 $dp-line-height-hero-mark: $dp-line-height-92;
+/* 优惠券弹窗左区面额行高（生产弹窗量测值）。 */
+$dp-line-height-coupon-amount: 78px;
 
 $dp-font-weight-400: 400;
 $dp-font-weight-500: 500;
@@ -175,6 +206,7 @@ $dp-font-weight-medium: $dp-font-weight-400;
 $dp-font-weight-semibold: $dp-font-weight-700;
 $dp-font-weight-bold: $dp-font-weight-700;
 
+$dp-space-0: 0;
 $dp-space-1: 1px;
 $dp-space-2: 2px;
 $dp-space-3: 3px;
@@ -215,6 +247,7 @@ $dp-card-padding: $dp-space-24;
 
 $dp-radius-1: 1px;
 $dp-radius-3: 3px;
+$dp-radius-4: 4px;
 $dp-radius-6: 6px;
 $dp-radius-8: 8px;
 $dp-radius-9: 9px;

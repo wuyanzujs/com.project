@@ -1,9 +1,8 @@
-import { Text, View } from '@tarojs/components'
+import { Image, Text, View } from '@tarojs/components'
 
 import type { ExpressDraft } from '@/services/express'
 import { AppPressable } from '@/shared/components'
-import { AppIcon } from '@/shared/components/AppIcon'
-import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
+import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon'
 
 import './index.scss'
 
@@ -37,10 +36,10 @@ export function ExpressDeliveryPointField({
       <Text className='express-delivery-point-field__action'>
         {selected ? '更换' : '选择'}
       </Text>
-      <AppIcon
-        color={APP_STYLE_COLORS.text.supporting}
-        name='chevronRight'
-        size={APP_NATIVE_TOKENS.icon.small}
+      <Image
+        className='express-delivery-point-field__arrow'
+        mode='aspectFit'
+        src={APP_IMAGE_ICONS.arrowRightGrey}
       />
     </AppPressable>
   )

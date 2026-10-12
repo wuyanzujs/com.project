@@ -1,0 +1,31 @@
+@use '@/styles/_tokens.scss' as *;
+
+.app-switch {
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-switch__track {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  width: 80px;
+  height: 40px;
+  padding: $dp-space-4;
+  background: $dp-color-bg-track;
+  border-radius: $dp-radius-pill;
+}
+
+.app-switch__track--on {
+  justify-content: flex-end;
+  background: $dp-color-brand;
+}
+
+.app-switch__thumb {
+  width: 32px;
+  height: 32px;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-16;
+}

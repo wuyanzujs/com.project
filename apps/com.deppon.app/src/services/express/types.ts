@@ -205,6 +205,15 @@ export interface ExpressProductQuote {
   discount?: Array<{ marketCode: string; reduceFee: number }> | null
   couponRankType?: string
   billWeight: number | null
+  // 生产端产品卡会用到的时间产品别名与时效路由；同一接口会返回，只是
+  // 之前没消费，这里补上类型声明。
+  mainRoutePref?: string | null
+  shortDistance?: string | null
+  deliveryNature?: string | null
+  timeProducts?: Array<{
+    timeProductsCode: string
+    timeProductsName: string
+  }> | null
 }
 
 export type ExpressScanRole =

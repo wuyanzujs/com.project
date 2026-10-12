@@ -1,4 +1,4 @@
-import { Input, Text, View } from '@tarojs/components'
+import { Image, Input, Text, View } from '@tarojs/components'
 
 import { useEffect, useState } from 'react'
 
@@ -12,8 +12,8 @@ import {
 } from '@/services/express'
 import type { ExpressDraft } from '@/services/express'
 import { AppPressable } from '@/shared/components'
-import { AppIcon } from '@/shared/components/AppIcon'
-import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
+import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon'
+import { APP_NATIVE_TOKENS } from '@/styles/nativeTokens'
 
 import type { ExpressCollectionController } from '../../hooks/useExpressCollection'
 
@@ -170,10 +170,10 @@ export function ExpressCollectionCard({
                   : '请选择已审核通过的账户'}
               </Text>
             </View>
-            <AppIcon
-              color={APP_STYLE_COLORS.text.supporting}
-              name='chevronRight'
-              size={APP_NATIVE_TOKENS.icon.small}
+            <Image
+              className='express-collection__arrow'
+              mode='aspectFit'
+              src={APP_IMAGE_ICONS.arrowRightGrey}
             />
           </AppPressable>
 

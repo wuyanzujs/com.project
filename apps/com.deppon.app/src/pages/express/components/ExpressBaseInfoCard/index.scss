@@ -1,8 +1,8 @@
 @use '@/styles/_tokens.scss' as *;
 
 .express-base-info {
-  margin-bottom: $dp-space-14;
-  padding: $dp-space-4 $dp-space-20;
+  margin-bottom: $dp-space-16;
+  padding: $dp-space-0 $dp-space-24;
   background: $dp-color-bg-card;
-  border-radius: $dp-radius-card;
+  border-radius: $dp-radius-32;
 }

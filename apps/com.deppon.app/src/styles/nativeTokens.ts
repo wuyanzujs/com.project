@@ -40,7 +40,8 @@ export const APP_STYLE_COLORS = {
     card: '#ffffff',
     muted: '#eef2f6',
     disabled: '#f2f4f7',
-    track: '#e2e2e2'
+    track: '#e2e2e2',
+    sheetPayment: '#f2fbff'
   },
   border: {
     strong: '#d0d5dd',

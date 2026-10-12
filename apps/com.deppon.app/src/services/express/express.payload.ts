@@ -7,6 +7,7 @@ import {
 } from './deliveryPreference.rules'
 import {
   getExpressContactRegion,
+  getExpressContactRegionAddress,
   getNowText,
   toFiniteNumber,
   trimText
@@ -134,9 +135,9 @@ export function buildFreightRequest(
   return {
     channel: APP_RUNTIME_CONFIG.omsChannel,
     ...insuranceFields,
-    originalsStreet: getExpressContactRegion(draft.consignee),
+    originalsStreet: getExpressContactRegionAddress(draft.consignee),
     receiverAddress: draft.consignee.address,
-    originalsaddress: getExpressContactRegion(draft.sender),
+    originalsaddress: getExpressContactRegionAddress(draft.sender),
     shipperAddress: draft.sender.address,
     reciveLoanType: getPpcCollectionType(draft.collection.type),
     returnBillType: getExpressReturnBillPpcType(returnBill.type),

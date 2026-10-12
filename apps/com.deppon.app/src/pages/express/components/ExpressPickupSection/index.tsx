@@ -1,11 +1,13 @@
-import { Text, View } from '@tarojs/components'
+import { Image, Text, View } from '@tarojs/components'
+
+import { useState } from 'react'
 
 import type { ExpressDraft, ExpressFlag } from '@/services/express'
 import { AppPressable } from '@/shared/components'
-import { AppIcon } from '@/shared/components/AppIcon'
+import { AppIcon, APP_IMAGE_ICONS } from '@/shared/components/AppIcon'
 import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-import { ExpressPickupTimeCard } from '../ExpressPickupTimeCard'
+import { ExpressPickupTimeSheet } from '../ExpressPickupTimeSheet'
 
 import type { ExpressPickupTimeController } from '../../hooks/useExpressPickupTime'
 
@@ -37,12 +39,41 @@ export function ExpressPickupSection({
   onOpenStations
 }: ExpressPickupSectionProps) {
   const isDoorPickup = pickup.dispatch === 'Y'
+  // 生产端「期望上门时间」行点击打开底部弹窗，不在页内展开时段面板。
+  const [timeSheetVisible, setTimeSheetVisible] = useState(false)
   const pickupTime = pickup.timeSlot || pickup.time || '今天 一小时内'
   const stationName = pickup.stationName || '查看附近服务点'
+
+  const handleOpenTimeSheet = () => {
+    setTimeSheetVisible(true)
+    pickupTimeController.onQuery()
+  }
 
   return (
     <View className='express-pickup-section'>
       <View className='express-pickup-section__modes'>
+        {/* 生产端分段器三件套：顶部灰垫片衬出白盖片凸角露出的灰、主灰块带 32 底圆角、白盖片 32 凸角压顶。 */}
+        <View
+          className={
+            isDoorPickup
+              ? 'express-pickup-section__notch express-pickup-section__notch--top-right'
+              : 'express-pickup-section__notch express-pickup-section__notch--top-left'
+          }
+        />
+        <View
+          className={
+            isDoorPickup
+              ? 'express-pickup-section__notch express-pickup-section__notch--main-right'
+              : 'express-pickup-section__notch express-pickup-section__notch--main-left'
+          }
+        />
+        <View
+          className={
+            isDoorPickup
+              ? 'express-pickup-section__cap express-pickup-section__cap--left'
+              : 'express-pickup-section__cap express-pickup-section__cap--right'
+          }
+        />
         <AppPressable
           accessibilityLabel='选择上门取件'
           className={
@@ -87,9 +118,42 @@ export function ExpressPickupSection({
 
       {isDoorPickup ? (
         <View className='express-pickup-section__body'>
+          {hasSenderAddress ? (
+            <>
+              <AppPressable
+                accessibilityLabel={`期望上门时间${pickupTime}`}
+                block
+                className='express-pickup-section__row'
+                layout='row-start'
+                onPress={handleOpenTimeSheet}
+              >
+                <Text className='express-pickup-section__label express-pickup-section__label--flush'>
+                  期望上门时间
+                </Text>
+                <Text
+                  className='express-pickup-section__value'
+                  numberOfLines={1}
+                >
+                  {pickupTime}
+                </Text>
+                <Image
+                  className='express-pickup-section__chevron'
+                  mode='aspectFit'
+                  src={APP_IMAGE_ICONS.arrowRightGrey}
+                />
+              </AppPressable>
+
+              <ExpressPickupTimeSheet
+                controller={pickupTimeController}
+                visible={timeSheetVisible}
+                onClose={() => setTimeSheetVisible(false)}
+              />
+            </>
+          ) : null}
+
           <View className='express-pickup-section__contact-row'>
             <View className='express-pickup-section__contact-label'>
-              <Text className='express-pickup-section__label express-pickup-section__label--contact'>
+              <Text className='express-pickup-section__label express-pickup-section__label--flush'>
                 提前电话联系
               </Text>
               <Text className='express-pickup-section__required'>必填</Text>
@@ -113,7 +177,11 @@ export function ExpressPickupSection({
                           ? 'express-pickup-section__radio express-pickup-section__radio--active'
                           : 'express-pickup-section__radio'
                       }
-                    />
+                    >
+                      {selected ? (
+                        <View className='express-pickup-section__radio-dot' />
+                      ) : null}
+                    </View>
                     <Text className='express-pickup-section__contact-text'>
                       {option.label}
                     </Text>
@@ -122,45 +190,6 @@ export function ExpressPickupSection({
               })}
             </View>
           </View>
-
-          {hasSenderAddress ? (
-            <>
-              <AppPressable
-                accessibilityLabel={`期望上门时间${pickupTime}`}
-                block
-                className='express-pickup-section__row'
-                layout='row-start'
-                onPress={pickupTimeController.onQuery}
-              >
-                <AppIcon
-                  color={APP_STYLE_COLORS.brand.default}
-                  name='clock'
-                  size={APP_NATIVE_TOKENS.icon.small}
-                />
-                <Text className='express-pickup-section__label'>
-                  期望上门时间
-                </Text>
-                <Text
-                  className='express-pickup-section__value'
-                  numberOfLines={1}
-                >
-                  {pickupTime}
-                </Text>
-                <View className='express-pickup-section__chevron'>
-                  <AppIcon
-                    color={APP_STYLE_COLORS.text.supporting}
-                    name='chevronDown'
-                    size={APP_NATIVE_TOKENS.icon.small}
-                  />
-                </View>
-              </AppPressable>
-
-              <ExpressPickupTimeCard
-                controller={pickupTimeController}
-                pickup={pickup}
-              />
-            </>
-          ) : null}
         </View>
       ) : (
         <View className='express-pickup-section__body'>
@@ -180,13 +209,11 @@ export function ExpressPickupSection({
             <Text className='express-pickup-section__value' numberOfLines={1}>
               {stationName}
             </Text>
-            <View className='express-pickup-section__chevron'>
-              <AppIcon
-                color={APP_STYLE_COLORS.text.supporting}
-                name='chevronDown'
-                size={APP_NATIVE_TOKENS.icon.small}
-              />
-            </View>
+            <Image
+              className='express-pickup-section__chevron'
+              mode='aspectFit'
+              src={APP_IMAGE_ICONS.arrowRightGrey}
+            />
           </AppPressable>
         </View>
       )}

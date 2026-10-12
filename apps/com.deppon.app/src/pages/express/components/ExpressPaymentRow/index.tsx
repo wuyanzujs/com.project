@@ -1,32 +1,18 @@
-import { Text, View } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import { Image, Text, View } from '@tarojs/components'
+
+import { useState } from 'react'
 
 import type {
   ExpressMonthlyPayView,
   ExpressPaymentType
 } from '@/services/express'
 import { AppPressable } from '@/shared/components'
-import { AppIcon } from '@/shared/components/AppIcon'
-import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
+import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon'
 
 import { ExpressMonthlyPayCard } from '../ExpressMonthlyPayCard'
+import { ExpressPaymentSheet } from '../ExpressPaymentSheet'
 
 import './index.scss'
-
-const PAYMENT_OPTIONS: Array<{ label: string; value: ExpressPaymentType }> = [
-  {
-    label: '寄付现结',
-    value: 'MP'
-  },
-  {
-    label: '到付',
-    value: 'PAY_ARIIVE'
-  },
-  {
-    label: '月结',
-    value: 'MONTH_PAY'
-  }
-]
 
 interface ExpressPaymentRowProps {
   monthlyPayView: ExpressMonthlyPayView | null
@@ -41,24 +27,15 @@ export function ExpressPaymentRow({
   onMonthlyPayAction,
   onSelect
 }: ExpressPaymentRowProps) {
+  const [sheetVisible, setSheetVisible] = useState(false)
   const label =
-    PAYMENT_OPTIONS.find(option => option.value === value)?.label || '请选择'
-
-  const handlePress = () => {
-    void Taro.showActionSheet({
-      itemList: PAYMENT_OPTIONS.map(option => option.label)
-    })
-      .then(result => {
-        const option = PAYMENT_OPTIONS[result.tapIndex]
-
-        if (option) {
-          onSelect(option.value)
-        }
-      })
-      .catch(() => {
-        // 用户取消选择，保持当前付款方式。
-      })
-  }
+    value === 'MP'
+      ? '寄付现结'
+      : value === 'PAY_ARIIVE'
+        ? '到付'
+        : value === 'MONTH_PAY'
+          ? '月结'
+          : '请选择'
 
   return (
     <View className='express-payment-row'>
@@ -67,21 +44,34 @@ export function ExpressPaymentRow({
         block
         className='express-payment-row__entry'
         layout='row-start'
-        onPress={handlePress}
+        onPress={() => setSheetVisible(true)}
       >
         <Text className='express-payment-row__label'>付款方式</Text>
+        {/* 生产端角标贴在右侧值文字前面，不跟在标签后。 */}
         {value === 'MP' ? (
-          <Text className='express-payment-row__badge'>推荐使用储值卡</Text>
+          <View className='express-payment-row__badge'>
+            <Text className='express-payment-row__badge-text'>
+              推荐使用储值卡
+            </Text>
+            <View className='express-payment-row__badge-arrow' />
+          </View>
         ) : null}
         <Text className='express-payment-row__value' numberOfLines={1}>
           {label}
         </Text>
-        <AppIcon
-          color={APP_STYLE_COLORS.text.supporting}
-          name='chevronRight'
-          size={APP_NATIVE_TOKENS.icon.small}
+        <Image
+          className='express-payment-row__arrow'
+          mode='aspectFit'
+          src={APP_IMAGE_ICONS.arrowRightGrey}
         />
       </AppPressable>
+
+      <ExpressPaymentSheet
+        visible={sheetVisible}
+        value={value}
+        onClose={() => setSheetVisible(false)}
+        onSelect={onSelect}
+      />
 
       {monthlyPayView ? (
         <ExpressMonthlyPayCard

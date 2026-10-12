@@ -6,15 +6,18 @@ import { useCallback, useEffect, useState } from 'react'
 import { contactSelection } from '@/services/contact'
 import {
   clearExpressScanContext,
+  createExpressProductQuoteView,
   createExpressScanContextView,
   createExpressDraft,
   expressDraftBridge,
   expressDraftStorage,
+  expressGoodsBridge,
   expressPrivacyStorage,
   mapContactToExpressContact,
   setExpressContact,
   setExpressPrivacyProtection,
   swapExpressContacts,
+  updateExpressGoods,
   updateExpressPickup,
   updateExpressService
 } from '@/services/express'
@@ -46,6 +49,8 @@ import { ExpressPrivacyCard } from './components/ExpressPrivacyCard'
 import { ExpressQuoteSection } from './components/ExpressQuoteSection'
 import { ExpressServiceSection } from './components/ExpressServiceSection'
 import { ExpressSubmitBar } from './components/ExpressSubmitBar'
+import { ExpressWeatherBanner } from './components/ExpressWeatherBanner'
+import { useExpressAutoQuote } from './hooks/useExpressAutoQuote'
 import { useExpressCollection } from './hooks/useExpressCollection'
 import { useExpressCoupons } from './hooks/useExpressCoupons'
 import { useExpressDeliveryPoint } from './hooks/useExpressDeliveryPoint'
@@ -59,12 +64,13 @@ import { useExpressQuote } from './hooks/useExpressQuote'
 import { useExpressReturnBill } from './hooks/useExpressReturnBill'
 import { useExpressSubmit } from './hooks/useExpressSubmit'
 import { useExpressWarehouse } from './hooks/useExpressWarehouse'
+import { useExpressWeather } from './hooks/useExpressWeather'
 
 import './index.scss'
 
 function getProductPriceText(product: ExpressProductQuote | null) {
   if (!product || product.totalfee === null || product.totalfee === undefined) {
-    return '--'
+    return '¥--'
   }
 
   return `¥${product.totalfee}`
@@ -123,16 +129,36 @@ const ExpressPage = () => {
     setDraft(current => updateExpressPickup(current, patch))
   }, [])
 
-  const goods = useExpressGoods({ draft, setDraft, restoreQuotes })
+  const goods = useExpressGoods({ setDraft, restoreQuotes })
   const monthlyPay = useExpressMonthlyPay({ draft, updateService })
   const submit = useExpressSubmit({ draft, warehouseController })
   const entryNav = useExpressEntryNavigation({ draft })
+  const { weatherText } = useExpressWeather({ draft })
+
+  useExpressAutoQuote({
+    draft,
+    quotes,
+    quoteStatus,
+    onQuote: handleQuote
+  })
+
+  const handleOpenGoods = useCallback(() => {
+    navigateToAppRoute(APP_ROUTES.expressGoods)
+  }, [])
 
   useEffect(() => {
     expressDraftStorage.save(draft)
   }, [draft])
 
   useDidShow(() => {
+    // 物品信息页确认后回传货物（对齐生产端 redux 存货 + onShow 重算价格）。
+    const goodsPayload = expressGoodsBridge.consume()
+
+    if (goodsPayload) {
+      restoreQuotes([])
+      setDraft(current => updateExpressGoods(current, goodsPayload.goods))
+    }
+
     const carriedDraft = expressDraftBridge.consume()
 
     if (carriedDraft) {
@@ -258,10 +284,15 @@ const ExpressPage = () => {
     })
   }
 
+  const selectedProductDetailView = draft.selectedProduct
+    ? createExpressProductQuoteView(draft.selectedProduct)
+    : null
+
   return (
     <AppPage
       footer={
         <ExpressSubmitBar
+          detailView={selectedProductDetailView}
           priceText={getProductPriceText(draft.selectedProduct)}
           quoteLoading={quoteStatus === 'loading'}
           submitting={submit.submiting}
@@ -296,17 +327,7 @@ const ExpressPage = () => {
         />
 
         <ExpressBaseInfoCard>
-          <ExpressGoodsSection
-            plain
-            goods={draft.goods}
-            goodsLoading={goods.goodsLoading}
-            goodsMessage={goods.goodsMessage}
-            goodsSuggestions={goods.goodsSuggestions}
-            onGoodsChange={goods.updateGoods}
-            onGoodsNameInput={goods.handleGoodsNameInput}
-            onQueryGoodsNames={goods.handleQueryGoodsNames}
-            onSelectGoodsName={goods.handleSelectGoodsName}
-          />
+          <ExpressGoodsSection goods={draft.goods} onPress={handleOpenGoods} />
 
           <ExpressPaymentRow
             monthlyPayView={monthlyPay.monthlyPayView}
@@ -314,6 +335,21 @@ const ExpressPage = () => {
             onMonthlyPayAction={handleOpenMonthlyPayAction}
             onSelect={monthlyPay.handlePaymentTypeSelect}
           />
+
+          {/* 生产端把价格时效块嵌在基础信息卡内：付款方式与防水提示之间。 */}
+          {quotes.length > 0 || quoteStatus === 'loading' || draft.quoteStaleReason ? (
+            <ExpressQuoteSection
+              plain
+              quoteStaleReason={draft.quoteStaleReason}
+              quoteStatus={quoteStatus}
+              quotes={quotes}
+              selectedProduct={draft.selectedProduct}
+              onQuote={handleQuote}
+              onSelectProduct={handleSelectProduct}
+            />
+          ) : null}
+
+          <ExpressWeatherBanner text={weatherText} onPress={handleOpenGoods} />
 
           <ExpressCouponCard
             controller={couponController}
@@ -350,38 +386,30 @@ const ExpressPage = () => {
           onServiceChange={updateService}
         />
 
-        {quotes.length > 0 || quoteStatus === 'loading' ? (
-          <ExpressQuoteSection
-            pickup={draft.pickup}
-            quoteStaleReason={draft.quoteStaleReason}
-            quoteStatus={quoteStatus}
-            quotes={quotes}
-            selectedProduct={draft.selectedProduct}
-            onQueryPickupTime={pickupTimeController.onQuery}
-            onQuote={handleQuote}
-            onSelectProduct={handleSelectProduct}
-          />
-        ) : null}
-
         <ExpressPrivacyCard
           value={draft.service.privacyProtection}
           onChange={handlePrivacyProtectionChange}
           onOpenTerms={handleOpenPrivacyTerms}
         />
 
-        <ExpressOrderOptionsSection
-          agreementAccepted={draft.agreementAccepted}
-          submitMessage={submit.submitMessage}
-          validationMessages={
-            submit.validation.valid ? [] : submit.validation.messages
-          }
-          onToggleAgreement={() =>
-            setDraft(current => ({
-              ...current,
-              agreementAccepted: !current.agreementAccepted
-            }))
-          }
-        />
+        {/* 生产端在货物名称与收寄双方地址齐全后才展示协议行。 */}
+        {draft.goods.name &&
+        draft.sender?.address &&
+        draft.consignee?.address ? (
+          <ExpressOrderOptionsSection
+            agreementAccepted={draft.agreementAccepted}
+            submitMessage={submit.submitMessage}
+            validationMessages={
+              submit.validation.valid ? [] : submit.validation.messages
+            }
+            onToggleAgreement={() =>
+              setDraft(current => ({
+                ...current,
+                agreementAccepted: !current.agreementAccepted
+              }))
+            }
+          />
+        ) : null}
       </ScrollView>
     </AppPage>
   )

@@ -15,9 +15,8 @@
   justify-content: space-between;
 }
 
-.express-collection__header-content {
-  flex: 1;
-}
+.express-collection__header-content { flex: 1; }
+.express-collection__arrow { flex-shrink: 0; width: $dp-space-24; height: $dp-space-24; }
 
 .express-collection__summary,
 .express-collection__hint {

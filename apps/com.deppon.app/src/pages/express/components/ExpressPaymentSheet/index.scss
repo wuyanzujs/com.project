@@ -1,0 +1,48 @@
+@use '@/styles/_tokens.scss' as *;
+
+/* 选项卡：白底 24 圆角，选中 2px 蓝描边（生产量测 #00a0f2），未选无边框。 */
+.express-payment-sheet__options {
+  display: flex; flex-direction: column; padding: $dp-space-0 $dp-space-32;
+}
+.express-payment-sheet__option {
+  display: flex; flex-direction: row; align-items: center; justify-content: space-between; min-height: 134px; padding: $dp-space-20 $dp-space-32; background: $dp-color-bg-card; border-radius: $dp-radius-24; border-width: 2px; border-style: solid; border-color: $dp-color-bg-card;
+}
+.express-payment-sheet__option--selected {
+  border-color: $dp-color-picker-active;
+}
+.express-payment-sheet__option--stacked {
+  margin-top: $dp-space-16;
+}
+.express-payment-sheet__option-main {
+  display: flex; flex: 1; flex-direction: column; justify-content: center;
+}
+.express-payment-sheet__option-head {
+  display: flex; flex-direction: row; align-items: center;
+}
+.express-payment-sheet__option-label {
+  color: $dp-color-text-strong; font-size: $dp-font-size-title; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-48;
+}
+.express-payment-sheet__option-tag {
+  display: flex; align-items: center; height: 36px; margin-left: $dp-space-10; padding: $dp-space-0 $dp-space-10; background: $dp-color-picker-tag-bg; border-radius: $dp-radius-18;
+}
+.express-payment-sheet__option-tag-text {
+  color: $dp-color-brand; font-size: $dp-font-size-fine; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-28;
+}
+.express-payment-sheet__option-description {
+  margin-top: $dp-space-8; color: $dp-color-text-placeholder; font-size: $dp-font-size-body; line-height: $dp-line-height-36;
+}
+.express-payment-sheet__option-description--selected {
+  color: $dp-color-text-body;
+}
+.express-payment-sheet__radio {
+  display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; margin-left: $dp-space-24; border-radius: $dp-radius-round; border-width: 2px; border-style: solid; border-color: $dp-color-border;
+}
+.express-payment-sheet__radio--active {
+  background: $dp-color-picker-radio; border-color: $dp-color-picker-radio;
+}
+.express-payment-sheet__confirm {
+  display: flex; flex: 1; align-items: center; justify-content: center; height: 88px; background: $dp-color-brand; border-radius: $dp-radius-44;
+}
+.express-payment-sheet__confirm-text {
+  color: $dp-color-text-inverse; font-size: $dp-font-size-title-large; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-48;
+}

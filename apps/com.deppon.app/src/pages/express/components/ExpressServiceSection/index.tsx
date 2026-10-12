@@ -1,4 +1,4 @@
-import { Input, Text, View } from '@tarojs/components'
+import { Image, Input, Text, View } from '@tarojs/components'
 
 import { useState } from 'react'
 
@@ -13,7 +13,7 @@ import type {
   ExpressScanContextView
 } from '@/services/express'
 import { AppPressable } from '@/shared/components'
-import { AppIcon } from '@/shared/components/AppIcon'
+import { AppIcon, APP_IMAGE_ICONS } from '@/shared/components/AppIcon'
 import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import { ExpressCollectionCard } from '../ExpressCollectionCard'
@@ -110,7 +110,7 @@ export function ExpressServiceSection({
     packaging.woodenCodes.length ||
     packaging.unpackingCodes.length
   )
-  const summary = [
+  const summaryParts = [
     service.deliveryMode !== 'PICKNOTUPSTAIRS' && deliveryLabel,
     packagingSelected && '包装服务',
     service.passwordSigning === 'Y' && '签收密码',
@@ -121,9 +121,14 @@ export function ExpressServiceSection({
       getExpressDeliveryPreferenceOption(deliveryPreference.type).label,
     warehouse.enabled && '送货进仓',
     remark && '备注'
-  ]
-    .filter(Boolean)
-    .join('、')
+  ].filter(Boolean)
+  // 生产端摘要最多展示 3 项；含代收货款时只留 2 项，超出用「…」截断。
+  const summaryLimit = summaryParts.includes('代收货款') ? 2 : 3
+  const summary =
+    summaryParts.length > summaryLimit
+      ? `${summaryParts.slice(0, summaryLimit).join('、')}…`
+      : summaryParts.join('、')
+  const hasSummary = summaryParts.length > 0
 
   return (
     <View className='express-value-added'>
@@ -138,19 +143,34 @@ export function ExpressServiceSection({
         <AppPressable
           accessibilityLabel={expanded ? '收起增值服务' : '展开增值服务'}
           block
-          className='express-service-entry'
+          className='express-service-entry express-service-entry--fold'
           layout='row-start'
           onPress={() => setExpanded(current => !current)}
         >
           <Text className='express-service-entry__title'>增值服务</Text>
-          <Text className='express-service-entry__summary' numberOfLines={1}>
-            {summary || '代收货款、签收单、送货方式'}
+          <Text
+            className={
+              hasSummary
+                ? 'express-service-entry__summary'
+                : 'express-service-entry__summary express-service-entry__summary--muted'
+            }
+            numberOfLines={1}
+          >
+            {summary || '代收货款、签收单…'}
           </Text>
-          <AppIcon
-            color={APP_STYLE_COLORS.text.supporting}
-            name={expanded ? 'chevronUp' : 'chevronDown'}
-            size={APP_NATIVE_TOKENS.icon.small}
-          />
+          {expanded ? (
+            <AppIcon
+              color={APP_STYLE_COLORS.text.supporting}
+              name='chevronUp'
+              size={APP_NATIVE_TOKENS.icon.small}
+            />
+          ) : (
+            <Image
+              className='express-service-entry__arrow'
+              mode='aspectFit'
+              src={APP_IMAGE_ICONS.arrowRightGrey}
+            />
+          )}
         </AppPressable>
 
         {expanded ? (
@@ -294,7 +314,13 @@ export function ExpressServiceSection({
               onPress={() => setRemarkExpanded(current => !current)}
             >
               <Text className='express-service-entry__title'>备注</Text>
-              <Text className='express-service-entry__summary'>
+              <Text
+                className={
+                  remark
+                    ? 'express-service-entry__summary'
+                    : 'express-service-entry__summary express-service-entry__summary--muted'
+                }
+              >
                 {remark ? '已填写' : '选填'}
               </Text>
               <AppIcon
