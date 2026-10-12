@@ -19,7 +19,7 @@ import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
 import { dialPhone } from '@/shared/platform/phone'
 import { scanAppCode } from '@/shared/platform/scan'
-import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
+import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import Banner from './components/banner'
 import Menu from './components/menu'
@@ -202,7 +202,7 @@ const HomePage = () => {
             <AppIcon
               color={APP_STYLE_COLORS.text.heading}
               name='phone'
-              size={24}
+              size={APP_NATIVE_TOKENS.icon.large}
             />
             <Text className='home-support-bar__text'>95353</Text>
           </AppPressable>
@@ -216,7 +216,7 @@ const HomePage = () => {
             <AppIcon
               color={APP_STYLE_COLORS.text.heading}
               name='headphones'
-              size={24}
+              size={APP_NATIVE_TOKENS.icon.large}
             />
             <Text className='home-support-bar__text'>在线客服</Text>
           </AppPressable>
@@ -230,7 +230,7 @@ const HomePage = () => {
             <AppIcon
               color={APP_STYLE_COLORS.text.heading}
               name='contact'
-              size={24}
+              size={APP_NATIVE_TOKENS.icon.large}
             />
             <Text className='home-support-bar__text'>企业合作</Text>
           </AppPressable>
