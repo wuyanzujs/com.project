@@ -136,7 +136,7 @@ const rnBehaviorContractChecks = [
   },
   {
     filePath: path.join(appRoot, 'src/shared/native/AppSessionCookie.ts'),
-    expected: "from '@preeternal/react-native-cookie-manager'",
+    expected: "from '@react-native-cookies/cookies'",
     message:
       'RN ECO_TOKEN 必须通过 shared/native cookie facade 同步，业务层不能猜测 Set-Cookie。'
   },
