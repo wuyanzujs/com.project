@@ -1,7 +1,8 @@
 require('../support/register.cjs')
+const Taro = require('@tarojs/taro')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
-const Taro = require('@tarojs/taro')
+
 const {
   dispatchAppRouteAsync
 } = require('@/shared/navigation/navigationRuntime')

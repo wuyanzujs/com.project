@@ -1,21 +1,20 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
 const assert = require('node:assert/strict')
-const {
-  createApplyPreview,
-  createApplySubmitPayload,
-  validateEmail
-} = require('@/services/invoice/invoice.apply')
+const { test } = require('node:test')
+
 const {
   getSelectedInvoiceECardAmount,
   getSelectedInvoiceECards,
   parseInvoiceCenterTab
 } = require('@/pages/invoice/index/invoiceCenterViewModel')
 const {
-  calculateInvoiceOrderAuthCountdown,
-  getInvoiceOrderAuthValidationMessage
-} = require('@/services/invoice/invoice.orderAuth')
-const { invoiceService } = require('@/services/invoice/invoice.service')
+  createInvoiceModifyAddressPayload
+} = require('@/services/invoice/invoice.actions')
+const {
+  createApplyPreview,
+  createApplySubmitPayload,
+  validateEmail
+} = require('@/services/invoice/invoice.apply')
 const {
   invoiceApplyService
 } = require('@/services/invoice/invoice.apply.service')
@@ -23,11 +22,10 @@ const {
   invoiceCenterService
 } = require('@/services/invoice/invoice.center.service')
 const {
-  invoiceTaxpayerService
-} = require('@/services/invoice/invoice.taxpayer.service')
-const {
-  createInvoiceModifyAddressPayload
-} = require('@/services/invoice/invoice.actions')
+  createECardApplyPreview,
+  createECardApplySubmitPayload,
+  normalizeInvoiceECard
+} = require('@/services/invoice/invoice.ecard')
 const {
   canCancelInvoiceApply,
   canModifyInvoiceAddress,
@@ -37,15 +35,19 @@ const {
   parseInvoiceAcceptAddress
 } = require('@/services/invoice/invoice.history')
 const {
-  createECardApplyPreview,
-  createECardApplySubmitPayload,
-  normalizeInvoiceECard
-} = require('@/services/invoice/invoice.ecard')
+  calculateInvoiceOrderAuthCountdown,
+  getInvoiceOrderAuthValidationMessage
+} = require('@/services/invoice/invoice.orderAuth')
+const { invoiceService } = require('@/services/invoice/invoice.service')
 const {
   createTaxpayerPayload,
   normalizeTaxpayer,
   validateTaxpayer
 } = require('@/services/invoice/invoice.taxpayer')
+const {
+  invoiceTaxpayerService
+} = require('@/services/invoice/invoice.taxpayer.service')
+
 const {
   companyTaxpayer,
   createECardInvoiceDraft,

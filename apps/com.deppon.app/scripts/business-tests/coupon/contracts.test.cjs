@@ -1,23 +1,25 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
 const assert = require('node:assert/strict')
+const { test } = require('node:test')
+
 const {
   couponService,
   createCouponDetailView,
   expressCouponService,
   validateCouponExchangeCode
 } = require('@/services/coupon')
+const { expressCouponApi } = require('@/services/coupon/expressCoupon.api')
 const {
   EXPRESS_COUPON_AUTO_QUERY_DELAY_MS,
   createExpressCouponQueryRequest,
   createExpressCouponRequestKey,
   getExpressCouponOriginalFee
 } = require('@/services/express/couponOrder.rules')
-const { expressCouponApi } = require('@/services/coupon/expressCoupon.api')
 const {
   buildCreateOrderRequest,
   buildFreightRequest
 } = require('@/services/express/express.payload')
+
 const {
   createValidExpressDraft,
   expressProduct

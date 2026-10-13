@@ -15,8 +15,13 @@ const STYLE_DEBT_FIELDS = [
   ['rawSpaces', '间距字面量']
 ]
 
-const SPACE_PROPERTY_PATTERN =
-  /^(?:padding|margin|gap|row-gap|column-gap)(?:-(?:top|right|bottom|left|inline|block|inline-start|inline-end|block-start|block-end))?$/
+const SPACE_PROPERTY_PATTERN = new RegExp(
+  [
+    String.raw`^(?:padding|margin|gap|row-gap|column-gap)(?:-(?:top|`,
+    String.raw`right|bottom|left|inline|block|inline-start|inline-end|`,
+    String.raw`block-start|block-end))?$`
+  ].join('')
+)
 
 const CSS_NAMED_COLORS = new Set(
   `aliceblue antiquewhite aqua aquamarine azure beige bisque black
@@ -598,9 +603,12 @@ const getMixinDefinitions = (source, declarations, localVariables) =>
         const { property } = declaration
         if (
           isColorProperty(property) &&
-          !/^border(?:-(?:top|right|bottom|left))?(?:-(?:left|right))?-radius$/.test(
-            property
-          )
+          !new RegExp(
+            [
+              String.raw`^border(?:-(?:top|right|bottom|left))?(?:-(?:left|`,
+              String.raw`right))?-radius$`
+            ].join('')
+          ).test(property)
         ) {
           addParameterField(contract, resolvedValue, 'rawColors')
         } else if (property === 'font-size') {
@@ -608,9 +616,12 @@ const getMixinDefinitions = (source, declarations, localVariables) =>
         } else if (property === 'line-height') {
           addParameterField(contract, resolvedValue, 'rawLineHeights')
         } else if (
-          /^border(?:-(?:top|right|bottom|left))?(?:-(?:left|right))?-radius$/.test(
-            property
-          )
+          new RegExp(
+            [
+              String.raw`^border(?:-(?:top|right|bottom|left))?(?:-(?:left|`,
+              String.raw`right))?-radius$`
+            ].join('')
+          ).test(property)
         ) {
           addParameterField(contract, resolvedValue, 'rawRadii')
         } else if (SPACE_PROPERTY_PATTERN.test(property)) {
@@ -978,8 +989,13 @@ const TARO_NATIVE_ELEMENTS = new Set([
 
 const getTaroNativeAliases = source => {
   const aliases = new Set(TARO_NATIVE_ELEMENTS)
-  const importPattern =
-    /\bimport\s+((?:(?!\bimport\b)[\s\S])*?)\s+from\s+['"]@tarojs\/components['"]/g
+  const importPattern = new RegExp(
+    [
+      String.raw`\bimport\s+((?:(?!\bimport\b)[\s\S])*?)\s+`,
+      String.raw`from\s+['"]@tarojs\/components['"]`
+    ].join(''),
+    'g'
+  )
 
   for (const match of source.matchAll(importPattern)) {
     const clause = match[1]
@@ -1220,8 +1236,13 @@ const getReactNativePressableAliases = source => {
     }
   }
 
-  const requirePattern =
-    /\b(?:const|let|var)\s*\{([\s\S]*?)\}\s*=\s*require\s*\(\s*['"]react-native['"]\s*\)/g
+  const requirePattern = new RegExp(
+    [
+      String.raw`\b(?:const|let|var)\s*\{([\s\S]*?)\}\s*=\s*require\s*\(`,
+      String.raw`\s*['"]react-native['"]\s*\)`
+    ].join(''),
+    'g'
+  )
   for (const match of source.matchAll(requirePattern)) {
     for (const specifier of match[1].split(',')) {
       const [imported, local] = specifier

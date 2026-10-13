@@ -1,7 +1,9 @@
 require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
 const CookieManager = require('@react-native-cookies/cookies')
+
 const {
   createAppSessionCookieRuntime
 } = require('@/shared/native/AppSessionCookie')

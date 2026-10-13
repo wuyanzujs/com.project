@@ -1,5 +1,7 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
 const {
   buildOrderModifyRequest,
   createOrderEditDraft
@@ -10,7 +12,7 @@ const {
   updateOrderEditInsuranceAmount,
   validateOrderEditInsurance
 } = require('@/services/order/order.edit.insurance')
-const assert = require('node:assert/strict')
+
 const { createOrderDetail } = require('../fixtures/order.cjs')
 
 const cases = [

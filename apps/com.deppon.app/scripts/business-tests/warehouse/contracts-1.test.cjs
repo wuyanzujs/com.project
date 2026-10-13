@@ -1,20 +1,7 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
-const {
-  applyExpressWarehouseScreening,
-  clearExpressWarehouse,
-  createExpressWarehouseInputKey,
-  createExpressWarehouseScreening,
-  isExpressWarehouseScreeningCurrent,
-  normalizeExpressWarehouseScreeningType,
-  updateExpressWarehouse,
-  validateExpressWarehouse
-} = require('@/services/express/warehouse.rules')
 const assert = require('node:assert/strict')
-const {
-  acknowledgeExpressWarehouseScreening,
-  rejectExpressWarehouse
-} = require('@/services/express/warehouse.decisions')
+const { test } = require('node:test')
+
 const {
   selectExpressProduct,
   setExpressContact,
@@ -25,6 +12,21 @@ const {
   buildCreateOrderRequest,
   buildFreightRequest
 } = require('@/services/express/express.payload')
+const {
+  acknowledgeExpressWarehouseScreening,
+  rejectExpressWarehouse
+} = require('@/services/express/warehouse.decisions')
+const {
+  applyExpressWarehouseScreening,
+  clearExpressWarehouse,
+  createExpressWarehouseInputKey,
+  createExpressWarehouseScreening,
+  isExpressWarehouseScreeningCurrent,
+  normalizeExpressWarehouseScreeningType,
+  updateExpressWarehouse,
+  validateExpressWarehouse
+} = require('@/services/express/warehouse.rules')
+
 const {
   createValidExpressDraft,
   expressProduct

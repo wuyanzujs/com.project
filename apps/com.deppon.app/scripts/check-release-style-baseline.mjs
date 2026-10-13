@@ -1,6 +1,6 @@
+import { spawnSync } from 'node:child_process'
 import path from 'node:path'
 import process from 'node:process'
-import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url))

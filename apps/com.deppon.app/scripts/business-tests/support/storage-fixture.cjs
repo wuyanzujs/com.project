@@ -1,4 +1,5 @@
 const Taro = require('@tarojs/taro')
+
 const { removeStorageValue } = require('@/cache/storage')
 
 function createStorageFixture(t) {

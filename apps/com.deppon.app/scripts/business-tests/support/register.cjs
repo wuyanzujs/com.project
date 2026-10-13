@@ -2,6 +2,7 @@ const { existsSync, readFileSync } = require('node:fs')
 const { registerHooks } = require('node:module')
 const path = require('node:path')
 const { fileURLToPath, pathToFileURL } = require('node:url')
+
 const ts = require('typescript')
 
 const appRoot = path.resolve(__dirname, '../../..')

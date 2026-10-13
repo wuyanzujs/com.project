@@ -1,18 +1,20 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
 const assert = require('node:assert/strict')
-const { APP_WEB_TARGETS } = require('@/shared/webview/appWeb')
+const { test } = require('node:test')
+
+const { customerApi } = require('@/services/customer/customer.api')
 const {
   createCustomerCapabilitySummary,
   customerService,
   normalizeCustomerCapability
 } = require('@/services/customer/customer.service')
-const { customerApi } = require('@/services/customer/customer.api')
 const { applyExpressScanContext } = require('@/services/express/express.draft')
 const {
   buildFilterOrderRequest,
   buildFreightRequest
 } = require('@/services/express/express.payload')
+const { APP_WEB_TARGETS } = require('@/shared/webview/appWeb')
+
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
 
 const cases = [

@@ -1,6 +1,7 @@
 require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
 const { CACHE_KEYS } = require('@/cache/keys')
 const {
   getStorageValue,
@@ -8,6 +9,7 @@ const {
   removeStorageValue,
   setStorageValue
 } = require('@/cache/storage')
+
 const { createDeferred } = require('../support/deferred.cjs')
 const { createStorageFixture } = require('../support/storage-fixture.cjs')
 

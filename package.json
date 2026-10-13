@@ -53,7 +53,12 @@
       "pnpm --filter com.deppon.app exec eslint --fix",
       "prettier --write"
     ],
-    "apps/com.deppon.app/{config,scripts}/**/*.{ts,tsx,js,cjs,mjs}": [
+    "apps/com.deppon.app/config/**/*.{ts,tsx,js,cjs,mjs}": [
+      "pnpm --filter com.deppon.app exec eslint --fix",
+      "prettier --write"
+    ],
+    "apps/com.deppon.app/scripts/**/*.{ts,tsx,js,cjs,mjs}": [
+      "pnpm --filter com.deppon.app exec eslint --fix",
       "prettier --write"
     ],
     "apps/com.deppon.app/src/**/*.scss": [

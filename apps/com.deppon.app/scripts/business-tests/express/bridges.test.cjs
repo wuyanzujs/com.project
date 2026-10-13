@@ -1,10 +1,8 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
-const {
-  createExpressPickupNightCapability
-} = require('@/services/express/pickupTime.rules')
-const { expressDraftBridge } = require('@/services/express/draftBridge')
 const assert = require('node:assert/strict')
+const { test } = require('node:test')
+
+const { expressDraftBridge } = require('@/services/express/draftBridge')
 const {
   applyExpressScanContext,
   clearExpressScanContext,
@@ -18,8 +16,12 @@ const {
   buildFreightRequest
 } = require('@/services/express/express.payload')
 const {
+  createExpressPickupNightCapability
+} = require('@/services/express/pickupTime.rules')
+const {
   createExpressScanContextView
 } = require('@/services/express/scanContext')
+
 const {
   createValidExpressDraft,
   expressProduct

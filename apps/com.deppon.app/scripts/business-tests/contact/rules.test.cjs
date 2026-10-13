@@ -1,5 +1,7 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
 const {
   applyAddressHintToContact,
   applyAnalysis4ToContact,
@@ -12,7 +14,6 @@ const {
   parseAddressHint,
   resolveContactAddressIntegrity
 } = require('@/services/contact')
-const assert = require('node:assert/strict')
 
 const cases = [
   {

@@ -1,20 +1,22 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
+const { CACHE_KEYS } = require('@/cache/keys')
+const { getStorageValue, setStorageValue } = require('@/cache/storage')
+const { expressDraftBridge } = require('@/services/express/draftBridge')
+const { expressApi } = require('@/services/express/express.api')
 const {
   createExpressWarehouseScreening
 } = require('@/services/express/warehouse.rules')
-const { expressDraftBridge } = require('@/services/express/draftBridge')
-const assert = require('node:assert/strict')
-const { templateDraftBridge } = require('@/services/template/template.bridge')
-const { getAppWebWarehouseStagingId } = require('@/shared/webview/appWeb')
-const { appWebMessageBridge } = require('@/shared/webview/appWebMessage')
-const { expressApi } = require('@/services/express/express.api')
 const {
   queryExpressWarehouseScreening,
   stageExpressWarehouse
 } = require('@/services/express/warehouse.service')
-const { getStorageValue, setStorageValue } = require('@/cache/storage')
-const { CACHE_KEYS } = require('@/cache/keys')
+const { templateDraftBridge } = require('@/services/template/template.bridge')
+const { getAppWebWarehouseStagingId } = require('@/shared/webview/appWeb')
+const { appWebMessageBridge } = require('@/shared/webview/appWebMessage')
+
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
 
 const cases = [

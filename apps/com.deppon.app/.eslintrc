@@ -12,7 +12,8 @@
         "scripts/**/*.{js,cjs,mjs}"
       ],
       "env": {
-        "node": true
+        "node": true,
+        "es2022": true
       },
       "parser": "@typescript-eslint/parser",
       "plugins": ["@typescript-eslint"],

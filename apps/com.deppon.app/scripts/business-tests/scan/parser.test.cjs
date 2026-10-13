@@ -1,7 +1,8 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
-const { parseAppScanValue } = require('@/shared/platform/scan')
 const assert = require('node:assert/strict')
+const { test } = require('node:test')
+
+const { parseAppScanValue } = require('@/shared/platform/scan')
 
 const cases = [
   {

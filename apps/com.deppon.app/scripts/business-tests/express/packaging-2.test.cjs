@@ -1,17 +1,19 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
-const { updateExpressPackaging } = require('@/services/express/packaging.rules')
 const assert = require('node:assert/strict')
+const { test } = require('node:test')
+
 const { CACHE_KEYS, createCacheStorageKey } = require('@/cache/keys')
 const {
   getStorageValue,
   removeStorageValue,
   setStorageValue
 } = require('@/cache/storage')
-const { expressDraftStorage } = require('@/services/express/draftStorage')
 const { expressDraftBridge } = require('@/services/express/draftBridge')
-const { templateDraftBridge } = require('@/services/template/template.bridge')
+const { expressDraftStorage } = require('@/services/express/draftStorage')
 const { createExpressDraft } = require('@/services/express/express.draft')
+const { updateExpressPackaging } = require('@/services/express/packaging.rules')
+const { templateDraftBridge } = require('@/services/template/template.bridge')
+
 const {
   createValidExpressDraft,
   expressProduct

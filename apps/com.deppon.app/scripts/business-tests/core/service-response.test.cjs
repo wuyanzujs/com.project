@@ -1,6 +1,7 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
 const assert = require('node:assert/strict')
+const { test } = require('node:test')
+
 const { createServiceFailure } = require('@/services/serviceResponse')
 
 const cases = [

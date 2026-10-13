@@ -264,14 +264,24 @@ const forbiddenPatterns = [
       '不要直接使用支付宝小程序 my.*，请通过 shared/platform facade 或 service 层重构。'
   },
   {
-    pattern:
-      /\b(?:getStorageSync|setStorageSync|getStorageInfoSync|removeStorageSync|clearStorageSync)\b/g,
+    pattern: new RegExp(
+      [
+        String.raw`\b(?:getStorageSync|setStorageSync|getStorageInfoSync|`,
+        String.raw`removeStorageSync|clearStorageSync)\b`
+      ].join(''),
+      'g'
+    ),
     message:
       'Taro RN 不支持同步缓存 API，请通过 src/cache facade 使用异步持久化缓存。'
   },
   {
-    pattern:
-      /\bTaro\.(?:getStorage|setStorage|removeStorage|clearStorage|getStorageInfo)\b/g,
+    pattern: new RegExp(
+      [
+        String.raw`\bTaro\.(?:getStorage|setStorage|removeStorage|`,
+        String.raw`clearStorage|getStorageInfo)\b`
+      ].join(''),
+      'g'
+    ),
     message: 'Taro 缓存 API 只能在 src/cache facade 中封装。',
     allowRelativePathPrefixes: cacheFacadeRelativePathPrefixes
   },
@@ -299,8 +309,14 @@ const forbiddenPatterns = [
     allowRelativePathPrefixes: ['src/services/']
   },
   {
-    pattern:
-      /\b(?:printApi|blueToothPrintCode|queryPrintConfig|userPrintConfig|updatePrintStatus|validatePrintSelection)\b/g,
+    pattern: new RegExp(
+      [
+        String.raw`\b(?:printApi|blueToothPrintCode|queryPrintConfig|`,
+        String.raw`userPrintConfig|updatePrintStatus|`,
+        String.raw`validatePrintSelection)\b`
+      ].join(''),
+      'g'
+    ),
     message:
       '打印订单列表首期只允许只读查询，不能绕过 service 或混入设备、模板、配置和状态回写逻辑。',
     includeRelativePathPrefixes: ['src/pages/print/list/']
@@ -329,18 +345,36 @@ const forbiddenPatterns = [
     allowRelativePathPrefixes: nativeOrCacheFacadeRelativePathPrefixes
   },
   {
-    pattern:
-      /\bwindow\.(?:document|location|history|navigator|localStorage|sessionStorage|addEventListener|removeEventListener|open|close|postMessage)\b/g,
+    pattern: new RegExp(
+      [
+        String.raw`\bwindow\.(?:document|location|history|navigator|`,
+        String.raw`localStorage|sessionStorage|addEventListener|`,
+        String.raw`removeEventListener|open|close|postMessage)\b`
+      ].join(''),
+      'g'
+    ),
     message: 'RN App 业务代码不能调用 window DOM/H5 API。'
   },
   {
-    pattern:
-      /\bdocument\.(?:querySelector|querySelectorAll|getElementById|getElementsByClassName|createElement|body|head|cookie|addEventListener|removeEventListener)\b/g,
+    pattern: new RegExp(
+      [
+        String.raw`\bdocument\.(?:querySelector|querySelectorAll|`,
+        String.raw`getElementById|getElementsByClassName|createElement|`,
+        String.raw`body|head|cookie|addEventListener|`,
+        String.raw`removeEventListener)\b`
+      ].join(''),
+      'g'
+    ),
     message: 'RN App 业务代码不能调用 document DOM API。'
   },
   {
-    pattern:
-      /\b(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem|clear|key)\b/g,
+    pattern: new RegExp(
+      [
+        String.raw`\b(?:localStorage|sessionStorage)\.(?:getItem|setItem|`,
+        String.raw`removeItem|clear|key)\b`
+      ].join(''),
+      'g'
+    ),
     message: 'RN App 不支持 Web Storage，请通过 src/cache facade。'
   },
   {
@@ -348,8 +382,19 @@ const forbiddenPatterns = [
     message: 'RN App 不能直接调用 navigator API，请通过对应端能力 facade。'
   },
   {
-    pattern:
-      /\bTaro\.(?:getSystemInfoSync|getMenuButtonBoundingClientRect|createSelectorQuery|getFileSystemManager|onUserCaptureScreen|offUserCaptureScreen|pageScrollTo|setTabBarBadge|removeTabBarBadge|showShareMenu|hideShareMenu|chooseAddress|chooseInvoiceTitle|login|checkSession|requestPayment|createCanvasContext|canvasToTempFilePath)\b/g,
+    pattern: new RegExp(
+      [
+        String.raw`\bTaro\.(?:getSystemInfoSync|`,
+        String.raw`getMenuButtonBoundingClientRect|createSelectorQuery|`,
+        String.raw`getFileSystemManager|onUserCaptureScreen|`,
+        String.raw`offUserCaptureScreen|pageScrollTo|setTabBarBadge|`,
+        String.raw`removeTabBarBadge|showShareMenu|hideShareMenu|`,
+        String.raw`chooseAddress|chooseInvoiceTitle|login|checkSession|`,
+        String.raw`requestPayment|createCanvasContext|`,
+        String.raw`canvasToTempFilePath)\b`
+      ].join(''),
+      'g'
+    ),
     message:
       '该 Taro API 不属于 RN App 可直接使用能力，请通过 shared/platform、shared/native 或业务 facade 重构。'
   },
@@ -372,8 +417,13 @@ const forbiddenPatterns = [
     fileExtensions: ['.scss']
   },
   {
-    pattern:
-      /^\s*(?:[.#]?[A-Za-z_][\w-]*)(?:\s*[+>~]\s*|\s+)(?:[.#]?[A-Za-z_][\w-]*)(?=[^,{\r\n]*\{)/gm,
+    pattern: new RegExp(
+      [
+        String.raw`^\s*(?:[.#]?[A-Za-z_][\w-]*)(?:\s*[+>~]\s*|`,
+        String.raw`\s+)(?:[.#]?[A-Za-z_][\w-]*)(?=[^,{\r\n]*\{)`
+      ].join(''),
+      'gm'
+    ),
     message:
       'Taro RN 会忽略后代/子级/兄弟组合选择器，请给目标元素添加独立 modifier class。',
     fileExtensions: ['.scss']
@@ -419,15 +469,29 @@ const forbiddenPatterns = [
     includeRelativePathPrefixes: ['src/pages/']
   },
   {
-    pattern:
-      /\bimport\s+((?:(?!\bimport\b)[\s\S])*?\b(?:Pressable|TouchableHighlight|TouchableNativeFeedback|TouchableOpacity|TouchableWithoutFeedback)\b(?:(?!\bfrom\b)[\s\S])*?)\s+from\s+['"]react-native['"]/g,
+    pattern: new RegExp(
+      [
+        String.raw`\bimport\s+((?:(?!\bimport\b)[\s\S])*?\b(?:Pressable|`,
+        String.raw`TouchableHighlight|TouchableNativeFeedback|`,
+        String.raw`TouchableOpacity|TouchableWithoutFeedback)\b`,
+        String.raw`(?:(?!\bfrom\b)[\s\S])*?)\s+from\s+['"]react-native['"]`
+      ].join(''),
+      'g'
+    ),
     message:
       '点击控件必须统一使用 AppPressable/AppButton，禁止业务或其他 facade 直接引入 RN Pressable。',
     allowRelativePaths: ['src/shared/native/AppNativePressable.tsx']
   },
   {
-    pattern:
-      /\b(?:const|let|var)\s*\{[^}]*\b(?:Pressable|TouchableHighlight|TouchableNativeFeedback|TouchableOpacity|TouchableWithoutFeedback)\b[^}]*\}\s*=\s*require\s*\(\s*['"]react-native['"]\s*\)/g,
+    pattern: new RegExp(
+      [
+        String.raw`\b(?:const|let|var)\s*\{[^}]*\b(?:Pressable|`,
+        String.raw`TouchableHighlight|TouchableNativeFeedback|`,
+        String.raw`TouchableOpacity|TouchableWithoutFeedback)\b[^}]*\}\s*=`,
+        String.raw`\s*require\s*\(\s*['"]react-native['"]\s*\)`
+      ].join(''),
+      'g'
+    ),
     message:
       '点击控件必须统一使用 AppPressable/AppButton，禁止业务或其他 facade 直接引入 RN Pressable。',
     allowRelativePaths: ['src/shared/native/AppNativePressable.tsx']
@@ -694,9 +758,21 @@ function checkForbiddenTaroApiAliases(filePath, relativePath, content) {
 
   const aliases = []
   const aliasPatterns = [
-    /\bimport\s+([A-Za-z_$][\w$]*)\s*(?:,\s*\{[^}]*\})?\s+from\s+['"]@tarojs\/taro['"]/g,
+    new RegExp(
+      [
+        String.raw`\bimport\s+([A-Za-z_$][\w$]*)\s*`,
+        String.raw`(?:,\s*\{[^}]*\})?\s+from\s+['"]@tarojs\/taro['"]`
+      ].join(''),
+      'g'
+    ),
     /\bimport\s+\*\s+as\s+([A-Za-z_$][\w$]*)\s+from\s+['"]@tarojs\/taro['"]/g,
-    /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*require\(\s*['"]@tarojs\/taro['"]\s*\)/g
+    new RegExp(
+      [
+        String.raw`\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*require`,
+        String.raw`\(\s*['"]@tarojs\/taro['"]\s*\)`
+      ].join(''),
+      'g'
+    )
   ]
 
   for (const pattern of aliasPatterns) {
@@ -725,14 +801,20 @@ function checkForbiddenTaroApiAliases(filePath, relativePath, content) {
 
   const namedImportPatterns = [
     /\bimport\s*\{([\s\S]*?)\}\s*from\s+['"]@tarojs\/taro['"]/g,
-    /\b(?:const|let|var)\s*\{([^}]*)\}\s*=\s*require\(\s*['"]@tarojs\/taro['"]\s*\)/g
+    new RegExp(
+      [
+        String.raw`\b(?:const|let|var)\s*\{([^}]*)\}\s*=`,
+        String.raw`\s*require\(\s*['"]@tarojs\/taro['"]\s*\)`
+      ].join(''),
+      'g'
+    )
   ]
 
   for (const pattern of namedImportPatterns) {
     for (const match of content.matchAll(pattern)) {
       for (const rawSpecifier of match[1].split(',')) {
         const specifier = rawSpecifier.trim().replace(/^type\s+/, '')
-        const importedName = specifier.split(/\s+(?:as|:)\s+/)[0]
+        const importedName = specifier.split(/\s+as\s+|\s*:\s*/)[0]
 
         if (!forbiddenTaroApiNames.has(importedName)) {
           continue

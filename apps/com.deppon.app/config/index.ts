@@ -1,5 +1,7 @@
-import { defineConfig, type UserConfigExport } from '@tarojs/cli'
 import * as path from 'path'
+
+import { defineConfig, type UserConfigExport } from '@tarojs/cli'
+
 import devConfig from './dev'
 import prodConfig from './prod'
 import runtimeBuild from './runtime-build.cjs'

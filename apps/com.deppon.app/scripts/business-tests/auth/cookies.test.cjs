@@ -1,6 +1,14 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
+const Taro = require('@tarojs/taro')
 const assert = require('node:assert/strict')
+const { test } = require('node:test')
+
+const { CACHE_KEYS } = require('@/cache/keys')
+const {
+  getStorageValue,
+  removeStorageValue,
+  setStorageValue
+} = require('@/cache/storage')
 const {
   createEcoSessionCookie,
   extractEcoToken,
@@ -14,20 +22,12 @@ const {
   hydrateSessionCookie,
   saveSessionCookieFromResponse
 } = require('@/request/cookieJar')
-const {
-  getStorageValue,
-  removeStorageValue,
-  setStorageValue
-} = require('@/cache/storage')
-const { CACHE_KEYS } = require('@/cache/keys')
-const Taro = require('@tarojs/taro')
 const { depponHttp } = require('@/request/deppon')
 const {
   authApi,
   authService,
   clearAppSession,
-  createAppSmsLoginRequest,
-  saveCurrentUser
+  createAppSmsLoginRequest
 } = require('@/services/auth')
 const authSession = require('@/services/auth/session')
 

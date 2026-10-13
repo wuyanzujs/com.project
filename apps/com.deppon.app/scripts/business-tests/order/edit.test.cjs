@@ -1,16 +1,20 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
 const {
   buildOrderModifyRequest,
   createOrderEditDraft,
   getOrderEditUnavailableMessage,
   validateOrderEditDraft
 } = require('@/services/order/order.edit')
-const assert = require('node:assert/strict')
 const {
-  ORDER_EDIT_DELIVERY_OPTIONS,
-  isOrderEditDeliveryModeVisible
-} = require('@/services/order/order.edit.schedule')
+  clearOrderEditCollection,
+  updateOrderEditCollection
+} = require('@/services/order/order.edit.collection')
+const {
+  updateOrderEditInsuranceAmount
+} = require('@/services/order/order.edit.insurance')
 const {
   ORDER_EDIT_PACKAGING_MAX_COUNT,
   ORDER_EDIT_PACKAGING_UNIT_FEE,
@@ -20,12 +24,10 @@ const {
   validateOrderEditPackaging
 } = require('@/services/order/order.edit.packaging')
 const {
-  updateOrderEditInsuranceAmount
-} = require('@/services/order/order.edit.insurance')
-const {
-  clearOrderEditCollection,
-  updateOrderEditCollection
-} = require('@/services/order/order.edit.collection')
+  ORDER_EDIT_DELIVERY_OPTIONS,
+  isOrderEditDeliveryModeVisible
+} = require('@/services/order/order.edit.schedule')
+
 const { createOrderDetail } = require('../fixtures/order.cjs')
 
 const cases = [

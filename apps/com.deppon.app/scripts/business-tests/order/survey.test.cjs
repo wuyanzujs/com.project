@@ -1,5 +1,26 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
+const {
+  ORDER_NPS_SURVEY_API_ENDPOINTS,
+  orderNpsSurveyApi
+} = require('@/services/order/order.npsSurvey.api')
+const {
+  createOrderNpsDraft,
+  createOrderNpsLabelContent,
+  createOrderNpsSubmitRequest,
+  toggleOrderNpsReason,
+  updateOrderNpsCategory,
+  updateOrderNpsScore
+} = require('@/services/order/order.npsSurvey.rules')
+const {
+  ORDER_SCENE_SURVEY_API_ENDPOINTS,
+  orderSceneSurveyApi
+} = require('@/services/order/order.sceneSurvey.api')
+const {
+  orderSceneSurveyOrchestrator
+} = require('@/services/order/order.sceneSurvey.orchestrator')
 const {
   ORDER_SCENE_SURVEY_WINDOW_MS,
   createOrderSceneLabelSubmitRequest,
@@ -10,26 +31,7 @@ const {
   parseOrderSceneSurveyTime,
   validateOrderSceneScoreDraft
 } = require('@/services/order/order.sceneSurvey.rules')
-const assert = require('node:assert/strict')
-const {
-  ORDER_SCENE_SURVEY_API_ENDPOINTS,
-  orderSceneSurveyApi
-} = require('@/services/order/order.sceneSurvey.api')
-const {
-  createOrderNpsDraft,
-  createOrderNpsLabelContent,
-  createOrderNpsSubmitRequest,
-  toggleOrderNpsReason,
-  updateOrderNpsCategory,
-  updateOrderNpsScore
-} = require('@/services/order/order.npsSurvey.rules')
-const {
-  ORDER_NPS_SURVEY_API_ENDPOINTS,
-  orderNpsSurveyApi
-} = require('@/services/order/order.npsSurvey.api')
-const {
-  orderSceneSurveyOrchestrator
-} = require('@/services/order/order.sceneSurvey.orchestrator')
+
 const { createOrderDetail } = require('../fixtures/order.cjs')
 
 const cases = [

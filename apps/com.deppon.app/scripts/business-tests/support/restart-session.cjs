@@ -1,6 +1,7 @@
 require('./register.cjs')
-const { readFileSync } = require('node:fs')
 const Taro = require('@tarojs/taro')
+const { readFileSync } = require('node:fs')
+
 const { hydrateStorage } = require('@/cache/storage')
 const {
   configureSessionCookieRuntime,

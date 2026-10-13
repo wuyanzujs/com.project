@@ -3,6 +3,7 @@ const assert = require('node:assert/strict')
 const { spawnSync } = require('node:child_process')
 const path = require('node:path')
 const { test } = require('node:test')
+
 const { CACHE_KEYS, createCacheStorageKey } = require('@/cache/keys')
 const { getStorageValue, setStorageValue } = require('@/cache/storage')
 const {
@@ -16,6 +17,7 @@ const {
 const { authApi } = require('@/services/auth/auth.api')
 const { authService } = require('@/services/auth/auth.service')
 const { clearAppSession, saveCurrentUser } = require('@/services/auth/session')
+
 const { createDeferred } = require('../support/deferred.cjs')
 const { createStorageFixture } = require('../support/storage-fixture.cjs')
 

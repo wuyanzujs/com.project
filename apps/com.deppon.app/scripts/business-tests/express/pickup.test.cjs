@@ -1,5 +1,25 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
+const { expressApi } = require('@/services/express/express.api')
+const {
+  applyExpressPickupTime,
+  selectExpressProduct,
+  updateExpressPickup
+} = require('@/services/express/express.draft')
+const {
+  buildCreateOrderRequest,
+  buildFreightRequest,
+  buildPickupTimeRequest
+} = require('@/services/express/express.payload')
+const { expressService } = require('@/services/express/express.service')
+const {
+  createExpressPickupDateOptions,
+  findExpressPickupTimeSelection,
+  getFirstExpressPickupTimeSelection,
+  normalizeExpressPickupTimeResponse
+} = require('@/services/express/pickupTime.options')
 const {
   EXPRESS_NIGHT_PICKUP_CACHE_MS,
   acceptExpressNightPickupNotice,
@@ -11,25 +31,7 @@ const {
   selectExpressPickupTime,
   validateExpressPickupTime
 } = require('@/services/express/pickupTime.rules')
-const {
-  buildCreateOrderRequest,
-  buildFreightRequest,
-  buildPickupTimeRequest
-} = require('@/services/express/express.payload')
-const assert = require('node:assert/strict')
-const { expressApi } = require('@/services/express/express.api')
-const { expressService } = require('@/services/express/express.service')
-const {
-  createExpressPickupDateOptions,
-  findExpressPickupTimeSelection,
-  getFirstExpressPickupTimeSelection,
-  normalizeExpressPickupTimeResponse
-} = require('@/services/express/pickupTime.options')
-const {
-  applyExpressPickupTime,
-  selectExpressProduct,
-  updateExpressPickup
-} = require('@/services/express/express.draft')
+
 const {
   createValidExpressDraft,
   expressProduct

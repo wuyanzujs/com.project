@@ -1,5 +1,7 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
 const {
   DEFAULT_PRINT_DATE_RANGE_KEY,
   PRINT_API_ENDPOINTS,
@@ -12,7 +14,6 @@ const {
   resolvePrintListCounts,
   validatePrintSelection
 } = require('@/services/print')
-const assert = require('node:assert/strict')
 
 const cases = [
   {

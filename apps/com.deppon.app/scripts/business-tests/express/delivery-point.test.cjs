@@ -1,28 +1,30 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
-const {
-  getStationMatchTypes,
-  normalizeAddressStation
-} = require('@/services/query/query.station')
-const {
-  EXPRESS_DELIVERY_POINT_MAX_DISTANCE_KM,
-  stationSelection
-} = require('@/services/query')
 const assert = require('node:assert/strict')
-const {
-  setExpressContact,
-  updateExpressService
-} = require('@/services/express/express.draft')
+const { test } = require('node:test')
+
 const {
   createExpressDeliveryPointDraft,
   getExpressDeliveryPointOrderFields,
   normalizeExpressDeliveryPointDraft,
   updateExpressDeliveryPoint
 } = require('@/services/express/deliveryPoint.rules')
+const { expressDraftBridge } = require('@/services/express/draftBridge')
+const {
+  setExpressContact,
+  updateExpressService
+} = require('@/services/express/express.draft')
 const {
   buildCreateOrderRequest
 } = require('@/services/express/express.payload')
-const { expressDraftBridge } = require('@/services/express/draftBridge')
+const {
+  EXPRESS_DELIVERY_POINT_MAX_DISTANCE_KM,
+  stationSelection
+} = require('@/services/query')
+const {
+  getStationMatchTypes,
+  normalizeAddressStation
+} = require('@/services/query/query.station')
+
 const {
   consigneeContact,
   createValidExpressDraft

@@ -1,13 +1,15 @@
 require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
 const { configureRequest, onRequestEvent } = require('@/request')
-const { depponHttp } = require('@/request/deppon')
 const {
   clearSessionCookie,
   getEcoToken,
   setSessionCookie
 } = require('@/request/cookieJar')
+const { depponHttp } = require('@/request/deppon')
+
 const { createDeferred } = require('../support/deferred.cjs')
 const { createStorageFixture } = require('../support/storage-fixture.cjs')
 

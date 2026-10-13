@@ -1,12 +1,14 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
-const {
-  createExpressProductQuoteView
-} = require('@/services/express/express.quoteView')
+
 const {
   validateExpressPriceTimeDraft
 } = require('@/services/express/express.draft')
-const assert = require('node:assert/strict')
+const {
+  createExpressProductQuoteView
+} = require('@/services/express/express.quoteView')
+
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
 
 const cases = [

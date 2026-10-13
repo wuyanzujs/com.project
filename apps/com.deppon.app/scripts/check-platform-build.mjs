@@ -403,9 +403,12 @@ function checkHarmonyConfig(packageJson, configContent) {
 
   if (
     !sourceContents.some(({ content }) =>
-      /<reference\s+path=['"][^'"]*plugin-platform-harmony-cpp\/types\/define\.d\.ts['"]/.test(
-        content
-      )
+      new RegExp(
+        [
+          String.raw`<reference\s+path=['"][^'"]*plugin-platform-harmony-cpp`,
+          String.raw`\/types\/define\.d\.ts['"]`
+        ].join('')
+      ).test(content)
     )
   ) {
     violations.push('Harmony-CPP 缺少 define.d.ts 的三斜线类型引用。')
@@ -435,9 +438,12 @@ function checkHarmonyConfig(packageJson, configContent) {
     }
 
     if (
-      /\bbackground\s*:\s*['"](?!#|rgb\(|rgba\(|hsl\(|hsla\()[A-Za-z]+['"]/.test(
-        content
-      )
+      new RegExp(
+        [
+          String.raw`\bbackground\s*:\s*['"](?!#|rgb\(|rgba\(|hsl\(|`,
+          String.raw`hsla\()[A-Za-z]+['"]`
+        ].join('')
+      ).test(content)
     ) {
       violations.push(`${relativePath} 的内联 background 必须使用明确色值。`)
     }

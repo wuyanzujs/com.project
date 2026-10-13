@@ -1,6 +1,7 @@
 require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
 const { configureRequest } = require('@/request')
 const { getEcoToken } = require('@/request/cookieJar')
 const { authService } = require('@/services/auth/auth.service')
@@ -12,6 +13,7 @@ const {
   createExpressInsuranceCapability
 } = require('@/services/express/insurance.rules')
 const { orderService } = require('@/services/order/order.service')
+
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
 const { createStorageFixture } = require('../support/storage-fixture.cjs')
 

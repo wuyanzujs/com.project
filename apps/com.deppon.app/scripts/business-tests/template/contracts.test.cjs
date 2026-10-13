@@ -1,5 +1,9 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
+const { expressDraftBridge } = require('@/services/express/draftBridge')
+const { templateApi } = require('@/services/template/template.api')
 const {
   applyTemplateMetadataUpdate,
   buildTemplateMetadataSaveRequest,
@@ -10,12 +14,10 @@ const {
   validateTemplateDraft,
   validateTemplateMeta
 } = require('@/services/template/template.mapper')
-const assert = require('node:assert/strict')
-const { templateApi } = require('@/services/template/template.api')
 const { templateService } = require('@/services/template/template.service')
-const { expressDraftBridge } = require('@/services/express/draftBridge')
-const { createExpressTemplateRaw } = require('../fixtures/template.cjs')
+
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
+const { createExpressTemplateRaw } = require('../fixtures/template.cjs')
 
 const cases = [
   {

@@ -124,8 +124,24 @@ if (
   violations.push('lint-staged must cover App source files.')
 }
 
-if (!stagedPatterns.some(pattern => pattern.includes('{config,scripts}'))) {
-  violations.push('lint-staged must format App configuration and scripts.')
+for (const directory of ['config', 'scripts']) {
+  if (
+    !stagedPatterns.some(pattern =>
+      pattern.includes(`apps/com.deppon.app/${directory}/`)
+    )
+  ) {
+    violations.push(`lint-staged must cover App ${directory} files.`)
+  }
+
+  const stagedTasks = Object.entries(stagedConfig)
+    .filter(([pattern]) =>
+      pattern.includes(`apps/com.deppon.app/${directory}/`)
+    )
+    .flatMap(([, tasks]) => (Array.isArray(tasks) ? tasks : [tasks]))
+
+  if (!stagedTasks.some(task => task.includes('eslint'))) {
+    violations.push(`lint-staged must run ESLint on App ${directory} files.`)
+  }
 }
 
 if (!stagedPatterns.some(pattern => pattern.includes('yml'))) {
@@ -154,10 +170,23 @@ if (!appPackage.scripts?.['lint:config']) {
   )
 }
 
-if (!appPackage.scripts['lint:config'].includes('prettier --check')) {
+if (!appPackage.scripts?.['lint:config']?.includes('prettier --check')) {
   violations.push(
     'App lint:config must run the configuration and script formatting check.'
   )
+}
+
+for (const scriptName of ['lint', 'lint:config', 'lint:fix']) {
+  const lintScript = appPackage.scripts?.[scriptName] ?? ''
+
+  if (
+    !lintScript.includes('eslint') ||
+    ['config/', 'scripts/'].some(directory => !lintScript.includes(directory))
+  ) {
+    violations.push(
+      `App ${scriptName} must run ESLint on configuration and script files.`
+    )
+  }
 }
 
 if (appPackage.dependencies?.['expo-camera'] !== '14.1.3') {

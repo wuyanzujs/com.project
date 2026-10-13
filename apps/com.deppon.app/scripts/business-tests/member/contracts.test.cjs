@@ -1,12 +1,13 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
 const assert = require('node:assert/strict')
+const { test } = require('node:test')
+
+const { createECardLinkRequest } = require('@/services/ecard')
 const {
   createMemberMasUrl,
   createMemberWelfareUrl
 } = require('@/services/member/member.service')
 const { APP_WEB_TARGETS } = require('@/shared/webview/appWeb')
-const { createECardLinkRequest } = require('@/services/ecard')
 
 const cases = [
   {

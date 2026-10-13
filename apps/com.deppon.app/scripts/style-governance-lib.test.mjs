@@ -867,7 +867,8 @@ test('stylelint contract rejects unsupported RN style functions and units', () =
     [stylelintScriptPath, '--stdin-filename', 'src/pages/example/index.scss'],
     {
       cwd: path.join(workspaceRoot, 'apps/com.deppon.app'),
-      input: `.example { width: 2ch; background: repeating-conic-gradient(red, blue); }\n`
+      input:
+        '.example { width: 2ch; background: repeating-conic-gradient(red, blue); }\n'
     }
   )
   const valid = run(
@@ -875,7 +876,7 @@ test('stylelint contract rejects unsupported RN style functions and units', () =
     [stylelintScriptPath, '--stdin-filename', 'src/pages/example/index.scss'],
     {
       cwd: path.join(workspaceRoot, 'apps/com.deppon.app'),
-      input: `.example { width: 2px; transform: rotate(2deg); }\n`
+      input: '.example { width: 2px; transform: rotate(2deg); }\n'
     }
   )
 
@@ -883,24 +884,79 @@ test('stylelint contract rejects unsupported RN style functions and units', () =
   assert.equal(valid.status, 0, valid.stderr)
 })
 
-test('RN boundary contract includes style, pressable and Taro alias rules', () => {
-  const boundarySource = fs.readFileSync(
-    path.join(scriptDirectory, 'check-rn-boundaries.mjs'),
-    'utf8'
+test('RN boundary contract rejects style, pressable and Taro alias bypasses', t => {
+  const cases = [
+    {
+      file: 'src/pages/example/gradient.scss',
+      content: '.example { background: repeating-conic-gradient(red, blue); }',
+      message: 'RN 样式禁止 gradient'
+    },
+    {
+      file: 'src/pages/example/pseudo.scss',
+      content: '.example::before { width: 0; }',
+      message: 'RN 样式不支持伪元素'
+    },
+    {
+      file: 'src/pages/example/elevation.scss',
+      content: '.example { elevation: 1; }',
+      message: '页面样式不能直接使用 elevation'
+    },
+    ...[
+      'Pressable',
+      'TouchableHighlight',
+      'TouchableNativeFeedback',
+      'TouchableOpacity',
+      'TouchableWithoutFeedback'
+    ].flatMap(name => [
+      {
+        file: `src/pages/example/${name}-import.tsx`,
+        content: `import { ${name} as NativeClick } from 'react-native'`,
+        message: '点击控件必须统一使用 AppPressable/AppButton'
+      },
+      {
+        file: `src/pages/example/${name}-require.tsx`,
+        content: `const { ${name}: NativeClick } = require('react-native')`,
+        message: '点击控件必须统一使用 AppPressable/AppButton'
+      }
+    ]),
+    ...[
+      "import Api from '@tarojs/taro'; Api.scanCode()",
+      "import * as Api from '@tarojs/taro'; Api.scanCode()",
+      "const Api = require('@tarojs/taro'); Api.scanCode()",
+      "import { scanCode as scan } from '@tarojs/taro'; scan()",
+      "const { scanCode: scan } = require('@tarojs/taro'); scan()"
+    ].map((content, index) => ({
+      file: `src/pages/example/taro-alias-${index}.ts`,
+      content,
+      message: '禁止通过别名或具名导入绕过 Taro RN API 门禁'
+    }))
+  ]
+  const safeFiles = {
+    'src/pages/example/safe.ts': "import { View } from '@tarojs/components'",
+    'src/shared/components/Surface/index.scss': '.surface { elevation: 1; }'
+  }
+  const root = createProjectFixture(t, {
+    ...safeFiles,
+    ...Object.fromEntries(cases.map(({ file, content }) => [file, content]))
+  })
+  const result = run(
+    process.execPath,
+    [path.join(scriptDirectory, 'check-rn-boundaries.mjs')],
+    { cwd: root }
   )
+  const diagnostics = result.stderr.replaceAll(path.sep, '/').split('\n')
 
-  for (const token of [
-    '(?:repeating-)?(?:linear|radial|conic)-gradient',
-    '::[A-Za-z]',
-    'elevation\\s*:',
-    'Pressable|TouchableHighlight|TouchableNativeFeedback|TouchableOpacity|TouchableWithoutFeedback',
-    'includeRelativePathPrefixes',
-    'checkForbiddenTaroApiAliases'
-  ]) {
+  assert.equal(result.status, 1)
+  for (const { file, message } of cases) {
     assert.ok(
-      boundarySource.includes(token),
-      `check-rn-boundaries.mjs 缺少契约片段：${token}`
+      diagnostics.some(
+        line => line.startsWith(`${file}:`) && line.includes(message)
+      ),
+      `RN boundary check did not reject ${file}: ${result.stderr}`
     )
+  }
+  for (const file of Object.keys(safeFiles)) {
+    assert.ok(!diagnostics.some(line => line.startsWith(`${file}:`)))
   }
 })
 
@@ -1517,7 +1573,12 @@ test('Android and iOS releases use the reusable baseline ratchet contract', () =
     )
     assert.match(
       workflow,
-      /STYLE_GOVERNANCE_BASE_REF:\s*origin\/\$\{\{\s*github\.event\.repository\.default_branch\s*\}\}/
+      new RegExp(
+        [
+          String.raw`STYLE_GOVERNANCE_BASE_REF:\s*origin\/`,
+          String.raw`\$\{\{\s*github\.event\.repository\.default_branch\s*\}\}`
+        ].join('')
+      )
     )
   }
 

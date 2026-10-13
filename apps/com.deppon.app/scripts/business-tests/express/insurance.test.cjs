@@ -1,5 +1,22 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
+const { expressDraftBridge } = require('@/services/express/draftBridge')
+const { expressApi } = require('@/services/express/express.api')
+const {
+  setExpressContact,
+  updateExpressGoods
+} = require('@/services/express/express.draft')
+const {
+  buildCreateOrderRequest,
+  buildFreightRequest,
+  buildInsurancePriceRequest
+} = require('@/services/express/express.payload')
+const { expressService } = require('@/services/express/express.service')
+const {
+  getExpressInsuranceProductPolicy
+} = require('@/services/express/insurance.product')
 const {
   EXPRESS_INSURANCE_DEFAULT_LIMIT,
   EXPRESS_INSURANCE_FREE_AMOUNT,
@@ -16,26 +33,11 @@ const {
   updateExpressInsurance,
   validateExpressInsurance
 } = require('@/services/express/insurance.rules')
-const { expressDraftBridge } = require('@/services/express/draftBridge')
-const { templateDraftBridge } = require('@/services/template/template.bridge')
-const assert = require('node:assert/strict')
-const {
-  getExpressInsuranceProductPolicy
-} = require('@/services/express/insurance.product')
 const {
   createExpressInsuranceView
 } = require('@/services/express/insurance.view')
-const {
-  buildCreateOrderRequest,
-  buildFreightRequest,
-  buildInsurancePriceRequest
-} = require('@/services/express/express.payload')
-const {
-  setExpressContact,
-  updateExpressGoods
-} = require('@/services/express/express.draft')
-const { expressApi } = require('@/services/express/express.api')
-const { expressService } = require('@/services/express/express.service')
+const { templateDraftBridge } = require('@/services/template/template.bridge')
+
 const {
   consigneeContact,
   createValidExpressDraft,

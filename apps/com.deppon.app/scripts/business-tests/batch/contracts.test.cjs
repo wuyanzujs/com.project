@@ -1,5 +1,7 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
 const {
   BATCH_MAX_CONSIGNEE_COUNT,
   applyBatchQuoteResults,
@@ -14,13 +16,13 @@ const {
   validateBatchDraft,
   validateBatchSubmitDraft
 } = require('@/services/batch')
-const assert = require('node:assert/strict')
 const { expressApi } = require('@/services/express/express.api')
-const { createValidExpressDraft } = require('../fixtures/express.cjs')
+
 const {
   createBatchContact,
   createValidBatchDraft
 } = require('../fixtures/batch.cjs')
+const { createValidExpressDraft } = require('../fixtures/express.cjs')
 
 const cases = [
   {

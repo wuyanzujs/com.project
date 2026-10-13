@@ -1,12 +1,13 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
 const {
   authApi,
   authService,
   createAppLoginRegisterRecord,
   createAppSmsLoginRequest
 } = require('@/services/auth')
-const assert = require('node:assert/strict')
 
 const cases = [
   {

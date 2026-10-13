@@ -1,8 +1,10 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
-const assert = require('node:assert/strict')
-const { sanitizeAppRouteUrl } = require('@/shared/navigation/appNavigation')
 const Taro = require('@tarojs/taro')
+const assert = require('node:assert/strict')
+const { test } = require('node:test')
+
+const { contactSelection } = require('@/services/contact')
+const { sanitizeAppRouteUrl } = require('@/shared/navigation/appNavigation')
 const {
   createLoginRedirectUrl,
   navigateToLogin
@@ -11,7 +13,6 @@ const {
   dispatchAppRoute,
   dispatchAppRouteAsync
 } = require('@/shared/navigation/navigationRuntime')
-const { contactSelection } = require('@/services/contact')
 
 const cases = [
   {

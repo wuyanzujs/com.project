@@ -1,5 +1,7 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
 const {
   clearExpressCollection,
   createExpressCollectionDraft,
@@ -11,12 +13,12 @@ const {
   updateExpressCollectionPricing,
   validateExpressCollection
 } = require('@/services/express/collection.rules')
-const assert = require('node:assert/strict')
 const { selectExpressProduct } = require('@/services/express/express.draft')
 const {
   buildCreateOrderRequest,
   buildFreightRequest
 } = require('@/services/express/express.payload')
+
 const {
   createValidExpressDraft,
   expressProduct

@@ -1,7 +1,9 @@
 require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
 const { LatestRequestCoordinator } = require('@/shared/async/latestRequest')
+
 const { createDeferred } = require('../support/deferred.cjs')
 
 test('rapid filter changes discard an older response arriving last', async () => {

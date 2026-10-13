@@ -1,9 +1,11 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
 const {
   createExpressQuoteRequestKey
 } = require('@/services/express/requestKey')
-const assert = require('node:assert/strict')
+
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
 
 const cases = [

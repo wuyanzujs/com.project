@@ -1,8 +1,10 @@
 require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
-const { goodsQueryService } = require('@/services/goods/goods.service')
+
 const { expressService } = require('@/services/express/express.service')
+const { goodsQueryService } = require('@/services/goods/goods.service')
+
 const { createDeferred } = require('../support/deferred.cjs')
 const { createStorageFixture } = require('../support/storage-fixture.cjs')
 

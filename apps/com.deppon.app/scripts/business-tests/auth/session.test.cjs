@@ -1,6 +1,11 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
 const assert = require('node:assert/strict')
+const { test } = require('node:test')
+
+const {
+  clearAccountScopedCache,
+  preserveAccountScopedCacheForLogin
+} = require('@/cache/accountScope')
 const {
   ACCOUNT_SCOPED_CACHE_KEYS,
   ACCOUNT_SCOPED_STORAGE_KEYS,
@@ -8,17 +13,13 @@ const {
   createCacheStorageKey
 } = require('@/cache/keys')
 const { getStorageValue, setStorageValue } = require('@/cache/storage')
-const {
-  clearAccountScopedCache,
-  preserveAccountScopedCacheForLogin
-} = require('@/cache/accountScope')
-const { appWebMessageBridge } = require('@/shared/webview/appWebMessage')
 const { clearAppSession, saveCurrentUser } = require('@/services/auth')
 const {
   createAppUserIdentity,
   isSameAppUser,
   shouldClearAccountScopedCache
 } = require('@/services/auth/sessionIdentity')
+const { appWebMessageBridge } = require('@/shared/webview/appWebMessage')
 
 const cases = [
   {

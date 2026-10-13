@@ -1,16 +1,8 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
 const assert = require('node:assert/strict')
-const {
-  createPaymentEvaluateWebUri,
-  createPaymentWaybillQuery,
-  getPaymentEvaluateScene,
-  getPaymentItemAmount,
-  getPaymentOrderTypeLabel,
-  getPaymentRangeDays,
-  getPaymentWriteOffStatus
-} = require('@/services/payment/payment.service')
-const { createPaymentFeeSummary } = require('@/services/payment/payment.fees')
+const { test } = require('node:test')
+
+const { paymentApi } = require('@/services/payment/payment.api')
 const {
   APP_PAYMENT_UNAVAILABLE_MESSAGE,
   buildPaymentCreateRequest,
@@ -22,7 +14,16 @@ const {
   selectPaymentCheckoutItems,
   validatePaymentCheckout
 } = require('@/services/payment/payment.checkout')
-const { paymentApi } = require('@/services/payment/payment.api')
+const { createPaymentFeeSummary } = require('@/services/payment/payment.fees')
+const {
+  createPaymentEvaluateWebUri,
+  createPaymentWaybillQuery,
+  getPaymentEvaluateScene,
+  getPaymentItemAmount,
+  getPaymentOrderTypeLabel,
+  getPaymentRangeDays,
+  getPaymentWriteOffStatus
+} = require('@/services/payment/payment.service')
 
 const cases = [
   {

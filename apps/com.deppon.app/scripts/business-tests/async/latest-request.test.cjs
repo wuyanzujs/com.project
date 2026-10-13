@@ -1,7 +1,8 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
-const { LatestRequestCoordinator } = require('@/shared/async/latestRequest')
 const assert = require('node:assert/strict')
+const { test } = require('node:test')
+
+const { LatestRequestCoordinator } = require('@/shared/async/latestRequest')
 
 const cases = [
   {

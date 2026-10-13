@@ -1,18 +1,18 @@
 require('../support/register.cjs')
-const { test } = require('node:test')
-const {
-  appWebMessageBridge,
-  parseAppWebMessage
-} = require('@/shared/webview/appWebMessage')
 const assert = require('node:assert/strict')
+const { test } = require('node:test')
+
+const { queryService } = require('@/services/query')
+const { supportService } = require('@/services/support')
 const {
   APP_WEB_TARGETS,
   isAllowedAppWebTargetUrl,
   requiresAppWebLogin
 } = require('@/shared/webview/appWeb')
-const { supportService } = require('@/services/support')
-const path = require('node:path')
-const { queryService } = require('@/services/query')
+const {
+  appWebMessageBridge,
+  parseAppWebMessage
+} = require('@/shared/webview/appWebMessage')
 
 const cases = [
   {

@@ -1,5 +1,18 @@
 require('../support/register.cjs')
+const assert = require('node:assert/strict')
 const { test } = require('node:test')
+
+const { CACHE_KEYS } = require('@/cache/keys')
+const {
+  getStorageValue,
+  removeStorageValue,
+  setStorageValue
+} = require('@/cache/storage')
+const { customerService } = require('@/services/customer/customer.service')
+const { expressApi } = require('@/services/express/express.api')
+const { applyExpressScanContext } = require('@/services/express/express.draft')
+const { buildFreightRequest } = require('@/services/express/express.payload')
+const { expressService } = require('@/services/express/express.service')
 const {
   createExpressProductAvailability,
   createExpressProductPointRequest,
@@ -11,18 +24,7 @@ const {
   supportsExpressDczpRecommendation,
   supportsExpressProductSwitch
 } = require('@/services/express/productAvailability.rules')
-const { applyExpressScanContext } = require('@/services/express/express.draft')
-const assert = require('node:assert/strict')
-const { buildFreightRequest } = require('@/services/express/express.payload')
-const {
-  getStorageValue,
-  removeStorageValue,
-  setStorageValue
-} = require('@/cache/storage')
-const { CACHE_KEYS } = require('@/cache/keys')
-const { expressApi } = require('@/services/express/express.api')
-const { expressService } = require('@/services/express/express.service')
-const { customerService } = require('@/services/customer/customer.service')
+
 const {
   createValidExpressDraft,
   expressProduct
