@@ -13,7 +13,8 @@ export const APP_ROUTE_DEFINITIONS = [
   {
     name: 'express',
     title: '寄快递',
-    path: 'pages/express/index'
+    path: 'pages/express/index',
+    loginRequired: true
   },
   {
     name: 'expressGoods',

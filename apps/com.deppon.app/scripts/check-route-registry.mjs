@@ -102,6 +102,23 @@ function checkRouteDefinitions(routes) {
   if (!routes.some(item => item.loginRequired)) {
     addViolation('routeRegistry.ts 至少需要一个 loginRequired 受保护路由。')
   }
+
+  // 寄件主页是寄件流程的账号入口，进入即要求登录；物品信息等子页只从寄件页
+  // 进入，由父页面守卫覆盖，不单独声明 loginRequired。
+  const requiredLoginRouteNames = ['express']
+
+  for (const name of requiredLoginRouteNames) {
+    const route = routes.find(item => item.name === name)
+
+    if (!route) {
+      addViolation(`routeRegistry.ts 缺少寄件域路由：${name}。`)
+      continue
+    }
+
+    if (!route.loginRequired) {
+      addViolation(`寄件域路由 ${name} 必须声明 loginRequired: true。`)
+    }
+  }
 }
 
 function checkDerivedConsumers() {

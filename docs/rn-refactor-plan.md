@@ -112,7 +112,7 @@
 - 旧寄件二维码里的 `pickupManId`、`courierNo`、`driverId`、`acceptDept`、`businessCode`、`shipperNumber` 会被识别为寄件业务二维码并保留 `role/value`；`sceneId` 和 `partner=Y` 也会进入解析结果，后续寄件页接入时不再回挖旧小程序工具函数。
 - `services/express` 已提供 `ExpressScanContext`、`applyExpressScanContext`、`clearExpressScanContext`、`createExpressScanContextView` 和 `SCAN_QR_CODE` 草稿桥接来源。当前只承接旧项目已明确的下单字段映射：`pickupManId/driverId -> pickupManId`，`shipperNumber -> shipperNumber`，`acceptDept/businessCode -> acceptDept`；带入或移除扫码上下文时会清空旧报价和协议勾选，提示重新获取价格，并在寄件页展示扫码来源说明和移除入口。
 - 客户编码二维码会在价格时效请求中带入 `customerCode/customerMonthly/customerContract`，在筛单请求中带入 `customerCode/limitCust`，并在创建订单时提交 `shipperNumber`；不在前端硬编码账号月结/合同权限，是否可月结、是否合同客户和费用规则仍以后端校验为准。
-- 首页和发票中心扫码使用 `scanAppCode` 分类分流：普通运单进入订单详情或发票运单搜索，`printId` 云打印码进入面单打印中心，寄件业务二维码、短链和非德邦二维码不进入普通查件链路。首页扫码遇到 `sendQrCode` 时，会把 `ExpressScanContext` 写入寄件草稿并通过登录守卫进入寄件页；发票中心仍只消费运单号。
+- 首页和发票中心扫码使用 `scanAppCode` 分类分流：普通运单进入订单详情或发票运单搜索，`printId` 云打印码进入面单打印中心，寄件业务二维码、短链和非德邦二维码不进入普通查件链路。首页扫码遇到 `sendQrCode` 时，会把 `ExpressScanContext` 写入寄件草稿并经统一登录守卫进入寄件页（寄件页已按生产端策略改为登录必需，扫码带入的内存草稿在登录回跳后继续使用）；发票中心仍只消费运单号。
 - 当前不复制旧小程序里的 `p.url.cn` 短链网络解析、云打印小程序外跳和寄件二维码状态机；这些能力后续按 App 原生扫码、打印和寄件 service 独立接入。
 - 当前 `APP_NATIVE_CAPABILITIES.scan` 仍是 `pending`，页面会展示统一“扫码能力待接入 App 原生模块”提示。
 - 后续只需要在 `scanCode` 内部接入 RN 原生相机/扫码模块，业务页面不再改调用形态。
@@ -464,7 +464,8 @@ type ContactSelectMode = 'select' | 'manage'
 - `pages/express/index`：隐私面单作为服务选项接入，首次开启时展示 App 内确认说明，确认结果写入本地缓存；创建订单时通过 `encryptInfo: 'Y' | 'N'` 传给后端。
 - `pages/express/index` 已移除演示联系人“填入”能力，联系人来源只保留地址簿选择、新增后回填和查价草稿带入。
 - `services/express/draftStorage.ts`：新增寄件草稿持久化，使用 2 小时 TTL 缓存收寄件、货物、服务、报价和备注；提交成功后清理。
-- `pages/express/index`：草稿变化自动保存，页面初始化优先恢复草稿；未登录点击提交时先保存草稿，再跳登录页，登录后回到寄件页继续提交。
+- `pages/express/index`：寄件页已按生产端登录策略改为登录必需（`routeRegistry` 声明 `loginRequired`），未登录从首页、扫码、查价、优惠券、再来一单等任意入口进入都会先走统一登录守卫并携带回跳地址；草稿变化自动保存，页面初始化优先恢复草稿；会话过期兜底保留提交前草稿并跳登录页，登录后继续提交。
+- `shared/navigation/routeRegistry.ts`、`scripts/check-route-registry.mjs` 与 `scripts/business-tests/navigation/gating.test.cjs`：寄件主页声明 `loginRequired` 后，`APP_LOGIN_ROUTE_PATHS`、导航守卫和 App 恢复态检查自动按同一注册表拦截；物品信息等子页只从寄件页进入，由父页面守卫覆盖，不单独声明；门禁脚本锁定寄件主页的登录必需声明，业务测试断言匿名进入跳登录并携带回跳地址（含 query）、已登录直接进入。
 - `services/express.submitDraft`：下单前新增货物标签和筛单校验。`queryGoodsRemark` 返回 `displayType=forbid` 时阻断；`sieveOrder/tips` 返回 `type=2/3/4` 时必须完成当前证明上的明确确认，未确认时阻断并展示后端 `reason`，`type=1` 作为提醒类结果暂不阻断。
 
 首期保留的业务规则：
@@ -473,7 +474,7 @@ type ContactSelectMode = 'select' | 'manage'
 - 收件人变化后清空已选产品价格。
 - 收寄地址互换时清空取件时间、夜揽地址能力和派送偏好，避免详细地址变化复用旧范围结果。
 - 下单前校验协议、收寄件完整度、手机号、地址差异、货物名称、重量、件数和产品价格。
-- 下单前必须具备 `ECO_TOKEN`，未登录不会直接打安全接口，避免 401 后丢失当前寄件表单。
+- 寄件主页进入即要求登录（物品信息等子页只从寄件页进入，跟随父页面守卫），未登录不会渲染寄件表单或直接请求安全接口；提交前的 `ECO_TOKEN` 校验改为会话过期兜底，避免 401 后丢失当前寄件表单。
 - 隐私面单不影响报价，开启/关闭不会清空已选产品；最终是否成功生效仍以后端下单校验为准。
 - 月结付款在 RN 首期只做客户编码可见提示和客户绑定引导，不在前端硬编码合同客户、统一结算、折扣价和代收货款权限。
 - `passProductCode` 表示产品融合/升级角色，不是 `selectedProduct.omsProductCode`；普通寄件默认 `EXP`，融合明确关闭时回到空角色，司机和营业部二维码使用 `DRIVER_QR_CODE`。
