@@ -16,6 +16,11 @@ import type {
   InvoiceStatusClass
 } from './types'
 
+/**
+ *
+ * @param value 秒级或毫秒级时间戳
+ * @description 统一时间戳为毫秒
+ */
 function normalizeTimestamp(value?: number | null) {
   if (!value) {
     return null
@@ -24,6 +29,11 @@ function normalizeTimestamp(value?: number | null) {
   return value < 10000000000 ? value * 1000 : value
 }
 
+/**
+ *
+ * @param value 时间戳
+ * @description 格式化时间戳为日期时间文案
+ */
 function formatTimestamp(value?: number | null) {
   const timestamp = normalizeTimestamp(value)
 
@@ -40,6 +50,11 @@ function formatTimestamp(value?: number | null) {
   return formatDateTime(date)
 }
 
+/**
+ *
+ * @param status 开票状态 code
+ * @description 把开票状态转成文案
+ */
 function getHistoryStatusName(status: number) {
   switch (status) {
     case 0:
@@ -75,6 +90,11 @@ function getHistoryStatusName(status: number) {
   }
 }
 
+/**
+ *
+ * @param status 开票状态 code
+ * @description 取开票状态对应的样式类
+ */
 function getHistoryStatusClass(status: number): InvoiceStatusClass {
   if (status === 6 || status === 31) {
     return 'Cancel'
@@ -91,6 +111,11 @@ function getHistoryStatusClass(status: number): InvoiceStatusClass {
   return 'Process'
 }
 
+/**
+ *
+ * @param category 发票类别 code
+ * @description 取发票类别的展示文案
+ */
 function getBillCategoryName(category?: string) {
   switch (category) {
     case '01':
@@ -105,12 +130,22 @@ function getBillCategoryName(category?: string) {
   }
 }
 
+/**
+ *
+ * @param value 地址片段
+ * @description 归一地址片段并过滤 null 字符串
+ */
 function normalizeAddressPiece(value?: string | null) {
   const text = normalizeText(value)
 
   return text && text !== 'null' ? text : ''
 }
 
+/**
+ *
+ * @param value 竖线分隔的收票地址
+ * @description 解析出省市区与详细地址
+ */
 export function parseInvoiceAcceptAddress(value?: string | null) {
   const [province = '', city = '', county = '', ...addressParts] =
     normalizeText(value).split('|')
@@ -123,10 +158,21 @@ export function parseInvoiceAcceptAddress(value?: string | null) {
   }
 }
 
+/**
+ *
+ * @param status 开票状态 code
+ * @description 判断是否可发送发票邮件
+ */
 export function canSendInvoiceEmail(status: number) {
   return status === 4 || status === 7 || status === 27
 }
 
+/**
+ *
+ * @param status 开票状态 code
+ * @param category 发票类别 code
+ * @description 判断是否可撤销开票申请
+ */
 export function canCancelInvoiceApply(
   status: number,
   category?: InvoiceBillCategory | ''
@@ -134,6 +180,12 @@ export function canCancelInvoiceApply(
   return category === '01' && (status === 1 || status === 3 || status === 28)
 }
 
+/**
+ *
+ * @param status 开票状态 code
+ * @param category 发票类别 code
+ * @description 判断是否可作废发票
+ */
 export function canReverseInvoice(
   status: number,
   category?: InvoiceBillCategory | ''
@@ -141,6 +193,12 @@ export function canReverseInvoice(
   return category !== '01' && (status === 4 || status === 47)
 }
 
+/**
+ *
+ * @param status 开票状态 code
+ * @param category 发票类别 code
+ * @description 判断是否可修改收票地址
+ */
 export function canModifyInvoiceAddress(
   status: number,
   category?: InvoiceBillCategory | ''
@@ -148,6 +206,11 @@ export function canModifyInvoiceAddress(
   return category === '01' && (status === 3 || status === 4)
 }
 
+/**
+ *
+ * @param item 开票历史原始数据
+ * @description 把开票历史原始数据转成视图
+ */
 export function normalizeHistory(item: InvoiceHistoryRaw): InvoiceHistoryView {
   const status = Number.parseInt(normalizeText(item.status), 10)
   const normalizedStatus = Number.isFinite(status) ? status : 0
@@ -183,6 +246,11 @@ export function normalizeHistory(item: InvoiceHistoryRaw): InvoiceHistoryView {
   }
 }
 
+/**
+ *
+ * @param raw 运单号与金额的映射
+ * @description 转成开票运单明细列表
+ */
 export function normalizeHistoryWaybills(
   raw: InvoiceHistoryWaybillRaw
 ): InvoiceHistoryWaybillView[] {
@@ -194,6 +262,13 @@ export function normalizeHistoryWaybills(
     .filter(item => item.waybillNumber && item.amount > 0)
 }
 
+/**
+ *
+ * @param title 文件标题
+ * @param pdfUrl pdf 链接
+ * @param imageUrl 图片链接
+ * @description 组装发票预览文件信息
+ */
 function createPreviewFile(title: string, pdfUrl?: string, imageUrl?: string) {
   const normalizedPdfUrl = normalizeText(pdfUrl)
   const normalizedImageUrl = normalizeText(imageUrl)
@@ -208,6 +283,13 @@ function createPreviewFile(title: string, pdfUrl?: string, imageUrl?: string) {
   }
 }
 
+/**
+ *
+ * @param raw 发票预览原始数据
+ * @param applyNo 发票申请号
+ * @param title 发票标题
+ * @description 把发票预览原始数据转成视图
+ */
 export function normalizePreview(
   raw: InvoicePreviewRaw,
   applyNo: string,

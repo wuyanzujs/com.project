@@ -14,6 +14,11 @@ import type {
 
 const DEFAULT_PAGE_SIZE = 20
 
+/**
+ *
+ * @param role 联系人类型
+ * @description 创建空的联系人对象
+ */
 export function createEmptyContact(role: Contact['type'] = 0): Contact {
   return {
     name: '',
@@ -29,6 +34,11 @@ export function createEmptyContact(role: Contact['type'] = 0): Contact {
   }
 }
 
+/**
+ *
+ * @param value 待统计文本
+ * @description 统计文本中的汉字个数
+ */
 function getChineseLength(value: string) {
   return (value.match(/[\u4e00-\u9fa5]/g) ?? []).length
 }
@@ -38,12 +48,23 @@ type ContactAddressParts = Pick<
   'province' | 'city' | 'county' | 'address' | 'town'
 >
 
+/**
+ *
+ * @param value 地址片段，可为空
+ * @description 归一地址片段，null 文本返回空
+ */
 function normalizeAddressPart(value?: string | null) {
   const text = (value ?? '').trim()
 
   return text && text !== 'null' ? text : ''
 }
 
+/**
+ *
+ * @param value 地址文本
+ * @param prefix 重复前缀
+ * @description 去除地址文本开头重复的前缀
+ */
 function removeRepeatedPrefix(value: string, prefix: string) {
   let nextValue = value
 
@@ -54,6 +75,11 @@ function removeRepeatedPrefix(value: string, prefix: string) {
   return nextValue
 }
 
+/**
+ *
+ * @param contact 省市区与详细地址
+ * @description 拼接联系人完整地址
+ */
 export function getContactFullAddress(contact: ContactAddressParts) {
   return [
     contact.province,
@@ -66,6 +92,11 @@ export function getContactFullAddress(contact: ContactAddressParts) {
     .join('')
 }
 
+/**
+ *
+ * @param raw 逗号分隔的地址提示
+ * @description 解析地址提示为省市区字段
+ */
 export function parseAddressHint(raw: string): ContactAddressHint {
   const [province = '', city = '', county = '', town = '', ...addressParts] =
     raw.split(',')
@@ -80,6 +111,11 @@ export function parseAddressHint(raw: string): ContactAddressHint {
   }
 }
 
+/**
+ *
+ * @param hint 地址提示
+ * @description 生成地址提示展示文案
+ */
 export function getAddressHintLabel(hint: ContactAddressHint) {
   const town = normalizeAddressPart(hint.town)
 
@@ -96,6 +132,12 @@ export function getAddressHintLabel(hint: ContactAddressHint) {
   )
 }
 
+/**
+ *
+ * @param contact 联系人
+ * @param hint 地址提示
+ * @description 将地址提示写入联系人
+ */
 export function applyAddressHintToContact(
   contact: Contact,
   hint: ContactAddressHint
@@ -116,6 +158,11 @@ export function applyAddressHintToContact(
   }
 }
 
+/**
+ *
+ * @param value 省市区文本，可为空
+ * @description 解析横线分隔的省市区文本
+ */
 function parseProCityName(value?: string | null) {
   if (!value?.includes('-')) {
     return {
@@ -134,10 +181,21 @@ function parseProCityName(value?: string | null) {
   }
 }
 
+/**
+ *
+ * @param value 电话号码，可为空
+ * @description 归一电话号码，仅保留数字前 11 位
+ */
 function normalizeAnalysisPhone(value?: string | null) {
   return (value ?? '').replace(/[^\d]/g, '').slice(0, 11)
 }
 
+/**
+ *
+ * @param contact 联系人
+ * @param analysis 智能识别结果
+ * @description 将智能识别结果写入联系人
+ */
 export function applyAnalysisToContact(
   contact: Contact,
   analysis: ContactAnalysis
@@ -167,6 +225,12 @@ export function applyAnalysisToContact(
   }
 }
 
+/**
+ *
+ * @param contact 联系人
+ * @param analysis 智能识别结果 4
+ * @description 将智能识别结果 4 写入联系人
+ */
 export function applyAnalysis4ToContact(
   contact: Contact,
   analysis: ContactAnalysis4
@@ -187,6 +251,11 @@ export function applyAnalysis4ToContact(
   }
 }
 
+/**
+ *
+ * @param contact 联系人
+ * @description 校验联系人必填项与格式
+ */
 export function validateContact(contact: Contact): ContactValidationResult {
   const messages: string[] = []
   const name = contact.name.trim()
@@ -226,6 +295,11 @@ export function validateContact(contact: Contact): ContactValidationResult {
 }
 
 export const contactService = {
+  /**
+   *
+   * @param options 分页与关键字
+   * @description 分页查询联系人列表
+   */
   queryList(options: ContactListOptions = {}) {
     return contactApi.queryContact({
       pageIndex: options.pageIndex ?? 1,
@@ -236,6 +310,11 @@ export const contactService = {
     })
   },
 
+  /**
+   *
+   * @param contact 联系人
+   * @description 校验通过后保存联系人
+   */
   save(contact: Contact) {
     const validation = validateContact(contact)
 
@@ -250,6 +329,11 @@ export const contactService = {
     return contactApi.saveContact(contact)
   },
 
+  /**
+   *
+   * @param id 地址 ID
+   * @description 删除单个联系人地址
+   */
   remove(id: string) {
     if (!id) {
       return Promise.resolve({
@@ -262,6 +346,11 @@ export const contactService = {
     return contactApi.deleteContacts([id])
   },
 
+  /**
+   *
+   * @param ids 地址 ID 列表
+   * @description 批量删除联系人地址
+   */
   removeMany(ids: string[]) {
     if (!ids.length) {
       return Promise.resolve({
@@ -274,6 +363,11 @@ export const contactService = {
     return contactApi.deleteContacts(ids)
   },
 
+  /**
+   *
+   * @param contact 联系人
+   * @description 将联系人设为默认地址
+   */
   setDefault(contact: Contact) {
     if (!contact.id) {
       return Promise.resolve({
@@ -289,14 +383,29 @@ export const contactService = {
     })
   },
 
+  /**
+   *
+   * @description 查询默认联系人地址
+   */
   queryDefault() {
     return contactApi.queryDefaultContact()
   },
 
+  /**
+   *
+   * @param address 地址文本
+   * @description 调用接口做地址智能识别
+   */
   analyze(address: string) {
     return contactApi.analyzeAddress(address)
   },
 
+  /**
+   *
+   * @param detailAddress 详细地址
+   * @param contact 省市区，可选
+   * @description 调用接口做地址智能识别 4
+   */
   analyze4(detailAddress: string, contact?: Partial<Contact>) {
     return contactApi.analyzeAddress4({
       province: contact?.province,
@@ -306,6 +415,11 @@ export const contactService = {
     })
   },
 
+  /**
+   *
+   * @param contact 省市区与详细地址
+   * @description 查询地址提示列表
+   */
   queryAddressHints(
     contact: Pick<Contact, 'province' | 'city' | 'county' | 'address'>
   ) {
@@ -317,6 +431,11 @@ export const contactService = {
     })
   },
 
+  /**
+   *
+   * @param contact 省市区
+   * @description 查询街道列表
+   */
   queryTownList(contact: Pick<Contact, 'province' | 'city' | 'county'>) {
     return contactApi.queryTownList({
       provinceName: contact.province,
@@ -325,6 +444,11 @@ export const contactService = {
     })
   },
 
+  /**
+   *
+   * @param contact 省市区与详细地址
+   * @description 校验地址详细程度
+   */
   checkAddressDetail(
     contact: Pick<Contact, 'province' | 'city' | 'county' | 'address'>
   ) {
@@ -333,6 +457,10 @@ export const contactService = {
     )
   },
 
+  /**
+   *
+   * @description 查询联系人地址数量
+   */
   queryCount() {
     return contactApi.queryContactCount()
   },

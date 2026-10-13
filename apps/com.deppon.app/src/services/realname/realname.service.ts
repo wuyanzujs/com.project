@@ -25,10 +25,20 @@ const ID_CARD_CHECK_CODES = [
   '2'
 ]
 
+/**
+ *
+ * @param value 文本，可为空
+ * @description 归一文本为去空格字符串
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param idCardNo 身份证号
+ * @description 身份证号保留前 6 位后 4 位，中间打码
+ */
 function maskIdCardNo(idCardNo: string) {
   const value = normalizeText(idCardNo)
 
@@ -43,6 +53,11 @@ function maskIdCardNo(idCardNo: string) {
   return `${value.slice(0, 6)}********${value.slice(-4)}`
 }
 
+/**
+ *
+ * @param value 身份证号
+ * @description 校验身份证号中的出生日期
+ */
 function isValidBirthday(value: string) {
   const year = Number(value.slice(6, 10))
   const month = Number(value.slice(10, 12))
@@ -58,6 +73,11 @@ function isValidBirthday(value: string) {
   )
 }
 
+/**
+ *
+ * @param idCardNo 身份证号
+ * @description 按校验位规则校验身份证号
+ */
 export function isValidIdCardNo(idCardNo: string) {
   const value = normalizeText(idCardNo).toUpperCase()
 
@@ -76,6 +96,11 @@ export function isValidIdCardNo(idCardNo: string) {
   return ID_CARD_CHECK_CODES[sum % 11] === value[17]
 }
 
+/**
+ *
+ * @param name 姓名
+ * @description 校验姓名长度与字符，返回错误文案
+ */
 function validateName(name: string) {
   const value = normalizeText(name)
 
@@ -90,6 +115,11 @@ function validateName(name: string) {
   return ''
 }
 
+/**
+ *
+ * @param raw 实名信息原始数据，可为空
+ * @description 组装实名状态展示结构
+ */
 function toRealNameView(raw?: RealNameAuthRaw | null): RealNameAuthView {
   const name = normalizeText(raw?.name)
   const idCardNo = normalizeText(raw?.idCardNo).toUpperCase()
@@ -107,6 +137,11 @@ function toRealNameView(raw?: RealNameAuthRaw | null): RealNameAuthView {
   }
 }
 
+/**
+ *
+ * @param view 实名状态
+ * @description 取未打码的身份证号
+ */
 function getRawIdCardNo(view: RealNameAuthView | null) {
   const idCardNo = view?.idCardNo ?? ''
 
@@ -114,6 +149,12 @@ function getRawIdCardNo(view: RealNameAuthView | null) {
 }
 
 export const realNameService = {
+  /**
+   *
+   * @param name 姓名
+   * @param idCardNo 身份证号
+   * @description 校验实名信息并返回归一结果
+   */
   validate(name: string, idCardNo: string): RealNameValidationResult {
     const nextName = normalizeText(name)
     const nextIdCardNo = normalizeText(idCardNo).toUpperCase()
@@ -147,6 +188,10 @@ export const realNameService = {
 
   maskIdCardNo,
 
+  /**
+   *
+   * @description 查询实名认证状态
+   */
   async query(): Promise<DepponResponse<RealNameAuthView>> {
     const response = await realNameApi.queryRealNameAuth(false)
 
@@ -160,6 +205,12 @@ export const realNameService = {
     }
   },
 
+  /**
+   *
+   * @param name 姓名
+   * @param idCardNo 身份证号
+   * @description 校验后提交手工实名认证
+   */
   async submitManual(
     name: string,
     idCardNo: string
@@ -178,6 +229,11 @@ export const realNameService = {
     })
   },
 
+  /**
+   *
+   * @param current 当前实名信息
+   * @description 删除实名认证信息
+   */
   async deleteRealName(
     current: RealNameAuthView | null
   ): Promise<DepponResponse<boolean>> {
@@ -193,6 +249,10 @@ export const realNameService = {
     })
   },
 
+  /**
+   *
+   * @description 发起网络身份认证并提交凭证
+   */
   async startNetworkIdentityAuth(): Promise<DepponResponse<boolean>> {
     const bizSeqResponse = await realNameApi.fetchBizSeq()
 

@@ -12,6 +12,10 @@ import type {
   PrivacyVersionResponse
 } from './types'
 
+/**
+ *
+ * @description 创建隐私行为请求参数
+ */
 function createPrivacyBehaviorRequest(): PrivacyBehaviorRequest {
   return {
     sysCode: APP_RUNTIME_CONFIG.systemCode,
@@ -19,18 +23,33 @@ function createPrivacyBehaviorRequest(): PrivacyBehaviorRequest {
   }
 }
 
+/**
+ *
+ * @param value 版本号原始值，可为空
+ * @description 归一版本号文本
+ */
 function normalizeVersion(value?: string | null) {
   return (value ?? '').trim()
 }
 
 let dismissedHomePromptKey = ''
 
+/**
+ *
+ * @param status 隐私状态
+ * @description 拼接首页提示去重 key
+ */
 function createHomePromptKey(status: PrivacyStatusView) {
   return `${status.latestVersion || 'latest-empty'}:${
     status.agreedVersion || 'agreed-empty'
   }`
 }
 
+/**
+ *
+ * @param status 隐私状态
+ * @description 按隐私状态创建首页提示，无需提示返回 null
+ */
 function createHomePrivacyPrompt(
   status: PrivacyStatusView
 ): PrivacyHomePromptView | null {
@@ -57,6 +76,11 @@ function createHomePrivacyPrompt(
   }
 }
 
+/**
+ *
+ * @param response 隐私版本接口返回
+ * @description 转隐私状态展示数据
+ */
 function toPrivacyStatusView(
   response: PrivacyVersionResponse
 ): PrivacyStatusView {
@@ -95,6 +119,10 @@ function toPrivacyStatusView(
 }
 
 export const privacyService = {
+  /**
+   *
+   * @description 查询隐私版本确认状态
+   */
   async queryPrivacyStatus(): Promise<DepponResponse<PrivacyStatusView>> {
     const response = await privacyApi.queryPrivacyVersion(false)
 
@@ -108,6 +136,10 @@ export const privacyService = {
     }
   },
 
+  /**
+   *
+   * @description 保存隐私协议同意状态
+   */
   async savePrivacyAgreement() {
     const response = await privacyApi.savePrivacyVersion(
       createPrivacyBehaviorRequest()
@@ -122,6 +154,10 @@ export const privacyService = {
     return response
   },
 
+  /**
+   *
+   * @description 撤销隐私协议同意
+   */
   async cancelPrivacyAgreement() {
     const response = await privacyApi.cancelPrivacyVersion(
       createPrivacyBehaviorRequest()
@@ -134,6 +170,10 @@ export const privacyService = {
     return response
   },
 
+  /**
+   *
+   * @description 查询首页隐私提示，未登录返回 null
+   */
   async queryHomePrivacyPrompt(): Promise<PrivacyHomePromptView | null> {
     if (!getCurrentEcoToken()) {
       return null
@@ -148,6 +188,11 @@ export const privacyService = {
     return createHomePrivacyPrompt(response.result)
   },
 
+  /**
+   *
+   * @param prompt 待忽略的提示
+   * @description 记录已忽略的首页提示 key
+   */
   dismissHomePrivacyPrompt(prompt: Pick<PrivacyHomePromptView, 'key'>) {
     dismissedHomePromptKey = prompt.key
   }

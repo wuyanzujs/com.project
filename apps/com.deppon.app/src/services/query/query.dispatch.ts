@@ -38,10 +38,20 @@ const PICKUP_ONLY_RANGE_CODES = new Set([
 
 const UNSERVICEABLE_RANGE_CODES = new Set(['DELIVERY_NATURE_ZTBPS'])
 
+/**
+ *
+ * @param value 文本，可为空
+ * @description 去除首尾空白
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param query 地址查询条件
+ * @description 拼接完整的省市区地址
+ */
 function createFullAddress(query: DispatchAddressQuery) {
   return normalizeText(
     query.rawText ||
@@ -51,6 +61,12 @@ function createFullAddress(query: DispatchAddressQuery) {
   )
 }
 
+/**
+ *
+ * @param analysis 地址识别结果
+ * @param query 地址查询条件
+ * @description 合并识别结果与入参，生成标准地址
+ */
 function createAddressFromAnalysis(
   analysis: {
     province?: string
@@ -87,6 +103,11 @@ function createAddressFromAnalysis(
   }
 }
 
+/**
+ *
+ * @param item 物流收派项
+ * @description 物流收派项转为街道结构
+ */
 function normalizeLogisticsStreet(item: LogisticsDispatchItem): DispatchStreet {
   return {
     streetName: item.villageName,
@@ -94,6 +115,11 @@ function normalizeLogisticsStreet(item: LogisticsDispatchItem): DispatchStreet {
   }
 }
 
+/**
+ *
+ * @param response 物流收派响应
+ * @description 归一物流收派范围分组
+ */
 function normalizeLogisticsGroups(
   response: LogisticsDispatchResponse
 ): DispatchRangeGroup[] {
@@ -126,6 +152,11 @@ function normalizeLogisticsGroups(
   return groups
 }
 
+/**
+ *
+ * @param list 快递收派项列表
+ * @description 归一快递收派范围分组
+ */
 function normalizeExpressGroups(
   list: ExpressDispatchItem[] = []
 ): DispatchRangeGroup[] {
@@ -141,6 +172,12 @@ function normalizeExpressGroups(
     }))
 }
 
+/**
+ *
+ * @param groups 收派范围分组
+ * @param matchedStreet 命中的街道名
+ * @description 查找命中街道所属的范围 code
+ */
 function findMatchedStreetCode(
   groups: DispatchRangeGroup[],
   matchedStreet: string
@@ -156,6 +193,12 @@ function findMatchedStreetCode(
   return group?.code || ''
 }
 
+/**
+ *
+ * @param groups 收派范围分组
+ * @param matchedStreet 命中的街道名
+ * @description 根据收派范围生成提示文案
+ */
 function createDispatchHint(
   groups: DispatchRangeGroup[],
   matchedStreet: string
@@ -181,6 +224,12 @@ function createDispatchHint(
   return '当前区域存在特殊收派规则，请以页面结果为准'
 }
 
+/**
+ *
+ * @param groups 收派范围分组
+ * @param matchedStreet 命中的街道名
+ * @description 判断当前区域是否可下单寄件
+ */
 function canCreateExpress(groups: DispatchRangeGroup[], matchedStreet: string) {
   const matchedCode = findMatchedStreetCode(groups, matchedStreet)
 
@@ -191,6 +240,11 @@ function canCreateExpress(groups: DispatchRangeGroup[], matchedStreet: string) {
   return groups.some(group => SERVICEABLE_RANGE_CODES.has(group.code))
 }
 
+/**
+ *
+ * @param query 地址查询条件
+ * @description 识别并补全省市区地址
+ */
 export async function resolveDispatchAddress(
   query: DispatchAddressQuery
 ): Promise<DepponResponse<DispatchAddress>> {
@@ -222,6 +276,12 @@ export async function resolveDispatchAddress(
   }
 }
 
+/**
+ *
+ * @param productType 产品类型
+ * @param query 地址查询条件
+ * @description 查询指定产品的收派范围
+ */
 export async function queryDispatchRange(
   productType: DispatchProductType,
   query: DispatchAddressQuery

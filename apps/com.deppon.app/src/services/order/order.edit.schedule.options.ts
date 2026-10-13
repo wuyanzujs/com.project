@@ -32,16 +32,33 @@ export interface OrderEditPickupDateOption {
   timeOptions: OrderEditPickupTimeOption[]
 }
 
+/**
+ *
+ * @param value 原始文本
+ * @description 转为去除首尾空格的文本
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param value 时段类型
+ * @description 判断是否为可选的时段类型
+ */
 function isAvailablePickupType(
   value: OrderEditPickupOpeningType
 ): value is OrderEditPickupTimeType {
   return value === 'NORMAL' || value === 'NIGHT'
 }
 
+/**
+ *
+ * @param target 按日期聚合的时段映射
+ * @param openingList 可预约日期列表
+ * @param type 时段类型
+ * @description 将可预约时段合并进日期映射
+ */
 function appendOpeningList(
   target: Map<string, Map<string, OrderEditPickupOpeningItem>>,
   openingList: OrderEditPickupOpeningDate[] | undefined,
@@ -71,6 +88,12 @@ function appendOpeningList(
   }
 }
 
+/**
+ *
+ * @param response 上门时间响应
+ * @param nightCapability 夜间揽收能力
+ * @description 归并排序上门时间数据
+ */
 export function normalizeOrderEditPickupTimeResponse(
   response: OrderEditPickupTimeResponse,
   nightCapability?: OrderEditPickupNightCapability
@@ -114,6 +137,11 @@ export function normalizeOrderEditPickupTimeResponse(
   }
 }
 
+/**
+ *
+ * @param value 日期文本
+ * @description 解析并校验日期
+ */
 function parseDate(value: string) {
   const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/)
 
@@ -133,6 +161,11 @@ function parseDate(value: string) {
     : null
 }
 
+/**
+ *
+ * @param response 上门时间响应
+ * @description 生成上门日期与时段选项
+ */
 export function createOrderEditPickupDateOptions(
   response?: OrderEditPickupTimeResponse | null
 ): OrderEditPickupDateOption[] {
@@ -158,6 +191,12 @@ export function createOrderEditPickupDateOptions(
   })
 }
 
+/**
+ *
+ * @param date 日期
+ * @param time 时段
+ * @description 拼接完整的上门时间
+ */
 export function createOrderEditPickupDateTime(date: string, time: string) {
   const normalizedTime = normalizeText(time)
 
@@ -166,6 +205,11 @@ export function createOrderEditPickupDateTime(date: string, time: string) {
     : `${normalizeText(date)} ${normalizedTime}`.trim()
 }
 
+/**
+ *
+ * @param response 上门时间响应
+ * @description 取首个可用的上门时段
+ */
 export function getFirstOrderEditPickupTimeSelection(
   response: OrderEditPickupTimeResponse
 ): OrderEditPickupTimeSelection | null {
@@ -180,6 +224,12 @@ export function getFirstOrderEditPickupTimeSelection(
   return null
 }
 
+/**
+ *
+ * @param response 上门时间响应
+ * @param pickup 当前上门时间草稿
+ * @description 匹配草稿中已选的上门时段
+ */
 export function findOrderEditPickupTimeSelection(
   response: OrderEditPickupTimeResponse,
   pickup: Pick<OrderEditPickupDraft, 'time' | 'type'>
@@ -201,6 +251,13 @@ export function findOrderEditPickupTimeSelection(
   return null
 }
 
+/**
+ *
+ * @param response 上门时间响应
+ * @param date 日期
+ * @param time 时段
+ * @description 取指定日期时段的选中项
+ */
 export function getOrderEditPickupTimeSelection(
   response: OrderEditPickupTimeResponse | null,
   date: string,
@@ -220,6 +277,11 @@ export function getOrderEditPickupTimeSelection(
   return item ? { date, ...item } : null
 }
 
+/**
+ *
+ * @param value 时间文本
+ * @description 提取时间文本中的日期
+ */
 export function getOrderEditPickupDate(value: string) {
   return value.match(/^(\d{4}-\d{2}-\d{2})/)?.[1] ?? ''
 }

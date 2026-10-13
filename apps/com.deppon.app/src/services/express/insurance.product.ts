@@ -18,6 +18,11 @@ const SXB_BLOCKED_PRODUCTS = new Set<ExpressProductCode>([
   ...LOGISTICS_PRODUCTS
 ])
 
+/**
+ *
+ * @param productCode 产品 code
+ * @description 取产品的保价策略
+ */
 export function getExpressInsuranceProductPolicy(
   productCode: ExpressProductCode
 ) {

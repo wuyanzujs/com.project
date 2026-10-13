@@ -13,6 +13,11 @@ import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type { ExpressDraft, ExpressPickupTimeResponse } from './types'
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 查询取件时间并归一响应
+ */
 export async function queryExpressPickupTime(
   draft: ExpressDraft
 ): Promise<DepponResponse<ExpressPickupTimeResponse>> {

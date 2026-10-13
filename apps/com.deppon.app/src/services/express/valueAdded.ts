@@ -74,6 +74,10 @@ const PAPER_RETURN_BILL_TYPES = new Set<ExpressReturnBillType>([
   'ORIGINAL_ONLINE'
 ])
 
+/**
+ *
+ * @description 创建空的返单草稿
+ */
 export function createExpressReturnBillDraft(): ExpressReturnBillDraft {
   return {
     type: 'NO_RETURN_SIGNED',
@@ -84,16 +88,31 @@ export function createExpressReturnBillDraft(): ExpressReturnBillDraft {
   }
 }
 
+/**
+ *
+ * @param value 待处理的文本
+ * @description 归一文本，非字符串返回空
+ */
 function normalizeText(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
+/**
+ *
+ * @param value 返单类型
+ * @description 归一返单类型，非法返回无需返单
+ */
 function normalizeType(value: unknown): ExpressReturnBillType {
   return RETURN_BILL_TYPES.has(value as ExpressReturnBillType)
     ? (value as ExpressReturnBillType)
     : 'NO_RETURN_SIGNED'
 }
 
+/**
+ *
+ * @param value 签收要求
+ * @description 归一签收要求并去重
+ */
 function normalizeRequirements(value: unknown) {
   const values = Array.isArray(value)
     ? value
@@ -114,6 +133,11 @@ function normalizeRequirements(value: unknown) {
     .filter(code => normalized.has(code))
 }
 
+/**
+ *
+ * @param value 返单张数
+ * @description 归一返单张数到合法区间
+ */
 function normalizeReturnCount(value: unknown) {
   const count = Number(value)
 
@@ -127,18 +151,39 @@ function normalizeReturnCount(value: unknown) {
   )
 }
 
+/**
+ *
+ * @param value 其他签收要求
+ * @description 归一其他签收要求并截断
+ */
 function normalizeCustomRequirement(value: unknown) {
   return normalizeText(value).slice(0, EXPRESS_RETURN_BILL_CUSTOM_MAX_LENGTH)
 }
 
+/**
+ *
+ * @param type 返单类型
+ * @description 判断是否为电子云签类型
+ */
 export function isExpressCloudSignType(type: ExpressReturnBillType) {
   return type === 'RETURNBILL_TYPE_ONLINE' || type === 'ORIGINAL_ONLINE'
 }
 
+/**
+ *
+ * @param type 返单类型
+ * @description 判断是否为纸质返单类型
+ */
 export function isExpressPaperReturnBillType(type: ExpressReturnBillType) {
   return PAPER_RETURN_BILL_TYPES.has(type)
 }
 
+/**
+ *
+ * @param type 返单类型
+ * @param productCode 产品 code，可为空
+ * @description 判断产品是否支持该返单类型
+ */
 export function isExpressReturnBillTypeSupported(
   type: ExpressReturnBillType,
   productCode?: ExpressProductCode | string
@@ -146,6 +191,11 @@ export function isExpressReturnBillTypeSupported(
   return !(productCode === 'DCZP' && isExpressCloudSignType(type))
 }
 
+/**
+ *
+ * @param productCode 产品 code，可为空
+ * @description 取当前产品可用的返单选项
+ */
 export function getExpressReturnBillOptions(
   productCode?: ExpressProductCode | string
 ) {
@@ -154,6 +204,12 @@ export function getExpressReturnBillOptions(
   )
 }
 
+/**
+ *
+ * @param value 返单草稿，可为空
+ * @param productCode 产品 code，可为空
+ * @description 归一返单草稿，清理不支持的字段
+ */
 export function normalizeExpressReturnBillDraft(
   value?: Partial<ExpressReturnBillDraft> | Record<string, unknown> | null,
   productCode?: ExpressProductCode | string
@@ -195,6 +251,13 @@ export function normalizeExpressReturnBillDraft(
   }
 }
 
+/**
+ *
+ * @param draft 返单草稿
+ * @param patch 待更新的返单字段
+ * @param productCode 产品 code，可为空
+ * @description 合并并归一返单草稿
+ */
 export function updateExpressReturnBillDraft(
   draft: ExpressReturnBillDraft,
   patch: Partial<ExpressReturnBillDraft>,
@@ -209,6 +272,12 @@ export function updateExpressReturnBillDraft(
   )
 }
 
+/**
+ *
+ * @param draft 返单草稿
+ * @param productCode 产品 code，可为空
+ * @description 归一模板用返单草稿，清空 fileCode
+ */
 export function normalizeExpressReturnBillForTemplate(
   draft: ExpressReturnBillDraft,
   productCode?: ExpressProductCode | string
@@ -221,6 +290,11 @@ export function normalizeExpressReturnBillForTemplate(
   }
 }
 
+/**
+ *
+ * @param value 返单类型
+ * @description 取返单类型对应选项，兜底首个
+ */
 export function getExpressReturnBillOption(value: ExpressReturnBillType) {
   return (
     expressReturnBillOptions.find(option => option.value === value) ??
@@ -228,6 +302,11 @@ export function getExpressReturnBillOption(value: ExpressReturnBillType) {
   )
 }
 
+/**
+ *
+ * @param value 返单类型
+ * @description 映射返单类型为 PPC code
+ */
 export function getExpressReturnBillPpcType(
   value: ExpressReturnBillType
 ): 'NONE' | 'FAX' | 'ORIGINAL' | 'ONLINE' | 'ORIGINAL_ONLINE' {
@@ -245,12 +324,23 @@ export function getExpressReturnBillPpcType(
   }
 }
 
+/**
+ *
+ * @param draft 返单草稿
+ * @description 拼接签收要求文案
+ */
 export function getExpressReturnBillRequirementText(
   draft: ExpressReturnBillDraft
 ) {
   return normalizeExpressReturnBillDraft(draft).requirements.join(',')
 }
 
+/**
+ *
+ * @param draft 返单草稿
+ * @param productCode 产品 code，可为空
+ * @description 校验返单草稿，返回错误提示
+ */
 export function validateExpressReturnBill(
   draft: ExpressReturnBillDraft,
   productCode?: ExpressProductCode | string

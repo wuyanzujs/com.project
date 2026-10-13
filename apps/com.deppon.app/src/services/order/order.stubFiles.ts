@@ -31,14 +31,30 @@ const ORDER_CONTRACT_STATUS_LABELS: Record<string, string> = {
   INVALID: '合同已作废'
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 取订单合同文件 code
+ */
 function getOrderContractFileCode(order: OrderDetail) {
   return getOrderTextField(order, ['returnFileId', 'fileCode'])
 }
 
+/**
+ *
+ * @param status 合同状态
+ * @description 合同状态转展示文案
+ */
 function getOrderContractStatusText(status: OrderContractStatus) {
   return ORDER_CONTRACT_STATUS_LABELS[status] || '合同签署中'
 }
 
+/**
+ *
+ * @param fileCode 文件 code
+ * @param waybillNumber 运单号
+ * @description 创建合同预览 URI
+ */
 function createContractPreviewUri(fileCode: string, waybillNumber: string) {
   return createRouteUrl(
     '/gwapi/onlineService/eco/online/secure/contractPreview',
@@ -49,6 +65,12 @@ function createContractPreviewUri(fileCode: string, waybillNumber: string) {
   )
 }
 
+/**
+ *
+ * @param fileCode 文件 code
+ * @param waybillNumber 运单号
+ * @description 创建合同预览 WebView 路由
+ */
 function createContractPreviewRoute(fileCode: string, waybillNumber: string) {
   return createAppWebUrl({
     source: 'ORDER_STUB_CONTRACT_PREVIEW',
@@ -58,6 +80,12 @@ function createContractPreviewRoute(fileCode: string, waybillNumber: string) {
   })
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param status 合同状态
+ * @description 组装电子合同存根视图
+ */
 function createOrderStubDocumentView(
   order: OrderDetail,
   status: OrderContractStatus
@@ -84,6 +112,11 @@ function createOrderStubDocumentView(
   }
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 查询订单电子合同存根
+ */
 export async function queryOrderStubDocument(
   order: OrderDetail
 ): Promise<DepponResponse<OrderStubDocumentView>> {
@@ -112,6 +145,14 @@ export async function queryOrderStubDocument(
   }
 }
 
+/**
+ *
+ * @param title 分组标题
+ * @param nameTitle 名称列标题
+ * @param countTitle 数量列标题
+ * @param amountTitle 金额列标题
+ * @description 创建空的包装费用分组
+ */
 function createPackageFeeGroup(
   title: string,
   nameTitle: string,
@@ -127,6 +168,13 @@ function createPackageFeeGroup(
   }
 }
 
+/**
+ *
+ * @param name 费用名称
+ * @param count 规格或件数
+ * @param amount 金额
+ * @description 创建费用明细项，金额无效返回 null
+ */
 function createPackageFeeItem(
   name: string,
   count: string,
@@ -145,6 +193,12 @@ function createPackageFeeItem(
   }
 }
 
+/**
+ *
+ * @param group 费用分组
+ * @param item 费用明细项
+ * @description 将非空明细项追加到分组
+ */
 function addPackageFeeItem(
   group: OrderStubPackageFeeGroupView,
   item: OrderStubPackageFeeItemView | null
@@ -154,6 +208,11 @@ function addPackageFeeItem(
   }
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 取订单包装费用金额
+ */
 function getOrderPackageCharge(order: OrderDetail) {
   const directCharge = getOrderNumberField(order, ['pickCharge'])
 
@@ -175,6 +234,11 @@ function getOrderPackageCharge(order: OrderDetail) {
   return pickCharge ? asNumber(pickCharge.feeMoney) : 0
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 查询订单包装费用明细存根
+ */
 export async function queryOrderStubPackageFee(
   order: OrderDetail
 ): Promise<DepponResponse<OrderStubPackageFeeView>> {

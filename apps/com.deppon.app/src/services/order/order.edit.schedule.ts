@@ -53,20 +53,41 @@ export interface OrderEditScheduleRequestDiff {
   request: Partial<OrderModifyRequest>
 }
 
+/**
+ *
+ * @param value 原始值
+ * @description 转为去除首尾空格的文本
+ */
 function normalizeText(value: unknown) {
   return value === null || value === undefined ? '' : String(value).trim()
 }
 
+/**
+ *
+ * @param value 原始值
+ * @description 归一为有限的数字
+ */
 function normalizeNumber(value: unknown) {
   const number = Number(value)
 
   return Number.isFinite(number) ? number : 0
 }
 
+/**
+ *
+ * @param value 产品 code
+ * @description 归一产品 code 为大写
+ */
 function normalizeProductCode(value: unknown) {
   return normalizeText(value).toUpperCase()
 }
 
+/**
+ *
+ * @param detail 订单详情
+ * @param key 扩展字段 key
+ * @description 读取订单扩展字段的文本值
+ */
 function getExtendFieldValue(detail: OrderDetail, key: string) {
   const fields = Array.isArray(detail.orderExtendFields)
     ? detail.orderExtendFields
@@ -77,6 +98,11 @@ function getExtendFieldValue(detail: OrderDetail, key: string) {
   )
 }
 
+/**
+ *
+ * @param value 送货方式
+ * @description 归一送货方式，非法值置空
+ */
 export function normalizeOrderEditDeliveryMode(
   value: unknown
 ): OrderEditDeliveryMode {
@@ -89,6 +115,12 @@ export function normalizeOrderEditDeliveryMode(
     : ''
 }
 
+/**
+ *
+ * @param input 上门时间入参
+ * @param productCode 产品 code
+ * @description 生成上门时间查询的入参 key
+ */
 function createScheduleInputKey(
   input: OrderEditScheduleInput,
   productCode: string
@@ -108,10 +140,20 @@ function createScheduleInputKey(
     .join('|')
 }
 
+/**
+ *
+ * @param draft 订单修改草稿
+ * @description 生成当前草稿的上门时间查询 key
+ */
 export function createOrderEditScheduleQueryKey(draft: OrderEditDraft) {
   return createScheduleInputKey(draft, draft.schedule.productCode)
 }
 
+/**
+ *
+ * @param draft 订单修改草稿
+ * @description 生成寄件地址的比对 key
+ */
 function createPickupAddressKey(draft: OrderEditDraft) {
   return [
     draft.sender.province,
@@ -124,6 +166,12 @@ function createPickupAddressKey(draft: OrderEditDraft) {
     .join('|')
 }
 
+/**
+ *
+ * @param detail 订单详情
+ * @param input 上门时间入参
+ * @description 从订单详情创建上门时间草稿
+ */
 export function createOrderEditScheduleDraft(
   detail: OrderDetail,
   input: OrderEditScheduleInput
@@ -152,6 +200,11 @@ export function createOrderEditScheduleDraft(
   }
 }
 
+/**
+ *
+ * @param schedule 上门时间草稿
+ * @description 判断是否为物流订单
+ */
 function isLogisticsOrder(schedule: OrderEditScheduleDraft) {
   const tableType = normalizeProductCode(schedule.tableType)
 
@@ -175,6 +228,11 @@ function isLogisticsOrder(schedule: OrderEditScheduleDraft) {
   )
 }
 
+/**
+ *
+ * @param draft 订单修改草稿
+ * @description 判断是否需要展示送货方式
+ */
 export function isOrderEditDeliveryModeVisible(draft: OrderEditDraft) {
   if (BIG_PACKAGE_PRODUCT_CODES.has(draft.schedule.productCode)) {
     return false
@@ -187,6 +245,11 @@ export function isOrderEditDeliveryModeVisible(draft: OrderEditDraft) {
   )
 }
 
+/**
+ *
+ * @param draft 订单修改草稿
+ * @description 组装夜间揽收能力查询请求
+ */
 export function buildOrderEditPickupNightRequest(
   draft: OrderEditDraft
 ): OrderEditPickupNightRequest | null {
@@ -200,6 +263,13 @@ export function buildOrderEditPickupNightRequest(
     : null
 }
 
+/**
+ *
+ * @param draft 订单修改草稿
+ * @param response 夜间揽收能力响应
+ * @param checkedAt 校验时间戳
+ * @description 创建夜间揽收能力缓存
+ */
 export function createOrderEditPickupNightCapability(
   draft: OrderEditDraft,
   response?: OrderEditPickupNightResponse | null,
@@ -219,6 +289,12 @@ export function createOrderEditPickupNightCapability(
   }
 }
 
+/**
+ *
+ * @param draft 订单修改草稿
+ * @param now 当前时间戳
+ * @description 取未过期且地址一致的夜间揽收能力
+ */
 export function getFreshOrderEditPickupNightCapability(
   draft: OrderEditDraft,
   now = Date.now()
@@ -239,6 +315,12 @@ export function getFreshOrderEditPickupNightCapability(
   return capability
 }
 
+/**
+ *
+ * @param draft 订单修改草稿
+ * @param capability 夜间揽收能力
+ * @description 组装上门时间查询请求
+ */
 export function buildOrderEditPickupTimeRequest(
   draft: OrderEditDraft,
   capability?: OrderEditPickupNightCapability
@@ -267,6 +349,11 @@ export function buildOrderEditPickupTimeRequest(
   }
 }
 
+/**
+ *
+ * @param value 上门时间文本
+ * @description 解析上门时间为时间戳
+ */
 function parsePickupDateTime(value: string) {
   const match = normalizeText(value).match(
     /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/
@@ -295,6 +382,12 @@ function parsePickupDateTime(value: string) {
     : null
 }
 
+/**
+ *
+ * @param pickupTime 上门时间
+ * @param now 当前时间
+ * @description 校验夜间上门时间是否可预约
+ */
 export function isOrderEditNightPickupTimeValid(
   pickupTime: string,
   now = new Date()
@@ -322,6 +415,12 @@ export function isOrderEditNightPickupTimeValid(
   )
 }
 
+/**
+ *
+ * @param draft 订单修改草稿
+ * @param options 可选的校验选项
+ * @description 生成上门时间与送货方式校验提示
+ */
 export function validateOrderEditSchedule(
   draft: OrderEditDraft,
   options: { now?: Date } = {}
@@ -362,6 +461,12 @@ export function validateOrderEditSchedule(
   return messages
 }
 
+/**
+ *
+ * @param draft 当前草稿
+ * @param origin 原始草稿
+ * @description 生成上门时间与送货方式的字段差异
+ */
 export function createOrderEditScheduleRequestDiff(
   draft: OrderEditDraft,
   origin: OrderEditDraft

@@ -58,20 +58,41 @@ const EXPRESS_PRODUCT_CODES = new Set<ExpressProductCode>([
   'NLRF'
 ])
 
+/**
+ *
+ * @param value 待处理文本，可为空
+ * @description 归一文本，去首尾空白
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param value 待转换值
+ * @param fallback 兜底值
+ * @description 转有限数字，非法时用兜底值
+ */
 function toFiniteNumber(value: unknown, fallback = 0) {
   const number = Number(value)
 
   return Number.isFinite(number) ? number : fallback
 }
 
+/**
+ *
+ * @param value 付款方式 code
+ * @description 归一付款方式，非法值按现付
+ */
 function normalizePaymentType(value?: string): ExpressPaymentType {
   return value === 'PAY_ARIIVE' || value === 'MONTH_PAY' ? value : 'MP'
 }
 
+/**
+ *
+ * @param value 返单类型 code
+ * @description 归一返单类型，非法值按无需返单
+ */
 function normalizeReturnType(value?: string): ExpressReturnBillType {
   if (
     value === 'CUSTOMER_SIGNED_FAX' ||
@@ -85,12 +106,22 @@ function normalizeReturnType(value?: string): ExpressReturnBillType {
   return 'NO_RETURN_SIGNED'
 }
 
+/**
+ *
+ * @param value 产品 code
+ * @description 归一产品 code，非法值返回空字符串
+ */
 function normalizeProductCode(value?: string): ExpressProductCode {
   return EXPRESS_PRODUCT_CODES.has(value as ExpressProductCode)
     ? (value as ExpressProductCode)
     : ''
 }
 
+/**
+ *
+ * @param raw 模板联系人原始数据，可为空
+ * @description 转模板联系人，全空时返回 null
+ */
 function mapTemplateContact(
   raw?: ExpressTemplateContactRaw | null
 ): ExpressContact | null {
@@ -124,6 +155,11 @@ function mapTemplateContact(
   }
 }
 
+/**
+ *
+ * @param contact 联系人，可为空
+ * @description 生成联系人展示文案
+ */
 function getContactText(contact: ExpressContact | null) {
   if (!contact) {
     return '--'
@@ -134,6 +170,11 @@ function getContactText(contact: ExpressContact | null) {
     .join(' · ')
 }
 
+/**
+ *
+ * @param contact 联系人，可为空
+ * @description 转接口联系人结构，空值返回 null
+ */
 function mapExpressContact(contact: ExpressContact | null) {
   if (!contact) {
     return null
@@ -154,6 +195,11 @@ function mapExpressContact(contact: ExpressContact | null) {
   }
 }
 
+/**
+ *
+ * @param raw 模板原始数据
+ * @description 模板转寄件草稿
+ */
 export function mapTemplateToExpressDraft(raw: ExpressTemplateRaw) {
   const draft = createExpressDraft()
   const paymentType = normalizePaymentType(raw.template.payment?.paymentType)
@@ -202,6 +248,11 @@ export function mapTemplateToExpressDraft(raw: ExpressTemplateRaw) {
   } satisfies ExpressDraft
 }
 
+/**
+ *
+ * @param raw 模板原始数据
+ * @description 模板转列表展示数据
+ */
 export function normalizeExpressTemplate(
   raw: ExpressTemplateRaw
 ): ExpressTemplateView {
@@ -229,6 +280,11 @@ export function normalizeExpressTemplate(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 校验模板草稿，返回错误文案
+ */
 export function validateTemplateDraft(draft: ExpressDraft) {
   if (!draft.sender) {
     return '请先填写寄件人'
@@ -245,6 +301,11 @@ export function validateTemplateDraft(draft: ExpressDraft) {
   return ''
 }
 
+/**
+ *
+ * @param meta 模板元信息
+ * @description 校验模板名称和默认状态
+ */
 export function validateTemplateMeta(meta: ExpressTemplateDraftMeta) {
   const name = meta.name.trim()
 
@@ -263,6 +324,12 @@ export function validateTemplateMeta(meta: ExpressTemplateDraftMeta) {
   return ''
 }
 
+/**
+ *
+ * @param template 模板展示数据
+ * @param meta 模板元信息
+ * @description 判断模板名称或默认状态是否变化
+ */
 export function isTemplateMetadataChanged(
   template: ExpressTemplateView,
   meta: ExpressTemplateDraftMeta
@@ -273,6 +340,13 @@ export function isTemplateMetadataChanged(
   )
 }
 
+/**
+ *
+ * @param template 模板展示数据
+ * @param meta 模板元信息
+ * @param sysCode 系统 code
+ * @description 构造模板元信息保存请求
+ */
 export function buildTemplateMetadataSaveRequest(
   template: ExpressTemplateView,
   meta: ExpressTemplateDraftMeta,
@@ -287,6 +361,13 @@ export function buildTemplateMetadataSaveRequest(
   }
 }
 
+/**
+ *
+ * @param templates 模板列表
+ * @param id 目标模板 id
+ * @param meta 模板元信息
+ * @description 更新列表中的模板名称与默认状态
+ */
 export function applyTemplateMetadataUpdate(
   templates: ExpressTemplateView[],
   id: string,
@@ -328,6 +409,14 @@ export function applyTemplateMetadataUpdate(
   })
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param meta 模板元信息
+ * @param sysCode 系统 code
+ * @param id 模板 id，新建时为空
+ * @description 构造模板保存请求
+ */
 export function buildTemplateSaveRequest(
   draft: ExpressDraft,
   meta: ExpressTemplateDraftMeta,

@@ -36,16 +36,33 @@ import type {
   OrderModifyRequest
 } from './types'
 
+/**
+ *
+ * @param value 原始值
+ * @description 转为去除首尾空格的文本
+ */
 function normalizeText(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
+/**
+ *
+ * @param value 原始值
+ * @param fallback 兜底值
+ * @description 转为数字，非法时使用兜底值
+ */
 function normalizeNumber(value: unknown, fallback: number) {
   const number = Number(value)
 
   return Number.isFinite(number) ? number : fallback
 }
 
+/**
+ *
+ * @param detail 订单详情
+ * @param role 联系人角色
+ * @description 从订单详情提取寄件人或收件人
+ */
 function createEditContact(
   detail: OrderDetail,
   role: 'sender' | 'receiver'
@@ -73,6 +90,12 @@ function createEditContact(
   }
 }
 
+/**
+ *
+ * @param contact 订单修改联系人
+ * @param type 联系人类型
+ * @description 转换为地址簿联系人结构
+ */
 function toContact(contact: OrderEditContact, type: 0 | 1): Contact {
   return {
     name: contact.name,
@@ -88,6 +111,12 @@ function toContact(contact: OrderEditContact, type: 0 | 1): Contact {
   }
 }
 
+/**
+ *
+ * @param left 左侧地址
+ * @param right 右侧地址
+ * @description 判断两个地址是否一致
+ */
 function addressesEqual(left: OrderEditContact, right: OrderEditContact) {
   return (
     normalizeText(left.province) === normalizeText(right.province) &&
@@ -97,6 +126,11 @@ function addressesEqual(left: OrderEditContact, right: OrderEditContact) {
   )
 }
 
+/**
+ *
+ * @param detail 订单详情
+ * @description 从订单详情创建订单修改草稿
+ */
 export function createOrderEditDraft(detail: OrderDetail): OrderEditDraft {
   const sender = createEditContact(detail, 'sender')
   const receiver = createEditContact(detail, 'receiver')
@@ -125,6 +159,11 @@ export function createOrderEditDraft(detail: OrderDetail): OrderEditDraft {
   }
 }
 
+/**
+ *
+ * @param detail 订单详情
+ * @description 生成订单不可修改的原因提示
+ */
 export function getOrderEditUnavailableMessage(detail: OrderDetail) {
   if (detail.modifyFlag !== true) {
     return '当前订单不允许修改'
@@ -145,6 +184,11 @@ export function getOrderEditUnavailableMessage(detail: OrderDetail) {
   return ''
 }
 
+/**
+ *
+ * @param draft 订单修改草稿
+ * @description 生成订单修改草稿的校验提示
+ */
 export function validateOrderEditDraft(
   draft: OrderEditDraft
 ): OrderEditValidationResult {
@@ -198,6 +242,16 @@ export function validateOrderEditDraft(
   }
 }
 
+/**
+ *
+ * @param request 修改请求
+ * @param changedFields 变更项名称列表
+ * @param key 请求字段名
+ * @param label 变更项名称
+ * @param value 新值
+ * @param originValue 原值
+ * @description 文本有变化时写入请求并记录变更
+ */
 function setChangedText(
   request: OrderModifyRequest,
   changedFields: string[],
@@ -214,6 +268,12 @@ function setChangedText(
   }
 }
 
+/**
+ *
+ * @param request 修改请求
+ * @param fields 待合并字段
+ * @description 合并修改字段，扩展字段追加写入
+ */
 function assignOrderModifyFields(
   request: OrderModifyRequest,
   fields: Partial<OrderModifyRequest>
@@ -230,6 +290,12 @@ function assignOrderModifyFields(
   }
 }
 
+/**
+ *
+ * @param draft 当前草稿
+ * @param origin 原始草稿
+ * @description 对比草稿生成订单修改请求与变更项
+ */
 export function buildOrderModifyRequest(
   draft: OrderEditDraft,
   origin: OrderEditDraft
@@ -377,6 +443,12 @@ export function buildOrderModifyRequest(
 }
 
 export const orderEditService = {
+  /**
+   *
+   * @param draft 当前草稿
+   * @param origin 原始草稿
+   * @description 校验并提交订单修改
+   */
   async submit(draft: OrderEditDraft, origin: OrderEditDraft) {
     const validation = validateOrderEditDraft(draft)
 

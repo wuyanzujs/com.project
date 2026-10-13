@@ -15,14 +15,29 @@ import type {
   InvoiceOrderSearchView
 } from './types'
 
+/**
+ *
+ * @param value 待处理的文本或数字
+ * @description 转成去掉首尾空格的字符串
+ */
 function normalizeText(value?: string | number | null) {
   return String(value ?? '').trim()
 }
 
+/**
+ *
+ * @param item 开票运单原始数据
+ * @description 判断运单是否需要身份验证
+ */
 function isOrderAuthRequired(item: InvoiceOrderRaw) {
   return !!item.option && item.option !== '01'
 }
 
+/**
+ *
+ * @param item 开票运单原始数据
+ * @description 按验证方式生成运单验证挑战信息
+ */
 function createOrderAuthChallenge(
   item: InvoiceOrderRaw
 ): InvoiceOrderAuthChallenge | null {
@@ -75,6 +90,11 @@ function createOrderAuthChallenge(
   }
 }
 
+/**
+ *
+ * @param list 开票运单原始列表
+ * @description 生成查询结果，需要验证时只返回挑战信息
+ */
 function normalizeOrderSearchResult(
   list: InvoiceOrderRaw[]
 ): InvoiceOrderSearchView {
@@ -88,6 +108,11 @@ function normalizeOrderSearchResult(
 }
 
 export const invoiceOrderSearchService = {
+  /**
+   *
+   * @param waybillNumber 运单号
+   * @description 按运单号查询可开票运单
+   */
   async queryByWaybill(
     waybillNumber: string
   ): Promise<DepponResponse<InvoiceOrderSearchView>> {
@@ -121,6 +146,12 @@ export const invoiceOrderSearchService = {
     }
   },
 
+  /**
+   *
+   * @param waybillNumber 运单号
+   * @param value 验证信息
+   * @description 校验付款人验证信息
+   */
   async verifyPhone(
     waybillNumber: string,
     value: string
@@ -161,6 +192,11 @@ export const invoiceOrderSearchService = {
     }
   },
 
+  /**
+   *
+   * @param waybillNumber 运单号
+   * @description 发送运单验证短信验证码
+   */
   async sendAuthCode(waybillNumber: string): Promise<DepponResponse<null>> {
     const normalizedWaybill = normalizeText(waybillNumber)
 
@@ -185,6 +221,12 @@ export const invoiceOrderSearchService = {
     }
   },
 
+  /**
+   *
+   * @param waybillNumber 运单号
+   * @param code 短信验证码
+   * @description 校验运单短信验证码
+   */
   async verifyAuthCode(
     waybillNumber: string,
     code: string

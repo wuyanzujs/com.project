@@ -75,10 +75,20 @@ const EXPRESS_COLLECTION_TYPES = new Set<ExpressCollectionType>([
   'INTRADAY'
 ])
 
+/**
+ *
+ * @param value 数字
+ * @description 数字补零为两位字符串
+ */
 function pad(value: number) {
   return String(value).padStart(2, '0')
 }
 
+/**
+ *
+ * @param value 时间值
+ * @description 格式化为 yyyy-MM-dd HH:mm
+ */
 function formatDateTime(value: string | number | Date | null | undefined) {
   if (!value) {
     return ''
@@ -95,14 +105,30 @@ function formatDateTime(value: string | number | Date | null | undefined) {
   )} ${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
+/**
+ *
+ * @param orderClass 订单分类码
+ * @param fallback 兜底文案
+ * @description 取订单分类对应文案
+ */
 export function getOrderClassLabel(orderClass: number, fallback?: string) {
   return ORDER_CLASS_LABELS[orderClass] || fallback || '未知状态'
 }
 
+/**
+ *
+ * @param statusName 状态文案
+ * @description 收件状态文案转订单分类码
+ */
 function getConsigneeOrderClass(statusName: string) {
   return CONSIGNEE_STATUS_TO_CLASS[statusName] ?? 1
 }
 
+/**
+ *
+ * @param value 产品 code
+ * @description 校验并归一寄件产品 code
+ */
 function asExpressProductCode(value: unknown): ExpressProductCode {
   return typeof value === 'string' &&
     EXPRESS_PRODUCT_CODES.has(value as ExpressProductCode)
@@ -110,6 +136,12 @@ function asExpressProductCode(value: unknown): ExpressProductCode {
     : ''
 }
 
+/**
+ *
+ * @param value 付款方式
+ * @param fallback 兜底付款方式
+ * @description 校验并归一付款方式
+ */
 function asExpressPaymentType(
   value: unknown,
   fallback: ExpressPaymentType
@@ -120,6 +152,12 @@ function asExpressPaymentType(
     : fallback
 }
 
+/**
+ *
+ * @param value 送货方式
+ * @param fallback 兜底送货方式
+ * @description 校验并归一送货方式
+ */
 function asExpressDeliveryMode(
   value: unknown,
   fallback: ExpressDeliveryMode
@@ -130,6 +168,12 @@ function asExpressDeliveryMode(
     : fallback
 }
 
+/**
+ *
+ * @param value 代收货款类型
+ * @param fallback 兜底类型
+ * @description 校验并归一代收货款类型
+ */
 function asExpressCollectionType(
   value: unknown,
   fallback: ExpressCollectionType
@@ -140,16 +184,32 @@ function asExpressCollectionType(
     : fallback
 }
 
+/**
+ *
+ * @param value 待转换值
+ * @param fallback 兜底数值
+ * @description 转为数字，非法值取兜底
+ */
 export function asNumber(value: unknown, fallback = 0) {
   const numberValue = Number(value)
 
   return Number.isFinite(numberValue) ? numberValue : fallback
 }
 
+/**
+ *
+ * @param value 待转换值
+ * @description 非字符串值统一返回空串
+ */
 function asText(value: unknown) {
   return typeof value === 'string' ? value : ''
 }
 
+/**
+ *
+ * @param item 寄件订单原始数据
+ * @description 归一寄件订单为列表项
+ */
 export function normalizeSenderOrder(item: SenderOrderItem): OrderListItem {
   const orderClass = Number(item.orderClassification)
 
@@ -172,6 +232,11 @@ export function normalizeSenderOrder(item: SenderOrderItem): OrderListItem {
   }
 }
 
+/**
+ *
+ * @param item 收件订单原始数据
+ * @description 归一收件订单为列表项
+ */
 export function normalizeConsigneeOrder(
   item: ConsigneeOrderItem
 ): OrderListItem {
@@ -196,6 +261,11 @@ export function normalizeConsigneeOrder(
   }
 }
 
+/**
+ *
+ * @param detail 运单详情原始数据
+ * @description 归一运单详情字段
+ */
 export function normalizeWaybillDetail(detail: WaybillDetailRaw): OrderDetail {
   return {
     ...detail,
@@ -222,6 +292,11 @@ export function normalizeWaybillDetail(detail: WaybillDetailRaw): OrderDetail {
   }
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 构造寄件人联系信息
+ */
 function createOrderSenderContact(order: OrderDetail): ExpressContact {
   return {
     name: asText(order.contactName),
@@ -234,6 +309,11 @@ function createOrderSenderContact(order: OrderDetail): ExpressContact {
   }
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 构造收件人联系信息
+ */
 function createOrderReceiverContact(order: OrderDetail): ExpressContact {
   return {
     name: asText(order.receiverName),
@@ -246,6 +326,12 @@ function createOrderReceiverContact(order: OrderDetail): ExpressContact {
   }
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param mode 重下单模式
+ * @description 由订单详情生成寄件草稿
+ */
 export function createExpressDraftFromOrderDetail(
   order: OrderDetail,
   mode: OrderResendMode = 'repeat'

@@ -9,6 +9,11 @@ export const ORDER_EDIT_PACKAGING_MIN_COUNT = 1
 export const ORDER_EDIT_PACKAGING_MAX_COUNT = 999
 export const ORDER_EDIT_PACKAGING_UNIT_FEE = 2
 
+/**
+ *
+ * @param value 原始值
+ * @description 转为去除首尾空格的文本
+ */
 function normalizeText(value: unknown) {
   if (value === null || value === undefined) {
     return ''
@@ -17,6 +22,12 @@ function normalizeText(value: unknown) {
   return String(value).trim()
 }
 
+/**
+ *
+ * @param detail 订单详情
+ * @param key 扩展字段 key
+ * @description 倒序读取订单扩展字段的值
+ */
 function getOrderExtendFieldValue(detail: OrderDetail, key: string) {
   const fields = Array.isArray(detail.orderExtendFields)
     ? detail.orderExtendFields
@@ -33,6 +44,11 @@ function getOrderExtendFieldValue(detail: OrderDetail, key: string) {
   return undefined
 }
 
+/**
+ *
+ * @param value 打包件数
+ * @description 归一打包件数到合法范围
+ */
 export function normalizeOrderEditPackagingCount(value: unknown) {
   const count = Number(value)
 
@@ -46,6 +62,11 @@ export function normalizeOrderEditPackagingCount(value: unknown) {
   )
 }
 
+/**
+ *
+ * @param value 件数输入文本
+ * @description 清洗打包件数输入，仅保留数字
+ */
 export function normalizeOrderEditPackagingCountInput(value: string) {
   return value
     .replace(/\D/g, '')
@@ -53,6 +74,11 @@ export function normalizeOrderEditPackagingCountInput(value: string) {
     .slice(0, String(ORDER_EDIT_PACKAGING_MAX_COUNT).length)
 }
 
+/**
+ *
+ * @param detail 订单详情
+ * @description 从订单详情创建打包服务草稿
+ */
 export function createOrderEditPackagingDraft(
   detail: OrderDetail
 ): OrderEditPackagingDraft {
@@ -63,6 +89,12 @@ export function createOrderEditPackagingDraft(
   }
 }
 
+/**
+ *
+ * @param packaging 打包服务草稿
+ * @param value 新的件数
+ * @description 更新打包服务件数
+ */
 export function updateOrderEditPackagingCount(
   packaging: OrderEditPackagingDraft,
   value: unknown
@@ -72,6 +104,11 @@ export function updateOrderEditPackagingCount(
   return count === packaging.count ? packaging : { count }
 }
 
+/**
+ *
+ * @param packaging 打包服务草稿
+ * @description 生成打包件数校验提示
+ */
 export function validateOrderEditPackaging(packaging: OrderEditPackagingDraft) {
   const count = packaging.count
 
@@ -87,6 +124,11 @@ export function validateOrderEditPackaging(packaging: OrderEditPackagingDraft) {
   return []
 }
 
+/**
+ *
+ * @param packaging 打包服务草稿
+ * @description 计算打包服务总费用
+ */
 export function getOrderEditPackagingFee(packaging: OrderEditPackagingDraft) {
   return (
     normalizeOrderEditPackagingCount(packaging.count) *
@@ -94,6 +136,12 @@ export function getOrderEditPackagingFee(packaging: OrderEditPackagingDraft) {
   )
 }
 
+/**
+ *
+ * @param packaging 当前草稿
+ * @param origin 原始草稿
+ * @description 判断打包件数是否发生变化
+ */
 export function isOrderEditPackagingChanged(
   packaging: OrderEditPackagingDraft,
   origin: OrderEditPackagingDraft
@@ -104,6 +152,11 @@ export function isOrderEditPackagingChanged(
   )
 }
 
+/**
+ *
+ * @param packaging 打包服务草稿
+ * @description 生成订单修改接口的打包字段
+ */
 export function createOrderEditPackagingRequestFields(
   packaging: OrderEditPackagingDraft
 ): Pick<OrderModifyRequest, 'orderExtendFields'> {

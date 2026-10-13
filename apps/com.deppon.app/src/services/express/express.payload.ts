@@ -62,6 +62,11 @@ import type {
 const DEFAULT_GOODS_COUNT = 1
 const DEFAULT_GOODS_WEIGHT = 1
 
+/**
+ *
+ * @param deliveryMode 页面派送方式
+ * @description 派送方式转 PPC 编码
+ */
 function getPpcDeliveryMode(
   deliveryMode: ExpressDraft['service']['deliveryMode']
 ) {
@@ -79,6 +84,11 @@ function getPpcDeliveryMode(
   }
 }
 
+/**
+ *
+ * @param reciveLoanType 代收货款类型
+ * @description 代收货款类型转 PPC 编码
+ */
 function getPpcCollectionType(
   reciveLoanType: ExpressDraft['collection']['type']
 ) {
@@ -92,10 +102,20 @@ function getPpcCollectionType(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 取草稿生效的产品 code
+ */
 export function getDraftProductCode(draft: ExpressDraft) {
   return draft.selectedProduct?.omsProductCode || draft.service.transportMode
 }
 
+/**
+ *
+ * @param scanContext 扫码上下文
+ * @description 取扫码上下文中的客户 code
+ */
 function getScanContextCustomerCode(scanContext: ExpressDraft['scanContext']) {
   if (scanContext?.role !== 'shipperNumber') {
     return ''
@@ -104,6 +124,12 @@ function getScanContextCustomerCode(scanContext: ExpressDraft['scanContext']) {
   return trimText(scanContext.value)
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param availability 产品可用性信息
+ * @description 组装询价请求 payload
+ */
 export function buildFreightRequest(
   draft: ExpressDraft,
   availability?: ExpressProductAvailability
@@ -163,6 +189,12 @@ export function buildFreightRequest(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param nightCapability 夜间取件能力
+ * @description 组装取件时间查询请求
+ */
 export function buildPickupTimeRequest(
   draft: ExpressDraft,
   nightCapability?: ExpressPickupNightCapability
@@ -199,6 +231,12 @@ export function buildPickupTimeRequest(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param capability 保价能力配置
+ * @description 组装保价费用请求
+ */
 export function buildInsurancePriceRequest(
   draft: ExpressDraft,
   capability?: ExpressInsuranceCapability | null
@@ -235,6 +273,11 @@ export function buildInsurancePriceRequest(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 组装下单前筛单拦截请求
+ */
 export function buildFilterOrderRequest(
   draft: ExpressDraft
 ): ExpressFilterRequest {
@@ -262,6 +305,11 @@ export function buildFilterOrderRequest(
   }
 }
 
+/**
+ *
+ * @param scanContext 扫码上下文
+ * @description 从扫码上下文提取下单字段
+ */
 function getScanContextOrderFields(scanContext: ExpressDraft['scanContext']) {
   const fields = {
     acceptDept: '',
@@ -296,6 +344,11 @@ function getScanContextOrderFields(scanContext: ExpressDraft['scanContext']) {
   return fields
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 取下单用的取件开始时间
+ */
 function getPickupOrderTime(draft: ExpressDraft) {
   const timeSlot = trimText(draft.pickup.timeSlot)
 
@@ -306,6 +359,12 @@ function getPickupOrderTime(draft: ExpressDraft) {
   return draft.pickup.time || getNowText()
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param insuranceCapability 保价能力配置
+ * @description 组装创建订单请求 payload
+ */
 export function buildCreateOrderRequest(
   draft: ExpressDraft,
   insuranceCapability?: ExpressInsuranceCapability | null

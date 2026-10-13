@@ -30,10 +30,20 @@ const PAYMENT_WRITE_OFF_STATUS: Record<
   PAID: 1
 }
 
+/**
+ *
+ * @param value 数字
+ * @description 补零为两位数字字符串
+ */
 function pad(value: number) {
   return String(value).padStart(2, '0')
 }
 
+/**
+ *
+ * @param date 日期
+ * @description 格式化为接口需要的日期时间串
+ */
 function formatPaymentDateTime(date: Date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
     date.getDate()
@@ -42,6 +52,11 @@ function formatPaymentDateTime(date: Date) {
   )}`
 }
 
+/**
+ *
+ * @param days 往前天数
+ * @description 生成支付查询的起止时间范围
+ */
 function getPaymentDateRange(days = DEFAULT_PAYMENT_RANGE_DAYS) {
   const endDate = new Date()
   const startDate = new Date()
@@ -58,30 +73,60 @@ function getPaymentDateRange(days = DEFAULT_PAYMENT_RANGE_DAYS) {
   }
 }
 
+/**
+ *
+ * @param role 用户角色
+ * @description 按角色返回订单类型
+ */
 function getOrderTypeByRole(role: QueryUnpaidPaymentOptions['role']) {
   return role === 'receive' ? 'DR' : 'OR'
 }
 
+/**
+ *
+ * @param value 任意文本
+ * @description 去除首尾空格，空值返回空串
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param status 支付列表状态
+ * @description 取状态对应的核销状态值
+ */
 export function getPaymentWriteOffStatus(
   status: PaymentListStatus = 'UNPAID'
 ): PaymentWriteOffStatus {
   return PAYMENT_WRITE_OFF_STATUS[status]
 }
 
+/**
+ *
+ * @param status 支付列表状态
+ * @description 取状态对应的查询天数
+ */
 export function getPaymentRangeDays(status: PaymentListStatus = 'UNPAID') {
   return status === 'PAID'
     ? PAID_PAYMENT_RANGE_DAYS
     : DEFAULT_PAYMENT_RANGE_DAYS
 }
 
+/**
+ *
+ * @param item 支付费用项
+ * @description 按支付方式取评价 scene
+ */
 export function getPaymentEvaluateScene(item: PaymentItem) {
   return item.paymentMethod === 'FC' ? 'S0705' : 'S0405'
 }
 
+/**
+ *
+ * @param type 订单类型
+ * @description 取订单类型的中文名称
+ */
 export function getPaymentOrderTypeLabel(type?: PaymentOrderType | null) {
   if (type === 'CR') {
     return '货款'
@@ -94,6 +139,11 @@ export function getPaymentOrderTypeLabel(type?: PaymentOrderType | null) {
   return '运费'
 }
 
+/**
+ *
+ * @param item 支付费用项
+ * @description 构造评价 rowData JSON 串
+ */
 function createPaymentEvaluateRowData(item: PaymentItem) {
   return JSON.stringify([
     {
@@ -103,6 +153,12 @@ function createPaymentEvaluateRowData(item: PaymentItem) {
   ])
 }
 
+/**
+ *
+ * @param item 支付费用项
+ * @param mobile 评价手机号
+ * @description 创建评价页面 URI
+ */
 export function createPaymentEvaluateWebUri(
   item: PaymentItem,
   mobile = authService.getCachedUser()?.mobile || ''
@@ -115,6 +171,11 @@ export function createPaymentEvaluateWebUri(
   })
 }
 
+/**
+ *
+ * @param value 运单号文本，可含多个
+ * @description 解析运单号为查询参数
+ */
 export function createPaymentWaybillQuery(value?: string | null) {
   const waybillNumbers = String(value ?? '')
     .split(/[,，\s]+/)
@@ -136,6 +197,11 @@ export function createPaymentWaybillQuery(value?: string | null) {
   return {}
 }
 
+/**
+ *
+ * @param item 支付费用项
+ * @description 补全 active 默认值
+ */
 function normalizePaymentItem(item: PaymentItem): PaymentItem {
   return {
     ...item,
@@ -143,12 +209,22 @@ function normalizePaymentItem(item: PaymentItem): PaymentItem {
   }
 }
 
+/**
+ *
+ * @param value 原始金额
+ * @description 转为有效数字，非法返回 null
+ */
 function toFiniteAmount(value: unknown) {
   const amount = Number(value)
 
   return Number.isFinite(amount) ? amount : null
 }
 
+/**
+ *
+ * @param values 候选金额列表
+ * @description 取首个有效金额，都无效返回 0
+ */
 function getFirstFiniteAmount(...values: unknown[]) {
   for (const value of values) {
     const amount = toFiniteAmount(value)
@@ -161,6 +237,12 @@ function getFirstFiniteAmount(...values: unknown[]) {
   return 0
 }
 
+/**
+ *
+ * @param item 支付费用项
+ * @param status 支付列表状态
+ * @description 按状态取费用项的支付金额
+ */
 export function getPaymentItemAmount(
   item: PaymentItem,
   status: PaymentListStatus = 'UNPAID'
@@ -176,6 +258,13 @@ export function getPaymentItemAmount(
   return getFirstFiniteAmount(item.unWriteoffAmount, item.totalAmount)
 }
 
+/**
+ *
+ * @param waybillNumber 运单号
+ * @param items 费用项列表
+ * @param disabledReason 不可支付原因，可选
+ * @description 构造运单的待支付汇总
+ */
 function createPaymentSummary(
   waybillNumber: string,
   items: PaymentItem[],
@@ -196,10 +285,21 @@ function createPaymentSummary(
   }
 }
 
+/**
+ *
+ * @param items 费用项列表
+ * @description 过滤京东支付项并补全字段
+ */
 function filterUnsupportedPayments(items: PaymentItem[]) {
   return items.filter(item => item.isJdPay !== 'Y').map(normalizePaymentItem)
 }
 
+/**
+ *
+ * @param items 费用项列表
+ * @param status 支付列表状态
+ * @description 按状态归一支付列表
+ */
 function normalizePaymentList(items: PaymentItem[], status: PaymentListStatus) {
   if (status === 'UNPAID') {
     return filterUnsupportedPayments(items)
@@ -208,6 +308,12 @@ function normalizePaymentList(items: PaymentItem[], status: PaymentListStatus) {
   return items.map(normalizePaymentItem)
 }
 
+/**
+ *
+ * @param items 费用项列表
+ * @param status 支付列表状态
+ * @description 汇总费用项的支付金额
+ */
 function getTotalPaymentAmount(
   items: PaymentItem[],
   status: PaymentListStatus
@@ -223,6 +329,11 @@ export const paymentService = {
 
   getOrderTypeByRole,
 
+  /**
+   *
+   * @param options 列表查询参数
+   * @description 查询待支付或已支付记录列表
+   */
   async queryPaymentList(
     options: QueryPaymentListOptions = {}
   ): Promise<DepponResponse<PaymentListResult>> {
@@ -268,6 +379,11 @@ export const paymentService = {
     }
   },
 
+  /**
+   *
+   * @param options 列表查询参数
+   * @description 查询待支付运单列表
+   */
   queryUnpaidList(
     options: QueryUnpaidPaymentListOptions = {}
   ): Promise<DepponResponse<PaymentListResult>> {
@@ -277,6 +393,11 @@ export const paymentService = {
     })
   },
 
+  /**
+   *
+   * @param options 查询参数
+   * @description 按运单号查询待支付费用汇总
+   */
   async queryUnpaidByWaybill(
     options: QueryUnpaidPaymentOptions
   ): Promise<DepponResponse<PaymentSummary>> {

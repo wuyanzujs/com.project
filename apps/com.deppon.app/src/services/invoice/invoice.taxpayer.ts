@@ -7,6 +7,11 @@ import type {
   InvoiceTaxpayerView
 } from './types'
 
+/**
+ *
+ * @param item 发票抬头原始数据
+ * @description 把发票抬头原始数据转成视图
+ */
 export function normalizeTaxpayer(
   item: InvoiceTaxpayerRaw
 ): InvoiceTaxpayerView {
@@ -25,6 +30,11 @@ export function normalizeTaxpayer(
   }
 }
 
+/**
+ *
+ * @param form 发票抬头表单
+ * @description 组装发票抬头保存的 payload
+ */
 export function createTaxpayerPayload(
   form: InvoiceTaxpayerForm
 ): InvoiceTaxpayerSaveRequest {
@@ -42,6 +52,11 @@ export function createTaxpayerPayload(
   }
 }
 
+/**
+ *
+ * @param taxpayer 发票抬头视图，可为空
+ * @description 用发票抬头生成表单数据
+ */
 export function createFormFromTaxpayer(
   taxpayer?: InvoiceTaxpayerView | null
 ): InvoiceTaxpayerForm {
@@ -59,6 +74,11 @@ export function createFormFromTaxpayer(
   }
 }
 
+/**
+ *
+ * @param form 发票抬头表单
+ * @description 校验发票抬头表单并返回错误文案
+ */
 export function validateTaxpayer(form: InvoiceTaxpayerForm) {
   const name = form.name.trim()
   const taxNumber = form.taxNumber.trim()

@@ -14,6 +14,11 @@ import type {
   ExpressScanContext
 } from '../express/types'
 
+/**
+ *
+ * @param scanContext 扫码上下文，可为空
+ * @description 从扫码上下文解析下单用的扫码字段
+ */
 function getScanOrderFields(scanContext?: ExpressScanContext) {
   const fields = {
     acceptDept: '',
@@ -48,6 +53,13 @@ function getScanOrderFields(scanContext?: ExpressScanContext) {
   return fields
 }
 
+/**
+ *
+ * @param item 收货人草稿
+ * @param draft 批量草稿
+ * @param pickupTime 取件时间
+ * @description 组装单个收货人的下单明细
+ */
 function buildReceiveOrder(
   item: BatchConsigneeDraft,
   draft: BatchDraft,
@@ -94,6 +106,11 @@ function buildReceiveOrder(
   }
 }
 
+/**
+ *
+ * @param draft 批量草稿
+ * @description 组装批量创建订单的请求体
+ */
 export function buildBatchCreateOrderRequest(
   draft: BatchDraft
 ): CreateExpressOrderRequest {

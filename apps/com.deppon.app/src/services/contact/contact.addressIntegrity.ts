@@ -15,6 +15,11 @@ type ContactAddressParts = Pick<
   'province' | 'city' | 'county' | 'address'
 >
 
+/**
+ *
+ * @param contact 地址字段
+ * @description 组装地址完整性校验请求参数
+ */
 export function createContactAddressCheckRequest(
   contact: ContactAddressParts
 ): ContactAddressCheckRequest {
@@ -26,6 +31,11 @@ export function createContactAddressCheckRequest(
   }
 }
 
+/**
+ *
+ * @param response 校验接口响应
+ * @description 归一地址完整性校验结果
+ */
 export function resolveContactAddressIntegrity(
   response: Pick<
     DepponResponse<unknown>,

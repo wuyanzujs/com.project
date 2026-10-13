@@ -28,10 +28,21 @@ import type {
 const SCAN_CONTEXT_STALE_REASON = '扫码寄件信息变化，请重新获取价格'
 const SCAN_CONTEXT_CLEAR_REASON = '扫码寄件信息已移除，请重新获取价格'
 
+/**
+ *
+ * @param value 待处理的文本
+ * @description 去除文本首尾空白
+ */
 function trimValue(value: string | undefined) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param pickup 取件信息
+ * @param clearNightCapability 是否清空夜间取件能力
+ * @description 清空取件时间与驿站选择
+ */
 function clearPickupSelection(
   pickup: ExpressDraft['pickup'],
   clearNightCapability = false
@@ -50,10 +61,20 @@ function clearPickupSelection(
   }
 }
 
+/**
+ *
+ * @param pickup 取件信息
+ * @description 清空取件时间并重置夜间能力
+ */
 function clearPickupSchedule(pickup: ExpressDraft['pickup']) {
   return clearPickupSelection(pickup, true)
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 寄件人变化后重置相关草稿字段
+ */
 export function resetSenderDependencies(draft: ExpressDraft): ExpressDraft {
   return {
     ...draft,
@@ -65,6 +86,11 @@ export function resetSenderDependencies(draft: ExpressDraft): ExpressDraft {
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 收件人变化后重置相关草稿字段
+ */
 export function resetConsigneeDependencies(draft: ExpressDraft): ExpressDraft {
   return {
     ...draft,
@@ -79,6 +105,12 @@ export function resetConsigneeDependencies(draft: ExpressDraft): ExpressDraft {
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param reason 报价过期提示文案
+ * @description 清空选品并标记报价过期
+ */
 export function markExpressQuoteStale(
   draft: ExpressDraft,
   reason: string
@@ -90,6 +122,13 @@ export function markExpressQuoteStale(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param patch 待更新的货物字段
+ * @param reason 报价过期提示文案
+ * @description 更新货物信息并联动重置相关依赖
+ */
 export function updateExpressGoods(
   draft: ExpressDraft,
   patch: Partial<ExpressDraft['goods']>,
@@ -124,6 +163,13 @@ export function updateExpressGoods(
   )
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param patch 待更新的服务字段
+ * @param reason 报价过期提示文案
+ * @description 更新服务方式并归一关联字段
+ */
 export function updateExpressService(
   draft: ExpressDraft,
   patch: Partial<ExpressServiceOptions>,
@@ -173,6 +219,13 @@ export function updateExpressService(
   )
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param patch 待更新的取件字段
+ * @param reason 报价过期提示文案
+ * @description 更新取件方式与时间信息
+ */
 export function updateExpressPickup(
   draft: ExpressDraft,
   patch: Partial<ExpressDraft['pickup']>,
@@ -203,6 +256,12 @@ export function updateExpressPickup(
   )
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param value 优惠券号
+ * @description 更新并归一优惠券号
+ */
 export function updateExpressCouponNumber(
   draft: ExpressDraft,
   value: string
@@ -216,6 +275,12 @@ export function updateExpressCouponNumber(
   )
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param value 隐私面单开关值
+ * @description 设置隐私面单开关
+ */
 export function setExpressPrivacyProtection(
   draft: ExpressDraft,
   value: ExpressDraft['service']['privacyProtection']
@@ -229,6 +294,12 @@ export function setExpressPrivacyProtection(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param product 选中的报价产品
+ * @description 选择报价产品并同步服务与保价
+ */
 export function selectExpressProduct(
   draft: ExpressDraft,
   product: ExpressProductQuote | null
@@ -276,6 +347,12 @@ export function selectExpressProduct(
       }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param response 取件时间查询响应
+ * @description 应用取件时间响应并选中时段
+ */
 export function applyExpressPickupTime(
   draft: ExpressDraft,
   response: ExpressPickupTimeResponse
@@ -328,6 +405,11 @@ export function applyExpressPickupTime(
   }
 }
 
+/**
+ *
+ * @param context 扫码上下文
+ * @description 归一扫码上下文，无效时返回空
+ */
 function normalizeExpressScanContext(
   context: ExpressScanContext
 ): ExpressScanContext | null {
@@ -350,6 +432,12 @@ function normalizeExpressScanContext(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param context 扫码上下文
+ * @description 应用扫码信息并重置相关依赖
+ */
 export function applyExpressScanContext(
   draft: ExpressDraft,
   context: ExpressScanContext
@@ -377,6 +465,11 @@ export function applyExpressScanContext(
   return resetExpressInsuranceCapability(nextDraft, { clearLimit: true })
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 清除扫码上下文并标记报价过期
+ */
 export function clearExpressScanContext(draft: ExpressDraft): ExpressDraft {
   if (!draft.scanContext) {
     return draft
@@ -394,6 +487,13 @@ export function clearExpressScanContext(draft: ExpressDraft): ExpressDraft {
   return resetExpressInsuranceCapability(nextDraft, { clearLimit: true })
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param target 联系人目标，寄件人或收件人
+ * @param contact 联系人信息
+ * @description 设置联系人并重置对应依赖
+ */
 export function setExpressContact(
   draft: ExpressDraft,
   target: ExpressContactTarget,
@@ -409,6 +509,11 @@ export function setExpressContact(
     : resetConsigneeDependencies(nextDraft)
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 互换收寄件联系人并重置依赖
+ */
 export function swapExpressContacts(draft: ExpressDraft): ExpressDraft {
   const nextDraft = {
     ...draft,

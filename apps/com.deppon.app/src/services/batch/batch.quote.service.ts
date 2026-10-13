@@ -10,6 +10,12 @@ import { createServiceFailure as createFailure } from '../serviceResponse'
 import type { BatchConsigneeDraft, BatchDraft, BatchQuoteItem } from './types'
 import type { ExpressDraft, ExpressProductQuote } from '../express/types'
 
+/**
+ *
+ * @param draft 批量草稿
+ * @param item 收货人草稿
+ * @description 由批量草稿生成单票的报价草稿
+ */
 function createQuoteDraft(
   draft: BatchDraft,
   item: BatchConsigneeDraft
@@ -56,10 +62,20 @@ function createQuoteDraft(
   }
 }
 
+/**
+ *
+ * @param products 产品报价列表
+ * @description 取第一个有效产品作为默认报价产品
+ */
 function getDefaultQuoteProduct(products: ExpressProductQuote[]) {
   return products.find(product => !!product.omsProductCode) ?? null
 }
 
+/**
+ *
+ * @param draft 批量草稿
+ * @description 并发获取所有收货人的产品价格
+ */
 export async function quoteBatchDraft(
   draft: BatchDraft
 ): Promise<DepponResponse<BatchQuoteItem[]>> {

@@ -38,6 +38,11 @@ const URGE_PROGRESS_WEB_PATH = '/depponmobile/mow/order/urgeProgress'
 const WAYBILL_MODIFY_WEB_PATH = '/depponmobile/mow/order/modifyNew/index'
 const DELIVERY_PREFERENCE_WEB_PATH = '/depponmobile/orderStayTmp'
 
+/**
+ *
+ * @param order 订单详情
+ * @description 判断订单是否处于可投诉状态
+ */
 function isComplaintStatus(order: OrderDetail) {
   const orderClass = getOrderClass(order)
   const statusText = getOrderStatusText(order)
@@ -53,6 +58,12 @@ function isComplaintStatus(order: OrderDetail) {
   return COMPLAINT_ORDER_CLASSES.has(orderClass)
 }
 
+/**
+ *
+ * @param value 时间字符串
+ * @param days 天数
+ * @description 判断时间是否在最近指定天数内
+ */
 function isWithinDays(value: string | null | undefined, days: number) {
   if (!value) {
     return true
@@ -67,6 +78,12 @@ function isWithinDays(value: string | null | undefined, days: number) {
   return Date.now() - timestamp <= days * 24 * 60 * 60 * 1000
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param options 操作选项
+ * @description 判断是否展示需要登录的详情操作
+ */
 function canShowSecureDetailActions(
   order: OrderDetail,
   options: OrderDetailActionOptions
@@ -76,6 +93,11 @@ function canShowSecureDetailActions(
   )
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 判断订单是否可发起投诉
+ */
 function canCreateComplaint(order: OrderDetail) {
   return (
     !!getDetailWaybillNumber(order) &&
@@ -84,6 +106,12 @@ function canCreateComplaint(order: OrderDetail) {
   )
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param role 当前页面角色
+ * @description 判断运单是否可修改
+ */
 function canModifyWaybill(order: OrderDetail, role?: OrderRole) {
   return (
     role !== 'receive' &&
@@ -93,6 +121,12 @@ function canModifyWaybill(order: OrderDetail, role?: OrderRole) {
   )
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param role 当前页面角色
+ * @description 判断订单是否可修改
+ */
 function canModifyOrder(order: OrderDetail, role?: OrderRole) {
   return (
     role !== 'receive' &&
@@ -102,6 +136,12 @@ function canModifyOrder(order: OrderDetail, role?: OrderRole) {
   )
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param role 当前页面角色
+ * @description 判断是否可通知派送
+ */
 function canNotifyDeliver(order: OrderDetail, role?: OrderRole) {
   return (
     isSenderDetail(order, role) &&
@@ -111,6 +151,12 @@ function canNotifyDeliver(order: OrderDetail, role?: OrderRole) {
   )
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param role 当前页面角色
+ * @description 判断运单是否可拦截作废
+ */
 function canInvalidWaybill(order: OrderDetail, role?: OrderRole) {
   return (
     isSenderDetail(order, role) &&
@@ -120,6 +166,12 @@ function canInvalidWaybill(order: OrderDetail, role?: OrderRole) {
   )
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param role 当前页面角色
+ * @description 判断是否可调整收件方式
+ */
 function canEditDeliveryPreference(order: OrderDetail, role?: OrderRole) {
   return (
     isReceiverDetail(order, role) &&
@@ -128,10 +180,21 @@ function canEditDeliveryPreference(order: OrderDetail, role?: OrderRole) {
   )
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 判断是否可联系营业部
+ */
 function canContactDepartment(order: OrderDetail) {
   return isInvalidOrder(order) && !!getOrderStationCode(order)
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param options 操作选项
+ * @description 按订单状态组装催单上下文
+ */
 export function createOrderUrgeContext(
   order: OrderDetail,
   options: OrderDetailActionOptions
@@ -169,6 +232,11 @@ export function createOrderUrgeContext(
   return null
 }
 
+/**
+ *
+ * @param urge 催单上下文
+ * @description 创建催单进度 H5 地址
+ */
 export function createUrgeProgressWebUri(urge: OrderDetailUrgeActionView) {
   return createOrderDetailWebUri(URGE_PROGRESS_WEB_PATH, {
     voucherType: urge.voucherType,
@@ -176,6 +244,12 @@ export function createUrgeProgressWebUri(urge: OrderDetailUrgeActionView) {
   })
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param options 操作选项
+ * @description 按订单状态生成详情页操作列表
+ */
 export function createOrderDetailActions(
   order: OrderDetail,
   options: OrderDetailActionOptions = {}

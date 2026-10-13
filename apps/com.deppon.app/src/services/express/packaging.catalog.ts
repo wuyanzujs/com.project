@@ -192,10 +192,20 @@ export const EXPRESS_UNPACKING_OPTIONS: ExpressUnpackingOption[] = [
   }
 ]
 
+/**
+ *
+ * @param value 纸箱 code
+ * @description 取纸箱选项，不存在返回 null
+ */
 export function getExpressCartonOption(value: ExpressCartonCode) {
   return EXPRESS_CARTON_OPTIONS.find(option => option.code === value) ?? null
 }
 
+/**
+ *
+ * @param value 木包装 code
+ * @description 取木包装选项，不存在返回 null
+ */
 export function getExpressWoodenPackagingOption(
   value: ExpressWoodenPackagingCode
 ) {
@@ -205,6 +215,11 @@ export function getExpressWoodenPackagingOption(
   )
 }
 
+/**
+ *
+ * @param value 拆包装 code
+ * @description 取拆包装选项，不存在返回 null
+ */
 export function getExpressUnpackingOption(value: ExpressUnpackingCode) {
   return EXPRESS_UNPACKING_OPTIONS.find(option => option.code === value) ?? null
 }

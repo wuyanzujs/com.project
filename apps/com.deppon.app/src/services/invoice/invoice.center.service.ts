@@ -25,6 +25,11 @@ const DEFAULT_ORDER_RANGE_MONTHS = 3
 const DEFAULT_HISTORY_RANGE_MONTHS = 12
 const DEFAULT_PAGE_SIZE = 10
 
+/**
+ *
+ * @param months 向前追溯的月数
+ * @description 生成查询用的起止时间范围
+ */
 function getDateRange(months: number) {
   const endDate = new Date()
   const startDate = new Date()
@@ -40,6 +45,14 @@ function getDateRange(months: number) {
   }
 }
 
+/**
+ *
+ * @param list 当前页数据
+ * @param pageIndex 页码
+ * @param pageSize 每页条数
+ * @param totalRows 总条数，可为空
+ * @description 组装统一的分页结果
+ */
 function createListResult<TItem>(
   list: TItem[],
   pageIndex: number,
@@ -58,6 +71,12 @@ function createListResult<TItem>(
 }
 
 export const invoiceCenterService = {
+  /**
+   *
+   * @param pageIndex 页码
+   * @param pageSize 每页条数
+   * @description 查询可开票运单列表
+   */
   async queryOrders(
     pageIndex = 1,
     pageSize = DEFAULT_PAGE_SIZE
@@ -95,6 +114,12 @@ export const invoiceCenterService = {
     }
   },
 
+  /**
+   *
+   * @param pageIndex 页码
+   * @param pageSize 每页条数
+   * @description 查询储值卡可开票记录
+   */
   async queryECards(
     pageIndex = 1,
     pageSize = DEFAULT_PAGE_SIZE
@@ -122,6 +147,13 @@ export const invoiceCenterService = {
     }
   },
 
+  /**
+   *
+   * @param pageIndex 页码
+   * @param pageSize 每页条数
+   * @param waybillNumber 运单号，可为空
+   * @description 按运单号或时间范围查询开票历史
+   */
   async queryHistory(
     pageIndex = 1,
     pageSize = DEFAULT_PAGE_SIZE,

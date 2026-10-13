@@ -22,6 +22,11 @@ const PDC_SIGNED_ORDER_CLASS = 2
 const PDC_FIRST_SOURCE = 'PDC_KDYZJO'
 const PDC_SECOND_SOURCE = 'PDC_KDYZJT'
 
+/**
+ *
+ * @param source 来源标识
+ * @description 按来源返回发送频次，未匹配返回 null
+ */
 function getPdcSendFrequency(source: string): OrderPdcSendFrequency | null {
   if (source.includes(PDC_SECOND_SOURCE)) {
     return 'TWO'
@@ -30,6 +35,13 @@ function getPdcSendFrequency(source: string): OrderPdcSendFrequency | null {
   return source.includes(PDC_FIRST_SOURCE) ? 'ONE' : null
 }
 
+/**
+ *
+ * @param detail 订单信息，可为空
+ * @param source 来源标识
+ * @param publicTrackMode 是否公开轨迹
+ * @description 创建签收反馈上下文，条件不满足返回 null
+ */
 export function createOrderPdcFeedbackContext(
   detail: Pick<OrderDetail, 'orderClassification' | 'waybillNumber'> | null,
   source: string,
@@ -56,6 +68,12 @@ export function createOrderPdcFeedbackContext(
   }
 }
 
+/**
+ *
+ * @param context 签收反馈上下文
+ * @param feedbackResult 反馈结果
+ * @description 创建签收反馈提交请求
+ */
 export function createOrderPdcFeedbackRequest(
   context: OrderPdcFeedbackContext,
   feedbackResult: OrderPdcFeedbackResult
@@ -68,6 +86,11 @@ export function createOrderPdcFeedbackRequest(
 }
 
 export const orderPdcFeedbackService = {
+  /**
+   *
+   * @param context 签收反馈上下文
+   * @description 查询待反馈状态
+   */
   async queryPending(context: OrderPdcFeedbackContext) {
     const response = await orderPdcFeedbackApi.query({
       waybillNo: context.waybillNumber
@@ -85,6 +108,12 @@ export const orderPdcFeedbackService = {
     }
   },
 
+  /**
+   *
+   * @param context 签收反馈上下文
+   * @param feedbackResult 反馈结果
+   * @description 提交签收反馈
+   */
   submit(
     context: OrderPdcFeedbackContext,
     feedbackResult: OrderPdcFeedbackResult

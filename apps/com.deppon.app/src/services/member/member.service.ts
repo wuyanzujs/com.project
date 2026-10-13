@@ -58,16 +58,31 @@ const DEFAULT_BENEFITS: MemberBenefitView[] = [
   }
 ]
 
+/**
+ *
+ * @param value 待转换值
+ * @description 转为有限数字，失败返回 0
+ */
 function toFiniteNumber(value: unknown) {
   const numberValue = Number(value)
 
   return Number.isFinite(numberValue) ? numberValue : 0
 }
 
+/**
+ *
+ * @param value 文本或数字，可为空
+ * @description 归一文本为去空格字符串
+ */
 function normalizeText(value?: string | number | null) {
   return String(value ?? '').trim()
 }
 
+/**
+ *
+ * @param status SVIP 状态
+ * @description 生成 SVIP 状态文案
+ */
 function getSvipStatusText(status: number) {
   if (status === 1) {
     return 'SVIP 生效中'
@@ -80,6 +95,12 @@ function getSvipStatusText(status: number) {
   return '普通会员'
 }
 
+/**
+ *
+ * @param level 等级原始数据，可为空
+ * @param svip SVIP 原始数据，可为空
+ * @description 组装会员概览展示结构
+ */
 function normalizeOverview(
   level?: MemberLevelRaw | null,
   svip?: MemberSvipRaw | null
@@ -107,6 +128,12 @@ function normalizeOverview(
   }
 }
 
+/**
+ *
+ * @param result 返回数据
+ * @param message 提示文案
+ * @description 组装成功响应结构
+ */
 function createSuccessResponse<TResult>(
   result: TResult,
   message = ''
@@ -118,6 +145,13 @@ function createSuccessResponse<TResult>(
   }
 }
 
+/**
+ *
+ * @param baseUrl 基础地址
+ * @param source 来源标识
+ * @param code 临时 token
+ * @description 拼接福利中心页面 URL
+ */
 export function createMemberWelfareUrl(
   baseUrl: string,
   source: string,
@@ -129,6 +163,12 @@ export function createMemberWelfareUrl(
   })
 }
 
+/**
+ *
+ * @param path 页面路径
+ * @param baseUrl 基础地址
+ * @description 拼接 MAS 页面基础地址
+ */
 function createMemberMasBaseUrl(
   path: string,
   baseUrl = APP_RUNTIME_CONFIG.memberWebURL
@@ -142,6 +182,14 @@ function createMemberMasBaseUrl(
   }
 }
 
+/**
+ *
+ * @param action 目标动作
+ * @param source 来源标识
+ * @param code 临时 token
+ * @param baseUrl 基础地址
+ * @description 拼接 MAS 页面 URL
+ */
 export function createMemberMasUrl(
   action: MemberWebAction,
   source: string,
@@ -158,6 +206,10 @@ export function createMemberMasUrl(
 }
 
 export const memberService = {
+  /**
+   *
+   * @description 查询等级与 SVIP 信息并组装概览
+   */
   async queryOverview(): Promise<DepponResponse<MemberOverviewView>> {
     const [levelResponse, svipResponse] = await Promise.all([
       memberApi.queryLevel().catch(() => null),
@@ -173,6 +225,12 @@ export const memberService = {
     return createSuccessResponse(overview, message)
   },
 
+  /**
+   *
+   * @param source 来源标识
+   * @param baseUrl 基础地址
+   * @description 创建带临时 token 的福利中心 URL
+   */
   async createWelfareCenterUrl(
     source = 'MEMBER_INDEX',
     baseUrl = APP_RUNTIME_CONFIG.memberWebURL
@@ -193,6 +251,13 @@ export const memberService = {
     }
   },
 
+  /**
+   *
+   * @param action 目标动作
+   * @param source 来源标识
+   * @param baseUrl 基础地址
+   * @description 创建带临时 token 的 MAS 页面 URL
+   */
   async createMasUrl(
     action: MemberWebAction,
     source = 'MEMBER_INDEX',

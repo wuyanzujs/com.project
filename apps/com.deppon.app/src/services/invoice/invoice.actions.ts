@@ -12,6 +12,13 @@ type InvoiceAddressContact = Pick<
   'name' | 'telephone' | 'province' | 'city' | 'county' | 'town' | 'address'
 >
 
+/**
+ *
+ * @param path 发票基础操作路径
+ * @param applyNo 发票申请号
+ * @param failureMessage 失败提示文案
+ * @description 调用发票基础操作接口并统一处理失败
+ */
 async function requestInvoiceBasicAction(
   path: 'cancelInvoiceApply' | 'toRedRush',
   applyNo: string,
@@ -42,6 +49,11 @@ async function requestInvoiceBasicAction(
   }
 }
 
+/**
+ *
+ * @param applyNo 发票申请号
+ * @description 撤销发票开票申请
+ */
 export function cancelInvoiceApply(applyNo: string) {
   return requestInvoiceBasicAction(
     'cancelInvoiceApply',
@@ -50,10 +62,20 @@ export function cancelInvoiceApply(applyNo: string) {
   )
 }
 
+/**
+ *
+ * @param applyNo 发票申请号
+ * @description 作废发票开票申请
+ */
 export function reverseInvoice(applyNo: string) {
   return requestInvoiceBasicAction('toRedRush', applyNo, '作废失败，请稍后再试')
 }
 
+/**
+ *
+ * @param contact 收票地址联系人信息
+ * @description 拼接乡镇与详细地址
+ */
 function getInvoiceAddressDetail(contact: InvoiceAddressContact) {
   const town = normalizeText(contact.town)
   const address = normalizeText(contact.address)
@@ -65,6 +87,12 @@ function getInvoiceAddressDetail(contact: InvoiceAddressContact) {
   return address || town
 }
 
+/**
+ *
+ * @param applyNo 发票申请号
+ * @param contact 收票地址联系人信息
+ * @description 组装修改收票地址的 payload
+ */
 export function createInvoiceModifyAddressPayload(
   applyNo: string,
   contact: InvoiceAddressContact
@@ -84,6 +112,11 @@ export function createInvoiceModifyAddressPayload(
   }
 }
 
+/**
+ *
+ * @param payload 修改收票地址请求参数
+ * @description 校验参数并返回错误文案
+ */
 function validateInvoiceModifyAddressPayload(
   payload: InvoiceModifyAddressRequest
 ) {
@@ -111,6 +144,12 @@ function validateInvoiceModifyAddressPayload(
   return ''
 }
 
+/**
+ *
+ * @param applyNo 发票申请号
+ * @param contact 收票地址联系人信息
+ * @description 修改发票收票地址
+ */
 export async function modifyInvoiceAddress(
   applyNo: string,
   contact: InvoiceAddressContact

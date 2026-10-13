@@ -22,26 +22,52 @@ const WEEKDAY_TEXT: Record<string, string> = {
   Saturday: '六'
 }
 
+/**
+ *
+ * @param value 待转换值
+ * @param fallback 兜底值
+ * @description 转为有限数字，失败取兜底值
+ */
 function toFiniteNumber(value: unknown, fallback = 0) {
   const numberValue = Number(value)
 
   return Number.isFinite(numberValue) ? numberValue : fallback
 }
 
+/**
+ *
+ * @param value 数字
+ * @description 数字转文本并去掉末尾的零
+ */
 function trimNumberText(value: number) {
   return Number.isInteger(value)
     ? String(value)
     : value.toFixed(2).replace(/\.?0+$/, '')
 }
 
+/**
+ *
+ * @param value 分金额
+ * @description 分金额转元文本
+ */
 function formatCentAmount(value: unknown) {
   return trimNumberText(toFiniteNumber(value) / 100)
 }
 
+/**
+ *
+ * @param value 折扣值
+ * @description 折扣值转折文本
+ */
 function formatDiscount(value: unknown) {
   return trimNumberText(toFiniteNumber(value) / 10)
 }
 
+/**
+ *
+ * @param value 日期文本，可为空
+ * @description 归一日期为点分隔文本
+ */
 function formatDate(value?: string | null) {
   if (!value) {
     return ''
@@ -68,6 +94,11 @@ function formatDate(value?: string | null) {
   )}.${String(date.getDate()).padStart(2, '0')}`
 }
 
+/**
+ *
+ * @param coupon 优惠券
+ * @description 取优惠券类型名称
+ */
 function getCouponTypeName(coupon: CouponItem) {
   switch (coupon.discountType) {
     case '2':
@@ -87,6 +118,11 @@ function getCouponTypeName(coupon: CouponItem) {
   }
 }
 
+/**
+ *
+ * @param coupon 优惠券
+ * @description 取优惠券面额值与单位
+ */
 function getCouponAmount(coupon: CouponItem) {
   if (coupon.discountType === '4') {
     return {
@@ -115,6 +151,11 @@ function getCouponAmount(coupon: CouponItem) {
   }
 }
 
+/**
+ *
+ * @param coupon 优惠券
+ * @description 生成优惠门槛文案
+ */
 function getThresholdText(coupon: CouponItem) {
   if (coupon.discountType === '2') {
     return `满${formatCentAmount(coupon.useFee)}元可用`
@@ -139,6 +180,11 @@ function getThresholdText(coupon: CouponItem) {
   return '优惠规则以结算页为准'
 }
 
+/**
+ *
+ * @param fitWeek 可用星期，可为空
+ * @description 生成限星期使用文案
+ */
 function getUsageTimeText(fitWeek?: string | null) {
   if (!fitWeek) {
     return ''
@@ -153,6 +199,12 @@ function getUsageTimeText(fitWeek?: string | null) {
   return weekdays ? `限周${weekdays}使用` : ''
 }
 
+/**
+ *
+ * @param coupon 优惠券
+ * @param status 优惠券状态
+ * @description 生成有效期文案
+ */
 function getValidityText(coupon: CouponItem, status: CouponStatus) {
   const startTime = formatDate(coupon.startTime)
   const endTime = formatDate(coupon.endTime)
@@ -164,6 +216,12 @@ function getValidityText(coupon: CouponItem, status: CouponStatus) {
   return endTime ? `有效期至 ${endTime}` : '有效期以券详情为准'
 }
 
+/**
+ *
+ * @param coupon 优惠券
+ * @param status 优惠券状态
+ * @description 生成优惠券状态文案
+ */
 function getStatusText(coupon: CouponItem, status: CouponStatus) {
   if (status === 'USED') {
     return '已使用'
@@ -176,6 +234,11 @@ function getStatusText(coupon: CouponItem, status: CouponStatus) {
   return '可使用'
 }
 
+/**
+ *
+ * @param coupon 优惠券
+ * @description 生成优惠券角标文案
+ */
 function getLabelText(coupon: CouponItem) {
   if (coupon.couponLabel === 'NEW') {
     return '新领取'
@@ -192,6 +255,13 @@ function getLabelText(coupon: CouponItem) {
   return ''
 }
 
+/**
+ *
+ * @param coupon 优惠券
+ * @param usageTimeText 可用时间文案
+ * @param labelText 角标文案
+ * @description 组装优惠券标签，最多 4 个
+ */
 function createTags(
   coupon: CouponItem,
   usageTimeText: string,
@@ -202,6 +272,11 @@ function createTags(
     .slice(0, 4)
 }
 
+/**
+ *
+ * @param value 描述文本，可为空
+ * @description 按换行拆分描述并去掉空行
+ */
 function splitDescription(value?: string | null) {
   return (value ?? '')
     .split('\n')
@@ -209,6 +284,11 @@ function splitDescription(value?: string | null) {
     .filter(Boolean)
 }
 
+/**
+ *
+ * @param code 兑换码
+ * @description 校验兑换码，返回错误文案
+ */
 export function validateCouponExchangeCode(code: string) {
   const exchangeCouponCode = code.trim()
 
@@ -227,6 +307,11 @@ export function validateCouponExchangeCode(code: string) {
   return ''
 }
 
+/**
+ *
+ * @param raw 券详情原始数据
+ * @description 组装优惠券详情展示结构
+ */
 export function createCouponDetailView(raw: {
   couponCode?: string
   fitProduct?: string | null
@@ -274,6 +359,12 @@ export function createCouponDetailView(raw: {
 }
 
 export const couponService = {
+  /**
+   *
+   * @param coupon 优惠券
+   * @param status 优惠券状态
+   * @description 组装优惠券卡片展示结构
+   */
   toCouponCard(coupon: CouponItem, status: CouponStatus): CouponCardView {
     const amount = getCouponAmount(coupon)
     const usageTimeText = getUsageTimeText(coupon.fitWeek)
@@ -298,6 +389,12 @@ export const couponService = {
     }
   },
 
+  /**
+   *
+   * @param status 优惠券状态
+   * @param loading 是否展示加载态
+   * @description 查询用户优惠券列表
+   */
   async queryUserCoupons(
     status: CouponStatus,
     loading = false
@@ -325,6 +422,11 @@ export const couponService = {
     }
   },
 
+  /**
+   *
+   * @param code 兑换码
+   * @description 校验后兑换优惠券
+   */
   async exchangeCoupon(
     code: string
   ): Promise<DepponResponse<CouponExchangeResponse>> {
@@ -346,6 +448,11 @@ export const couponService = {
     return response
   },
 
+  /**
+   *
+   * @param couponCode 券码
+   * @description 查询优惠券详情
+   */
   async queryCouponDetail(
     couponCode: string
   ): Promise<DepponResponse<CouponDetailView>> {
@@ -367,6 +474,10 @@ export const couponService = {
     }
   },
 
+  /**
+   *
+   * @description 查询即将过期优惠券数量
+   */
   async queryExpireCount(): Promise<number> {
     const response = await couponApi.queryExpireCouponCount()
 

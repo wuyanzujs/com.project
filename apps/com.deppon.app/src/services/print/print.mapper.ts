@@ -10,6 +10,11 @@ interface PrintListPaginationFallback {
   pageSize: number
 }
 
+/**
+ *
+ * @param value 原始值
+ * @description 空值返回空串，其余转字符串去空格
+ */
 function normalizeText(value: unknown) {
   if (value === null || value === undefined) {
     return ''
@@ -18,6 +23,12 @@ function normalizeText(value: unknown) {
   return String(value).trim()
 }
 
+/**
+ *
+ * @param value 原始值
+ * @param fallback 兜底值
+ * @description 转非负整数，非法时返回兜底值
+ */
 function toNonNegativeInteger(value: unknown, fallback: number) {
   if (value === null || value === undefined || value === '') {
     return fallback
@@ -32,12 +43,23 @@ function toNonNegativeInteger(value: unknown, fallback: number) {
   return Math.floor(normalized)
 }
 
+/**
+ *
+ * @param value 原始值
+ * @param fallback 兜底值
+ * @description 转正整数，非法时返回兜底值
+ */
 function toPositiveInteger(value: unknown, fallback: number) {
   const normalized = toNonNegativeInteger(value, fallback)
 
   return normalized > 0 ? normalized : fallback
 }
 
+/**
+ *
+ * @param value 收件人手机号
+ * @description 手机号脱敏，无值时返回 --
+ */
 export function maskPrintRecipientPhone(value: unknown) {
   const phone = normalizeText(value)
 
@@ -48,6 +70,14 @@ export function maskPrintRecipientPhone(value: unknown) {
   return `${phone.slice(0, 3)}****${phone.slice(-4)}`
 }
 
+/**
+ *
+ * @param province 省
+ * @param city 市
+ * @param area 区
+ * @param address 详细地址
+ * @description 拼接收件人省市区与详细地址
+ */
 export function createPrintRecipientAddress(
   province: unknown,
   city: unknown,
@@ -62,6 +92,12 @@ export function createPrintRecipientAddress(
   return segments.join('') || '地址信息暂缺'
 }
 
+/**
+ *
+ * @param raw 打印订单原始数据
+ * @param index 列表下标，用于兜底 key
+ * @description 归一打印订单为列表展示项
+ */
 export function normalizePrintOrder(
   raw: PrintOrderRaw,
   index = 0
@@ -88,6 +124,12 @@ export function normalizePrintOrder(
   }
 }
 
+/**
+ *
+ * @param raw 打印列表原始响应
+ * @param fallback 分页兜底值
+ * @description 归一打印列表分页与列表数据
+ */
 export function normalizePrintListResult(
   raw: PrintListResponse,
   fallback: PrintListPaginationFallback

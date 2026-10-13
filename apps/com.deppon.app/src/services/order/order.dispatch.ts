@@ -24,6 +24,11 @@ import type { OrderDetail, OrderDetailActionOptions } from './types'
 
 const PICKUP_TIME_SOURCE = 4 as const
 
+/**
+ *
+ * @param order 订单详情
+ * @description 判断货物是否已被揽收
+ */
 function hasPickedUpGoods(order: OrderDetail) {
   return (
     order.isPickupGoods === true ||
@@ -32,6 +37,11 @@ function hasPickedUpGoods(order: OrderDetail) {
   )
 }
 
+/**
+ *
+ * @param slot 上门时间段原始数据
+ * @description 归一单个上门时间段
+ */
 function normalizePickupSlot(
   slot: OrderPickupTimeSlotRaw
 ): OrderPickupSlotView | null {
@@ -49,6 +59,12 @@ function normalizePickupSlot(
   }
 }
 
+/**
+ *
+ * @param date 日期文本
+ * @param slots 该日期的时间段列表
+ * @description 归一单个上门日期及其时间段
+ */
 function normalizePickupDate(
   date: string,
   slots: OrderPickupTimeSlotRaw[]
@@ -70,6 +86,12 @@ function normalizePickupDate(
   }
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param options 操作选项
+ * @description 判断订单是否可预约上门时间
+ */
 export function canScheduleOrderPickup(
   order: OrderDetail,
   options: OrderDetailActionOptions = {}
@@ -85,6 +107,11 @@ export function canScheduleOrderPickup(
   )
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 组装上门时间查询入参
+ */
 export function buildOrderPickupTimeRequest(
   order: OrderDetail
 ): OrderPickupTimeRequest | null {
@@ -128,6 +155,12 @@ export function buildOrderPickupTimeRequest(
   }
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param response 上门时间接口响应
+ * @description 组装可预约上门时间视图
+ */
 export function createOrderPickupScheduleView(
   order: OrderDetail,
   response: OrderPickupTimeResponse
@@ -146,6 +179,12 @@ export function createOrderPickupScheduleView(
   }
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param options 操作选项
+ * @description 查询订单可预约上门时间
+ */
 export async function queryOrderPickupSchedule(
   order: OrderDetail,
   options: OrderDetailActionOptions = {}
@@ -178,6 +217,11 @@ export async function queryOrderPickupSchedule(
   }
 }
 
+/**
+ *
+ * @param data 预约上门入参
+ * @description 校验后提交上门时间预约
+ */
 export function dispatchOrderPickup(
   data: OrderDispatchRequest
 ): Promise<DepponResponse<boolean>> {

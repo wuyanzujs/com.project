@@ -18,18 +18,37 @@ export interface AuthResult {
   user: AppUser | null
 }
 
+/**
+ *
+ * @description 取运行时系统编码
+ */
 function getSystemCode() {
   return APP_RUNTIME_CONFIG.systemCode
 }
 
+/**
+ *
+ * @param mobile 手机号
+ * @description 校验是否为合法手机号
+ */
 export function isValidMobile(mobile: string) {
   return /^1[3-9]\d{9}$/.test(mobile.trim())
 }
 
+/**
+ *
+ * @param smsCode 短信验证码
+ * @description 校验是否为 6 位数字验证码
+ */
 export function isValidSmsCode(smsCode: string) {
   return /^\d{6}$/.test(smsCode.trim())
 }
 
+/**
+ *
+ * @param mobile 手机号
+ * @description 手机号中间四位用星号打码
+ */
 export function maskMobile(mobile = '') {
   const value = mobile.trim()
 
@@ -40,6 +59,11 @@ export function maskMobile(mobile = '') {
   return `${value.slice(0, 3)}****${value.slice(7)}`
 }
 
+/**
+ *
+ * @param user 当前用户，可为空
+ * @description 取用户展示名称，缺省为未登录
+ */
 export function getUserDisplayName(user: AppUser | null) {
   if (!user) {
     return '未登录'
@@ -55,10 +79,18 @@ export function getUserDisplayName(user: AppUser | null) {
 }
 
 export const authService = {
+  /**
+   *
+   * @description 取本地缓存的用户信息
+   */
   getCachedUser() {
     return getCurrentUser()
   },
 
+  /**
+   *
+   * @description 拉取并保存用户信息，失败返回空
+   */
   async bootstrapUser(): Promise<AppUser | null> {
     const response = await authApi.queryUserInfo(false, false)
 
@@ -73,6 +105,11 @@ export const authService = {
     return null
   },
 
+  /**
+   *
+   * @param mobile 手机号
+   * @description 校验手机号后发送登录验证码
+   */
   async sendLoginSms(mobile: string) {
     if (!isValidMobile(mobile)) {
       return Promise.resolve({
@@ -89,6 +126,13 @@ export const authService = {
     })
   },
 
+  /**
+   *
+   * @param mobile 手机号
+   * @param smsCode 短信验证码
+   * @param redirectUrl 登录后返回页面，可选
+   * @description 短信验证码登录并保存登录态
+   */
   async loginWithSms(
     mobile: string,
     smsCode: string,
@@ -157,6 +201,10 @@ export const authService = {
     }
   },
 
+  /**
+   *
+   * @description 退出登录并清理本机会话数据
+   */
   async logout() {
     try {
       await authApi.logout(getSystemCode())
@@ -167,6 +215,11 @@ export const authService = {
     }
   },
 
+  /**
+   *
+   * @param source 来源标识
+   * @description 生成临时 token，失败返回空串
+   */
   async generateTmpToken(source: string) {
     const response = await authApi.generateTmpToken({ source }, false)
 

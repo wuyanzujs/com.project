@@ -32,16 +32,36 @@ import type {
 const DEFAULT_GOODS_COUNT = 1
 const DEFAULT_GOODS_WEIGHT = 1
 
+/**
+ *
+ * @param value 待判断的数值
+ * @param fallback 无效时的兜底值
+ * @description 非有限数字时返回兜底值
+ */
 export function toFiniteNumber(value: number, fallback = 0) {
   return Number.isFinite(value) ? value : fallback
 }
 
+/**
+ *
+ * @param value 待处理的文本
+ * @description 去除文本首尾空白
+ */
 export function trimText(value: string | undefined) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @description 生成当前日期时间文本
+ */
 export function getNowText() {
   const now = new Date()
+  /**
+   *
+   * @param value 待补零的数字
+   * @description 数字补零为两位
+   */
   const pad = (value: number) => String(value).padStart(2, '0')
 
   return [
@@ -50,6 +70,10 @@ export function getNowText() {
   ].join(' ')
 }
 
+/**
+ *
+ * @description 创建空的寄件草稿
+ */
 export function createExpressDraft(): ExpressDraft {
   return {
     sender: null,
@@ -92,6 +116,11 @@ export function createExpressDraft(): ExpressDraft {
   }
 }
 
+/**
+ *
+ * @param contact 地址簿联系人
+ * @description 地址簿联系人转寄件联系人
+ */
 export function mapContactToExpressContact(contact: Contact): ExpressContact {
   return {
     id: contact.id,
@@ -108,6 +137,11 @@ export function mapContactToExpressContact(contact: Contact): ExpressContact {
   }
 }
 
+/**
+ *
+ * @param address 仅含地址信息的对象
+ * @description 仅用地址创建寄件联系人
+ */
 export function createAddressOnlyExpressContact(address: {
   province?: string
   city?: string
@@ -126,6 +160,11 @@ export function createAddressOnlyExpressContact(address: {
   }
 }
 
+/**
+ *
+ * @param contact 寄件联系人
+ * @description 拼接联系人完整地址
+ */
 export function getExpressContactFullAddress(contact: ExpressContact) {
   return [
     contact.province,
@@ -153,6 +192,11 @@ export function maskExpressContactMobile(mobile: string | null | undefined) {
   return `${digits.slice(0, 3)} **** ${digits.slice(-4)}`
 }
 
+/**
+ *
+ * @param contact 寄件联系人
+ * @description 拼接联系人省市区镇
+ */
 export function getExpressContactRegion(contact: ExpressContact) {
   return [contact.province, contact.city, contact.county, contact.town]
     .filter(Boolean)
@@ -169,6 +213,12 @@ export function getExpressContactRegionAddress(contact: ExpressContact) {
     .join(',')
 }
 
+/**
+ *
+ * @param contact 寄件或收件联系人
+ * @param label 提示语中的角色名
+ * @description 校验联系人信息并返回提示
+ */
 export function validateExpressContact(
   contact: ExpressContact | null,
   label: string
@@ -205,6 +255,12 @@ export function validateExpressContact(
   return messages
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param options 校验开关
+ * @description 校验寄件草稿并汇总错误提示
+ */
 export function validateExpressDraft(
   draft: ExpressDraft,
   options: {
@@ -269,6 +325,12 @@ export function validateExpressDraft(
   }
 }
 
+/**
+ *
+ * @param contact 寄件或收件联系人
+ * @param label 提示语中的角色名
+ * @description 校验时效询价所需的地址信息
+ */
 function validatePriceTimeContact(
   contact: ExpressContact | null,
   label: string
@@ -293,6 +355,11 @@ function validatePriceTimeContact(
   return messages
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 校验时效询价所需草稿字段
+ */
 export function validateExpressPriceTimeDraft(
   draft: ExpressDraft
 ): ExpressValidationResult {

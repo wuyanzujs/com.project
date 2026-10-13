@@ -30,16 +30,33 @@ export interface ExpressPickupDateOption {
   timeOptions: ExpressPickupTimeOption[]
 }
 
+/**
+ *
+ * @param value 待处理的文本
+ * @description 归一文本，空值返回空字符串
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param value 取件时段类型
+ * @description 判断是否为可预约时段类型
+ */
 function isAvailablePickupType(
   value: ExpressPickupTimeOpeningType
 ): value is ExpressPickupTimeType {
   return value === 'NORMAL' || value === 'NIGHT'
 }
 
+/**
+ *
+ * @param target 按日期聚合的时段 Map
+ * @param openingList 接口返回的开放时段列表
+ * @param type 时段类型
+ * @description 把开放时段按日期聚合进 Map
+ */
 function appendOpeningList(
   target: Map<string, Map<string, ExpressPickupTimeOpeningDate>>,
   openingList: ExpressPickupTimeOpening[] | undefined,
@@ -69,6 +86,12 @@ function appendOpeningList(
   }
 }
 
+/**
+ *
+ * @param response 取件时间响应
+ * @param nightCapability 夜间揽收能力，可为空
+ * @description 归一取件时间响应，合并夜间能力
+ */
 export function normalizeExpressPickupTimeResponse(
   response: ExpressPickupTimeResponse,
   nightCapability?: ExpressPickupNightCapability
@@ -112,6 +135,11 @@ export function normalizeExpressPickupTimeResponse(
   }
 }
 
+/**
+ *
+ * @param value 日期字符串
+ * @description 解析日期字符串，非法返回 null
+ */
 function parseDate(value: string) {
   const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/)
 
@@ -131,6 +159,11 @@ function parseDate(value: string) {
     : null
 }
 
+/**
+ *
+ * @param response 取件时间响应，可为空
+ * @description 生成日期和时段选项
+ */
 export function createExpressPickupDateOptions(
   response?: ExpressPickupTimeResponse | null
 ): ExpressPickupDateOption[] {
@@ -156,6 +189,11 @@ export function createExpressPickupDateOptions(
   })
 }
 
+/**
+ *
+ * @param response 取件时间响应
+ * @description 取首个普通时段作为默认选中
+ */
 export function getFirstExpressPickupTimeSelection(
   response: ExpressPickupTimeResponse
 ): ExpressPickupTimeSelection | null {
@@ -170,6 +208,12 @@ export function getFirstExpressPickupTimeSelection(
   return null
 }
 
+/**
+ *
+ * @param date 日期
+ * @param time 时间
+ * @description 拼接下单用的取件时间
+ */
 export function createExpressPickupDateTime(date: string, time: string) {
   const normalizedTime = normalizeText(time)
 
@@ -178,6 +222,12 @@ export function createExpressPickupDateTime(date: string, time: string) {
     : `${normalizeText(date)} ${normalizedTime}`.trim()
 }
 
+/**
+ *
+ * @param response 取件时间响应
+ * @param pickup 已选取件信息
+ * @description 反查已选时间对应的时段
+ */
 export function findExpressPickupTimeSelection(
   response: ExpressPickupTimeResponse,
   pickup: ExpressPickup

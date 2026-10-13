@@ -33,6 +33,11 @@ export interface ExpressInsuranceView {
   options: ExpressInsuranceOptionView[]
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 生成保价页面的展示模型
+ */
 export function createExpressInsuranceView(
   draft: ExpressDraft
 ): ExpressInsuranceView {

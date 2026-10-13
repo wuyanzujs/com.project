@@ -237,6 +237,11 @@ const PROMOTER_CATALOG: OrderNpsCatalog = {
   }))
 }
 
+/**
+ *
+ * @param score NPS 评分
+ * @description 按评分返回对应的问卷目录
+ */
 export function getOrderNpsCatalog(score: number | null) {
   if (score === null || !Number.isInteger(score) || score < 0 || score > 10) {
     return null

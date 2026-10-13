@@ -8,6 +8,11 @@ import type { BatchDraft } from './types'
 
 const BATCH_DRAFT_EXPIRE_HOURS = 2
 
+/**
+ *
+ * @param draft 批量草稿
+ * @description 深拷贝草稿，隔离缓存数据
+ */
 function cloneDraft(draft: BatchDraft): BatchDraft {
   return {
     ...draft,
@@ -23,6 +28,11 @@ function cloneDraft(draft: BatchDraft): BatchDraft {
   }
 }
 
+/**
+ *
+ * @param draft 批量草稿
+ * @description 合并默认值补齐草稿字段
+ */
 function normalizeDraft(draft: BatchDraft): BatchDraft {
   const defaultDraft = createBatchDraft()
 
@@ -56,6 +66,11 @@ function normalizeDraft(draft: BatchDraft): BatchDraft {
 }
 
 export const batchDraftStorage = {
+  /**
+   *
+   * @param draft 批量草稿
+   * @description 缓存批量草稿
+   */
   save(draft: BatchDraft) {
     return dpCache.set<BatchDraft>(CACHE_KEYS.batchDraft, {
       data: cloneDraft(draft),
@@ -66,12 +81,21 @@ export const batchDraftStorage = {
     })
   },
 
+  /**
+   *
+   * @description 读取并归一缓存的批量草稿
+   */
   restore() {
     const draft = dpCache.get<BatchDraft>(CACHE_KEYS.batchDraft)
 
     return draft ? normalizeDraft(draft) : null
   },
 
+  /**
+   *
+   * @param draft 批量草稿
+   * @description 保存草稿并保留登录态缓存
+   */
   async preserveForLogin(draft: BatchDraft) {
     const saved = await batchDraftStorage.save(draft)
 
@@ -82,6 +106,10 @@ export const batchDraftStorage = {
     return saved
   },
 
+  /**
+   *
+   * @description 清除批量草稿缓存
+   */
   clear() {
     return dpCache.remove(CACHE_KEYS.batchDraft)
   }

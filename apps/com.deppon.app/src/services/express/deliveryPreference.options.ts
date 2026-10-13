@@ -56,10 +56,20 @@ export const EXPRESS_DELIVERY_TIME_WINDOWS: ExpressDeliveryTimeWindowOption[] =
     }
   ]
 
+/**
+ *
+ * @param value 原始文本
+ * @description 去除首尾空白，空值返回空字符串
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param value 日期字符串
+ * @description 解析日期文本，非法时返回 null
+ */
 export function parseExpressDeliveryDate(value?: string | null) {
   const text = normalizeText(value)
   const match = text.match(/^(\d{4})-(\d{2})-(\d{2})/)
@@ -84,18 +94,39 @@ export function parseExpressDeliveryDate(value?: string | null) {
   return date
 }
 
+/**
+ *
+ * @param value 数字
+ * @description 补零为两位字符串
+ */
 function pad(value: number) {
   return String(value).padStart(2, '0')
 }
 
+/**
+ *
+ * @param date 日期对象
+ * @description 格式化为 YYYY-MM-DD
+ */
 function formatDate(date: Date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
+/**
+ *
+ * @param date 起始日期
+ * @param amount 偏移天数
+ * @description 在日期上增加指定天数
+ */
 export function addExpressDeliveryDays(date: Date, amount: number) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate() + amount)
 }
 
+/**
+ *
+ * @param date 日期对象
+ * @description 生成一个派送日期选项
+ */
 function createDateOption(date: Date): ExpressDeliveryDateOption {
   return {
     value: formatDate(date),
@@ -104,10 +135,20 @@ function createDateOption(date: Date): ExpressDeliveryDateOption {
   }
 }
 
+/**
+ *
+ * @param value 日期字符串
+ * @description 判断日期文本是否为合法日期
+ */
 export function isExpressDeliveryDateTextValid(value: string) {
   return DATE_PATTERN.test(value) && Boolean(parseExpressDeliveryDate(value))
 }
 
+/**
+ *
+ * @param value 定时派送时段
+ * @description 判断是否为合法的定时派送时段
+ */
 export function isExpressScheduledDeliveryWindow(value: string) {
   const match = value.match(SCHEDULED_WINDOW_PATTERN)
 
@@ -118,24 +159,52 @@ export function isExpressScheduledDeliveryWindow(value: string) {
   )
 }
 
+/**
+ *
+ * @param value 定时派送时段
+ * @description 判断是否为夜间派送时段
+ */
 export function isExpressNightDeliveryWindow(value: string) {
   return value.endsWith('21:00-23:59')
 }
 
+/**
+ *
+ * @param value 定时派送时段
+ * @description 提取其中的日期部分
+ */
 export function getExpressScheduledDate(value: string) {
   return value.match(SCHEDULED_WINDOW_PATTERN)?.[1] ?? ''
 }
 
+/**
+ *
+ * @param value 定时派送时段
+ * @description 提取其中的时间窗口部分
+ */
 export function getExpressScheduledTimeWindow(value: string) {
   return value.match(SCHEDULED_WINDOW_PATTERN)?.[2] ?? ''
 }
 
+/**
+ *
+ * @param date 日期
+ * @param timeWindow 时间窗口
+ * @description 拼接并校验定时派送时段，非法返回空串
+ */
 export function createExpressScheduledWindow(date: string, timeWindow: string) {
   const value = `${date} ${timeWindow}`
 
   return isExpressScheduledDeliveryWindow(value) ? value : ''
 }
 
+/**
+ *
+ * @param arriveDate 预计到达日期，可为空
+ * @param selectedWindow 已选中的定时派送时段
+ * @param now 当前时间
+ * @description 生成未来七天的定时派送日期选项
+ */
 export function createExpressScheduledDateOptions(
   arriveDate?: string | null,
   selectedWindow = '',
@@ -158,12 +227,23 @@ export function createExpressScheduledDateOptions(
   return options
 }
 
+/**
+ *
+ * @param now 当前时间
+ * @description 生成未来 30 天的不可收货日期选项
+ */
 export function createExpressUnavailableDateOptions(now = new Date()) {
   return Array.from({ length: 30 }, (_, index) =>
     createDateOption(addExpressDeliveryDays(now, index + 1))
   )
 }
 
+/**
+ *
+ * @param rawDates 不可收货日期数组
+ * @param now 当前时间
+ * @description 校验不可收货日期的数量、格式与范围
+ */
 export function validateExpressUnavailableDeliveryDates(
   rawDates: string[],
   now?: Date
@@ -187,6 +267,12 @@ export function validateExpressUnavailableDeliveryDates(
   return []
 }
 
+/**
+ *
+ * @param arriveDateValue 预计到达日期
+ * @param scheduledWindow 定时派送时段
+ * @description 校验定时派送是否在预计到达后 7 天内
+ */
 export function validateExpressScheduledDeliveryRange(
   arriveDateValue: string | null | undefined,
   scheduledWindow: string

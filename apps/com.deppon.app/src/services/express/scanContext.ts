@@ -18,6 +18,11 @@ const EXPRESS_SCAN_ROLE_LABELS: Record<ExpressScanRole, string> = {
   shipperNumber: '客户编码二维码'
 }
 
+/**
+ *
+ * @param context 扫码上下文
+ * @description 生成扫码上下文说明文案
+ */
 function getScanContextSummary(context: ExpressScanContext) {
   const meta = [
     context.sceneId ? `场景 ${context.sceneId}` : '',
@@ -37,6 +42,11 @@ function getScanContextSummary(context: ExpressScanContext) {
   }
 }
 
+/**
+ *
+ * @param context 扫码上下文，可为空
+ * @description 生成扫码信息展示结构
+ */
 export function createExpressScanContextView(
   context?: ExpressScanContext
 ): ExpressScanContextView | null {

@@ -53,10 +53,21 @@ import type {
   ExpressQuoteResult
 } from './types'
 
+/**
+ *
+ * @param response 接口响应
+ * @description 取响应失败提示文案
+ */
 function getResponseFailureMessage(response: DepponResponse<unknown>) {
   return response.message || '校验失败，请稍后再试'
 }
 
+/**
+ *
+ * @param response 保价费用响应
+ * @param amount 保价金额
+ * @description 归一保价费用响应
+ */
 function normalizeInsuranceQuote(
   response: ExpressInsurancePriceResponse | null,
   amount: number
@@ -71,6 +82,11 @@ function normalizeInsuranceQuote(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 提交前校验货物与保价规则
+ */
 async function checkGoodsBeforeSubmit(
   draft: ExpressDraft
 ): Promise<DepponResponse<ExpressInsuranceCapability>> {
@@ -105,6 +121,11 @@ async function checkGoodsBeforeSubmit(
   return { ...response, result: capability }
 }
 
+/**
+ *
+ * @param data 货物标签请求参数
+ * @description 按货物名称校验并归一结果
+ */
 async function checkGoodsByName(
   data: ExpressGoodsLabelRequest
 ): Promise<DepponResponse<ExpressGoodsCheckResult>> {
@@ -132,6 +153,11 @@ async function checkGoodsByName(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 提交前校验仓库筛单结果
+ */
 async function checkOrderFilterBeforeSubmit(
   draft: ExpressDraft
 ): Promise<DepponResponse<boolean>> {
@@ -156,6 +182,11 @@ async function checkOrderFilterBeforeSubmit(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 提交前执行货物与筛单校验
+ */
 async function checkBeforeSubmit(
   draft: ExpressDraft
 ): Promise<DepponResponse<ExpressInsuranceCapability>> {
@@ -177,6 +208,13 @@ async function checkBeforeSubmit(
 export const expressService = {
   createDraft: createExpressDraft,
 
+  /**
+   *
+   * @param keyword 搜索关键字
+   * @param pageIndex 页码
+   * @param pageSize 每页条数
+   * @description 按关键字搜索货物名称
+   */
   queryGoodsNames(keyword: string, pageIndex = 1, pageSize = 20) {
     return expressApi.queryGoodsName({
       keyWord: keyword,
@@ -185,12 +223,22 @@ export const expressService = {
     })
   },
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 查询货物标签校验结果
+   */
   queryGoodsLabels(draft: ExpressDraft) {
     return expressApi.queryGoodsLabels(createExpressGoodsLabelRequest(draft))
   },
 
   checkGoodsByName,
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 询价并返回可售产品列表
+   */
   async quote(
     draft: ExpressDraft
   ): Promise<DepponResponse<ExpressQuoteResult>> {
@@ -240,6 +288,11 @@ export const expressService = {
     }
   },
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 按地址时效口径询价
+   */
   quotePriceTime(draft: ExpressDraft) {
     const validation = validateExpressPriceTimeDraft(draft)
 
@@ -252,6 +305,11 @@ export const expressService = {
     return expressApi.queryFreight(buildFreightRequest(draft), false)
   },
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 查询保价费用
+   */
   async queryInsurancePrice(
     draft: ExpressDraft
   ): Promise<DepponResponse<ExpressInsuranceQuote>> {
@@ -283,6 +341,11 @@ export const expressService = {
 
   stageWarehouse: stageExpressWarehouse,
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 查询定时派送可选时间
+   */
   queryDeliveryAppointment(draft: ExpressDraft) {
     if (
       !draft.consignee?.province ||
@@ -322,6 +385,11 @@ export const expressService = {
     )
   },
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 校验并提交寄件草稿下单
+   */
   async submitDraft(
     draft: ExpressDraft
   ): Promise<DepponResponse<CreateExpressOrderResponse>> {
@@ -355,6 +423,11 @@ export const expressService = {
     )
   },
 
+  /**
+   *
+   * @param data 订单详情请求参数
+   * @description 查询寄件订单详情
+   */
   queryOrderDetail(data: ExpressOrderDetailRequest) {
     return expressApi.queryOrderDetail({
       ...data,
@@ -362,6 +435,11 @@ export const expressService = {
     })
   },
 
+  /**
+   *
+   * @param data 订单取消请求参数
+   * @description 取消寄件订单
+   */
   cancelOrder(data: ExpressOrderCancelRequest) {
     return expressApi.cancelOrder({
       ...data,

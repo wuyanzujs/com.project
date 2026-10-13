@@ -36,6 +36,11 @@ const LOGISTICS_SERVICE_IMAGE_SCENES: Record<OrderServiceImageScene, string> = {
   7: 'PICKUP_TAKE_PHOTO'
 }
 
+/**
+ *
+ * @param value 图片地址数据
+ * @description 归一图片地址，去重并升级为 https
+ */
 function normalizeImageUrls(value: unknown): string[] {
   if (!Array.isArray(value)) {
     return []
@@ -62,6 +67,14 @@ function normalizeImageUrls(value: unknown): string[] {
   return Array.from(new Set(urls))
 }
 
+/**
+ *
+ * @param kind 分组类型
+ * @param title 分组标题
+ * @param summary 分组说明
+ * @param urls 图片地址列表
+ * @description 创建照片分组，无图片返回 null
+ */
 function createOrderStubImageGroup(
   kind: OrderStubImageGroupView['kind'],
   title: string,
@@ -83,6 +96,10 @@ function createOrderStubImageGroup(
   }
 }
 
+/**
+ *
+ * @description 创建空图片响应
+ */
 function createEmptyImageResponse(): DepponResponse<string[]> {
   return {
     status: true,
@@ -91,6 +108,12 @@ function createEmptyImageResponse(): DepponResponse<string[]> {
   }
 }
 
+/**
+ *
+ * @param scene 服务照片场景
+ * @param isLogistics 是否物流单
+ * @description 按单据类型取服务照片场景 code
+ */
 function getOrderServiceImageScene(
   scene: OrderServiceImageScene,
   isLogistics: boolean
@@ -100,6 +123,13 @@ function getOrderServiceImageScene(
     : EXPRESS_SERVICE_IMAGE_SCENES[scene]
 }
 
+/**
+ *
+ * @param wayBill 运单号
+ * @param scene 服务照片场景
+ * @param isLogistics 是否物流单
+ * @description 按场景查询服务照片
+ */
 function queryServiceImagesByScene(
   wayBill: string,
   scene: OrderServiceImageScene,
@@ -116,6 +146,11 @@ function queryServiceImagesByScene(
   )
 }
 
+/**
+ *
+ * @param value 包装照片数据
+ * @description 从包装照片数据中提取并归一图片地址
+ */
 function normalizePackageImageUrls(value: unknown) {
   if (!value || typeof value !== 'object' || !('list' in value)) {
     return []
@@ -129,12 +164,22 @@ function normalizePackageImageUrls(value: unknown) {
   )
 }
 
+/**
+ *
+ * @param result Promise 结算结果
+ * @description 取 fulfilled 的响应，否则返回 null
+ */
 function getSettledResponse<TResult>(
   result: PromiseSettledResult<DepponResponse<TResult>>
 ) {
   return result.status === 'fulfilled' ? result.value : null
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 汇总查询订单各类揽收与签收照片
+ */
 export async function queryOrderStubImages(
   order: OrderDetail
 ): Promise<DepponResponse<OrderStubImagesView>> {

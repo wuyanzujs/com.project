@@ -31,6 +31,11 @@ const NPS_PLAN: OrderSceneSurveyPlanItem = {
   kind: 'NPS'
 }
 
+/**
+ *
+ * @param code 场景 code
+ * @description 按 code 前缀创建场景计划项
+ */
 function createScenePlan(code: string): OrderSceneSurveyPlanItem {
   return {
     code,
@@ -38,6 +43,11 @@ function createScenePlan(code: string): OrderSceneSurveyPlanItem {
   }
 }
 
+/**
+ *
+ * @param value 时间戳
+ * @description 归一为毫秒时间戳，非法返回 null
+ */
 function normalizeTimestamp(value: number) {
   if (!Number.isFinite(value) || value <= 0) {
     return null
@@ -46,6 +56,11 @@ function normalizeTimestamp(value: number) {
   return value < 1_000_000_000_000 ? value * 1000 : value
 }
 
+/**
+ *
+ * @param value 时间值
+ * @description 解析多种格式的时间为毫秒时间戳
+ */
 export function parseOrderSceneSurveyTime(value: unknown) {
   if (typeof value === 'number') {
     return normalizeTimestamp(value)
@@ -99,6 +114,12 @@ export function parseOrderSceneSurveyTime(value: unknown) {
   return Number.isFinite(parsed) ? parsed : null
 }
 
+/**
+ *
+ * @param time 时间值
+ * @param now 当前时间戳
+ * @description 判断时间是否在问卷有效期内
+ */
 function isWithinSurveyWindow(time: unknown, now: number) {
   const timestamp = parseOrderSceneSurveyTime(time)
 
@@ -111,6 +132,12 @@ function isWithinSurveyWindow(time: unknown, now: number) {
   return elapsed >= 0 && elapsed < ORDER_SCENE_SURVEY_WINDOW_MS
 }
 
+/**
+ *
+ * @param left 左侧时间戳
+ * @param right 右侧时间戳
+ * @description 判断两个时间戳是否为同一自然日
+ */
 function isSameLocalDay(left: number, right: number) {
   const leftDate = new Date(left)
   const rightDate = new Date(right)
@@ -122,6 +149,11 @@ function isSameLocalDay(left: number, right: number) {
   )
 }
 
+/**
+ *
+ * @param options 订单、角色、来源与当前时间
+ * @description 按订单类型和来源生成问卷计划
+ */
 function getScenePlan(options: {
   detail: OrderDetail
   role: OrderRole
@@ -173,6 +205,11 @@ function getScenePlan(options: {
     : [NPS_PLAN, createScenePlan('S0908')]
 }
 
+/**
+ *
+ * @param options 上下文构造入参
+ * @description 创建场景问卷上下文，无有效计划返回 null
+ */
 export function createOrderSceneSurveyContext(options: {
   detail: OrderDetail | null
   role: OrderRole
@@ -227,10 +264,20 @@ export function createOrderSceneSurveyContext(options: {
   }
 }
 
+/**
+ *
+ * @param value 待处理值
+ * @description 归一文本，非字符串返回空字符串
+ */
 function asText(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
+/**
+ *
+ * @param value 原始标签数据
+ * @description 归一评价标签，非法数据返回 null
+ */
 function normalizeLabel(value: unknown): OrderSceneSurveyLabel | null {
   if (!value || typeof value !== 'object') {
     return null
@@ -257,6 +304,12 @@ function normalizeLabel(value: unknown): OrderSceneSurveyLabel | null {
   return { id, name, min, max }
 }
 
+/**
+ *
+ * @param plan 场景计划项
+ * @param raw 问卷原始数据
+ * @description 归一问卷项，无效数据返回 null
+ */
 export function normalizeOrderSceneSurveyQuestion(
   plan: OrderSceneSurveyPlanItem,
   raw: OrderSceneSurveyQuestionRaw | null | undefined
@@ -287,6 +340,12 @@ export function normalizeOrderSceneSurveyQuestion(
   }
 }
 
+/**
+ *
+ * @param item 问卷项
+ * @param score 评分
+ * @description 取出评分区间命中的标签
+ */
 export function getOrderSceneScoreLabels(
   item: OrderSceneSurveyItem,
   score: OrderSceneSurveyScore | null
@@ -298,6 +357,12 @@ export function getOrderSceneScoreLabels(
   return item.labels.filter(label => score >= label.min && score <= label.max)
 }
 
+/**
+ *
+ * @param item 问卷项
+ * @param draft 评分草稿
+ * @description 校验评分草稿，返回错误提示文案
+ */
 export function validateOrderSceneScoreDraft(
   item: OrderSceneSurveyItem,
   draft: OrderSceneScoreDraft
@@ -318,6 +383,12 @@ export function validateOrderSceneScoreDraft(
   return ''
 }
 
+/**
+ *
+ * @param context 场景问卷上下文
+ * @param sceneCode 场景 code
+ * @description 创建问卷提交请求基础结构
+ */
 function createSubmitBase(context: OrderSceneSurveyContext, sceneCode: string) {
   return {
     content: '',
@@ -336,6 +407,13 @@ function createSubmitBase(context: OrderSceneSurveyContext, sceneCode: string) {
   }
 }
 
+/**
+ *
+ * @param context 场景问卷上下文
+ * @param item 问卷项
+ * @param draft 评分草稿
+ * @description 创建评分提交请求，校验不通过返回 null
+ */
 export function createOrderSceneScoreSubmitRequest(
   context: OrderSceneSurveyContext,
   item: OrderSceneSurveyItem,
@@ -367,6 +445,13 @@ export function createOrderSceneScoreSubmitRequest(
   }
 }
 
+/**
+ *
+ * @param context 场景问卷上下文
+ * @param item 问卷项
+ * @param labelId 标签 id
+ * @description 创建标签提交请求，标签不可用返回 null
+ */
 export function createOrderSceneLabelSubmitRequest(
   context: OrderSceneSurveyContext,
   item: OrderSceneSurveyItem,

@@ -14,6 +14,12 @@ import type {
 
 type SurveyConfigList = SupportSurveyConfig[]
 
+/**
+ *
+ * @param path 网页 path
+ * @param source 来源标识
+ * @description 拼带 token 的安全 WebView 路径
+ */
 function createSecureWebPath(path: string, source: string) {
   return appendRouteQuery(path, {
     sonSource: source,
@@ -22,12 +28,23 @@ function createSecureWebPath(path: string, source: string) {
   })
 }
 
+/**
+ *
+ * @param item 问卷配置
+ * @description 判断问卷配置是否可用
+ */
 function isValidSurveyConfig(
   item: SupportSurveyConfig
 ): item is Required<Pick<SupportSurveyConfig, 'url'>> & SupportSurveyConfig {
   return typeof item.url === 'string' && item.url.trim().startsWith('https://')
 }
 
+/**
+ *
+ * @param item 问卷配置
+ * @param index 问卷序号
+ * @description 转问卷入口展示数据
+ */
 function mapSurveyConfigToEntry(
   item: SupportSurveyConfig,
   index: number
@@ -48,10 +65,20 @@ function mapSurveyConfigToEntry(
 }
 
 export const supportService = {
+  /**
+   *
+   * @param path 网页 path
+   * @param source 来源标识
+   * @description 创建带 token 的安全 WebView 路径
+   */
   createSecureWebUri(path: string, source = 'APP_SUPPORT_CENTER') {
     return createSecureWebPath(path, source)
   },
 
+  /**
+   *
+   * @description 查询配置中心下发的问卷入口
+   */
   async querySurveyEntries(): Promise<SupportEntryView[]> {
     try {
       const response = await supportApi.fetchSwitchConfig<SurveyConfigList>(
@@ -71,6 +98,11 @@ export const supportService = {
     }
   },
 
+  /**
+   *
+   * @param surveyEntries 问卷入口列表
+   * @description 组装支持中心分区列表
+   */
   getSections(surveyEntries: SupportEntryView[] = []): SupportSectionView[] {
     return [
       {

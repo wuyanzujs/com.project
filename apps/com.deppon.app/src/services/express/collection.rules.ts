@@ -28,14 +28,29 @@ export const EXPRESS_COLLECTION_OPTIONS: ExpressCollectionOption[] = [
   }
 ]
 
+/**
+ *
+ * @param value 原始文本
+ * @description 去除首尾空白，空值返回空字符串
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param value 账号文本
+ * @description 去空白字符并移除账号中的空格
+ */
 function normalizeAccount(value?: string | null) {
   return normalizeText(value).replace(/\s+/g, '')
 }
 
+/**
+ *
+ * @param value 金额原始值
+ * @description 解析代收货款金额并保留两位小数
+ */
 export function parseExpressCollectionAmount(value: string | number) {
   const parsed = Number(value)
 
@@ -46,6 +61,11 @@ export function parseExpressCollectionAmount(value: string | number) {
   return Math.round(parsed * 100) / 100
 }
 
+/**
+ *
+ * @param value 金额输入文本
+ * @description 过滤非法字符并规范金额输入格式
+ */
 export function normalizeExpressCollectionAmountInput(value: string) {
   const sanitized = value.replace(/[^\d.]/g, '')
   const hasDecimalPoint = sanitized.includes('.')
@@ -64,6 +84,10 @@ export function normalizeExpressCollectionAmountInput(value: string) {
   return `${integer}.${decimal}`
 }
 
+/**
+ *
+ * @description 创建空的代收货款草稿
+ */
 export function createExpressCollectionDraft(): ExpressCollectionDraft {
   return {
     type: '',
@@ -75,6 +99,11 @@ export function createExpressCollectionDraft(): ExpressCollectionDraft {
   }
 }
 
+/**
+ *
+ * @param value 代收货款草稿，可为空
+ * @description 归一草稿中的类型、金额与账户字段
+ */
 export function normalizeExpressCollectionDraft(
   value?: Partial<ExpressCollectionDraft> | null
 ): ExpressCollectionDraft {
@@ -102,6 +131,11 @@ export function normalizeExpressCollectionDraft(
   }
 }
 
+/**
+ *
+ * @param type 代收货款类型
+ * @description 按类型取选项，缺省返回第一项
+ */
 export function getExpressCollectionOption(type: ExpressCollectionType) {
   return (
     EXPRESS_COLLECTION_OPTIONS.find(option => option.value === type) ??
@@ -109,6 +143,11 @@ export function getExpressCollectionOption(type: ExpressCollectionType) {
   )
 }
 
+/**
+ *
+ * @param value 收款账号
+ * @description 账号脱敏，仅保留末四位
+ */
 export function maskExpressCollectionAccount(value?: string | null) {
   const account = normalizeAccount(value)
 
@@ -123,6 +162,11 @@ export function maskExpressCollectionAccount(value?: string | null) {
   return `**** ${account.slice(-4)}`
 }
 
+/**
+ *
+ * @param product 报价产品信息
+ * @description 从报价明细中取回代收货款费用
+ */
 export function getExpressCollectionFee(product?: ExpressProductQuote | null) {
   const detail = product?.detail?.find(item => {
     const code = normalizeText(item.priceEntryCode).toUpperCase()
@@ -136,6 +180,11 @@ export function getExpressCollectionFee(product?: ExpressProductQuote | null) {
     : null
 }
 
+/**
+ *
+ * @param collection 代收货款草稿
+ * @description 校验代收货款信息是否完整合规
+ */
 export function validateExpressCollection(collection: ExpressCollectionDraft) {
   const normalized = normalizeExpressCollectionDraft(collection)
 
@@ -164,6 +213,12 @@ export function validateExpressCollection(collection: ExpressCollectionDraft) {
   return messages
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param patch 待更新的计价字段
+ * @description 更新代收类型与金额并标记报价过期
+ */
 export function updateExpressCollectionPricing(
   draft: ExpressDraft,
   patch: Partial<Pick<ExpressCollectionDraft, 'type' | 'amount'>>
@@ -180,6 +235,12 @@ export function updateExpressCollectionPricing(
   )
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param patch 待更新的明细字段
+ * @description 更新代收账户等明细信息
+ */
 export function updateExpressCollectionDetails(
   draft: ExpressDraft,
   patch: Partial<
@@ -198,6 +259,11 @@ export function updateExpressCollectionDetails(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 清空代收货款信息，必要时标记报价过期
+ */
 export function clearExpressCollection(draft: ExpressDraft) {
   const nextCollection = {
     ...createExpressCollectionDraft(),

@@ -22,26 +22,51 @@ interface ExpressInsuranceMutation {
   type?: ExpressInsuranceType
 }
 
+/**
+ *
+ * @param value 待处理文本，可为空
+ * @description 归一文本，去除首尾空格
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param value 待校验数值
+ * @description 转成正数，非法值返回 0
+ */
 function normalizePositiveNumber(value: unknown) {
   const number = Number(value)
 
   return Number.isFinite(number) && number > 0 ? number : 0
 }
 
+/**
+ *
+ * @param value 保价金额
+ * @description 归一保价金额为整数，非法值返回 0
+ */
 export function normalizeExpressInsuranceAmount(value: unknown) {
   const number = Number(value)
 
   return Number.isFinite(number) && number > 0 ? Math.trunc(number) : 0
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 取草稿的产品 code，优先已选产品
+ */
 function getExpressInsuranceProductCode(draft: ExpressDraft) {
   return draft.selectedProduct?.omsProductCode || draft.service.transportMode
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 按货物与收寄地址生成能力标识 key
+ */
 export function createExpressInsuranceCapabilityKey(draft: ExpressDraft) {
   return [
     normalizeText(draft.goods.name),
@@ -54,6 +79,12 @@ export function createExpressInsuranceCapabilityKey(draft: ExpressDraft) {
   ].join('|')
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param labels 货物标签列表
+ * @description 依据货物标签生成保价能力
+ */
 export function createExpressInsuranceCapability(
   draft: ExpressDraft,
   labels: ExpressGoodsLabel[] = []
@@ -70,6 +101,11 @@ export function createExpressInsuranceCapability(
   }
 }
 
+/**
+ *
+ * @param value 保价能力，可为空
+ * @description 归一保价能力的各字段
+ */
 function normalizeExpressInsuranceCapability(
   value?: Partial<ExpressInsuranceCapability> | null
 ): ExpressInsuranceCapability {
@@ -81,6 +117,10 @@ function normalizeExpressInsuranceCapability(
   }
 }
 
+/**
+ *
+ * @description 创建默认保价草稿
+ */
 export function createExpressInsuranceDraft(): ExpressInsuranceDraft {
   return {
     type: 'NORMAL',
@@ -89,6 +129,13 @@ export function createExpressInsuranceDraft(): ExpressInsuranceDraft {
   }
 }
 
+/**
+ *
+ * @param value 保价类型，可为空
+ * @param productCode 产品 code
+ * @param capability 保价能力，可为空
+ * @description 归一保价类型，不支持时回落基础保
+ */
 function normalizeExpressInsuranceType(
   value: unknown,
   productCode: ExpressProductCode,
@@ -112,6 +159,12 @@ function normalizeExpressInsuranceType(
   return type
 }
 
+/**
+ *
+ * @param value 保价草稿，可为空
+ * @param productCode 产品 code
+ * @description 归一保价草稿的类型、额度与能力
+ */
 export function normalizeExpressInsuranceDraft(
   value?: Partial<ExpressInsuranceDraft> | null,
   productCode: ExpressProductCode = ''
@@ -125,6 +178,12 @@ export function normalizeExpressInsuranceDraft(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param override 覆盖的保价能力
+ * @description 取与当前草稿匹配的保价能力，过期返回 null
+ */
 export function getFreshExpressInsuranceCapability(
   draft: ExpressDraft,
   override?: ExpressInsuranceCapability | null
@@ -136,6 +195,12 @@ export function getFreshExpressInsuranceCapability(
     : null
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param capability 待校验的保价能力
+ * @description 判断保价能力是否与当前草稿一致
+ */
 export function isExpressInsuranceCapabilityCurrent(
   draft: ExpressDraft,
   capability: ExpressInsuranceCapability
@@ -152,6 +217,12 @@ export function isExpressInsuranceCapabilityCurrent(
   )
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param capability 保价能力，可为空
+ * @description 取保价额度，含省心保与必保上限
+ */
 export function getExpressInsuranceLimit(
   draft: ExpressDraft,
   capability?: ExpressInsuranceCapability | null
@@ -175,6 +246,12 @@ export function getExpressInsuranceLimit(
   return draft.insurance.limit || EXPRESS_INSURANCE_DEFAULT_LIMIT
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param capability 保价能力，可为空
+ * @description 取当前生效的保价类型
+ */
 export function getExpressInsuranceType(
   draft: ExpressDraft,
   capability?: ExpressInsuranceCapability | null
@@ -188,6 +265,12 @@ export function getExpressInsuranceType(
   )
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param capability 保价能力，可为空
+ * @description 取生效保价金额，含赠送基础保障
+ */
 export function getExpressInsuranceEffectiveAmount(
   draft: ExpressDraft,
   capability?: ExpressInsuranceCapability | null
@@ -211,6 +294,12 @@ export function getExpressInsuranceEffectiveAmount(
   return policy.free ? EXPRESS_INSURANCE_FREE_AMOUNT : 0
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param capability 保价能力，可为空
+ * @description 校验保价金额与类型，返回提示语
+ */
 export function validateExpressInsurance(
   draft: ExpressDraft,
   capability?: ExpressInsuranceCapability | null
@@ -258,6 +347,12 @@ export function validateExpressInsurance(
   return messages
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param capability 保价能力，可为空
+ * @description 取报价用的保价子类型
+ */
 export function getExpressInsurancePriceSubtype(
   draft: ExpressDraft,
   capability?: ExpressInsuranceCapability | null
@@ -278,6 +373,12 @@ export function getExpressInsurancePriceSubtype(
   return 'QEB'
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param capability 保价能力，可为空
+ * @description 组装报价接口的保价字段
+ */
 export function createExpressInsuranceQuoteFields(
   draft: ExpressDraft,
   capability?: ExpressInsuranceCapability | null
@@ -312,6 +413,12 @@ export function createExpressInsuranceQuoteFields(
   return fields
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param capability 保价能力，可为空
+ * @description 组装下单接口的保价金额与扩展字段
+ */
 export function createExpressInsuranceOrderFields(
   draft: ExpressDraft,
   capability?: ExpressInsuranceCapability | null
@@ -353,6 +460,13 @@ export function createExpressInsuranceOrderFields(
   return { insuredAmount, orderExtendFields }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param capability 保价能力
+ * @param limit 保价额度，可为空
+ * @description 应用保价能力并归一失效的保价金额
+ */
 export function applyExpressInsuranceCapability(
   draft: ExpressDraft,
   capability: ExpressInsuranceCapability,
@@ -385,6 +499,12 @@ export function applyExpressInsuranceCapability(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param options 可选配置，clearLimit 清空额度
+ * @description 重置保价能力，可选清空额度
+ */
 export function resetExpressInsuranceCapability(
   draft: ExpressDraft,
   options: { clearLimit?: boolean } = {}
@@ -399,6 +519,13 @@ export function resetExpressInsuranceCapability(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param patch 待更新的保价字段
+ * @param reason 报价过期原因
+ * @description 更新保价，有变化时清空选品并标记报价过期
+ */
 export function updateExpressInsurance(
   draft: ExpressDraft,
   patch: ExpressInsuranceMutation,

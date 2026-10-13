@@ -32,6 +32,11 @@ import type {
   OrderStubView
 } from './types'
 
+/**
+ *
+ * @param order 订单信息
+ * @description 生成运单号或订单号展示文案
+ */
 export function getOrderIdentityText(order: {
   orderNumber?: string | null
   waybillNumber?: string | null
@@ -47,6 +52,11 @@ export function getOrderIdentityText(order: {
   return '暂无单号'
 }
 
+/**
+ *
+ * @param order 订单信息
+ * @description 取可复制的运单号或订单号
+ */
 export function getOrderCopyNumber(order: {
   orderNumber?: string | null
   waybillNumber?: string | null
@@ -54,6 +64,11 @@ export function getOrderCopyNumber(order: {
   return order.waybillNumber || order.orderNumber || ''
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 拼接寄件人完整地址
+ */
 export function getOrderSenderAddress(order: OrderDetail) {
   return getFullAddress([
     order.contactProvince,
@@ -64,6 +79,11 @@ export function getOrderSenderAddress(order: OrderDetail) {
   ])
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 拼接收件人完整地址
+ */
 export function getOrderReceiverAddress(order: OrderDetail) {
   return getFullAddress([
     order.receiverProvince,
@@ -74,10 +94,20 @@ export function getOrderReceiverAddress(order: OrderDetail) {
   ])
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 按订单类型返回存根标题
+ */
 function getOrderStubTitle(order: OrderDetail) {
   return isWaitAllotOrder(order) ? '订单详情' : '电子存根'
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 取订单状态展示文案
+ */
 function getOrderStubStatus(order: OrderDetail) {
   const orderClass = getOrderClass(order)
 
@@ -89,6 +119,11 @@ function getOrderStubStatus(order: OrderDetail) {
   )
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 取订单号并去掉下划线后缀
+ */
 function getOrderStubOrderNumber(order: OrderDetail) {
   const orderNumber = order.orderNumber || ''
 
@@ -99,6 +134,12 @@ function getOrderStubOrderNumber(order: OrderDetail) {
   return orderNumber
 }
 
+/**
+ *
+ * @param role 寄收角色
+ * @param order 订单详情
+ * @description 组装寄件人或收件人信息
+ */
 function getOrderStubParty(
   role: OrderStubPartyRole,
   order: OrderDetail
@@ -125,6 +166,13 @@ function getOrderStubParty(
   }
 }
 
+/**
+ *
+ * @param label 字段名称
+ * @param value 字段值
+ * @param options 复制与强调配置
+ * @description 创建存根字段
+ */
 function createOrderStubField(
   label: string,
   value: unknown,
@@ -137,6 +185,13 @@ function createOrderStubField(
   }
 }
 
+/**
+ *
+ * @param label 字段名称
+ * @param value 字段值
+ * @param options 复制与强调配置
+ * @description 创建存根字段，无展示值返回 null
+ */
 function createOptionalOrderStubField(
   label: string,
   value: unknown,
@@ -149,6 +204,12 @@ function createOptionalOrderStubField(
   return createOrderStubField(label, value, options)
 }
 
+/**
+ *
+ * @param title 分组标题
+ * @param fields 字段列表
+ * @description 创建存根分组，无可见字段返回 null
+ */
 function createOrderStubSection(
   title: string,
   fields: Array<OrderStubFieldView | null>
@@ -165,12 +226,23 @@ function createOrderStubSection(
     : null
 }
 
+/**
+ *
+ * @param sections 分组列表
+ * @description 过滤掉空分组
+ */
 function compactOrderStubSections(
   sections: Array<OrderStubSectionView | null>
 ) {
   return sections.filter((item): item is OrderStubSectionView => !!item)
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param role 用户角色
+ * @description 创建电子存根路由
+ */
 function createOrderStubRoute(order: OrderDetail, role?: OrderRole) {
   return createRouteUrl(APP_ROUTES.orderStub, {
     orderNumber: order.orderNumber || '',
@@ -180,6 +252,12 @@ function createOrderStubRoute(order: OrderDetail, role?: OrderRole) {
   })
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @param options 存根入口配置
+ * @description 创建电子存根入口，条件不满足置为不可用
+ */
 export function createOrderStubEntry(
   order: OrderDetail,
   options: OrderDetailActionOptions = {}
@@ -212,6 +290,11 @@ export function createOrderStubEntry(
   }
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 创建货物信息分组
+ */
 function createOrderStubBasicSection(order: OrderDetail) {
   const chargeWeight = getOrderNumberField(order, [
     'orderChargeWeight',
@@ -251,6 +334,11 @@ function createOrderStubBasicSection(order: OrderDetail) {
   ])
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 创建费用信息分组
+ */
 function createOrderStubChargeSection(order: OrderDetail) {
   const serviceChargeList = Array.isArray(order.serviceChargeList)
     ? order.serviceChargeList
@@ -295,6 +383,11 @@ function createOrderStubChargeSection(order: OrderDetail) {
   ])
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 创建订单信息分组
+ */
 function createOrderStubOrderSection(order: OrderDetail) {
   const orderNumber = getOrderStubOrderNumber(order)
   const waybillNumber = getDetailWaybillNumber(order)
@@ -322,6 +415,11 @@ function createOrderStubOrderSection(order: OrderDetail) {
   ])
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 创建存根提示文案列表
+ */
 function createOrderStubNotices(order: OrderDetail): OrderStubNoticeView[] {
   const notices: OrderStubNoticeView[] = []
 
@@ -348,6 +446,11 @@ function createOrderStubNotices(order: OrderDetail): OrderStubNoticeView[] {
   return notices
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 解析货物尺寸展示数据
+ */
 function createOrderStubSizeView(order: OrderDetail) {
   const rawSize = getOrderTextField(order, ['goodsSize'])
   const parts = rawSize
@@ -376,6 +479,11 @@ function createOrderStubSizeView(order: OrderDetail) {
   }
 }
 
+/**
+ *
+ * @param order 订单详情
+ * @description 组装电子存根视图
+ */
 export function createOrderStubView(order: OrderDetail): OrderStubView {
   const waybillNumber = getDetailWaybillNumber(order)
   const orderNumber = getOrderStubOrderNumber(order)

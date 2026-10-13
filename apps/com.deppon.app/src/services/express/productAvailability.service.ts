@@ -21,6 +21,11 @@ import type {
   ExpressProductUpgradeResult
 } from './types'
 
+/**
+ *
+ * @param result 接口聚合结果
+ * @description 取成功的接口响应，否则返回 null
+ */
 function getSuccessfulResponse<TResult>(
   result: PromiseSettledResult<DepponResponse<TResult> | null>
 ) {
@@ -31,6 +36,11 @@ function getSuccessfulResponse<TResult>(
   return result.value
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 查询并归一客户能力，失败时降级
+ */
 async function resolveQuoteCustomerCapability(draft: ExpressDraft) {
   if (!getCurrentEcoToken()) {
     return resolveExpressProductCustomerCapability(draft)
@@ -48,6 +58,12 @@ async function resolveQuoteCustomerCapability(draft: ExpressDraft) {
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param customer 客户能力
+ * @description 创建默认产品可用性
+ */
 function createDefaultAvailability(
   draft: ExpressDraft,
   customer: ExpressProductCustomerCapability
@@ -55,6 +71,11 @@ function createDefaultAvailability(
   return createExpressProductAvailability(draft, customer)
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 并发查询产品网点、切换、升级与货物标签
+ */
 export async function queryExpressProductAvailability(draft: ExpressDraft) {
   const customer = await resolveQuoteCustomerCapability(draft)
   const productSwitchEnabled = supportsExpressProductSwitch(draft)

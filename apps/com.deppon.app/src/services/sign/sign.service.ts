@@ -5,10 +5,20 @@ import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type { SignCodeView, UserSignCodeRaw } from './types'
 
+/**
+ *
+ * @param value 待处理文本，可为空
+ * @description 归一文本，去首尾空白
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param realName 签收人姓名
+ * @description 校验签收人姓名，返回校验结果
+ */
 function validateRealName(realName: string) {
   const value = normalizeText(realName)
 
@@ -35,6 +45,11 @@ function validateRealName(realName: string) {
   }
 }
 
+/**
+ *
+ * @param signCode 签收码
+ * @description 拼签收码分享链接，空值返回空字符串
+ */
 export function createSignCodePayload(signCode: string) {
   const normalizedCode = normalizeText(signCode)
 
@@ -43,6 +58,12 @@ export function createSignCodePayload(signCode: string) {
     : ''
 }
 
+/**
+ *
+ * @param raw 签收码原始数据，可为空
+ * @param hasRealName 是否已实名
+ * @description 转签收码展示数据
+ */
 function toSignCodeView(
   raw?: UserSignCodeRaw | null,
   hasRealName = true
@@ -66,6 +87,10 @@ function toSignCodeView(
 export const signService = {
   validateRealName,
 
+  /**
+   *
+   * @description 查询签收码，未实名时返回空态
+   */
   async querySignCode(): Promise<DepponResponse<SignCodeView>> {
     const existsResponse = await signApi.existsUserRealName()
 
@@ -92,6 +117,11 @@ export const signService = {
     }
   },
 
+  /**
+   *
+   * @param realName 签收人姓名
+   * @description 校验并保存实名信息
+   */
   async saveRealName(realName: string): Promise<DepponResponse<boolean>> {
     const validation = validateRealName(realName)
 

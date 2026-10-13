@@ -28,15 +28,31 @@ type WarehouseScreeningInput = {
   acknowledged?: unknown
 }
 
+/**
+ *
+ * @param value 待处理的文本
+ * @description 归一文本，非字符串返回空
+ */
 function normalizeText(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
+/**
+ *
+ * @param value 待转换的值
+ * @param fallback 兜底值
+ * @description 归一数字，非法返回兜底值
+ */
 function normalizeNumber(value: unknown, fallback = 0) {
   const result = Number(value)
   return Number.isFinite(result) ? result : fallback
 }
 
+/**
+ *
+ * @param value 仓型
+ * @description 归一仓型，非法返回空字符串
+ */
 export function normalizeExpressWarehouseType(
   value: unknown
 ): ExpressWarehouseType {
@@ -44,12 +60,22 @@ export function normalizeExpressWarehouseType(
   return /^[1-6]$/.test(normalized) ? (normalized as ExpressWarehouseType) : ''
 }
 
+/**
+ *
+ * @param value 进仓方式
+ * @description 归一进仓方式，非法返回空字符串
+ */
 export function normalizeExpressWarehouseWay(
   value: unknown
 ): ExpressWarehouseWay {
   return value === 'APSF' || value === 'AGXSF' ? value : ''
 }
 
+/**
+ *
+ * @param value 筛单类型
+ * @description 归一筛单类型，非法返回 0
+ */
 export function normalizeExpressWarehouseScreeningType(
   value: unknown
 ): ExpressWarehouseScreeningType {
@@ -59,6 +85,10 @@ export function normalizeExpressWarehouseScreeningType(
     : 0
 }
 
+/**
+ *
+ * @description 创建空的筛单草稿
+ */
 export function createExpressWarehouseScreeningDraft(): WarehouseScreening {
   return {
     inputKey: '',
@@ -70,6 +100,11 @@ export function createExpressWarehouseScreeningDraft(): WarehouseScreening {
   }
 }
 
+/**
+ *
+ * @param value 筛单信息，可为空
+ * @description 归一筛单信息
+ */
 export function normalizeExpressWarehouseScreening(
   value?: WarehouseScreeningInput | null
 ): ExpressWarehouseScreening {
@@ -83,6 +118,10 @@ export function normalizeExpressWarehouseScreening(
   }
 }
 
+/**
+ *
+ * @description 创建空的送货进仓草稿
+ */
 export function createExpressWarehouseDraft(): ExpressWarehouseDraft {
   return {
     enabled: false,
@@ -98,6 +137,11 @@ export function createExpressWarehouseDraft(): ExpressWarehouseDraft {
   }
 }
 
+/**
+ *
+ * @param value 送货进仓草稿，可为空
+ * @description 归一送货进仓草稿
+ */
 export function normalizeExpressWarehouseDraft(
   value?: WarehouseDraftInput | null
 ): ExpressWarehouseDraft {
@@ -123,6 +167,11 @@ export function normalizeExpressWarehouseDraft(
   }
 }
 
+/**
+ *
+ * @param contact 联系人信息
+ * @description 归一联系人信息为筛单入参
+ */
 function getContactInput(contact: ExpressDraft['sender']) {
   if (!contact) {
     return null
@@ -139,16 +188,31 @@ function getContactInput(contact: ExpressDraft['sender']) {
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 取当前产品 code
+ */
 function getProductCode(draft: ExpressDraft) {
   return draft.selectedProduct?.omsProductCode || draft.service.transportMode
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 取扫码带入的客户 code
+ */
 function getCustomerCode(draft: ExpressDraft) {
   return draft.scanContext?.role === 'shipperNumber'
     ? normalizeText(draft.scanContext.value)
     : ''
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 生成筛单输入 key
+ */
 export function createExpressWarehouseInputKey(draft: ExpressDraft) {
   const customerCode = getCustomerCode(draft)
 
@@ -165,6 +229,12 @@ export function createExpressWarehouseInputKey(draft: ExpressDraft) {
   })
 }
 
+/**
+ *
+ * @param current 当前筛单信息
+ * @param next 新的筛单信息
+ * @description 判断两次筛单输入与结果是否一致
+ */
 export function isSameExpressWarehouseScreeningProof(
   current: ExpressWarehouseScreening,
   next: ExpressWarehouseScreening
@@ -177,6 +247,12 @@ export function isSameExpressWarehouseScreeningProof(
   )
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param screening 筛单信息
+ * @description 判断是否满足自动选择送货进仓
+ */
 export function shouldAutoSelectExpressWarehouse(
   draft: ExpressDraft,
   screening: Pick<ExpressWarehouseScreening, 'type'>
@@ -193,6 +269,12 @@ export function shouldAutoSelectExpressWarehouse(
   )
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param response 筛单响应，可为空
+ * @description 由筛单结果生成筛单信息
+ */
 export function createExpressWarehouseScreening(
   draft: ExpressDraft,
   response?: ExpressFilterResponse | null
@@ -221,6 +303,11 @@ export function createExpressWarehouseScreening(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 判断筛单结果是否仍对应当前输入
+ */
 export function isExpressWarehouseScreeningCurrent(draft: ExpressDraft) {
   const screening = normalizeExpressWarehouseDraft(draft.warehouse).screening
   return (
@@ -229,6 +316,12 @@ export function isExpressWarehouseScreeningCurrent(draft: ExpressDraft) {
   )
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param latest 最新筛单结果
+ * @description 提交前校验筛单结果是否有效
+ */
 export function validateExpressWarehouseScreeningForSubmit(
   draft: ExpressDraft,
   latest: ExpressWarehouseScreening
@@ -259,6 +352,12 @@ export function validateExpressWarehouseScreeningForSubmit(
   return []
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param options 校验选项，可要求筛单
+ * @description 校验送货进仓，返回错误提示
+ */
 export function validateExpressWarehouse(
   draft: ExpressDraft,
   options: { requireScreening?: boolean } = {}
@@ -299,6 +398,12 @@ export function validateExpressWarehouse(
   return messages
 }
 
+/**
+ *
+ * @param current 当前送货进仓草稿
+ * @param next 新的送货进仓草稿
+ * @description 判断影响报价的字段是否变化
+ */
 function hasQuoteFieldChanged(
   current: ExpressWarehouseDraft,
   next: ExpressWarehouseDraft
@@ -319,6 +424,13 @@ function hasQuoteFieldChanged(
   )
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param patch 待更新的送货进仓字段
+ * @param options 更新选项，可标记已确认
+ * @description 更新送货进仓草稿并按需清空报价
+ */
 export function updateExpressWarehouse(
   draft: ExpressDraft,
   patch: Partial<ExpressWarehouseDraft>,
@@ -360,10 +472,21 @@ export function updateExpressWarehouse(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 关闭送货进仓
+ */
 export function clearExpressWarehouse(draft: ExpressDraft) {
   return updateExpressWarehouse(draft, { enabled: false })
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param value 筛单结果
+ * @description 应用筛单结果并同步草稿
+ */
 export function applyExpressWarehouseScreening(
   draft: ExpressDraft,
   value: ExpressWarehouseScreening
@@ -404,6 +527,12 @@ export function applyExpressWarehouseScreening(
   }
 }
 
+/**
+ *
+ * @param value 送货进仓草稿
+ * @param options 重置选项，可清空服务信息
+ * @description 重置送货进仓输入，保留筛单标记
+ */
 export function resetExpressWarehouseInput(
   value: ExpressWarehouseDraft,
   options: { clearService?: boolean } = {}

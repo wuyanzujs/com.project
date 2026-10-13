@@ -22,6 +22,11 @@ import type {
 
 const WAREHOUSE_WEB_PATH = APP_WEB_TARGETS.EXPRESS_WAREHOUSE.url
 
+/**
+ *
+ * @param value 筛单结果
+ * @description 判断筛单结果 type 是否合法
+ */
 function hasValidScreeningResult(
   value: unknown
 ): value is ExpressFilterResponse {
@@ -40,10 +45,21 @@ function hasValidScreeningResult(
   )
 }
 
+/**
+ *
+ * @param error 捕获的错误
+ * @param fallback 兜底文案
+ * @description 取错误信息，兜底默认文案
+ */
 function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error && error.message ? error.message : fallback
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 查询送货进仓筛单结果
+ */
 export async function queryExpressWarehouseScreening(
   draft: ExpressDraft
 ): Promise<DepponResponse<ExpressWarehouseScreening>> {
@@ -73,6 +89,11 @@ export async function queryExpressWarehouseScreening(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 暂存送货进仓信息并返回跳转 URI
+ */
 export async function stageExpressWarehouse(
   draft: ExpressDraft
 ): Promise<DepponResponse<ExpressWarehouseStageResult>> {

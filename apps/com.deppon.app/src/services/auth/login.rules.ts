@@ -26,6 +26,11 @@ const EMPTY_REGISTER_RECORD: Omit<
   appId: ''
 }
 
+/**
+ *
+ * @param redirectUrl 返回页面地址
+ * @description 归一返回页面路径，非法路径返回空
+ */
 function normalizeRegisterPage(redirectUrl?: string) {
   const pathname = (redirectUrl ?? '').split('?')[0].trim()
 
@@ -46,6 +51,13 @@ export function createAppLoginRegisterRecord(
   }
 }
 
+/**
+ *
+ * @param mobile 手机号
+ * @param smsCode 短信验证码
+ * @param redirectUrl 返回页面地址，可选
+ * @description 组装 App 短信登录请求参数
+ */
 export function createAppSmsLoginRequest(
   mobile: string,
   smsCode: string,

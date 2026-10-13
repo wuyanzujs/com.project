@@ -52,10 +52,19 @@ export const EXPRESS_DELIVERY_PREFERENCE_OPTIONS: DeliveryPreferenceOptions = [
   }
 ]
 
+/**
+ *
+ * @param value 原始文本
+ * @description 去除首尾空白，空值返回空字符串
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @description 创建空的派送偏好草稿
+ */
 export function createExpressDeliveryPreferenceDraft(): PreferenceDraft {
   return {
     type: '',
@@ -65,6 +74,11 @@ export function createExpressDeliveryPreferenceDraft(): PreferenceDraft {
   }
 }
 
+/**
+ *
+ * @param value 派送偏好草稿，可为空
+ * @description 按派送类型归一各字段并清理无关数据
+ */
 export function normalizeExpressDeliveryPreferenceDraft(
   value?: Partial<ExpressDeliveryPreferenceDraft> | null
 ): ExpressDeliveryPreferenceDraft {
@@ -92,6 +106,11 @@ export function normalizeExpressDeliveryPreferenceDraft(
   }
 }
 
+/**
+ *
+ * @param productCode 产品 code
+ * @description 判断产品是否支持定时派送
+ */
 export function isExpressScheduledDeliveryProductSupported(
   productCode?: string | null
 ) {
@@ -100,6 +119,11 @@ export function isExpressScheduledDeliveryProductSupported(
   return !!code && code !== 'DCZP' && code !== 'TKDR'
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 生成定时派送可用性校验 key
+ */
 export function createExpressDeliveryAvailabilityKey(draft: ExpressDraft) {
   const consignee = draft.consignee
   const product = draft.selectedProduct
@@ -124,6 +148,11 @@ export function createExpressDeliveryAvailabilityKey(draft: ExpressDraft) {
     .join('|')
 }
 
+/**
+ *
+ * @param type 派送偏好类型
+ * @description 按类型取选项，缺省返回第一项
+ */
 export function getExpressDeliveryPreferenceOption(
   type: ExpressDeliveryPreferenceType
 ) {
@@ -133,6 +162,11 @@ export function getExpressDeliveryPreferenceOption(
   )
 }
 
+/**
+ *
+ * @param preference 派送偏好草稿
+ * @description 生成派送偏好的展示摘要文案
+ */
 export function getExpressDeliveryPreferenceSummary(
   preference: ExpressDeliveryPreferenceDraft
 ) {
@@ -151,6 +185,11 @@ export function getExpressDeliveryPreferenceSummary(
   return getExpressDeliveryPreferenceOption(normalized.type).label
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 构建定时派送预约请求参数
+ */
 export function buildExpressDeliveryAppointmentRequest(
   draft: ExpressDraft
 ): ExpressDeliveryAppointmentRequest {
@@ -168,6 +207,11 @@ export function buildExpressDeliveryAppointmentRequest(
   }
 }
 
+/**
+ *
+ * @param preference 派送偏好草稿
+ * @description 生成报价所需的派送附加字段
+ */
 export function createExpressDeliveryQuoteFields(
   preference: ExpressDeliveryPreferenceDraft
 ) {
@@ -189,6 +233,11 @@ export function createExpressDeliveryQuoteFields(
   }
 }
 
+/**
+ *
+ * @param preference 派送偏好草稿
+ * @description 生成下单所需的派送偏好字段
+ */
 export function createExpressDeliveryOrderFields(
   preference: ExpressDeliveryPreferenceDraft
 ): ExpressDeliveryOrderFields {
@@ -223,6 +272,12 @@ export function createExpressDeliveryOrderFields(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param options 校验选项，可控是否要求已获取产品
+ * @description 校验派送偏好是否合法可用
+ */
 export function validateExpressDeliveryPreference(
   draft: ExpressDraft,
   options: { requireProduct?: boolean; now?: Date } = {}
@@ -279,6 +334,12 @@ export function validateExpressDeliveryPreference(
   )
 }
 
+/**
+ *
+ * @param left 左侧派送偏好
+ * @param right 右侧派送偏好
+ * @description 判断两个派送偏好是否一致
+ */
 function isSamePreference(
   left: ExpressDeliveryPreferenceDraft,
   right: ExpressDeliveryPreferenceDraft
@@ -291,6 +352,12 @@ function isSamePreference(
   )
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param patch 待更新的派送偏好字段
+ * @description 更新派送偏好，有变化时清空选品并标记报价过期
+ */
 export function updateExpressDeliveryPreference(
   draft: ExpressDraft,
   patch: Partial<ExpressDeliveryPreferenceDraft>
@@ -315,6 +382,11 @@ export function updateExpressDeliveryPreference(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 清空派送偏好
+ */
 export function clearExpressDeliveryPreference(draft: ExpressDraft) {
   return updateExpressDeliveryPreference(
     draft,

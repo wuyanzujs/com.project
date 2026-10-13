@@ -19,16 +19,32 @@ const ROUTE_DISCOUNT_MARKET_CODE = 'XLYHF'
 
 export const EXPRESS_COUPON_AUTO_QUERY_DELAY_MS = 300
 
+/**
+ *
+ * @param value 原始值
+ * @description 转字符串并去除首尾空白
+ */
 function normalizeText(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
+/**
+ *
+ * @param value 金额原始值
+ * @description 转金额，非法或负数视为 0
+ */
 function toAmount(value: unknown) {
   const amount = Number(value)
 
   return Number.isFinite(amount) ? Math.max(0, amount) : 0
 }
 
+/**
+ *
+ * @param product 报价产品信息
+ * @param feeType 费用类型
+ * @description 按费用类型从报价明细中取费用
+ */
 function getDetailFee(
   product: ExpressProductQuote,
   feeType: ExpressCouponFeeType
@@ -41,6 +57,12 @@ function getDetailFee(
   return toAmount(detail?.caculateFee)
 }
 
+/**
+ *
+ * @param product 报价产品信息
+ * @param predicate 市场 code 匹配函数
+ * @description 按条件取市场折扣金额
+ */
 function getDiscountFee(
   product: ExpressProductQuote,
   predicate: (marketCode: string) => boolean
@@ -52,12 +74,23 @@ function getDiscountFee(
   return toAmount(discount?.reduceFee)
 }
 
+/**
+ *
+ * @param value 优惠类型 code
+ * @description 归一优惠类型，BZ 转为 NMBZ
+ */
 function normalizeCouponRankType(value?: string) {
   const type = normalizeText(value).toUpperCase()
 
   return type === 'BZ' ? 'NMBZ' : type
 }
 
+/**
+ *
+ * @param product 报价产品信息
+ * @param feeType 费用类型
+ * @description 还原券前原始费用，含线路折扣
+ */
 export function getExpressCouponOriginalFee(
   product: ExpressProductQuote,
   feeType: ExpressCouponFeeType
@@ -83,6 +116,11 @@ export function getExpressCouponOriginalFee(
   )
 }
 
+/**
+ *
+ * @param product 报价产品信息
+ * @description 生成各费用类型的券前费用列表
+ */
 function createCouponFeeList(product: ExpressProductQuote) {
   return (Object.keys(COUPON_DETAIL_CODES) as ExpressCouponFeeType[])
     .map<ExpressCouponFee>(feeType => ({
@@ -92,12 +130,22 @@ function createCouponFeeList(product: ExpressProductQuote) {
     .filter(item => item.freight > 0)
 }
 
+/**
+ *
+ * @param parts 地址分段
+ * @description 拼接地址各段，缺项返回空串
+ */
 function createAddress(parts: string[]) {
   const normalized = parts.map(normalizeText)
 
   return normalized.every(Boolean) ? normalized.join('-') : ''
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 构建优惠券查询请求，缺关键信息返回 null
+ */
 export function createExpressCouponQueryRequest(
   draft: ExpressDraft
 ): ExpressCouponQueryRequest | null {
@@ -143,6 +191,11 @@ export function createExpressCouponQueryRequest(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 生成优惠券请求 key，用于请求去重
+ */
 export function createExpressCouponRequestKey(draft: ExpressDraft) {
   const request = createExpressCouponQueryRequest(draft)
 

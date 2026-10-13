@@ -20,22 +20,45 @@ const PAYMENT_SERVICE_FEE_FIELDS: Array<{
   { key: 'storageFee', label: '保管费' }
 ]
 
+/**
+ *
+ * @param value 原始金额
+ * @description 转为有效数字，非法返回 null
+ */
 function toFiniteAmount(value: unknown) {
   const amount = Number(value)
 
   return Number.isFinite(amount) ? amount : null
 }
 
+/**
+ *
+ * @param value 原始金额
+ * @description 转为非负支付金额，非法返回 0
+ */
 function toPaymentAmount(value: unknown) {
   const amount = toFiniteAmount(value)
 
   return amount && amount > 0 ? amount : 0
 }
 
+/**
+ *
+ * @param value 金额
+ * @description 四舍五入保留两位小数
+ */
 function roundPaymentAmount(value: number) {
   return Math.round(value * 100) / 100
 }
 
+/**
+ *
+ * @param key 费用 key
+ * @param label 费用名称
+ * @param amount 费用金额
+ * @param tone 展示色调，可选
+ * @description 构造费用行，金额非正返回 null
+ */
 function createPaymentFeeRow(
   key: string,
   label: string,
@@ -56,6 +79,11 @@ function createPaymentFeeRow(
   }
 }
 
+/**
+ *
+ * @param item 附加费用明细
+ * @description 将费用明细转为费用行
+ */
 function getChargeItemRow(item: PaymentChargeItem) {
   return createPaymentFeeRow(
     item.feeAttribute,
@@ -64,6 +92,11 @@ function getChargeItemRow(item: PaymentChargeItem) {
   )
 }
 
+/**
+ *
+ * @param item 支付费用项
+ * @description 汇总基础运费、服务费与优惠等费用行
+ */
 export function createPaymentFeeSummary(item: PaymentItem): PaymentFeeSummary {
   const serviceRows: PaymentFeeRow[] = []
   const favorFeeFromDetail =

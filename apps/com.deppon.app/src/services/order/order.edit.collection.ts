@@ -24,14 +24,29 @@ export const ORDER_EDIT_COLLECTION_OPTIONS: Array<{
   }
 ]
 
+/**
+ *
+ * @param value 原始值
+ * @description 转为去除首尾空格的文本
+ */
 function normalizeText(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
+/**
+ *
+ * @param value 收款账户
+ * @description 去除空格并归一收款账户文本
+ */
 function normalizeAccount(value: unknown) {
   return normalizeText(value).replace(/\s+/g, '')
 }
 
+/**
+ *
+ * @param value 代收货款类型
+ * @description 归一为 NORMAL 或 INTRADAY 类型
+ */
 export function normalizeOrderEditCollectionType(
   value: unknown
 ): OrderEditCollectionType {
@@ -42,6 +57,11 @@ export function normalizeOrderEditCollectionType(
     : 'NORMAL'
 }
 
+/**
+ *
+ * @param value 代收货款金额
+ * @description 解析金额并保留两位小数
+ */
 export function parseOrderEditCollectionAmount(value: unknown) {
   const amount = Number(value)
 
@@ -52,6 +72,11 @@ export function parseOrderEditCollectionAmount(value: unknown) {
   return Math.round(amount * 100) / 100
 }
 
+/**
+ *
+ * @param value 金额输入文本
+ * @description 清洗代收货款金额输入，限制位数
+ */
 export function normalizeOrderEditCollectionAmountInput(value: string) {
   const sanitized = value.replace(/[^\d.]/g, '')
   const hasDecimalPoint = sanitized.includes('.')
@@ -70,6 +95,11 @@ export function normalizeOrderEditCollectionAmountInput(value: string) {
   return integer + '.' + decimal
 }
 
+/**
+ *
+ * @param value 代收货款草稿，可为空
+ * @description 归一草稿中的类型、金额与收款账户
+ */
 export function normalizeOrderEditCollection(
   value?: Partial<OrderEditCollectionDraft> | null
 ): OrderEditCollectionDraft {
@@ -88,6 +118,11 @@ export function normalizeOrderEditCollection(
   }
 }
 
+/**
+ *
+ * @param detail 订单详情
+ * @description 从订单详情创建代收货款草稿
+ */
 export function createOrderEditCollectionDraft(
   detail: OrderDetail
 ): OrderEditCollectionDraft {
@@ -109,6 +144,12 @@ export function createOrderEditCollectionDraft(
   })
 }
 
+/**
+ *
+ * @param collection 代收货款草稿
+ * @param patch 待更新字段
+ * @description 合并补丁并归一当前草稿
+ */
 export function updateOrderEditCollection(
   collection: OrderEditCollectionDraft,
   patch: Partial<OrderEditCollectionDraft>
@@ -119,6 +160,11 @@ export function updateOrderEditCollection(
   })
 }
 
+/**
+ *
+ * @param collection 代收货款草稿
+ * @description 清空代收货款，仅保留限额
+ */
 export function clearOrderEditCollection(collection: OrderEditCollectionDraft) {
   return normalizeOrderEditCollection({
     enabled: false,
@@ -131,6 +177,11 @@ export function clearOrderEditCollection(collection: OrderEditCollectionDraft) {
   })
 }
 
+/**
+ *
+ * @param collection 代收货款草稿
+ * @description 生成代收货款校验提示
+ */
 export function validateOrderEditCollection(
   collection: OrderEditCollectionDraft
 ) {
@@ -166,6 +217,11 @@ export type OrderEditCollectionRequestFields = Required<
   >
 >
 
+/**
+ *
+ * @param collection 代收货款草稿
+ * @description 生成订单修改接口的代收货款字段
+ */
 export function createOrderEditCollectionRequestFields(
   collection: OrderEditCollectionDraft
 ): OrderEditCollectionRequestFields {
@@ -186,6 +242,12 @@ export function createOrderEditCollectionRequestFields(
       }
 }
 
+/**
+ *
+ * @param collection 当前草稿
+ * @param origin 原始草稿
+ * @description 判断代收货款是否发生变化
+ */
 export function isOrderEditCollectionChanged(
   collection: OrderEditCollectionDraft,
   origin: OrderEditCollectionDraft
@@ -201,6 +263,11 @@ export function isOrderEditCollectionChanged(
   )
 }
 
+/**
+ *
+ * @param value 收款账户
+ * @description 掩码展示代收货款收款账户
+ */
 export function maskOrderEditCollectionAccount(value: unknown) {
   const account = normalizeAccount(value)
 

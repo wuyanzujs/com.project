@@ -11,6 +11,11 @@ import type {
   ExpressUnpackageLtlInfo
 } from './types'
 
+/**
+ *
+ * @param value 包装草稿
+ * @description 生成报价用的包装信息列表
+ */
 export function createExpressQuotePackageInfoList(
   value: ExpressPackagingDraft
 ): ExpressPackageInfo[] | undefined {
@@ -29,6 +34,11 @@ export function createExpressQuotePackageInfoList(
   ]
 }
 
+/**
+ *
+ * @param value 包装草稿
+ * @description 生成下单用的包装信息列表
+ */
 export function createExpressOrderPackageInfoList(
   value: ExpressPackagingDraft
 ): ExpressPackageInfo[] | undefined {
@@ -60,6 +70,11 @@ export function createExpressOrderPackageInfoList(
   return packageInfoList.length > 0 ? packageInfoList : undefined
 }
 
+/**
+ *
+ * @param value 包装草稿
+ * @description 取包装对应的零担类型
+ */
 export function getExpressPackageLtlType(
   value: ExpressPackagingDraft
 ): ExpressPackageLtlType {
@@ -78,6 +93,11 @@ export function getExpressPackageLtlType(
   return hasWoodenPackaging ? 'WOOD_PACKAGE' : ''
 }
 
+/**
+ *
+ * @param value 包装草稿
+ * @description 生成拆包装数量信息
+ */
 export function createExpressUnpackingNumbers(
   value: ExpressPackagingDraft
 ): ExpressUnpackageLtlInfo {
@@ -97,12 +117,22 @@ export function createExpressUnpackingNumbers(
   return result
 }
 
+/**
+ *
+ * @param value 包装草稿
+ * @description 生成下单用的拆包装数量信息
+ */
 export function createExpressOrderUnpackageLtlInfo(
   value: ExpressPackagingDraft
 ) {
   return createExpressUnpackingNumbers(value)
 }
 
+/**
+ *
+ * @param value 包装草稿
+ * @description 拼接木包装名称文案
+ */
 export function createExpressOrderPackingText(value: ExpressPackagingDraft) {
   const packaging = normalizeExpressPackagingDraft(value)
   const woodenCodes = new Set(packaging.woodenCodes)

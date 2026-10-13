@@ -82,14 +82,29 @@ const DEFAULT_HOT_GOODS: GoodsSuggestionView[] = [
   }
 ]
 
+/**
+ *
+ * @param value 文本，可为空
+ * @description 去除首尾空白
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param item 品名原始数据
+ * @description 拼接一级与二级分类
+ */
 function getGoodsCategory(item: ExpressGoodsItem) {
   return [item.firstCategory, item.secondCategory].filter(Boolean).join(' / ')
 }
 
+/**
+ *
+ * @param item 品名原始数据
+ * @description 品名原始数据转推荐项结构
+ */
 function normalizeSuggestion(item: ExpressGoodsItem): GoodsSuggestionView {
   return {
     name: normalizeText(item.productKeyWord),
@@ -101,6 +116,11 @@ function normalizeSuggestion(item: ExpressGoodsItem): GoodsSuggestionView {
   }
 }
 
+/**
+ *
+ * @param suggestions 品名推荐列表
+ * @description 按名称去重推荐项
+ */
 function dedupeSuggestions(
   suggestions: GoodsSuggestionView[]
 ): GoodsSuggestionView[] {
@@ -118,6 +138,11 @@ function dedupeSuggestions(
   })
 }
 
+/**
+ *
+ * @param result 货物校验结果
+ * @description 校验结果转历史记录项
+ */
 function toHistoryItem(result: GoodsCheckResult): GoodsHistoryItem {
   return {
     goodsName: result.goodsName,
@@ -128,10 +153,19 @@ function toHistoryItem(result: GoodsCheckResult): GoodsHistoryItem {
   }
 }
 
+/**
+ *
+ * @description 读取缓存的货物查询历史
+ */
 function getHistory() {
   return dpCache.get<GoodsHistoryItem[]>(CACHE_KEYS.goodsQueryHistory) ?? []
 }
 
+/**
+ *
+ * @param result 货物校验结果
+ * @description 保存查询历史并限制保留条数
+ */
 function saveHistoryItem(result: GoodsCheckResult) {
   const current = getHistory()
   const next = [
@@ -148,18 +182,36 @@ function saveHistoryItem(result: GoodsCheckResult) {
 }
 
 export const goodsQueryService = {
+  /**
+   *
+   * @description 返回默认热门品名
+   */
   getHotGoods() {
     return DEFAULT_HOT_GOODS
   },
 
+  /**
+   *
+   * @description 返回货物查询历史
+   */
   getHistory() {
     return getHistory()
   },
 
+  /**
+   *
+   * @description 清空货物查询历史
+   */
   clearHistory() {
     return dpCache.remove(CACHE_KEYS.goodsQueryHistory)
   },
 
+  /**
+   *
+   * @param keyword 搜索关键词
+   * @param pageSize 分页大小
+   * @description 搜索品名推荐并去重
+   */
   async searchGoods(
     keyword: string,
     pageSize = GOODS_SEARCH_PAGE_SIZE
@@ -186,6 +238,11 @@ export const goodsQueryService = {
     }
   },
 
+  /**
+   *
+   * @param input 货物校验入参
+   * @description 校验货物名称并记录查询历史
+   */
   async checkGoods(
     input: GoodsCheckInput
   ): Promise<DepponResponse<GoodsCheckResult>> {

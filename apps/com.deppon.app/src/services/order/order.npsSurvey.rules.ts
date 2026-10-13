@@ -10,6 +10,11 @@ import type {
 export const ORDER_NPS_SCORE_VALUES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 export const ORDER_NPS_CONTENT_MAX_LENGTH = 100
 
+/**
+ *
+ * @param score 初始评分
+ * @description 创建 NPS 问卷草稿
+ */
 export function createOrderNpsDraft(
   score: number | null = null
 ): OrderNpsDraft {
@@ -21,6 +26,11 @@ export function createOrderNpsDraft(
   }
 }
 
+/**
+ *
+ * @param score NPS 评分
+ * @description 按评分返回贬损、中立或推荐分组
+ */
 function getScoreGroup(score: number | null) {
   if (score === null || score < 0 || score > 10) {
     return ''
@@ -33,6 +43,12 @@ function getScoreGroup(score: number | null) {
   return score <= 8 ? 'PASSIVE' : 'PROMOTER'
 }
 
+/**
+ *
+ * @param draft NPS 草稿
+ * @param score NPS 评分
+ * @description 更新评分，跨分组时清空已选原因
+ */
 export function updateOrderNpsScore(draft: OrderNpsDraft, score: number) {
   if (!Number.isInteger(score) || score < 0 || score > 10) {
     return draft
@@ -47,6 +63,12 @@ export function updateOrderNpsScore(draft: OrderNpsDraft, score: number) {
   }
 }
 
+/**
+ *
+ * @param draft NPS 草稿
+ * @param category 问题分类
+ * @description 切换分类并清空已选原因
+ */
 export function updateOrderNpsCategory(draft: OrderNpsDraft, category: string) {
   const catalog = getOrderNpsCatalog(draft.score)
 
@@ -61,6 +83,12 @@ export function updateOrderNpsCategory(draft: OrderNpsDraft, category: string) {
   }
 }
 
+/**
+ *
+ * @param draft NPS 草稿
+ * @param reason 推荐或不推荐原因
+ * @description 切换原因选中状态，受最大可选数限制
+ */
 export function toggleOrderNpsReason(draft: OrderNpsDraft, reason: string) {
   const catalog = getOrderNpsCatalog(draft.score)
   const category = catalog?.options.find(
@@ -88,6 +116,12 @@ export function toggleOrderNpsReason(draft: OrderNpsDraft, reason: string) {
   }
 }
 
+/**
+ *
+ * @param draft NPS 草稿
+ * @param content 补充说明
+ * @description 更新补充说明并按长度上限截断
+ */
 export function updateOrderNpsContent(draft: OrderNpsDraft, content: string) {
   return {
     ...draft,
@@ -95,6 +129,11 @@ export function updateOrderNpsContent(draft: OrderNpsDraft, content: string) {
   }
 }
 
+/**
+ *
+ * @param draft NPS 草稿
+ * @description 组装级联标签内容，无有效分类返回 undefined
+ */
 export function createOrderNpsLabelContent(
   draft: OrderNpsDraft
 ): OrderNpsLabelContent | undefined {
@@ -128,6 +167,12 @@ export function createOrderNpsLabelContent(
   }
 }
 
+/**
+ *
+ * @param context 场景问卷上下文
+ * @param draft NPS 草稿
+ * @description 创建 NPS 提交 payload，评分非法返回 null
+ */
 export function createOrderNpsSubmitRequest(
   context: OrderSceneSurveyContext,
   draft: OrderNpsDraft

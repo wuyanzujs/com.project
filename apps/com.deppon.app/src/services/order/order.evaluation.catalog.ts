@@ -69,6 +69,12 @@ const DELIVERY_POSITIVE_LABELS = [
   '主动送上门'
 ] as const
 
+/**
+ *
+ * @param recordType 评价记录类型
+ * @param level 评价星级
+ * @description 按记录类型和星级返回可选评价标签
+ */
 export function getOrderEvaluationLabels(
   recordType: OrderEvaluationRecordType,
   level: OrderEvaluationLevel

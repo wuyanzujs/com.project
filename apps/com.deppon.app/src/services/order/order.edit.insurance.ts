@@ -21,6 +21,11 @@ const REQUIRED_PRODUCT_CODES = new Set([
 
 const FREE_COVERAGE_PRODUCT_CODES = new Set(['NFLF', 'NLRF'])
 
+/**
+ *
+ * @param value 原始值
+ * @description 转为去除首尾空格的文本
+ */
 function normalizeText(value: unknown) {
   if (value === null || value === undefined) {
     return ''
@@ -29,10 +34,20 @@ function normalizeText(value: unknown) {
   return String(value).trim()
 }
 
+/**
+ *
+ * @param value 产品 code
+ * @description 归一产品 code 为大写
+ */
 function normalizeProductCode(value: unknown) {
   return normalizeText(value).toUpperCase()
 }
 
+/**
+ *
+ * @param value 保价金额
+ * @description 归一保价金额为两位小数
+ */
 function normalizeAmount(value: unknown) {
   const amount = Number(value)
 
@@ -43,6 +58,12 @@ function normalizeAmount(value: unknown) {
   return Math.round(amount * 100) / 100
 }
 
+/**
+ *
+ * @param detail 订单详情
+ * @param key 扩展字段 key
+ * @description 读取订单扩展字段的文本值
+ */
 function getOrderExtendFieldValue(detail: OrderDetail, key: string) {
   const fields = Array.isArray(detail.orderExtendFields)
     ? detail.orderExtendFields
@@ -52,6 +73,11 @@ function getOrderExtendFieldValue(detail: OrderDetail, key: string) {
   return field ? normalizeText(field.value) : ''
 }
 
+/**
+ *
+ * @param detail 订单详情
+ * @description 解析订单的保价锁定类型
+ */
 function getLockedType(detail: OrderDetail): OrderEditInsuranceLockedType {
   const value = getOrderExtendFieldValue(detail, 'bjlx')
 
@@ -66,6 +92,11 @@ function getLockedType(detail: OrderDetail): OrderEditInsuranceLockedType {
   return value === '1' ? 'SXB' : 'SPECIAL'
 }
 
+/**
+ *
+ * @param detail 订单详情
+ * @description 从订单详情创建保价草稿
+ */
 export function createOrderEditInsuranceDraft(
   detail: OrderDetail
 ): OrderEditInsuranceDraft {
@@ -94,6 +125,11 @@ export function createOrderEditInsuranceDraft(
   }
 }
 
+/**
+ *
+ * @param value 金额输入文本
+ * @description 清洗保价金额输入，限制位数
+ */
 export function normalizeOrderEditInsuranceAmountInput(value: string) {
   const sanitized = value.replace(/[^\d.]/g, '')
   const hasDecimalPoint = sanitized.includes('.')
@@ -110,6 +146,12 @@ export function normalizeOrderEditInsuranceAmountInput(value: string) {
   return integer + '.' + decimal
 }
 
+/**
+ *
+ * @param insurance 保价草稿
+ * @param value 新的保价金额
+ * @description 更新保价金额并清除来源标记
+ */
 export function updateOrderEditInsuranceAmount(
   insurance: OrderEditInsuranceDraft,
   value: unknown
@@ -125,6 +167,11 @@ export function updateOrderEditInsuranceAmount(
   }
 }
 
+/**
+ *
+ * @param insurance 保价草稿
+ * @description 生成保价金额校验提示
+ */
 export function validateOrderEditInsurance(insurance: OrderEditInsuranceDraft) {
   if (!insurance.editable) {
     return []
@@ -151,6 +198,12 @@ export function validateOrderEditInsurance(insurance: OrderEditInsuranceDraft) {
   return []
 }
 
+/**
+ *
+ * @param insurance 当前草稿
+ * @param origin 原始草稿
+ * @description 判断保价金额是否发生变化
+ */
 export function isOrderEditInsuranceChanged(
   insurance: OrderEditInsuranceDraft,
   origin: OrderEditInsuranceDraft
@@ -167,6 +220,11 @@ export type OrderEditInsuranceRequestFields = Required<
   Pick<OrderModifyRequest, 'insuredAmount' | 'orderExtendFields'>
 >
 
+/**
+ *
+ * @param insurance 保价草稿
+ * @description 生成订单修改接口的保价字段
+ */
 export function createOrderEditInsuranceRequestFields(
   insurance: OrderEditInsuranceDraft
 ): OrderEditInsuranceRequestFields {
@@ -186,6 +244,11 @@ export function createOrderEditInsuranceRequestFields(
   }
 }
 
+/**
+ *
+ * @param insurance 保价草稿
+ * @description 生成保价变更项名称
+ */
 export function getOrderEditInsuranceChangedLabel(
   insurance: OrderEditInsuranceDraft
 ) {
@@ -196,6 +259,11 @@ export function getOrderEditInsuranceChangedLabel(
     : '保价金额'
 }
 
+/**
+ *
+ * @param insurance 保价草稿
+ * @description 生成保价说明文案
+ */
 export function getOrderEditInsuranceSummary(
   insurance: OrderEditInsuranceDraft
 ) {

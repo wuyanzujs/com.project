@@ -58,10 +58,20 @@ const DEFAULT_RANGE_DAYS = 30
 
 const DELETABLE_ORDER_CLASSES = new Set([2, 3, 4, 5, 99])
 
+/**
+ *
+ * @param value 数字
+ * @description 数字补零为两位字符串
+ */
 function pad(value: number) {
   return String(value).padStart(2, '0')
 }
 
+/**
+ *
+ * @param date 日期对象
+ * @description 格式化为接口请求时间文案
+ */
 function formatRequestDateTime(date: Date) {
   return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(
     date.getDate()
@@ -70,6 +80,11 @@ function formatRequestDateTime(date: Date) {
   )}`
 }
 
+/**
+ *
+ * @param days 查询天数
+ * @description 生成订单查询的起止时间
+ */
 export function getOrderDateRange(days = DEFAULT_RANGE_DAYS) {
   const endDate = new Date()
   const startDate = new Date()
@@ -86,10 +101,19 @@ export function getOrderDateRange(days = DEFAULT_RANGE_DAYS) {
   }
 }
 
+/**
+ *
+ * @description 取默认订单查询时间范围
+ */
 function getDefaultDateRange() {
   return getOrderDateRange()
 }
 
+/**
+ *
+ * @param order 订单简要信息
+ * @description 判断订单是否可删除
+ */
 export function canDeleteOrder(order: {
   orderClass?: number
   orderClassification?: string | number
@@ -123,6 +147,11 @@ export const orderService = {
   invalidWaybill: invalidOrderWaybill,
   resolveDepartmentPhone,
 
+  /**
+   *
+   * @param options 列表查询条件
+   * @description 按角色分页查询订单列表
+   */
   async queryList(
     options: OrderListOptions = {}
   ): Promise<DepponResponse<OrderListResult>> {
@@ -188,6 +217,11 @@ export const orderService = {
     }
   },
 
+  /**
+   *
+   * @param data 订单号或运单号
+   * @description 按运单号或订单号查询详情
+   */
   async queryDetail(data: {
     orderNumber?: string
     waybillNumber?: string
@@ -239,6 +273,12 @@ export const orderService = {
     return createFailure('缺少订单号或运单号')
   },
 
+  /**
+   *
+   * @param waybillNumber 运单号
+   * @param options 轨迹查询选项
+   * @description 查询运单物流轨迹列表
+   */
   queryTrackList(
     waybillNumber?: string | null,
     options: OrderTrackQueryOptions = {}
@@ -250,6 +290,12 @@ export const orderService = {
     return orderApi.queryTrackList(waybillNumber, options)
   },
 
+  /**
+   *
+   * @param orderNumber 订单号
+   * @param cancelReason 取消原因
+   * @description 取消订单并回传取消原因
+   */
   cancelOrder(orderNumber: string, cancelReason = '用户取消') {
     if (!orderNumber) {
       return Promise.resolve(createFailure<boolean>('缺少订单号，无法取消'))
@@ -262,6 +308,11 @@ export const orderService = {
     })
   },
 
+  /**
+   *
+   * @param data 订单号或运单号与角色
+   * @description 按角色删除订单或运单
+   */
   deleteOrder(data: {
     role: OrderRole
     orderNumber?: string | null

@@ -4,10 +4,20 @@ import type {
   InvoiceStatusClass
 } from './types'
 
+/**
+ *
+ * @param value 数字值
+ * @description 数字补零为两位字符串
+ */
 function pad(value: number) {
   return String(value).padStart(2, '0')
 }
 
+/**
+ *
+ * @param date 日期对象
+ * @description 格式化为日期时间字符串
+ */
 function formatDateTime(date: Date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
     date.getDate()
@@ -16,20 +26,41 @@ function formatDateTime(date: Date) {
   )}`
 }
 
+/**
+ *
+ * @param value 待处理的文本或数字
+ * @description 转成去掉首尾空格的字符串
+ */
 function normalizeText(value?: string | number | null) {
   return String(value ?? '').trim()
 }
 
+/**
+ *
+ * @param value 待转换的值
+ * @description 转成有限数字，非法值返回 0
+ */
 function toFiniteNumber(value: unknown) {
   const numberValue = Number(value)
 
   return Number.isFinite(numberValue) ? numberValue : 0
 }
 
+/**
+ *
+ * @param value 文本
+ * @param maxLength 最大长度
+ * @description 超长文本截断并加省略号
+ */
 function truncateText(value: string, maxLength: number) {
   return value.length > maxLength ? `${value.slice(0, maxLength)}...` : value
 }
 
+/**
+ *
+ * @param value 秒级或毫秒级时间戳
+ * @description 统一时间戳为毫秒
+ */
 function normalizeTimestamp(value?: number | null) {
   if (!value) {
     return null
@@ -38,6 +69,11 @@ function normalizeTimestamp(value?: number | null) {
   return value < 10000000000 ? value * 1000 : value
 }
 
+/**
+ *
+ * @param value 时间戳
+ * @description 格式化时间戳为日期时间文案
+ */
 function formatTimestamp(value?: number | null) {
   const timestamp = normalizeTimestamp(value)
 
@@ -54,6 +90,11 @@ function formatTimestamp(value?: number | null) {
   return formatDateTime(date)
 }
 
+/**
+ *
+ * @param item 开票运单原始数据
+ * @description 解析运单开票状态与可开票标记
+ */
 function normalizeOrderStatus(item: InvoiceOrderRaw): {
   statusText: string
   statusClass: InvoiceStatusClass
@@ -91,6 +132,11 @@ function normalizeOrderStatus(item: InvoiceOrderRaw): {
   }
 }
 
+/**
+ *
+ * @param item 开票运单原始数据
+ * @description 把开票运单原始数据转成视图
+ */
 export function normalizeInvoiceOrder(item: InvoiceOrderRaw): InvoiceOrderView {
   const status = normalizeOrderStatus(item)
 

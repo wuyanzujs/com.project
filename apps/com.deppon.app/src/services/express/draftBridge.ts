@@ -32,6 +32,11 @@ export interface ExpressDraftBridgePayload {
 
 let pendingDraft: ExpressDraftBridgePayload | null = null
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 深拷贝并归一寄件草稿
+ */
 function cloneDraft(draft: ExpressDraft): ExpressDraft {
   return {
     ...draft,
@@ -70,6 +75,11 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 重置仓库信息并清空关联服务
+ */
 function clearWarehouseForBridge(draft: ExpressDraft) {
   return resetExpressWarehouseInput(draft.warehouse, {
     clearService: true
@@ -77,6 +87,12 @@ function clearWarehouseForBridge(draft: ExpressDraft) {
 }
 
 export const expressDraftBridge = {
+  /**
+   *
+   * @param draft 寄件草稿
+   * @param product 选中的报价产品
+   * @description 从询价页带入草稿与报价
+   */
   carryFromQueryPrice(draft: ExpressDraft, product: ExpressProductQuote) {
     const currentProductCode =
       draft.selectedProduct?.omsProductCode || draft.service.transportMode
@@ -99,6 +115,11 @@ export const expressDraftBridge = {
     }
   },
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 从再来一单带入草稿
+   */
   carryFromOrderResend(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
@@ -117,6 +138,11 @@ export const expressDraftBridge = {
     }
   },
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 从优惠券列表带入草稿
+   */
   carryFromCoupon(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
@@ -133,6 +159,11 @@ export const expressDraftBridge = {
     }
   },
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 从货物名称查询带入草稿
+   */
   carryFromGoodsQuery(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
@@ -150,6 +181,11 @@ export const expressDraftBridge = {
     }
   },
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 从批量识别带入草稿
+   */
   carryFromBatchRecognition(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
@@ -168,6 +204,11 @@ export const expressDraftBridge = {
     }
   },
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 从扫码寄件带入草稿
+   */
   carryFromScanQrCode(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
@@ -187,6 +228,11 @@ export const expressDraftBridge = {
     }
   },
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 从收派范围查询带入草稿
+   */
   carryFromDispatchQuery(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
@@ -206,6 +252,11 @@ export const expressDraftBridge = {
     }
   },
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 从专属快递员带入草稿
+   */
   carryFromCourier(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
@@ -225,6 +276,11 @@ export const expressDraftBridge = {
     }
   },
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 从寄件模板带入草稿
+   */
   carryFromTemplate(draft: ExpressDraft) {
     const nextDraft = cloneDraft({
       ...draft,
@@ -244,6 +300,10 @@ export const expressDraftBridge = {
     }
   },
 
+  /**
+   *
+   * @description 取出并清空待消费的草稿
+   */
   consume() {
     const nextDraft = pendingDraft
 

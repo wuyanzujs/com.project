@@ -6,10 +6,20 @@ import type {
   ExpressGoodsLabel
 } from './types'
 
+/**
+ *
+ * @param labels 货物标签列表
+ * @description 取第一个禁寄标签
+ */
 export function getBlockingExpressGoodsLabel(labels: ExpressGoodsLabel[]) {
   return labels.find(label => label.displayType === 'forbid')
 }
 
+/**
+ *
+ * @param label 货物标签
+ * @description 由标签推导货物校验状态
+ */
 function getGoodsLabelStatus(
   label: ExpressGoodsLabel
 ): ExpressGoodsCheckStatus {
@@ -24,6 +34,12 @@ function getGoodsLabelStatus(
   return 'risk'
 }
 
+/**
+ *
+ * @param current 当前状态
+ * @param next 新状态
+ * @description 取两者中更严重的一个状态
+ */
 function compareGoodsStatus(
   current: ExpressGoodsCheckStatus,
   next: ExpressGoodsCheckStatus
@@ -38,6 +54,11 @@ function compareGoodsStatus(
   return rank[next] > rank[current] ? next : current
 }
 
+/**
+ *
+ * @param labels 货物标签列表
+ * @description 汇总所有标签得出最终校验状态
+ */
 function getGoodsCheckStatus(labels: ExpressGoodsLabel[]) {
   return labels.reduce<ExpressGoodsCheckStatus>(
     (status, label) => compareGoodsStatus(status, getGoodsLabelStatus(label)),
@@ -45,6 +66,11 @@ function getGoodsCheckStatus(labels: ExpressGoodsLabel[]) {
   )
 }
 
+/**
+ *
+ * @param status 货物校验状态
+ * @description 按状态取标题文案
+ */
 function getGoodsCheckTitle(status: ExpressGoodsCheckStatus) {
   switch (status) {
     case 'forbid':
@@ -58,6 +84,12 @@ function getGoodsCheckTitle(status: ExpressGoodsCheckStatus) {
   }
 }
 
+/**
+ *
+ * @param status 货物校验状态
+ * @param labels 货物标签列表
+ * @description 优先取标签提示，否则按状态取默认文案
+ */
 function getGoodsCheckMessage(
   status: ExpressGoodsCheckStatus,
   labels: ExpressGoodsLabel[]
@@ -80,6 +112,12 @@ function getGoodsCheckMessage(
   }
 }
 
+/**
+ *
+ * @param goodsName 货物名称
+ * @param labels 货物标签列表
+ * @description 组装货物校验结果
+ */
 export function normalizeExpressGoodsCheckResult(
   goodsName: string,
   labels: ExpressGoodsLabel[]

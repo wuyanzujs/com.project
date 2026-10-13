@@ -8,6 +8,11 @@ import type { ExpressDraft } from '../express'
 
 let stagedDraft: ExpressDraft | null = null
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 深拷贝并归一寄件草稿
+ */
 function cloneDraft(draft: ExpressDraft): ExpressDraft {
   return {
     ...draft,
@@ -47,10 +52,19 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
 }
 
 export const templateDraftBridge = {
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 暂存模板带入的寄件草稿
+   */
   stage(draft: ExpressDraft) {
     stagedDraft = cloneDraft(draft)
   },
 
+  /**
+   *
+   * @description 取出并清空暂存的寄件草稿
+   */
   consume() {
     const draft = stagedDraft
 

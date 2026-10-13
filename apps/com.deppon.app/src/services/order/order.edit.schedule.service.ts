@@ -12,6 +12,11 @@ import { createServiceFailure } from '../serviceResponse'
 
 import type { OrderEditDraft, OrderEditPickupTimeResponse } from './types'
 
+/**
+ *
+ * @param draft 订单修改草稿
+ * @description 查询并归一可预约的上门时间
+ */
 export async function queryOrderEditPickupTimes(
   draft: OrderEditDraft
 ): Promise<DepponResponse<OrderEditPickupTimeResponse>> {

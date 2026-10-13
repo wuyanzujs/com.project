@@ -26,6 +26,11 @@ export interface ExpressMonthlyPayViewOptions {
   errorMessage: string
 }
 
+/**
+ *
+ * @param customer 客户中心视图
+ * @description 生成已绑定客户摘要文案
+ */
 function getBoundCustomerSummary(customer: CustomerCenterView) {
   const codeText = customer.code ? `客户编码 ${customer.code}` : '已绑定客户'
   const nameText = customer.name ? `，${customer.name}` : ''
@@ -33,6 +38,15 @@ function getBoundCustomerSummary(customer: CustomerCenterView) {
   return `${codeText}${nameText}。月结和合同权限提交时仍以后端校验为准。`
 }
 
+/**
+ *
+ * @param paymentType 付款方式
+ * @param customer 客户中心视图
+ * @param loading 客户信息是否加载中
+ * @param checked 是否已查询过客户编码
+ * @param errorMessage 客户信息错误提示
+ * @description 组装月结付款提示视图
+ */
 export function createExpressMonthlyPayView({
   paymentType,
   customer,

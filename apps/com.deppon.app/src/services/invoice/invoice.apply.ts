@@ -12,6 +12,11 @@ const EXPRESS_APPLY_SYSTEM = {
   SourceSystem: 'XCX'
 } as const
 
+/**
+ *
+ * @param email 接收邮箱
+ * @description 校验邮箱格式并返回错误文案
+ */
 export function validateEmail(email: string) {
   if (!email.trim()) {
     return '请输入接收邮箱'
@@ -24,10 +29,20 @@ export function validateEmail(email: string) {
   return ''
 }
 
+/**
+ *
+ * @param category 发票类别 code
+ * @description 取发票类别的展示文案
+ */
 function getApplyBillCategoryText(category: InvoiceApplyDraft['billCategory']) {
   return category === '13' ? '电子专票' : '电子普票'
 }
 
+/**
+ *
+ * @param draft 开票申请草稿
+ * @description 生成开票申请的预览与校验结果
+ */
 export function createApplyPreview(
   draft: InvoiceApplyDraft
 ): InvoiceApplyPreview {
@@ -66,6 +81,11 @@ export function createApplyPreview(
   }
 }
 
+/**
+ *
+ * @param draft 开票申请草稿
+ * @description 组装开票申请提交的 payload
+ */
 export function createApplySubmitPayload(
   draft: InvoiceApplyDraft
 ): InvoiceApplySubmitRequest {

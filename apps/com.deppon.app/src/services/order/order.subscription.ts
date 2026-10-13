@@ -10,10 +10,20 @@ import type {
   WaybillSubscriptionView
 } from './types'
 
+/**
+ *
+ * @param value 待归一值
+ * @description 非字符串返回空串，其余去空格
+ */
 function normalizeText(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
+/**
+ *
+ * @param value 时间戳或时间文本
+ * @description 格式化关注运单的时间
+ */
 function formatSubscriptionTime(value: unknown) {
   if (value === null || value === undefined || value === '') {
     return ''
@@ -26,6 +36,11 @@ function formatSubscriptionTime(value: unknown) {
     return String(value)
   }
 
+  /**
+   *
+   * @param item 数字
+   * @description 数字补零为两位字符串
+   */
   const pad = (item: number) => String(item).padStart(2, '0')
 
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
@@ -33,6 +48,11 @@ function formatSubscriptionTime(value: unknown) {
   )} ${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
+/**
+ *
+ * @param raw 关注运单原始数据
+ * @description 归一关注运单为视图数据
+ */
 export function normalizeWaybillSubscription(
   raw: WaybillSubscriptionRaw
 ): WaybillSubscriptionView | null {
@@ -61,6 +81,12 @@ export function normalizeWaybillSubscription(
   }
 }
 
+/**
+ *
+ * @param subscribed 是否已关注，null 表示未知
+ * @param loading 是否处理中
+ * @description 生成关注或取消关注操作项
+ */
 export function createOrderSubscriptionAction(
   subscribed: boolean | null,
   loading = false
@@ -81,6 +107,10 @@ export function createOrderSubscriptionAction(
 }
 
 export const orderSubscriptionService = {
+  /**
+   *
+   * @description 查询已关注的运单列表
+   */
   async queryList(): Promise<DepponResponse<WaybillSubscriptionView[]>> {
     const response = await orderApi.querySubscriptions()
 
@@ -97,6 +127,11 @@ export const orderSubscriptionService = {
     }
   },
 
+  /**
+   *
+   * @param waybillNumber 运单号
+   * @description 查询运单关注状态
+   */
   async queryStatus(waybillNumber?: string | null) {
     const normalizedNumber = normalizeText(waybillNumber)
 
@@ -115,6 +150,12 @@ export const orderSubscriptionService = {
     return response as DepponResponse<boolean>
   },
 
+  /**
+   *
+   * @param waybillNumber 运单号
+   * @param subscribed 是否关注
+   * @description 关注或取消关注运单
+   */
   async setSubscribed(waybillNumber: string, subscribed: boolean) {
     const normalizedNumber = normalizeText(waybillNumber)
 

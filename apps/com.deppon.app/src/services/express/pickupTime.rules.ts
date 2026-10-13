@@ -16,16 +16,31 @@ export const EXPRESS_NIGHT_PICKUP_CACHE_MS = 2 * 60 * 60 * 1000
 export const EXPRESS_NIGHT_PICKUP_NOTICE =
   '夜间揽收服务费标准为 50 元/票，最终以重新报价明细为准。'
 
+/**
+ *
+ * @param value 待处理的文本
+ * @description 归一文本，空值返回空字符串
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param value 取件时段类型
+ * @description 判断是否为可预约时段类型
+ */
 function isAvailablePickupType(
   value: ExpressPickupTimeOpeningType
 ): value is ExpressPickupTimeType {
   return value === 'NORMAL' || value === 'NIGHT'
 }
 
+/**
+ *
+ * @param value 取件时段类型
+ * @description 归一取件时段类型，默认 NORMAL
+ */
 function normalizePickupTimeType(value: unknown): ExpressPickupTimeType {
   if (value === 'NIGHT') {
     return value
@@ -34,6 +49,11 @@ function normalizePickupTimeType(value: unknown): ExpressPickupTimeType {
   return 'NORMAL'
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 生成寄件地址 key，用于夜间揽收缓存
+ */
 function createPickupAddressKey(draft: Pick<ExpressDraft, 'sender'>) {
   const sender = draft.sender
 
@@ -52,6 +72,11 @@ function createPickupAddressKey(draft: Pick<ExpressDraft, 'sender'>) {
     .join('|')
 }
 
+/**
+ *
+ * @param value 夜间揽收能力
+ * @description 归一夜间揽收能力，非法返回空
+ */
 function normalizeNightCapability(
   value?: Partial<ExpressPickupNightCapability> | null
 ) {
@@ -75,6 +100,11 @@ function normalizeNightCapability(
   } satisfies ExpressPickupNightCapability
 }
 
+/**
+ *
+ * @param value 取件信息，可为空
+ * @description 归一取件信息
+ */
 export function normalizeExpressPickup(
   value?: Partial<ExpressPickup> | null
 ): ExpressPickup {
@@ -96,6 +126,11 @@ export function normalizeExpressPickup(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 构造夜间揽收查询入参
+ */
 export function buildExpressPickupNightRequest(
   draft: ExpressDraft
 ): ExpressPickupNightRequest {
@@ -111,6 +146,13 @@ export function buildExpressPickupNightRequest(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param response 夜间揽收查询响应，可为空
+ * @param checkedAt 校验时间戳
+ * @description 由接口结果生成夜间揽收能力
+ */
 export function createExpressPickupNightCapability(
   draft: ExpressDraft,
   response?: ExpressPickupNightResponse | null,
@@ -130,6 +172,12 @@ export function createExpressPickupNightCapability(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param now 当前时间戳
+ * @description 取仍在有效期内的夜间揽收能力
+ */
 export function getFreshExpressPickupNightCapability(
   draft: ExpressDraft,
   now = Date.now()
@@ -148,6 +196,12 @@ export function getFreshExpressPickupNightCapability(
   return capability
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param selection 选中的取件时段
+ * @description 选中取件时段并清空已选产品
+ */
 export function selectExpressPickupTime(
   draft: ExpressDraft,
   selection: ExpressPickupTimeSelection
@@ -183,6 +237,11 @@ export function selectExpressPickupTime(
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 记录已确认夜间揽收费用提示
+ */
 export function acceptExpressNightPickupNotice(draft: ExpressDraft) {
   if (draft.pickup.type !== 'NIGHT' || draft.pickup.nightNoticeAccepted) {
     return draft
@@ -197,6 +256,11 @@ export function acceptExpressNightPickupNotice(draft: ExpressDraft) {
   }
 }
 
+/**
+ *
+ * @param value 时间字符串
+ * @description 解析取件时间，非法返回 null
+ */
 function parsePickupDateTime(value: string) {
   const match = normalizeText(value).match(
     /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/
@@ -223,6 +287,12 @@ function parsePickupDateTime(value: string) {
     : null
 }
 
+/**
+ *
+ * @param pickupTime 取件时间
+ * @param now 当前时间
+ * @description 校验夜间取件时间是否可预约
+ */
 export function isExpressNightPickupTimeValid(
   pickupTime: string,
   now = new Date()
@@ -249,6 +319,12 @@ export function isExpressNightPickupTimeValid(
   return selected >= nextMorning
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @param options 可选的当前时间
+ * @description 校验取件时间，返回错误提示
+ */
 export function validateExpressPickupTime(
   draft: ExpressDraft,
   options: { now?: Date } = {}
@@ -283,6 +359,11 @@ export function validateExpressPickupTime(
   return []
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 生成报价用的夜间揽收字段
+ */
 export function createExpressPickupQuoteFields(draft: ExpressDraft) {
   return {
     nightAccept:
@@ -292,6 +373,11 @@ export function createExpressPickupQuoteFields(draft: ExpressDraft) {
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 生成下单用的取件扩展字段
+ */
 export function createExpressPickupOrderFields(
   draft: ExpressDraft
 ): ExpressOrderExtendField[] {

@@ -149,6 +149,11 @@ const RULES: Record<ExpressInsuranceRuleType, ExpressInsuranceRuleView> = {
   }
 }
 
+/**
+ *
+ * @param value 保价规则类型，可为空
+ * @description 归一保价规则类型，非法值回落基础保
+ */
 function normalizeRuleType(value?: string): ExpressInsuranceRuleType {
   if (value === 'QEB' || value === 'SXB') {
     return value
@@ -158,6 +163,10 @@ function normalizeRuleType(value?: string): ExpressInsuranceRuleType {
 }
 
 export const expressInsuranceRules = {
+  /**
+   *
+   * @description 取全部保价规则类型与标题
+   */
   getRuleTypes() {
     return Object.values(RULES).map(item => ({
       type: item.type,
@@ -166,10 +175,20 @@ export const expressInsuranceRules = {
     }))
   },
 
+  /**
+   *
+   * @param value 保价规则类型
+   * @description 取对应的保价规则详情
+   */
   getRule(value?: string) {
     return RULES[normalizeRuleType(value)]
   },
 
+  /**
+   *
+   * @param type 保价规则类型
+   * @description 创建保价规则页路由 query
+   */
   createRuleRoute(type: ExpressInsuranceRuleType = 'NORMAL') {
     return createAppRouteUrl(APP_ROUTES.expressInsurance, {
       type

@@ -22,10 +22,22 @@ export const BATCH_MAX_CONSIGNEE_COUNT = 10
 export const BATCH_EXCEL_URL =
   'https://www.deppon.com/batchorder?source=APP_BATCHORDER'
 
+/**
+ *
+ * @param value 文本，可为空
+ * @description 去除首尾空白
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param step 校验步骤
+ * @param message 失败提示
+ * @param consigneeIndex 收货人下标
+ * @description 创建校验失败结果
+ */
 function createFailure(
   step: BatchValidationResult['step'],
   message: string,
@@ -39,6 +51,10 @@ function createFailure(
   }
 }
 
+/**
+ *
+ * @description 创建校验通过结果
+ */
 function createSuccess(): BatchValidationResult {
   return {
     valid: true,
@@ -48,12 +64,22 @@ function createSuccess(): BatchValidationResult {
   }
 }
 
+/**
+ *
+ * @param value 手机号
+ * @description 校验手机号或座机号格式
+ */
 function isValidContactPhone(value: string) {
   const phone = normalizeText(value)
 
   return /^1[3-9]\d{9}$/.test(phone) || /^0\d{2,3}-?\d{7,8}$/.test(phone)
 }
 
+/**
+ *
+ * @param contact 联系人
+ * @description 判断联系人姓名与地址是否完整
+ */
 function isCompleteContact(contact: BatchContact) {
   return [
     contact.name,
@@ -64,12 +90,22 @@ function isCompleteContact(contact: BatchContact) {
   ].every(value => !!normalizeText(value))
 }
 
+/**
+ *
+ * @param contact 联系人
+ * @description 生成地址 key，用于发货人与收货人比对
+ */
 function createAddressKey(contact: BatchContact) {
   return [contact.province, contact.city, contact.county, contact.address]
     .map(normalizeText)
     .join('|')
 }
 
+/**
+ *
+ * @param line 单行地址文本
+ * @description 按分隔符或空白拆分单行地址
+ */
 function splitBatchAddressLine(line: string) {
   const delimiterParts = line
     .split(/[\t,，|]+/)
@@ -83,6 +119,13 @@ function splitBatchAddressLine(line: string) {
   return line.split(/\s+/).map(normalizeText).filter(Boolean)
 }
 
+/**
+ *
+ * @param lineNumber 行号
+ * @param rawText 原始文本
+ * @param message 失败原因
+ * @description 创建地址识别失败项
+ */
 function createRecognizeFailure(
   lineNumber: number,
   rawText: string,
@@ -98,6 +141,13 @@ function createRecognizeFailure(
   }
 }
 
+/**
+ *
+ * @param lineNumber 行号
+ * @param rawText 原始文本
+ * @param parts 已拆分的字段
+ * @description 校验字段并生成识别成功的收货人
+ */
 function createRecognizedConsignee(
   lineNumber: number,
   rawText: string,
@@ -148,6 +198,11 @@ function createRecognizedConsignee(
   }
 }
 
+/**
+ *
+ * @param value 多行地址文本
+ * @description 逐行识别批量收货人地址
+ */
 export function recognizeBatchAddressText(
   value: string
 ): BatchAddressRecognitionResult {
@@ -167,6 +222,11 @@ export function recognizeBatchAddressText(
   }
 }
 
+/**
+ *
+ * @param province 省份
+ * @description 判断是否为港澳台特殊地区
+ */
 function isSpecialRegion(province?: string | null) {
   const value = normalizeText(province)
 
@@ -175,6 +235,12 @@ function isSpecialRegion(province?: string | null) {
   )
 }
 
+/**
+ *
+ * @param senderProvince 发货人省份
+ * @param consigneeProvince 收货人省份
+ * @description 判断港澳台互寄是否需要拦截
+ */
 export function shouldBlockSpecialRegionBatchOrder(
   senderProvince?: string | null,
   consigneeProvince?: string | null
@@ -191,6 +257,12 @@ export function shouldBlockSpecialRegionBatchOrder(
   return senderSpecial && sender.includes('台湾')
 }
 
+/**
+ *
+ * @param draft 批量草稿
+ * @param options 校验选项
+ * @description 校验批量草稿的必填项与格式
+ */
 export function validateBatchDraft(
   draft: BatchDraft,
   options: { requireProduct?: boolean } = {}
@@ -304,10 +376,20 @@ export function validateBatchDraft(
   return createSuccess()
 }
 
+/**
+ *
+ * @param draft 批量草稿
+ * @description 提交前校验草稿并要求已获取价格
+ */
 export function validateBatchSubmitDraft(draft: BatchDraft) {
   return validateBatchDraft(draft, { requireProduct: true })
 }
 
+/**
+ *
+ * @param result 创建订单响应
+ * @description 汇总批量提交的成功与失败票数
+ */
 export function createBatchSubmitSummary(
   result: CreateExpressOrderResponse
 ): BatchSubmitSummary {
@@ -350,6 +432,10 @@ export function createBatchSubmitSummary(
 }
 
 export const batchService = {
+  /**
+   *
+   * @description 生成批量寄入口页的展示数据
+   */
   getEntryView(): BatchEntryView {
     return {
       title: '批量寄',
@@ -408,6 +494,11 @@ export const batchService = {
 
   shouldBlockSpecialRegionOrder: shouldBlockSpecialRegionBatchOrder,
 
+  /**
+   *
+   * @param draft 批量草稿
+   * @description 校验后获取所有收货人的产品价格
+   */
   async quoteDraft(
     draft: BatchDraft
   ): Promise<DepponResponse<BatchQuoteItem[]>> {
@@ -420,6 +511,11 @@ export const batchService = {
     return quoteBatchDraft(draft)
   },
 
+  /**
+   *
+   * @param draft 批量草稿
+   * @description 校验后提交批量订单
+   */
   async submitDraft(
     draft: BatchDraft
   ): Promise<DepponResponse<CreateExpressOrderResponse>> {

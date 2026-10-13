@@ -34,6 +34,12 @@ export const PRINT_API_ENDPOINTS = [
   '/gwapi/onlineService/eco/online/print/order/secure/updatePrintStatus'
 ]
 
+/**
+ *
+ * @param step 校验步骤
+ * @param message 提示文案
+ * @description 构造打印选择校验结果
+ */
 function createResult(
   step: PrintSelectionResult['step'],
   message: string
@@ -45,6 +51,11 @@ function createResult(
   }
 }
 
+/**
+ *
+ * @param state 打印选择状态
+ * @description 依次校验打印前置条件
+ */
 export function validatePrintSelection(
   state: PrintSelectionState
 ): PrintSelectionResult {
@@ -63,6 +74,11 @@ export function validatePrintSelection(
   return createResult('ready', '')
 }
 
+/**
+ *
+ * @param options 打印中心选项
+ * @description 有云打印码时构造云打印视图
+ */
 function createCloudCodeView(options: PrintCenterOptions) {
   const printId = options.printId?.trim()
 
@@ -80,6 +96,11 @@ function createCloudCodeView(options: PrintCenterOptions) {
   }
 }
 
+/**
+ *
+ * @param result Promise 结果
+ * @description 取已兑现的响应，失败返回 null
+ */
 function getFulfilledResponse(
   result: PromiseSettledResult<DepponResponse<PrintListResponse>>
 ) {
@@ -89,6 +110,11 @@ function getFulfilledResponse(
 export const printService = {
   getDateRangeOptions: createPrintDateRangeOptions,
 
+  /**
+   *
+   * @param options 列表查询参数
+   * @description 查询待打印或已打印面单列表
+   */
   async queryList(
     options: QueryPrintListOptions
   ): Promise<DepponResponse<PrintListResult>> {
@@ -127,6 +153,11 @@ export const printService = {
     }
   },
 
+  /**
+   *
+   * @param options 数量查询参数
+   * @description 并发查询待打印与已打印数量
+   */
   async queryCounts(
     options: QueryPrintCountsOptions = {}
   ): Promise<DepponResponse<PrintListCounts>> {
@@ -163,6 +194,11 @@ export const printService = {
     }
   },
 
+  /**
+   *
+   * @param options 打印中心选项
+   * @description 构造打印中心页面视图
+   */
   getCenterView(options: PrintCenterOptions = {}): PrintCenterView {
     const nativeReady = APP_NATIVE_CAPABILITIES.print === 'ready'
 

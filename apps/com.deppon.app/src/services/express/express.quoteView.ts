@@ -27,6 +27,11 @@ const EXPRESS_FEE_NAMES: Record<string, string> = {
 // 运费明细的 priceEntryCode，产品卡上「¥X起」取的是 FRT 口径而非总价。
 const EXPRESS_FREIGHT_ENTRY_CODE = 'FRT'
 
+/**
+ *
+ * @param value 金额原始值
+ * @description 转为有限金额，无效时返回 null
+ */
 function toFiniteAmount(value: unknown) {
   if (value === null || value === undefined || value === '') {
     return null
@@ -37,14 +42,30 @@ function toFiniteAmount(value: unknown) {
   return Number.isFinite(amount) ? amount : null
 }
 
+/**
+ *
+ * @param product 报价产品
+ * @description 取报价产品的总费用金额
+ */
 function getQuoteAmount(product: ExpressProductQuote | null | undefined) {
   return toFiniteAmount(product?.totalfee)
 }
 
+/**
+ *
+ * @param product 报价产品
+ * @description 生成报价产品唯一 key
+ */
 export function getExpressQuoteKey(product: ExpressProductQuote) {
   return `${product.omsProductCode || product.productName}-${product.totalfee ?? ''}`
 }
 
+/**
+ *
+ * @param product 报价产品
+ * @param suffix 金额后缀文案
+ * @description 生成报价价格展示文本
+ */
 export function getExpressQuotePriceText(
   product: ExpressProductQuote | null | undefined,
   suffix = ''
@@ -76,6 +97,11 @@ export function getExpressQuoteTimeProduct(product: ExpressProductQuote) {
   }
 }
 
+/**
+ *
+ * @param product 报价产品
+ * @description 取运费口径的明细金额
+ */
 export function getExpressQuoteFreight(product: ExpressProductQuote) {
   const freight = product.detail?.find(
     item =>
@@ -117,12 +143,22 @@ export function existsExpressQuotePrice(product: ExpressProductQuote) {
   return { free: false, visible: false }
 }
 
+/**
+ *
+ * @param product 报价产品
+ * @description 取产品时效展示文案
+ */
 export function getExpressQuoteTimeText(product: ExpressProductQuote) {
   return (
     product.daysFormat || product.days || product.arriveDate || '时效待确认'
   )
 }
 
+/**
+ *
+ * @param product 报价产品
+ * @description 生成计费重量展示文案
+ */
 export function getExpressQuoteBillWeightText(product: ExpressProductQuote) {
   if (product.billWeight === null || product.billWeight === undefined) {
     return ''
@@ -131,6 +167,11 @@ export function getExpressQuoteBillWeightText(product: ExpressProductQuote) {
   return `计费重量 ${product.billWeight}kg`
 }
 
+/**
+ *
+ * @param detail 费用明细项
+ * @description 单条费用明细转展示行
+ */
 function createFeeRow(detail: ExpressPriceDetail): ExpressQuoteFeeRow | null {
   const amount = toFiniteAmount(detail.caculateFee)
 
@@ -147,6 +188,11 @@ function createFeeRow(detail: ExpressPriceDetail): ExpressQuoteFeeRow | null {
   }
 }
 
+/**
+ *
+ * @param product 报价产品
+ * @description 组装费用明细展示行列表
+ */
 export function createExpressQuoteFeeRows(
   product: ExpressProductQuote
 ): ExpressQuoteFeeRow[] {
@@ -155,6 +201,11 @@ export function createExpressQuoteFeeRows(
     .filter((row): row is ExpressQuoteFeeRow => Boolean(row))
 }
 
+/**
+ *
+ * @param product 报价产品
+ * @description 组装报价产品展示模型
+ */
 export function createExpressProductQuoteView(
   product: ExpressProductQuote
 ): ExpressProductQuoteView {

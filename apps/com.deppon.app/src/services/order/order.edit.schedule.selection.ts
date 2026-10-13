@@ -8,12 +8,23 @@ import {
 import type { OrderEditPickupTimeSelection } from './order.edit.schedule.options'
 import type { OrderEditDraft, OrderEditPickupTimeResponse } from './types'
 
+/**
+ *
+ * @param value 原始值
+ * @description 归一为有限的数字
+ */
 function normalizeNumber(value: unknown) {
   const number = Number(value)
 
   return Number.isFinite(number) ? number : 0
 }
 
+/**
+ *
+ * @param draft 订单修改草稿
+ * @param selection 选中的上门时段
+ * @description 写入选中的上门时间
+ */
 export function selectOrderEditPickupTime(
   draft: OrderEditDraft,
   selection: OrderEditPickupTimeSelection
@@ -46,6 +57,12 @@ export function selectOrderEditPickupTime(
   }
 }
 
+/**
+ *
+ * @param draft 订单修改草稿
+ * @param response 上门时间响应
+ * @description 用最新响应刷新草稿中的上门时间
+ */
 export function applyOrderEditPickupTimeResponse(
   draft: OrderEditDraft,
   response: OrderEditPickupTimeResponse
@@ -98,6 +115,11 @@ export function applyOrderEditPickupTimeResponse(
   return nextDraft
 }
 
+/**
+ *
+ * @param draft 订单修改草稿
+ * @description 标记已确认夜间揽收费用提示
+ */
 export function acceptOrderEditNightPickupNotice(draft: OrderEditDraft) {
   if (
     draft.schedule.pickup.type !== 'NIGHT' ||

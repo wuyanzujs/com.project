@@ -9,6 +9,11 @@ interface CachedInvoiceOrderAuth {
   value: string
 }
 
+/**
+ *
+ * @param waybillNumber 运单号
+ * @description 读取缓存的运单验证值
+ */
 export function getCachedInvoiceOrderAuthValue(waybillNumber: string) {
   const normalizedWaybill = waybillNumber.trim()
   const list =
@@ -17,6 +22,12 @@ export function getCachedInvoiceOrderAuthValue(waybillNumber: string) {
   return list.find(item => item.id === normalizedWaybill)?.value.trim() ?? ''
 }
 
+/**
+ *
+ * @param waybillNumber 运单号
+ * @param value 验证值
+ * @description 缓存运单验证值，当日有效
+ */
 export async function rememberInvoiceOrderAuthValue(
   waybillNumber: string,
   value: string
@@ -41,6 +52,12 @@ export async function rememberInvoiceOrderAuthValue(
   })
 }
 
+/**
+ *
+ * @param sentAt 验证码发送时间
+ * @param now 当前时间
+ * @description 计算验证码剩余秒数
+ */
 export function calculateInvoiceOrderAuthCountdown(
   sentAt: number | null | undefined,
   now = Date.now()
@@ -56,12 +73,22 @@ export function calculateInvoiceOrderAuthCountdown(
   return Math.min(INVOICE_ORDER_AUTH_CODE_SECONDS, Math.max(0, remaining))
 }
 
+/**
+ *
+ * @param now 当前时间
+ * @description 取验证码剩余倒计时秒数
+ */
 export function getInvoiceOrderAuthCodeCountdown(now = Date.now()) {
   const sentAt = dpCache.get<number>(CACHE_KEYS.invoiceOrderAuthCodeSend)
 
   return calculateInvoiceOrderAuthCountdown(sentAt, now)
 }
 
+/**
+ *
+ * @param sentAt 验证码发送时间
+ * @description 记录验证码发送时间
+ */
 export function markInvoiceOrderAuthCodeSent(sentAt = Date.now()) {
   return dpCache.set(CACHE_KEYS.invoiceOrderAuthCodeSend, {
     data: sentAt,
@@ -72,6 +99,12 @@ export function markInvoiceOrderAuthCodeSent(sentAt = Date.now()) {
   })
 }
 
+/**
+ *
+ * @param auth 运单验证挑战信息
+ * @param value 用户输入值
+ * @description 校验用户输入并返回错误文案
+ */
 export function getInvoiceOrderAuthValidationMessage(
   auth: InvoiceOrderAuthChallenge,
   value: string

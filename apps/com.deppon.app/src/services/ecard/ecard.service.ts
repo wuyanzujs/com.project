@@ -12,20 +12,40 @@ import type {
   ECardTargetPage
 } from './types'
 
+/**
+ *
+ * @param value 待转换值
+ * @description 转为有限数字，失败返回 0
+ */
 function toFiniteNumber(value: unknown) {
   const numberValue = Number(value)
 
   return Number.isFinite(numberValue) ? numberValue : 0
 }
 
+/**
+ *
+ * @param value 金额
+ * @description 格式化为带货币符号的金额文本
+ */
 function formatMoney(value: number) {
   return Number.isInteger(value) ? `¥${value}` : `¥${value.toFixed(2)}`
 }
 
+/**
+ *
+ * @param value 文本，可为空
+ * @description 归一文本为去空格字符串
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param raw 活动原始数据，可为空
+ * @description 归一充值活动展示数据，最多 3 条
+ */
 function normalizePromotions(raw?: ECardPromotionRaw | null) {
   return (raw?.configList ?? [])
     .map(item => {
@@ -43,12 +63,23 @@ function normalizePromotions(raw?: ECardPromotionRaw | null) {
     .slice(0, 3) as ECardOverviewView['promotions']
 }
 
+/**
+ *
+ * @param value 文本，可为空
+ * @description 归一文本，空值返回 undefined
+ */
 function normalizeOptionalText(value?: string | null) {
   const text = normalizeText(value)
 
   return text || undefined
 }
 
+/**
+ *
+ * @param targetPage 目标页面
+ * @param options 可选跳转参数
+ * @description 组装 E 卡链接请求参数
+ */
 export function createECardLinkRequest(
   targetPage: ECardTargetPage = 'HOME',
   options: ECardCenterUrlOptions = {}
@@ -80,6 +111,10 @@ export function createECardLinkRequest(
 }
 
 export const ecardService = {
+  /**
+   *
+   * @description 查询余额与活动，组装 E 卡概览
+   */
   async queryOverview(): Promise<DepponResponse<ECardOverviewView>> {
     const [balanceResponse, promotionResponse] = await Promise.all([
       ecardApi.queryBalance('2', false).catch(() => null),
@@ -111,6 +146,12 @@ export const ecardService = {
     }
   },
 
+  /**
+   *
+   * @param targetPage 目标页面
+   * @param options 可选跳转参数
+   * @description 创建 E 卡中心页面链接
+   */
   async createCenterUrl(
     targetPage: ECardTargetPage = 'HOME',
     options: ECardCenterUrlOptions = {}
@@ -132,6 +173,10 @@ export const ecardService = {
     }
   },
 
+  /**
+   *
+   * @description 创建 E 卡预览页面链接
+   */
   async createPreviewUrl() {
     const response = await ecardApi.createECardPreviewLink({
       sysCode: APP_RUNTIME_CONFIG.ecardPmcSystemCode

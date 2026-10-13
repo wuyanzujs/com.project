@@ -24,6 +24,11 @@ const WEATHER_CACHE_KEY_PREFIX = 'DEPPON_GIS_WEATHER_'
 // 旧小程序天气缓存 300 分钟过期，保持一致。
 const WEATHER_CACHE_EXPIRE = { type: DPCacheExpireType.HOURS, value: 5 }
 
+/**
+ *
+ * @param adcode 区县 adcode
+ * @description 带缓存查询区县天气预报
+ */
 async function loadCountyWeatherInfos(adcode: string) {
   const cacheKey = `${WEATHER_CACHE_KEY_PREFIX}${adcode}`
   const cached = dpCache.get<GisWeatherDayItem[]>(cacheKey)

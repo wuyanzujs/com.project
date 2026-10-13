@@ -27,10 +27,21 @@ import type {
 const DEFAULT_STATION_PAGE_SIZE = 100
 const STATION_FEEDBACK_WEB_PATH = '/depponmobile/survey/noStarEvaluate'
 
+/**
+ *
+ * @param value 文本，可为空
+ * @description 去除首尾空白
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param type 网点查询类型
+ * @param subType 业务子类型
+ * @description 按查询类型生成网点的 matchtypes
+ */
 export function getStationMatchTypes(
   type: StationQueryType,
   subType: 'EXPRESS' | 'LOGISTICS'
@@ -50,6 +61,11 @@ export function getStationMatchTypes(
   return ['leave', 'pickup', 'expressPickup', 'deliver', 'expressDeliver']
 }
 
+/**
+ *
+ * @param type 网点查询类型
+ * @description 映射城市网点查询的 type 值
+ */
 function getStationCityType(type: StationQueryType): StationCityType {
   if (type === 'LEAVE') {
     return '1'
@@ -66,10 +82,20 @@ function getStationCityType(type: StationQueryType): StationCityType {
   return ''
 }
 
+/**
+ *
+ * @param value 经营范围文本
+ * @description 归一经营范围的分隔符
+ */
 function normalizeBusiness(value?: string | null) {
   return normalizeText(value).replace(/\s+/g, '、').replace(/、$/, '')
 }
 
+/**
+ *
+ * @param value 距离数值
+ * @description 距离转为 km 文案
+ */
 function normalizeDistance(value?: number | null) {
   if (!value) {
     return ''
@@ -78,6 +104,12 @@ function normalizeDistance(value?: number | null) {
   return `${Math.round(value * 100) / 100}km`
 }
 
+/**
+ *
+ * @param startTime 开始营业时间
+ * @param endTime 结束营业时间
+ * @description 生成网点营业时间文案
+ */
 function normalizeStationTime(startTime?: string, endTime?: string) {
   if (startTime && endTime) {
     return `周一至周日，${startTime}-${endTime}`
@@ -86,10 +118,20 @@ function normalizeStationTime(startTime?: string, endTime?: string) {
   return '周一至周日'
 }
 
+/**
+ *
+ * @param item 网点
+ * @description 取网点主编码
+ */
 function getStationPrimaryCode(item: Pick<StationItem, 'code' | 'id'>) {
   return normalizeText(item.code || item.id)
 }
 
+/**
+ *
+ * @param value 联系电话文本
+ * @description 提取网点主电话号码
+ */
 export function getStationPrimaryPhone(value?: string | null) {
   const candidates = normalizeText(value)
     .split(/[,，;；、\s/]+/)
@@ -103,6 +145,12 @@ export function getStationPrimaryPhone(value?: string | null) {
   )
 }
 
+/**
+ *
+ * @param station 网点
+ * @param address 查询地址
+ * @description 生成网点反馈的 rowData
+ */
 function createStationFeedbackRowData(
   station: Pick<StationItem, 'code'> | null,
   address: DispatchAddress | null
@@ -119,6 +167,11 @@ function createStationFeedbackRowData(
   ])
 }
 
+/**
+ *
+ * @param item 地址网点原始数据
+ * @description 地址网点原始数据转网点结构
+ */
 export function normalizeAddressStation(
   item: AddressStationRawItem
 ): StationItem {
@@ -139,6 +192,11 @@ export function normalizeAddressStation(
   }
 }
 
+/**
+ *
+ * @param item 城市网点原始数据
+ * @description 城市网点原始数据转网点结构
+ */
 function normalizeCityStation(item: CityStationRawItem): StationItem {
   return {
     id: item.unifiedCode,
@@ -157,6 +215,12 @@ function normalizeCityStation(item: CityStationRawItem): StationItem {
   }
 }
 
+/**
+ *
+ * @param item 网点详情原始数据
+ * @param options 详情补充选项
+ * @description 网点详情原始数据转详情结构
+ */
 function normalizeStationDetail(
   item: StationDetailRaw,
   options: {
@@ -188,6 +252,12 @@ function normalizeStationDetail(
   }
 }
 
+/**
+ *
+ * @param item 网点
+ * @param source 来源标识
+ * @description 创建网点详情的路由 URL
+ */
 export function createStationDetailRoute(
   item: Pick<StationItem, 'code' | 'id' | 'distance'>,
   source = 'QUERY_STATIONS'
@@ -205,6 +275,12 @@ export function createStationDetailRoute(
   })
 }
 
+/**
+ *
+ * @param station 网点
+ * @param address 查询地址
+ * @description 创建网点反馈的 WebView URI
+ */
 export function createStationFeedbackWebUri(
   station?: Pick<StationItem, 'code'> | null,
   address?: DispatchAddress | null
@@ -220,6 +296,11 @@ export function createStationFeedbackWebUri(
   })
 }
 
+/**
+ *
+ * @param options 网点查询条件
+ * @description 查询附近或城市网点列表
+ */
 export async function queryStations(
   options: StationQueryOptions
 ): Promise<DepponResponse<StationQueryResult>> {
@@ -294,6 +375,12 @@ export async function queryStations(
   }
 }
 
+/**
+ *
+ * @param code 网点编码
+ * @param options 详情补充选项
+ * @description 查询网点详情
+ */
 export async function queryStationDetail(
   code: string,
   options: {

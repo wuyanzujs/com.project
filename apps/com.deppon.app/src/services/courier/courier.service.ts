@@ -15,11 +15,20 @@ import type {
   CourierView
 } from './types'
 
+/**
+ *
+ * @param value 快递员工号，可为空
+ * @description 归一快递员工号，去首尾空白
+ */
 function normalizeCourierNo(value?: string | null) {
   return (value ?? '').trim()
 }
 
 export const courierService = {
+  /**
+   *
+   * @description 查询专属快递员列表
+   */
   async queryList(): Promise<DepponResponse<CourierView[]>> {
     const response = await courierApi.queryList()
 
@@ -35,6 +44,11 @@ export const courierService = {
     }
   },
 
+  /**
+   *
+   * @param courierNo 快递员工号
+   * @description 查询快递员详情与绑定状态
+   */
   async queryDetail(
     courierNo: string
   ): Promise<DepponResponse<CourierDetailView>> {
@@ -74,6 +88,11 @@ export const courierService = {
     }
   },
 
+  /**
+   *
+   * @param courierNo 快递员工号
+   * @description 关注快递员，已绑定视为成功
+   */
   async bind(courierNo: string): Promise<DepponResponse<null>> {
     const normalizedCourierNo = normalizeCourierNo(courierNo)
 
@@ -94,6 +113,11 @@ export const courierService = {
     }
   },
 
+  /**
+   *
+   * @param courierNo 快递员工号
+   * @description 取消关注快递员
+   */
   async unbind(courierNo: string): Promise<DepponResponse<null>> {
     const normalizedCourierNo = normalizeCourierNo(courierNo)
 
@@ -113,6 +137,11 @@ export const courierService = {
     }
   },
 
+  /**
+   *
+   * @param courierNo 快递员工号
+   * @description 把快递员信息带入寄件草稿
+   */
   prepareExpress(courierNo: string) {
     const draft = createCourierExpressDraft(courierNo)
 

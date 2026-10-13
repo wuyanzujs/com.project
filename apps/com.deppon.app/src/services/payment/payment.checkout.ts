@@ -30,10 +30,20 @@ import type {
 
 export const APP_PAYMENT_UNAVAILABLE_MESSAGE = '当前版本暂不支持在线支付'
 
+/**
+ *
+ * @param value 任意文本
+ * @description 去除首尾空格，空值返回空串
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param item 支付费用项
+ * @description 生成费用项去重 key
+ */
 function getPaymentItemKey(item: PaymentItem) {
   return [
     normalizeText(item.accountStatementDetailNo),
@@ -42,6 +52,12 @@ function getPaymentItemKey(item: PaymentItem) {
   ].join(':')
 }
 
+/**
+ *
+ * @param items 支付费用项列表
+ * @param detailNo 指定明细编号，可选
+ * @description 按明细编号筛选并去重费用项
+ */
 export function selectPaymentCheckoutItems(
   items: PaymentItem[],
   detailNo?: string | null
@@ -67,6 +83,11 @@ export function selectPaymentCheckoutItems(
   })
 }
 
+/**
+ *
+ * @param items 支付费用项列表
+ * @description 校验费用项是否可发起支付
+ */
 export function validatePaymentCheckout(
   items: PaymentItem[]
 ): PaymentCheckoutValidation {
@@ -115,6 +136,11 @@ export function validatePaymentCheckout(
   }
 }
 
+/**
+ *
+ * @param items 支付费用项列表
+ * @description 组装收银台视图与待支付金额
+ */
 export function createPaymentCheckoutView(
   items: PaymentItem[]
 ): PaymentCheckoutView {
@@ -134,6 +160,11 @@ export function createPaymentCheckoutView(
   }
 }
 
+/**
+ *
+ * @param options 收银台路由参数
+ * @description 创建收银台页面跳转 URL
+ */
 export function createPaymentCheckoutUrl(options: PaymentCheckoutRouteOptions) {
   return createAppRouteUrl(APP_ROUTES.paymentCheckout, {
     waybillNumber: normalizeText(options.waybillNumber),
@@ -143,6 +174,11 @@ export function createPaymentCheckoutUrl(options: PaymentCheckoutRouteOptions) {
   })
 }
 
+/**
+ *
+ * @param items 支付费用项列表
+ * @description 构造创建支付单请求体
+ */
 export function buildPaymentCreateRequest(
   items: PaymentItem[]
 ): PaymentCreateRequest {
@@ -153,6 +189,11 @@ export function buildPaymentCreateRequest(
   }
 }
 
+/**
+ *
+ * @param order 支付单
+ * @description 构造取消支付单请求体
+ */
 export function createPaymentCancelRequest(
   order: PaymentOrder
 ): PaymentCancelRequest {
@@ -165,6 +206,11 @@ export function createPaymentCancelRequest(
   }
 }
 
+/**
+ *
+ * @param response 确认支付响应
+ * @description 归一支付指令，识别渠道或终态
+ */
 export function normalizePaymentCommand(
   response: PaymentConfirmResponse
 ): PaymentCommand {
@@ -234,12 +280,21 @@ export function normalizePaymentCommand(
   }
 }
 
+/**
+ *
+ * @description 取当前登录用户的用户 id
+ */
 function getPaymentUserId() {
   const user = authService.getCachedUser()
 
   return normalizeText(user?.id || user?.originalOpenId || user?.openId || '')
 }
 
+/**
+ *
+ * @param order 待取消的支付单
+ * @description 静默取消支付单，失败忽略
+ */
 async function cancelPaymentOrder(order: PaymentOrder | null) {
   if (!order) {
     return
@@ -252,6 +307,14 @@ async function cancelPaymentOrder(order: PaymentOrder | null) {
   }
 }
 
+/**
+ *
+ * @param order 支付单
+ * @param view 收银台视图
+ * @param command 支付指令
+ * @param transactionId 交易流水号
+ * @description 构造支付完成结果
+ */
 function createCheckoutResult(
   order: PaymentOrder,
   view: PaymentCheckoutView,
@@ -271,10 +334,19 @@ function createCheckoutResult(
 }
 
 export const paymentCheckoutService = {
+  /**
+   *
+   * @description 判断当前是否支持在线支付
+   */
   isPaymentAvailable() {
     return isNativeCapabilityReady('payment')
   },
 
+  /**
+   *
+   * @param options 提交支付参数
+   * @description 创建支付单、确认并唤起支付
+   */
   async submit(
     options: SubmitPaymentCheckoutOptions
   ): Promise<DepponResponse<PaymentCheckoutResult>> {

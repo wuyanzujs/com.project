@@ -15,10 +15,20 @@ const ECARD_APPLY_SYSTEM = {
   SourceSystem: 'WX'
 } as const
 
+/**
+ *
+ * @param value 数字值
+ * @description 数字补零为两位字符串
+ */
 function pad(value: number) {
   return String(value).padStart(2, '0')
 }
 
+/**
+ *
+ * @param value 秒级或毫秒级时间戳
+ * @description 统一时间戳为毫秒
+ */
 function normalizeTimestamp(value?: number | null) {
   if (!value) {
     return 0
@@ -27,6 +37,11 @@ function normalizeTimestamp(value?: number | null) {
   return value < 10000000000 ? value * 1000 : value
 }
 
+/**
+ *
+ * @param value 时间戳
+ * @description 格式化时间戳为日期时间文案
+ */
 function formatTimestamp(value?: number | null) {
   const timestamp = normalizeTimestamp(value)
 
@@ -47,6 +62,11 @@ function formatTimestamp(value?: number | null) {
   )}`
 }
 
+/**
+ *
+ * @param raw 储值卡开票原始数据
+ * @description 把储值卡原始数据转成视图
+ */
 export function normalizeInvoiceECard(raw: InvoiceECardRaw): InvoiceECardView {
   const id = normalizeText(raw.payNo || raw.orderNo || raw.id)
   const timestamp = normalizeTimestamp(
@@ -61,10 +81,20 @@ export function normalizeInvoiceECard(raw: InvoiceECardRaw): InvoiceECardView {
   }
 }
 
+/**
+ *
+ * @param items 储值卡开票记录
+ * @description 汇总储值卡可开票金额
+ */
 export function getInvoiceECardTotalAmount(items: InvoiceECardView[]) {
   return items.reduce((total, item) => total + toFiniteNumber(item.amount), 0)
 }
 
+/**
+ *
+ * @param draft 储值卡开票草稿
+ * @description 生成储值卡开票预览与校验结果
+ */
 export function createECardApplyPreview(
   draft: InvoiceECardApplyDraft
 ): InvoiceApplyPreview {
@@ -99,6 +129,11 @@ export function createECardApplyPreview(
   }
 }
 
+/**
+ *
+ * @param draft 储值卡开票草稿
+ * @description 组装储值卡开票提交的 payload
+ */
 export function createECardApplySubmitPayload(
   draft: InvoiceECardApplyDraft
 ): InvoiceECardApplySubmitRequest {

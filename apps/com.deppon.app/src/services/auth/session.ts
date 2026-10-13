@@ -20,10 +20,18 @@ import {
 
 import type { AppUser } from './types'
 
+/**
+ *
+ * @description 取当前 eco token
+ */
 export function getCurrentEcoToken() {
   return getEcoToken()
 }
 
+/**
+ *
+ * @description 恢复登录态 cookie 并返回 eco token
+ */
 export async function recoverCurrentEcoToken() {
   if (getCurrentEcoToken()) {
     return getCurrentEcoToken()
@@ -34,6 +42,11 @@ export async function recoverCurrentEcoToken() {
   return getCurrentEcoToken()
 }
 
+/**
+ *
+ * @param user 用户信息
+ * @description 保存用户信息，账号变更时清理缓存
+ */
 export async function saveCurrentUser(user: AppUser) {
   const currentUser = getCurrentUser()
   const owner = getJsonStorageValue<AppUser>(CACHE_KEYS.accountCacheOwner)
@@ -69,14 +82,26 @@ export async function saveCurrentUser(user: AppUser) {
   return setJsonStorageValue(CACHE_KEYS.userInfo, user)
 }
 
+/**
+ *
+ * @description 取本地缓存的用户信息
+ */
 export function getCurrentUser() {
   return getJsonStorageValue<AppUser>(CACHE_KEYS.userInfo)
 }
 
+/**
+ *
+ * @description 清除本地缓存的用户信息
+ */
 export function clearCurrentUser() {
   return removeStorageValue(CACHE_KEYS.userInfo)
 }
 
+/**
+ *
+ * @description 清理登录态与账号维度缓存
+ */
 export async function clearAppSession() {
   appWebMessageBridge.clear()
 

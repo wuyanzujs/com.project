@@ -13,6 +13,12 @@ import type {
   OrderSceneSurveyPlanItem
 } from './order.sceneSurvey.types'
 
+/**
+ *
+ * @param context 场景问卷上下文
+ * @param plan 场景计划项
+ * @description 创建问卷查询请求参数
+ */
 function createQueryRequest(
   context: OrderSceneSurveyContext,
   plan: OrderSceneSurveyPlanItem
@@ -26,6 +32,12 @@ function createQueryRequest(
 }
 
 export const orderSceneSurveyService = {
+  /**
+   *
+   * @param context 场景问卷上下文
+   * @param plan 场景计划项
+   * @description 查询单个场景问卷配置
+   */
   async queryOne(
     context: OrderSceneSurveyContext,
     plan: OrderSceneSurveyPlanItem
@@ -73,6 +85,13 @@ export const orderSceneSurveyService = {
     }
   },
 
+  /**
+   *
+   * @param context 场景问卷上下文
+   * @param item 问卷项
+   * @param draft 评分草稿
+   * @description 提交评分问卷
+   */
   submitScore(
     context: OrderSceneSurveyContext,
     item: OrderSceneSurveyItem,
@@ -85,6 +104,13 @@ export const orderSceneSurveyService = {
       : Promise.resolve(createServiceFailure<boolean>('请完善评价内容'))
   },
 
+  /**
+   *
+   * @param context 场景问卷上下文
+   * @param item 问卷项
+   * @param labelId 标签 id
+   * @description 提交标签问卷
+   */
   submitLabel(
     context: OrderSceneSurveyContext,
     item: OrderSceneSurveyItem,

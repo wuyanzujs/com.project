@@ -7,6 +7,11 @@ import type {
   ExpressWarehouseStagingPayload
 } from './types'
 
+/**
+ *
+ * @param value 送货进仓草稿
+ * @description 生成报价用的送货进仓字段
+ */
 export function createExpressWarehouseQuoteFields(
   value: ExpressWarehouseDraft
 ) {
@@ -33,6 +38,11 @@ export function createExpressWarehouseQuoteFields(
   }
 }
 
+/**
+ *
+ * @param value 送货进仓草稿
+ * @description 生成下单用的送货进仓字段
+ */
 export function createExpressWarehouseOrderFields(
   value: ExpressWarehouseDraft
 ): {
@@ -79,6 +89,11 @@ export function createExpressWarehouseOrderFields(
   }
 }
 
+/**
+ *
+ * @param value 送货进仓草稿
+ * @description 生成送货进仓暂存 payload
+ */
 export function createExpressWarehouseStagingPayload(
   value: ExpressWarehouseDraft
 ): ExpressWarehouseStagingPayload {

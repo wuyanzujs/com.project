@@ -12,10 +12,20 @@ import type {
   CustomerInfoRaw
 } from './types'
 
+/**
+ *
+ * @param value 文本，可为空
+ * @description 归一文本为去空格字符串
+ */
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
+/**
+ *
+ * @param value 主联系人标识，可为空
+ * @description 生成是否主联系人文案
+ */
 function getMainContactText(value?: string | null) {
   const normalized = normalizeText(value).toUpperCase()
 
@@ -24,6 +34,11 @@ function getMainContactText(value?: string | null) {
     : '普通联系人'
 }
 
+/**
+ *
+ * @param value 私人账单标识，可为空
+ * @description 生成私人账单开通文案
+ */
 function getPrivateBillText(value?: string | null) {
   const normalized = normalizeText(value).toUpperCase()
 
@@ -38,6 +53,11 @@ function getPrivateBillText(value?: string | null) {
   return '以客户中心为准'
 }
 
+/**
+ *
+ * @param raw 客户信息原始数据，可为空
+ * @description 组装客户中心展示结构
+ */
 function toCustomerCenterView(
   raw?: CustomerInfoRaw | null
 ): CustomerCenterView {
@@ -68,12 +88,22 @@ function toCustomerCenterView(
   }
 }
 
+/**
+ *
+ * @param value 待转换值
+ * @description 转为正数，非法值返回空
+ */
 function toPositiveNumber(value: unknown) {
   const parsed = Number(value)
 
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null
 }
 
+/**
+ *
+ * @param raw 客户能力原始数据，可为空
+ * @description 归一客户服务能力信息
+ */
 export function normalizeCustomerCapability(
   raw?: CustomerCapabilityRaw | null
 ): CustomerCapabilityView {
@@ -89,6 +119,11 @@ export function normalizeCustomerCapability(
   }
 }
 
+/**
+ *
+ * @param value 代收额度
+ * @description 格式化代收额度文案
+ */
 function formatCollectionLimit(value: number | null) {
   if (value === null) {
     return '--'
@@ -101,6 +136,12 @@ function formatCollectionLimit(value: number | null) {
   return text + ' 元'
 }
 
+/**
+ *
+ * @param capability 客户服务能力
+ * @param customer 客户中心信息，可选
+ * @description 组装客户能力汇总展示结构
+ */
 export function createCustomerCapabilitySummary(
   capability: CustomerCapabilityView,
   customer?: CustomerCenterView | null
@@ -127,6 +168,10 @@ export function createCustomerCapabilitySummary(
   }
 }
 
+/**
+ *
+ * @description 查询并组装客户中心信息
+ */
 async function queryCustomerCenter(): Promise<
   DepponResponse<CustomerCenterView>
 > {
@@ -142,6 +187,10 @@ async function queryCustomerCenter(): Promise<
   }
 }
 
+/**
+ *
+ * @description 查询并组装客户服务额度
+ */
 async function queryCustomerCapability(): Promise<
   DepponResponse<CustomerCapabilityView>
 > {
@@ -157,6 +206,10 @@ async function queryCustomerCapability(): Promise<
   }
 }
 
+/**
+ *
+ * @description 并行查询客户与额度并汇总
+ */
 async function queryCustomerOverview(): Promise<
   DepponResponse<CustomerCenterOverviewView>
 > {

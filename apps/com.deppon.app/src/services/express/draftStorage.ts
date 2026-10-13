@@ -20,6 +20,11 @@ import type {
 
 const EXPRESS_DRAFT_EXPIRE_HOURS = 2
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 深拷贝并归一寄件草稿
+ */
 function cloneDraft(draft: ExpressDraft): ExpressDraft {
   return {
     ...draft,
@@ -58,6 +63,11 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
   }
 }
 
+/**
+ *
+ * @param draft 缓存的寄件草稿
+ * @description 归一草稿并兼容旧字段
+ */
 function normalizeDraft(draft: ExpressDraft): ExpressDraft {
   const defaultDraft = createExpressDraft()
   const legacyDraft = draft as ExpressDraft & {
@@ -130,6 +140,11 @@ function normalizeDraft(draft: ExpressDraft): ExpressDraft {
   }
 }
 
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 判断草稿是否含有效内容
+ */
 function hasMeaningfulDraft(draft: ExpressDraft) {
   const defaultDraft = createExpressDraft()
 
@@ -181,6 +196,11 @@ function hasMeaningfulDraft(draft: ExpressDraft) {
 }
 
 export const expressDraftStorage = {
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 缓存寄件草稿
+   */
   save(draft: ExpressDraft) {
     return dpCache.set<ExpressDraft>(CACHE_KEYS.expressDraft, {
       data: cloneDraft(draft),
@@ -191,6 +211,10 @@ export const expressDraftStorage = {
     })
   },
 
+  /**
+   *
+   * @description 读取并归一缓存的寄件草稿
+   */
   restore() {
     const draft = dpCache.get<ExpressDraft>(CACHE_KEYS.expressDraft)
 
@@ -203,6 +227,11 @@ export const expressDraftStorage = {
     return hasMeaningfulDraft(normalizedDraft) ? normalizedDraft : null
   },
 
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 登录前保留草稿缓存
+   */
   async preserveForLogin(draft: ExpressDraft) {
     const saved = await expressDraftStorage.save(draft)
 
@@ -213,6 +242,10 @@ export const expressDraftStorage = {
     return saved
   },
 
+  /**
+   *
+   * @description 清除缓存的寄件草稿
+   */
   clear() {
     return dpCache.remove(CACHE_KEYS.expressDraft)
   }
