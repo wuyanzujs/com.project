@@ -623,11 +623,11 @@ check-rn-boundaries.mjs      阻止小程序 API、H5 插件、RN 原生直调�
 check-route-registry.mjs     检查路由注册表和页面文件
 check-module-size.mjs        检查页面和 service 文件体量
 check-runtime-config.mjs     检查生产配置和 token 硬编码
-check-business-rules.cjs     跑一批纯业务规则断言
+check-business-rules.cjs     发现并运行按领域拆分的 Node 业务测试
 check-native-env.mjs         检查 Android/iOS 本地构建环境
 ```
 
-如果你改的是业务规则，尤其是订单、寄件、发票、扫码、打印、批量寄，记得看 `check-business-rules.cjs` 有没有对应断言。这个文件相当于轻量测试入口。
+如果你改的是业务规则，尤其是订单、寄件、发票、扫码、打印、批量寄，记得查看 `scripts/business-tests/<domain>/` 中的对应测试。`check-business-rules.cjs` 只负责发现和运行测试，新增断言放入对应领域的 `.test.cjs`。测试组织、fixture 和 mock 约定见 `scripts/business-tests/README.md`。
 
 ## 调试一个功能时怎么追代码
 
@@ -773,7 +773,7 @@ shared/navigation/routeUrl.ts
 2. 在 `services/<domain>/<domain>.api.ts` 增加接口函数。
 3. 在 service、mapper、rules 或 useCase 中编排业务。
 4. 页面只调用 service，不直接调用 api。
-5. 如果是稳定业务规则，补到 `check-business-rules.cjs`。
+5. 如果是稳定业务规则，补到 `scripts/business-tests/<domain>/*.test.cjs`。
 6. 跑：
 
    ```bash

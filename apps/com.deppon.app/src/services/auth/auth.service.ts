@@ -161,7 +161,9 @@ export const authService = {
     try {
       await authApi.logout(getSystemCode())
     } finally {
-      await clearAppSession()
+      if (!(await clearAppSession())) {
+        throw new Error('登录状态已停用，但本机数据清理失败，请重试')
+      }
     }
   },
 

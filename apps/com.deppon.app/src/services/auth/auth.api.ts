@@ -12,7 +12,7 @@ export const authApi = {
     return depponHttp.post<AppUser, LoginRequest>(
       '/gwapi/userService/eco/user/login',
       data,
-      { loading, login: false }
+      { loading, login: false, sessionLogin: true }
     )
   },
 

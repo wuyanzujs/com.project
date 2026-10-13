@@ -12,10 +12,8 @@ import {
   expressDraftBridge,
   expressDraftStorage,
   expressGoodsBridge,
-  expressPrivacyStorage,
   mapContactToExpressContact,
   setExpressContact,
-  setExpressPrivacyProtection,
   swapExpressContacts,
   updateExpressGoods,
   updateExpressPickup,
@@ -60,6 +58,7 @@ import { useExpressGoods } from './hooks/useExpressGoods'
 import { useExpressInsurance } from './hooks/useExpressInsurance'
 import { useExpressMonthlyPay } from './hooks/useExpressMonthlyPay'
 import { useExpressPickupTime } from './hooks/useExpressPickupTime'
+import { useExpressPrivacy } from './hooks/useExpressPrivacy'
 import { useExpressQuote } from './hooks/useExpressQuote'
 import { useExpressReturnBill } from './hooks/useExpressReturnBill'
 import { useExpressSubmit } from './hooks/useExpressSubmit'
@@ -117,6 +116,7 @@ const ExpressPage = () => {
     setDraft
   })
   const warehouseController = useExpressWarehouse({ draft, setDraft })
+  const privacyController = useExpressPrivacy(setDraft)
 
   const updateService = useCallback(
     (patch: Partial<ExpressDraft['service']>) => {
@@ -207,35 +207,6 @@ const ExpressPage = () => {
     )
   })
 
-  const handlePrivacyProtectionChange = (
-    value: ExpressDraft['service']['privacyProtection']
-  ) => {
-    if (value === 'N') {
-      setDraft(current => setExpressPrivacyProtection(current, value))
-      return
-    }
-
-    if (expressPrivacyStorage.hasConfirmed()) {
-      setDraft(current => setExpressPrivacyProtection(current, value))
-      return
-    }
-
-    Taro.showModal({
-      title: '开启隐私面单',
-      content:
-        '开启后，运单将按后端规则隐藏收寄件手机号等敏感信息。请确认快递员仍可通过系统联系收寄方。',
-      confirmText: '开启',
-      success: res => {
-        if (!res.confirm) {
-          return
-        }
-
-        expressPrivacyStorage.confirm()
-        setDraft(current => setExpressPrivacyProtection(current, value))
-      }
-    })
-  }
-
   const handleShare = () => {
     void shareWithApp({
       source: 'EXPRESS_SUBMIT',
@@ -246,16 +217,6 @@ const ExpressPage = () => {
         title: getNativeCapabilityErrorMessage(error),
         icon: 'none'
       })
-    })
-  }
-
-  const handleOpenPrivacyTerms = () => {
-    void Taro.showModal({
-      title: '信息加密说明',
-      content:
-        '开启后，纸质运单和德邦自助查单渠道（APP、小程序等）会对收寄双方姓名、电话、地址做隐藏处理，仅保留必要信息用于揽派。快递员仍可通过系统联系收寄方。',
-      showCancel: false,
-      confirmText: '我知道了'
     })
   }
 
@@ -337,7 +298,9 @@ const ExpressPage = () => {
           />
 
           {/* 生产端把价格时效块嵌在基础信息卡内：付款方式与防水提示之间。 */}
-          {quotes.length > 0 || quoteStatus === 'loading' || draft.quoteStaleReason ? (
+          {quotes.length > 0 ||
+          quoteStatus === 'loading' ||
+          draft.quoteStaleReason ? (
             <ExpressQuoteSection
               plain
               quoteStaleReason={draft.quoteStaleReason}
@@ -388,8 +351,8 @@ const ExpressPage = () => {
 
         <ExpressPrivacyCard
           value={draft.service.privacyProtection}
-          onChange={handlePrivacyProtectionChange}
-          onOpenTerms={handleOpenPrivacyTerms}
+          onChange={privacyController.onChange}
+          onOpenTerms={privacyController.onOpenTerms}
         />
 
         {/* 生产端在货物名称与收寄双方地址齐全后才展示协议行。 */}

@@ -8,6 +8,7 @@ export const CACHE_KEYS = {
   invoiceOrderAuth: 'DEPPON_INVOICE_ORDER_AUTH',
   invoiceOrderAuthCodeSend: 'DEPPON_INVOICE_ORDER_AUTH_CODE_SEND',
   invoiceEmail: 'DEPPON_INVOICE_EMAIL',
+  sessionInvalidated: 'DEPPON_SESSION_INVALIDATED',
   userSession: 'DEPPON_USER_SESSION',
   userInfo: 'DEPPON_USER_INFO'
 } as const

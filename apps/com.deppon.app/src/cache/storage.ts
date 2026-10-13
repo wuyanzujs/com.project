@@ -3,6 +3,7 @@ import Taro from '@tarojs/taro'
 import { APP_STORAGE_KEYS } from './keys'
 
 const storageValues = new Map<string, string>()
+const storageOperationQueues = new Map<string, Promise<void>>()
 let hydrationPromise: Promise<void> | null = null
 
 function normalizeStorageValue(value: unknown) {
@@ -13,17 +14,21 @@ function normalizeStorageValue(value: unknown) {
   return typeof value === 'string' ? value : String(value)
 }
 
-async function hydrateStorageKey(key: string) {
-  try {
-    const result = await Taro.getStorage({ key })
-    const value = normalizeStorageValue(result.data)
+function hydrateStorageKey(key: string) {
+  return enqueueStorageOperation(key, async () => {
+    try {
+      const result = await Taro.getStorage({ key })
+      const value = normalizeStorageValue(result.data)
 
-    if (value) {
-      storageValues.set(key, value)
+      if (value) {
+        storageValues.set(key, value)
+      } else {
+        storageValues.delete(key)
+      }
+    } catch {
+      storageValues.delete(key)
     }
-  } catch {
-    storageValues.delete(key)
-  }
+  })
 }
 
 export function hydrateStorage() {
@@ -40,26 +45,48 @@ export function getStorageValue(key: string): string {
   return storageValues.get(key) ?? ''
 }
 
-export async function setStorageValue(key: string, value: string) {
-  storageValues.set(key, value)
+function enqueueStorageOperation<T>(
+  key: string,
+  operation: () => Promise<T>
+): Promise<T> {
+  const previous = storageOperationQueues.get(key) ?? Promise.resolve()
+  const current = previous.then(operation, operation)
+  const settled = current.then(
+    () => undefined,
+    () => undefined
+  )
 
-  try {
-    await Taro.setStorage({ key, data: value })
-    return true
-  } catch {
-    return false
-  }
+  storageOperationQueues.set(key, settled)
+
+  return current.finally(() => {
+    if (storageOperationQueues.get(key) === settled) {
+      storageOperationQueues.delete(key)
+    }
+  })
 }
 
-export async function removeStorageValue(key: string) {
-  storageValues.delete(key)
+export function setStorageValue(key: string, value: string) {
+  return enqueueStorageOperation(key, async () => {
+    try {
+      await Taro.setStorage({ key, data: value })
+      storageValues.set(key, value)
+      return true
+    } catch {
+      return false
+    }
+  })
+}
 
-  try {
-    await Taro.removeStorage({ key })
-    return true
-  } catch {
-    return false
-  }
+export function removeStorageValue(key: string) {
+  return enqueueStorageOperation(key, async () => {
+    try {
+      await Taro.removeStorage({ key })
+      storageValues.delete(key)
+      return true
+    } catch {
+      return false
+    }
+  })
 }
 
 export function getJsonStorageValue<T>(key: string): T | null {

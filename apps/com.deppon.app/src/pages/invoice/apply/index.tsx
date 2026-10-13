@@ -218,7 +218,7 @@ const InvoiceApplyPage = () => {
         return
       }
 
-      dpCache.set(CACHE_KEYS.invoiceEmail, {
+      await dpCache.set(CACHE_KEYS.invoiceEmail, {
         data: email.trim()
       })
       Taro.showToast({

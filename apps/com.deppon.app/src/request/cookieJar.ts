@@ -20,6 +20,20 @@ export interface SessionCookieRuntime {
 }
 
 let sessionCookieRuntime: SessionCookieRuntime | null = null
+let sessionInvalidated = false
+let sessionRevision = 0
+let pendingSessionCookie: string | null = null
+let sessionMutationQueue: Promise<void> = Promise.resolve()
+
+function enqueueSessionMutation(operation: () => Promise<boolean>) {
+  const current = sessionMutationQueue.then(operation, operation)
+  sessionMutationQueue = current.then(
+    () => undefined,
+    () => undefined
+  )
+
+  return current
+}
 
 const SESSION_COOKIE_RECOVERY_ATTEMPTS = 5
 const SESSION_COOKIE_RECOVERY_INTERVAL_MS = 40
@@ -57,7 +71,17 @@ export {
 } from './cookie.rules'
 
 export function getSessionCookie() {
+  if (isSessionInvalidated()) {
+    return ''
+  }
+
   return getStorageValue(CACHE_KEYS.cookie)
+}
+
+function isSessionInvalidated() {
+  return (
+    sessionInvalidated || getStorageValue(CACHE_KEYS.sessionInvalidated) === '1'
+  )
 }
 
 export function getEcoToken() {
@@ -70,36 +94,97 @@ export function configureSessionCookieRuntime(
   sessionCookieRuntime = runtime
 }
 
-export async function setSessionCookie(cookie: string) {
+export function setSessionCookie(cookie: string) {
   const sessionCookie = createEcoSessionCookie(cookie)
 
   if (!sessionCookie) {
-    return false
+    return Promise.resolve(false)
   }
 
-  const saved = await setStorageValue(CACHE_KEYS.cookie, sessionCookie)
+  const previousCookie = pendingSessionCookie ?? getSessionCookie()
 
-  if (!saved) {
-    return false
+  if (
+    sessionCookie !== previousCookie ||
+    (pendingSessionCookie === null && isSessionInvalidated())
+  ) {
+    sessionRevision += 1
   }
 
-  if (sessionCookieRuntime) {
-    await sessionCookieRuntime.write(sessionCookie).catch(() => false)
-  }
+  pendingSessionCookie = sessionCookie
+  const revision = sessionRevision
 
-  return true
+  const mutation = enqueueSessionMutation(async () => {
+    if (revision !== sessionRevision) {
+      return false
+    }
+
+    const saved = await setStorageValue(CACHE_KEYS.cookie, sessionCookie)
+
+    if (!saved || revision !== sessionRevision) {
+      return false
+    }
+
+    if (!(await removeStorageValue(CACHE_KEYS.sessionInvalidated))) {
+      sessionInvalidated = true
+      return false
+    }
+
+    if (revision !== sessionRevision) {
+      return false
+    }
+
+    sessionInvalidated = false
+
+    if (sessionCookieRuntime) {
+      await sessionCookieRuntime.write(sessionCookie).catch(() => false)
+    }
+
+    return revision === sessionRevision
+  })
+
+  return mutation.finally(() => {
+    if (revision === sessionRevision) {
+      pendingSessionCookie = null
+    }
+  })
 }
 
-export async function clearSessionCookie() {
-  const [, storageCleared] = await Promise.all([
-    sessionCookieRuntime?.clear().catch(() => false),
-    removeStorageValue(CACHE_KEYS.cookie)
-  ])
+export function clearSessionCookie() {
+  // Block recovery immediately; the durable marker survives failed deletion.
+  sessionInvalidated = true
+  pendingSessionCookie = null
+  const revision = ++sessionRevision
 
-  return storageCleared
+  return enqueueSessionMutation(async () => {
+    await setStorageValue(CACHE_KEYS.sessionInvalidated, '1')
+
+    const [nativeCleared, storageCleared] = await Promise.all([
+      sessionCookieRuntime?.clear().catch(() => false) ?? Promise.resolve(true),
+      removeStorageValue(CACHE_KEYS.cookie)
+    ])
+
+    if (!nativeCleared || !storageCleared) {
+      return false
+    }
+
+    const markerCleared = await removeStorageValue(
+      CACHE_KEYS.sessionInvalidated
+    )
+
+    if (markerCleared && revision === sessionRevision) {
+      sessionInvalidated = false
+    }
+
+    return markerCleared
+  })
 }
 
 async function hydrateSessionCookieWithAttempts(url: string, attempts: number) {
+  if (isSessionInvalidated()) {
+    return ''
+  }
+
+  const revision = sessionRevision
   const cachedCookie = getSessionCookie()
 
   if (cachedCookie) {
@@ -107,12 +192,17 @@ async function hydrateSessionCookieWithAttempts(url: string, attempts: number) {
       await sessionCookieRuntime.write(cachedCookie).catch(() => false)
     }
 
-    return cachedCookie
+    return revision === sessionRevision ? getSessionCookie() : ''
   }
 
   const nativeCookie = await readSessionCookieFromRuntime(url, attempts)
 
-  if (!nativeCookie || !(await setSessionCookie(nativeCookie))) {
+  if (
+    revision !== sessionRevision ||
+    isSessionInvalidated() ||
+    !nativeCookie ||
+    !(await setSessionCookie(nativeCookie))
+  ) {
     return ''
   }
 
@@ -137,14 +227,27 @@ export function getResponseSetCookie(
   )
 }
 
-export async function saveSessionCookieFromResponse(response: HttpResponse) {
+export async function saveSessionCookieFromResponse(
+  response: HttpResponse,
+  options: { allowInvalidatedSession?: boolean } = {}
+) {
+  const revision = sessionRevision
+
+  if (isSessionInvalidated() && !options.allowInvalidatedSession) {
+    return ''
+  }
+
   const cookie =
     getResponseSetCookie(response) ||
     (sessionCookieRuntime
       ? await sessionCookieRuntime.read(response.url).catch(() => '')
       : '')
 
-  if (!cookie) {
+  if (
+    !cookie ||
+    revision !== sessionRevision ||
+    (isSessionInvalidated() && !options.allowInvalidatedSession)
+  ) {
     return ''
   }
 

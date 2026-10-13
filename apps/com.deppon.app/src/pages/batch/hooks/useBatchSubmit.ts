@@ -2,7 +2,6 @@ import Taro from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
-
 import {
   batchDraftStorage,
   batchService,
@@ -91,12 +90,18 @@ export function useBatchSubmit({
         showToast(summary.message)
       }
 
-      void batchDraftStorage.clear()
+      await batchDraftStorage.clear()
       navigateToAppRoute(APP_ROUTES.orderList, { login: true })
     } finally {
       setSubmiting(false)
     }
-  }, [draft, showToast, submitValidation.message, submitValidation.valid, submiting])
+  }, [
+    draft,
+    showToast,
+    submitValidation.message,
+    submitValidation.valid,
+    submiting
+  ])
 
   return {
     submiting,

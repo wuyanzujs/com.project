@@ -80,11 +80,13 @@ export function clearCurrentUser() {
 export async function clearAppSession() {
   appWebMessageBridge.clear()
 
-  await Promise.all([
+  const results = await Promise.all([
     clearSessionCookie(),
     clearCurrentUser(),
     removeStorageValue(CACHE_KEYS.userSession),
     removeStorageValue(CACHE_KEYS.accountCacheOwner),
     clearAccountScopedCache()
   ])
+
+  return results.every(Boolean)
 }

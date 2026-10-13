@@ -100,7 +100,7 @@ export function useInvoiceOrderAuth({
         return
       }
 
-      invoiceOrderAuth.markCodeSent()
+      await invoiceOrderAuth.markCodeSent()
       setOrderAuthCountdown(invoiceOrderAuth.codeSeconds)
       showPendingToast('验证码已发送')
     } finally {
@@ -168,7 +168,7 @@ export function useInvoiceOrderAuth({
                 message: response.message || '验证失败，请重新确认信息'
               }
         },
-        result => {
+        async result => {
           if (result.kind === 'error') {
             setOrderAuthMessage(result.message)
             return
@@ -176,7 +176,7 @@ export function useInvoiceOrderAuth({
 
           if (applyOrderSearchResponse(result.response)) {
             if (result.shouldCache) {
-              invoiceOrderAuth.rememberValue(
+              await invoiceOrderAuth.rememberValue(
                 auth.waybillNumber,
                 normalizedValue
               )

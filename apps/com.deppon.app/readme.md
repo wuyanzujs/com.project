@@ -44,6 +44,8 @@ pnpm --filter com.deppon.app run check:platform-build
 
 `pnpm verify:app` 是本地和 CI 的统一静态质量入口，会串行执行类型检查、ESLint、Stylelint、样式治理、RN 边界、路由注册表、页面/service 体量、运行时配置、业务规则和平台契约检查，不会生成 RN bundle 或原生安装包。
 
+业务测试已按领域放到 `scripts/business-tests/`，使用 Node 自带的测试运行器。可以执行 `pnpm --filter com.deppon.app run check:business-rules cache auth` 只检查缓存和登录，也可以运行 `flows` 检查登录、寄件、订单查询和退出的服务集成流程。新增用例、fixture 和 mock 的约定见 [业务测试说明](scripts/business-tests/README.md)。
+
 需要由发布者显式生成 bundle 时执行：
 
 ```bash

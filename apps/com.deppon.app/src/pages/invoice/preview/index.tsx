@@ -145,7 +145,7 @@ const InvoicePreviewPage = () => {
         return
       }
 
-      dpCache.set(CACHE_KEYS.invoiceEmail, {
+      await dpCache.set(CACHE_KEYS.invoiceEmail, {
         data: email.trim(),
         expire: {
           type: DPCacheExpireType.INFINITY

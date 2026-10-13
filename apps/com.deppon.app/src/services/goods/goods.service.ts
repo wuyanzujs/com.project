@@ -139,14 +139,12 @@ function saveHistoryItem(result: GoodsCheckResult) {
     ...current.filter(item => item.goodsName !== result.goodsName)
   ].slice(0, GOODS_HISTORY_LIMIT)
 
-  dpCache.set<GoodsHistoryItem[]>(CACHE_KEYS.goodsQueryHistory, {
+  return dpCache.set<GoodsHistoryItem[]>(CACHE_KEYS.goodsQueryHistory, {
     data: next,
     expire: {
       type: DPCacheExpireType.INFINITY
     }
   })
-
-  return next
 }
 
 export const goodsQueryService = {
@@ -211,7 +209,7 @@ export const goodsQueryService = {
       checkedAt: Date.now()
     }
 
-    saveHistoryItem(result)
+    await saveHistoryItem(result)
 
     return {
       ...response,

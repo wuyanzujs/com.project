@@ -46,6 +46,7 @@ export interface DepponRequestOptions<
   contentType?: string
   login?: boolean
   loading?: boolean
+  sessionLogin?: boolean
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -85,7 +86,8 @@ function createFallbackResponse<TResult>(
 async function normalizeOwsResponse<TResult>(
   response: HttpResponse<unknown>,
   loginRequired: boolean,
-  requestCookie: string
+  requestCookie: string,
+  sessionLogin: boolean
 ): Promise<DepponResponse<TResult>> {
   const data = response.data
   const dataStatus = isRecord(data) ? data.status : undefined
@@ -101,7 +103,9 @@ async function normalizeOwsResponse<TResult>(
 
   const sessionCookie =
     currentSession && !authExpired
-      ? await saveSessionCookieFromResponse(response)
+      ? await saveSessionCookieFromResponse(response, {
+          allowInvalidatedSession: sessionLogin
+        })
       : ''
 
   if (
@@ -158,7 +162,8 @@ export function depponRequest<TResult = unknown, TData = unknown>(
         normalizeOwsResponse<TResult>(
           response,
           options.login !== false,
-          requestCookie
+          requestCookie,
+          options.sessionLogin === true
         )
     })
     .catch((error: unknown) => {

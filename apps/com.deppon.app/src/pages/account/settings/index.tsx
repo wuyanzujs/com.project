@@ -140,6 +140,9 @@ const AccountSettingsPage = () => {
           navigateToAppRoute(APP_ROUTES.mine, {
             replace: true
           })
+        } catch (error) {
+          setOverview(accountService.getOverview())
+          showToast(error instanceof Error ? error.message : '退出失败，请重试')
         } finally {
           setLogouting(false)
         }

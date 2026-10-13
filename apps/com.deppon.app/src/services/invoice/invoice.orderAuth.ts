@@ -17,7 +17,7 @@ export function getCachedInvoiceOrderAuthValue(waybillNumber: string) {
   return list.find(item => item.id === normalizedWaybill)?.value.trim() ?? ''
 }
 
-export function rememberInvoiceOrderAuthValue(
+export async function rememberInvoiceOrderAuthValue(
   waybillNumber: string,
   value: string
 ) {
@@ -25,7 +25,7 @@ export function rememberInvoiceOrderAuthValue(
   const normalizedValue = value.trim()
 
   if (!normalizedWaybill || !normalizedValue) {
-    return
+    return false
   }
 
   const list =
@@ -33,7 +33,7 @@ export function rememberInvoiceOrderAuthValue(
   const nextList = list.filter(item => item.id !== normalizedWaybill)
 
   nextList.push({ id: normalizedWaybill, value: normalizedValue })
-  dpCache.set(CACHE_KEYS.invoiceOrderAuth, {
+  return dpCache.set(CACHE_KEYS.invoiceOrderAuth, {
     data: nextList,
     expire: {
       type: DPCacheExpireType.TODAY
@@ -63,7 +63,7 @@ export function getInvoiceOrderAuthCodeCountdown(now = Date.now()) {
 }
 
 export function markInvoiceOrderAuthCodeSent(sentAt = Date.now()) {
-  dpCache.set(CACHE_KEYS.invoiceOrderAuthCodeSend, {
+  return dpCache.set(CACHE_KEYS.invoiceOrderAuthCodeSend, {
     data: sentAt,
     expire: {
       type: DPCacheExpireType.MINUTES,

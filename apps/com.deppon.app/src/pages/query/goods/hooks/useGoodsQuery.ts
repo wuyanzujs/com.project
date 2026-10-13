@@ -1,7 +1,4 @@
-import Taro from '@tarojs/taro'
-
 import { useCallback, useState } from 'react'
-
 
 import {
   createExpressDraft,
@@ -33,7 +30,7 @@ interface UseGoodsQueryResult {
   setMessage: (next: string) => void
   handleSearch: () => Promise<void>
   checkGoodsName: (goodsName: string) => Promise<void>
-  handleClearHistory: () => void
+  handleClearHistory: () => Promise<void>
   handleCarryToExpress: () => void
 }
 
@@ -126,10 +123,13 @@ export function useGoodsQuery(
     }
   }, [keyword, searching, showToast])
 
-  const handleClearHistory = useCallback(() => {
-    goodsQueryService.clearHistory()
-    setHistory([])
-  }, [])
+  const handleClearHistory = useCallback(async () => {
+    if (await goodsQueryService.clearHistory()) {
+      setHistory([])
+    } else {
+      showToast('历史记录清理失败，请重试')
+    }
+  }, [showToast])
 
   const handleCarryToExpress = useCallback(() => {
     if (!result) {

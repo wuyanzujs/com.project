@@ -116,7 +116,9 @@ export function useExpressSubmit({
         response.result.waybillNumbers?.[0] ||
         ''
 
-      expressDraftStorage.clear()
+      if (!(await expressDraftStorage.clear())) {
+        Taro.showToast({ title: '订单已提交，草稿清理失败', icon: 'none' })
+      }
 
       navigateToAppRoute(
         createAppRouteUrl(APP_ROUTES.expressSuccess, {
