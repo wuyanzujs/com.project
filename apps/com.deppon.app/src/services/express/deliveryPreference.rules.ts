@@ -20,41 +20,43 @@ export interface ExpressDeliveryPreferenceOption {
   summary: string
 }
 
+type DeliveryPreferenceOptions = ExpressDeliveryPreferenceOption[]
+type PreferenceDraft = ExpressDeliveryPreferenceDraft
+
 export interface ExpressDeliveryOrderFields {
   appointmentDeliveryTime: string
   orderExtendFields: ExpressOrderExtendField[]
   newOrderExtendFields: ExpressOrderExtendField[]
 }
 
-export const EXPRESS_DELIVERY_PREFERENCE_OPTIONS: ExpressDeliveryPreferenceOption[] =
-  [
-    {
-      value: '',
-      label: '常规派送',
-      summary: '按运输产品预计时效安排派送。'
-    },
-    {
-      value: 'SCHEDULED',
-      label: '定时派送',
-      summary: '在预计到达后的 7 天内选择派送时间段。'
-    },
-    {
-      value: 'NOTIFY_SENDER',
-      label: '等寄件人通知',
-      summary: '快件到达派送网点后，等待寄件人通知再派送。'
-    },
-    {
-      value: 'NOTIFY_RECEIVER',
-      label: '等收件人通知',
-      summary: '等待收件人通知再派送，可标记未来 30 天不可收货日期。'
-    }
-  ]
+export const EXPRESS_DELIVERY_PREFERENCE_OPTIONS: DeliveryPreferenceOptions = [
+  {
+    value: '',
+    label: '常规派送',
+    summary: '按运输产品预计时效安排派送。'
+  },
+  {
+    value: 'SCHEDULED',
+    label: '定时派送',
+    summary: '在预计到达后的 7 天内选择派送时间段。'
+  },
+  {
+    value: 'NOTIFY_SENDER',
+    label: '等寄件人通知',
+    summary: '快件到达派送网点后，等待寄件人通知再派送。'
+  },
+  {
+    value: 'NOTIFY_RECEIVER',
+    label: '等收件人通知',
+    summary: '等待收件人通知再派送，可标记未来 30 天不可收货日期。'
+  }
+]
 
 function normalizeText(value?: string | null) {
   return (value ?? '').trim()
 }
 
-export function createExpressDeliveryPreferenceDraft(): ExpressDeliveryPreferenceDraft {
+export function createExpressDeliveryPreferenceDraft(): PreferenceDraft {
   return {
     type: '',
     scheduledWindow: '',

@@ -12,10 +12,10 @@ import { createAppWebUrl } from '@/shared/webview/appWeb'
 
 import type {
   OrderDetailDialHandler,
-  UseOrderDetailActionsOptions
+  UseOrderDetailActionsOptions as DetailOptions
 } from './useOrderDetailActions'
 
-export interface UseOrderDetailServiceActionsOptions extends UseOrderDetailActionsOptions {
+export interface UseOrderDetailServiceActionsOptions extends DetailOptions {
   handleDial: OrderDetailDialHandler
 }
 

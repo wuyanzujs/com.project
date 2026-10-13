@@ -1,12 +1,6 @@
-import Taro from '@tarojs/taro'
-
 import { useCallback, useRef, useState } from 'react'
 
-
-import {
-  applyBatchQuoteResults,
-  batchService
-} from '@/services/batch'
+import { applyBatchQuoteResults, batchService } from '@/services/batch'
 import type { BatchDraft } from '@/services/batch'
 
 interface UseBatchQuoteParams {
@@ -72,7 +66,14 @@ export function useBatchQuote({
     } finally {
       setQuoteLoading(false)
     }
-  }, [draft, quoteLoading, setDraft, showToast, validation.message, validation.valid])
+  }, [
+    draft,
+    quoteLoading,
+    setDraft,
+    showToast,
+    validation.message,
+    validation.valid
+  ])
 
   return {
     quoteLoading,

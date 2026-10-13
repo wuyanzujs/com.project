@@ -1,5 +1,3 @@
-import { Text } from '@tarojs/components'
-
 import type { ExpressDraft } from '@/services/express'
 
 import { ExpressSection } from '../ExpressSection'

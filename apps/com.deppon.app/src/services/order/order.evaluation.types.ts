@@ -41,7 +41,9 @@ export interface OrderEvaluationQueryResultRaw {
   evaluateCourierMessage: OrderEvaluationPendingCourierRaw | null
 }
 
-export interface OrderEvaluationQueryResponse extends DepponResponse<OrderEvaluationQueryResultRaw> {
+type OrderEvaluationResponse = DepponResponse<OrderEvaluationQueryResultRaw>
+
+export interface OrderEvaluationQueryResponse extends OrderEvaluationResponse {
   code?: string
 }
 

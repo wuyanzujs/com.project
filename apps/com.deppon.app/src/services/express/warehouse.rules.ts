@@ -13,6 +13,8 @@ import type {
 const AUTO_SELECT_WEIGHT = 100
 const LEGACY_LTL_PRODUCT_CODES = new Set(['JZKH', 'JZQY_LONG'])
 
+type WarehouseScreening = ExpressWarehouseScreening
+
 type WarehouseDraftInput = Omit<Partial<ExpressWarehouseDraft>, 'screening'> & {
   screening?: Partial<ExpressWarehouseScreening> | null
 }
@@ -57,7 +59,7 @@ export function normalizeExpressWarehouseScreeningType(
     : 0
 }
 
-export function createExpressWarehouseScreeningDraft(): ExpressWarehouseScreening {
+export function createExpressWarehouseScreeningDraft(): WarehouseScreening {
   return {
     inputKey: '',
     type: 0,

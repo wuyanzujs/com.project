@@ -2,7 +2,6 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
-
 import { couponService } from '@/services/coupon'
 import type { CouponDetailView, CouponStatus } from '@/services/coupon'
 import {
@@ -14,7 +13,6 @@ import {
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
-import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
 interface UseCouponDetailParams {
   couponCode: string

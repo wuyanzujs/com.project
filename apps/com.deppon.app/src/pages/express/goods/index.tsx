@@ -47,7 +47,14 @@ interface GoodsStepperProps {
 
 // 生产端总重量/货物件数是胶囊步进器：灰轨道两端 − +，中间白色输入 pill，
 // 单位（kg/件）显示在白色 pill 内右侧。
-function GoodsStepper({ max, min, onChange, step, unit, value }: GoodsStepperProps) {
+function GoodsStepper({
+  max,
+  min,
+  onChange,
+  step,
+  unit,
+  value
+}: GoodsStepperProps) {
   const amount = parseAmount(value)
   const disabledMinus = amount <= min
   const disabledPlus = amount >= max
@@ -246,7 +253,9 @@ const ExpressGoodsPage = () => {
               )}
               {nameSuggestion.message && (
                 <Text className='express-goods-message'>
-                  {nameSuggestion.loading ? '推荐查询中' : nameSuggestion.message}
+                  {nameSuggestion.loading
+                    ? '推荐查询中'
+                    : nameSuggestion.message}
                 </Text>
               )}
               <View className='express-goods-chips'>
@@ -257,7 +266,9 @@ const ExpressGoodsPage = () => {
                     key={item.name}
                     onPress={() => handleSelectName(item.name)}
                   >
-                    <Text className='express-goods-chip__text'>{item.name}</Text>
+                    <Text className='express-goods-chip__text'>
+                      {item.name}
+                    </Text>
                   </AppPressable>
                 ))}
               </View>

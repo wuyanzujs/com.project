@@ -10,7 +10,6 @@ import { ExpressSheet } from '../ExpressSheet'
 
 import type { ExpressPickupTimeController } from '../../hooks/useExpressPickupTime'
 
-
 import './index.scss'
 
 interface ExpressPickupTimeSheetProps {
@@ -27,7 +26,11 @@ function getRelativeDayLabel(value: string) {
     return ''
   }
 
-  const target = Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+  const target = Date.UTC(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3])
+  )
   const now = new Date()
   const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
   const days = Math.round((target - today) / 86400000)
@@ -40,16 +43,22 @@ function getRelativeDayLabel(value: string) {
 }
 
 // 与生产一致：切日期后默认选当日第一个可选的普通时段，没有普通时段再取首个可选时段。
-function getDefaultTimeOption(controller: ExpressPickupTimeController, date: string) {
-  const dateOption = controller.dateOptions.find(option => option.value === date)
+function getDefaultTimeOption(
+  controller: ExpressPickupTimeController,
+  date: string
+) {
+  const dateOption = controller.dateOptions.find(
+    option => option.value === date
+  )
 
   if (!dateOption) {
     return undefined
   }
 
   return (
-    dateOption.timeOptions.find(option => !option.disabled && option.type === 'NORMAL') ??
-    dateOption.timeOptions.find(option => !option.disabled)
+    dateOption.timeOptions.find(
+      option => !option.disabled && option.type === 'NORMAL'
+    ) ?? dateOption.timeOptions.find(option => !option.disabled)
   )
 }
 
@@ -67,7 +76,8 @@ export function ExpressPickupTimeSheet({
     setPrevVisible(visible)
 
     if (visible) {
-      const seededDate = controller.selectedDate || controller.dateOptions[0]?.value || ''
+      const seededDate =
+        controller.selectedDate || controller.dateOptions[0]?.value || ''
 
       setDateValue(seededDate)
       setTimeValue(
@@ -81,17 +91,23 @@ export function ExpressPickupTimeSheet({
   // 打开瞬间查询可能还在途（seed 时 dateOptions 为空会落空），数据到位后补一次
   // 跟随：优先草稿选中，日期无效则回退首日，时段回退当日首个可选普通时段。
   if (visible && !timeValue && controller.dateOptions.length) {
-    const nextDate = controller.dateOptions.some(option => option.value === dateValue)
+    const nextDate = controller.dateOptions.some(
+      option => option.value === dateValue
+    )
       ? dateValue
       : controller.selectedDate || controller.dateOptions[0]?.value || ''
 
     setDateValue(nextDate)
     setTimeValue(
-      controller.selectedTime || getDefaultTimeOption(controller, nextDate)?.time || ''
+      controller.selectedTime ||
+        getDefaultTimeOption(controller, nextDate)?.time ||
+        ''
     )
   }
 
-  const activeDate = controller.dateOptions.find(option => option.value === dateValue)
+  const activeDate = controller.dateOptions.find(
+    option => option.value === dateValue
+  )
   const timeOptions = activeDate?.timeOptions ?? []
 
   const handleDatePress = (date: string) => {
@@ -131,7 +147,10 @@ export function ExpressPickupTimeSheet({
     >
       {controller.dateOptions.length ? (
         <View className='express-pickup-time-sheet__columns'>
-          <ScrollView className='express-pickup-time-sheet__column express-pickup-time-sheet__column--dates' scrollY>
+          <ScrollView
+            className='express-pickup-time-sheet__column express-pickup-time-sheet__column--dates'
+            scrollY
+          >
             {controller.dateOptions.map(option => {
               const selected = option.value === dateValue
               const relativeLabel = getRelativeDayLabel(option.value)
@@ -154,7 +173,9 @@ export function ExpressPickupTimeSheet({
                         : 'express-pickup-time-sheet__date-text'
                     }
                   >
-                    {relativeLabel ? `${option.value}(${relativeLabel})` : option.value}
+                    {relativeLabel
+                      ? `${option.value}(${relativeLabel})`
+                      : option.value}
                   </Text>
                 </AppPressable>
               )

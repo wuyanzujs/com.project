@@ -188,7 +188,11 @@ export function useExpressPickupTime({
 
   // pickup.time 与槽位 time 同为「日期 时间戳」全格式，直接精确匹配；
   // 旧逻辑剥掉日期前缀后只剩时刻，永远匹配不上导致 selectedTime 恒为空。
-  const selectedTimeOption = getSelection(response, selectedDate, draft.pickup.time)
+  const selectedTimeOption = getSelection(
+    response,
+    selectedDate,
+    draft.pickup.time
+  )
 
   return {
     dateOptions,

@@ -16,6 +16,8 @@ export interface ExpressReturnBillRequirementOption {
   label: string
 }
 
+type ReturnBillRequirementOptions = ExpressReturnBillRequirementOption[]
+
 export const EXPRESS_RETURN_BILL_CUSTOM_MAX_LENGTH = 20
 export const EXPRESS_RETURN_BILL_COUNT_MIN = 1
 export const EXPRESS_RETURN_BILL_COUNT_MAX = 99
@@ -48,7 +50,7 @@ export const expressReturnBillOptions: ExpressReturnBillOption[] = [
   }
 ]
 
-export const expressReturnBillRequirementOptions: ExpressReturnBillRequirementOption[] =
+export const expressReturnBillRequirementOptions: ReturnBillRequirementOptions =
   [
     { code: 'R1', label: '签名' },
     { code: 'R2', label: '盖章' },

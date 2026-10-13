@@ -17,7 +17,9 @@ export interface OrderEditPickupTimeSelection {
   type: OrderEditPickupOpeningType
 }
 
-export interface OrderEditPickupTimeOption extends OrderEditPickupTimeSelection {
+type PickupTimeSelection = OrderEditPickupTimeSelection
+
+export interface OrderEditPickupTimeOption extends PickupTimeSelection {
   label: string
   disabled: boolean
   night: boolean
