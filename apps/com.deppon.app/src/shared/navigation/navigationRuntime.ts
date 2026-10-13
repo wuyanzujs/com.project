@@ -1,6 +1,7 @@
 import Taro from '@tarojs/taro'
 
 import { APP_MAIN_NAVIGATION } from './routes'
+import { createRouteQuery } from './routeUrl'
 
 interface DispatchAppRouteOptions {
   failureMessage?: string
@@ -15,8 +16,10 @@ interface DispatchAppRouteAsyncOptions extends DispatchAppRouteOptions {
 interface PageLike {
   route?: string
   __route__?: string
+  options?: Record<string, unknown>
   $router?: {
     path?: string
+    params?: Record<string, unknown>
   }
 }
 
@@ -44,20 +47,55 @@ function reportNavigationFailure(options: DispatchAppRouteOptions) {
   }
 }
 
-function getRoutePathname(url: string) {
-  return url.split('?')[0].replace(/^\/+/, '')
+function normalizeRoutePath(route: string) {
+  return route.startsWith('/') ? route : `/${route}`
 }
 
-function getCurrentRoutePathname() {
+function getRoutePathname(url: string) {
+  return normalizeRoutePath(url.split('?')[0])
+}
+
+function getPageRouteUrl(page: PageLike | undefined) {
+  const route = page?.route || page?.__route__ || page?.$router?.path || ''
+
+  if (!route) {
+    return ''
+  }
+
+  const params = page?.options || page?.$router?.params || {}
+  const query = createRouteQuery(params)
+
+  return query
+    ? `${normalizeRoutePath(route)}?${query}`
+    : normalizeRoutePath(route)
+}
+
+function getCurrentRouteUrl() {
   try {
     const pages = Taro.getCurrentPages() as PageLike[]
-    const page = pages[pages.length - 1]
-    const route = page?.route || page?.__route__ || page?.$router?.path || ''
 
-    return getRoutePathname(route)
+    return getPageRouteUrl(pages[pages.length - 1])
   } catch {
     return ''
   }
+}
+
+function routeMatches(currentUrl: string, targetUrl: string) {
+  const normalizedCurrent = normalizeRouteUrl(currentUrl)
+  const normalizedTarget = normalizeRouteUrl(targetUrl)
+
+  if (normalizedCurrent === normalizedTarget) {
+    return true
+  }
+
+  // Some RN page snapshots expose only the pathname while a navigation is
+  // settling. In that window query equality cannot be observed yet; once the
+  // current page exposes query params, the exact comparison above applies.
+  return (
+    !normalizedCurrent.includes('?') &&
+    normalizedTarget.includes('?') &&
+    getRoutePathname(normalizedCurrent) === getRoutePathname(normalizedTarget)
+  )
 }
 
 function delayNavigationConfirmation() {
@@ -67,12 +105,12 @@ function delayNavigationConfirmation() {
 }
 
 async function confirmCurrentRoute(url: string) {
-  const targetPathname = getRoutePathname(url)
+  const targetUrl = normalizeRouteUrl(url)
 
   for (let attempt = 0; attempt < NAVIGATION_CONFIRM_ATTEMPTS; attempt += 1) {
-    const currentPathname = getCurrentRoutePathname()
+    const currentUrl = getCurrentRouteUrl()
 
-    if (currentPathname && currentPathname === targetPathname) {
+    if (currentUrl && routeMatches(currentUrl, targetUrl)) {
       return true
     }
 
@@ -85,9 +123,23 @@ async function confirmCurrentRoute(url: string) {
 }
 
 function isCurrentRoute(url: string) {
-  const currentPathname = getCurrentRoutePathname()
+  const currentUrl = getCurrentRouteUrl()
 
-  return Boolean(currentPathname) && currentPathname === getRoutePathname(url)
+  return Boolean(currentUrl) && routeMatches(currentUrl, url)
+}
+
+function normalizeRouteUrl(url: string) {
+  const [pathname, query = ''] = url.split('?')
+
+  if (!query) {
+    return normalizeRoutePath(pathname)
+  }
+
+  const params = new URLSearchParams(query)
+
+  return `${normalizeRoutePath(pathname)}?${createRouteQuery(
+    Object.fromEntries(params.entries())
+  )}`
 }
 
 interface AppRuntimeTabBarGlobal {
@@ -130,7 +182,8 @@ function getCurrentPageCount() {
 // 容器，因为 switchTab 是通过当前聚焦的导航器解析 tab 路由的。
 async function switchToMainRoute(url: string) {
   const needsUnwind =
-    !isMainRoutePathname(getCurrentRoutePathname()) && getCurrentPageCount() > 1
+    !isMainRoutePathname(getRoutePathname(getCurrentRouteUrl())) &&
+    getCurrentPageCount() > 1
 
   if (needsUnwind) {
     try {

@@ -7,6 +7,7 @@ const ts = require('typescript')
 const appRoot = path.resolve(__dirname, '../../..')
 const srcRoot = path.join(appRoot, 'src')
 const taroMockURL = pathToFileURL(path.join(__dirname, 'taro.cjs')).href
+const cookieMockURL = pathToFileURL(path.join(__dirname, 'cookie.cjs')).href
 
 globalThis.__APP_RUNTIME_CONFIG__ = require('./runtime-config.cjs')
 
@@ -15,6 +16,10 @@ registerHooks({
   resolve(specifier, context, nextResolve) {
     if (specifier === '@tarojs/taro') {
       return { url: taroMockURL, format: 'commonjs', shortCircuit: true }
+    }
+
+    if (specifier === '@react-native-cookies/cookies') {
+      return { url: cookieMockURL, format: 'commonjs', shortCircuit: true }
     }
 
     if (

@@ -95,15 +95,11 @@ export function createAppSessionCookieRuntime(urls: string[]) {
           )
         )
       )
-      const results = await Promise.allSettled([
-        ...expiredCookieWrites,
-        CookieManager.clearAll(false),
-        CookieManager.clearAll(true)
-      ])
+      const results = await Promise.allSettled([...expiredCookieWrites])
 
       await CookieManager.flush().catch(() => undefined)
 
-      return results.some(result => result.status === 'fulfilled')
+      return results.every(result => result.status === 'fulfilled')
     }
   }
 }
