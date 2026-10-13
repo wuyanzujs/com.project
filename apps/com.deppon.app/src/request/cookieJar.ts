@@ -150,7 +150,7 @@ export function setSessionCookie(cookie: string) {
 }
 
 export function clearSessionCookie() {
-  // Block recovery immediately; the durable marker survives failed deletion.
+  // 立即阻断恢复；持久化标记即使删除失败也会留存。
   sessionInvalidated = true
   pendingSessionCookie = null
   const revision = ++sessionRevision

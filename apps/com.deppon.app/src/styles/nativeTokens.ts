@@ -1,6 +1,6 @@
 /**
- * Native props cannot consume Sass. Every color below has an identical Sass
- * declaration in _tokens.scss and is checked by style governance.
+ * 原生组件的 props 无法消费 Sass。下面每个颜色在 _tokens.scss 中都有对应的
+ * Sass 声明，并由样式治理脚本校验两者一致。
  */
 export const APP_STYLE_COLORS = {
   transparent: 'transparent',

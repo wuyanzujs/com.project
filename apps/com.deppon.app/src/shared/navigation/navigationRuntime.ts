@@ -88,9 +88,8 @@ function routeMatches(currentUrl: string, targetUrl: string) {
     return true
   }
 
-  // Some RN page snapshots expose only the pathname while a navigation is
-  // settling. In that window query equality cannot be observed yet; once the
-  // current page exposes query params, the exact comparison above applies.
+  // RN 页面快照在导航尚未稳定时可能只暴露 pathname。此时还观测不到 query 是否
+  // 相等；等当前页面暴露 query 参数后，就走上面对 URL 的精确比较。
   return (
     !normalizedCurrent.includes('?') &&
     normalizedTarget.includes('?') &&

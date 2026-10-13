@@ -50,14 +50,14 @@ const makeFixtureWritable = root => {
     try {
       fs.chmodSync(filePath, 0o666)
     } catch {
-      // Cleanup should remain best-effort when another process owns a file.
+      // 文件被其他进程占用时，清理应保持尽力而为。
     }
   }
 
   try {
     fs.chmodSync(root, 0o777)
   } catch {
-    // Cleanup should remain best-effort when another process owns a directory.
+    // 目录被其他进程占用时，清理应保持尽力而为。
   }
 }
 

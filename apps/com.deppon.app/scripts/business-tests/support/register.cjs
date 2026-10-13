@@ -12,7 +12,7 @@ const cookieMockURL = pathToFileURL(path.join(__dirname, 'cookie.cjs')).href
 
 globalThis.__APP_RUNTIME_CONFIG__ = require('./runtime-config.cjs')
 
-// Use Node's public hooks instead of patching Module._resolveFilename.
+// 使用 Node 的公开钩子，而不是给 Module._resolveFilename 打补丁。
 registerHooks({
   resolve(specifier, context, nextResolve) {
     if (specifier === '@tarojs/taro') {

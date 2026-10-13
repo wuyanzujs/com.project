@@ -11,7 +11,7 @@ export type AppPressableLayout =
 
 export interface AppPressableProps extends PropsWithChildren {
   accessibilityLabel?: string
-  /** Keep disabled semantics while allowing onPress to explain why. */
+  /** 保留 disabled 语义，同时允许 onPress 说明不可用的原因。 */
   allowDisabledPress?: boolean
   block?: boolean
   className?: string

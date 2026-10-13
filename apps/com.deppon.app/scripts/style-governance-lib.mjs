@@ -710,9 +710,8 @@ const hasSpaceLiteral = value =>
   hasNumericLiteral(value) && !/^-?0(?:px|%)?$/i.test(value.trim())
 
 const countStaticMixinValue = (metrics, fields, value, context, variables) => {
-  // A color alias is charged at its literal declaration, matching ordinary
-  // Sass variable consumers. Direct colors in an at-rule argument are charged
-  // here because getDeclarations intentionally skips parentheses.
+  // 颜色别名在其字面声明处计数，与普通 Sass 变量使用方一致。at-rule 参数里的
+  // 直接颜色在这里计数，因为 getDeclarations 有意跳过括号内容。
   const directColors = extractColorsFromValue(value).length
   if (directColors > 0) metrics.rawColors += directColors
 
@@ -937,10 +936,9 @@ export const analyzeNativeContent = content => {
   return { rawColors }
 }
 
-// Taro's RN renderer does not provide a reliable hit target for event
-// handlers attached to primitive elements. Keep the list explicit so custom
-// PascalCase components (for example, Banner or OrderDetailEmpty) are not
-// mistaken for native controls.
+// Taro 的 RN 渲染器无法为挂在基础元素上的事件处理器提供可靠的点击命中区域。
+// 这里保持白名单显式列出，避免自定义 PascalCase 组件（例如 Banner、
+// OrderDetailEmpty）被误判为原生控件。
 const TARO_NATIVE_ELEMENTS = new Set([
   'View',
   'Text',
@@ -1160,9 +1158,8 @@ const getLineNumber = (source, offset) => {
 }
 
 /**
- * Find direct click/tap handlers on known Taro primitive elements. The
- * scanner intentionally works without a parser dependency because the CLI is
- * copied into release fixtures and must remain self-contained.
+ * 查找挂在已知 Taro 基础元素上的直接 click/tap 处理器。该扫描器有意不依赖解析器：
+ * CLI 会被复制进发布用例中，必须保持自包含。
  */
 export const scanNativeClickHandlers = source => {
   const nativeNames = getTaroNativeAliases(source)

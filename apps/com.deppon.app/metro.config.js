@@ -11,7 +11,7 @@ const maxWorkers =
     : 2
 
 /**
- * Metro configuration
+ * Metro 配置
  * https://facebook.github.io/metro/docs/configuration
  *
  * @type {import('metro-config').MetroConfig}

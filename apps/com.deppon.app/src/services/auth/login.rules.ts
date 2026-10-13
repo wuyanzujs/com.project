@@ -33,9 +33,8 @@ function normalizeRegisterPage(redirectUrl?: string) {
 }
 
 /**
- * The OWS login endpoint still expects the legacy registerRecord envelope.
- * App cannot collect mini-program marketing/device fields, so those fields
- * stay empty and only the safe return page/system code are supplied.
+ * OWS 登录接口仍要求旧版 registerRecord 结构。App 端无法采集小程序的营销/设备
+ * 字段，因此这些字段保持为空，只填安全的返回页面和系统编码。
  */
 export function createAppLoginRegisterRecord(
   redirectUrl?: string
