@@ -6,11 +6,7 @@
   },
   "overrides": [
     {
-      "files": [
-        "src/**/*.{ts,tsx}",
-        "config/**/*.{ts,js,cjs,mjs}",
-        "scripts/**/*.{js,cjs,mjs}"
-      ],
+      "files": ["src/**/*.{ts,tsx}", "config/**/*.{ts,js,cjs,mjs}", "scripts/**/*.{js,cjs,mjs}"],
       "env": {
         "node": true,
         "es2022": true
@@ -32,13 +28,7 @@
         "import/order": [
           "error",
           {
-            "groups": [
-              "builtin",
-              "external",
-              "internal",
-              ["parent", "sibling", "index"],
-              "type"
-            ],
+            "groups": ["builtin", "external", "internal", ["parent", "sibling", "index"], "type"],
             "pathGroups": [
               {
                 "pattern": "react",
@@ -77,12 +67,7 @@
       }
     },
     {
-      "files": [
-        "config/**/*.{js,cjs}",
-        "scripts/**/*.{js,cjs}",
-        "*.config.js",
-        "*.cjs"
-      ],
+      "files": ["config/**/*.{js,cjs}", "scripts/**/*.{js,cjs}", "*.config.js", "*.cjs"],
       "env": {
         "node": true
       },
