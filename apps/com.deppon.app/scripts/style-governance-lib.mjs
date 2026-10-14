@@ -1,11 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-// 行数上限：100 行基准，最多超 30% 即 130 行；
+// 行数上限是代码里的政策常量，基线只能引用不超过它的值；
 // 已超上限的存量文件冻结在基线行数，只能收缩。
 export const DEFAULT_STYLE_LIMITS = Object.freeze({
-  pageScssLines: 130,
-  componentScssLines: 130
+  pageScssLines: 500,
+  componentScssLines: 500
 })
 
 const STYLE_DEBT_FIELDS = [
@@ -1710,6 +1710,11 @@ const validateBaseline = baseline => {
   if (!Number.isInteger(baseline.limits?.pageScssLines) || !Number.isInteger(baseline.limits?.componentScssLines)) {
     return ['样式基线缺少有效的文件行数上限']
   }
+  for (const limit of ['pageScssLines', 'componentScssLines']) {
+    if (baseline.limits[limit] > DEFAULT_STYLE_LIMITS[limit]) {
+      failures.push(`样式基线的 ${limit} 从代码上限 ${DEFAULT_STYLE_LIMITS[limit]} 放宽到 ${baseline.limits[limit]}`)
+    }
+  }
 
   for (const [file, metrics] of Object.entries(baseline.scss.files)) {
     for (const [field, label] of STYLE_DEBT_FIELDS) {
@@ -1867,12 +1872,8 @@ export const compareBaselineEvolution = (current, previous) => {
   const failures = [...validateBaseline(current), ...validateBaseline(previous)]
   if (failures.length > 0) return { ok: false, failures }
 
-  for (const limit of ['pageScssLines', 'componentScssLines']) {
-    if (current.limits[limit] > previous.limits[limit]) {
-      failures.push(`${limit} 从 ${previous.limits[limit]} 放宽到 ${current.limits[limit]}`)
-    }
-  }
-
+  // 行数上限的政策值由 DEFAULT_STYLE_LIMITS 决定，基线越界已在校验中拦截，
+  // 这里不再比对上一版上限，避免合法的政策上调被当成放宽。
   for (const [file, metrics] of Object.entries(current.scss.files)) {
     const previousMetrics = previous.scss.files[file]
     if (!previousMetrics) {

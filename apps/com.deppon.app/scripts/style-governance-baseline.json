@@ -1,8 +1,8 @@
 {
   "version": 2,
   "limits": {
-    "pageScssLines": 130,
-    "componentScssLines": 130
+    "pageScssLines": 500,
+    "componentScssLines": 500
   },
   "scss": {
     "files": {

@@ -16,6 +16,7 @@ import {
   compareSnapshot,
   createInitialBaseline,
   createNextBaseline,
+  DEFAULT_STYLE_LIMITS,
   scanDirectReactNativePressables,
   scanNativeClickHandlers
 } from './style-governance-lib.mjs'
@@ -1330,6 +1331,26 @@ test('baseline evolution rejects manually raised ceilings', () => {
 
   assert.equal(result.ok, false)
   assert.match(result.failures.join('\n'), /颜色字面量上限从 1 放宽到 2/)
+})
+
+test('baseline limits cannot exceed the code policy ceiling', () => {
+  const raised = structuredClone(baseline(snapshot()))
+  const exceedsPolicy = DEFAULT_STYLE_LIMITS.pageScssLines + 1
+  raised.limits.pageScssLines = exceedsPolicy
+
+  const result = compareSnapshot(snapshot(), raised)
+
+  assert.equal(result.ok, false)
+  assert.match(result.failures.join('\n'), new RegExp(`pageScssLines 从代码上限 ${DEFAULT_STYLE_LIMITS.pageScssLines} 放宽到 ${exceedsPolicy}`))
+})
+
+test('baseline evolution accepts limits that follow the code policy ceiling', () => {
+  const previous = structuredClone(baseline(snapshot()))
+  previous.limits = { pageScssLines: 130, componentScssLines: 130 }
+  const current = structuredClone(previous)
+  current.limits = { ...DEFAULT_STYLE_LIMITS }
+
+  assert.equal(compareBaselineEvolution(current, previous).ok, true)
 })
 
 for (const [field, label] of [

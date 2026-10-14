@@ -40,6 +40,11 @@ const legacyBudgets = new Map([
   ]
 ])
 
+// 生成型纯数据文件不参与行数治理，豁免登记用于说明来源，避免后人误拆或误删。
+const exemptFiles = new Map([
+  ['src/services/gis/weatherRegionMap.ts', '由旧小程序城市数据集一次性转换生成的区县名到天气 adcode 离线映射，纯数据表不参与行数预算。']
+])
+
 function toPosixPath(filePath) {
   return filePath.split(path.sep).join('/')
 }
@@ -95,6 +100,11 @@ const approaching = []
 
 for (const filePath of checkedRoots.flatMap(walkFiles)) {
   const relativePath = toPosixPath(path.relative(appRoot, filePath))
+
+  if (exemptFiles.has(relativePath)) {
+    continue
+  }
+
   const lineCount = countLines(readFileSync(filePath, 'utf8'))
   const legacyBudget = legacyBudgets.get(relativePath)
   const budget = legacyBudget ? createBudget(legacyBudget.max, 'documented', legacyBudget.reason) : getDefaultBudget(relativePath)
