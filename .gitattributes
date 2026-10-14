@@ -1,0 +1,29 @@
+# 全仓库统一 LF 行尾：让工作区文件与索引记录保持一致，避免 core.autocrlf=true
+# 承诺的 CRLF 检出与 .editorconfig / Prettier 的 LF 写入互相拉扯，
+# 产生「内容完全相同却一直显示已修改」的假改动。
+* text=auto eol=lf
+
+# Windows 批处理由 cmd.exe 执行，保留 CRLF
+*.bat text eol=crlf
+
+# 原生资源与归档文件不做行尾转换
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.icns binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.jar binary
+*.aar binary
+*.so binary
+*.a binary
+*.keystore binary
+*.jks binary
+*.zip binary
+*.mp4 binary
+*.pdf binary
