@@ -14,11 +14,7 @@ import {
   resetBatchQuotes,
   updateBatchConsigneeGoods
 } from '@/services/batch'
-import type {
-  BatchConsigneeDraft,
-  BatchDraft,
-  BatchEntryActionView
-} from '@/services/batch'
+import type { BatchConsigneeDraft, BatchDraft, BatchEntryActionView } from '@/services/batch'
 import { contactSelection } from '@/services/contact'
 import { expressDraftStorage } from '@/services/express'
 import { AppPage, AppPressable } from '@/shared/components'
@@ -27,13 +23,7 @@ import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 import { copyTextToClipboard } from '@/shared/platform/clipboard'
 
-import {
-  BatchConsigneeSection,
-  BatchFooter,
-  BatchRecognitionSection,
-  BatchSenderSection,
-  BatchSettingsSection
-} from './components/BatchSections'
+import { BatchConsigneeSection, BatchFooter, BatchRecognitionSection, BatchSenderSection, BatchSettingsSection } from './components/BatchSections'
 import { useBatchQuote } from './hooks/useBatchQuote'
 import { useBatchSubmit } from './hooks/useBatchSubmit'
 
@@ -43,21 +33,11 @@ import './messages.scss'
 
 const BatchPage = () => {
   const entry = useMemo(() => batchService.getEntryView(), [])
-  const [draft, setDraft] = useState<BatchDraft>(
-    () =>
-      batchDraftStorage.restore() ??
-      createBatchDraftFromExpressDraft(expressDraftStorage.restore())
-  )
+  const [draft, setDraft] = useState<BatchDraft>(() => batchDraftStorage.restore() ?? createBatchDraftFromExpressDraft(expressDraftStorage.restore()))
   const [recognitionText, setRecognitionText] = useState('')
-  const recognition = useMemo(
-    () => batchService.recognizeAddressText(recognitionText),
-    [recognitionText]
-  )
+  const recognition = useMemo(() => batchService.recognizeAddressText(recognitionText), [recognitionText])
   const validation = useMemo(() => batchService.validateDraft(draft), [draft])
-  const submitValidation = useMemo(
-    () => batchService.validateSubmitDraft(draft),
-    [draft]
-  )
+  const submitValidation = useMemo(() => batchService.validateSubmitDraft(draft), [draft])
 
   const showToast = useCallback((title: string) => {
     Taro.showToast({
@@ -127,9 +107,7 @@ const BatchPage = () => {
   }
 
   const handleAddRecognized = () => {
-    const additions = recognition.items
-      .map(createBatchConsigneeFromRecognition)
-      .filter((item): item is BatchConsigneeDraft => !!item)
+    const additions = recognition.items.map(createBatchConsigneeFromRecognition).filter((item): item is BatchConsigneeDraft => !!item)
     const existingKeys = new Set(draft.consignees.map(getBatchContactKey))
     const uniqueAdditions = additions.filter(item => {
       const key = getBatchContactKey(item)
@@ -160,10 +138,7 @@ const BatchPage = () => {
 
     setDraft(current => ({
       ...current,
-      consignees: [
-        ...current.consignees,
-        ...uniqueAdditions.slice(0, remaining)
-      ]
+      consignees: [...current.consignees, ...uniqueAdditions.slice(0, remaining)]
     }))
     quote.quoteRequestVersion.current += 1
     quote.setQuoteMessage('收货清单已更新，请获取价格')
@@ -172,9 +147,7 @@ const BatchPage = () => {
   const handleRemoveConsignee = (index: number) => {
     setDraft(current => ({
       ...current,
-      consignees: current.consignees.filter(
-        (_, itemIndex) => itemIndex !== index
-      )
+      consignees: current.consignees.filter((_, itemIndex) => itemIndex !== index)
     }))
     quote.quoteRequestVersion.current += 1
   }
@@ -192,6 +165,7 @@ const BatchPage = () => {
       }
       keyboardAvoiding
       safeArea='bottom'
+      statusBar='dark'
       surface='page'
     >
       <ScrollView className='batch-page' scrollY style={{ flex: 1 }}>
@@ -200,40 +174,24 @@ const BatchPage = () => {
           <Text className='batch-header__summary'>{entry.summary}</Text>
         </View>
 
-        <BatchSenderSection
-          sender={draft.sender}
-          onSelect={handleSelectSender}
-        />
+        <BatchSenderSection sender={draft.sender} onSelect={handleSelectSender} />
 
         <View className='batch-section'>
           <View className='batch-section__head'>
             <Text className='batch-section__title'>可用服务</Text>
           </View>
           {entry.actions.map(action => (
-            <AppPressable
-              className={`batch-action batch-action--${action.status}`}
-              key={action.key}
-              onPress={() => handleAction(action)}
-            >
+            <AppPressable className={`batch-action batch-action--${action.status}`} key={action.key} onPress={() => handleAction(action)}>
               <View className='batch-action__main'>
                 <Text className='batch-action__title'>{action.title}</Text>
                 <Text className='batch-action__summary'>{action.summary}</Text>
               </View>
-              <Text
-                className={`batch-action__status batch-action__status--${action.status}`}
-              >
-                {action.statusText}
-              </Text>
+              <Text className={`batch-action__status batch-action__status--${action.status}`}>{action.statusText}</Text>
             </AppPressable>
           ))}
         </View>
 
-        <BatchRecognitionSection
-          recognition={recognition}
-          text={recognitionText}
-          onAdd={handleAddRecognized}
-          onTextChange={setRecognitionText}
-        />
+        <BatchRecognitionSection recognition={recognition} text={recognitionText} onAdd={handleAddRecognized} onTextChange={setRecognitionText} />
 
         <BatchConsigneeSection
           consignees={draft.consignees}
@@ -241,9 +199,7 @@ const BatchPage = () => {
           onGoodsChange={(index, patch) => {
             quote.quoteRequestVersion.current += 1
             quote.setQuoteMessage('货物信息已更新，请重新获取价格')
-            setDraft(current =>
-              updateBatchConsigneeGoods(current, index, patch)
-            )
+            setDraft(current => updateBatchConsigneeGoods(current, index, patch))
           }}
           onRemove={handleRemoveConsignee}
         />
@@ -270,26 +226,20 @@ const BatchPage = () => {
 
         {quote.quoteMessage && (
           <View className='batch-quote-message'>
-            <Text className='batch-quote-message__text'>
-              {quote.quoteMessage}
-            </Text>
+            <Text className='batch-quote-message__text'>{quote.quoteMessage}</Text>
           </View>
         )}
 
         {submit.submitMessage && (
           <View className='batch-submit-message'>
-            <Text className='batch-submit-message__text'>
-              {submit.submitMessage}
-            </Text>
+            <Text className='batch-submit-message__text'>{submit.submitMessage}</Text>
           </View>
         )}
 
         <View className='batch-section'>
           <View className='batch-section__head'>
             <Text className='batch-section__title'>批量规则</Text>
-            <Text className='batch-section__hint'>
-              最多 {entry.maxConsigneeCount} 票
-            </Text>
+            <Text className='batch-section__hint'>最多 {entry.maxConsigneeCount} 票</Text>
           </View>
           {entry.rules.map((rule, index) => (
             <View className='batch-rule' key={rule}>

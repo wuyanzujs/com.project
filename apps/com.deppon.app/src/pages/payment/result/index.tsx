@@ -27,11 +27,7 @@ function parseResultParams(params: Record<string, string | undefined>) {
 
 const PaymentResultPage = () => {
   const router = useRouter()
-  const result = useMemo(
-    () =>
-      parseResultParams(router.params as Record<string, string | undefined>),
-    [router.params]
-  )
+  const result = useMemo(() => parseResultParams(router.params as Record<string, string | undefined>), [router.params])
 
   const handleOpenOrder = () => {
     if (!result.waybillNumber) {
@@ -56,72 +52,45 @@ const PaymentResultPage = () => {
   }
 
   return (
-    <AppPage safeArea='bottom' surface='page'>
+    <AppPage safeArea='bottom' statusBar='dark' surface='page'>
       <View className='payment-result-page'>
         <View className='payment-result-status'>
           <View className='payment-result-status__icon'>
             <AppIcon
-              color={
-                result.paid
-                  ? APP_STYLE_COLORS.status.successEmphasis
-                  : APP_STYLE_COLORS.status.dangerEmphasis
-              }
+              color={result.paid ? APP_STYLE_COLORS.status.successEmphasis : APP_STYLE_COLORS.status.dangerEmphasis}
               name={result.paid ? 'badgeCheck' : 'shieldAlert'}
             />
           </View>
-          <Text className='payment-result-status__title'>
-            {result.paid ? '支付完成' : '支付未完成'}
-          </Text>
-          {result.amount && (
-            <Text className='payment-result-status__amount'>
-              ¥{result.amount}
-            </Text>
-          )}
+          <Text className='payment-result-status__title'>{result.paid ? '支付完成' : '支付未完成'}</Text>
+          {result.amount && <Text className='payment-result-status__amount'>¥{result.amount}</Text>}
         </View>
 
         <View className='payment-result-detail'>
           <View className='payment-result-row'>
             <Text className='payment-result-row__label'>运单号</Text>
-            <Text className='payment-result-row__value'>
-              {result.waybillNumber || '--'}
-            </Text>
+            <Text className='payment-result-row__value'>{result.waybillNumber || '--'}</Text>
           </View>
           <View className='payment-result-row'>
             <Text className='payment-result-row__label'>支付单号</Text>
-            <Text className='payment-result-row__value'>
-              {result.payNo || '--'}
-            </Text>
+            <Text className='payment-result-row__value'>{result.payNo || '--'}</Text>
           </View>
           {result.subject && (
             <View className='payment-result-row'>
               <Text className='payment-result-row__label'>支付内容</Text>
-              <Text className='payment-result-row__value'>
-                {result.subject}
-              </Text>
+              <Text className='payment-result-row__value'>{result.subject}</Text>
             </View>
           )}
           {result.transactionId && (
             <View className='payment-result-row'>
               <Text className='payment-result-row__label'>渠道流水</Text>
-              <Text className='payment-result-row__value'>
-                {result.transactionId}
-              </Text>
+              <Text className='payment-result-row__value'>{result.transactionId}</Text>
             </View>
           )}
         </View>
 
         <View className='payment-result-actions'>
-          <AppButton
-            label='查看订单'
-            disabled={!result.waybillNumber}
-            onPress={handleOpenOrder}
-          />
-          <AppButton
-            className='payment-result-actions__secondary'
-            label='返回支付列表'
-            variant='secondary'
-            onPress={handleBackToPaymentList}
-          />
+          <AppButton label='查看订单' disabled={!result.waybillNumber} onPress={handleOpenOrder} />
+          <AppButton className='payment-result-actions__secondary' label='返回支付列表' variant='secondary' onPress={handleBackToPaymentList} />
         </View>
       </View>
     </AppPage>

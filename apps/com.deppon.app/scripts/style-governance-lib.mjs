@@ -1,9 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+// 行数上限：100 行基准，最多超 30% 即 130 行；
+// 已超上限的存量文件冻结在基线行数，只能收缩。
 export const DEFAULT_STYLE_LIMITS = Object.freeze({
-  pageScssLines: 300,
-  componentScssLines: 180
+  pageScssLines: 130,
+  componentScssLines: 130
 })
 
 const STYLE_DEBT_FIELDS = [
@@ -50,33 +52,21 @@ const CSS_NAMED_COLORS = new Set(
     .filter(Boolean)
 )
 
-const COLOR_FUNCTION_NAMES =
-  'rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color|color-mix|(?:repeating-)?(?:linear|radial|conic)-gradient'
-const COLOR_FUNCTION_PATTERN = new RegExp(
-  `\\b(?:${COLOR_FUNCTION_NAMES})\\s*\\(`,
-  'gi'
-)
-const COLOR_FUNCTION_VALUE_PATTERN = new RegExp(
-  `\\b(?:${COLOR_FUNCTION_NAMES})\\s*\\([^;]*?\\)`,
-  'gi'
-)
-const GRADIENT_FUNCTION_PATTERN =
-  /\b(?:repeating-)?(?:linear|radial|conic)-gradient\s*\(/gi
+const COLOR_FUNCTION_NAMES = 'rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color|color-mix|(?:repeating-)?(?:linear|radial|conic)-gradient'
+const COLOR_FUNCTION_PATTERN = new RegExp(`\\b(?:${COLOR_FUNCTION_NAMES})\\s*\\(`, 'gi')
+const COLOR_FUNCTION_VALUE_PATTERN = new RegExp(`\\b(?:${COLOR_FUNCTION_NAMES})\\s*\\([^;]*?\\)`, 'gi')
+const GRADIENT_FUNCTION_PATTERN = /\b(?:repeating-)?(?:linear|radial|conic)-gradient\s*\(/gi
 const HEX_COLOR_PATTERN = /#[0-9a-f]{3,8}\b/gi
-const TOKEN_USE_PATTERN =
-  /@use\s+['"](?:tokens|[^'"]*styles(?:\/(?:index|_?tokens)(?:\.scss)?)?)['"]/
+const TOKEN_USE_PATTERN = /@use\s+['"](?:tokens|[^'"]*styles(?:\/(?:index|_?tokens)(?:\.scss)?)?)['"]/
 const RELIABLE_RN_STYLE_UNITS = new Set(['px', '%', 'deg'])
 const STYLE_DIMENSION_PATTERN = /(^|[^#\w$-])-?(?:\d*\.)?\d+([a-z%]+)\b/gi
 const PSEUDO_ELEMENT_PATTERN = /::[a-z][a-z0-9-]*/gi
 
-const normalizePath = value =>
-  value.replaceAll(path.sep, '/').replace(/^\.\//, '')
+const normalizePath = value => value.replaceAll(path.sep, '/').replace(/^\.\//, '')
 
-const relativePath = (root, filePath) =>
-  normalizePath(path.relative(root, filePath))
+const relativePath = (root, filePath) => normalizePath(path.relative(root, filePath))
 
-export const stripStyleComments = content =>
-  content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|\s)\/\/.*$/gm, '$1')
+export const stripStyleComments = content => content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|\s)\/\/.*$/gm, '$1')
 
 const getLineCount = content => {
   if (!content) return 0
@@ -102,8 +92,7 @@ const getLexicalContexts = (source, offsets) => {
     if (pending.has(index)) {
       contexts.set(index, {
         scope: [...scope],
-        ignored:
-          Boolean(quote) || parentheses > 0 || brackets > 0 || interpolation > 0
+        ignored: Boolean(quote) || parentheses > 0 || brackets > 0 || interpolation > 0
       })
       pending.delete(index)
     }
@@ -141,12 +130,7 @@ const getLexicalContexts = (source, offsets) => {
         flowControl: /^@(?:if|else|for|each|while)\b/.test(header)
       })
       statementStart = index + 1
-    } else if (
-      character === '}' &&
-      parentheses === 0 &&
-      brackets === 0 &&
-      scope.length > 1
-    ) {
+    } else if (character === '}' && parentheses === 0 && brackets === 0 && scope.length > 1) {
       scope.pop()
       statementStart = index + 1
     } else if (character === ';' && parentheses === 0 && brackets === 0) {
@@ -190,11 +174,7 @@ const readDeclarationValue = (source, start) => {
     else if (character === ')') parentheses = Math.max(0, parentheses - 1)
     else if (character === '[') brackets += 1
     else if (character === ']') brackets = Math.max(0, brackets - 1)
-    else if (
-      parentheses === 0 &&
-      brackets === 0 &&
-      (character === ';' || character === '}')
-    ) {
+    else if (parentheses === 0 && brackets === 0 && (character === ';' || character === '}')) {
       return source.slice(start, index).trim()
     }
   }
@@ -222,9 +202,7 @@ const getDeclarations = content => {
   return candidates
     .filter(({ index }) => !contexts.get(index)?.ignored)
     .map(({ rawProperty, index, valueStart }) => ({
-      property: rawProperty.startsWith('$')
-        ? normalizeSassVariable(rawProperty)
-        : rawProperty.toLowerCase(),
+      property: rawProperty.startsWith('$') ? normalizeSassVariable(rawProperty) : rawProperty.toLowerCase(),
       value: readDeclarationValue(source, valueStart),
       index,
       scope: contexts.get(index)?.scope ?? [{ id: 0, flowControl: false }]
@@ -236,9 +214,7 @@ const getLocalVariables = declarations => {
   for (const declaration of declarations) {
     if (!declaration.property.startsWith('$')) continue
     const currentScope = declaration.scope.at(-1)
-    const previous = currentScope?.flowControl
-      ? findVisibleVariable(declaration.property, variables, declaration)
-      : null
+    const previous = currentScope?.flowControl ? findVisibleVariable(declaration.property, variables, declaration) : null
     declaration.bindingScope = previous?.bindingScope ?? declaration.scope
     const existing = variables.get(declaration.property) ?? []
     existing.push(declaration)
@@ -247,54 +223,26 @@ const getLocalVariables = declarations => {
   return variables
 }
 
-const isAncestorScope = (ancestor, descendant) =>
-  ancestor.length <= descendant.length &&
-  ancestor.every((scope, index) => scope.id === descendant[index].id)
+const isAncestorScope = (ancestor, descendant) => ancestor.length <= descendant.length && ancestor.every((scope, index) => scope.id === descendant[index].id)
 
 function findVisibleVariable(variable, variables, context) {
   return (variables.get(normalizeSassVariable(variable)) ?? [])
-    .filter(
-      declaration =>
-        declaration.index < context.index &&
-        isAncestorScope(
-          declaration.bindingScope ?? declaration.scope,
-          context.scope
-        )
-    )
-    .sort(
-      (left, right) =>
-        (right.bindingScope ?? right.scope).length -
-          (left.bindingScope ?? left.scope).length || right.index - left.index
-    )[0]
+    .filter(declaration => declaration.index < context.index && isAncestorScope(declaration.bindingScope ?? declaration.scope, context.scope))
+    .sort((left, right) => (right.bindingScope ?? right.scope).length - (left.bindingScope ?? left.scope).length || right.index - left.index)[0]
 }
 
-const resolveLocalVariables = (
-  value,
-  variables,
-  context,
-  resolving = new Set(),
-  blockedVariables = new Set()
-) =>
-  value.replace(
-    /(^|[^.])(\$[-_a-zA-Z][-_a-zA-Z0-9]*)/g,
-    (match, prefix, variable) => {
-      if (blockedVariables.has(normalizeSassVariable(variable))) return match
-      const declaration = findVisibleVariable(variable, variables, context)
-      if (!declaration) return match
-      const key = `${declaration.property}:${declaration.index}`
-      if (resolving.has(key)) return match
+const resolveLocalVariables = (value, variables, context, resolving = new Set(), blockedVariables = new Set()) =>
+  value.replace(/(^|[^.])(\$[-_a-zA-Z][-_a-zA-Z0-9]*)/g, (match, prefix, variable) => {
+    if (blockedVariables.has(normalizeSassVariable(variable))) return match
+    const declaration = findVisibleVariable(variable, variables, context)
+    if (!declaration) return match
+    const key = `${declaration.property}:${declaration.index}`
+    if (resolving.has(key)) return match
 
-      const nextResolving = new Set(resolving)
-      nextResolving.add(key)
-      return `${prefix}${resolveLocalVariables(
-        declaration.value,
-        variables,
-        declaration,
-        nextResolving,
-        blockedVariables
-      )}`
-    }
-  )
+    const nextResolving = new Set(resolving)
+    nextResolving.add(key)
+    return `${prefix}${resolveLocalVariables(declaration.value, variables, declaration, nextResolving, blockedVariables)}`
+  })
 
 const findMatchingDelimiter = (source, openIndex, open, close) => {
   let depth = 0
@@ -350,12 +298,7 @@ const splitTopLevel = (value, delimiter = ',') => {
     else if (character === ']') brackets = Math.max(0, brackets - 1)
     else if (character === '{') braces += 1
     else if (character === '}') braces = Math.max(0, braces - 1)
-    else if (
-      character === delimiter &&
-      parentheses === 0 &&
-      brackets === 0 &&
-      braces === 0
-    ) {
+    else if (character === delimiter && parentheses === 0 && brackets === 0 && braces === 0) {
       parts.push(value.slice(start, index).trim())
       start = index + 1
     }
@@ -390,12 +333,7 @@ const findTopLevelCharacter = (value, target) => {
     else if (character === ']') brackets = Math.max(0, brackets - 1)
     else if (character === '{') braces += 1
     else if (character === '}') braces = Math.max(0, braces - 1)
-    else if (
-      character === target &&
-      parentheses === 0 &&
-      brackets === 0 &&
-      braces === 0
-    ) {
+    else if (character === target && parentheses === 0 && brackets === 0 && braces === 0) {
       return index
     }
   }
@@ -438,12 +376,7 @@ const tokenizeStyleValue = value => {
     else if (character === '{') braces += 1
     else if (character === '}') braces = Math.max(0, braces - 1)
 
-    if (
-      parentheses === 0 &&
-      brackets === 0 &&
-      braces === 0 &&
-      (character === '/' || /\s/.test(character))
-    ) {
+    if (parentheses === 0 && brackets === 0 && braces === 0 && (character === '/' || /\s/.test(character))) {
       flush()
       if (character === '/') tokens.push('/')
     } else {
@@ -463,29 +396,20 @@ const isFontSizeSlot = value =>
 const getFontShorthandParts = value => {
   const tokens = tokenizeStyleValue(value)
   const slashIndex = tokens.indexOf('/')
-  const sizeIndex =
-    slashIndex > 0
-      ? slashIndex - 1
-      : tokens.findIndex(token => isFontSizeSlot(token))
+  const sizeIndex = slashIndex > 0 ? slashIndex - 1 : tokens.findIndex(token => isFontSizeSlot(token))
   if (sizeIndex < 0) {
     return { fontSize: '', lineHeight: '', fontWeights: [] }
   }
 
   return {
     fontSize: tokens[sizeIndex],
-    lineHeight:
-      slashIndex >= 0 && slashIndex + 1 < tokens.length
-        ? tokens[slashIndex + 1]
-        : '',
+    lineHeight: slashIndex >= 0 && slashIndex + 1 < tokens.length ? tokens[slashIndex + 1] : '',
     fontWeights: tokens.slice(0, sizeIndex)
   }
 }
 
 const scanSassAtRules = (source, keyword) => {
-  const namePattern =
-    keyword === 'include'
-      ? '[-_a-zA-Z][-_a-zA-Z0-9]*(?:\\.[-_a-zA-Z][-_a-zA-Z0-9]*)?'
-      : '[-_a-zA-Z][-_a-zA-Z0-9]*'
+  const namePattern = keyword === 'include' ? '[-_a-zA-Z][-_a-zA-Z0-9]*(?:\\.[-_a-zA-Z][-_a-zA-Z0-9]*)?' : '[-_a-zA-Z][-_a-zA-Z0-9]*'
   const pattern = new RegExp(`@${keyword}\\s+(${namePattern})\\s*\\(`, 'g')
   const candidates = [...source.matchAll(pattern)].map(match => ({
     index: match.index,
@@ -500,12 +424,7 @@ const scanSassAtRules = (source, keyword) => {
   return candidates.flatMap(candidate => {
     const context = contexts.get(candidate.index)
     if (context?.ignored) return []
-    const closeIndex = findMatchingDelimiter(
-      source,
-      candidate.openIndex,
-      '(',
-      ')'
-    )
+    const closeIndex = findMatchingDelimiter(source, candidate.openIndex, '(', ')')
     if (closeIndex < 0) return []
 
     const result = {
@@ -551,12 +470,7 @@ const semanticFieldsForParameter = variable => {
   return fields
 }
 
-const variableReferences = value =>
-  new Set(
-    [...value.matchAll(/(^|[^.])(\$[-_a-zA-Z][-_a-zA-Z0-9]*)/g)].map(match =>
-      normalizeSassVariable(match[2])
-    )
-  )
+const variableReferences = value => new Set([...value.matchAll(/(^|[^.])(\$[-_a-zA-Z][-_a-zA-Z0-9]*)/g)].map(match => normalizeSassVariable(match[2])))
 
 const addParameterField = (contract, value, field) => {
   for (const variable of variableReferences(value)) {
@@ -577,52 +491,26 @@ const getMixinDefinitions = (source, declarations, localVariables) =>
         }
       ]
     })
-    const contract = new Map(
-      parameters.map(parameter => [
-        parameter.name,
-        semanticFieldsForParameter(parameter.name)
-      ])
-    )
+    const contract = new Map(parameters.map(parameter => [parameter.name, semanticFieldsForParameter(parameter.name)]))
     const blockedVariables = new Set(parameters.map(({ name }) => name))
 
     if (definition.bodyStart != null && definition.bodyEnd != null) {
       for (const declaration of declarations) {
-        if (
-          declaration.index <= definition.bodyStart ||
-          declaration.index >= definition.bodyEnd
-        ) {
+        if (declaration.index <= definition.bodyStart || declaration.index >= definition.bodyEnd) {
           continue
         }
-        const resolvedValue = resolveLocalVariables(
-          declaration.value,
-          localVariables,
-          declaration,
-          new Set(),
-          blockedVariables
-        )
+        const resolvedValue = resolveLocalVariables(declaration.value, localVariables, declaration, new Set(), blockedVariables)
         const { property } = declaration
         if (
           isColorProperty(property) &&
-          !new RegExp(
-            [
-              String.raw`^border(?:-(?:top|right|bottom|left))?(?:-(?:left|`,
-              String.raw`right))?-radius$`
-            ].join('')
-          ).test(property)
+          !new RegExp([String.raw`^border(?:-(?:top|right|bottom|left))?(?:-(?:left|`, String.raw`right))?-radius$`].join('')).test(property)
         ) {
           addParameterField(contract, resolvedValue, 'rawColors')
         } else if (property === 'font-size') {
           addParameterField(contract, resolvedValue, 'rawFontSizes')
         } else if (property === 'line-height') {
           addParameterField(contract, resolvedValue, 'rawLineHeights')
-        } else if (
-          new RegExp(
-            [
-              String.raw`^border(?:-(?:top|right|bottom|left))?(?:-(?:left|`,
-              String.raw`right))?-radius$`
-            ].join('')
-          ).test(property)
-        ) {
+        } else if (new RegExp([String.raw`^border(?:-(?:top|right|bottom|left))?(?:-(?:left|`, String.raw`right))?-radius$`].join('')).test(property)) {
           addParameterField(contract, resolvedValue, 'rawRadii')
         } else if (SPACE_PROPERTY_PATTERN.test(property)) {
           addParameterField(contract, resolvedValue, 'rawSpaces')
@@ -643,13 +531,7 @@ const getMixinDefinitions = (source, declarations, localVariables) =>
   })
 
 const findContainingMixin = (definitions, index) =>
-  definitions.find(
-    definition =>
-      definition.bodyStart != null &&
-      definition.bodyEnd != null &&
-      index > definition.bodyStart &&
-      index < definition.bodyEnd
-  )
+  definitions.find(definition => definition.bodyStart != null && definition.bodyEnd != null && index > definition.bodyStart && index < definition.bodyEnd)
 
 const findVisibleMixin = (definitions, inclusion) => {
   if (inclusion.name.includes('.')) return null
@@ -661,10 +543,7 @@ const findVisibleMixin = (definitions, inclusion) => {
         definition.index < inclusion.index &&
         isAncestorScope(definition.scope, inclusion.scope)
     )
-    .sort(
-      (left, right) =>
-        right.scope.length - left.scope.length || right.index - left.index
-    )[0]
+    .sort((left, right) => right.scope.length - left.scope.length || right.index - left.index)[0]
 }
 
 const isColorProperty = property =>
@@ -686,9 +565,7 @@ const extractColorsFromValue = value => {
     colors.push(match[0].slice(0, -1).trim().toLowerCase())
   }
 
-  const withoutFunctionsAndHex = value
-    .replace(HEX_COLOR_PATTERN, ' ')
-    .replace(COLOR_FUNCTION_VALUE_PATTERN, ' ')
+  const withoutFunctionsAndHex = value.replace(HEX_COLOR_PATTERN, ' ').replace(COLOR_FUNCTION_VALUE_PATTERN, ' ')
 
   for (const word of withoutFunctionsAndHex.match(/[a-z][a-z0-9-]*/gi) ?? []) {
     const normalized = word.toLowerCase()
@@ -698,16 +575,11 @@ const extractColorsFromValue = value => {
   return colors
 }
 
-const hasNumericLiteral = value =>
-  /(^|[^a-z0-9_$-])-?(?:\d*\.)?\d+(?:[a-z%]+)?\b/i.test(value)
+const hasNumericLiteral = value => /(^|[^a-z0-9_$-])-?(?:\d*\.)?\d+(?:[a-z%]+)?\b/i.test(value)
 
-const hasFontWeightLiteral = value =>
-  hasNumericLiteral(value) ||
-  (!value.includes('$') &&
-    /^\s*(?:normal|bold|bolder|lighter)\s*$/i.test(value))
+const hasFontWeightLiteral = value => hasNumericLiteral(value) || (!value.includes('$') && /^\s*(?:normal|bold|bolder|lighter)\s*$/i.test(value))
 
-const hasSpaceLiteral = value =>
-  hasNumericLiteral(value) && !/^-?0(?:px|%)?$/i.test(value.trim())
+const hasSpaceLiteral = value => hasNumericLiteral(value) && !/^-?0(?:px|%)?$/i.test(value.trim())
 
 const countStaticMixinValue = (metrics, fields, value, context, variables) => {
   // 颜色别名在其字面声明处计数，与普通 Sass 变量使用方一致。at-rule 参数里的
@@ -737,11 +609,7 @@ export const analyzeStyleContent = content => {
   const source = stripStyleComments(content)
   const declarations = getDeclarations(source)
   const localVariables = getLocalVariables(declarations)
-  const mixinDefinitions = getMixinDefinitions(
-    source,
-    declarations,
-    localVariables
-  )
+  const mixinDefinitions = getMixinDefinitions(source, declarations, localVariables)
   const mixinIncludes = scanSassAtRules(source, 'include')
   let rawColors = 0
   let rawFontSizes = 0
@@ -752,17 +620,8 @@ export const analyzeStyleContent = content => {
 
   for (const declaration of declarations) {
     const { property, value } = declaration
-    const containingMixin = findContainingMixin(
-      mixinDefinitions,
-      declaration.index
-    )
-    const resolvedValue = resolveLocalVariables(
-      value,
-      localVariables,
-      declaration,
-      new Set(),
-      containingMixin?.blockedVariables ?? new Set()
-    )
+    const containingMixin = findContainingMixin(mixinDefinitions, declaration.index)
+    const resolvedValue = resolveLocalVariables(value, localVariables, declaration, new Set(), containingMixin?.blockedVariables ?? new Set())
     if (isColorProperty(property) || property.startsWith('$')) {
       rawColors += extractColorsFromValue(value).length
     }
@@ -772,18 +631,10 @@ export const analyzeStyleContent = content => {
     if (property === 'line-height' && hasNumericLiteral(resolvedValue)) {
       rawLineHeights += 1
     }
-    if (
-      /^border(?:-(?:top|right|bottom|left))?(?:-(?:left|right))?-radius$/.test(
-        property
-      ) &&
-      hasNumericLiteral(resolvedValue)
-    ) {
+    if (/^border(?:-(?:top|right|bottom|left))?(?:-(?:left|right))?-radius$/.test(property) && hasNumericLiteral(resolvedValue)) {
       rawRadii += 1
     }
-    if (
-      SPACE_PROPERTY_PATTERN.test(property) &&
-      hasSpaceLiteral(resolvedValue)
-    ) {
+    if (SPACE_PROPERTY_PATTERN.test(property) && hasSpaceLiteral(resolvedValue)) {
       rawSpaces += 1
     }
     if (property === 'font-weight' && hasFontWeightLiteral(resolvedValue)) {
@@ -816,13 +667,7 @@ export const analyzeStyleContent = content => {
         index: definition.index,
         scope: definition.scope
       }
-      countStaticMixinValue(
-        metrics,
-        fields,
-        parameter.defaultValue,
-        context,
-        localVariables
-      )
+      countStaticMixinValue(metrics, fields, parameter.defaultValue, context, localVariables)
     }
   }
 
@@ -837,14 +682,10 @@ export const analyzeStyleContent = content => {
       let fields
       if (argument.name) {
         parameter = parameters.find(item => item.name === argument.name)
-        fields =
-          contract.get(argument.name) ??
-          semanticFieldsForParameter(argument.name)
+        fields = contract.get(argument.name) ?? semanticFieldsForParameter(argument.name)
       } else {
         parameter = parameters[positionalIndex.value]
-        fields = parameter
-          ? (contract.get(parameter.name) ?? new Set())
-          : new Set()
+        fields = parameter ? (contract.get(parameter.name) ?? new Set()) : new Set()
         positionalIndex.value += 1
       }
       countStaticMixinValue(
@@ -987,13 +828,7 @@ const TARO_NATIVE_ELEMENTS = new Set([
 
 const getTaroNativeAliases = source => {
   const aliases = new Set(TARO_NATIVE_ELEMENTS)
-  const importPattern = new RegExp(
-    [
-      String.raw`\bimport\s+((?:(?!\bimport\b)[\s\S])*?)\s+`,
-      String.raw`from\s+['"]@tarojs\/components['"]`
-    ].join(''),
-    'g'
-  )
+  const importPattern = new RegExp([String.raw`\bimport\s+((?:(?!\bimport\b)[\s\S])*?)\s+`, String.raw`from\s+['"]@tarojs\/components['"]`].join(''), 'g')
 
   for (const match of source.matchAll(importPattern)) {
     const clause = match[1]
@@ -1020,8 +855,7 @@ const getTaroNativeAliases = source => {
   return aliases
 }
 
-const isScriptQuote = character =>
-  character === "'" || character === '"' || character === '`'
+const isScriptQuote = character => character === "'" || character === '"' || character === '`'
 
 const maskScriptTrivia = source => {
   const characters = [...source]
@@ -1174,8 +1008,7 @@ export const scanNativeClickHandlers = source => {
     const maskedBody = maskScriptTrivia(tag.body)
     const eventPattern = /(?:^|\s)(onClick|onTap)(?=\s*(?:=|\/?$))/g
     for (const match of maskedBody.matchAll(eventPattern)) {
-      const eventOffset =
-        tag.bodyStart + match.index + match[0].indexOf(match[1])
+      const eventOffset = tag.bodyStart + match.index + match[0].indexOf(match[1])
       handlers.push({
         element: tag.name,
         prop: match[1],
@@ -1198,18 +1031,11 @@ export const scanNativeClickHandlers = source => {
   return handlers
 }
 
-const REACT_NATIVE_PRESSABLES = new Set([
-  'Pressable',
-  'TouchableHighlight',
-  'TouchableNativeFeedback',
-  'TouchableOpacity',
-  'TouchableWithoutFeedback'
-])
+const REACT_NATIVE_PRESSABLES = new Set(['Pressable', 'TouchableHighlight', 'TouchableNativeFeedback', 'TouchableOpacity', 'TouchableWithoutFeedback'])
 
 const getReactNativePressableAliases = source => {
   const aliases = new Set()
-  const importPattern =
-    /\bimport\s+((?:(?!\bimport\b)[\s\S])*?)\s+from\s+['"]react-native['"]/g
+  const importPattern = /\bimport\s+((?:(?!\bimport\b)[\s\S])*?)\s+from\s+['"]react-native['"]/g
 
   for (const match of source.matchAll(importPattern)) {
     const clause = match[1]
@@ -1234,10 +1060,7 @@ const getReactNativePressableAliases = source => {
   }
 
   const requirePattern = new RegExp(
-    [
-      String.raw`\b(?:const|let|var)\s*\{([\s\S]*?)\}\s*=\s*require\s*\(`,
-      String.raw`\s*['"]react-native['"]\s*\)`
-    ].join(''),
+    [String.raw`\b(?:const|let|var)\s*\{([\s\S]*?)\}\s*=\s*require\s*\(`, String.raw`\s*['"]react-native['"]\s*\)`].join(''),
     'g'
   )
   for (const match of source.matchAll(requirePattern)) {
@@ -1272,10 +1095,7 @@ export const scanDirectReactNativePressables = source => {
 
   for (const name of pressableNames) {
     const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    const createElementPattern = new RegExp(
-      `\\b(?:React\\s*\\.\\s*)?createElement\\s*\\(\\s*${escapedName}\\b`,
-      'g'
-    )
+    const createElementPattern = new RegExp(`\\b(?:React\\s*\\.\\s*)?createElement\\s*\\(\\s*${escapedName}\\b`, 'g')
     for (const match of maskedSource.matchAll(createElementPattern)) {
       usages.push({
         element: name,
@@ -1290,30 +1110,16 @@ export const scanDirectReactNativePressables = source => {
 export const analyzeNativePressableContract = content => {
   const source = maskScriptTrivia(content)
   return {
-    minWidth:
-      /\bminWidth\s*:\s*APP_NATIVE_TOKENS\s*\.\s*touch\s*\.\s*minimum\b/.test(
-        source
-      ),
-    minHeight:
-      /\bminHeight\s*:\s*APP_NATIVE_TOKENS\s*\.\s*touch\s*\.\s*minimum\b/.test(
-        source
-      )
+    minWidth: /\bminWidth\s*:\s*APP_NATIVE_TOKENS\s*\.\s*touch\s*\.\s*minimum\b/.test(source),
+    minHeight: /\bminHeight\s*:\s*APP_NATIVE_TOKENS\s*\.\s*touch\s*\.\s*minimum\b/.test(source)
   }
 }
 
-export const getNativePressableContractFailures = (
-  content,
-  file = 'src/shared/native/AppNativePressable.tsx'
-) => {
+export const getNativePressableContractFailures = (content, file = 'src/shared/native/AppNativePressable.tsx') => {
   const contract = analyzeNativePressableContract(content)
   if (contract.minWidth && contract.minHeight) return []
-  const missing = [
-    !contract.minWidth && 'minWidth',
-    !contract.minHeight && 'minHeight'
-  ].filter(Boolean)
-  return [
-    `${file} 必须使用 APP_NATIVE_TOKENS.touch.minimum 作为 ${missing.join('、')}`
-  ]
+  const missing = [!contract.minWidth && 'minWidth', !contract.minHeight && 'minHeight'].filter(Boolean)
+  return [`${file} 必须使用 APP_NATIVE_TOKENS.touch.minimum 作为 ${missing.join('、')}`]
 }
 
 const readBraceBlock = (source, openIndex) => {
@@ -1343,9 +1149,7 @@ export const analyzeNativeTouchMinimum = content => {
   const touchOpen = objectSource.indexOf('{', touch.index)
   const touchSource = readBraceBlock(objectSource, touchOpen)
   if (touchSource === null) return { minimum: null, isStatic44: false }
-  const minimum =
-    /\bminimum\s*:\s*([+-]?(?:\d+(?:\.\d+)?|\.\d+))\b/.exec(touchSource)?.[1] ??
-    null
+  const minimum = /\bminimum\s*:\s*([+-]?(?:\d+(?:\.\d+)?|\.\d+))\b/.exec(touchSource)?.[1] ?? null
 
   return {
     minimum: minimum === null ? null : Number(minimum),
@@ -1353,13 +1157,8 @@ export const analyzeNativeTouchMinimum = content => {
   }
 }
 
-export const getNativeTouchMinimumFailures = (
-  content,
-  file = 'src/styles/nativeTokens.ts'
-) =>
-  analyzeNativeTouchMinimum(content).isStatic44
-    ? []
-    : [`${file} 的 APP_NATIVE_TOKENS.touch.minimum 必须声明为静态数值 44`]
+export const getNativeTouchMinimumFailures = (content, file = 'src/styles/nativeTokens.ts') =>
+  analyzeNativeTouchMinimum(content).isStatic44 ? [] : [`${file} 的 APP_NATIVE_TOKENS.touch.minimum 必须声明为静态数值 44`]
 
 const hasJsxMarkup = source => {
   const maskedSource = maskScriptTrivia(source)
@@ -1386,14 +1185,10 @@ const walk = directory => {
   return files
 }
 
-const sortedObject = entries =>
-  Object.fromEntries(
-    [...entries].sort(([left], [right]) => left.localeCompare(right))
-  )
+const sortedObject = entries => Object.fromEntries([...entries].sort(([left], [right]) => left.localeCompare(right)))
 
 const isScriptIdentifierStart = character => /[a-zA-Z_$]/.test(character ?? '')
-const isScriptIdentifierPart = character =>
-  /[a-zA-Z0-9_$]/.test(character ?? '')
+const isScriptIdentifierPart = character => /[a-zA-Z0-9_$]/.test(character ?? '')
 
 const skipScriptTrivia = (source, start) => {
   let index = start
@@ -1404,9 +1199,7 @@ const skipScriptTrivia = (source, start) => {
     }
     if (source[index] === '/' && source[index + 1] === '/') {
       const newline = source.indexOf('\n', index + 2)
-      return newline === -1
-        ? source.length
-        : skipScriptTrivia(source, newline + 1)
+      return newline === -1 ? source.length : skipScriptTrivia(source, newline + 1)
     }
     if (source[index] === '/' && source[index + 1] === '*') {
       const end = source.indexOf('*/', index + 2)
@@ -1476,10 +1269,7 @@ const readFromSpecifier = (source, start, allowImmediateLiteral) => {
     const identifier = readScriptIdentifier(source, index)
     if (identifier) {
       if (identifier.value === 'from') {
-        return readScriptLiteral(
-          source,
-          skipScriptTrivia(source, identifier.end)
-        )
+        return readScriptLiteral(source, skipScriptTrivia(source, identifier.end))
       }
       index = identifier.end
       continue
@@ -1511,20 +1301,13 @@ const getScriptStyleSpecifiers = source => {
     if (identifier.value === 'import') {
       const afterImport = skipScriptTrivia(source, identifier.end)
       specifier =
-        source[afterImport] === '('
-          ? readCallSpecifier(source, afterImport)
-          : source[afterImport] === '.'
-            ? null
-            : readFromSpecifier(source, afterImport, true)
+        source[afterImport] === '(' ? readCallSpecifier(source, afterImport) : source[afterImport] === '.' ? null : readFromSpecifier(source, afterImport, true)
     } else if (identifier.value === 'export') {
       specifier = readFromSpecifier(source, identifier.end, false)
     } else if (identifier.value === 'require') {
       let afterRequire = skipScriptTrivia(source, identifier.end)
       if (source[afterRequire] === '.') {
-        const resolveIdentifier = readScriptIdentifier(
-          source,
-          skipScriptTrivia(source, afterRequire + 1)
-        )
+        const resolveIdentifier = readScriptIdentifier(source, skipScriptTrivia(source, afterRequire + 1))
         if (resolveIdentifier?.value !== 'resolve') continue
         afterRequire = resolveIdentifier.end
       }
@@ -1601,16 +1384,8 @@ const isParentIndexStyle = (sourceFile, targetFile) => {
   if (!['index.scss', '_index.scss'].includes(path.basename(targetFile))) {
     return false
   }
-  const relative = path.relative(
-    path.dirname(targetFile),
-    path.dirname(sourceFile)
-  )
-  return (
-    relative !== '' &&
-    relative !== '..' &&
-    !relative.startsWith(`..${path.sep}`) &&
-    !path.isAbsolute(relative)
-  )
+  const relative = path.relative(path.dirname(targetFile), path.dirname(sourceFile))
+  return relative !== '' && relative !== '..' && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative)
 }
 
 const getParentStyleImports = (appRoot, scriptFiles, scssFiles) => {
@@ -1637,11 +1412,7 @@ const getParentStyleImports = (appRoot, scriptFiles, scssFiles) => {
     }
   }
 
-  return imports.sort((left, right) =>
-    `${left.file}:${left.importPath}`.localeCompare(
-      `${right.file}:${right.importPath}`
-    )
-  )
+  return imports.sort((left, right) => `${left.file}:${left.importPath}`.localeCompare(`${right.file}:${right.importPath}`))
 }
 
 const splitTopLevelStatements = content => {
@@ -1684,17 +1455,9 @@ const getTokenSourceFailures = content => {
   }
 
   const invalidStatement = splitTopLevelStatements(source).find(
-    statement =>
-      !/^\$[a-z][a-z0-9-]*\s*:/i.test(statement) &&
-      !/^@use\s+['"][^'"]+['"](?:\s+as\s+(?:\*|[a-z][a-z0-9_-]*))?$/i.test(
-        statement
-      )
+    statement => !/^\$[a-z][a-z0-9-]*\s*:/i.test(statement) && !/^@use\s+['"][^'"]+['"](?:\s+as\s+(?:\*|[a-z][a-z0-9_-]*))?$/i.test(statement)
   )
-  return invalidStatement
-    ? [
-        `src/styles/_tokens.scss 只能声明 token，发现非法语句：${invalidStatement.split(/\r?\n/, 1)[0]}`
-      ]
-    : []
+  return invalidStatement ? [`src/styles/_tokens.scss 只能声明 token，发现非法语句：${invalidStatement.split(/\r?\n/, 1)[0]}`] : []
 }
 
 const getTopLevelScssSelectors = content => {
@@ -1726,11 +1489,7 @@ const getTopLevelScssSelectors = content => {
     else if (character === '{' && parentheses === 0 && brackets === 0) {
       if (braces === 0) {
         const selector = source.slice(statementStart, index).trim()
-        if (
-          selector &&
-          !selector.startsWith('@') &&
-          !selector.startsWith('$')
-        ) {
+        if (selector && !selector.startsWith('@') && !selector.startsWith('$')) {
           selectors.push(selector)
         }
       }
@@ -1750,27 +1509,17 @@ const getPageIndexOwnershipFailures = (appRoot, scssFiles) => {
   const failures = []
   for (const filePath of scssFiles) {
     const file = relativePath(appRoot, filePath)
-    if (
-      !file.startsWith('src/pages/') ||
-      path.basename(file) !== 'index.scss' ||
-      file.includes('/components/')
-    ) {
+    if (!file.startsWith('src/pages/') || path.basename(file) !== 'index.scss' || file.includes('/components/')) {
       continue
     }
 
-    const selectors = getTopLevelScssSelectors(
-      fs.readFileSync(filePath, 'utf8')
-    )
+    const selectors = getTopLevelScssSelectors(fs.readFileSync(filePath, 'utf8'))
     if (selectors.length > 4) {
-      failures.push(
-        `${file} 页面 index.scss 顶级规则 ${selectors.length} 个，最多允许 4 个，请拆分页面子组件样式`
-      )
+      failures.push(`${file} 页面 index.scss 顶级规则 ${selectors.length} 个，最多允许 4 个，请拆分页面子组件样式`)
     }
     for (const selector of selectors) {
       if (selector.includes('__')) {
-        failures.push(
-          `${file} 页面 index.scss 顶级选择器禁止 BEM（${selector}），请迁移到页面子组件样式`
-        )
+        failures.push(`${file} 页面 index.scss 顶级选择器禁止 BEM（${selector}），请迁移到页面子组件样式`)
       }
     }
   }
@@ -1781,11 +1530,7 @@ const getPageComponentOwnershipFailures = (appRoot, scriptFiles) => {
   const failures = []
   for (const filePath of scriptFiles) {
     const file = relativePath(appRoot, filePath)
-    if (
-      !file.startsWith('src/pages/') ||
-      !file.includes('/components/') ||
-      !/\.(?:tsx|jsx)$/.test(file)
-    ) {
+    if (!file.startsWith('src/pages/') || !file.includes('/components/') || !/\.(?:tsx|jsx)$/.test(file)) {
       continue
     }
 
@@ -1798,10 +1543,7 @@ const getPageComponentOwnershipFailures = (appRoot, scriptFiles) => {
       const targetDir = path.dirname(targetFile)
       if (targetDir === sourceDir) return true
       // 文件夹式组件：允许引用组件目录根下的共享 SCSS
-      return (
-        path.basename(sourceDir) !== 'components' &&
-        path.dirname(sourceDir) === targetDir
-      )
+      return path.basename(sourceDir) !== 'components' && path.dirname(sourceDir) === targetDir
     })
     if (!hasLocalStyle) {
       failures.push(`${file} 含 JSX，但必须静态导入同目录 SCSS`)
@@ -1815,94 +1557,51 @@ export const collectProjectSnapshot = appRoot => {
   const srcRoot = path.join(appRoot, 'src')
   const allFiles = walk(srcRoot)
   const scssFiles = allFiles.filter(filePath => filePath.endsWith('.scss'))
-  const unsupportedStyleFiles = allFiles.filter(filePath =>
-    /\.(?:css|sass|less)$/.test(filePath)
-  )
+  const unsupportedStyleFiles = allFiles.filter(filePath => /\.(?:css|sass|less)$/.test(filePath))
   const governedScssFiles = scssFiles.filter(filePath => {
     const file = relativePath(appRoot, filePath)
     return !file.startsWith('src/styles/')
   })
-  const systemScssFiles = scssFiles.filter(filePath =>
-    relativePath(appRoot, filePath).startsWith('src/styles/')
-  )
-  const nativeFiles = allFiles.filter(filePath =>
-    /\.(?:ts|tsx)$/.test(filePath)
-  )
-  const interactionFiles = allFiles.filter(filePath =>
-    /\.(?:tsx|jsx)$/.test(filePath)
-  )
-  const scriptFiles = allFiles.filter(filePath =>
-    /\.(?:[cm]?js|jsx|ts|tsx)$/.test(filePath)
-  )
-  const styleEntries = governedScssFiles.map(filePath => [
-    relativePath(appRoot, filePath),
-    analyzeStyleContent(fs.readFileSync(filePath, 'utf8'))
-  ])
+  const systemScssFiles = scssFiles.filter(filePath => relativePath(appRoot, filePath).startsWith('src/styles/'))
+  const nativeFiles = allFiles.filter(filePath => /\.(?:ts|tsx)$/.test(filePath))
+  const interactionFiles = allFiles.filter(filePath => /\.(?:tsx|jsx)$/.test(filePath))
+  const scriptFiles = allFiles.filter(filePath => /\.(?:[cm]?js|jsx|ts|tsx)$/.test(filePath))
+  const styleEntries = governedScssFiles.map(filePath => [relativePath(appRoot, filePath), analyzeStyleContent(fs.readFileSync(filePath, 'utf8'))])
   const nativeEntries = nativeFiles
-    .filter(
-      filePath =>
-        relativePath(appRoot, filePath) !== 'src/styles/nativeTokens.ts'
-    )
-    .map(filePath => [
-      relativePath(appRoot, filePath),
-      analyzeNativeContent(fs.readFileSync(filePath, 'utf8'))
-    ])
+    .filter(filePath => relativePath(appRoot, filePath) !== 'src/styles/nativeTokens.ts')
+    .map(filePath => [relativePath(appRoot, filePath), analyzeNativeContent(fs.readFileSync(filePath, 'utf8'))])
     .filter(([, metrics]) => metrics.rawColors > 0)
   const systemFailures = []
 
   systemFailures.push(...getPageIndexOwnershipFailures(appRoot, scssFiles))
-  systemFailures.push(
-    ...getPageComponentOwnershipFailures(appRoot, scriptFiles)
-  )
+  systemFailures.push(...getPageComponentOwnershipFailures(appRoot, scriptFiles))
 
   for (const filePath of scssFiles) {
     const file = relativePath(appRoot, filePath)
-    systemFailures.push(
-      ...getUnsupportedStyleFailures(fs.readFileSync(filePath, 'utf8'), file)
-    )
+    systemFailures.push(...getUnsupportedStyleFailures(fs.readFileSync(filePath, 'utf8'), file))
   }
 
   for (const filePath of scriptFiles) {
     const file = relativePath(appRoot, filePath)
     const source = fs.readFileSync(filePath, 'utf8')
-    if (
-      file.startsWith('src/pages/') &&
-      /\belevation\s*:/.test(maskScriptTrivia(source))
-    ) {
+    if (file.startsWith('src/pages/') && /\belevation\s*:/.test(maskScriptTrivia(source))) {
       systemFailures.push(`${file} 页面原生样式禁止直接使用 elevation`)
     }
     if (file === 'src/shared/native/AppNativePressable.tsx') continue
     for (const usage of scanDirectReactNativePressables(source)) {
-      systemFailures.push(
-        `${file}:${usage.line} 不能直接使用 RN ${usage.element}，请统一使用 AppPressable/AppButton`
-      )
+      systemFailures.push(`${file}:${usage.line} 不能直接使用 RN ${usage.element}，请统一使用 AppPressable/AppButton`)
     }
   }
 
-  const pressablePath = path.join(
-    srcRoot,
-    'shared',
-    'native',
-    'AppNativePressable.tsx'
-  )
+  const pressablePath = path.join(srcRoot, 'shared', 'native', 'AppNativePressable.tsx')
   if (fs.existsSync(pressablePath)) {
-    systemFailures.push(
-      ...getNativePressableContractFailures(
-        fs.readFileSync(pressablePath, 'utf8')
-      )
-    )
+    systemFailures.push(...getNativePressableContractFailures(fs.readFileSync(pressablePath, 'utf8')))
   }
 
-  systemFailures.push(
-    ...getTokenSourceFailures(
-      fs.readFileSync(path.join(srcRoot, 'styles', '_tokens.scss'), 'utf8')
-    )
-  )
+  systemFailures.push(...getTokenSourceFailures(fs.readFileSync(path.join(srcRoot, 'styles', '_tokens.scss'), 'utf8')))
 
   for (const filePath of unsupportedStyleFiles) {
-    systemFailures.push(
-      `${relativePath(appRoot, filePath)} 使用了未纳入治理的样式扩展名`
-    )
+    systemFailures.push(`${relativePath(appRoot, filePath)} 使用了未纳入治理的样式扩展名`)
   }
 
   for (const filePath of scssFiles) {
@@ -1924,53 +1623,32 @@ export const collectProjectSnapshot = appRoot => {
     }
   }
 
-  const tokenSource = fs
-    .readFileSync(path.join(srcRoot, 'styles', '_tokens.scss'), 'utf8')
-    .toLowerCase()
-  const nativeTokenSource = fs.readFileSync(
-    path.join(srcRoot, 'styles', 'nativeTokens.ts'),
-    'utf8'
-  )
+  const tokenSource = fs.readFileSync(path.join(srcRoot, 'styles', '_tokens.scss'), 'utf8').toLowerCase()
+  const nativeTokenSource = fs.readFileSync(path.join(srcRoot, 'styles', 'nativeTokens.ts'), 'utf8')
   systemFailures.push(...getNativeTouchMinimumFailures(nativeTokenSource))
   for (const color of nativeTokenSource.match(HEX_COLOR_PATTERN) ?? []) {
     if (!tokenSource.includes(color.toLowerCase())) {
-      systemFailures.push(
-        `nativeTokens.ts 的 ${color} 未在 _tokens.scss 中登记`
-      )
+      systemFailures.push(`nativeTokens.ts 的 ${color} 未在 _tokens.scss 中登记`)
     }
   }
 
   const legacyGlobalClassFiles = scssFiles
-    .filter(filePath =>
-      /(^|,)\s*\.dp-[a-z0-9_-]+/im.test(
-        stripStyleComments(fs.readFileSync(filePath, 'utf8'))
-      )
-    )
+    .filter(filePath => /(^|,)\s*\.dp-[a-z0-9_-]+/im.test(stripStyleComments(fs.readFileSync(filePath, 'utf8'))))
     .map(filePath => relativePath(appRoot, filePath))
     .sort()
 
   const nativeClickHandlers = interactionFiles
     .flatMap(filePath => {
       const file = relativePath(appRoot, filePath)
-      return scanNativeClickHandlers(fs.readFileSync(filePath, 'utf8')).map(
-        handler => ({ file, ...handler })
-      )
+      return scanNativeClickHandlers(fs.readFileSync(filePath, 'utf8')).map(handler => ({ file, ...handler }))
     })
-    .sort((left, right) =>
-      `${left.file}:${left.line}:${left.element}:${left.prop}`.localeCompare(
-        `${right.file}:${right.line}:${right.element}:${right.prop}`
-      )
-    )
+    .sort((left, right) => `${left.file}:${left.line}:${left.element}:${left.prop}`.localeCompare(`${right.file}:${right.line}:${right.element}:${right.prop}`))
 
   return {
     scss: { files: sortedObject(styleEntries) },
     native: { files: sortedObject(nativeEntries) },
     architecture: {
-      parentStyleImports: getParentStyleImports(
-        appRoot,
-        scriptFiles,
-        scssFiles
-      ),
+      parentStyleImports: getParentStyleImports(appRoot, scriptFiles, scssFiles),
       legacyGlobalClassFiles,
       nativeClickHandlers
     },
@@ -1978,19 +1656,20 @@ export const collectProjectSnapshot = appRoot => {
   }
 }
 
-const getLineLimit = (file, limits) =>
-  file.startsWith('src/shared/components/') || file.includes('/components/')
-    ? limits.componentScssLines
-    : limits.pageScssLines
+const isComponentStyle = file => file.startsWith('src/shared/components/') || file.includes('/components/')
+
+const getLineLimit = (file, limits) => (isComponentStyle(file) ? limits.componentScssLines : limits.pageScssLines)
+
+// 行数按上限制管理：允许增长到 max(基线行数, 上限)，
+// 超过即要求拆分文件；已超上限的文件冻结在当前基线行数。
+const getLineAllowance = (file, limits, baselineLines) => Math.max(getLineLimit(file, limits), baselineLines)
 
 const requiresTokenUsage = file => file !== 'src/app.scss'
 
 // rawSpaces 是新增的存量维度，当前 898 处间距字面量尚未清零。
 // strict 门禁暂只要求前 5 个已清零维度归零；间距走 daily 只降不增，
 // 待存量清零后再纳入 strict 判定。
-const STRICT_STYLE_FIELDS = STYLE_DEBT_FIELDS.filter(
-  ([field]) => field !== 'rawSpaces'
-)
+const STRICT_STYLE_FIELDS = STYLE_DEBT_FIELDS.filter(([field]) => field !== 'rawSpaces')
 
 const isStrictStyle = (file, metrics, limits) =>
   (!requiresTokenUsage(file) || metrics.usesTokens) &&
@@ -2028,10 +1707,7 @@ const validateBaseline = baseline => {
   if (!baseline.scss?.files || !baseline.native?.files) {
     return ['样式基线缺少逐文件数据']
   }
-  if (
-    !Number.isInteger(baseline.limits?.pageScssLines) ||
-    !Number.isInteger(baseline.limits?.componentScssLines)
-  ) {
+  if (!Number.isInteger(baseline.limits?.pageScssLines) || !Number.isInteger(baseline.limits?.componentScssLines)) {
     return ['样式基线缺少有效的文件行数上限']
   }
 
@@ -2056,8 +1732,7 @@ const validateBaseline = baseline => {
   if (
     !Array.isArray(baseline.architecture?.parentStyleImports) ||
     !Array.isArray(baseline.architecture?.legacyGlobalClassFiles) ||
-    (baseline.architecture?.nativeClickHandlers !== undefined &&
-      !Array.isArray(baseline.architecture.nativeClickHandlers))
+    (baseline.architecture?.nativeClickHandlers !== undefined && !Array.isArray(baseline.architecture.nativeClickHandlers))
   ) {
     failures.push('样式基线缺少架构债务清单')
   }
@@ -2065,22 +1740,13 @@ const validateBaseline = baseline => {
   return failures
 }
 
-const compareMetric = ({
-  file,
-  label,
-  current,
-  allowed,
-  failures,
-  stale = true
-}) => {
+const compareMetric = ({ file, label, current, allowed, failures, stale = true }) => {
   if (!Number.isInteger(allowed) || allowed < 0) {
     failures.push(`${file} 的 ${label} 基线无效`)
   } else if (current > allowed) {
     failures.push(`${file} 的 ${label} 从 ${allowed} 增加到 ${current}`)
   } else if (stale && current < allowed) {
-    failures.push(
-      `${file} 的 ${label} 基线可从 ${allowed} 收紧到 ${current}，请运行 update:styles-baseline`
-    )
+    failures.push(`${file} 的 ${label} 基线可从 ${allowed} 收紧到 ${current}，请运行 update:styles-baseline`)
   }
 }
 
@@ -2109,13 +1775,10 @@ const compareDailySnapshot = (current, baseline, failures) => {
         failures
       })
     }
-    compareMetric({
-      file,
-      label: '行数',
-      current: metrics.lines,
-      allowed: allowed.lines,
-      failures
-    })
+    const lineAllowance = getLineAllowance(file, limits, allowed.lines)
+    if (metrics.lines > lineAllowance) {
+      failures.push(`${file} 有 ${metrics.lines} 行，超过允许上限 ${lineAllowance} 行，请拆分样式文件`)
+    }
 
     if (allowed.usesTokens && !metrics.usesTokens) {
       failures.push(`${file} 移除了 token 引入`)
@@ -2151,24 +1814,9 @@ const compareDailySnapshot = (current, baseline, failures) => {
     }
   }
 
-  compareLists(
-    current.architecture.parentStyleImports,
-    baseline.architecture.parentStyleImports,
-    '父级 index.scss 导入',
-    failures
-  )
-  compareLists(
-    current.architecture.legacyGlobalClassFiles,
-    baseline.architecture.legacyGlobalClassFiles,
-    'legacy 全局类文件',
-    failures
-  )
-  compareLists(
-    current.architecture.nativeClickHandlers ?? [],
-    baseline.architecture.nativeClickHandlers ?? [],
-    'Taro 原生点击控件',
-    failures
-  )
+  compareLists(current.architecture.parentStyleImports, baseline.architecture.parentStyleImports, '父级 index.scss 导入', failures)
+  compareLists(current.architecture.legacyGlobalClassFiles, baseline.architecture.legacyGlobalClassFiles, 'legacy 全局类文件', failures)
+  compareLists(current.architecture.nativeClickHandlers ?? [], baseline.architecture.nativeClickHandlers ?? [], 'Taro 原生点击控件', failures)
 }
 
 const compareStrictSnapshot = (current, baseline, failures) => {
@@ -2179,13 +1827,11 @@ const compareStrictSnapshot = (current, baseline, failures) => {
     for (const [field, label] of STRICT_STYLE_FIELDS) {
       if (metrics[field] > 0) failures.push(`${file} 的 ${label}必须归零`)
     }
-    const limit = getLineLimit(file, baseline.limits)
-    if (metrics.lines > limit) {
-      const kind =
-        limit === baseline.limits.componentScssLines ? '组件' : '页面'
-      failures.push(
-        `${file} 有 ${metrics.lines} 行，超过${kind}上限 ${limit} 行`
-      )
+    const baselineLines = baseline.scss.files[file]?.lines ?? 0
+    const allowance = getLineAllowance(file, baseline.limits, baselineLines)
+    if (metrics.lines > allowance) {
+      const kind = isComponentStyle(file) ? '组件' : '页面'
+      failures.push(`${file} 有 ${metrics.lines} 行，超过${kind}上限 ${allowance} 行`)
     }
   }
 
@@ -2201,13 +1847,8 @@ const compareStrictSnapshot = (current, baseline, failures) => {
     failures.push(`${file} 仍包含 legacy 全局类`)
   }
   for (const handler of current.architecture.nativeClickHandlers ?? []) {
-    const detail =
-      handler.prop === 'spread'
-        ? '使用了可能隐藏点击事件的 JSX spread props'
-        : `不能直接绑定 ${handler.prop}`
-    failures.push(
-      `${handler.file}:${handler.line} 的 Taro 原生 ${handler.element} ${detail}，请使用 AppPressable/AppButton`
-    )
+    const detail = handler.prop === 'spread' ? '使用了可能隐藏点击事件的 JSX spread props' : `不能直接绑定 ${handler.prop}`
+    failures.push(`${handler.file}:${handler.line} 的 Taro 原生 ${handler.element} ${detail}，请使用 AppPressable/AppButton`)
   }
 }
 
@@ -2228,9 +1869,7 @@ export const compareBaselineEvolution = (current, previous) => {
 
   for (const limit of ['pageScssLines', 'componentScssLines']) {
     if (current.limits[limit] > previous.limits[limit]) {
-      failures.push(
-        `${limit} 从 ${previous.limits[limit]} 放宽到 ${current.limits[limit]}`
-      )
+      failures.push(`${limit} 从 ${previous.limits[limit]} 放宽到 ${current.limits[limit]}`)
     }
   }
 
@@ -2244,15 +1883,12 @@ export const compareBaselineEvolution = (current, previous) => {
     }
     for (const [field, label] of STYLE_DEBT_FIELDS) {
       if (metrics[field] > previousMetrics[field]) {
-        failures.push(
-          `${file} 的 ${label}上限从 ${previousMetrics[field]} 放宽到 ${metrics[field]}`
-        )
+        failures.push(`${file} 的 ${label}上限从 ${previousMetrics[field]} 放宽到 ${metrics[field]}`)
       }
     }
-    if (metrics.lines > previousMetrics.lines) {
-      failures.push(
-        `${file} 的行数上限从 ${previousMetrics.lines} 放宽到 ${metrics.lines}`
-      )
+    const lineAllowance = getLineAllowance(file, current.limits, previousMetrics.lines)
+    if (metrics.lines > lineAllowance) {
+      failures.push(`${file} 的行数上限从 ${lineAllowance} 放宽到 ${metrics.lines}`)
     }
     if (previousMetrics.usesTokens && !metrics.usesTokens) {
       failures.push(`${file} 的 token 要求被移除`)
@@ -2264,31 +1900,23 @@ export const compareBaselineEvolution = (current, previous) => {
     if (!previousMetrics) {
       failures.push(`${file} 被新增到 TS/TSX 颜色基线`)
     } else if (metrics.rawColors > previousMetrics.rawColors) {
-      failures.push(
-        `${file} 的 TS/TSX 颜色上限从 ${previousMetrics.rawColors} 放宽到 ${metrics.rawColors}`
-      )
+      failures.push(`${file} 的 TS/TSX 颜色上限从 ${previousMetrics.rawColors} 放宽到 ${metrics.rawColors}`)
     }
   }
 
-  const previousParentImports = new Set(
-    previous.architecture.parentStyleImports.map(itemKey)
-  )
+  const previousParentImports = new Set(previous.architecture.parentStyleImports.map(itemKey))
   for (const item of current.architecture.parentStyleImports) {
     if (!previousParentImports.has(itemKey(item))) {
       failures.push(`基线新增父级 index.scss 导入：${itemKey(item)}`)
     }
   }
-  const previousLegacyFiles = new Set(
-    previous.architecture.legacyGlobalClassFiles
-  )
+  const previousLegacyFiles = new Set(previous.architecture.legacyGlobalClassFiles)
   for (const file of current.architecture.legacyGlobalClassFiles) {
     if (!previousLegacyFiles.has(file)) {
       failures.push(`基线新增 legacy 全局类文件：${file}`)
     }
   }
-  const previousNativeClickHandlers = new Set(
-    (previous.architecture.nativeClickHandlers ?? []).map(itemKey)
-  )
+  const previousNativeClickHandlers = new Set((previous.architecture.nativeClickHandlers ?? []).map(itemKey))
   for (const handler of current.architecture.nativeClickHandlers ?? []) {
     if (!previousNativeClickHandlers.has(itemKey(handler))) {
       failures.push(`基线新增 Taro 原生点击控件：${itemKey(handler)}`)
@@ -2299,10 +1927,7 @@ export const compareBaselineEvolution = (current, previous) => {
 }
 
 export const createNextBaseline = (current, previousBaseline) => {
-  const failures = [
-    ...validateBaseline(previousBaseline),
-    ...current.systemFailures
-  ]
+  const failures = [...validateBaseline(previousBaseline), ...current.systemFailures]
   if (failures.length > 0) return { ok: false, failures }
 
   const limits = previousBaseline.limits
@@ -2316,18 +1941,15 @@ export const createNextBaseline = (current, previousBaseline) => {
     }
     for (const [field, label] of STYLE_DEBT_FIELDS) {
       if (metrics[field] > previous[field]) {
-        failures.push(
-          `${file} 的 ${label} 从 ${previous[field]} 增加到 ${metrics[field]}`
-        )
+        failures.push(`${file} 的 ${label} 从 ${previous[field]} 增加到 ${metrics[field]}`)
       }
     }
     if (previous.usesTokens && !metrics.usesTokens) {
       failures.push(`${file} 移除了 token 引入`)
     }
-    if (metrics.lines > previous.lines) {
-      failures.push(
-        `${file} 的行数从 ${previous.lines} 增加到 ${metrics.lines}`
-      )
+    const lineAllowance = getLineAllowance(file, limits, previous.lines)
+    if (metrics.lines > lineAllowance) {
+      failures.push(`${file} 的行数从 ${lineAllowance} 增加到 ${metrics.lines}，请先拆分样式文件`)
     }
   }
 
@@ -2336,31 +1958,23 @@ export const createNextBaseline = (current, previousBaseline) => {
     if (!previous) {
       failures.push(`${file} 新增了 TS/TSX 静态颜色`)
     } else if (metrics.rawColors > previous.rawColors) {
-      failures.push(
-        `${file} 的 TS/TSX 静态颜色从 ${previous.rawColors} 增加到 ${metrics.rawColors}`
-      )
+      failures.push(`${file} 的 TS/TSX 静态颜色从 ${previous.rawColors} 增加到 ${metrics.rawColors}`)
     }
   }
 
-  const previousParentImports = new Set(
-    previousBaseline.architecture.parentStyleImports.map(itemKey)
-  )
+  const previousParentImports = new Set(previousBaseline.architecture.parentStyleImports.map(itemKey))
   for (const item of current.architecture.parentStyleImports) {
     if (!previousParentImports.has(itemKey(item))) {
       failures.push(`新增父级 index.scss 导入：${itemKey(item)}`)
     }
   }
-  const previousLegacyFiles = new Set(
-    previousBaseline.architecture.legacyGlobalClassFiles
-  )
+  const previousLegacyFiles = new Set(previousBaseline.architecture.legacyGlobalClassFiles)
   for (const file of current.architecture.legacyGlobalClassFiles) {
     if (!previousLegacyFiles.has(file)) {
       failures.push(`新增 legacy 全局类文件：${file}`)
     }
   }
-  const previousNativeClickHandlers = new Set(
-    (previousBaseline.architecture.nativeClickHandlers ?? []).map(itemKey)
-  )
+  const previousNativeClickHandlers = new Set((previousBaseline.architecture.nativeClickHandlers ?? []).map(itemKey))
   for (const handler of current.architecture.nativeClickHandlers ?? []) {
     if (!previousNativeClickHandlers.has(itemKey(handler))) {
       failures.push(`新增 Taro 原生点击控件：${itemKey(handler)}`)
@@ -2379,21 +1993,14 @@ export const createNextBaseline = (current, previousBaseline) => {
       native: { files: sortedObject(Object.entries(current.native.files)) },
       architecture: {
         parentStyleImports: [...current.architecture.parentStyleImports],
-        legacyGlobalClassFiles: [
-          ...current.architecture.legacyGlobalClassFiles
-        ],
-        nativeClickHandlers: [
-          ...(current.architecture.nativeClickHandlers ?? [])
-        ]
+        legacyGlobalClassFiles: [...current.architecture.legacyGlobalClassFiles],
+        nativeClickHandlers: [...(current.architecture.nativeClickHandlers ?? [])]
       }
     }
   }
 }
 
-export const createInitialBaseline = (
-  current,
-  limits = DEFAULT_STYLE_LIMITS
-) => ({
+export const createInitialBaseline = (current, limits = DEFAULT_STYLE_LIMITS) => ({
   version: 2,
   limits: { ...limits },
   scss: { files: sortedObject(Object.entries(current.scss.files)) },
@@ -2425,10 +2032,7 @@ export const getSnapshotSummary = snapshot => {
       tokenFiles: 0
     }
   )
-  const nativeColors = Object.values(snapshot.native.files).reduce(
-    (total, metrics) => total + metrics.rawColors,
-    0
-  )
+  const nativeColors = Object.values(snapshot.native.files).reduce((total, metrics) => total + metrics.rawColors, 0)
 
   return {
     scssFiles: styles.length,
@@ -2436,7 +2040,6 @@ export const getSnapshotSummary = snapshot => {
     nativeColors,
     parentStyleImports: snapshot.architecture.parentStyleImports.length,
     legacyGlobalClassFiles: snapshot.architecture.legacyGlobalClassFiles.length,
-    nativeClickHandlers: (snapshot.architecture.nativeClickHandlers ?? [])
-      .length
+    nativeClickHandlers: (snapshot.architecture.nativeClickHandlers ?? []).length
   }
 }

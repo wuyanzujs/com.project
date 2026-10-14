@@ -21,18 +21,9 @@ import {
 } from './style-governance-lib.mjs'
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url))
-const governanceLibraryPath = path.join(
-  scriptDirectory,
-  'style-governance-lib.mjs'
-)
-const governanceCliPath = path.join(
-  scriptDirectory,
-  'check-style-governance.mjs'
-)
-const releaseBaselineContractPath = path.join(
-  scriptDirectory,
-  'check-release-style-baseline.mjs'
-)
+const governanceLibraryPath = path.join(scriptDirectory, 'style-governance-lib.mjs')
+const governanceCliPath = path.join(scriptDirectory, 'check-style-governance.mjs')
+const releaseBaselineContractPath = path.join(scriptDirectory, 'check-release-style-baseline.mjs')
 
 const makeFixtureWritable = root => {
   if (!fs.existsSync(root)) {
@@ -101,8 +92,7 @@ const createProjectFixture = (t, files = {}) => {
   const defaults = {
     'src/app.scss': "@use './styles/tokens' as *;\n",
     'src/styles/_tokens.scss': '$fixture-color: #16181a;\n',
-    'src/styles/nativeTokens.ts':
-      'export const APP_NATIVE_TOKENS = { touch: { minimum: 44 } } as const\n'
+    'src/styles/nativeTokens.ts': 'export const APP_NATIVE_TOKENS = { touch: { minimum: 44 } } as const\n'
   }
   for (const [file, content] of Object.entries({ ...defaults, ...files })) {
     writeFixtureFile(root, file, content)
@@ -125,10 +115,8 @@ const createCliFixture = (t, files = {}) => {
   const fixtureFiles = {
     'src/app.scss': "@use './styles/tokens' as *;\n",
     'src/styles/_tokens.scss': '$fixture-color: #16181a;\n',
-    'src/styles/nativeTokens.ts':
-      'export const APP_NATIVE_TOKENS = { touch: { minimum: 44 } } as const\n',
-    'src/pages/example/index.scss':
-      "@use '../../styles/tokens' as *;\n.example { padding: 0; }\n",
+    'src/styles/nativeTokens.ts': 'export const APP_NATIVE_TOKENS = { touch: { minimum: 44 } } as const\n',
+    'src/pages/example/index.scss': "@use '../../styles/tokens' as *;\n.example { padding: 0; }\n",
     ...files
   }
   for (const [file, content] of Object.entries(fixtureFiles)) {
@@ -137,24 +125,12 @@ const createCliFixture = (t, files = {}) => {
 
   const fixtureScriptDirectory = path.join(appRoot, 'scripts')
   fs.mkdirSync(fixtureScriptDirectory, { recursive: true })
-  fs.copyFileSync(
-    governanceLibraryPath,
-    path.join(fixtureScriptDirectory, 'style-governance-lib.mjs')
-  )
-  fs.copyFileSync(
-    governanceCliPath,
-    path.join(fixtureScriptDirectory, 'check-style-governance.mjs')
-  )
+  fs.copyFileSync(governanceLibraryPath, path.join(fixtureScriptDirectory, 'style-governance-lib.mjs'))
+  fs.copyFileSync(governanceCliPath, path.join(fixtureScriptDirectory, 'check-style-governance.mjs'))
 
   const current = collectProjectSnapshot(appRoot)
-  const fixtureBaselinePath = path.join(
-    fixtureScriptDirectory,
-    'style-governance-baseline.json'
-  )
-  fs.writeFileSync(
-    fixtureBaselinePath,
-    `${JSON.stringify(createInitialBaseline(current), null, 2)}\n`
-  )
+  const fixtureBaselinePath = path.join(fixtureScriptDirectory, 'style-governance-baseline.json')
+  fs.writeFileSync(fixtureBaselinePath, `${JSON.stringify(createInitialBaseline(current), null, 2)}\n`)
 
   return {
     appRoot,
@@ -200,8 +176,8 @@ const snapshot = (overrides = {}) => ({
 const baseline = current => ({
   version: 2,
   limits: {
-    pageScssLines: 300,
-    componentScssLines: 180
+    pageScssLines: 130,
+    componentScssLines: 130
   },
   scss: current.scss,
   native: current.native,
@@ -671,9 +647,7 @@ test('scanNativeClickHandlers ignores unknown spreads but reports static click s
     const text = <Text {...{ onTap: handleTap }} />
   `
 
-  assert.deepEqual(scanNativeClickHandlers(source), [
-    { element: 'Text', prop: 'spread', line: 5 }
-  ])
+  assert.deepEqual(scanNativeClickHandlers(source), [{ element: 'Text', prop: 'spread', line: 5 }])
 })
 
 test('scanDirectReactNativePressables finds aliases and createElement bypasses', () => {
@@ -745,10 +719,7 @@ test('collectProjectSnapshot rejects a touch minimum below 44dp', t => {
 
   const current = collectProjectSnapshot(root)
 
-  assert.match(
-    current.systemFailures.join('\n'),
-    /APP_NATIVE_TOKENS\.touch\.minimum.*静态数值 44/
-  )
+  assert.match(current.systemFailures.join('\n'), /APP_NATIVE_TOKENS\.touch\.minimum.*静态数值 44/)
 })
 
 test('collectProjectSnapshot reports native primitive handlers and contract failures', t => {
@@ -774,10 +745,7 @@ test('collectProjectSnapshot reports native primitive handlers and contract fail
       line: 4
     }
   ])
-  assert.match(
-    current.systemFailures.join('\n'),
-    /AppNativePressable\.tsx.*APP_NATIVE_TOKENS\.touch\.minimum/
-  )
+  assert.match(current.systemFailures.join('\n'), /AppNativePressable\.tsx.*APP_NATIVE_TOKENS\.touch\.minimum/)
 })
 
 test('collectProjectSnapshot scans app.scss as a governed style file', t => {
@@ -806,10 +774,7 @@ test('collectProjectSnapshot rejects business selectors in _tokens.scss', t => {
 
   const current = collectProjectSnapshot(root)
 
-  assert.match(
-    current.systemFailures.join('\n'),
-    /_tokens\.scss.*只能声明 token/
-  )
+  assert.match(current.systemFailures.join('\n'), /_tokens\.scss.*只能声明 token/)
 })
 
 test('collectProjectSnapshot rejects gradients, pseudo-elements, unreliable units and page elevation', t => {
@@ -851,34 +816,19 @@ test('collectProjectSnapshot rejects direct RN pressable bypasses outside the sh
 
   const current = collectProjectSnapshot(root)
 
-  assert.match(
-    current.systemFailures.join('\n'),
-    /SmallPressable\.tsx:3 不能直接使用 RN TinyPressable/
-  )
+  assert.match(current.systemFailures.join('\n'), /SmallPressable\.tsx:3 不能直接使用 RN TinyPressable/)
 })
 
 test('stylelint contract rejects unsupported RN style functions and units', () => {
-  const stylelintScriptPath = path.join(
-    workspaceRoot,
-    'apps/com.deppon.app/node_modules/stylelint/bin/stylelint.mjs'
-  )
-  const invalid = run(
-    process.execPath,
-    [stylelintScriptPath, '--stdin-filename', 'src/pages/example/index.scss'],
-    {
-      cwd: path.join(workspaceRoot, 'apps/com.deppon.app'),
-      input:
-        '.example { width: 2ch; background: repeating-conic-gradient(red, blue); }\n'
-    }
-  )
-  const valid = run(
-    process.execPath,
-    [stylelintScriptPath, '--stdin-filename', 'src/pages/example/index.scss'],
-    {
-      cwd: path.join(workspaceRoot, 'apps/com.deppon.app'),
-      input: '.example { width: 2px; transform: rotate(2deg); }\n'
-    }
-  )
+  const stylelintScriptPath = path.join(workspaceRoot, 'apps/com.deppon.app/node_modules/stylelint/bin/stylelint.mjs')
+  const invalid = run(process.execPath, [stylelintScriptPath, '--stdin-filename', 'src/pages/example/index.scss'], {
+    cwd: path.join(workspaceRoot, 'apps/com.deppon.app'),
+    input: '.example { width: 2ch; background: repeating-conic-gradient(red, blue); }\n'
+  })
+  const valid = run(process.execPath, [stylelintScriptPath, '--stdin-filename', 'src/pages/example/index.scss'], {
+    cwd: path.join(workspaceRoot, 'apps/com.deppon.app'),
+    input: '.example { width: 2px; transform: rotate(2deg); }\n'
+  })
 
   assert.equal(invalid.status !== 0, true, invalid.stdout)
   assert.equal(valid.status, 0, valid.stderr)
@@ -901,13 +851,7 @@ test('RN boundary contract rejects style, pressable and Taro alias bypasses', t 
       content: '.example { elevation: 1; }',
       message: '页面样式不能直接使用 elevation'
     },
-    ...[
-      'Pressable',
-      'TouchableHighlight',
-      'TouchableNativeFeedback',
-      'TouchableOpacity',
-      'TouchableWithoutFeedback'
-    ].flatMap(name => [
+    ...['Pressable', 'TouchableHighlight', 'TouchableNativeFeedback', 'TouchableOpacity', 'TouchableWithoutFeedback'].flatMap(name => [
       {
         file: `src/pages/example/${name}-import.tsx`,
         content: `import { ${name} as NativeClick } from 'react-native'`,
@@ -939,19 +883,13 @@ test('RN boundary contract rejects style, pressable and Taro alias bypasses', t 
     ...safeFiles,
     ...Object.fromEntries(cases.map(({ file, content }) => [file, content]))
   })
-  const result = run(
-    process.execPath,
-    [path.join(scriptDirectory, 'check-rn-boundaries.mjs')],
-    { cwd: root }
-  )
+  const result = run(process.execPath, [path.join(scriptDirectory, 'check-rn-boundaries.mjs')], { cwd: root })
   const diagnostics = result.stderr.replaceAll(path.sep, '/').split('\n')
 
   assert.equal(result.status, 1)
   for (const { file, message } of cases) {
     assert.ok(
-      diagnostics.some(
-        line => line.startsWith(`${file}:`) && line.includes(message)
-      ),
+      diagnostics.some(line => line.startsWith(`${file}:`) && line.includes(message)),
       `RN boundary check did not reject ${file}: ${result.stderr}`
     )
   }
@@ -965,31 +903,21 @@ test('collectProjectSnapshot detects every supported parent style import form', 
     'src/pages/example/index.scss': "@use '../../styles/tokens' as *;\n",
     'src/pages/example/index.tsx': "import './index.scss'\n",
     'src/pages/example/components/SideEffect.tsx': "import '../index.scss'\n",
-    'src/pages/example/components/FromImport.tsx':
-      "import styles from '../index.scss'\nvoid styles\n",
+    'src/pages/example/components/FromImport.tsx': "import styles from '../index.scss'\nvoid styles\n",
     'src/pages/example/components/CommonJs.tsx': "require('../index.scss')\n",
-    'src/pages/example/components/Dynamic.tsx':
-      "void import('../index.scss')\n",
-    'src/pages/example/components/TemplateDynamic.tsx':
-      'void import(`../index.scss`)\n',
-    'src/pages/example/components/TemplateRequire.tsx':
-      'require(`../index.scss`)\n',
-    'src/pages/example/components/Alias.tsx':
-      "import '@/pages/example/index.scss'\n",
+    'src/pages/example/components/Dynamic.tsx': "void import('../index.scss')\n",
+    'src/pages/example/components/TemplateDynamic.tsx': 'void import(`../index.scss`)\n',
+    'src/pages/example/components/TemplateRequire.tsx': 'require(`../index.scss`)\n',
+    'src/pages/example/components/Alias.tsx': "import '@/pages/example/index.scss'\n",
     'src/pages/example/components/Normalized.tsx': "import '.././index.scss'\n",
     'src/pages/example/components/Extensionless.tsx': "import '../index'\n",
     'src/pages/example/components/Legacy.jsx': "import '../index.scss'\n",
     'src/pages/example/components/SassUse.scss': "@use '../index';\n",
-    'src/pages/example/components/SassForward.scss':
-      "@forward '../index.scss';\n"
+    'src/pages/example/components/SassForward.scss': "@forward '../index.scss';\n"
   })
 
   const current = collectProjectSnapshot(root)
-  const imports = new Set(
-    current.architecture.parentStyleImports.map(
-      item => `${item.file}:${item.importPath}`
-    )
-  )
+  const imports = new Set(current.architecture.parentStyleImports.map(item => `${item.file}:${item.importPath}`))
 
   assert.deepEqual(
     imports,
@@ -1020,11 +948,7 @@ test('collectProjectSnapshot resolves Sass index partials in every path form', t
   })
 
   const current = collectProjectSnapshot(root)
-  const imports = new Set(
-    current.architecture.parentStyleImports.map(
-      item => `${item.file}:${item.importPath}`
-    )
-  )
+  const imports = new Set(current.architecture.parentStyleImports.map(item => `${item.file}:${item.importPath}`))
 
   assert.deepEqual(
     imports,
@@ -1079,10 +1003,7 @@ test('daily comparison rejects a per-file increase despite a total decrease', ()
   const result = compareSnapshot(current, baseline(previous))
 
   assert.equal(result.ok, false)
-  assert.match(
-    result.failures.join('\n'),
-    /src\/pages\/a\/index\.scss.*颜色.*2.*3/
-  )
+  assert.match(result.failures.join('\n'), /src\/pages\/a\/index\.scss.*颜色.*2.*3/)
 })
 
 test('daily comparison requires the baseline to ratchet after improvement', () => {
@@ -1145,19 +1066,10 @@ test('native click handlers are tracked per file in daily and strict modes', () 
 
   assert.equal(compareSnapshot(unchanged, baseline(previous)).ok, true)
   assert.equal(compareSnapshot(removed, baseline(previous)).ok, false)
-  assert.match(
-    compareSnapshot(removed, baseline(previous)).failures.join('\n'),
-    /Taro 原生点击控件已减少，请更新基线/
-  )
+  assert.match(compareSnapshot(removed, baseline(previous)).failures.join('\n'), /Taro 原生点击控件已减少，请更新基线/)
   assert.equal(compareSnapshot(added, baseline(previous)).ok, false)
-  assert.match(
-    compareSnapshot(added, baseline(previous)).failures.join('\n'),
-    /Taro 原生点击控件新增/
-  )
-  assert.equal(
-    compareSnapshot(unchanged, baseline(previous), { strict: true }).ok,
-    false
-  )
+  assert.match(compareSnapshot(added, baseline(previous)).failures.join('\n'), /Taro 原生点击控件新增/)
+  assert.equal(compareSnapshot(unchanged, baseline(previous), { strict: true }).ok, false)
   assert.match(
     compareSnapshot(unchanged, baseline(previous), {
       strict: true
@@ -1197,14 +1109,8 @@ test('native click baseline can only ratchet downward', () => {
 
   assert.equal(createNextBaseline(reduced, baseline(previous)).ok, true)
   assert.equal(createNextBaseline(increased, baseline(previous)).ok, false)
-  assert.equal(
-    compareBaselineEvolution(baseline(reduced), baseline(previous)).ok,
-    true
-  )
-  assert.equal(
-    compareBaselineEvolution(baseline(increased), baseline(previous)).ok,
-    false
-  )
+  assert.equal(compareBaselineEvolution(baseline(reduced), baseline(previous)).ok, true)
+  assert.equal(compareBaselineEvolution(baseline(increased), baseline(previous)).ok, false)
 })
 
 test('page index ownership keeps page orchestration small and excludes component indexes', t => {
@@ -1255,16 +1161,10 @@ test('page index ownership keeps page orchestration small and excludes component
 
   const current = collectProjectSnapshot(root)
   const failures = current.systemFailures.join('\n')
-  assert.match(
-    failures,
-    /src\/pages\/example\/index\.scss.*顶级规则 6 个.*最多允许 4 个/
-  )
+  assert.match(failures, /src\/pages\/example\/index\.scss.*顶级规则 6 个.*最多允许 4 个/)
   assert.match(failures, /src\/pages\/example\/index\.scss.*顶级选择器禁止 BEM/)
   assert.doesNotMatch(failures, /components\/index\.scss.*最多允许/)
-  assert.match(
-    failures,
-    /src\/pages\/example\/components\/MissingStyle\.tsx.*静态导入同目录 SCSS/
-  )
+  assert.match(failures, /src\/pages\/example\/components\/MissingStyle\.tsx.*静态导入同目录 SCSS/)
   assert.doesNotMatch(failures, /components\/Owned\.tsx/)
   assert.doesNotMatch(failures, /components\/helper\.tsx/)
   assert.doesNotMatch(failures, /components\/SharedConsumer\.tsx/)
@@ -1297,32 +1197,114 @@ test('baseline update accepts debt reduction and rejects debt increase', () => {
   assert.equal(createNextBaseline(increased, baseline(previous)).ok, false)
 })
 
-test('baseline update and evolution always reject a per-file line increase', () => {
+test('baseline update and evolution allow line growth up to the allowance only', () => {
   const previous = snapshot({
     scss: {
       files: {
-        'src/pages/example/index.scss': cleanStyle({ lines: 20 })
+        'src/pages/example/index.scss': cleanStyle({ lines: 130 })
+      }
+    }
+  })
+  const withinAllowance = snapshot({
+    scss: {
+      files: {
+        'src/pages/example/index.scss': cleanStyle({ lines: 40 })
       }
     }
   })
   const increased = snapshot({
     scss: {
       files: {
-        'src/pages/example/index.scss': cleanStyle({ lines: 21 })
+        'src/pages/example/index.scss': cleanStyle({ lines: 131 })
       }
     }
   })
 
+  assert.equal(createNextBaseline(withinAllowance, baseline(previous)).ok, true)
+  assert.equal(compareBaselineEvolution(baseline(withinAllowance), baseline(previous)).ok, true)
+
   const update = createNextBaseline(increased, baseline(previous))
-  const evolution = compareBaselineEvolution(
-    baseline(increased),
-    baseline(previous)
-  )
+  const evolution = compareBaselineEvolution(baseline(increased), baseline(previous))
 
   assert.equal(update.ok, false)
-  assert.match(update.failures.join('\n'), /行数从 20 增加到 21/)
+  assert.match(update.failures.join('\n'), /行数从 130 增加到 131/)
   assert.equal(evolution.ok, false)
-  assert.match(evolution.failures.join('\n'), /行数上限从 20 放宽到 21/)
+  assert.match(evolution.failures.join('\n'), /行数上限从 130 放宽到 131/)
+})
+
+test('line allowance freezes files that already exceed the limit', () => {
+  const previous = snapshot({
+    scss: {
+      files: {
+        'src/pages/example/index.scss': cleanStyle({ lines: 200 })
+      }
+    }
+  })
+  const shrunk = snapshot({
+    scss: {
+      files: {
+        'src/pages/example/index.scss': cleanStyle({ lines: 150 })
+      }
+    }
+  })
+  const grown = snapshot({
+    scss: {
+      files: {
+        'src/pages/example/index.scss': cleanStyle({ lines: 201 })
+      }
+    }
+  })
+
+  assert.equal(createNextBaseline(shrunk, baseline(previous)).ok, true)
+  assert.equal(compareBaselineEvolution(baseline(shrunk), baseline(previous)).ok, true)
+
+  const update = createNextBaseline(grown, baseline(previous))
+  const evolution = compareBaselineEvolution(baseline(grown), baseline(previous))
+
+  assert.equal(update.ok, false)
+  assert.match(update.failures.join('\n'), /行数从 200 增加到 201/)
+  assert.equal(evolution.ok, false)
+  assert.match(evolution.failures.join('\n'), /行数上限从 200 放宽到 201/)
+})
+
+test('daily comparison permits line growth up to the allowance without ratcheting', () => {
+  const previous = snapshot({
+    scss: {
+      files: {
+        'src/pages/example/index.scss': cleanStyle({ lines: 100 })
+      }
+    }
+  })
+  const withinAllowance = snapshot({
+    scss: {
+      files: {
+        'src/pages/example/index.scss': cleanStyle({ lines: 129 })
+      }
+    }
+  })
+  const shrunk = snapshot({
+    scss: {
+      files: {
+        'src/pages/example/index.scss': cleanStyle({ lines: 80 })
+      }
+    }
+  })
+  const beyondAllowance = snapshot({
+    scss: {
+      files: {
+        'src/pages/example/index.scss': cleanStyle({ lines: 131 })
+      }
+    }
+  })
+
+  assert.equal(compareSnapshot(previous, baseline(previous)).ok, true)
+  assert.equal(compareSnapshot(withinAllowance, baseline(previous)).ok, true)
+  assert.equal(compareSnapshot(shrunk, baseline(previous)).ok, true)
+
+  const result = compareSnapshot(beyondAllowance, baseline(previous))
+
+  assert.equal(result.ok, false)
+  assert.match(result.failures.join('\n'), /超过允许上限 130 行/)
 })
 
 test('baseline evolution never bypasses validation for a legacy baseline', () => {
@@ -1374,10 +1356,7 @@ for (const [field, label] of [
     })
 
     const update = createNextBaseline(increased, baseline(previous))
-    const evolution = compareBaselineEvolution(
-      baseline(increased),
-      baseline(previous)
-    )
+    const evolution = compareBaselineEvolution(baseline(increased), baseline(previous))
 
     assert.equal(update.ok, false)
     assert.match(update.failures.join('\n'), new RegExp(label))
@@ -1403,10 +1382,7 @@ test('baseline ratchet rejects a per-file native color increase', () => {
   })
 
   assert.equal(createNextBaseline(increased, baseline(previous)).ok, false)
-  assert.equal(
-    compareBaselineEvolution(baseline(increased), baseline(previous)).ok,
-    false
-  )
+  assert.equal(compareBaselineEvolution(baseline(increased), baseline(previous)).ok, false)
 })
 
 test('baseline evolution allows a new strict zero-debt file', () => {
@@ -1423,7 +1399,7 @@ test('strict comparison requires zero debt and applies file budgets', () => {
       files: {
         'src/pages/example/index.scss': cleanStyle({
           rawColors: 1,
-          lines: 301
+          lines: 131
         })
       }
     },
@@ -1443,15 +1419,43 @@ test('strict comparison requires zero debt and applies file budgets', () => {
     }
   })
 
-  const result = compareSnapshot(current, baseline(current), { strict: true })
+  const strictBaseline = structuredClone(baseline(current))
+  strictBaseline.scss.files['src/pages/example/index.scss'].lines = 100
+
+  const result = compareSnapshot(current, strictBaseline, { strict: true })
   const failures = result.failures.join('\n')
 
   assert.equal(result.ok, false)
   assert.match(failures, /颜色字面量必须归零/)
-  assert.match(failures, /超过页面上限 300 行/)
+  assert.match(failures, /超过页面上限 130 行/)
   assert.match(failures, /TS\/TSX 静态颜色必须归零/)
   assert.match(failures, /父级 index\.scss/)
   assert.match(failures, /legacy 全局类/)
+})
+
+test('strict comparison freezes style files that already exceed the line limit', () => {
+  const current = snapshot({
+    scss: {
+      files: {
+        'src/pages/example/index.scss': cleanStyle({ lines: 200 })
+      }
+    }
+  })
+  const frozenBaseline = structuredClone(baseline(current))
+
+  assert.equal(compareSnapshot(current, frozenBaseline, { strict: true }).ok, true)
+
+  const grown = snapshot({
+    scss: {
+      files: {
+        'src/pages/example/index.scss': cleanStyle({ lines: 201 })
+      }
+    }
+  })
+  const result = compareSnapshot(grown, frozenBaseline, { strict: true })
+
+  assert.equal(result.ok, false)
+  assert.match(result.failures.join('\n'), /超过页面上限 200 行/)
 })
 
 test('strict comparison governs a clean app.scss without requiring token usage', () => {
@@ -1463,10 +1467,7 @@ test('strict comparison governs a clean app.scss without requiring token usage',
     }
   })
 
-  assert.equal(
-    compareSnapshot(current, baseline(current), { strict: true }).ok,
-    true
-  )
+  assert.equal(compareSnapshot(current, baseline(current), { strict: true }).ok, true)
 })
 
 test('CLI default, strict, report and invalid modes expose stable exit codes', t => {
@@ -1493,22 +1494,13 @@ test('CLI update writes a reduced baseline and is rejected in CI', t => {
       .example { color: #16181a; }
     `
   })
-  writeFixtureFile(
-    fixture.appRoot,
-    'src/pages/example/index.scss',
-    "@use '../../styles/tokens' as *;\n"
-  )
+  writeFixtureFile(fixture.appRoot, 'src/pages/example/index.scss', "@use '../../styles/tokens' as *;\n")
 
   const update = runCli(fixture, ['--update-baseline'])
-  const updatedBaseline = JSON.parse(
-    fs.readFileSync(fixture.baselinePath, 'utf8')
-  )
+  const updatedBaseline = JSON.parse(fs.readFileSync(fixture.baselinePath, 'utf8'))
 
   assert.equal(update.status, 0, update.stderr)
-  assert.equal(
-    updatedBaseline.scss.files['src/pages/example/index.scss'].rawColors,
-    0
-  )
+  assert.equal(updatedBaseline.scss.files['src/pages/example/index.scss'].rawColors, 0)
 
   const beforeCiAttempt = fs.readFileSync(fixture.baselinePath, 'utf8')
   for (const ciValue of ['true', '1', 'yes', 'on']) {
@@ -1536,10 +1528,7 @@ test('CLI rejects a loosened baseline against a temporary git base ref', t => {
 
   const loosened = JSON.parse(fs.readFileSync(fixture.baselinePath, 'utf8'))
   loosened.scss.files['src/pages/example/index.scss'].rawColors = 1
-  fs.writeFileSync(
-    fixture.baselinePath,
-    `${JSON.stringify(loosened, null, 2)}\n`
-  )
+  fs.writeFileSync(fixture.baselinePath, `${JSON.stringify(loosened, null, 2)}\n`)
 
   const result = runCli(fixture, [], {
     env: { STYLE_GOVERNANCE_BASE_REF: 'HEAD' }
@@ -1551,34 +1540,15 @@ test('CLI rejects a loosened baseline against a temporary git base ref', t => {
 })
 
 test('Android and iOS releases use the reusable baseline ratchet contract', () => {
-  const workflows = ['android-release.yml', 'ios-release.yml'].map(file =>
-    fs.readFileSync(
-      path.join(workspaceRoot, '.github', 'workflows', file),
-      'utf8'
-    )
-  )
-  const contractPath = path.join(
-    scriptDirectory,
-    'check-release-style-baseline.mjs'
-  )
+  const workflows = ['android-release.yml', 'ios-release.yml'].map(file => fs.readFileSync(path.join(workspaceRoot, '.github', 'workflows', file), 'utf8'))
+  const contractPath = path.join(scriptDirectory, 'check-release-style-baseline.mjs')
 
   for (const workflow of workflows) {
+    assert.match(workflow, /uses:\s*actions\/checkout@v4[\s\S]*?with:\s*\n\s+fetch-depth:\s*0/)
+    assert.match(workflow, /node apps\/com\.deppon\.app\/scripts\/check-release-style-baseline\.mjs/)
     assert.match(
       workflow,
-      /uses:\s*actions\/checkout@v4[\s\S]*?with:\s*\n\s+fetch-depth:\s*0/
-    )
-    assert.match(
-      workflow,
-      /node apps\/com\.deppon\.app\/scripts\/check-release-style-baseline\.mjs/
-    )
-    assert.match(
-      workflow,
-      new RegExp(
-        [
-          String.raw`STYLE_GOVERNANCE_BASE_REF:\s*origin\/`,
-          String.raw`\$\{\{\s*github\.event\.repository\.default_branch\s*\}\}`
-        ].join('')
-      )
+      new RegExp([String.raw`STYLE_GOVERNANCE_BASE_REF:\s*origin\/`, String.raw`\$\{\{\s*github\.event\.repository\.default_branch\s*\}\}`].join(''))
     )
   }
 
@@ -1597,20 +1567,10 @@ test('Android and iOS releases use the reusable baseline ratchet contract', () =
 })
 
 test('formal verify includes the strict style gate', () => {
-  const packageJson = JSON.parse(
-    fs.readFileSync(
-      path.join(workspaceRoot, 'apps/com.deppon.app/package.json')
-    )
-  )
+  const packageJson = JSON.parse(fs.readFileSync(path.join(workspaceRoot, 'apps/com.deppon.app/package.json')))
 
-  assert.match(
-    packageJson.scripts['verify:static'],
-    /pnpm run check:styles:strict/
-  )
-  assert.doesNotMatch(
-    packageJson.scripts.verify,
-    /bundle:android|bundle:ios|gradle|xcode|taro build/i
-  )
+  assert.match(packageJson.scripts['verify:static'], /pnpm run check:styles:strict/)
+  assert.doesNotMatch(packageJson.scripts.verify, /bundle:android|bundle:ios|gradle|xcode|taro build/i)
   assert.match(packageJson.scripts['verify:static'], /check:platform-build/)
   assert.match(packageJson.scripts['verify:bundle:android'], /bundle:android/)
   assert.match(packageJson.scripts['verify:bundle:ios'], /bundle:ios/)
@@ -1623,10 +1583,7 @@ test('release baseline contract handles dirty worktrees and clean release commit
       .example { color: #16181a; }
     `
   })
-  const fixtureContractPath = path.join(
-    path.dirname(fixture.cliPath),
-    'check-release-style-baseline.mjs'
-  )
+  const fixtureContractPath = path.join(path.dirname(fixture.cliPath), 'check-release-style-baseline.mjs')
   fs.copyFileSync(releaseBaselineContractPath, fixtureContractPath)
 
   for (const args of [
@@ -1643,11 +1600,7 @@ test('release baseline contract handles dirty worktrees and clean release commit
     cwd: fixture.repoRoot
   }).stdout.trim()
 
-  writeFixtureFile(
-    fixture.appRoot,
-    'src/pages/example/index.scss',
-    "@use '../../styles/tokens' as *;\n"
-  )
+  writeFixtureFile(fixture.appRoot, 'src/pages/example/index.scss', "@use '../../styles/tokens' as *;\n")
   const update = runCli(fixture, ['--update-baseline'])
   assert.equal(update.status, 0, update.stderr)
 
@@ -1672,10 +1625,7 @@ test('release baseline contract handles dirty worktrees and clean release commit
 
   const loosened = JSON.parse(fs.readFileSync(fixture.baselinePath, 'utf8'))
   loosened.scss.files['src/pages/example/index.scss'].rawColors = 2
-  fs.writeFileSync(
-    fixture.baselinePath,
-    `${JSON.stringify(loosened, null, 2)}\n`
-  )
+  fs.writeFileSync(fixture.baselinePath, `${JSON.stringify(loosened, null, 2)}\n`)
   const loosenedCheck = run(process.execPath, [fixtureContractPath], {
     cwd: fixture.repoRoot,
     env: { STYLE_GOVERNANCE_BASE_REF: 'HEAD' }
@@ -1691,10 +1641,7 @@ test('release baseline contract cannot wash out debt across feature commits', t 
       .example { color: #16181a; }
     `
   })
-  const fixtureContractPath = path.join(
-    path.dirname(fixture.cliPath),
-    'check-release-style-baseline.mjs'
-  )
+  const fixtureContractPath = path.join(path.dirname(fixture.cliPath), 'check-release-style-baseline.mjs')
   fs.copyFileSync(releaseBaselineContractPath, fixtureContractPath)
 
   for (const args of [
@@ -1723,10 +1670,7 @@ test('release baseline contract cannot wash out debt across feature commits', t 
     fs.writeFileSync(fixture.baselinePath, `${JSON.stringify(next, null, 2)}\n`)
   }
   setBaselineColorLimit(3)
-  assert.equal(
-    run('git', ['add', '.', '--'], { cwd: fixture.repoRoot }).status,
-    0
-  )
+  assert.equal(run('git', ['add', '.', '--'], { cwd: fixture.repoRoot }).status, 0)
   assert.equal(
     run('git', ['commit', '--quiet', '-m', 'loosen to three'], {
       cwd: fixture.repoRoot
@@ -1743,10 +1687,7 @@ test('release baseline contract cannot wash out debt across feature commits', t 
       .example { color: #16181a; background: #ffffff; }
     `
   )
-  assert.equal(
-    run('git', ['add', '.', '--'], { cwd: fixture.repoRoot }).status,
-    0
-  )
+  assert.equal(run('git', ['add', '.', '--'], { cwd: fixture.repoRoot }).status, 0)
   assert.equal(
     run('git', ['commit', '--quiet', '-m', 'lower to two'], {
       cwd: fixture.repoRoot
@@ -1768,11 +1709,7 @@ test('release baseline contract cannot wash out debt across feature commits', t 
   assert.equal(broadened.status, 1)
   assert.match(broadened.stderr, /基线不得放宽/)
 
-  writeFixtureFile(
-    fixture.appRoot,
-    'src/pages/example/index.scss',
-    "@use '../../styles/tokens' as *;\n"
-  )
+  writeFixtureFile(fixture.appRoot, 'src/pages/example/index.scss', "@use '../../styles/tokens' as *;\n")
   const tightenBaseline = runCli(fixture, ['--update-baseline'])
   assert.equal(tightenBaseline.status, 0, tightenBaseline.stderr)
   const tightened = run(process.execPath, [fixtureContractPath], {

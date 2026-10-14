@@ -1,8 +1,8 @@
 {
   "version": 2,
   "limits": {
-    "pageScssLines": 300,
-    "componentScssLines": 180
+    "pageScssLines": 130,
+    "componentScssLines": 130
   },
   "scss": {
     "files": {
@@ -1084,7 +1084,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 3,
         "usesTokens": true,
-        "lines": 71
+        "lines": 70
       },
       "src/pages/mine/components/MineMemberCard/index.scss": {
         "rawColors": 0,

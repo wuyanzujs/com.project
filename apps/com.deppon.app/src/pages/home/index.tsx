@@ -3,11 +3,7 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useRef } from 'react'
 
-import {
-  applyExpressScanContext,
-  createExpressDraft,
-  expressDraftBridge
-} from '@/services/express'
+import { applyExpressScanContext, createExpressDraft, expressDraftBridge } from '@/services/express'
 import { privacyService } from '@/services/privacy'
 import { AppPage, AppPressable } from '@/shared/components'
 import { AppIcon } from '@/shared/components/AppIcon'
@@ -141,51 +137,24 @@ const HomePage = () => {
   })
 
   return (
-    <AppPage
-      className='home-page-shell'
-      footer={<AppTabBar active='home' />}
-      safeArea='top'
-      statusBar='dark'
-    >
+    <AppPage className='home-page-shell' footer={<AppTabBar active='home' />} safeArea='none' statusBar='light'>
       <ScrollView className='home-page' scrollY>
         <Banner onPress={() => handleNavigate(APP_ROUTES.express)} />
 
         <View className='home-primary-actions'>
-          <AppPressable
-            flex
-            accessibilityLabel='寄快递'
-            block
-            className='home-primary-action'
-            onPress={() => handleNavigate(APP_ROUTES.express)}
-          >
-            <Image
-              className='home-primary-action__image'
-              mode='aspectFit'
-              src='https://ca.deppon.com.cn/ows/assets/home/1.png'
-            />
+          <AppPressable flex accessibilityLabel='寄快递' block className='home-primary-action' onPress={() => handleNavigate(APP_ROUTES.express)}>
+            <Image className='home-primary-action__image' mode='aspectFit' src='https://ca.deppon.com.cn/ows/assets/home/1.png' />
             <View>
               <Text className='home-primary-action__title'>寄快递</Text>
               <Text className='home-primary-action__summary'>1小时取件</Text>
             </View>
           </AppPressable>
           <View className='home-primary-actions__divider' />
-          <AppPressable
-            flex
-            accessibilityLabel='发物流'
-            block
-            className='home-primary-action'
-            onPress={() => handleNavigate(APP_ROUTES.express)}
-          >
-            <Image
-              className='home-primary-action__image'
-              mode='aspectFit'
-              src='https://ca.deppon.com.cn/ows/assets/home/2.png'
-            />
+          <AppPressable flex accessibilityLabel='发物流' block className='home-primary-action' onPress={() => handleNavigate(APP_ROUTES.express)}>
+            <Image className='home-primary-action__image' mode='aspectFit' src='https://ca.deppon.com.cn/ows/assets/home/2.png' />
             <View>
               <Text className='home-primary-action__title'>发物流</Text>
-              <Text className='home-primary-action__summary'>
-                大件/零担/整车
-              </Text>
+              <Text className='home-primary-action__summary'>大件/零担/整车</Text>
             </View>
           </AppPressable>
         </View>
@@ -193,67 +162,28 @@ const HomePage = () => {
         <Menu actions={HOME_QUICK_ACTIONS} onSelect={handleQuickAction} />
 
         <View className='home-support-bar'>
-          <AppPressable
-            flex
-            accessibilityLabel='拨打 95353'
-            className='home-support-bar__item'
-            onPress={handleServicePhone}
-          >
-            <AppIcon
-              color={APP_STYLE_COLORS.text.heading}
-              name='phone'
-              size={APP_NATIVE_TOKENS.icon.large}
-            />
+          <AppPressable flex accessibilityLabel='拨打 95353' className='home-support-bar__item' onPress={handleServicePhone}>
+            <AppIcon color={APP_STYLE_COLORS.text.heading} name='phone' size={APP_NATIVE_TOKENS.icon.large} />
             <Text className='home-support-bar__text'>95353</Text>
           </AppPressable>
           <View className='home-support-bar__divider' />
-          <AppPressable
-            flex
-            accessibilityLabel='在线客服'
-            className='home-support-bar__item'
-            onPress={() => handleNavigate(APP_ROUTES.supportCenter)}
-          >
-            <AppIcon
-              color={APP_STYLE_COLORS.text.heading}
-              name='headphones'
-              size={APP_NATIVE_TOKENS.icon.large}
-            />
+          <AppPressable flex accessibilityLabel='在线客服' className='home-support-bar__item' onPress={() => handleNavigate(APP_ROUTES.supportCenter)}>
+            <AppIcon color={APP_STYLE_COLORS.text.heading} name='headphones' size={APP_NATIVE_TOKENS.icon.large} />
             <Text className='home-support-bar__text'>在线客服</Text>
           </AppPressable>
           <View className='home-support-bar__divider' />
-          <AppPressable
-            flex
-            accessibilityLabel='企业合作'
-            className='home-support-bar__item'
-            onPress={() => handleNavigate(APP_ROUTES.customerCenter)}
-          >
-            <AppIcon
-              color={APP_STYLE_COLORS.text.heading}
-              name='contact'
-              size={APP_NATIVE_TOKENS.icon.large}
-            />
+          <AppPressable flex accessibilityLabel='企业合作' className='home-support-bar__item' onPress={() => handleNavigate(APP_ROUTES.customerCenter)}>
+            <AppIcon color={APP_STYLE_COLORS.text.heading} name='contact' size={APP_NATIVE_TOKENS.icon.large} />
             <Text className='home-support-bar__text'>企业合作</Text>
           </AppPressable>
         </View>
 
         <View className='home-query-bar'>
-          <AppPressable
-            flex
-            accessibilityLabel='服务查询'
-            block
-            className='home-query-bar__main'
-            onPress={() => handleNavigate(APP_ROUTES.dispatchQuery)}
-          >
+          <AppPressable flex accessibilityLabel='服务查询' block className='home-query-bar__main' onPress={() => handleNavigate(APP_ROUTES.dispatchQuery)}>
             <Text className='home-query-bar__title'>服务查询</Text>
-            <Text className='home-query-bar__summary'>
-              网点/派送范围/收寄标准/企业合作
-            </Text>
+            <Text className='home-query-bar__summary'>网点/派送范围/收寄标准/企业合作</Text>
           </AppPressable>
-          <AppPressable
-            accessibilityLabel='查价格查时效'
-            className='home-query-bar__price'
-            onPress={() => handleNavigate(APP_ROUTES.priceQuery)}
-          >
+          <AppPressable accessibilityLabel='查价格查时效' className='home-query-bar__price' onPress={() => handleNavigate(APP_ROUTES.priceQuery)}>
             <Text className='home-query-bar__price-text'>查价格/查时效</Text>
           </AppPressable>
         </View>

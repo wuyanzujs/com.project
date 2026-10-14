@@ -21,27 +21,16 @@ import { MineEntryGrids } from './components/MineEntryGrids'
 import { MineHero } from './components/MineHero'
 import { MineMemberCard } from './components/MineMemberCard'
 import { MineOrderShortcuts } from './components/MineOrderShortcuts'
-import {
-  EMPTY_ORDER_COUNTS,
-  QUICK_ENTRIES,
-  queryMineOrderCounts
-} from './mine.model'
+import { EMPTY_ORDER_COUNTS, QUICK_ENTRIES, queryMineOrderCounts } from './mine.model'
 
-import type {
-  MineEntry,
-  MineOrderCounts,
-  MineOrderShortcut
-} from './mine.model'
+import type { MineEntry, MineOrderCounts, MineOrderShortcut } from './mine.model'
 
 import './index.scss'
 
 const MinePage = () => {
-  const [user, setUser] = useState<AppUser | null>(() =>
-    authService.getCachedUser()
-  )
+  const [user, setUser] = useState<AppUser | null>(() => authService.getCachedUser())
   const [member, setMember] = useState<MemberOverviewView | null>(null)
-  const [orderCounts, setOrderCounts] =
-    useState<MineOrderCounts>(EMPTY_ORDER_COUNTS)
+  const [orderCounts, setOrderCounts] = useState<MineOrderCounts>(EMPTY_ORDER_COUNTS)
   const [couponExpireCount, setCouponExpireCount] = useState(0)
 
   const refreshUser = async () => {
@@ -53,13 +42,12 @@ const MinePage = () => {
       return
     }
 
-    const [nextUser, memberResponse, nextOrderCounts, expireCount] =
-      await Promise.all([
-        authService.bootstrapUser(),
-        memberService.queryOverview(),
-        queryMineOrderCounts(),
-        couponService.queryExpireCount()
-      ])
+    const [nextUser, memberResponse, nextOrderCounts, expireCount] = await Promise.all([
+      authService.bootstrapUser(),
+      memberService.queryOverview(),
+      queryMineOrderCounts(),
+      couponService.queryExpireCount()
+    ])
 
     setUser(nextUser ?? authService.getCachedUser())
     setMember(memberResponse.result ?? null)
@@ -124,12 +112,7 @@ const MinePage = () => {
   const levelCode = member?.levelCode ?? 0
 
   return (
-    <AppPage
-      className='mine-page-shell'
-      footer={<AppTabBar active='mine' />}
-      safeArea='top'
-      statusBar='dark'
-    >
+    <AppPage className='mine-page-shell' footer={<AppTabBar active='mine' />} safeArea='none' statusBar='dark'>
       <ScrollView className='mine-page' scrollY>
         <MineHero
           authenticated={Boolean(user)}
@@ -147,11 +130,7 @@ const MinePage = () => {
           />
         )}
 
-        <MineOrderShortcuts
-          authenticated={Boolean(user)}
-          orderCounts={orderCounts}
-          onSelect={handleOrderShortcut}
-        />
+        <MineOrderShortcuts authenticated={Boolean(user)} orderCounts={orderCounts} onSelect={handleOrderShortcut} />
 
         <MineEntryGrids quickEntries={QUICK_ENTRIES} onSelect={handleEntry} />
       </ScrollView>

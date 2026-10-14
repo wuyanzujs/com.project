@@ -1,14 +1,11 @@
 import { View } from '@tarojs/components'
+import { useDidHide, useDidShow } from '@tarojs/taro'
 
-import { type PropsWithChildren, type ReactNode } from 'react'
+import { type PropsWithChildren, type ReactNode, useState } from 'react'
 
 import { type Edge } from 'react-native-safe-area-context'
 
-import {
-  AppKeyboardAvoidingView,
-  AppSafeAreaView,
-  AppStatusBar
-} from '@/shared/native'
+import { AppKeyboardAvoidingView, AppSafeAreaView, AppStatusBar } from '@/shared/native'
 import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './index.scss'
@@ -16,6 +13,21 @@ import './index.scss'
 export type AppPageSafeArea = 'none' | 'top' | 'bottom' | 'both'
 export type AppPageStatusBar = 'none' | 'dark' | 'light'
 export type AppPageSurface = 'page' | 'card' | 'brand-soft'
+
+// RN 的 StatusBar 由最后挂载的实例生效，而 Taro 下多个页面会同时挂着，
+// 不聚焦的页面会把当前页的图标配色压掉。这里只在页面显示期间挂载。
+function PageStatusBar({ theme }: { theme: AppPageStatusBar }) {
+  const [shown, setShown] = useState(false)
+
+  useDidShow(() => setShown(true))
+  useDidHide(() => setShown(false))
+
+  if (theme === 'none' || !shown) {
+    return null
+  }
+
+  return <AppStatusBar theme={theme} />
+}
 
 export interface AppPageProps extends PropsWithChildren {
   className?: string
@@ -51,15 +63,8 @@ export function AppPage({
   surface = 'page'
 }: AppPageProps) {
   const content = (
-    <AppSafeAreaView
-      backgroundColor={SURFACE_COLORS[surface]}
-      edges={[...SAFE_AREA_EDGES[safeArea]]}
-    >
-      <View
-        className={['app-page', `app-page--${surface}`, className]
-          .filter(Boolean)
-          .join(' ')}
-      >
+    <AppSafeAreaView backgroundColor={SURFACE_COLORS[surface]} edges={[...SAFE_AREA_EDGES[safeArea]]}>
+      <View className={['app-page', `app-page--${surface}`, className].filter(Boolean).join(' ')}>
         {header ? <View className='app-page__header'>{header}</View> : null}
         <View className='app-page__content'>{children}</View>
         {footer ? <View className='app-page__footer'>{footer}</View> : null}
@@ -69,12 +74,8 @@ export function AppPage({
 
   return (
     <>
-      {statusBar === 'none' ? null : <AppStatusBar theme={statusBar} />}
-      {keyboardAvoiding ? (
-        <AppKeyboardAvoidingView>{content}</AppKeyboardAvoidingView>
-      ) : (
-        content
-      )}
+      <PageStatusBar theme={statusBar} />
+      {keyboardAvoiding ? <AppKeyboardAvoidingView>{content}</AppKeyboardAvoidingView> : content}
     </>
   )
 }

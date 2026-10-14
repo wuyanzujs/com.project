@@ -14,18 +14,8 @@ import {
   selectPaymentCheckoutItems,
   validatePaymentCheckout
 } from '@/services/payment'
-import type {
-  PaymentCheckoutSource,
-  PaymentItem,
-  PaymentRole
-} from '@/services/payment'
-import {
-  AppButton,
-  AppEmptyState,
-  AppLoadingState,
-  AppPage,
-  AppStatusTag
-} from '@/shared/components'
+import type { PaymentCheckoutSource, PaymentItem, PaymentRole } from '@/services/payment'
+import { AppButton, AppEmptyState, AppLoadingState, AppPage, AppStatusTag } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -41,9 +31,7 @@ interface PaymentCheckoutRouteParams {
   waybillNumber: string
 }
 
-function parseRouteParams(
-  params: Record<string, string | undefined>
-): PaymentCheckoutRouteParams {
+function parseRouteParams(params: Record<string, string | undefined>): PaymentCheckoutRouteParams {
   return {
     detailNo: params.detailNo?.trim() || '',
     role: params.role === 'receive' ? 'receive' : 'sender',
@@ -54,19 +42,13 @@ function parseRouteParams(
 
 const PaymentCheckoutPage = () => {
   const router = useRouter()
-  const routeParams = useMemo(
-    () => parseRouteParams(router.params as Record<string, string | undefined>),
-    [router.params]
-  )
+  const routeParams = useMemo(() => parseRouteParams(router.params as Record<string, string | undefined>), [router.params])
   const [items, setItems] = useState<PaymentItem[]>([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const checkout = useMemo(() => createPaymentCheckoutView(items), [items])
-  const validation = useMemo(
-    () => validatePaymentCheckout(checkout.items),
-    [checkout.items]
-  )
+  const validation = useMemo(() => validatePaymentCheckout(checkout.items), [checkout.items])
   const paymentAvailable = paymentCheckoutService.isPaymentAvailable()
 
   const loadCheckout = useCallback(async () => {
@@ -93,17 +75,10 @@ const PaymentCheckoutPage = () => {
         return
       }
 
-      const selectedItems = selectPaymentCheckoutItems(
-        response.result.items,
-        routeParams.detailNo
-      )
+      const selectedItems = selectPaymentCheckoutItems(response.result.items, routeParams.detailNo)
 
       setItems(selectedItems)
-      setErrorMessage(
-        selectedItems.length
-          ? ''
-          : response.result.disabledReason || '该笔费用已支付或暂不可付'
-      )
+      setErrorMessage(selectedItems.length ? '' : response.result.disabledReason || '该笔费用已支付或暂不可付')
     } finally {
       setLoading(false)
     }
@@ -168,9 +143,7 @@ const PaymentCheckoutPage = () => {
     <View className='payment-checkout-footer'>
       <View className='payment-checkout-footer__amount'>
         <Text className='payment-checkout-footer__label'>合计</Text>
-        <Text className='payment-checkout-footer__value'>
-          ¥{checkout.amount.toFixed(2)}
-        </Text>
+        <Text className='payment-checkout-footer__value'>¥{checkout.amount.toFixed(2)}</Text>
       </View>
       <AppButton
         block={false}
@@ -185,26 +158,18 @@ const PaymentCheckoutPage = () => {
   )
 
   return (
-    <AppPage footer={footer} safeArea='bottom' surface='page'>
+    <AppPage footer={footer} safeArea='bottom' statusBar='dark' surface='page'>
       <ScrollView className='payment-checkout-page' scrollY style={{ flex: 1 }}>
         <View className='payment-checkout-header'>
           <Text className='payment-checkout-header__title'>确认支付信息</Text>
-          <Text className='payment-checkout-header__summary'>
-            请核对运单与费用后提交
-          </Text>
+          <Text className='payment-checkout-header__summary'>请核对运单与费用后提交</Text>
         </View>
 
         {loading ? (
           <AppLoadingState label='正在加载待支付费用' />
         ) : errorMessage ? (
           <AppEmptyState
-            action={
-              <AppButton
-                density='compact'
-                label='重新加载'
-                onPress={loadCheckout}
-              />
-            }
+            action={<AppButton density='compact' label='重新加载' onPress={loadCheckout} />}
             description={errorMessage}
             title='暂无法支付'
             tone='error'
@@ -213,31 +178,19 @@ const PaymentCheckoutPage = () => {
           <>
             <View className='payment-checkout-section'>
               <View className='payment-checkout-section__head'>
-                <Text className='payment-checkout-section__title'>
-                  支付明细
-                </Text>
-                <Text className='payment-checkout-section__hint'>
-                  共 {checkout.count} 笔
-                </Text>
+                <Text className='payment-checkout-section__title'>支付明细</Text>
+                <Text className='payment-checkout-section__hint'>共 {checkout.count} 笔</Text>
               </View>
 
               {checkout.items.map(item => (
-                <View
-                  className='payment-checkout-item'
-                  key={`${item.accountStatementDetailNo}-${item.waybillNum}`}
-                >
+                <View className='payment-checkout-item' key={`${item.accountStatementDetailNo}-${item.waybillNum}`}>
                   <View className='payment-checkout-item__main'>
-                    <Text className='payment-checkout-item__number'>
-                      {item.waybillNum}
-                    </Text>
+                    <Text className='payment-checkout-item__number'>{item.waybillNum}</Text>
                     <Text className='payment-checkout-item__description'>
-                      {getPaymentOrderTypeLabel(item.orderSubType)} ·{' '}
-                      {item.senderCityName || '--'} 至 {item.arriveCity || '--'}
+                      {getPaymentOrderTypeLabel(item.orderSubType)} · {item.senderCityName || '--'} 至 {item.arriveCity || '--'}
                     </Text>
                   </View>
-                  <Text className='payment-checkout-item__amount'>
-                    ¥{getPaymentItemAmount(item, 'UNPAID').toFixed(2)}
-                  </Text>
+                  <Text className='payment-checkout-item__amount'>¥{getPaymentItemAmount(item, 'UNPAID').toFixed(2)}</Text>
                 </View>
               ))}
             </View>
@@ -245,30 +198,17 @@ const PaymentCheckoutPage = () => {
             <View className='payment-checkout-section'>
               <View className='payment-checkout-channel'>
                 <View className='payment-checkout-channel__main'>
-                  <Text className='payment-checkout-channel__title'>
-                    App 在线支付
-                  </Text>
-                  <Text className='payment-checkout-channel__summary'>
-                    支付渠道将在提交后由收银台确认
-                  </Text>
+                  <Text className='payment-checkout-channel__title'>App 在线支付</Text>
+                  <Text className='payment-checkout-channel__summary'>支付渠道将在提交后由收银台确认</Text>
                 </View>
-                <AppStatusTag
-                  label={paymentAvailable ? '可用' : '暂不可用'}
-                  tone={paymentAvailable ? 'success' : 'neutral'}
-                />
+                <AppStatusTag label={paymentAvailable ? '可用' : '暂不可用'} tone={paymentAvailable ? 'success' : 'neutral'} />
               </View>
-              {!paymentAvailable && (
-                <Text className='payment-checkout-channel__notice'>
-                  {APP_PAYMENT_UNAVAILABLE_MESSAGE}
-                </Text>
-              )}
+              {!paymentAvailable && <Text className='payment-checkout-channel__notice'>{APP_PAYMENT_UNAVAILABLE_MESSAGE}</Text>}
             </View>
 
             {!validation.valid && (
               <View className='payment-checkout-message'>
-                <Text className='payment-checkout-message__text'>
-                  {validation.message}
-                </Text>
+                <Text className='payment-checkout-message__text'>{validation.message}</Text>
               </View>
             )}
           </>
