@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro'
 
 import { APP_MAIN_NAVIGATION } from './routes'
-import { createRouteQuery } from './routeUrl'
+import { createRouteQuery, parseRouteQuery } from './routeUrl'
 
 interface DispatchAppRouteOptions {
   failureMessage?: string
@@ -120,15 +120,15 @@ function isCurrentRoute(url: string) {
 }
 
 function normalizeRouteUrl(url: string) {
-  const [pathname, query = ''] = url.split('?')
+  const separator = url.indexOf('?')
+  const pathname = separator < 0 ? url : url.slice(0, separator)
+  const query = separator < 0 ? '' : url.slice(separator + 1)
 
   if (!query) {
     return normalizeRoutePath(pathname)
   }
 
-  const params = new URLSearchParams(query)
-
-  return `${normalizeRoutePath(pathname)}?${createRouteQuery(Object.fromEntries(params.entries()))}`
+  return `${normalizeRoutePath(pathname)}?${createRouteQuery(parseRouteQuery(query))}`
 }
 
 interface AppRuntimeTabBarGlobal {

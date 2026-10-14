@@ -2,9 +2,25 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { appendRouteQuery, createAppRouteUrl, createRouteQuery, normalizeAppRouteUrlParam } = require('@/shared/navigation/routeUrl')
+const { appendRouteQuery, createAppRouteUrl, createRouteQuery, normalizeAppRouteUrlParam, parseRouteQuery } = require('@/shared/navigation/routeUrl')
 
 const cases = [
+  {
+    name: 'RN query 解析保留嵌套地址、等号、中文和异常转义',
+    run() {
+      assert.deepEqual(parseRouteQuery('keyword=%E5%BE%B7%E9%82%A6+快递&value=A=B&key=first&key=last&bad=%ZZ&flag'), {
+        keyword: '德邦 快递',
+        value: 'A=B',
+        key: 'last',
+        bad: '%ZZ',
+        flag: ''
+      })
+      assert.deepEqual(parseRouteQuery('redirectUrl=%2Fpages%2Forder%2Fdetail%2Findex%3Fkeyword%3DA%2526B%253DC'), {
+        redirectUrl: '/pages/order/detail/index?keyword=A%26B%3DC'
+      })
+      assert.deepEqual(parseRouteQuery('&&'), {})
+    }
+  },
   {
     name: 'route query keeps 0/false, drops empty values and encodes text',
     run() {
