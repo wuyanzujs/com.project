@@ -1,13 +1,4 @@
-export type RequestMethod =
-  | 'OPTIONS'
-  | 'GET'
-  | 'HEAD'
-  | 'POST'
-  | 'PUT'
-  | 'PATCH'
-  | 'DELETE'
-  | 'TRACE'
-  | 'CONNECT'
+export type RequestMethod = 'OPTIONS' | 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'TRACE' | 'CONNECT'
 
 export type RequestHeaders = Record<string, string>
 export type RequestCredentialsMode = 'include' | 'omit' | 'same-origin'
@@ -24,9 +15,7 @@ export interface HttpResponse<T = unknown> {
 
 export type TokenGetter = () => string | undefined | Promise<string | undefined>
 
-export type ResponseTransformer<TResult = unknown> = (
-  response: HttpResponse<unknown>
-) => TResult | Promise<TResult>
+export type ResponseTransformer<TResult = unknown> = (response: HttpResponse<unknown>) => TResult | Promise<TResult>
 
 export interface RequestOptions<TData = unknown, TResult = unknown> {
   url: string
@@ -43,10 +32,7 @@ export interface RequestOptions<TData = unknown, TResult = unknown> {
   transformResponse?: ResponseTransformer<TResult>
 }
 
-export type RequestShortcutOptions<TResult = unknown> = Omit<
-  RequestOptions<unknown, TResult>,
-  'url' | 'method' | 'data'
->
+export type RequestShortcutOptions<TResult = unknown> = Omit<RequestOptions<unknown, TResult>, 'url' | 'method' | 'data'>
 
 export interface RequestRuntimeConfig {
   baseURL?: string

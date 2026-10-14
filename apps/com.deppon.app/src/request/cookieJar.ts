@@ -1,15 +1,6 @@
-import {
-  createEcoSessionCookie,
-  extractEcoToken,
-  getSetCookieFromHeaders,
-  normalizeCookieList
-} from './cookie.rules'
+import { createEcoSessionCookie, extractEcoToken, getSetCookieFromHeaders, normalizeCookieList } from './cookie.rules'
 import { CACHE_KEYS } from '../cache/keys'
-import {
-  getStorageValue,
-  removeStorageValue,
-  setStorageValue
-} from '../cache/storage'
+import { getStorageValue, removeStorageValue, setStorageValue } from '../cache/storage'
 
 import type { HttpResponse } from './types'
 
@@ -64,11 +55,7 @@ async function readSessionCookieFromRuntime(url: string, attempts: number) {
   return ''
 }
 
-export {
-  extractEcoToken,
-  getSetCookieFromHeaders,
-  normalizeCookieList
-} from './cookie.rules'
+export { extractEcoToken, getSetCookieFromHeaders, normalizeCookieList } from './cookie.rules'
 
 export function getSessionCookie() {
   if (isSessionInvalidated()) {
@@ -79,18 +66,14 @@ export function getSessionCookie() {
 }
 
 function isSessionInvalidated() {
-  return (
-    sessionInvalidated || getStorageValue(CACHE_KEYS.sessionInvalidated) === '1'
-  )
+  return sessionInvalidated || getStorageValue(CACHE_KEYS.sessionInvalidated) === '1'
 }
 
 export function getEcoToken() {
   return extractEcoToken(getSessionCookie())
 }
 
-export function configureSessionCookieRuntime(
-  runtime: SessionCookieRuntime | null
-) {
+export function configureSessionCookieRuntime(runtime: SessionCookieRuntime | null) {
   sessionCookieRuntime = runtime
 }
 
@@ -103,10 +86,7 @@ export function setSessionCookie(cookie: string) {
 
   const previousCookie = pendingSessionCookie ?? getSessionCookie()
 
-  if (
-    sessionCookie !== previousCookie ||
-    (pendingSessionCookie === null && isSessionInvalidated())
-  ) {
+  if (sessionCookie !== previousCookie || (pendingSessionCookie === null && isSessionInvalidated())) {
     sessionRevision += 1
   }
 
@@ -167,9 +147,7 @@ export function clearSessionCookie() {
       return false
     }
 
-    const markerCleared = await removeStorageValue(
-      CACHE_KEYS.sessionInvalidated
-    )
+    const markerCleared = await removeStorageValue(CACHE_KEYS.sessionInvalidated)
 
     if (markerCleared && revision === sessionRevision) {
       sessionInvalidated = false
@@ -197,12 +175,7 @@ async function hydrateSessionCookieWithAttempts(url: string, attempts: number) {
 
   const nativeCookie = await readSessionCookieFromRuntime(url, attempts)
 
-  if (
-    revision !== sessionRevision ||
-    isSessionInvalidated() ||
-    !nativeCookie ||
-    !(await setSessionCookie(nativeCookie))
-  ) {
+  if (revision !== sessionRevision || isSessionInvalidated() || !nativeCookie || !(await setSessionCookie(nativeCookie))) {
     return ''
   }
 
@@ -217,37 +190,20 @@ export function recoverSessionCookie(url: string) {
   return hydrateSessionCookieWithAttempts(url, SESSION_COOKIE_RECOVERY_ATTEMPTS)
 }
 
-export function getResponseSetCookie(
-  response: Pick<HttpResponse, 'headers' | 'fallbackHeaders' | 'cookies'>
-) {
-  return (
-    getSetCookieFromHeaders(response.headers) ||
-    getSetCookieFromHeaders(response.fallbackHeaders) ||
-    normalizeCookieList(response.cookies)
-  )
+export function getResponseSetCookie(response: Pick<HttpResponse, 'headers' | 'fallbackHeaders' | 'cookies'>) {
+  return getSetCookieFromHeaders(response.headers) || getSetCookieFromHeaders(response.fallbackHeaders) || normalizeCookieList(response.cookies)
 }
 
-export async function saveSessionCookieFromResponse(
-  response: HttpResponse,
-  options: { allowInvalidatedSession?: boolean } = {}
-) {
+export async function saveSessionCookieFromResponse(response: HttpResponse, options: { allowInvalidatedSession?: boolean } = {}) {
   const revision = sessionRevision
 
   if (isSessionInvalidated() && !options.allowInvalidatedSession) {
     return ''
   }
 
-  const cookie =
-    getResponseSetCookie(response) ||
-    (sessionCookieRuntime
-      ? await sessionCookieRuntime.read(response.url).catch(() => '')
-      : '')
+  const cookie = getResponseSetCookie(response) || (sessionCookieRuntime ? await sessionCookieRuntime.read(response.url).catch(() => '') : '')
 
-  if (
-    !cookie ||
-    revision !== sessionRevision ||
-    (isSessionInvalidated() && !options.allowInvalidatedSession)
-  ) {
+  if (!cookie || revision !== sessionRevision || (isSessionInvalidated() && !options.allowInvalidatedSession)) {
     return ''
   }
 

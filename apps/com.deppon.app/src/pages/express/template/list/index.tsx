@@ -3,15 +3,8 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useRef, useState } from 'react'
 
-import {
-  applyTemplateMetadataUpdate,
-  EXPRESS_TEMPLATE_LIMIT,
-  templateService
-} from '@/services/template'
-import type {
-  ExpressTemplateDraftMeta,
-  ExpressTemplateView
-} from '@/services/template'
+import { applyTemplateMetadataUpdate, EXPRESS_TEMPLATE_LIMIT, templateService } from '@/services/template'
+import type { ExpressTemplateDraftMeta, ExpressTemplateView } from '@/services/template'
 import { AppPressable } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
@@ -29,8 +22,7 @@ const ExpressTemplateListPage = () => {
   const [templates, setTemplates] = useState<ExpressTemplateView[]>([])
   const [loading, setLoading] = useState(false)
   const [processingId, setProcessingId] = useState('')
-  const [editingTemplate, setEditingTemplate] =
-    useState<ExpressTemplateView | null>(null)
+  const [editingTemplate, setEditingTemplate] = useState<ExpressTemplateView | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
   const loadingRef = useRef(false)
 
@@ -125,9 +117,7 @@ const ExpressTemplateListPage = () => {
         return
       }
 
-      setTemplates(current =>
-        applyTemplateMetadataUpdate(current, template.id, meta)
-      )
+      setTemplates(current => applyTemplateMetadataUpdate(current, template.id, meta))
       setEditingTemplate(null)
       Taro.showToast({
         title: '模板信息已保存',
@@ -198,18 +188,10 @@ const ExpressTemplateListPage = () => {
           <Text className='template-list-toolbar__summary'>
             已保存 {templates.length}/{EXPRESS_TEMPLATE_LIMIT}
           </Text>
-          <AppPressable
-            className='template-list-toolbar__button template-list-toolbar__button--quiet'
-            onPress={loadTemplates}
-          >
-            <Text className='template-list-toolbar__text template-list-toolbar__text--quiet'>
-              {loading ? '同步中' : '刷新'}
-            </Text>
+          <AppPressable className='template-list-toolbar__button template-list-toolbar__button--quiet' onPress={loadTemplates}>
+            <Text className='template-list-toolbar__text template-list-toolbar__text--quiet'>{loading ? '同步中' : '刷新'}</Text>
           </AppPressable>
-          <AppPressable
-            className='template-list-toolbar__button'
-            onPress={handleCreate}
-          >
+          <AppPressable className='template-list-toolbar__button' onPress={handleCreate}>
             <Text className='template-list-toolbar__text'>新建模板</Text>
           </AppPressable>
         </View>
@@ -221,12 +203,8 @@ const ExpressTemplateListPage = () => {
                 <Image className='template-card__image' src={TEMPLATE_IMAGE} />
                 <View className='template-card__head-body'>
                   <View className='template-card__title-row'>
-                    <Text className='template-card__title'>
-                      {template.name}
-                    </Text>
-                    {template.isDefault && (
-                      <Text className='template-card__badge'>默认</Text>
-                    )}
+                    <Text className='template-card__title'>{template.name}</Text>
+                    {template.isDefault && <Text className='template-card__badge'>默认</Text>}
                   </View>
                   <Text className='template-card__goods'>
                     {template.goodsText} · {template.weightText}
@@ -237,18 +215,12 @@ const ExpressTemplateListPage = () => {
               <View className='template-card__route'>
                 <View className='template-card__contact'>
                   <Text className='template-card__contact-label'>寄</Text>
-                  <Text className='template-card__contact-value'>
-                    {template.senderText}
-                  </Text>
+                  <Text className='template-card__contact-value'>{template.senderText}</Text>
                 </View>
                 <Text className='template-card__route-arrow'>→</Text>
                 <View className='template-card__contact template-card__contact--end'>
-                  <Text className='template-card__contact-label template-card__contact-label--receive'>
-                    收
-                  </Text>
-                  <Text className='template-card__contact-value'>
-                    {template.receiverText}
-                  </Text>
+                  <Text className='template-card__contact-label template-card__contact-label--receive'>收</Text>
+                  <Text className='template-card__contact-value'>{template.receiverText}</Text>
                 </View>
               </View>
 
@@ -263,13 +235,8 @@ const ExpressTemplateListPage = () => {
               )}
 
               <View className='template-card__actions'>
-                <AppPressable
-                  className='template-card__button template-card__button--danger'
-                  onPress={() => handleDelete(template)}
-                >
-                  <Text className='template-card__button-text template-card__button-text--danger'>
-                    删除
-                  </Text>
+                <AppPressable className='template-card__button template-card__button--danger' onPress={() => handleDelete(template)}>
+                  <Text className='template-card__button-text template-card__button-text--danger'>删除</Text>
                 </AppPressable>
                 <AppPressable
                   className='template-card__button template-card__button--quiet'
@@ -277,26 +244,14 @@ const ExpressTemplateListPage = () => {
                     if (!processingId) setEditingTemplate(template)
                   }}
                 >
+                  <Text className='template-card__button-text template-card__button-text--quiet'>编辑信息</Text>
+                </AppPressable>
+                <AppPressable className='template-card__button template-card__button--quiet' onPress={() => handleSetDefault(template)}>
                   <Text className='template-card__button-text template-card__button-text--quiet'>
-                    编辑信息
+                    {processingId === template.id ? '处理中' : template.isDefault ? '取消默认' : '设为默认'}
                   </Text>
                 </AppPressable>
-                <AppPressable
-                  className='template-card__button template-card__button--quiet'
-                  onPress={() => handleSetDefault(template)}
-                >
-                  <Text className='template-card__button-text template-card__button-text--quiet'>
-                    {processingId === template.id
-                      ? '处理中'
-                      : template.isDefault
-                        ? '取消默认'
-                        : '设为默认'}
-                  </Text>
-                </AppPressable>
-                <AppPressable
-                  className='template-card__button'
-                  onPress={() => handleUse(template)}
-                >
+                <AppPressable className='template-card__button' onPress={() => handleUse(template)}>
                   <Text className='template-card__button-text'>使用模板</Text>
                 </AppPressable>
               </View>
@@ -305,17 +260,9 @@ const ExpressTemplateListPage = () => {
 
           {!templates.length && !loading && (
             <View className='template-list-empty'>
-              <Image
-                className='template-list-empty__image'
-                src={TEMPLATE_IMAGE}
-              />
-              <Text className='template-list-empty__title'>
-                {errorMessage || '暂无寄件模板'}
-              </Text>
-              <AppPressable
-                className='template-list-empty__button'
-                onPress={handleCreate}
-              >
+              <Image className='template-list-empty__image' src={TEMPLATE_IMAGE} />
+              <Text className='template-list-empty__title'>{errorMessage || '暂无寄件模板'}</Text>
+              <AppPressable className='template-list-empty__button' onPress={handleCreate}>
                 <Text className='template-list-empty__button-text'>去新建</Text>
               </AppPressable>
             </View>

@@ -3,15 +3,10 @@ import Taro from '@tarojs/taro'
 import { useCallback } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 
-import {
-  expressPrivacyStorage,
-  setExpressPrivacyProtection
-} from '@/services/express'
+import { expressPrivacyStorage, setExpressPrivacyProtection } from '@/services/express'
 import type { ExpressDraft } from '@/services/express'
 
-export function useExpressPrivacy(
-  setDraft: Dispatch<SetStateAction<ExpressDraft>>
-) {
+export function useExpressPrivacy(setDraft: Dispatch<SetStateAction<ExpressDraft>>) {
   const onChange = useCallback(
     (value: ExpressDraft['service']['privacyProtection']) => {
       if (value === 'N' || expressPrivacyStorage.hasConfirmed()) {
@@ -21,8 +16,7 @@ export function useExpressPrivacy(
 
       void Taro.showModal({
         title: '开启隐私面单',
-        content:
-          '开启后，运单将按后端规则隐藏收寄件手机号等敏感信息。请确认快递员仍可通过系统联系收寄方。',
+        content: '开启后，运单将按后端规则隐藏收寄件手机号等敏感信息。请确认快递员仍可通过系统联系收寄方。',
         confirmText: '开启',
         success: async res => {
           if (!res.confirm) {

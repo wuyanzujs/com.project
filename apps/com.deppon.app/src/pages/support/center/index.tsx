@@ -9,10 +9,7 @@ import { AppPressable } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
-import {
-  getNativeCapabilityErrorMessage,
-  isNativeCapabilityError
-} from '@/shared/platform/capabilities'
+import { getNativeCapabilityErrorMessage, isNativeCapabilityError } from '@/shared/platform/capabilities'
 import { dialPhone, PhoneNumberError } from '@/shared/platform/phone'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 
@@ -65,9 +62,7 @@ const SupportCenterPage = () => {
       return
     }
 
-    const uri = entry.webPath
-      ? supportService.createSecureWebUri(entry.webPath, entry.webParamSource)
-      : entry.webUri
+    const uri = entry.webPath ? supportService.createSecureWebUri(entry.webPath, entry.webParamSource) : entry.webUri
 
     navigateToAppRoute(
       createAppWebUrl({
@@ -86,11 +81,7 @@ const SupportCenterPage = () => {
     try {
       await dialPhone(entry.phoneNumber)
     } catch (error) {
-      showToast(
-        isNativeCapabilityError(error) || !(error instanceof PhoneNumberError)
-          ? getNativeCapabilityErrorMessage(error)
-          : error.message
-      )
+      showToast(isNativeCapabilityError(error) || !(error instanceof PhoneNumberError) ? getNativeCapabilityErrorMessage(error) : error.message)
     }
   }
 
@@ -130,9 +121,7 @@ const SupportCenterPage = () => {
         <View>
           <Text className='support-card__label'>服务热线</Text>
           <Text className='support-card__title'>95353</Text>
-          <Text className='support-card__summary'>
-            全年无休，为您提供寄件、查询和售后服务。
-          </Text>
+          <Text className='support-card__summary'>全年无休，为您提供寄件、查询和售后服务。</Text>
         </View>
         <AppPressable
           className='support-card__button'
@@ -158,22 +147,12 @@ const SupportCenterPage = () => {
             <Text className='support-section__summary'>{section.summary}</Text>
           </View>
           {section.entries.map(entry => (
-            <AppPressable
-              className={getEntryClassName(entry)}
-              key={entry.id}
-              onPress={() => handleEntry(entry)}
-            >
-              <Text className={getEntryMarkClassName(entry)}>
-                {entry.title.slice(0, 1)}
-              </Text>
+            <AppPressable className={getEntryClassName(entry)} key={entry.id} onPress={() => handleEntry(entry)}>
+              <Text className={getEntryMarkClassName(entry)}>{entry.title.slice(0, 1)}</Text>
               <View className='support-entry__content'>
                 <View className='support-entry__top'>
                   <Text className='support-entry__title'>{entry.title}</Text>
-                  {!!entry.badgeText && (
-                    <Text className='support-entry__badge'>
-                      {entry.badgeText}
-                    </Text>
-                  )}
+                  {!!entry.badgeText && <Text className='support-entry__badge'>{entry.badgeText}</Text>}
                 </View>
                 <Text className='support-entry__summary'>{entry.summary}</Text>
               </View>
@@ -185,9 +164,7 @@ const SupportCenterPage = () => {
 
       <View className='support-footer'>
         <Text className='support-footer__title'>还没找到入口？</Text>
-        <Text className='support-footer__summary'>
-          可先查看订单列表定位运单，再从订单详情进入在线客服。
-        </Text>
+        <Text className='support-footer__summary'>可先查看订单列表定位运单，再从订单详情进入在线客服。</Text>
         <AppPressable
           className='support-footer__button'
           onPress={() =>

@@ -1,20 +1,9 @@
 import { useDidShow } from '@tarojs/taro'
 
-import {
-  type Dispatch,
-  type SetStateAction,
-  useCallback,
-  useRef,
-  useState
-} from 'react'
+import { type Dispatch, type SetStateAction, useCallback, useRef, useState } from 'react'
 
 import { customerService } from '@/services/customer'
-import {
-  clearExpressCollection,
-  parseExpressCollectionAmount,
-  updateExpressCollectionDetails,
-  updateExpressCollectionPricing
-} from '@/services/express'
+import { clearExpressCollection, parseExpressCollectionAmount, updateExpressCollectionDetails, updateExpressCollectionPricing } from '@/services/express'
 import type { ExpressCollectionType, ExpressDraft } from '@/services/express'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { hasValidSession } from '@/shared/navigation/authGuard'
@@ -31,9 +20,7 @@ const EXPRESS_COLLECTION_WEB_CONTEXT = {
   messageContext: EXPRESS_COLLECTION_MESSAGE_CONTEXT
 } as const
 
-export function useExpressCollection({
-  setDraft
-}: UseExpressCollectionOptions) {
+export function useExpressCollection({ setDraft }: UseExpressCollectionOptions) {
   const [capabilityLoading, setCapabilityLoading] = useState(false)
   const [capabilityMessage, setCapabilityMessage] = useState('')
   const requestVersion = useRef(0)
@@ -76,11 +63,7 @@ export function useExpressCollection({
         )
       }
 
-      setCapabilityMessage(
-        response.result.collectionLimit
-          ? `当前代收上限 ${response.result.collectionLimit} 元`
-          : '已绑定客户，具体额度以下单校验为准'
-      )
+      setCapabilityMessage(response.result.collectionLimit ? `当前代收上限 ${response.result.collectionLimit} 元` : '已绑定客户，具体额度以下单校验为准')
     } finally {
       if (requestVersion.current === version) {
         setCapabilityLoading(false)
@@ -89,14 +72,10 @@ export function useExpressCollection({
   }, [setDraft])
 
   useDidShow(() => {
-    const account = appWebMessageBridge.consumeCollectionAccount(
-      EXPRESS_COLLECTION_WEB_CONTEXT
-    )
+    const account = appWebMessageBridge.consumeCollectionAccount(EXPRESS_COLLECTION_WEB_CONTEXT)
 
     if (!account) {
-      appWebMessageBridge.cancelCollectionAccount(
-        EXPRESS_COLLECTION_WEB_CONTEXT
-      )
+      appWebMessageBridge.cancelCollectionAccount(EXPRESS_COLLECTION_WEB_CONTEXT)
       return
     }
 
@@ -110,9 +89,7 @@ export function useExpressCollection({
   })
 
   const handleEnable = () => {
-    setDraft(current =>
-      updateExpressCollectionPricing(current, { type: 'NORMAL' })
-    )
+    setDraft(current => updateExpressCollectionPricing(current, { type: 'NORMAL' }))
     void loadCapability()
   }
 
@@ -129,11 +106,7 @@ export function useExpressCollection({
   }
 
   const handleOpenAccount = () => {
-    if (
-      !appWebMessageBridge.expectCollectionAccount(
-        EXPRESS_COLLECTION_WEB_CONTEXT
-      )
-    ) {
+    if (!appWebMessageBridge.expectCollectionAccount(EXPRESS_COLLECTION_WEB_CONTEXT)) {
       return
     }
 
@@ -185,6 +158,4 @@ export function useExpressCollection({
   }
 }
 
-export type ExpressCollectionController = ReturnType<
-  typeof useExpressCollection
->
+export type ExpressCollectionController = ReturnType<typeof useExpressCollection>

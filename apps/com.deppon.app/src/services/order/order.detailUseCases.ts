@@ -1,15 +1,8 @@
 import type { DepponResponse } from '@/request/deppon'
 
 import { orderApi } from './order.api'
-import {
-  createOrderUrgeContext,
-  createUrgeProgressWebUri
-} from './order.detailActions'
-import {
-  createOrderDetailWebUri,
-  DEFAULT_SERVICE_PHONE,
-  getDetailWaybillNumber
-} from './order.detailRules'
+import { createOrderUrgeContext, createUrgeProgressWebUri } from './order.detailActions'
+import { createOrderDetailWebUri, DEFAULT_SERVICE_PHONE, getDetailWaybillNumber } from './order.detailRules'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type {
@@ -24,8 +17,7 @@ import type {
 } from './types'
 
 const WAYBILL_MODIFY_WEB_PATH = '/depponmobile/mow/order/modifyNew/index'
-const INVALID_TO_MODIFY_MESSAGE =
-  '货物已经出发，不可作废，可在运单修改中操作拦截'
+const INVALID_TO_MODIFY_MESSAGE = '货物已经出发，不可作废，可在运单修改中操作拦截'
 
 /**
  *
@@ -33,10 +25,7 @@ const INVALID_TO_MODIFY_MESSAGE =
  * @param menus 催单按钮列表
  * @description 组装催单提示面板数据
  */
-function createUrgePanel(
-  content: string,
-  menus: OrderUrgeButtonRaw[] | null | undefined
-): OrderDetailUrgePanelView {
+function createUrgePanel(content: string, menus: OrderUrgeButtonRaw[] | null | undefined): OrderDetailUrgePanelView {
   return {
     content,
     menus: menus?.length
@@ -56,10 +45,7 @@ function createUrgePanel(
  * @param options 操作选项
  * @description 查询催单按钮并转为操作项
  */
-export async function queryOrderUrgeAction(
-  order: OrderDetail,
-  options: OrderDetailActionOptions = {}
-): Promise<OrderDetailActionView | null> {
+export async function queryOrderUrgeAction(order: OrderDetail, options: OrderDetailActionOptions = {}): Promise<OrderDetailActionView | null> {
   const urgeContext = createOrderUrgeContext(order, options)
 
   if (!urgeContext) {
@@ -103,9 +89,7 @@ export async function queryOrderUrgeAction(
  * @param urge 催单上下文
  * @description 查询催单提示与按钮
  */
-export async function queryOrderUrgePanel(
-  urge: OrderDetailUrgeActionView
-): Promise<DepponResponse<OrderDetailUrgePanelView>> {
+export async function queryOrderUrgePanel(urge: OrderDetailUrgeActionView): Promise<DepponResponse<OrderDetailUrgePanelView>> {
   const response = await orderApi.queryUrgeMenus({
     waybillNo: urge.voucherNumber,
     urgeType: urge.urgeType
@@ -127,10 +111,7 @@ export async function queryOrderUrgePanel(
  * @param action 催单操作项
  * @description 将催单菜单转为前端动作
  */
-export function resolveOrderUrgeMenuAction(
-  menu: OrderUrgeButtonRaw,
-  action: OrderDetailActionView
-) {
+export function resolveOrderUrgeMenuAction(menu: OrderUrgeButtonRaw, action: OrderDetailActionView) {
   if (menu.buttonCode === 'CONFIRM') {
     return {
       kind: 'close' as const
@@ -151,9 +132,7 @@ export function resolveOrderUrgeMenuAction(
   }
 
   if (menu.buttonCode === 'VIEW_PROGRESS') {
-    const webUri =
-      action.webUri ||
-      (action.urge ? createUrgeProgressWebUri(action.urge) : '')
+    const webUri = action.webUri || (action.urge ? createUrgeProgressWebUri(action.urge) : '')
 
     if (!webUri) {
       return {
@@ -181,17 +160,12 @@ export function resolveOrderUrgeMenuAction(
  * @param urge 催单上下文
  * @description 提交催单并归一提示文案
  */
-export async function submitOrderUrge(
-  urge: OrderDetailUrgeActionView
-): Promise<DepponResponse<string>> {
+export async function submitOrderUrge(urge: OrderDetailUrgeActionView): Promise<DepponResponse<string>> {
   const response = await orderApi.submitUrge({
     caseNo: urge.voucherNumber,
     reportScene: urge.urgeType
   })
-  const message =
-    response.result?.errorMsg ||
-    response.message ||
-    (response.status ? '催单已提交' : '催单失败，请稍后再试')
+  const message = response.result?.errorMsg || response.message || (response.status ? '催单已提交' : '催单失败，请稍后再试')
 
   return {
     ...response,
@@ -205,9 +179,7 @@ export async function submitOrderUrge(
  * @param order 订单详情
  * @description 通知营业部为运单安排派送
  */
-export async function notifyOrderDeliver(
-  order: OrderDetail
-): Promise<DepponResponse<boolean>> {
+export async function notifyOrderDeliver(order: OrderDetail): Promise<DepponResponse<boolean>> {
   const waybillNo = getDetailWaybillNumber(order)
 
   if (!waybillNo) {
@@ -224,23 +196,17 @@ export async function notifyOrderDeliver(
  * @param order 订单详情
  * @description 提交运单拦截作废，返回修改地址
  */
-export async function invalidOrderWaybill(
-  order: OrderDetail
-): Promise<DepponResponse<OrderInvalidWaybillResult>> {
+export async function invalidOrderWaybill(order: OrderDetail): Promise<DepponResponse<OrderInvalidWaybillResult>> {
   const waybillNumber = getDetailWaybillNumber(order)
 
   if (!waybillNumber) {
-    return Promise.resolve(
-      createFailure<OrderInvalidWaybillResult>('缺少运单号，暂无法拦截作废')
-    )
+    return Promise.resolve(createFailure<OrderInvalidWaybillResult>('缺少运单号，暂无法拦截作废'))
   }
 
   const response = await orderApi.invalidWaybill({
     waybillNumber
   })
-  const message =
-    response.message ||
-    (response.status ? '拦截作废成功' : '拦截作废失败，请稍后再试')
+  const message = response.message || (response.status ? '拦截作废成功' : '拦截作废失败，请稍后再试')
   const shouldModifyIntercept = message === INVALID_TO_MODIFY_MESSAGE
 
   return {
@@ -261,9 +227,7 @@ export async function invalidOrderWaybill(
  * @param department 营业部电话信息
  * @description 解析营业部电话，兜底客服热线
  */
-export async function resolveDepartmentPhone(
-  department: OrderDepartmentPhoneActionView
-): Promise<DepponResponse<string>> {
+export async function resolveDepartmentPhone(department: OrderDepartmentPhoneActionView): Promise<DepponResponse<string>> {
   if (department.phoneNumber) {
     return Promise.resolve({
       status: true,

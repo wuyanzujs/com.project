@@ -63,14 +63,7 @@ if (content.includes('__APP_RUNTIME_CONFIG__')) {
   violations.push('产物仍包含未替换的 __APP_RUNTIME_CONFIG__ 标识符。')
 }
 
-const expectedValues = runtimeConfig
-  ? [
-      runtimeConfig.apiBaseURL,
-      runtimeConfig.webBaseURL,
-      runtimeConfig.serviceWebURL,
-      runtimeConfig.memberWebURL
-    ]
-  : []
+const expectedValues = runtimeConfig ? [runtimeConfig.apiBaseURL, runtimeConfig.webBaseURL, runtimeConfig.serviceWebURL, runtimeConfig.memberWebURL] : []
 
 for (const value of new Set(expectedValues)) {
   if (!content.includes(value)) {
@@ -83,17 +76,10 @@ if (requireProduction && !/\benv\s*:\s*['"]production['"]/.test(content)) {
 }
 
 if (requireProduction && platform === 'android') {
-  const sourceMaps = findSourceMaps(
-    path.join(process.cwd(), 'android/app/src/main/assets')
-  )
+  const sourceMaps = findSourceMaps(path.join(process.cwd(), 'android/app/src/main/assets'))
 
   for (const sourceMap of sourceMaps) {
-    violations.push(
-      `Android release assets 不得包含 source map：${path.relative(
-        process.cwd(),
-        sourceMap
-      )}`
-    )
+    violations.push(`Android release assets 不得包含 source map：${path.relative(process.cwd(), sourceMap)}`)
   }
 }
 

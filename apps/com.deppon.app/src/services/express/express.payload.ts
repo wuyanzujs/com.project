@@ -1,17 +1,8 @@
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
 import { getExpressDeliveryPointOrderFields } from './deliveryPoint.rules'
-import {
-  createExpressDeliveryOrderFields,
-  createExpressDeliveryQuoteFields
-} from './deliveryPreference.rules'
-import {
-  getExpressContactRegion,
-  getExpressContactRegionAddress,
-  getNowText,
-  toFiniteNumber,
-  trimText
-} from './express.draft'
+import { createExpressDeliveryOrderFields, createExpressDeliveryQuoteFields } from './deliveryPreference.rules'
+import { getExpressContactRegion, getExpressContactRegionAddress, getNowText, toFiniteNumber, trimText } from './express.draft'
 import {
   createExpressInsuranceOrderFields,
   createExpressInsuranceQuoteFields,
@@ -29,11 +20,7 @@ import {
   getExpressPackageLtlType
 } from './packaging.payload'
 import { getExpressPackagingQuoteVolume } from './packaging.rules'
-import {
-  createExpressPickupOrderFields,
-  createExpressPickupQuoteFields,
-  getFreshExpressPickupNightCapability
-} from './pickupTime.rules'
+import { createExpressPickupOrderFields, createExpressPickupQuoteFields, getFreshExpressPickupNightCapability } from './pickupTime.rules'
 import { createExpressProductFreightFields } from './productAvailability.rules'
 import {
   getExpressReturnBillPpcType,
@@ -42,10 +29,7 @@ import {
   isExpressPaperReturnBillType,
   normalizeExpressReturnBillDraft
 } from './valueAdded'
-import {
-  createExpressWarehouseOrderFields,
-  createExpressWarehouseQuoteFields
-} from './warehouse.payload'
+import { createExpressWarehouseOrderFields, createExpressWarehouseQuoteFields } from './warehouse.payload'
 
 import type {
   CreateExpressOrderRequest,
@@ -67,9 +51,7 @@ const DEFAULT_GOODS_WEIGHT = 1
  * @param deliveryMode 页面派送方式
  * @description 派送方式转 PPC 编码
  */
-function getPpcDeliveryMode(
-  deliveryMode: ExpressDraft['service']['deliveryMode']
-) {
+function getPpcDeliveryMode(deliveryMode: ExpressDraft['service']['deliveryMode']) {
   switch (deliveryMode) {
     case 'PICKSELF':
       return 'SELF_PICKUP'
@@ -89,9 +71,7 @@ function getPpcDeliveryMode(
  * @param reciveLoanType 代收货款类型
  * @description 代收货款类型转 PPC 编码
  */
-function getPpcCollectionType(
-  reciveLoanType: ExpressDraft['collection']['type']
-) {
+function getPpcCollectionType(reciveLoanType: ExpressDraft['collection']['type']) {
   switch (reciveLoanType) {
     case 'INTRADAY':
       return 'R1'
@@ -130,33 +110,20 @@ function getScanContextCustomerCode(scanContext: ExpressDraft['scanContext']) {
  * @param availability 产品可用性信息
  * @description 组装询价请求 payload
  */
-export function buildFreightRequest(
-  draft: ExpressDraft,
-  availability?: ExpressProductAvailability
-): ExpressFreightRequest {
+export function buildFreightRequest(draft: ExpressDraft, availability?: ExpressProductAvailability): ExpressFreightRequest {
   if (!draft.sender || !draft.consignee) {
     throw new Error('缺少收寄件联系人')
   }
 
   const couponNumber = trimText(draft.couponNumber)
-  const deliveryQuoteFields = createExpressDeliveryQuoteFields(
-    draft.deliveryPreference
-  )
+  const deliveryQuoteFields = createExpressDeliveryQuoteFields(draft.deliveryPreference)
   const pickupQuoteFields = createExpressPickupQuoteFields(draft)
-  const warehouseQuoteFields = createExpressWarehouseQuoteFields(
-    draft.warehouse
-  )
+  const warehouseQuoteFields = createExpressWarehouseQuoteFields(draft.warehouse)
   const packageInfoList = createExpressQuotePackageInfoList(draft.packaging)
   const unpackingFields = createExpressUnpackingNumbers(draft.packaging)
-  const returnBill = normalizeExpressReturnBillDraft(
-    draft.service.returnBill,
-    getDraftProductCode(draft)
-  )
+  const returnBill = normalizeExpressReturnBillDraft(draft.service.returnBill, getDraftProductCode(draft))
   const productFields = createExpressProductFreightFields(draft, availability)
-  const insuranceFields = createExpressInsuranceQuoteFields(
-    draft,
-    availability?.insuranceCapability
-  )
+  const insuranceFields = createExpressInsuranceQuoteFields(draft, availability?.insuranceCapability)
 
   return {
     channel: APP_RUNTIME_CONFIG.omsChannel,
@@ -195,16 +162,12 @@ export function buildFreightRequest(
  * @param nightCapability 夜间取件能力
  * @description 组装取件时间查询请求
  */
-export function buildPickupTimeRequest(
-  draft: ExpressDraft,
-  nightCapability?: ExpressPickupNightCapability
-): ExpressPickupTimeRequest {
+export function buildPickupTimeRequest(draft: ExpressDraft, nightCapability?: ExpressPickupNightCapability): ExpressPickupTimeRequest {
   if (!draft.sender) {
     throw new Error('缺少寄件人联系人')
   }
 
-  const capability =
-    nightCapability ?? getFreshExpressPickupNightCapability(draft)
+  const capability = nightCapability ?? getFreshExpressPickupNightCapability(draft)
 
   return {
     sysCode: APP_RUNTIME_CONFIG.systemCode,
@@ -217,13 +180,8 @@ export function buildPickupTimeRequest(
     volume: toFiniteNumber(draft.goods.volume),
     goodsNumber: toFiniteNumber(draft.goods.count, DEFAULT_GOODS_COUNT),
     originalsaddress: getExpressContactRegion(draft.sender),
-    originalsStreet: draft.consignee
-      ? getExpressContactRegion(draft.consignee)
-      : undefined,
-    priceTimeProductCode:
-      draft.selectedProduct?.omsProductCode ||
-      draft.service.transportMode ||
-      undefined,
+    originalsStreet: draft.consignee ? getExpressContactRegion(draft.consignee) : undefined,
+    priceTimeProductCode: draft.selectedProduct?.omsProductCode || draft.service.transportMode || undefined,
     source: 0,
     nightOpening: capability?.enabled ? 'Y' : 'N',
     nightStartTime: capability?.enabled ? capability.startTime : '',
@@ -237,10 +195,7 @@ export function buildPickupTimeRequest(
  * @param capability 保价能力配置
  * @description 组装保价费用请求
  */
-export function buildInsurancePriceRequest(
-  draft: ExpressDraft,
-  capability?: ExpressInsuranceCapability | null
-): ExpressInsurancePriceRequest {
+export function buildInsurancePriceRequest(draft: ExpressDraft, capability?: ExpressInsuranceCapability | null): ExpressInsurancePriceRequest {
   const productCode = getDraftProductCode(draft)
 
   if (!productCode) {
@@ -256,11 +211,7 @@ export function buildInsurancePriceRequest(
   const amount = getExpressInsuranceEffectiveAmount(draft, capability)
 
   if (amount <= 0) {
-    throw new Error(
-      getFreshExpressInsuranceCapability(draft, capability)?.disabled
-        ? '当前货物暂不支持保价'
-        : '请填写保价金额'
-    )
+    throw new Error(getFreshExpressInsuranceCapability(draft, capability)?.disabled ? '当前货物暂不支持保价' : '请填写保价金额')
   }
 
   return {
@@ -278,9 +229,7 @@ export function buildInsurancePriceRequest(
  * @param draft 寄件草稿
  * @description 组装下单前筛单拦截请求
  */
-export function buildFilterOrderRequest(
-  draft: ExpressDraft
-): ExpressFilterRequest {
+export function buildFilterOrderRequest(draft: ExpressDraft): ExpressFilterRequest {
   if (!draft.sender || !draft.consignee) {
     throw new Error('缺少收寄件联系人')
   }
@@ -296,12 +245,10 @@ export function buildFilterOrderRequest(
     receiverName: draft.consignee.name,
     goodsName: trimText(draft.goods.name),
     totalWeight: toFiniteNumber(draft.goods.weight, DEFAULT_GOODS_WEIGHT),
-    transportMode:
-      draft.selectedProduct?.omsProductCode || draft.service.transportMode,
+    transportMode: draft.selectedProduct?.omsProductCode || draft.service.transportMode,
     deliveryMode: draft.service.deliveryMode,
     customerCode: scanCustomerCode || undefined,
-    limitCust:
-      !!scanCustomerCode || draft.service.paymentType === 'MONTH_PAY' ? 1 : 0
+    limitCust: !!scanCustomerCode || draft.service.paymentType === 'MONTH_PAY' ? 1 : 0
   }
 }
 
@@ -365,43 +312,24 @@ function getPickupOrderTime(draft: ExpressDraft) {
  * @param insuranceCapability 保价能力配置
  * @description 组装创建订单请求 payload
  */
-export function buildCreateOrderRequest(
-  draft: ExpressDraft,
-  insuranceCapability?: ExpressInsuranceCapability | null
-): CreateExpressOrderRequest {
+export function buildCreateOrderRequest(draft: ExpressDraft, insuranceCapability?: ExpressInsuranceCapability | null): CreateExpressOrderRequest {
   if (!draft.sender || !draft.consignee) {
     throw new Error('缺少收寄件联系人')
   }
 
-  const selectedProductCode =
-    draft.selectedProduct?.omsProductCode || draft.service.transportMode
+  const selectedProductCode = draft.selectedProduct?.omsProductCode || draft.service.transportMode
   const scanOrderFields = getScanContextOrderFields(draft.scanContext)
-  const deliveryOrderFields = createExpressDeliveryOrderFields(
-    draft.deliveryPreference
-  )
+  const deliveryOrderFields = createExpressDeliveryOrderFields(draft.deliveryPreference)
   const deliveryPointOrderFields = getExpressDeliveryPointOrderFields(draft)
-  const warehouseOrderFields = createExpressWarehouseOrderFields(
-    draft.warehouse
-  )
+  const warehouseOrderFields = createExpressWarehouseOrderFields(draft.warehouse)
   const packageInfoList = createExpressOrderPackageInfoList(draft.packaging)
   const packing = createExpressOrderPackingText(draft.packaging)
   const unpackageLtlInfo = createExpressOrderUnpackageLtlInfo(draft.packaging)
-  const returnBill = normalizeExpressReturnBillDraft(
-    draft.service.returnBill,
-    selectedProductCode
-  )
-  const returnBillOrderFields =
-    isExpressCloudSignType(returnBill.type) && returnBill.fileCode
-      ? [{ key: 'fileCode', value: returnBill.fileCode }]
-      : []
+  const returnBill = normalizeExpressReturnBillDraft(draft.service.returnBill, selectedProductCode)
+  const returnBillOrderFields = isExpressCloudSignType(returnBill.type) && returnBill.fileCode ? [{ key: 'fileCode', value: returnBill.fileCode }] : []
   const returnBillQuantityFields =
-    isExpressPaperReturnBillType(returnBill.type) && returnBill.returnCount > 1
-      ? [{ key: 'returnBillQty', value: returnBill.returnCount }]
-      : []
-  const insuranceOrderFields = createExpressInsuranceOrderFields(
-    draft,
-    insuranceCapability
-  )
+    isExpressPaperReturnBillType(returnBill.type) && returnBill.returnCount > 1 ? [{ key: 'returnBillQty', value: returnBill.returnCount }] : []
+  const insuranceOrderFields = createExpressInsuranceOrderFields(draft, insuranceCapability)
   const orderExtendFields = [
     ...deliveryOrderFields.orderExtendFields,
     ...createExpressPickupOrderFields(draft),
@@ -412,14 +340,10 @@ export function buildCreateOrderRequest(
   ]
 
   return {
-    contactIdList: [draft.sender.id, draft.consignee.id].filter(
-      (id): id is string => !!id
-    ),
+    contactIdList: [draft.sender.id, draft.consignee.id].filter((id): id is string => !!id),
     ...(packageInfoList ? { packageInfoList } : {}),
     unpackageLtlInfo,
-    ...(warehouseOrderFields.deliveryToWarehouse
-      ? { deliveryToWarehouse: warehouseOrderFields.deliveryToWarehouse }
-      : {}),
+    ...(warehouseOrderFields.deliveryToWarehouse ? { deliveryToWarehouse: warehouseOrderFields.deliveryToWarehouse } : {}),
     isAgreement: draft.agreementAccepted ? 'Y' : 'N',
     isContact: draft.service.needContact,
     clientChannel: APP_RUNTIME_CONFIG.appClientChannel,
@@ -474,18 +398,9 @@ export function buildCreateOrderRequest(
         customReturnRequirement: returnBill.customRequirement,
         pickPeriodTime: draft.pickup.pickPeriodTime,
         currentFirstTime:
-          draft.pickup.dispatch === 'Y' &&
-          !!draft.pickup.pickPeriodTime &&
-          !!draft.pickup.timeSlot &&
-          !draft.pickup.timeSlot.includes('-')
-            ? 'Y'
-            : undefined,
-        orderExtendFields:
-          orderExtendFields.length > 0 ? orderExtendFields : undefined,
-        newOrderExtendFields:
-          deliveryOrderFields.newOrderExtendFields.length > 0
-            ? deliveryOrderFields.newOrderExtendFields
-            : undefined
+          draft.pickup.dispatch === 'Y' && !!draft.pickup.pickPeriodTime && !!draft.pickup.timeSlot && !draft.pickup.timeSlot.includes('-') ? 'Y' : undefined,
+        orderExtendFields: orderExtendFields.length > 0 ? orderExtendFields : undefined,
+        newOrderExtendFields: deliveryOrderFields.newOrderExtendFields.length > 0 ? deliveryOrderFields.newOrderExtendFields : undefined
       }
     ]
   }

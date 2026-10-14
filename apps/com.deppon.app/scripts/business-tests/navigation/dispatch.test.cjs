@@ -5,29 +5,15 @@ const { test } = require('node:test')
 
 const { contactSelection } = require('@/services/contact')
 const { sanitizeAppRouteUrl } = require('@/shared/navigation/appNavigation')
-const {
-  createLoginRedirectUrl,
-  navigateToLogin
-} = require('@/shared/navigation/authGuard')
-const {
-  dispatchAppRoute,
-  dispatchAppRouteAsync
-} = require('@/shared/navigation/navigationRuntime')
+const { createLoginRedirectUrl, navigateToLogin } = require('@/shared/navigation/authGuard')
+const { dispatchAppRoute, dispatchAppRouteAsync } = require('@/shared/navigation/navigationRuntime')
 
 const cases = [
   {
     name: 'navigation does not rewrite an explicit login route to mine',
     run() {
-      assert.equal(
-        sanitizeAppRouteUrl(
-          '/pages/login/index?redirectUrl=%2Fpages%2Fmine%2Findex'
-        ),
-        '/pages/login/index?redirectUrl=%2Fpages%2Fmine%2Findex'
-      )
-      assert.equal(
-        sanitizeAppRouteUrl('https://example.com'),
-        '/pages/mine/index'
-      )
+      assert.equal(sanitizeAppRouteUrl('/pages/login/index?redirectUrl=%2Fpages%2Fmine%2Findex'), '/pages/login/index?redirectUrl=%2Fpages%2Fmine%2Findex')
+      assert.equal(sanitizeAppRouteUrl('https://example.com'), '/pages/mine/index')
     }
   },
   {
@@ -59,10 +45,7 @@ const cases = [
         })
 
         assert.equal(dispatched, true)
-        assert.equal(
-          redirectUrl,
-          '/pages/login/index?redirectUrl=%2Fpages%2Fmine%2Findex'
-        )
+        assert.equal(redirectUrl, '/pages/login/index?redirectUrl=%2Fpages%2Fmine%2Findex')
         assert.deepEqual(navigateOptions, { url: redirectUrl })
         await new Promise(resolve => setImmediate(resolve))
       } finally {
@@ -368,8 +351,7 @@ const cases = [
       let toastCount = 0
 
       try {
-        Taro.getCurrentPages = () =>
-          navigationStarted ? [] : [{ route: 'pages/mine/index', options: {} }]
+        Taro.getCurrentPages = () => (navigationStarted ? [] : [{ route: 'pages/mine/index', options: {} }])
         Taro.redirectTo = () => {
           navigationStarted = true
           redirectCount += 1

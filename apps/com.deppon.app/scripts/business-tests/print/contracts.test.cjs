@@ -23,9 +23,7 @@ const cases = [
         printId: 'PRINT_001',
         source: 'HOME_SCAN'
       })
-      const actions = Object.fromEntries(
-        view.actions.map(item => [item.key, item])
-      )
+      const actions = Object.fromEntries(view.actions.map(item => [item.key, item]))
 
       assert.equal(actions.orderList.status, 'ready')
       assert.equal(actions.printOrders.status, 'ready')
@@ -37,22 +35,14 @@ const cases = [
       assert.equal(view.cloudCode.printId, 'PRINT_001')
       assert.equal(view.cloudCode.source, 'HOME_SCAN')
       assert.equal(view.cloudCode.statusText, '暂不可用')
-      assert.ok(
-        PRINT_API_ENDPOINTS.includes(
-          '/gwapi/onlineService/eco/online/print/order/secure/queryNewOrderPrintList'
-        )
-      )
+      assert.ok(PRINT_API_ENDPOINTS.includes('/gwapi/onlineService/eco/online/print/order/secure/queryNewOrderPrintList'))
     }
   },
   {
     name: 'print date ranges use inclusive local calendar boundaries',
     run() {
-      const options = createPrintDateRangeOptions(
-        new Date(2026, 6, 16, 12, 30, 15)
-      )
-      const byKey = Object.fromEntries(
-        options.map(option => [option.key, option])
-      )
+      const options = createPrintDateRangeOptions(new Date(2026, 6, 16, 12, 30, 15))
+      const byKey = Object.fromEntries(options.map(option => [option.key, option]))
 
       assert.equal(DEFAULT_PRINT_DATE_RANGE_KEY, 'threeDays')
       assert.equal(byKey.today.startTime, '2026-07-16 00:00:00')

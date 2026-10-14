@@ -1,11 +1,6 @@
 import { getOrderNpsCatalog } from './order.npsSurvey.catalog'
 
-import type {
-  OrderNpsDraft,
-  OrderNpsLabelContent,
-  OrderNpsSubmitRequest,
-  OrderSceneSurveyContext
-} from './order.sceneSurvey.types'
+import type { OrderNpsDraft, OrderNpsLabelContent, OrderNpsSubmitRequest, OrderSceneSurveyContext } from './order.sceneSurvey.types'
 
 export const ORDER_NPS_SCORE_VALUES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 export const ORDER_NPS_CONTENT_MAX_LENGTH = 100
@@ -15,9 +10,7 @@ export const ORDER_NPS_CONTENT_MAX_LENGTH = 100
  * @param score 初始评分
  * @description 创建 NPS 问卷草稿
  */
-export function createOrderNpsDraft(
-  score: number | null = null
-): OrderNpsDraft {
+export function createOrderNpsDraft(score: number | null = null): OrderNpsDraft {
   return {
     score,
     category: '',
@@ -91,9 +84,7 @@ export function updateOrderNpsCategory(draft: OrderNpsDraft, category: string) {
  */
 export function toggleOrderNpsReason(draft: OrderNpsDraft, reason: string) {
   const catalog = getOrderNpsCatalog(draft.score)
-  const category = catalog?.options.find(
-    option => option.text === draft.category
-  )
+  const category = catalog?.options.find(option => option.text === draft.category)
 
   if (!category?.options.includes(reason)) {
     return draft
@@ -134,21 +125,15 @@ export function updateOrderNpsContent(draft: OrderNpsDraft, content: string) {
  * @param draft NPS 草稿
  * @description 组装级联标签内容，无有效分类返回 undefined
  */
-export function createOrderNpsLabelContent(
-  draft: OrderNpsDraft
-): OrderNpsLabelContent | undefined {
+export function createOrderNpsLabelContent(draft: OrderNpsDraft): OrderNpsLabelContent | undefined {
   const catalog = getOrderNpsCatalog(draft.score)
-  const category = catalog?.options.find(
-    option => option.text === draft.category
-  )
+  const category = catalog?.options.find(option => option.text === draft.category)
 
   if (!catalog || !category) {
     return undefined
   }
 
-  const validReasons = draft.reasons
-    .filter(reason => category.options.includes(reason))
-    .slice(0, category.maxSelections)
+  const validReasons = draft.reasons.filter(reason => category.options.includes(reason)).slice(0, category.maxSelections)
 
   return {
     type: 'CASCADE',
@@ -173,16 +158,8 @@ export function createOrderNpsLabelContent(
  * @param draft NPS 草稿
  * @description 创建 NPS 提交 payload，评分非法返回 null
  */
-export function createOrderNpsSubmitRequest(
-  context: OrderSceneSurveyContext,
-  draft: OrderNpsDraft
-): OrderNpsSubmitRequest | null {
-  if (
-    draft.score === null ||
-    !Number.isInteger(draft.score) ||
-    draft.score < 0 ||
-    draft.score > 10
-  ) {
+export function createOrderNpsSubmitRequest(context: OrderSceneSurveyContext, draft: OrderNpsDraft): OrderNpsSubmitRequest | null {
+  if (draft.score === null || !Number.isInteger(draft.score) || draft.score < 0 || draft.score > 10) {
     return null
   }
 

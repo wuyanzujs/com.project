@@ -5,14 +5,10 @@ import type { ComponentProps, ComponentType } from 'react'
 import type { ScrollViewProps as NativeScrollViewProps } from 'react-native'
 
 type TaroScrollViewProps = ComponentProps<typeof ScrollView>
-type KeyboardAwareScrollViewProps = TaroScrollViewProps &
-  Pick<NativeScrollViewProps, 'keyboardShouldPersistTaps'>
+type KeyboardAwareScrollViewProps = TaroScrollViewProps & Pick<NativeScrollViewProps, 'keyboardShouldPersistTaps'>
 
-const KeyboardAwareScrollView =
-  ScrollView as ComponentType<KeyboardAwareScrollViewProps>
+const KeyboardAwareScrollView = ScrollView as ComponentType<KeyboardAwareScrollViewProps>
 
 export function AppFormScrollView(props: TaroScrollViewProps) {
-  return (
-    <KeyboardAwareScrollView {...props} keyboardShouldPersistTaps='handled' />
-  )
+  return <KeyboardAwareScrollView {...props} keyboardShouldPersistTaps='handled' />
 }

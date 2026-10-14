@@ -1,22 +1,7 @@
 import { APP_ROUTES } from '@/shared/navigation/routes'
 
-import {
-  createRouteUrl,
-  getDetailWaybillNumber,
-  getOrderClass,
-  getOrderNumberField,
-  getOrderTextField,
-  isWaitAllotOrder
-} from './order.detailRules'
-import {
-  formatAmount,
-  formatMeasure,
-  getFullAddress,
-  hasDisplayText,
-  isEncryptedText,
-  maskMobile,
-  toDisplayText
-} from './order.display'
+import { createRouteUrl, getDetailWaybillNumber, getOrderClass, getOrderNumberField, getOrderTextField, isWaitAllotOrder } from './order.detailRules'
+import { formatAmount, formatMeasure, getFullAddress, hasDisplayText, isEncryptedText, maskMobile, toDisplayText } from './order.display'
 import { getOrderClassLabel } from './order.mapper'
 
 import type {
@@ -37,10 +22,7 @@ import type {
  * @param order 订单信息
  * @description 生成运单号或订单号展示文案
  */
-export function getOrderIdentityText(order: {
-  orderNumber?: string | null
-  waybillNumber?: string | null
-}) {
+export function getOrderIdentityText(order: { orderNumber?: string | null; waybillNumber?: string | null }) {
   if (order.waybillNumber) {
     return `运单号 ${order.waybillNumber}`
   }
@@ -57,10 +39,7 @@ export function getOrderIdentityText(order: {
  * @param order 订单信息
  * @description 取可复制的运单号或订单号
  */
-export function getOrderCopyNumber(order: {
-  orderNumber?: string | null
-  waybillNumber?: string | null
-}) {
+export function getOrderCopyNumber(order: { orderNumber?: string | null; waybillNumber?: string | null }) {
   return order.waybillNumber || order.orderNumber || ''
 }
 
@@ -70,13 +49,7 @@ export function getOrderCopyNumber(order: {
  * @description 拼接寄件人完整地址
  */
 export function getOrderSenderAddress(order: OrderDetail) {
-  return getFullAddress([
-    order.contactProvince,
-    order.contactCity,
-    order.contactArea,
-    order.contactTown,
-    order.contactAddress
-  ])
+  return getFullAddress([order.contactProvince, order.contactCity, order.contactArea, order.contactTown, order.contactAddress])
 }
 
 /**
@@ -85,13 +58,7 @@ export function getOrderSenderAddress(order: OrderDetail) {
  * @description 拼接收件人完整地址
  */
 export function getOrderReceiverAddress(order: OrderDetail) {
-  return getFullAddress([
-    order.receiverProvince,
-    order.receiverCity,
-    order.receiverArea,
-    order.receiverTown,
-    order.receiverAddress
-  ])
+  return getFullAddress([order.receiverProvince, order.receiverCity, order.receiverArea, order.receiverTown, order.receiverAddress])
 }
 
 /**
@@ -111,12 +78,7 @@ function getOrderStubTitle(order: OrderDetail) {
 function getOrderStubStatus(order: OrderDetail) {
   const orderClass = getOrderClass(order)
 
-  return (
-    order.orderClassName ||
-    order.orderStatus ||
-    (orderClass === null ? '' : getOrderClassLabel(orderClass)) ||
-    '订单状态'
-  )
+  return order.orderClassName || order.orderStatus || (orderClass === null ? '' : getOrderClassLabel(orderClass)) || '订单状态'
 }
 
 /**
@@ -140,20 +102,13 @@ function getOrderStubOrderNumber(order: OrderDetail) {
  * @param order 订单详情
  * @description 组装寄件人或收件人信息
  */
-function getOrderStubParty(
-  role: OrderStubPartyRole,
-  order: OrderDetail
-): OrderStubPartyView {
+function getOrderStubParty(role: OrderStubPartyRole, order: OrderDetail): OrderStubPartyView {
   const isSender = role === 'sender'
   const name = toDisplayText(isSender ? order.contactName : order.receiverName)
   const mobile = isSender ? order.contactMobile : order.receiverMobile
-  const address = isSender
-    ? getOrderSenderAddress(order)
-    : getOrderReceiverAddress(order)
+  const address = isSender ? getOrderSenderAddress(order) : getOrderReceiverAddress(order)
   const displayMobile = maskMobile(mobile)
-  const copyText = [name === '--' ? '' : name, displayMobile, address]
-    .filter(Boolean)
-    .join(' ')
+  const copyText = [name === '--' ? '' : name, displayMobile, address].filter(Boolean).join(' ')
 
   return {
     role,
@@ -173,11 +128,7 @@ function getOrderStubParty(
  * @param options 复制与强调配置
  * @description 创建存根字段
  */
-function createOrderStubField(
-  label: string,
-  value: unknown,
-  options: Pick<OrderStubFieldView, 'copyValue' | 'important'> = {}
-): OrderStubFieldView {
+function createOrderStubField(label: string, value: unknown, options: Pick<OrderStubFieldView, 'copyValue' | 'important'> = {}): OrderStubFieldView {
   return {
     label,
     value: toDisplayText(value),
@@ -210,13 +161,8 @@ function createOptionalOrderStubField(
  * @param fields 字段列表
  * @description 创建存根分组，无可见字段返回 null
  */
-function createOrderStubSection(
-  title: string,
-  fields: Array<OrderStubFieldView | null>
-): OrderStubSectionView | null {
-  const visibleFields = fields.filter(
-    (item): item is OrderStubFieldView => !!item
-  )
+function createOrderStubSection(title: string, fields: Array<OrderStubFieldView | null>): OrderStubSectionView | null {
+  const visibleFields = fields.filter((item): item is OrderStubFieldView => !!item)
 
   return visibleFields.length
     ? {
@@ -231,9 +177,7 @@ function createOrderStubSection(
  * @param sections 分组列表
  * @description 过滤掉空分组
  */
-function compactOrderStubSections(
-  sections: Array<OrderStubSectionView | null>
-) {
+function compactOrderStubSections(sections: Array<OrderStubSectionView | null>) {
   return sections.filter((item): item is OrderStubSectionView => !!item)
 }
 
@@ -258,10 +202,7 @@ function createOrderStubRoute(order: OrderDetail, role?: OrderRole) {
  * @param options 存根入口配置
  * @description 创建电子存根入口，条件不满足置为不可用
  */
-export function createOrderStubEntry(
-  order: OrderDetail,
-  options: OrderDetailActionOptions = {}
-): OrderStubEntryView {
+export function createOrderStubEntry(order: OrderDetail, options: OrderDetailActionOptions = {}): OrderStubEntryView {
   if (options.publicTrackMode) {
     return {
       available: false,
@@ -296,41 +237,20 @@ export function createOrderStubEntry(
  * @description 创建货物信息分组
  */
 function createOrderStubBasicSection(order: OrderDetail) {
-  const chargeWeight = getOrderNumberField(order, [
-    'orderChargeWeight',
-    'chargedWeight'
-  ])
-  const chargeType = getOrderTextField(order, [
-    'orderChargeType',
-    'chargingType'
-  ])
+  const chargeWeight = getOrderNumberField(order, ['orderChargeWeight', 'chargedWeight'])
+  const chargeType = getOrderTextField(order, ['orderChargeType', 'chargingType'])
 
   return createOrderStubSection('货物信息', [
     createOrderStubField('货物名称', order.goodsName),
     createOrderStubField('货物件数', formatMeasure(order.goodsNumber, '件')),
     createOrderStubField('货物重量', formatMeasure(order.totalWeight, 'kg')),
     createOrderStubField('货物体积', formatMeasure(order.totalVolume, 'm³')),
-    createOptionalOrderStubField(
-      '计费重量',
-      chargeWeight ? `${chargeWeight}kg` : ''
-    ),
+    createOptionalOrderStubField('计费重量', chargeWeight ? `${chargeWeight}kg` : ''),
     createOptionalOrderStubField('计费方式', chargeType),
-    createOptionalOrderStubField(
-      '产品类型',
-      getOrderTextField(order, ['productName', 'transportMode', 'tranProperty'])
-    ),
-    createOptionalOrderStubField(
-      '付款方式',
-      getOrderTextField(order, ['paymentName', 'paymentType', 'payment'])
-    ),
-    createOptionalOrderStubField(
-      '提货方式',
-      getOrderTextField(order, ['deliveryName', 'deliveryType'])
-    ),
-    createOptionalOrderStubField(
-      '签收单',
-      getOrderTextField(order, ['returnName', 'returnTypeName'])
-    )
+    createOptionalOrderStubField('产品类型', getOrderTextField(order, ['productName', 'transportMode', 'tranProperty'])),
+    createOptionalOrderStubField('付款方式', getOrderTextField(order, ['paymentName', 'paymentType', 'payment'])),
+    createOptionalOrderStubField('提货方式', getOrderTextField(order, ['deliveryName', 'deliveryType'])),
+    createOptionalOrderStubField('签收单', getOrderTextField(order, ['returnName', 'returnTypeName']))
   ])
 }
 
@@ -340,9 +260,7 @@ function createOrderStubBasicSection(order: OrderDetail) {
  * @description 创建费用信息分组
  */
 function createOrderStubChargeSection(order: OrderDetail) {
-  const serviceChargeList = Array.isArray(order.serviceChargeList)
-    ? order.serviceChargeList
-    : []
+  const serviceChargeList = Array.isArray(order.serviceChargeList) ? order.serviceChargeList : []
   const serviceFields = serviceChargeList
     .map(item => {
       if (!item || typeof item !== 'object') {
@@ -358,28 +276,13 @@ function createOrderStubChargeSection(order: OrderDetail) {
     .filter((item): item is OrderStubFieldView => !!item)
 
   return createOrderStubSection('费用信息', [
-    createOptionalOrderStubField(
-      '基础费用',
-      formatAmount(getOrderNumberField(order, ['totalCharge', 'totalFee']))
-    ),
-    createOptionalOrderStubField(
-      '保价',
-      formatAmount(getOrderNumberField(order, ['insurance', 'insuredAmount']))
-    ),
-    createOptionalOrderStubField(
-      '代收货款',
-      formatAmount(
-        getOrderNumberField(order, ['collectionAmount', 'reviceMoneyAmount'])
-      )
-    ),
+    createOptionalOrderStubField('基础费用', formatAmount(getOrderNumberField(order, ['totalCharge', 'totalFee']))),
+    createOptionalOrderStubField('保价', formatAmount(getOrderNumberField(order, ['insurance', 'insuredAmount']))),
+    createOptionalOrderStubField('代收货款', formatAmount(getOrderNumberField(order, ['collectionAmount', 'reviceMoneyAmount']))),
     ...serviceFields,
-    createOptionalOrderStubField(
-      '费用合计',
-      formatAmount(getOrderNumberField(order, ['orderCharge', 'totalFee'])),
-      {
-        important: true
-      }
-    )
+    createOptionalOrderStubField('费用合计', formatAmount(getOrderNumberField(order, ['orderCharge', 'totalFee'])), {
+      important: true
+    })
   ])
 }
 
@@ -400,18 +303,9 @@ function createOrderStubOrderSection(order: OrderDetail) {
     createOptionalOrderStubField('订单号', orderNumber, {
       copyValue: orderNumber
     }),
-    createOptionalOrderStubField(
-      '开单时间',
-      getOrderTextField(order, ['billingTime', 'openBillTime'])
-    ),
-    createOptionalOrderStubField(
-      '下单时间',
-      getOrderTextField(order, ['orderCreateTime', 'orderTime'])
-    ),
-    createOptionalOrderStubField(
-      '给快递员捎话',
-      getOrderTextField(order, ['message', 'remark'])
-    )
+    createOptionalOrderStubField('开单时间', getOrderTextField(order, ['billingTime', 'openBillTime'])),
+    createOptionalOrderStubField('下单时间', getOrderTextField(order, ['orderCreateTime', 'orderTime'])),
+    createOptionalOrderStubField('给快递员捎话', getOrderTextField(order, ['message', 'remark']))
   ])
 }
 
@@ -423,23 +317,17 @@ function createOrderStubOrderSection(order: OrderDetail) {
 function createOrderStubNotices(order: OrderDetail): OrderStubNoticeView[] {
   const notices: OrderStubNoticeView[] = []
 
-  if (
-    isEncryptedText(order.contactMobile) ||
-    isEncryptedText(order.receiverMobile) ||
-    order.isEncry === true
-  ) {
+  if (isEncryptedText(order.contactMobile) || isEncryptedText(order.receiverMobile) || order.isEncry === true) {
     notices.push({
       title: '隐私保护',
-      content:
-        '此单包含隐私保护信息，页面会按后端返回和 App 规则隐藏部分内容。',
+      content: '此单包含隐私保护信息，页面会按后端返回和 App 规则隐藏部分内容。',
       tone: 'warning'
     })
   }
 
   notices.push({
     title: '存根范围',
-    content:
-      '首期展示结构化订单存根、照片凭证和电子合同状态；合同完成后可通过受控 WebView 查看，保存下载后续由 App 文件能力承接。',
+    content: '首期展示结构化订单存根、照片凭证和电子合同状态；合同完成后可通过受控 WebView 查看，保存下载后续由 App 文件能力承接。',
     tone: 'info'
   })
 
@@ -468,13 +356,7 @@ function createOrderStubSizeView(order: OrderDetail) {
 
   return {
     available: true,
-    rows:
-      parts.length > 1
-        ? parts.map(
-            (item, index) =>
-              `尺寸${index + 1}：${item}${index === 0 ? '（单位cm）' : ''}`
-          )
-        : [`尺寸：${parts[0]}（单位cm）`],
+    rows: parts.length > 1 ? parts.map((item, index) => `尺寸${index + 1}：${item}${index === 0 ? '（单位cm）' : ''}`) : [`尺寸：${parts[0]}（单位cm）`],
     notice: '若代打木箱/木架，“1.4”为打包装后膨胀体积系数。'
   }
 }
@@ -499,11 +381,7 @@ export function createOrderStubView(order: OrderDetail): OrderStubView {
     sender: getOrderStubParty('sender', order),
     receiver: getOrderStubParty('receiver', order),
     size: createOrderStubSizeView(order),
-    sections: compactOrderStubSections([
-      createOrderStubBasicSection(order),
-      createOrderStubChargeSection(order),
-      createOrderStubOrderSection(order)
-    ]),
+    sections: compactOrderStubSections([createOrderStubBasicSection(order), createOrderStubChargeSection(order), createOrderStubOrderSection(order)]),
     notices: createOrderStubNotices(order)
   }
 }

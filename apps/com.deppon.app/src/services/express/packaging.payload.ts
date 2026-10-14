@@ -1,24 +1,14 @@
-import {
-  EXPRESS_UNPACKING_OPTIONS,
-  EXPRESS_WOODEN_PACKAGING_OPTIONS
-} from './packaging.catalog'
+import { EXPRESS_UNPACKING_OPTIONS, EXPRESS_WOODEN_PACKAGING_OPTIONS } from './packaging.catalog'
 import { normalizeExpressPackagingDraft } from './packaging.rules'
 
-import type {
-  ExpressPackageInfo,
-  ExpressPackageLtlType,
-  ExpressPackagingDraft,
-  ExpressUnpackageLtlInfo
-} from './types'
+import type { ExpressPackageInfo, ExpressPackageLtlType, ExpressPackagingDraft, ExpressUnpackageLtlInfo } from './types'
 
 /**
  *
  * @param value 包装草稿
  * @description 生成报价用的包装信息列表
  */
-export function createExpressQuotePackageInfoList(
-  value: ExpressPackagingDraft
-): ExpressPackageInfo[] | undefined {
+export function createExpressQuotePackageInfoList(value: ExpressPackagingDraft): ExpressPackageInfo[] | undefined {
   const packaging = normalizeExpressPackagingDraft(value)
 
   if (!packaging.cartonCode) {
@@ -39,9 +29,7 @@ export function createExpressQuotePackageInfoList(
  * @param value 包装草稿
  * @description 生成下单用的包装信息列表
  */
-export function createExpressOrderPackageInfoList(
-  value: ExpressPackagingDraft
-): ExpressPackageInfo[] | undefined {
+export function createExpressOrderPackageInfoList(value: ExpressPackagingDraft): ExpressPackageInfo[] | undefined {
   const packaging = normalizeExpressPackagingDraft(value)
   const packageInfoList: ExpressPackageInfo[] = []
 
@@ -75,9 +63,7 @@ export function createExpressOrderPackageInfoList(
  * @param value 包装草稿
  * @description 取包装对应的零担类型
  */
-export function getExpressPackageLtlType(
-  value: ExpressPackagingDraft
-): ExpressPackageLtlType {
+export function getExpressPackageLtlType(value: ExpressPackagingDraft): ExpressPackageLtlType {
   const packaging = normalizeExpressPackagingDraft(value)
   const hasWoodenPackaging = packaging.woodenCodes.length > 0
   const hasUnpacking = packaging.unpackingCodes.length > 0
@@ -98,9 +84,7 @@ export function getExpressPackageLtlType(
  * @param value 包装草稿
  * @description 生成拆包装数量信息
  */
-export function createExpressUnpackingNumbers(
-  value: ExpressPackagingDraft
-): ExpressUnpackageLtlInfo {
+export function createExpressUnpackingNumbers(value: ExpressPackagingDraft): ExpressUnpackageLtlInfo {
   const packaging = normalizeExpressPackagingDraft(value)
   const selectedCodes = new Set(packaging.unpackingCodes)
   const result: ExpressUnpackageLtlInfo = {
@@ -122,9 +106,7 @@ export function createExpressUnpackingNumbers(
  * @param value 包装草稿
  * @description 生成下单用的拆包装数量信息
  */
-export function createExpressOrderUnpackageLtlInfo(
-  value: ExpressPackagingDraft
-) {
+export function createExpressOrderUnpackageLtlInfo(value: ExpressPackagingDraft) {
   return createExpressUnpackingNumbers(value)
 }
 

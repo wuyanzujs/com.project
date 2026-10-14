@@ -1,10 +1,5 @@
 import { getInvoiceECardTotalAmount } from '@/services/invoice'
-import type {
-  InvoiceECardView,
-  InvoiceHistoryView,
-  InvoiceOrderView,
-  InvoiceTab
-} from '@/services/invoice'
+import type { InvoiceECardView, InvoiceHistoryView, InvoiceOrderView, InvoiceTab } from '@/services/invoice'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
@@ -21,9 +16,7 @@ export const INVOICE_CENTER_TABS: InvoiceCenterTabItem[] = [
 ]
 
 export function parseInvoiceCenterTab(value?: string): InvoiceTab {
-  return value === 'ecards' || value === 'history' || value === 'taxpayers'
-    ? value
-    : 'orders'
+  return value === 'ecards' || value === 'history' || value === 'taxpayers' ? value : 'orders'
 }
 
 export function createInvoiceOrderApplyUrl(order: InvoiceOrderView) {
@@ -52,20 +45,12 @@ export function createInvoiceDetailUrl(item: InvoiceHistoryView) {
   })
 }
 
-export function getSelectedInvoiceECards(
-  items: InvoiceECardView[],
-  selectedIds: string[]
-) {
+export function getSelectedInvoiceECards(items: InvoiceECardView[], selectedIds: string[]) {
   const selectedIdSet = new Set(selectedIds)
 
   return items.filter(item => selectedIdSet.has(item.id))
 }
 
-export function getSelectedInvoiceECardAmount(
-  items: InvoiceECardView[],
-  selectedIds: string[]
-) {
-  return getInvoiceECardTotalAmount(
-    getSelectedInvoiceECards(items, selectedIds)
-  )
+export function getSelectedInvoiceECardAmount(items: InvoiceECardView[], selectedIds: string[]) {
+  return getInvoiceECardTotalAmount(getSelectedInvoiceECards(items, selectedIds))
 }

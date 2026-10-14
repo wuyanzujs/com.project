@@ -53,12 +53,7 @@ function getDateRange(months: number) {
  * @param totalRows 总条数，可为空
  * @description 组装统一的分页结果
  */
-function createListResult<TItem>(
-  list: TItem[],
-  pageIndex: number,
-  pageSize: number,
-  totalRows?: number
-): InvoiceListResult<TItem> {
+function createListResult<TItem>(list: TItem[], pageIndex: number, pageSize: number, totalRows?: number): InvoiceListResult<TItem> {
   const total = totalRows ?? list.length
 
   return {
@@ -77,15 +72,9 @@ export const invoiceCenterService = {
    * @param pageSize 每页条数
    * @description 查询可开票运单列表
    */
-  async queryOrders(
-    pageIndex = 1,
-    pageSize = DEFAULT_PAGE_SIZE
-  ): Promise<DepponResponse<InvoiceListResult<InvoiceOrderView>>> {
+  async queryOrders(pageIndex = 1, pageSize = DEFAULT_PAGE_SIZE): Promise<DepponResponse<InvoiceListResult<InvoiceOrderView>>> {
     const range = getDateRange(DEFAULT_ORDER_RANGE_MONTHS)
-    const response = await invoiceApi.request<
-      InvoiceOrderListResponse,
-      InvoiceOrderListRequest
-    >(
+    const response = await invoiceApi.request<InvoiceOrderListResponse, InvoiceOrderListRequest>(
       'tradeQueryByCustomerCode',
       {
         currentPage: pageIndex,
@@ -105,12 +94,7 @@ export const invoiceCenterService = {
 
     return {
       ...response,
-      result: createListResult(
-        list,
-        response.result.pageIndex ?? pageIndex,
-        response.result.pageSize ?? pageSize,
-        response.result.total
-      )
+      result: createListResult(list, response.result.pageIndex ?? pageIndex, response.result.pageSize ?? pageSize, response.result.total)
     }
   },
 
@@ -120,24 +104,14 @@ export const invoiceCenterService = {
    * @param pageSize 每页条数
    * @description 查询储值卡可开票记录
    */
-  async queryECards(
-    pageIndex = 1,
-    pageSize = DEFAULT_PAGE_SIZE
-  ): Promise<DepponResponse<InvoiceListResult<InvoiceECardView>>> {
-    const response = await invoiceApi.request<InvoiceECardListResponse>(
-      'prepayCardQueryByCustomerCode',
-      undefined,
-      false,
-      30000
-    )
+  async queryECards(pageIndex = 1, pageSize = DEFAULT_PAGE_SIZE): Promise<DepponResponse<InvoiceListResult<InvoiceECardView>>> {
+    const response = await invoiceApi.request<InvoiceECardListResponse>('prepayCardQueryByCustomerCode', undefined, false, 30000)
 
     if (!response.status || !response.result) {
       return createFailure(response.message || '暂未获取到储值卡开票记录')
     }
 
-    const allItems = (response.result.list ?? [])
-      .map(normalizeInvoiceECard)
-      .filter(item => item.id && item.amount > 0)
+    const allItems = (response.result.list ?? []).map(normalizeInvoiceECard).filter(item => item.id && item.amount > 0)
     const startIndex = (pageIndex - 1) * pageSize
     const list = allItems.slice(startIndex, startIndex + pageSize)
 
@@ -154,18 +128,11 @@ export const invoiceCenterService = {
    * @param waybillNumber 运单号，可为空
    * @description 按运单号或时间范围查询开票历史
    */
-  async queryHistory(
-    pageIndex = 1,
-    pageSize = DEFAULT_PAGE_SIZE,
-    waybillNumber = ''
-  ): Promise<DepponResponse<InvoiceListResult<InvoiceHistoryView>>> {
+  async queryHistory(pageIndex = 1, pageSize = DEFAULT_PAGE_SIZE, waybillNumber = ''): Promise<DepponResponse<InvoiceListResult<InvoiceHistoryView>>> {
     const keyword = waybillNumber.trim()
 
     if (keyword) {
-      const response = await invoiceApi.request<
-        InvoiceHistoryQueryResponse,
-        InvoiceHistoryQueryRequest
-      >(
+      const response = await invoiceApi.request<InvoiceHistoryQueryResponse, InvoiceHistoryQueryRequest>(
         'queryApplyByWayBillNo',
         {
           sourceBillNo: keyword
@@ -186,10 +153,7 @@ export const invoiceCenterService = {
     }
 
     const range = getDateRange(DEFAULT_HISTORY_RANGE_MONTHS)
-    const response = await invoiceApi.request<
-      InvoiceHistoryListResponse,
-      InvoiceHistoryListRequest
-    >(
+    const response = await invoiceApi.request<InvoiceHistoryListResponse, InvoiceHistoryListRequest>(
       'queryInvoiceHistory',
       {
         currentPage: pageIndex,
@@ -208,12 +172,7 @@ export const invoiceCenterService = {
 
     return {
       ...response,
-      result: createListResult(
-        list,
-        response.result.pageIndex ?? pageIndex,
-        response.result.pageSize ?? pageSize,
-        response.result.total
-      )
+      result: createListResult(list, response.result.pageIndex ?? pageIndex, response.result.pageSize ?? pageSize, response.result.total)
     }
   }
 }

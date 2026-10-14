@@ -15,19 +15,8 @@ import {
   updateOrderEvaluationSuggestion,
   validateOrderEvaluationDraft
 } from '@/services/order'
-import type {
-  OrderDetail,
-  OrderEvaluationView,
-  OrderRole
-} from '@/services/order'
-import {
-  AppButton,
-  AppEmptyState,
-  AppLoadingState,
-  AppPage,
-  AppPageHeader,
-  AppStatusTag
-} from '@/shared/components'
+import type { OrderDetail, OrderEvaluationView, OrderRole } from '@/services/order'
+import { AppButton, AppEmptyState, AppLoadingState, AppPage, AppPageHeader, AppStatusTag } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -45,9 +34,7 @@ interface OrderEvaluationRouteParams {
   source: string
 }
 
-function parseRouteParams(
-  params: Record<string, string | undefined>
-): OrderEvaluationRouteParams {
+function parseRouteParams(params: Record<string, string | undefined>): OrderEvaluationRouteParams {
   return {
     orderNumber: (params.orderNumber || params.orderNo || '').trim(),
     waybillNumber: (params.waybillNumber || params.waybillNo || '').trim(),
@@ -58,10 +45,7 @@ function parseRouteParams(
 
 const OrderEvaluationPage = () => {
   const router = useRouter()
-  const routeParams = useMemo(
-    () => parseRouteParams(router.params as Record<string, string | undefined>),
-    [router.params]
-  )
+  const routeParams = useMemo(() => parseRouteParams(router.params as Record<string, string | undefined>), [router.params])
   const [detail, setDetail] = useState<OrderDetail | null>(null)
   const [evaluation, setEvaluation] = useState<OrderEvaluationView | null>(null)
   const [draft, setDraft] = useState(() => createOrderEvaluationDraft())
@@ -96,10 +80,7 @@ const OrderEvaluationPage = () => {
       const nextDetail = detailResponse.result
       setDetail(nextDetail)
 
-      const evaluationResponse = await orderEvaluationService.query(
-        nextDetail,
-        routeParams.role
-      )
+      const evaluationResponse = await orderEvaluationService.query(nextDetail, routeParams.role)
 
       if (!evaluationResponse.status || !evaluationResponse.result) {
         setErrorMessage(evaluationResponse.message || '暂未获取到评价信息')
@@ -133,11 +114,7 @@ const OrderEvaluationPage = () => {
       return
     }
 
-    const uri = createOrderEvaluationFallbackWebUri(
-      detail,
-      routeParams.role,
-      getCurrentUser()?.mobile || ''
-    )
+    const uri = createOrderEvaluationFallbackWebUri(detail, routeParams.role, getCurrentUser()?.mobile || '')
 
     navigateToAppRoute(
       createAppWebUrl({
@@ -194,30 +171,14 @@ const OrderEvaluationPage = () => {
   const footer =
     evaluation && !evaluation.committed ? (
       <View className='order-evaluation-footer'>
-        <AppButton
-          disabled={!validation.valid}
-          label='匿名提交评价'
-          loading={submitting}
-          loadingLabel='正在提交'
-          onPress={handleSubmit}
-        />
+        <AppButton disabled={!validation.valid} label='匿名提交评价' loading={submitting} loadingLabel='正在提交' onPress={handleSubmit} />
       </View>
     ) : undefined
 
   return (
-    <AppPage
-      footer={footer}
-      keyboardAvoiding
-      safeArea='bottom'
-      statusBar='dark'
-      surface='page'
-    >
+    <AppPage footer={footer} keyboardAvoiding safeArea='bottom' statusBar='dark' surface='page'>
       <ScrollView className='order-evaluation-page' scrollY>
-        <AppPageHeader
-          eyebrow='SERVICE REVIEW'
-          subtitle={`运单 ${routeParams.waybillNumber || '--'}`}
-          title='服务评价'
-        />
+        <AppPageHeader eyebrow='SERVICE REVIEW' subtitle={`运单 ${routeParams.waybillNumber || '--'}`} title='服务评价' />
 
         {loading ? (
           <AppLoadingState label='正在加载评价信息' />
@@ -225,19 +186,8 @@ const OrderEvaluationPage = () => {
           <AppEmptyState
             action={
               <View className='order-evaluation-error-actions'>
-                <AppButton
-                  density='compact'
-                  label='重新加载'
-                  onPress={loadEvaluation}
-                />
-                {detail ? (
-                  <AppButton
-                    density='compact'
-                    label='使用网页评价'
-                    variant='secondary'
-                    onPress={handleOpenWebFallback}
-                  />
-                ) : null}
+                <AppButton density='compact' label='重新加载' onPress={loadEvaluation} />
+                {detail ? <AppButton density='compact' label='使用网页评价' variant='secondary' onPress={handleOpenWebFallback} /> : null}
               </View>
             }
             description={errorMessage}
@@ -248,62 +198,31 @@ const OrderEvaluationPage = () => {
           <>
             <View className='order-evaluation-overview'>
               <View className='order-evaluation-overview__main'>
-                <Text className='order-evaluation-overview__name'>
-                  {evaluation.courierName}
-                </Text>
+                <Text className='order-evaluation-overview__name'>{evaluation.courierName}</Text>
                 <Text className='order-evaluation-overview__summary'>
-                  {evaluation.recordType === 'DELIVERY'
-                    ? '派送服务'
-                    : '揽收服务'}
+                  {evaluation.recordType === 'DELIVERY' ? '派送服务' : '揽收服务'}
                   {' · '}
                   {evaluation.courierRole === 'Driver' ? '司机' : '快递员'}
-                  {evaluation.averageLevel
-                    ? ` · 平均 ${evaluation.averageLevel.toFixed(1)} 星`
-                    : ''}
+                  {evaluation.averageLevel ? ` · 平均 ${evaluation.averageLevel.toFixed(1)} 星` : ''}
                 </Text>
               </View>
-              <AppStatusTag
-                label={evaluation.committed ? '已评价' : '待评价'}
-                tone={evaluation.committed ? 'success' : 'warning'}
-              />
+              <AppStatusTag label={evaluation.committed ? '已评价' : '待评价'} tone={evaluation.committed ? 'success' : 'warning'} />
             </View>
 
             {evaluation.committed ? (
               <View className='order-evaluation-result'>
-                <Text className='order-evaluation-result__score'>
-                  {evaluation.level} 星
-                </Text>
-                <Text className='order-evaluation-result__title'>
-                  本次服务评价已提交
-                </Text>
-                <Text className='order-evaluation-result__summary'>
-                  {evaluation.label || '感谢你对本次服务的反馈'}
-                </Text>
+                <Text className='order-evaluation-result__score'>{evaluation.level} 星</Text>
+                <Text className='order-evaluation-result__title'>本次服务评价已提交</Text>
+                <Text className='order-evaluation-result__summary'>{evaluation.label || '感谢你对本次服务的反馈'}</Text>
               </View>
             ) : (
               <OrderEvaluationForm
                 draft={draft}
                 recordType={evaluation.recordType}
                 validation={validation}
-                onLabelToggle={label =>
-                  setDraft(current =>
-                    toggleOrderEvaluationLabel(
-                      current,
-                      evaluation.recordType,
-                      label
-                    )
-                  )
-                }
-                onLevelChange={level =>
-                  setDraft(current =>
-                    updateOrderEvaluationLevel(current, level)
-                  )
-                }
-                onSuggestionChange={suggestion =>
-                  setDraft(current =>
-                    updateOrderEvaluationSuggestion(current, suggestion)
-                  )
-                }
+                onLabelToggle={label => setDraft(current => toggleOrderEvaluationLabel(current, evaluation.recordType, label))}
+                onLevelChange={level => setDraft(current => updateOrderEvaluationLevel(current, level))}
+                onSuggestionChange={suggestion => setDraft(current => updateOrderEvaluationSuggestion(current, suggestion))}
               />
             )}
           </>

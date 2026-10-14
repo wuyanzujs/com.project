@@ -285,13 +285,10 @@ export const APP_ROUTE_DEFINITIONS = [
 export type AppRouteDefinition = (typeof APP_ROUTE_DEFINITIONS)[number]
 export type AppRouteName = AppRouteDefinition['name']
 export type AppRoutePath = `/${AppRouteDefinition['path']}`
-export type AppMainRouteName = Extract<
-  AppRouteDefinition,
-  { main: true }
->['name']
+export type AppMainRouteName = Extract<AppRouteDefinition, { main: true }>['name']
 
 export const APP_PAGE_PATHS = APP_ROUTE_DEFINITIONS.map(item => item.path)
 
-export const APP_LOGIN_ROUTE_PATHS = APP_ROUTE_DEFINITIONS.filter(
-  item => 'loginRequired' in item && item.loginRequired
-).map(item => `/${item.path}` as AppRoutePath)
+export const APP_LOGIN_ROUTE_PATHS = APP_ROUTE_DEFINITIONS.filter(item => 'loginRequired' in item && item.loginRequired).map(
+  item => `/${item.path}` as AppRoutePath
+)

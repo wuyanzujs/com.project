@@ -8,8 +8,7 @@ const RULES: Record<ExpressInsuranceRuleType, ExpressInsuranceRuleView> = {
   NORMAL: {
     type: 'NORMAL',
     title: '基础保',
-    summary:
-      '适用于常规托寄物。发生丢失或破损时，赔付以保价声明价值、货物实际价值和实际损失为基础综合判定。',
+    summary: '适用于常规托寄物。发生丢失或破损时，赔付以保价声明价值、货物实际价值和实际损失为基础综合判定。',
     badgeText: '常用',
     sections: [
       {
@@ -57,8 +56,7 @@ const RULES: Record<ExpressInsuranceRuleType, ExpressInsuranceRuleView> = {
   QEB: {
     type: 'QEB',
     title: '全额保',
-    summary:
-      '面向足额投保的高价值托寄物。全部丢失或损坏时，可在保价金额内按实际损失优先处理。',
+    summary: '面向足额投保的高价值托寄物。全部丢失或损坏时，可在保价金额内按实际损失优先处理。',
     badgeText: '高价值',
     sections: [
       {
@@ -94,33 +92,23 @@ const RULES: Record<ExpressInsuranceRuleType, ExpressInsuranceRuleView> = {
       },
       {
         title: '重要提示',
-        content: [
-          '请按托寄物实际价值申报，虚高或虚低都可能影响后续理赔。',
-          '全新托寄物、维修价格、折旧和残值等材料以后端或理赔人员审核为准。'
-        ]
+        content: ['请按托寄物实际价值申报，虚高或虚低都可能影响后续理赔。', '全新托寄物、维修价格、折旧和残值等材料以后端或理赔人员审核为准。']
       }
     ]
   },
   SXB: {
     type: 'SXB',
     title: '省心保',
-    summary:
-      '面向票据、合同、证件、会员卡等难以衡量公允价值的托寄物，按固定保价金额提供简化保障。',
+    summary: '面向票据、合同、证件、会员卡等难以衡量公允价值的托寄物，按固定保价金额提供简化保障。',
     badgeText: '证件文件',
     sections: [
       {
         title: '服务说明',
-        content: [
-          '省心保适合证件、票据、合同等价值证明较难提供的文件类或卡证类物品。',
-          '发生全部丢失或损坏时，可按保价金额处理；部分损坏按规则比例处理。'
-        ]
+        content: ['省心保适合证件、票据、合同等价值证明较难提供的文件类或卡证类物品。', '发生全部丢失或损坏时，可按保价金额处理；部分损坏按规则比例处理。']
       },
       {
         title: '赔付示例',
-        content: [
-          '例如邮寄身份证并选择 500 元省心保，全部丢失时按保价金额处理。',
-          '若发生折损且影响使用或外观，按具体情形和规则比例处理。'
-        ],
+        content: ['例如邮寄身份证并选择 500 元省心保，全部丢失时按保价金额处理。', '若发生折损且影响使用或外观，按具体情形和规则比例处理。'],
         table: {
           title: '参考口径',
           headers: ['场景', '声明金额', '处理口径'],

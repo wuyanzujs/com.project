@@ -44,9 +44,7 @@ function normalizeText(value?: string | null) {
  * @param value 取件时段类型
  * @description 判断是否为可预约时段类型
  */
-function isAvailablePickupType(
-  value: ExpressPickupTimeOpeningType
-): value is ExpressPickupTimeType {
+function isAvailablePickupType(value: ExpressPickupTimeOpeningType): value is ExpressPickupTimeType {
   return value === 'NORMAL' || value === 'NIGHT'
 }
 
@@ -96,10 +94,7 @@ export function normalizeExpressPickupTimeResponse(
   response: ExpressPickupTimeResponse,
   nightCapability?: ExpressPickupNightCapability
 ): ExpressPickupTimeResponse {
-  const openingByDate = new Map<
-    string,
-    Map<string, ExpressPickupTimeOpeningDate>
-  >()
+  const openingByDate = new Map<string, Map<string, ExpressPickupTimeOpeningDate>>()
 
   appendOpeningList(openingByDate, response.openingList, 'NORMAL')
   appendOpeningList(openingByDate, response.nightOpeningList, 'NIGHT')
@@ -108,25 +103,15 @@ export function normalizeExpressPickupTimeResponse(
   const openingList = Array.from(openingByDate.entries())
     .sort(([left], [right]) => left.localeCompare(right))
     .map(([date, timeMap]) => {
-      const dateList = Array.from(timeMap.values()).sort((left, right) =>
-        left.time.localeCompare(right.time)
-      )
-      const hasNightQuickPickup = dateList.some(
-        item => item.type === 'NIGHT' && item.text.includes('小时')
-      )
+      const dateList = Array.from(timeMap.values()).sort((left, right) => left.time.localeCompare(right.time))
+      const hasNightQuickPickup = dateList.some(item => item.type === 'NIGHT' && item.text.includes('小时'))
 
       return {
         date,
-        dateList: hasNightQuickPickup
-          ? dateList.filter(
-              item => item.type !== 'NORMAL' || !item.text.includes('小时')
-            )
-          : dateList
+        dateList: hasNightQuickPickup ? dateList.filter(item => item.type !== 'NORMAL' || !item.text.includes('小时')) : dateList
       }
     })
-    .filter(opening =>
-      opening.dateList.some(item => isAvailablePickupType(item.type))
-    )
+    .filter(opening => opening.dateList.some(item => isAvailablePickupType(item.type)))
 
   return {
     ...response,
@@ -152,11 +137,7 @@ function parseDate(value: string) {
   const day = Number(match[3])
   const date = new Date(Date.UTC(year, month - 1, day))
 
-  return date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day
-    ? date
-    : null
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day ? date : null
 }
 
 /**
@@ -164,17 +145,13 @@ function parseDate(value: string) {
  * @param response 取件时间响应，可为空
  * @description 生成日期和时段选项
  */
-export function createExpressPickupDateOptions(
-  response?: ExpressPickupTimeResponse | null
-): ExpressPickupDateOption[] {
+export function createExpressPickupDateOptions(response?: ExpressPickupTimeResponse | null): ExpressPickupDateOption[] {
   return (response?.openingList ?? []).map(opening => {
     const date = parseDate(opening.date)
 
     return {
       value: opening.date,
-      label: date
-        ? `${date.getUTCMonth() + 1}月${date.getUTCDate()}日`
-        : opening.date,
+      label: date ? `${date.getUTCMonth() + 1}月${date.getUTCDate()}日` : opening.date,
       weekday: date ? WEEKDAY_LABELS[date.getUTCDay()] : '',
       timeOptions: opening.dateList.map(item => ({
         date: opening.date,
@@ -194,9 +171,7 @@ export function createExpressPickupDateOptions(
  * @param response 取件时间响应
  * @description 取首个普通时段作为默认选中
  */
-export function getFirstExpressPickupTimeSelection(
-  response: ExpressPickupTimeResponse
-): ExpressPickupTimeSelection | null {
+export function getFirstExpressPickupTimeSelection(response: ExpressPickupTimeResponse): ExpressPickupTimeSelection | null {
   for (const opening of response.openingList) {
     const item = opening.dateList.find(time => time.type === 'NORMAL')
 
@@ -217,9 +192,7 @@ export function getFirstExpressPickupTimeSelection(
 export function createExpressPickupDateTime(date: string, time: string) {
   const normalizedTime = normalizeText(time)
 
-  return /^\d{4}-\d{2}-\d{2}/.test(normalizedTime)
-    ? normalizedTime
-    : `${normalizeText(date)} ${normalizedTime}`.trim()
+  return /^\d{4}-\d{2}-\d{2}/.test(normalizedTime) ? normalizedTime : `${normalizeText(date)} ${normalizedTime}`.trim()
 }
 
 /**
@@ -228,17 +201,11 @@ export function createExpressPickupDateTime(date: string, time: string) {
  * @param pickup 已选取件信息
  * @description 反查已选时间对应的时段
  */
-export function findExpressPickupTimeSelection(
-  response: ExpressPickupTimeResponse,
-  pickup: ExpressPickup
-): ExpressPickupTimeSelection | null {
+export function findExpressPickupTimeSelection(response: ExpressPickupTimeResponse, pickup: ExpressPickup): ExpressPickupTimeSelection | null {
   for (const opening of response.openingList) {
     const item = opening.dateList.find(
       candidate =>
-        isAvailablePickupType(candidate.type) &&
-        candidate.type === pickup.type &&
-        createExpressPickupDateTime(opening.date, candidate.time) ===
-          pickup.time
+        isAvailablePickupType(candidate.type) && candidate.type === pickup.type && createExpressPickupDateTime(opening.date, candidate.time) === pickup.time
     )
 
     if (item) {

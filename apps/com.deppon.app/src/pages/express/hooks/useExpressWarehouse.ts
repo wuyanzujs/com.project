@@ -1,13 +1,6 @@
 import { useDidShow } from '@tarojs/taro'
 
-import {
-  type Dispatch,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from 'react'
+import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 import {
   acknowledgeExpressWarehouseScreening,
@@ -45,10 +38,7 @@ interface QueryScreeningOptions {
   apply?: boolean
 }
 
-export function useExpressWarehouse({
-  draft,
-  setDraft
-}: UseExpressWarehouseOptions) {
+export function useExpressWarehouse({ draft, setDraft }: UseExpressWarehouseOptions) {
   const [screeningLoading, setScreeningLoading] = useState(false)
   const [screeningMessage, setScreeningMessage] = useState('')
   const [stagingLoading, setStagingLoading] = useState(false)
@@ -90,10 +80,7 @@ export function useExpressWarehouse({
   })
 
   const queryScreening = useCallback(
-    async (
-      targetDraft: ExpressDraft = draft,
-      options: QueryScreeningOptions = {}
-    ) => {
+    async (targetDraft: ExpressDraft = draft, options: QueryScreeningOptions = {}) => {
       if (screeningLoading) {
         return null
       }
@@ -106,13 +93,9 @@ export function useExpressWarehouse({
       setScreeningMessage('正在识别送货进仓规则')
 
       try {
-        const response =
-          await expressService.queryWarehouseScreening(targetDraft)
+        const response = await expressService.queryWarehouseScreening(targetDraft)
 
-        if (
-          requestVersion.current !== version ||
-          latestInputKey.current !== requestKey
-        ) {
+        if (requestVersion.current !== version || latestInputKey.current !== requestKey) {
           return null
         }
 
@@ -154,22 +137,13 @@ export function useExpressWarehouse({
   )
 
   useEffect(() => {
-    if (
-      !draft.selectedProduct ||
-      draft.warehouse.screening.inputKey === inputKey ||
-      lastAutoQueryKey.current === inputKey
-    ) {
+    if (!draft.selectedProduct || draft.warehouse.screening.inputKey === inputKey || lastAutoQueryKey.current === inputKey) {
       return
     }
 
     lastAutoQueryKey.current = inputKey
     void queryScreening()
-  }, [
-    draft.selectedProduct,
-    draft.warehouse.screening.inputKey,
-    inputKey,
-    queryScreening
-  ])
+  }, [draft.selectedProduct, draft.warehouse.screening.inputKey, inputKey, queryScreening])
 
   const handleToggle = async () => {
     if (draft.warehouse.enabled) {
@@ -184,12 +158,7 @@ export function useExpressWarehouse({
     }
 
     if (draft.deliveryPreference.type) {
-      const confirmed = await showExpressWarehouseConfirmation(
-        '切换送货服务',
-        '送货进仓和派送偏好不能同时选择，继续后将清除当前派送偏好。',
-        '继续开启',
-        '取消'
-      )
+      const confirmed = await showExpressWarehouseConfirmation('切换送货服务', '送货进仓和派送偏好不能同时选择，继续后将清除当前派送偏好。', '继续开启', '取消')
 
       if (!confirmed) {
         return
@@ -224,12 +193,7 @@ export function useExpressWarehouse({
     }
 
     if (latestDraft.current.deliveryPreference.type) {
-      const confirmed = await showExpressWarehouseConfirmation(
-        '切换送货服务',
-        '送货进仓和派送偏好不能同时选择，继续后将清除当前派送偏好。',
-        '继续设置',
-        '取消'
-      )
+      const confirmed = await showExpressWarehouseConfirmation('切换送货服务', '送货进仓和派送偏好不能同时选择，继续后将清除当前派送偏好。', '继续设置', '取消')
 
       if (!confirmed) {
         return
@@ -260,10 +224,7 @@ export function useExpressWarehouse({
     try {
       const response = await expressService.stageWarehouse(stageDraft)
 
-      if (
-        stagingVersion.current !== version ||
-        createExpressWarehouseStageKey(latestDraft.current) !== requestKey
-      ) {
+      if (stagingVersion.current !== version || createExpressWarehouseStageKey(latestDraft.current) !== requestKey) {
         setScreeningMessage('寄件信息已变化，未打开旧的进仓预约')
         return
       }
@@ -293,78 +254,69 @@ export function useExpressWarehouse({
     }
   }
 
-  const prepareForSubmit =
-    useCallback(async (): Promise<ExpressWarehouseSubmitPreparation | null> => {
-      const screening = await queryScreening(latestDraft.current, {
-        apply: false
-      })
+  const prepareForSubmit = useCallback(async (): Promise<ExpressWarehouseSubmitPreparation | null> => {
+    const screening = await queryScreening(latestDraft.current, {
+      apply: false
+    })
 
-      if (!screening) {
-        return null
-      }
+    if (!screening) {
+      return null
+    }
 
-      let currentDraft = latestDraft.current
+    let currentDraft = latestDraft.current
+
+    if (createExpressWarehouseInputKey(currentDraft) !== screening.inputKey) {
+      setScreeningMessage('寄件信息已变化，请重新确认送货进仓')
+      return null
+    }
+
+    let preparedDraft = applyExpressWarehouseScreening(currentDraft, screening)
+
+    if (currentDraft.selectedProduct && !preparedDraft.selectedProduct) {
+      latestDraft.current = preparedDraft
+      setDraft(preparedDraft)
+      setScreeningMessage('送货进仓规则已更新，请重新获取产品价格')
+      return { draft: preparedDraft, proceed: false }
+    }
+
+    const decision = await resolveExpressWarehouseScreeningDecision(preparedDraft, screening)
+
+    if (decision !== 'PROCEED') {
+      currentDraft = latestDraft.current
 
       if (createExpressWarehouseInputKey(currentDraft) !== screening.inputKey) {
         setScreeningMessage('寄件信息已变化，请重新确认送货进仓')
         return null
       }
 
-      let preparedDraft = applyExpressWarehouseScreening(
-        currentDraft,
-        screening
-      )
+      preparedDraft = applyExpressWarehouseScreening(currentDraft, screening)
+    }
 
-      if (currentDraft.selectedProduct && !preparedDraft.selectedProduct) {
-        latestDraft.current = preparedDraft
-        setDraft(preparedDraft)
-        setScreeningMessage('送货进仓规则已更新，请重新获取产品价格')
-        return { draft: preparedDraft, proceed: false }
-      }
-
-      const decision = await resolveExpressWarehouseScreeningDecision(
-        preparedDraft,
-        screening
-      )
-
-      if (decision !== 'PROCEED') {
-        currentDraft = latestDraft.current
-
-        if (
-          createExpressWarehouseInputKey(currentDraft) !== screening.inputKey
-        ) {
-          setScreeningMessage('寄件信息已变化，请重新确认送货进仓')
-          return null
-        }
-
-        preparedDraft = applyExpressWarehouseScreening(currentDraft, screening)
-      }
-
-      if (decision === 'CANCEL') {
-        latestDraft.current = preparedDraft
-        setDraft(preparedDraft)
-        setScreeningMessage('请确认进仓提示后再提交')
-        return { draft: preparedDraft, proceed: false }
-      }
-
-      if (decision === 'ACKNOWLEDGE') {
-        preparedDraft = acknowledgeExpressWarehouseScreening(preparedDraft)
-      } else if (decision === 'ENABLE') {
-        preparedDraft = updateExpressWarehouse(preparedDraft, {
-          enabled: true
-        })
-        latestDraft.current = preparedDraft
-        setDraft(preparedDraft)
-        setScreeningMessage('已开启送货进仓，请完善预约信息并重新获取价格')
-        return { draft: preparedDraft, proceed: false }
-      } else if (decision === 'REJECT') {
-        preparedDraft = rejectExpressWarehouse(preparedDraft)
-      }
-
+    if (decision === 'CANCEL') {
       latestDraft.current = preparedDraft
       setDraft(preparedDraft)
-      return { draft: preparedDraft, proceed: true }
-    }, [queryScreening, setDraft])
+      setScreeningMessage('请确认进仓提示后再提交')
+      return { draft: preparedDraft, proceed: false }
+    }
+
+    if (decision === 'ACKNOWLEDGE') {
+      preparedDraft = acknowledgeExpressWarehouseScreening(preparedDraft)
+    } else if (decision === 'ENABLE') {
+      preparedDraft = updateExpressWarehouse(preparedDraft, {
+        enabled: true
+      })
+      latestDraft.current = preparedDraft
+      setDraft(preparedDraft)
+      setScreeningMessage('已开启送货进仓，请完善预约信息并重新获取价格')
+      return { draft: preparedDraft, proceed: false }
+    } else if (decision === 'REJECT') {
+      preparedDraft = rejectExpressWarehouse(preparedDraft)
+    }
+
+    latestDraft.current = preparedDraft
+    setDraft(preparedDraft)
+    return { draft: preparedDraft, proceed: true }
+  }, [queryScreening, setDraft])
 
   return {
     inputKey,

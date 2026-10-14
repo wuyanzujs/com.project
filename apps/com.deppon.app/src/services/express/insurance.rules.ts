@@ -85,19 +85,12 @@ export function createExpressInsuranceCapabilityKey(draft: ExpressDraft) {
  * @param labels 货物标签列表
  * @description 依据货物标签生成保价能力
  */
-export function createExpressInsuranceCapability(
-  draft: ExpressDraft,
-  labels: ExpressGoodsLabel[] = []
-): ExpressInsuranceCapability {
+export function createExpressInsuranceCapability(draft: ExpressDraft, labels: ExpressGoodsLabel[] = []): ExpressInsuranceCapability {
   return {
     inputKey: createExpressInsuranceCapabilityKey(draft),
     fragile: labels.some(label => label.goodsRemarkCode === 'fragile_articles'),
-    worryFree: labels.some(
-      label => label.goodsRemarkCode === 'worry_free_protection'
-    ),
-    disabled: labels.some(
-      label => label.goodsRemarkCode === 'limitation_insure'
-    )
+    worryFree: labels.some(label => label.goodsRemarkCode === 'worry_free_protection'),
+    disabled: labels.some(label => label.goodsRemarkCode === 'limitation_insure')
   }
 }
 
@@ -106,9 +99,7 @@ export function createExpressInsuranceCapability(
  * @param value 保价能力，可为空
  * @description 归一保价能力的各字段
  */
-function normalizeExpressInsuranceCapability(
-  value?: Partial<ExpressInsuranceCapability> | null
-): ExpressInsuranceCapability {
+function normalizeExpressInsuranceCapability(value?: Partial<ExpressInsuranceCapability> | null): ExpressInsuranceCapability {
   return {
     inputKey: normalizeText(value?.inputKey),
     fragile: value?.fragile === true,
@@ -136,11 +127,7 @@ export function createExpressInsuranceDraft(): ExpressInsuranceDraft {
  * @param capability 保价能力，可为空
  * @description 归一保价类型，不支持时回落基础保
  */
-function normalizeExpressInsuranceType(
-  value: unknown,
-  productCode: ExpressProductCode,
-  capability?: ExpressInsuranceCapability | null
-): ExpressInsuranceType {
+function normalizeExpressInsuranceType(value: unknown, productCode: ExpressProductCode, capability?: ExpressInsuranceCapability | null): ExpressInsuranceType {
   const type = value === 'QEB' || value === 'SXB' ? value : 'NORMAL'
   const policy = getExpressInsuranceProductPolicy(productCode)
 
@@ -165,10 +152,7 @@ function normalizeExpressInsuranceType(
  * @param productCode 产品 code
  * @description 归一保价草稿的类型、额度与能力
  */
-export function normalizeExpressInsuranceDraft(
-  value?: Partial<ExpressInsuranceDraft> | null,
-  productCode: ExpressProductCode = ''
-): ExpressInsuranceDraft {
+export function normalizeExpressInsuranceDraft(value?: Partial<ExpressInsuranceDraft> | null, productCode: ExpressProductCode = ''): ExpressInsuranceDraft {
   const capability = normalizeExpressInsuranceCapability(value?.capability)
 
   return {
@@ -184,15 +168,10 @@ export function normalizeExpressInsuranceDraft(
  * @param override 覆盖的保价能力
  * @description 取与当前草稿匹配的保价能力，过期返回 null
  */
-export function getFreshExpressInsuranceCapability(
-  draft: ExpressDraft,
-  override?: ExpressInsuranceCapability | null
-) {
+export function getFreshExpressInsuranceCapability(draft: ExpressDraft, override?: ExpressInsuranceCapability | null) {
   const capability = override ?? draft.insurance.capability
 
-  return capability.inputKey === createExpressInsuranceCapabilityKey(draft)
-    ? capability
-    : null
+  return capability.inputKey === createExpressInsuranceCapabilityKey(draft) ? capability : null
 }
 
 /**
@@ -201,10 +180,7 @@ export function getFreshExpressInsuranceCapability(
  * @param capability 待校验的保价能力
  * @description 判断保价能力是否与当前草稿一致
  */
-export function isExpressInsuranceCapabilityCurrent(
-  draft: ExpressDraft,
-  capability: ExpressInsuranceCapability
-) {
+export function isExpressInsuranceCapabilityCurrent(draft: ExpressDraft, capability: ExpressInsuranceCapability) {
   const current = getFreshExpressInsuranceCapability(draft)
   const next = normalizeExpressInsuranceCapability(capability)
 
@@ -223,17 +199,10 @@ export function isExpressInsuranceCapabilityCurrent(
  * @param capability 保价能力，可为空
  * @description 取保价额度，含省心保与必保上限
  */
-export function getExpressInsuranceLimit(
-  draft: ExpressDraft,
-  capability?: ExpressInsuranceCapability | null
-) {
+export function getExpressInsuranceLimit(draft: ExpressDraft, capability?: ExpressInsuranceCapability | null) {
   const productCode = getExpressInsuranceProductCode(draft)
   const policy = getExpressInsuranceProductPolicy(productCode)
-  const type = normalizeExpressInsuranceType(
-    draft.insurance.type,
-    productCode,
-    getFreshExpressInsuranceCapability(draft, capability)
-  )
+  const type = normalizeExpressInsuranceType(draft.insurance.type, productCode, getFreshExpressInsuranceCapability(draft, capability))
 
   if (type === 'SXB' && policy.supportsSxb) {
     return EXPRESS_INSURANCE_SXB_LIMIT
@@ -252,17 +221,10 @@ export function getExpressInsuranceLimit(
  * @param capability 保价能力，可为空
  * @description 取当前生效的保价类型
  */
-export function getExpressInsuranceType(
-  draft: ExpressDraft,
-  capability?: ExpressInsuranceCapability | null
-) {
+export function getExpressInsuranceType(draft: ExpressDraft, capability?: ExpressInsuranceCapability | null) {
   const productCode = getExpressInsuranceProductCode(draft)
 
-  return normalizeExpressInsuranceType(
-    draft.insurance.type,
-    productCode,
-    getFreshExpressInsuranceCapability(draft, capability)
-  )
+  return normalizeExpressInsuranceType(draft.insurance.type, productCode, getFreshExpressInsuranceCapability(draft, capability))
 }
 
 /**
@@ -271,10 +233,7 @@ export function getExpressInsuranceType(
  * @param capability 保价能力，可为空
  * @description 取生效保价金额，含赠送基础保障
  */
-export function getExpressInsuranceEffectiveAmount(
-  draft: ExpressDraft,
-  capability?: ExpressInsuranceCapability | null
-) {
+export function getExpressInsuranceEffectiveAmount(draft: ExpressDraft, capability?: ExpressInsuranceCapability | null) {
   const freshCapability = getFreshExpressInsuranceCapability(draft, capability)
 
   if (freshCapability?.disabled) {
@@ -287,9 +246,7 @@ export function getExpressInsuranceEffectiveAmount(
     return amount
   }
 
-  const policy = getExpressInsuranceProductPolicy(
-    getExpressInsuranceProductCode(draft)
-  )
+  const policy = getExpressInsuranceProductPolicy(getExpressInsuranceProductCode(draft))
 
   return policy.free ? EXPRESS_INSURANCE_FREE_AMOUNT : 0
 }
@@ -300,10 +257,7 @@ export function getExpressInsuranceEffectiveAmount(
  * @param capability 保价能力，可为空
  * @description 校验保价金额与类型，返回提示语
  */
-export function validateExpressInsurance(
-  draft: ExpressDraft,
-  capability?: ExpressInsuranceCapability | null
-) {
+export function validateExpressInsurance(draft: ExpressDraft, capability?: ExpressInsuranceCapability | null) {
   const messages: string[] = []
   const productCode = getExpressInsuranceProductCode(draft)
   const policy = getExpressInsuranceProductPolicy(productCode)
@@ -331,17 +285,13 @@ export function validateExpressInsurance(
   }
 
   if ((type === 'QEB' || type === 'SXB' || policy.required) && amount <= 0) {
-    messages.push(
-      policy.required ? '当前产品必须填写保价金额' : '请填写保价金额'
-    )
+    messages.push(policy.required ? '当前产品必须填写保价金额' : '请填写保价金额')
   }
 
   const limit = getExpressInsuranceLimit(draft, capability)
 
   if (amount > limit) {
-    messages.push(
-      type === 'SXB' ? `省心保最高保价${limit}元` : `保价金额最高为${limit}元`
-    )
+    messages.push(type === 'SXB' ? `省心保最高保价${limit}元` : `保价金额最高为${limit}元`)
   }
 
   return messages
@@ -353,14 +303,9 @@ export function validateExpressInsurance(
  * @param capability 保价能力，可为空
  * @description 取报价用的保价子类型
  */
-export function getExpressInsurancePriceSubtype(
-  draft: ExpressDraft,
-  capability?: ExpressInsuranceCapability | null
-): ExpressInsurancePriceSubtype {
+export function getExpressInsurancePriceSubtype(draft: ExpressDraft, capability?: ExpressInsuranceCapability | null): ExpressInsurancePriceSubtype {
   const freshCapability = getFreshExpressInsuranceCapability(draft, capability)
-  const policy = getExpressInsuranceProductPolicy(
-    getExpressInsuranceProductCode(draft)
-  )
+  const policy = getExpressInsuranceProductPolicy(getExpressInsuranceProductCode(draft))
 
   if (freshCapability?.fragile) {
     return 'YSB'
@@ -382,10 +327,7 @@ export function getExpressInsurancePriceSubtype(
 export function createExpressInsuranceQuoteFields(
   draft: ExpressDraft,
   capability?: ExpressInsuranceCapability | null
-): Pick<
-  ExpressFreightRequest,
-  'insuredAmount' | 'sxb' | 'fullCoverage' | 'isFragileArticles'
-> {
+): Pick<ExpressFreightRequest, 'insuredAmount' | 'sxb' | 'fullCoverage' | 'isFragileArticles'> {
   const insuredAmount = getExpressInsuranceEffectiveAmount(draft, capability)
   const subType = getExpressInsurancePriceSubtype(draft, capability)
   const fields: {
@@ -433,9 +375,7 @@ export function createExpressInsuranceOrderFields(
   }
 
   const freshCapability = getFreshExpressInsuranceCapability(draft, capability)
-  const policy = getExpressInsuranceProductPolicy(
-    getExpressInsuranceProductCode(draft)
-  )
+  const policy = getExpressInsuranceProductPolicy(getExpressInsuranceProductCode(draft))
   let insuranceType = 3
 
   if (freshCapability?.fragile) {
@@ -446,14 +386,9 @@ export function createExpressInsuranceOrderFields(
     insuranceType = 0
   }
 
-  const orderExtendFields: ExpressOrderExtendField[] = [
-    { key: 'bjlx', value: insuranceType }
-  ]
+  const orderExtendFields: ExpressOrderExtendField[] = [{ key: 'bjlx', value: insuranceType }]
 
-  if (
-    policy.free &&
-    normalizeExpressInsuranceAmount(draft.goods.insuredAmount) === 0
-  ) {
+  if (policy.free && normalizeExpressInsuranceAmount(draft.goods.insuredAmount) === 0) {
     orderExtendFields.unshift({ key: 'insuranceSource', value: 'DEFAULT' })
   }
 
@@ -467,30 +402,16 @@ export function createExpressInsuranceOrderFields(
  * @param limit 保价额度，可为空
  * @description 应用保价能力并归一失效的保价金额
  */
-export function applyExpressInsuranceCapability(
-  draft: ExpressDraft,
-  capability: ExpressInsuranceCapability,
-  limit?: number | null
-): ExpressDraft {
+export function applyExpressInsuranceCapability(draft: ExpressDraft, capability: ExpressInsuranceCapability, limit?: number | null): ExpressDraft {
   const productCode = getExpressInsuranceProductCode(draft)
   const normalizedCapability = normalizeExpressInsuranceCapability(capability)
-  const type = normalizeExpressInsuranceType(
-    draft.insurance.type,
-    productCode,
-    normalizedCapability
-  )
-  const nextAmount = normalizedCapability.disabled
-    ? 0
-    : draft.goods.insuredAmount
-  const nextLimit =
-    limit === undefined ? draft.insurance.limit : normalizePositiveNumber(limit)
+  const type = normalizeExpressInsuranceType(draft.insurance.type, productCode, normalizedCapability)
+  const nextAmount = normalizedCapability.disabled ? 0 : draft.goods.insuredAmount
+  const nextLimit = limit === undefined ? draft.insurance.limit : normalizePositiveNumber(limit)
 
   return {
     ...draft,
-    goods:
-      nextAmount === draft.goods.insuredAmount
-        ? draft.goods
-        : { ...draft.goods, insuredAmount: nextAmount },
+    goods: nextAmount === draft.goods.insuredAmount ? draft.goods : { ...draft.goods, insuredAmount: nextAmount },
     insurance: {
       type,
       limit: nextLimit,
@@ -505,10 +426,7 @@ export function applyExpressInsuranceCapability(
  * @param options 可选配置，clearLimit 清空额度
  * @description 重置保价能力，可选清空额度
  */
-export function resetExpressInsuranceCapability(
-  draft: ExpressDraft,
-  options: { clearLimit?: boolean } = {}
-): ExpressDraft {
+export function resetExpressInsuranceCapability(draft: ExpressDraft, options: { clearLimit?: boolean } = {}): ExpressDraft {
   return {
     ...draft,
     insurance: {
@@ -526,22 +444,11 @@ export function resetExpressInsuranceCapability(
  * @param reason 报价过期原因
  * @description 更新保价，有变化时清空选品并标记报价过期
  */
-export function updateExpressInsurance(
-  draft: ExpressDraft,
-  patch: ExpressInsuranceMutation,
-  reason = '保价信息变化，请重新获取价格'
-): ExpressDraft {
+export function updateExpressInsurance(draft: ExpressDraft, patch: ExpressInsuranceMutation, reason = '保价信息变化，请重新获取价格'): ExpressDraft {
   const capability = getFreshExpressInsuranceCapability(draft)
   const productCode = getExpressInsuranceProductCode(draft)
-  const type = normalizeExpressInsuranceType(
-    patch.type ?? draft.insurance.type,
-    productCode,
-    capability
-  )
-  const amount =
-    patch.amount === undefined
-      ? draft.goods.insuredAmount
-      : normalizeExpressInsuranceAmount(patch.amount)
+  const type = normalizeExpressInsuranceType(patch.type ?? draft.insurance.type, productCode, capability)
+  const amount = patch.amount === undefined ? draft.goods.insuredAmount : normalizeExpressInsuranceAmount(patch.amount)
 
   if (type === draft.insurance.type && amount === draft.goods.insuredAmount) {
     return draft

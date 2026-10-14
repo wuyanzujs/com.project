@@ -8,11 +8,7 @@ interface OrderDetailEmptyProps {
   onPress: () => void
 }
 
-export function OrderDetailEmpty({
-  buttonText,
-  title,
-  onPress
-}: OrderDetailEmptyProps) {
+export function OrderDetailEmpty({ buttonText, title, onPress }: OrderDetailEmptyProps) {
   return (
     <AppEmptyState
       action={
@@ -36,9 +32,7 @@ export function OrderDetailLoading(props: { publicTrackMode: boolean }) {
   return (
     <AppLoadingState
       className='order-detail-loading'
-      label={
-        props.publicTrackMode ? '正在加载物流轨迹...' : '正在加载订单详情...'
-      }
+      label={props.publicTrackMode ? '正在加载物流轨迹...' : '正在加载订单详情...'}
       layout='inline'
       showIndicator={false}
     />

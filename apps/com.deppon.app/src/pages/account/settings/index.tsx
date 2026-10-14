@@ -60,9 +60,7 @@ const ACCOUNT_ENTRIES: AccountEntry[] = [
 ]
 
 const AccountSettingsPage = () => {
-  const [overview, setOverview] = useState<AccountOverviewView>(() =>
-    accountService.getOverview()
-  )
+  const [overview, setOverview] = useState<AccountOverviewView>(() => accountService.getOverview())
   const [refreshing, setRefreshing] = useState(false)
   const [logouting, setLogouting] = useState(false)
 
@@ -155,30 +153,17 @@ const AccountSettingsPage = () => {
       <View className='account-settings-card'>
         <View className='account-settings-profile'>
           <View className='account-settings-profile__avatar'>
-            <Text className='account-settings-profile__avatar-text'>
-              {overview.loggedIn ? overview.displayName.slice(0, 1) : '德'}
-            </Text>
+            <Text className='account-settings-profile__avatar-text'>{overview.loggedIn ? overview.displayName.slice(0, 1) : '德'}</Text>
           </View>
           <View className='account-settings-profile__content'>
-            <Text className='account-settings-profile__name'>
-              {overview.displayName}
-            </Text>
-            <Text className='account-settings-profile__summary'>
-              {overview.loggedIn
-                ? overview.maskedMobile || '已登录'
-                : '登录后可管理账号与安全设置'}
-            </Text>
+            <Text className='account-settings-profile__name'>{overview.displayName}</Text>
+            <Text className='account-settings-profile__summary'>{overview.loggedIn ? overview.maskedMobile || '已登录' : '登录后可管理账号与安全设置'}</Text>
           </View>
-          <Text className='account-settings-profile__status'>
-            {refreshing ? '同步中' : overview.loggedIn ? '已登录' : '未登录'}
-          </Text>
+          <Text className='account-settings-profile__status'>{refreshing ? '同步中' : overview.loggedIn ? '已登录' : '未登录'}</Text>
         </View>
 
         {!overview.loggedIn && (
-          <AppPressable
-            className='account-settings-login'
-            onPress={handleLogin}
-          >
+          <AppPressable className='account-settings-login' onPress={handleLogin}>
             <Text className='account-settings-login__text'>去登录</Text>
           </AppPressable>
         )}
@@ -188,33 +173,21 @@ const AccountSettingsPage = () => {
         <Text className='account-settings-section__title'>账号资料</Text>
         <View className='account-settings-field'>
           <Text className='account-settings-field__label'>绑定手机号</Text>
-          <Text className='account-settings-field__value'>
-            {overview.maskedMobile || '--'}
-          </Text>
+          <Text className='account-settings-field__value'>{overview.maskedMobile || '--'}</Text>
         </View>
         <View className='account-settings-field'>
           <Text className='account-settings-field__label'>客户编码</Text>
-          <Text className='account-settings-field__value'>
-            {overview.user?.customerCode || '--'}
-          </Text>
+          <Text className='account-settings-field__value'>{overview.user?.customerCode || '--'}</Text>
         </View>
       </View>
 
       <View className='account-settings-section'>
         <Text className='account-settings-section__title'>安全与隐私</Text>
         {ACCOUNT_ENTRIES.map(entry => (
-          <AppPressable
-            className='account-settings-entry'
-            key={entry.title}
-            onPress={() => handleEntry(entry)}
-          >
+          <AppPressable className='account-settings-entry' key={entry.title} onPress={() => handleEntry(entry)}>
             <View className='account-settings-entry__content'>
-              <Text className='account-settings-entry__title'>
-                {entry.title}
-              </Text>
-              <Text className='account-settings-entry__summary'>
-                {entry.summary}
-              </Text>
+              <Text className='account-settings-entry__title'>{entry.title}</Text>
+              <Text className='account-settings-entry__summary'>{entry.summary}</Text>
             </View>
             <Text className='account-settings-entry__arrow'>›</Text>
           </AppPressable>
@@ -224,16 +197,9 @@ const AccountSettingsPage = () => {
       {overview.loggedIn && (
         <View className='account-settings-section'>
           <Text className='account-settings-section__title'>账号操作</Text>
-          <AppPressable
-            className='account-settings-danger'
-            onPress={handleLogout}
-          >
-            <Text className='account-settings-danger__title'>
-              {logouting ? '退出中' : '退出登录'}
-            </Text>
-            <Text className='account-settings-danger__summary'>
-              清除当前设备登录态，账号和数据仍会保留。
-            </Text>
+          <AppPressable className='account-settings-danger' onPress={handleLogout}>
+            <Text className='account-settings-danger__title'>{logouting ? '退出中' : '退出登录'}</Text>
+            <Text className='account-settings-danger__summary'>清除当前设备登录态，账号和数据仍会保留。</Text>
           </AppPressable>
           <AppPressable
             className='account-settings-danger account-settings-danger--strong'
@@ -243,12 +209,8 @@ const AccountSettingsPage = () => {
               })
             }
           >
-            <Text className='account-settings-danger__title account-settings-danger__title--strong'>
-              注销账号
-            </Text>
-            <Text className='account-settings-danger__summary'>
-              注销后账号信息将无法恢复，请谨慎操作。
-            </Text>
+            <Text className='account-settings-danger__title account-settings-danger__title--strong'>注销账号</Text>
+            <Text className='account-settings-danger__summary'>注销后账号信息将无法恢复，请谨慎操作。</Text>
           </AppPressable>
         </View>
       )}

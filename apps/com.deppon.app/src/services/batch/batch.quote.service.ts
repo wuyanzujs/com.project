@@ -16,10 +16,7 @@ import type { ExpressDraft, ExpressProductQuote } from '../express/types'
  * @param item 收货人草稿
  * @description 由批量草稿生成单票的报价草稿
  */
-function createQuoteDraft(
-  draft: BatchDraft,
-  item: BatchConsigneeDraft
-): ExpressDraft {
+function createQuoteDraft(draft: BatchDraft, item: BatchConsigneeDraft): ExpressDraft {
   const baseDraft = createExpressDraft()
 
   return {
@@ -76,18 +73,9 @@ function getDefaultQuoteProduct(products: ExpressProductQuote[]) {
  * @param draft 批量草稿
  * @description 并发获取所有收货人的产品价格
  */
-export async function quoteBatchDraft(
-  draft: BatchDraft
-): Promise<DepponResponse<BatchQuoteItem[]>> {
+export async function quoteBatchDraft(draft: BatchDraft): Promise<DepponResponse<BatchQuoteItem[]>> {
   try {
-    const responses = await Promise.all(
-      draft.consignees.map(item =>
-        expressApi.queryFreight(
-          buildFreightRequest(createQuoteDraft(draft, item)),
-          false
-        )
-      )
-    )
+    const responses = await Promise.all(draft.consignees.map(item => expressApi.queryFreight(buildFreightRequest(createQuoteDraft(draft, item)), false)))
     const quotes: BatchQuoteItem[] = []
 
     for (let index = 0; index < responses.length; index += 1) {
@@ -95,9 +83,7 @@ export async function quoteBatchDraft(
       const product = getDefaultQuoteProduct(response.result ?? [])
 
       if (!response.status || !product) {
-        return createFailure(
-          response.message || `第 ${index + 1} 票暂未获取到产品价格`
-        )
+        return createFailure(response.message || `第 ${index + 1} 票暂未获取到产品价格`)
       }
 
       quotes.push({
@@ -114,8 +100,6 @@ export async function quoteBatchDraft(
       result: quotes
     }
   } catch (error) {
-    return createFailure(
-      error instanceof Error ? error.message : '批量价格获取失败，请稍后重试'
-    )
+    return createFailure(error instanceof Error ? error.message : '批量价格获取失败，请稍后重试')
   }
 }

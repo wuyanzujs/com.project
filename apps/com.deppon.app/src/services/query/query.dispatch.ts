@@ -25,16 +25,9 @@ const DISPATCH_RANGE_NAMES: Record<string, string> = {
   DELIVERY_NATURE_CZTBPS: '乡镇自提'
 }
 
-const SERVICEABLE_RANGE_CODES = new Set([
-  'DELIVERY_NATURE_QJPS',
-  'DELIVERY_NATURE_GBQYBS',
-  'DELIVERY_NATURE_ZZXPS'
-])
+const SERVICEABLE_RANGE_CODES = new Set(['DELIVERY_NATURE_QJPS', 'DELIVERY_NATURE_GBQYBS', 'DELIVERY_NATURE_ZZXPS'])
 
-const PICKUP_ONLY_RANGE_CODES = new Set([
-  'DELIVERY_NATURE_FQJPS',
-  'DELIVERY_NATURE_CZTBPS'
-])
+const PICKUP_ONLY_RANGE_CODES = new Set(['DELIVERY_NATURE_FQJPS', 'DELIVERY_NATURE_CZTBPS'])
 
 const UNSERVICEABLE_RANGE_CODES = new Set(['DELIVERY_NATURE_ZTBPS'])
 
@@ -53,12 +46,7 @@ function normalizeText(value?: string | null) {
  * @description 拼接完整的省市区地址
  */
 function createFullAddress(query: DispatchAddressQuery) {
-  return normalizeText(
-    query.rawText ||
-      [query.province, query.city, query.county, query.address]
-        .filter(Boolean)
-        .join('')
-  )
+  return normalizeText(query.rawText || [query.province, query.city, query.county, query.address].filter(Boolean).join(''))
 }
 
 /**
@@ -97,9 +85,7 @@ function createAddressFromAnalysis(
     town,
     townCode: normalizeText(analysis.townCode),
     address: detailAddress,
-    fullAddress: [province, city, county, town, detailAddress]
-      .filter(Boolean)
-      .join('')
+    fullAddress: [province, city, county, town, detailAddress].filter(Boolean).join('')
   }
 }
 
@@ -120,9 +106,7 @@ function normalizeLogisticsStreet(item: LogisticsDispatchItem): DispatchStreet {
  * @param response 物流收派响应
  * @description 归一物流收派范围分组
  */
-function normalizeLogisticsGroups(
-  response: LogisticsDispatchResponse
-): DispatchRangeGroup[] {
+function normalizeLogisticsGroups(response: LogisticsDispatchResponse): DispatchRangeGroup[] {
   const groups: DispatchRangeGroup[] = []
 
   if (response.normalFarDeliveryList?.length) {
@@ -157,16 +141,11 @@ function normalizeLogisticsGroups(
  * @param list 快递收派项列表
  * @description 归一快递收派范围分组
  */
-function normalizeExpressGroups(
-  list: ExpressDispatchItem[] = []
-): DispatchRangeGroup[] {
+function normalizeExpressGroups(list: ExpressDispatchItem[] = []): DispatchRangeGroup[] {
   return list
     .filter(item => item.rangeTypeDesc?.length)
     .map(item => ({
-      name:
-        normalizeText(item.rangeTypeName) ||
-        DISPATCH_RANGE_NAMES[item.rangeTypeCode] ||
-        '派送范围',
+      name: normalizeText(item.rangeTypeName) || DISPATCH_RANGE_NAMES[item.rangeTypeCode] || '派送范围',
       code: item.rangeTypeCode,
       streetList: item.rangeTypeDesc
     }))
@@ -178,17 +157,12 @@ function normalizeExpressGroups(
  * @param matchedStreet 命中的街道名
  * @description 查找命中街道所属的范围 code
  */
-function findMatchedStreetCode(
-  groups: DispatchRangeGroup[],
-  matchedStreet: string
-) {
+function findMatchedStreetCode(groups: DispatchRangeGroup[], matchedStreet: string) {
   if (!matchedStreet) {
     return ''
   }
 
-  const group = groups.find(item =>
-    item.streetList.some(street => street.streetName === matchedStreet)
-  )
+  const group = groups.find(item => item.streetList.some(street => street.streetName === matchedStreet))
 
   return group?.code || ''
 }
@@ -199,10 +173,7 @@ function findMatchedStreetCode(
  * @param matchedStreet 命中的街道名
  * @description 根据收派范围生成提示文案
  */
-function createDispatchHint(
-  groups: DispatchRangeGroup[],
-  matchedStreet: string
-) {
+function createDispatchHint(groups: DispatchRangeGroup[], matchedStreet: string) {
   const matchedCode = findMatchedStreetCode(groups, matchedStreet)
 
   if (!groups.length) {
@@ -245,9 +216,7 @@ function canCreateExpress(groups: DispatchRangeGroup[], matchedStreet: string) {
  * @param query 地址查询条件
  * @description 识别并补全省市区地址
  */
-export async function resolveDispatchAddress(
-  query: DispatchAddressQuery
-): Promise<DepponResponse<DispatchAddress>> {
+export async function resolveDispatchAddress(query: DispatchAddressQuery): Promise<DepponResponse<DispatchAddress>> {
   const fullAddress = createFullAddress(query)
 
   if (!fullAddress) {
@@ -282,10 +251,7 @@ export async function resolveDispatchAddress(
  * @param query 地址查询条件
  * @description 查询指定产品的收派范围
  */
-export async function queryDispatchRange(
-  productType: DispatchProductType,
-  query: DispatchAddressQuery
-): Promise<DepponResponse<DispatchRangeResult>> {
+export async function queryDispatchRange(productType: DispatchProductType, query: DispatchAddressQuery): Promise<DepponResponse<DispatchRangeResult>> {
   const addressResponse = await resolveDispatchAddress(query)
 
   if (!addressResponse.status || !addressResponse.result) {
@@ -303,16 +269,12 @@ export async function queryDispatchRange(
           .then(response => ({
             status: response.status,
             message: response.message,
-            groups: response.result
-              ? normalizeExpressGroups(response.result.deliveryList ?? [])
-              : []
+            groups: response.result ? normalizeExpressGroups(response.result.deliveryList ?? []) : []
           }))
       : queryApi.queryLogisticsDispatch(address.countyCode).then(response => ({
           status: response.status,
           message: response.message,
-          groups: response.result
-            ? normalizeLogisticsGroups(response.result)
-            : []
+          groups: response.result ? normalizeLogisticsGroups(response.result) : []
         }))
 
   const [groupsResponse, streetResponse] = await Promise.all([
@@ -330,8 +292,7 @@ export async function queryDispatchRange(
   }
 
   const groups = groupsResponse.groups
-  const matchedStreet =
-    streetResponse.status && streetResponse.result ? streetResponse.result : ''
+  const matchedStreet = streetResponse.status && streetResponse.result ? streetResponse.result : ''
 
   return {
     status: true,

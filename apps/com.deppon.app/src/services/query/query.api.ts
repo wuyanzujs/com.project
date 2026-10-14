@@ -15,24 +15,16 @@ import type {
 
 export const queryApi = {
   queryDispatchStreet(data: DispatchStreetRequest) {
-    return depponHttp.post<string, DispatchStreetRequest>(
-      '/gwapi/queryService/eco/query/addressImagineTown',
-      data,
-      {
-        loading: false,
-        login: false
-      }
-    )
+    return depponHttp.post<string, DispatchStreetRequest>('/gwapi/queryService/eco/query/addressImagineTown', data, {
+      loading: false,
+      login: false
+    })
   },
 
   queryExpressDispatch(data: ExpressDispatchRequest) {
-    return depponHttp.post<ExpressDispatchResponse, ExpressDispatchRequest>(
-      '/gwapi/queryService/eco/query/range/queryAddressImagine',
-      data,
-      {
-        login: false
-      }
-    )
+    return depponHttp.post<ExpressDispatchResponse, ExpressDispatchRequest>('/gwapi/queryService/eco/query/range/queryAddressImagine', data, {
+      login: false
+    })
   },
 
   queryLogisticsDispatch(countyCode: string) {
@@ -47,33 +39,21 @@ export const queryApi = {
   },
 
   queryAddressStations(data: AddressStationRequest) {
-    return depponHttp.post<AddressStationResponse, AddressStationRequest>(
-      '/gwapi/queryService/eco/query/branch/stationSearch',
-      data,
-      {
-        login: false
-      }
-    )
+    return depponHttp.post<AddressStationResponse, AddressStationRequest>('/gwapi/queryService/eco/query/branch/stationSearch', data, {
+      login: false
+    })
   },
 
   queryCityStations(data: CityStationRequest) {
-    return depponHttp.post<CityStationResponse, CityStationRequest>(
-      '/gwapi/queryService/eco/query/branch/queryDeptNet',
-      data,
-      {
-        login: false
-      }
-    )
+    return depponHttp.post<CityStationResponse, CityStationRequest>('/gwapi/queryService/eco/query/branch/queryDeptNet', data, {
+      login: false
+    })
   },
 
   queryStationDetail(data: StationDetailRequest) {
-    return depponHttp.post<StationDetailRaw, StationDetailRequest>(
-      '/gwapi/queryService/eco/query/branch/queryDeptInfoByCode',
-      data,
-      {
-        loading: false,
-        login: false
-      }
-    )
+    return depponHttp.post<StationDetailRaw, StationDetailRequest>('/gwapi/queryService/eco/query/branch/queryDeptInfoByCode', data, {
+      loading: false,
+      login: false
+    })
   }
 }

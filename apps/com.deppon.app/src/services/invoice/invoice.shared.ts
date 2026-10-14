@@ -24,9 +24,7 @@ export function toFiniteNumber(value: unknown) {
  * @description 按中文占两字符计算文本长度
  */
 export function getFieldLength(value: string) {
-  return value
-    .split('')
-    .reduce((total, char) => total + (char.charCodeAt(0) > 255 ? 2 : 1), 0)
+  return value.split('').reduce((total, char) => total + (char.charCodeAt(0) > 255 ? 2 : 1), 0)
 }
 
 /**
@@ -44,11 +42,7 @@ function pad(value: number) {
  * @description 格式化为日期时间字符串
  */
 export function formatDateTime(date: Date) {
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
-    date.getSeconds()
-  )}`
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
 
 /**

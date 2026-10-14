@@ -3,21 +3,14 @@ const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
 const { CACHE_KEYS, createCacheStorageKey } = require('@/cache/keys')
-const {
-  getStorageValue,
-  removeStorageValue,
-  setStorageValue
-} = require('@/cache/storage')
+const { getStorageValue, removeStorageValue, setStorageValue } = require('@/cache/storage')
 const { expressDraftBridge } = require('@/services/express/draftBridge')
 const { expressDraftStorage } = require('@/services/express/draftStorage')
 const { createExpressDraft } = require('@/services/express/express.draft')
 const { updateExpressPackaging } = require('@/services/express/packaging.rules')
 const { templateDraftBridge } = require('@/services/template/template.bridge')
 
-const {
-  createValidExpressDraft,
-  expressProduct
-} = require('../fixtures/express.cjs')
+const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 
 const cases = [
   {
@@ -79,14 +72,8 @@ const cases = [
           unpackingCodes: ['UNPACKING_01']
         })
         assert.notEqual(restored.packaging, source.packaging)
-        assert.notEqual(
-          restored.packaging.woodenCodes,
-          source.packaging.woodenCodes
-        )
-        assert.notEqual(
-          restored.packaging.unpackingCodes,
-          source.packaging.unpackingCodes
-        )
+        assert.notEqual(restored.packaging.woodenCodes, source.packaging.woodenCodes)
+        assert.notEqual(restored.packaging.unpackingCodes, source.packaging.unpackingCodes)
 
         expressDraftBridge.carryFromCoupon(restored)
         restored.packaging.cartonCode = 'ZX_DP_07'
@@ -101,14 +88,8 @@ const cases = [
           unpackingCodes: ['UNPACKING_01']
         })
         assert.notEqual(carried.packaging, restored.packaging)
-        assert.notEqual(
-          carried.packaging.woodenCodes,
-          restored.packaging.woodenCodes
-        )
-        assert.notEqual(
-          carried.packaging.unpackingCodes,
-          restored.packaging.unpackingCodes
-        )
+        assert.notEqual(carried.packaging.woodenCodes, restored.packaging.woodenCodes)
+        assert.notEqual(carried.packaging.unpackingCodes, restored.packaging.unpackingCodes)
 
         templateDraftBridge.stage(carried)
         carried.packaging.cartonCode = 'ZX_DP'
@@ -123,14 +104,8 @@ const cases = [
           unpackingCodes: ['UNPACKING_01']
         })
         assert.notEqual(staged.packaging, carried.packaging)
-        assert.notEqual(
-          staged.packaging.woodenCodes,
-          carried.packaging.woodenCodes
-        )
-        assert.notEqual(
-          staged.packaging.unpackingCodes,
-          carried.packaging.unpackingCodes
-        )
+        assert.notEqual(staged.packaging.woodenCodes, carried.packaging.woodenCodes)
+        assert.notEqual(staged.packaging.unpackingCodes, carried.packaging.unpackingCodes)
 
         const woodOnlyDraft = createExpressDraft()
 

@@ -12,49 +12,32 @@ interface OrderTransportSectionProps {
   onDial: (phoneNumber?: string | null) => void
 }
 
-export function OrderTransportSection({
-  detail,
-  onDial
-}: OrderTransportSectionProps) {
+export function OrderTransportSection({ detail, onDial }: OrderTransportSectionProps) {
   return (
     <OrderDetailSection hint={detail.orderTime || ''} title='运输信息'>
       <View className='order-detail-route'>
         <View className='order-detail-route__block'>
-          <Text className='order-detail-route__city'>
-            {detail.contactCity || '--'}
-          </Text>
-          <Text className='order-detail-route__name'>
-            {detail.contactName || '--'}
-          </Text>
+          <Text className='order-detail-route__city'>{detail.contactCity || '--'}</Text>
+          <Text className='order-detail-route__name'>{detail.contactName || '--'}</Text>
         </View>
         <Text className='order-detail-route__arrow'>→</Text>
         <View className='order-detail-route__block order-detail-route__block--right'>
-          <Text className='order-detail-route__city'>
-            {detail.receiverCity || '--'}
-          </Text>
-          <Text className='order-detail-route__name'>
-            {detail.receiverName || '--'}
-          </Text>
+          <Text className='order-detail-route__city'>{detail.receiverCity || '--'}</Text>
+          <Text className='order-detail-route__name'>{detail.receiverName || '--'}</Text>
         </View>
       </View>
 
       <View className='order-detail-meta-row'>
         <Text className='order-detail-meta-row__label'>货物</Text>
-        <Text className='order-detail-meta-row__value'>
-          {detail.goodsName || '--'}
-        </Text>
+        <Text className='order-detail-meta-row__value'>{detail.goodsName || '--'}</Text>
       </View>
       <View className='order-detail-meta-row'>
         <Text className='order-detail-meta-row__label'>产品</Text>
-        <Text className='order-detail-meta-row__value'>
-          {detail.transportMode || '--'}
-        </Text>
+        <Text className='order-detail-meta-row__value'>{detail.transportMode || '--'}</Text>
       </View>
       <View className='order-detail-meta-row'>
         <Text className='order-detail-meta-row__label'>付款方式</Text>
-        <Text className='order-detail-meta-row__value'>
-          {detail.paymentType || '--'}
-        </Text>
+        <Text className='order-detail-meta-row__value'>{detail.paymentType || '--'}</Text>
       </View>
       {detail.courierName || detail.courierMobile ? (
         <View className='order-detail-meta-row'>

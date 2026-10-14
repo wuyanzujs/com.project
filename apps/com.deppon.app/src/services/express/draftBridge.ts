@@ -1,27 +1,13 @@
 import { normalizeExpressDeliveryPointDraft } from './deliveryPoint.rules'
 import { normalizeExpressInsuranceDraft } from './insurance.rules'
-import {
-  createExpressPackagingDraft,
-  normalizeExpressPackagingDraft
-} from './packaging.rules'
+import { createExpressPackagingDraft, normalizeExpressPackagingDraft } from './packaging.rules'
 import { normalizeExpressReturnBillDraft } from './valueAdded'
-import {
-  normalizeExpressWarehouseDraft,
-  resetExpressWarehouseInput
-} from './warehouse.rules'
+import { normalizeExpressWarehouseDraft, resetExpressWarehouseInput } from './warehouse.rules'
 
 import type { ExpressDraft, ExpressProductQuote } from './types'
 
 export type ExpressDraftBridgeSource =
-  | 'QUERY_PRICE'
-  | 'ORDER_RESEND'
-  | 'COUPON_LIST'
-  | 'GOODS_QUERY'
-  | 'BATCH_RECOGNITION'
-  | 'SCAN_QR_CODE'
-  | 'DISPATCH_QUERY'
-  | 'COURIER'
-  | 'TEMPLATE'
+  'QUERY_PRICE' | 'ORDER_RESEND' | 'COUPON_LIST' | 'GOODS_QUERY' | 'BATCH_RECOGNITION' | 'SCAN_QR_CODE' | 'DISPATCH_QUERY' | 'COURIER' | 'TEMPLATE'
 
 export interface ExpressDraftBridgePayload {
   source: ExpressDraftBridgeSource
@@ -43,10 +29,7 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
     sender: draft.sender ? { ...draft.sender } : null,
     consignee: draft.consignee ? { ...draft.consignee } : null,
     goods: { ...draft.goods },
-    insurance: normalizeExpressInsuranceDraft(
-      draft.insurance,
-      draft.selectedProduct?.omsProductCode || draft.service.transportMode
-    ),
+    insurance: normalizeExpressInsuranceDraft(draft.insurance, draft.selectedProduct?.omsProductCode || draft.service.transportMode),
     packaging: normalizeExpressPackagingDraft(draft.packaging),
     service: {
       ...draft.service,
@@ -57,20 +40,13 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
       ...draft.deliveryPreference,
       unavailableDates: [...draft.deliveryPreference.unavailableDates]
     },
-    deliveryPoint: normalizeExpressDeliveryPointDraft(
-      draft.deliveryPoint,
-      draft.service.deliveryMode
-    ),
+    deliveryPoint: normalizeExpressDeliveryPointDraft(draft.deliveryPoint, draft.service.deliveryMode),
     warehouse: normalizeExpressWarehouseDraft(draft.warehouse),
     pickup: {
       ...draft.pickup,
-      nightCapability: draft.pickup.nightCapability
-        ? { ...draft.pickup.nightCapability }
-        : undefined
+      nightCapability: draft.pickup.nightCapability ? { ...draft.pickup.nightCapability } : undefined
     },
-    selectedProduct: draft.selectedProduct
-      ? { ...draft.selectedProduct }
-      : null,
+    selectedProduct: draft.selectedProduct ? { ...draft.selectedProduct } : null,
     scanContext: draft.scanContext ? { ...draft.scanContext } : undefined
   }
 }
@@ -94,14 +70,10 @@ export const expressDraftBridge = {
    * @description 从询价页带入草稿与报价
    */
   carryFromQueryPrice(draft: ExpressDraft, product: ExpressProductQuote) {
-    const currentProductCode =
-      draft.selectedProduct?.omsProductCode || draft.service.transportMode
+    const currentProductCode = draft.selectedProduct?.omsProductCode || draft.service.transportMode
     const nextDraft = cloneDraft({
       ...draft,
-      warehouse:
-        currentProductCode === product.omsProductCode
-          ? draft.warehouse
-          : resetExpressWarehouseInput(draft.warehouse),
+      warehouse: currentProductCode === product.omsProductCode ? draft.warehouse : resetExpressWarehouseInput(draft.warehouse),
       selectedProduct: product,
       agreementAccepted: false,
       quoteStaleReason: ''
@@ -216,8 +188,7 @@ export const expressDraftBridge = {
       warehouse: clearWarehouseForBridge(draft),
       selectedProduct: null,
       agreementAccepted: false,
-      quoteStaleReason:
-        draft.quoteStaleReason || '扫码寄件信息变化，请重新获取价格'
+      quoteStaleReason: draft.quoteStaleReason || '扫码寄件信息变化，请重新获取价格'
     })
 
     pendingDraft = {
@@ -240,8 +211,7 @@ export const expressDraftBridge = {
       warehouse: clearWarehouseForBridge(draft),
       selectedProduct: null,
       agreementAccepted: false,
-      quoteStaleReason:
-        draft.quoteStaleReason || '收派范围查询带入，请重新获取价格'
+      quoteStaleReason: draft.quoteStaleReason || '收派范围查询带入，请重新获取价格'
     })
 
     pendingDraft = {
@@ -264,8 +234,7 @@ export const expressDraftBridge = {
       warehouse: clearWarehouseForBridge(draft),
       selectedProduct: null,
       agreementAccepted: false,
-      quoteStaleReason:
-        draft.quoteStaleReason || '专属快递员已带入，请重新获取价格'
+      quoteStaleReason: draft.quoteStaleReason || '专属快递员已带入，请重新获取价格'
     })
 
     pendingDraft = {
@@ -288,8 +257,7 @@ export const expressDraftBridge = {
       warehouse: clearWarehouseForBridge(draft),
       selectedProduct: null,
       agreementAccepted: false,
-      quoteStaleReason:
-        draft.quoteStaleReason || '模板信息已带入，请重新获取价格'
+      quoteStaleReason: draft.quoteStaleReason || '模板信息已带入，请重新获取价格'
     })
 
     pendingDraft = {

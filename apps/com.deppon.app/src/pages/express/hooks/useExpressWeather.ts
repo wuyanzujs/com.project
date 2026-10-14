@@ -8,19 +8,9 @@ function createWeatherQueryKey(draft: ExpressDraft) {
   const sender = draft.sender
   const consignee = draft.consignee
   const senderDate = draft.pickup.time.match(/^(\d{4}-\d{2}-\d{2})/)?.[1] ?? ''
-  const consigneeDate =
-    draft.selectedProduct?.arriveDate?.match(/^(\d{4}-\d{2}-\d{2})/)?.[1] ?? ''
+  const consigneeDate = draft.selectedProduct?.arriveDate?.match(/^(\d{4}-\d{2}-\d{2})/)?.[1] ?? ''
 
-  return [
-    sender?.province,
-    sender?.city,
-    sender?.county,
-    senderDate,
-    consignee?.province,
-    consignee?.city,
-    consignee?.county,
-    consigneeDate
-  ]
+  return [sender?.province, sender?.city, sender?.county, senderDate, consignee?.province, consignee?.city, consignee?.county, consigneeDate]
     .map(value => String(value ?? '').trim())
     .join('|')
 }
@@ -41,14 +31,10 @@ export function useExpressWeather({ draft }: { draft: ExpressDraft }) {
   latestQueryKey.current = queryKey
 
   useEffect(() => {
-    const [senderProvince, senderCity, senderCounty, senderDate, ...rest] =
-      queryKey.split('|')
-    const [consigneeProvince, consigneeCity, consigneeCounty, consigneeDate] =
-      rest
+    const [senderProvince, senderCity, senderCounty, senderDate, ...rest] = queryKey.split('|')
+    const [consigneeProvince, consigneeCity, consigneeCounty, consigneeDate] = rest
     const hasSender = Boolean(senderProvince && senderCity && senderCounty)
-    const hasConsignee = Boolean(
-      consigneeProvince && consigneeCity && consigneeCounty
-    )
+    const hasConsignee = Boolean(consigneeProvince && consigneeCity && consigneeCounty)
 
     if (!hasSender && !hasConsignee) {
       requestVersion.current += 1
@@ -61,9 +47,7 @@ export function useExpressWeather({ draft }: { draft: ExpressDraft }) {
     requestVersion.current = version
 
     void loadWaterproofText({
-      sender: hasSender
-        ? { province: senderProvince, city: senderCity, county: senderCounty }
-        : null,
+      sender: hasSender ? { province: senderProvince, city: senderCity, county: senderCounty } : null,
       senderDate: senderDate || getTodayText(),
       consignee: hasConsignee
         ? {
@@ -75,10 +59,7 @@ export function useExpressWeather({ draft }: { draft: ExpressDraft }) {
       consigneeDate
     })
       .then(text => {
-        if (
-          requestVersion.current === version &&
-          latestQueryKey.current === queryKey
-        ) {
+        if (requestVersion.current === version && latestQueryKey.current === queryKey) {
           setWeatherText(text)
         }
       })

@@ -1,12 +1,4 @@
-import {
-  type Dispatch,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { type Dispatch, type SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   acceptOrderEditNightPickupNotice,
@@ -20,24 +12,15 @@ import {
   queryOrderEditPickupTimes,
   selectOrderEditPickupTime
 } from '@/services/order'
-import type {
-  OrderEditDeliveryMode,
-  OrderEditDraft,
-  OrderEditPickupTimeResponse
-} from '@/services/order'
+import type { OrderEditDeliveryMode, OrderEditDraft, OrderEditPickupTimeResponse } from '@/services/order'
 
 interface UseOrderEditScheduleOptions {
   draft: OrderEditDraft | null
   setDraft: Dispatch<SetStateAction<OrderEditDraft | null>>
 }
 
-export function useOrderEditSchedule({
-  draft,
-  setDraft
-}: UseOrderEditScheduleOptions) {
-  const [response, setResponse] = useState<OrderEditPickupTimeResponse | null>(
-    null
-  )
+export function useOrderEditSchedule({ draft, setDraft }: UseOrderEditScheduleOptions) {
+  const [response, setResponse] = useState<OrderEditPickupTimeResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const requestVersion = useRef(0)
@@ -67,10 +50,7 @@ export function useOrderEditSchedule({
     try {
       const nextResponse = await queryOrderEditPickupTimes(snapshot)
 
-      if (
-        requestVersion.current !== version ||
-        latestQueryKey.current !== requestKey
-      ) {
+      if (requestVersion.current !== version || latestQueryKey.current !== requestKey) {
         return
       }
 
@@ -81,16 +61,10 @@ export function useOrderEditSchedule({
       }
 
       const pickupTimeResponse = nextResponse.result
-      const matchedSelection = findOrderEditPickupTimeSelection(
-        pickupTimeResponse,
-        snapshot.schedule.pickup
-      )
+      const matchedSelection = findOrderEditPickupTimeSelection(pickupTimeResponse, snapshot.schedule.pickup)
 
       setDraft(current => {
-        if (
-          !current ||
-          createOrderEditScheduleQueryKey(current) !== requestKey
-        ) {
+        if (!current || createOrderEditScheduleQueryKey(current) !== requestKey) {
           return current
         }
 
@@ -98,18 +72,10 @@ export function useOrderEditSchedule({
       })
       setResponse(pickupTimeResponse)
 
-      if (
-        snapshot.schedule.pickup.time &&
-        !matchedSelection &&
-        requestKey === snapshot.schedule.initialInputKey
-      ) {
+      if (snapshot.schedule.pickup.time && !matchedSelection && requestKey === snapshot.schedule.initialInputKey) {
         setMessage('当前订单原上门时间不在最新可选时段中')
       } else {
-        setMessage(
-          pickupTimeResponse.nightCapability?.enabled
-            ? '已加载普通与夜间上门时段'
-            : '已加载可用上门时段'
-        )
+        setMessage(pickupTimeResponse.nightCapability?.enabled ? '已加载普通与夜间上门时段' : '已加载可用上门时段')
       }
     } catch {
       if (requestVersion.current === version) {
@@ -150,31 +116,21 @@ export function useOrderEditSchedule({
     []
   )
 
-  const dateOptions = useMemo(
-    () => createOrderEditPickupDateOptions(response),
-    [response]
-  )
+  const dateOptions = useMemo(() => createOrderEditPickupDateOptions(response), [response])
   const pickup = draft?.schedule.pickup
   const selectedDate = getOrderEditPickupDate(pickup?.time ?? '')
-  const selectedTime =
-    response && pickup
-      ? (findOrderEditPickupTimeSelection(response, pickup)?.time ?? '')
-      : ''
+  const selectedTime = response && pickup ? (findOrderEditPickupTimeSelection(response, pickup)?.time ?? '') : ''
 
   const handleDateChange = (date: string) => {
     const dateOption = dateOptions.find(option => option.value === date)
     const selection =
-      dateOption?.timeOptions.find(
-        option => !option.disabled && option.type === 'NORMAL'
-      ) ?? dateOption?.timeOptions.find(option => !option.disabled)
+      dateOption?.timeOptions.find(option => !option.disabled && option.type === 'NORMAL') ?? dateOption?.timeOptions.find(option => !option.disabled)
 
     if (!selection) {
       return
     }
 
-    setDraft(current =>
-      current ? selectOrderEditPickupTime(current, selection) : current
-    )
+    setDraft(current => (current ? selectOrderEditPickupTime(current, selection) : current))
   }
 
   const handleTimeChange = (date: string, time: string) => {
@@ -184,15 +140,11 @@ export function useOrderEditSchedule({
       return
     }
 
-    setDraft(current =>
-      current ? selectOrderEditPickupTime(current, selection) : current
-    )
+    setDraft(current => (current ? selectOrderEditPickupTime(current, selection) : current))
   }
 
   const handleAcceptNightNotice = () => {
-    setDraft(current =>
-      current ? acceptOrderEditNightPickupNotice(current) : current
-    )
+    setDraft(current => (current ? acceptOrderEditNightPickupNotice(current) : current))
   }
 
   const handleDeliveryModeChange = (mode: OrderEditDeliveryMode) => {
@@ -226,6 +178,4 @@ export function useOrderEditSchedule({
   }
 }
 
-export type OrderEditScheduleController = ReturnType<
-  typeof useOrderEditSchedule
->
+export type OrderEditScheduleController = ReturnType<typeof useOrderEditSchedule>

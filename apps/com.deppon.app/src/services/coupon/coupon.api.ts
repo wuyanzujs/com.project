@@ -1,34 +1,19 @@
 import { depponHttp } from '@/request/deppon'
 
-import type {
-  CouponDetailRaw,
-  CouponDetailRequest,
-  CouponExchangeRequest,
-  CouponExchangeResponse,
-  CouponItem,
-  UserCouponListRequest
-} from './types'
+import type { CouponDetailRaw, CouponDetailRequest, CouponExchangeRequest, CouponExchangeResponse, CouponItem, UserCouponListRequest } from './types'
 
 export const couponApi = {
   queryUserCouponList(data: UserCouponListRequest, loading = false) {
-    return depponHttp.post<CouponItem[], UserCouponListRequest>(
-      '/gwapi/couponService/eco/coupon/new/secure/queryNewCouponList',
-      data,
-      {
-        loading
-      }
-    )
+    return depponHttp.post<CouponItem[], UserCouponListRequest>('/gwapi/couponService/eco/coupon/new/secure/queryNewCouponList', data, {
+      loading
+    })
   },
 
   queryExpireCouponCount(loading = false) {
-    return depponHttp.post<number>(
-      '/gwapi/couponService/eco/coupon/new/secure/queryExpireCoupon',
-      undefined,
-      {
-        loading,
-        login: false
-      }
-    )
+    return depponHttp.post<number>('/gwapi/couponService/eco/coupon/new/secure/queryExpireCoupon', undefined, {
+      loading,
+      login: false
+    })
   },
 
   exchangeCoupon(exchangeCouponCode: string, loading = true) {

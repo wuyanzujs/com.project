@@ -13,24 +13,6 @@ export interface AppCardProps extends PropsWithChildren {
   variant?: AppCardVariant
 }
 
-export function AppCard({
-  children,
-  className,
-  padding = 'default',
-  variant = 'default'
-}: AppCardProps) {
-  return (
-    <View
-      className={[
-        'app-card',
-        `app-card--${variant}`,
-        `app-card--padding-${padding}`,
-        className
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
-      {children}
-    </View>
-  )
+export function AppCard({ children, className, padding = 'default', variant = 'default' }: AppCardProps) {
+  return <View className={['app-card', `app-card--${variant}`, `app-card--padding-${padding}`, className].filter(Boolean).join(' ')}>{children}</View>
 }

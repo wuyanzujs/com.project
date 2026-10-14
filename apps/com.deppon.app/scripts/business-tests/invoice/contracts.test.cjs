@@ -2,30 +2,12 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  getSelectedInvoiceECardAmount,
-  getSelectedInvoiceECards,
-  parseInvoiceCenterTab
-} = require('@/pages/invoice/index/invoiceCenterViewModel')
-const {
-  createInvoiceModifyAddressPayload
-} = require('@/services/invoice/invoice.actions')
-const {
-  createApplyPreview,
-  createApplySubmitPayload,
-  validateEmail
-} = require('@/services/invoice/invoice.apply')
-const {
-  invoiceApplyService
-} = require('@/services/invoice/invoice.apply.service')
-const {
-  invoiceCenterService
-} = require('@/services/invoice/invoice.center.service')
-const {
-  createECardApplyPreview,
-  createECardApplySubmitPayload,
-  normalizeInvoiceECard
-} = require('@/services/invoice/invoice.ecard')
+const { getSelectedInvoiceECardAmount, getSelectedInvoiceECards, parseInvoiceCenterTab } = require('@/pages/invoice/index/invoiceCenterViewModel')
+const { createInvoiceModifyAddressPayload } = require('@/services/invoice/invoice.actions')
+const { createApplyPreview, createApplySubmitPayload, validateEmail } = require('@/services/invoice/invoice.apply')
+const { invoiceApplyService } = require('@/services/invoice/invoice.apply.service')
+const { invoiceCenterService } = require('@/services/invoice/invoice.center.service')
+const { createECardApplyPreview, createECardApplySubmitPayload, normalizeInvoiceECard } = require('@/services/invoice/invoice.ecard')
 const {
   canCancelInvoiceApply,
   canModifyInvoiceAddress,
@@ -34,25 +16,12 @@ const {
   normalizeHistory,
   parseInvoiceAcceptAddress
 } = require('@/services/invoice/invoice.history')
-const {
-  calculateInvoiceOrderAuthCountdown,
-  getInvoiceOrderAuthValidationMessage
-} = require('@/services/invoice/invoice.orderAuth')
+const { calculateInvoiceOrderAuthCountdown, getInvoiceOrderAuthValidationMessage } = require('@/services/invoice/invoice.orderAuth')
 const { invoiceService } = require('@/services/invoice/invoice.service')
-const {
-  createTaxpayerPayload,
-  normalizeTaxpayer,
-  validateTaxpayer
-} = require('@/services/invoice/invoice.taxpayer')
-const {
-  invoiceTaxpayerService
-} = require('@/services/invoice/invoice.taxpayer.service')
+const { createTaxpayerPayload, normalizeTaxpayer, validateTaxpayer } = require('@/services/invoice/invoice.taxpayer')
+const { invoiceTaxpayerService } = require('@/services/invoice/invoice.taxpayer.service')
 
-const {
-  companyTaxpayer,
-  createECardInvoiceDraft,
-  createInvoiceDraft
-} = require('../fixtures/invoice.cjs')
+const { companyTaxpayer, createECardInvoiceDraft, createInvoiceDraft } = require('../fixtures/invoice.cjs')
 
 const cases = [
   {
@@ -82,14 +51,8 @@ const cases = [
     run() {
       assert.equal(parseInvoiceCenterTab('history'), 'history')
       assert.equal(parseInvoiceCenterTab('unknown'), 'orders')
-      assert.equal(
-        getInvoiceOrderAuthValidationMessage({ authType: '02' }, '123'),
-        '请输入付款人手机号后四位'
-      )
-      assert.equal(
-        getInvoiceOrderAuthValidationMessage({ authType: '04' }, '123456'),
-        ''
-      )
+      assert.equal(getInvoiceOrderAuthValidationMessage({ authType: '02' }, '123'), '请输入付款人手机号后四位')
+      assert.equal(getInvoiceOrderAuthValidationMessage({ authType: '04' }, '123456'), '')
       assert.equal(calculateInvoiceOrderAuthCountdown(1000, 30500), 31)
       assert.equal(calculateInvoiceOrderAuthCountdown(1000, 62000), 0)
 
@@ -105,27 +68,12 @@ const cases = [
   {
     name: 'invoice service facade preserves domain service contracts',
     run() {
-      assert.equal(
-        invoiceService.submitApplyDraft,
-        invoiceApplyService.submitApplyDraft
-      )
-      assert.equal(
-        invoiceService.queryPreview,
-        invoiceApplyService.queryPreview
-      )
+      assert.equal(invoiceService.submitApplyDraft, invoiceApplyService.submitApplyDraft)
+      assert.equal(invoiceService.queryPreview, invoiceApplyService.queryPreview)
       assert.equal(invoiceService.queryOrders, invoiceCenterService.queryOrders)
-      assert.equal(
-        invoiceService.queryHistory,
-        invoiceCenterService.queryHistory
-      )
-      assert.equal(
-        invoiceService.queryTaxpayers,
-        invoiceTaxpayerService.queryTaxpayers
-      )
-      assert.equal(
-        invoiceService.saveTaxpayer,
-        invoiceTaxpayerService.saveTaxpayer
-      )
+      assert.equal(invoiceService.queryHistory, invoiceCenterService.queryHistory)
+      assert.equal(invoiceService.queryTaxpayers, invoiceTaxpayerService.queryTaxpayers)
+      assert.equal(invoiceService.saveTaxpayer, invoiceTaxpayerService.saveTaxpayer)
     }
   },
   {
@@ -160,15 +108,12 @@ const cases = [
         acceptPhone: '13800138000',
         acceptAddress: '上海市|上海市|青浦区|徐泾镇明珠路100号'
       })
-      assert.deepEqual(
-        parseInvoiceAcceptAddress('上海市|上海市|青浦区|徐泾镇明珠路100号'),
-        {
-          province: '上海市',
-          city: '上海市',
-          county: '青浦区',
-          address: '徐泾镇明珠路100号'
-        }
-      )
+      assert.deepEqual(parseInvoiceAcceptAddress('上海市|上海市|青浦区|徐泾镇明珠路100号'), {
+        province: '上海市',
+        city: '上海市',
+        county: '青浦区',
+        address: '徐泾镇明珠路100号'
+      })
     }
   },
   {

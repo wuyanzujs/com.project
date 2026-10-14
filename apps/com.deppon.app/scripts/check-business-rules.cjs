@@ -19,13 +19,9 @@ function findTests(directory) {
 }
 
 const files = findTests(testRoot).sort()
-const knownDomains = new Set(
-  files.map(file => path.relative(testRoot, file).split(path.sep)[0])
-)
+const knownDomains = new Set(files.map(file => path.relative(testRoot, file).split(path.sep)[0]))
 const unknownDomains = domains.filter(domain => !knownDomains.has(domain))
-const oversized = files.filter(
-  file => readFileSync(file, 'utf8').split('\n').length > 600
-)
+const oversized = files.filter(file => readFileSync(file, 'utf8').split('\n').length > 600)
 
 if (oversized.length) {
   console.error('Business test files exceed the 600-line budget:')
@@ -36,26 +32,12 @@ if (oversized.length) {
   console.error('Available domains: ' + [...knownDomains].sort().join(', '))
   process.exitCode = 1
 } else {
-  const selected = files.filter(
-    file =>
-      !domains.length ||
-      domains.includes(path.relative(testRoot, file).split(path.sep)[0])
-  )
-  const result = spawnSync(
-    process.execPath,
-    [
-      '--test',
-      '--test-concurrency=4',
-      '--test-timeout=15000',
-      '--test-reporter=spec',
-      ...selected
-    ],
-    {
-      cwd: appRoot,
-      stdio: 'inherit',
-      env: { ...process.env, TZ: 'Asia/Shanghai' }
-    }
-  )
+  const selected = files.filter(file => !domains.length || domains.includes(path.relative(testRoot, file).split(path.sep)[0]))
+  const result = spawnSync(process.execPath, ['--test', '--test-concurrency=4', '--test-timeout=15000', '--test-reporter=spec', ...selected], {
+    cwd: appRoot,
+    stdio: 'inherit',
+    env: { ...process.env, TZ: 'Asia/Shanghai' }
+  })
 
   if (result.error) {
     console.error(result.error)

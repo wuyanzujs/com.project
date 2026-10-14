@@ -15,26 +15,16 @@ const {
   validateExpressDeliveryPreference
 } = require('@/services/express/deliveryPreference.rules')
 const { selectExpressProduct } = require('@/services/express/express.draft')
-const {
-  buildCreateOrderRequest,
-  buildFreightRequest
-} = require('@/services/express/express.payload')
+const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
 
-const {
-  createValidExpressDraft,
-  expressProduct
-} = require('../fixtures/express.cjs')
+const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 
 const cases = [
   {
     name: 'express delivery preference builds stable date and availability contracts',
     run() {
       const now = new Date(2026, 6, 13)
-      const scheduledDates = createExpressScheduledDateOptions(
-        '2026-07-15 18:00:00',
-        '',
-        now
-      )
+      const scheduledDates = createExpressScheduledDateOptions('2026-07-15 18:00:00', '', now)
       const unavailableDates = createExpressUnavailableDateOptions(now)
       const draft = createValidExpressDraft()
       const request = buildExpressDeliveryAppointmentRequest(draft)
@@ -66,10 +56,7 @@ const cases = [
       }
       let draft = updateExpressDeliveryPreference(baseDraft, {
         type: 'SCHEDULED',
-        scheduledWindow: createExpressScheduledWindow(
-          '2026-07-16',
-          '14:00-16:00'
-        ),
+        scheduledWindow: createExpressScheduledWindow('2026-07-16', '14:00-16:00'),
         availabilityKey: createExpressDeliveryAvailabilityKey(baseDraft)
       })
 
@@ -89,10 +76,7 @@ const cases = [
       )
       assert.equal(freightRequest.appointmentDelivery, 'Y')
       assert.equal(freightRequest.nightDelivery, '')
-      assert.equal(
-        orderRequest.receive[0].appointmentDeliveryTime,
-        '2026-07-16 14:00-16:00'
-      )
+      assert.equal(orderRequest.receive[0].appointmentDeliveryTime, '2026-07-16 14:00-16:00')
       assert.deepEqual(orderRequest.receive[0].orderExtendFields, [
         { key: 'isAppointmentDeliver', value: 'Y' },
         { key: 'nightAccept', value: 'N' }
@@ -113,9 +97,7 @@ const cases = [
 
       assert.equal(nightQuoteFields.nightDelivery, 'Y')
       assert.equal(nightQuoteFields.appointmentDelivery, '')
-      assert.deepEqual(nightFields.orderExtendFields, [
-        { key: 'nightDelivery', value: 'Y' }
-      ])
+      assert.deepEqual(nightFields.orderExtendFields, [{ key: 'nightDelivery', value: 'Y' }])
       assert.equal(isExpressScheduledDeliveryProductSupported('DCZP'), false)
       assert.equal(isExpressScheduledDeliveryProductSupported('TKDR'), false)
 
@@ -158,25 +140,15 @@ const cases = [
         availabilityKey: ''
       }
 
-      assert.equal(
-        createExpressDeliveryQuoteFields(senderPreference).notifyIsDeliver,
-        'N'
-      )
-      assert.deepEqual(
-        createExpressDeliveryOrderFields(senderPreference).orderExtendFields,
-        [{ key: 'notifyIsDeliver', value: 'N' }]
-      )
-      assert.deepEqual(
-        createExpressDeliveryOrderFields(receiverPreference)
-          .newOrderExtendFields,
-        [
-          { key: 'waitReceiveNotifyDeliver', value: 'Y' },
-          {
-            key: 'waitReceiveNotifyNotDeliverTime',
-            value: '2026-07-20,2026-07-22'
-          }
-        ]
-      )
+      assert.equal(createExpressDeliveryQuoteFields(senderPreference).notifyIsDeliver, 'N')
+      assert.deepEqual(createExpressDeliveryOrderFields(senderPreference).orderExtendFields, [{ key: 'notifyIsDeliver', value: 'N' }])
+      assert.deepEqual(createExpressDeliveryOrderFields(receiverPreference).newOrderExtendFields, [
+        { key: 'waitReceiveNotifyDeliver', value: 'Y' },
+        {
+          key: 'waitReceiveNotifyNotDeliverTime',
+          value: '2026-07-20,2026-07-22'
+        }
+      ])
 
       const selfPickupDraft = {
         ...createValidExpressDraft(),
@@ -187,9 +159,7 @@ const cases = [
         deliveryPreference: receiverPreference
       }
 
-      assert.deepEqual(validateExpressDeliveryPreference(selfPickupDraft), [
-        '自提订单不能选择预约或通知派送'
-      ])
+      assert.deepEqual(validateExpressDeliveryPreference(selfPickupDraft), ['自提订单不能选择预约或通知派送'])
 
       const invalidDateDraft = {
         ...createValidExpressDraft(),
@@ -199,9 +169,7 @@ const cases = [
         }
       }
 
-      assert.deepEqual(validateExpressDeliveryPreference(invalidDateDraft), [
-        '不可收货日期格式不正确'
-      ])
+      assert.deepEqual(validateExpressDeliveryPreference(invalidDateDraft), ['不可收货日期格式不正确'])
     }
   }
 ]

@@ -13,31 +13,15 @@ interface MineEntryGridsProps {
   onSelect: (entry: MineEntry) => void
 }
 
-export function MineEntryGrids({
-  quickEntries,
-  onSelect
-}: MineEntryGridsProps) {
+export function MineEntryGrids({ quickEntries, onSelect }: MineEntryGridsProps) {
   return (
     <>
       <View className='mine-quick-grid'>
         {quickEntries?.map(entry => (
-          <AppPressable
-            flex
-            accessibilityLabel={entry.title}
-            block
-            className='mine-quick-grid__item'
-            key={entry.title}
-            onPress={() => onSelect(entry)}
-          >
-            <Image
-              className='mine-quick-grid__image'
-              mode='aspectFit'
-              src={entry.image}
-            />
+          <AppPressable flex accessibilityLabel={entry.title} block className='mine-quick-grid__item' key={entry.title} onPress={() => onSelect(entry)}>
+            <Image className='mine-quick-grid__image' mode='aspectFit' src={entry.image} />
             <Text className='mine-quick-grid__title'>{entry.title}</Text>
-            {entry.badge && (
-              <Text className='mine-service-grid__badge'>{entry.badge}</Text>
-            )}
+            {entry.badge && <Text className='mine-service-grid__badge'>{entry.badge}</Text>}
           </AppPressable>
         ))}
       </View>
@@ -45,21 +29,10 @@ export function MineEntryGrids({
       <View className='mine-service-grid'>
         {SERVICE_ENTRIES.map(entry => (
           <View className='mine-service-grid__cell' key={entry.title}>
-            <AppPressable
-              block
-              accessibilityLabel={entry.title}
-              className='mine-service-grid__item'
-              onPress={() => onSelect(entry)}
-            >
-              <Image
-                className='mine-service-grid__image'
-                mode='aspectFit'
-                src={entry.image}
-              />
+            <AppPressable block accessibilityLabel={entry.title} className='mine-service-grid__item' onPress={() => onSelect(entry)}>
+              <Image className='mine-service-grid__image' mode='aspectFit' src={entry.image} />
               <Text className='mine-service-grid__title'>{entry.title}</Text>
-              {entry.badge && (
-                <Text className='mine-service-grid__badge'>{entry.badge}</Text>
-              )}
+              {entry.badge && <Text className='mine-service-grid__badge'>{entry.badge}</Text>}
             </AppPressable>
           </View>
         ))}

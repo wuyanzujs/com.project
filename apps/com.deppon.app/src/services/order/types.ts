@@ -6,8 +6,7 @@ export * from './order.edit.types'
 
 export type OrderRole = 'sender' | 'receive'
 export type OrderPaymentFilter = '' | 'MP' | 'FC' | 'CT'
-export type OrderStatusFilter =
-  '' | 'RECEIPTING' | 'IN_TRANSIT' | 'SIGN' | 'CANCEL' | 'INVALID'
+export type OrderStatusFilter = '' | 'RECEIPTING' | 'IN_TRANSIT' | 'SIGN' | 'CANCEL' | 'INVALID'
 
 export type OrderDetailActionKind =
   | 'service'
@@ -46,27 +45,11 @@ export type OrderStubImageKind =
 export type OrderServiceImageScene = 1 | 2 | 3 | 4 | 5 | 6 | 7
 
 export type OrderContractStatus =
-  | 'SENT'
-  | 'REJECT'
-  | 'COMPLETE'
-  | 'REVOKE_CANCEL'
-  | 'OVERDUE'
-  | 'IN_SEND_APPROVAL'
-  | 'SEND_APPROVAL_NOT_PASSED'
-  | 'INVALID'
-  | string
+  'SENT' | 'REJECT' | 'COMPLETE' | 'REVOKE_CANCEL' | 'OVERDUE' | 'IN_SEND_APPROVAL' | 'SEND_APPROVAL_NOT_PASSED' | 'INVALID' | string
 
 export type OrderDetailActionTone = 'primary' | 'neutral' | 'warning' | 'danger'
 
-export type OrderDetailActionTarget =
-  | 'route'
-  | 'web'
-  | 'subscription'
-  | 'pickupSchedule'
-  | 'urge'
-  | 'notifyDeliver'
-  | 'invalidWaybill'
-  | 'departmentPhone'
+export type OrderDetailActionTarget = 'route' | 'web' | 'subscription' | 'pickupSchedule' | 'urge' | 'notifyDeliver' | 'invalidWaybill' | 'departmentPhone'
 
 export type OrderUrgeType = 'URGE_ORDER_NO' | 'URGE_BILL_NO'
 

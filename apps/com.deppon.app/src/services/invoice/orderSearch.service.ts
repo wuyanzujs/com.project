@@ -38,9 +38,7 @@ function isOrderAuthRequired(item: InvoiceOrderRaw) {
  * @param item 开票运单原始数据
  * @description 按验证方式生成运单验证挑战信息
  */
-function createOrderAuthChallenge(
-  item: InvoiceOrderRaw
-): InvoiceOrderAuthChallenge | null {
+function createOrderAuthChallenge(item: InvoiceOrderRaw): InvoiceOrderAuthChallenge | null {
   if (!isOrderAuthRequired(item)) {
     return null
   }
@@ -95,9 +93,7 @@ function createOrderAuthChallenge(
  * @param list 开票运单原始列表
  * @description 生成查询结果，需要验证时只返回挑战信息
  */
-function normalizeOrderSearchResult(
-  list: InvoiceOrderRaw[]
-): InvoiceOrderSearchView {
+function normalizeOrderSearchResult(list: InvoiceOrderRaw[]): InvoiceOrderSearchView {
   const authItem = list.find(isOrderAuthRequired)
   const auth = authItem ? createOrderAuthChallenge(authItem) : null
 
@@ -113,19 +109,14 @@ export const invoiceOrderSearchService = {
    * @param waybillNumber 运单号
    * @description 按运单号查询可开票运单
    */
-  async queryByWaybill(
-    waybillNumber: string
-  ): Promise<DepponResponse<InvoiceOrderSearchView>> {
+  async queryByWaybill(waybillNumber: string): Promise<DepponResponse<InvoiceOrderSearchView>> {
     const keyword = normalizeText(waybillNumber)
 
     if (!keyword) {
       return createFailure('请输入运单号')
     }
 
-    const response = await invoiceApi.request<
-      InvoiceOrderListResponse,
-      InvoiceOrderQueryRequest
-    >(
+    const response = await invoiceApi.request<InvoiceOrderListResponse, InvoiceOrderQueryRequest>(
       'tradeQueryBySourceBillNo',
       {
         sourceBillNo: keyword
@@ -152,10 +143,7 @@ export const invoiceOrderSearchService = {
    * @param value 验证信息
    * @description 校验付款人验证信息
    */
-  async verifyPhone(
-    waybillNumber: string,
-    value: string
-  ): Promise<DepponResponse<InvoiceOrderSearchView>> {
+  async verifyPhone(waybillNumber: string, value: string): Promise<DepponResponse<InvoiceOrderSearchView>> {
     const normalizedWaybill = normalizeText(waybillNumber)
     const normalizedValue = normalizeText(value)
 
@@ -167,10 +155,7 @@ export const invoiceOrderSearchService = {
       return createFailure('请输入验证信息')
     }
 
-    const response = await invoiceApi.request<
-      InvoiceOrderListResponse,
-      InvoiceOrderAuthPhoneRequest
-    >(
+    const response = await invoiceApi.request<InvoiceOrderListResponse, InvoiceOrderAuthPhoneRequest>(
       'checkSourcePaymentNumber',
       {
         sourceBillNo: normalizedWaybill,
@@ -204,10 +189,7 @@ export const invoiceOrderSearchService = {
       return createFailure('缺少运单号')
     }
 
-    const response = await invoiceApi.request<
-      null,
-      InvoiceOrderAuthCodeRequest
-    >('sendCheckCode', {
+    const response = await invoiceApi.request<null, InvoiceOrderAuthCodeRequest>('sendCheckCode', {
       sourceBillNo: normalizedWaybill
     })
 
@@ -227,10 +209,7 @@ export const invoiceOrderSearchService = {
    * @param code 短信验证码
    * @description 校验运单短信验证码
    */
-  async verifyAuthCode(
-    waybillNumber: string,
-    code: string
-  ): Promise<DepponResponse<null>> {
+  async verifyAuthCode(waybillNumber: string, code: string): Promise<DepponResponse<null>> {
     const normalizedWaybill = normalizeText(waybillNumber)
     const normalizedCode = normalizeText(code)
 
@@ -242,10 +221,7 @@ export const invoiceOrderSearchService = {
       return createFailure('请输入正确的短信验证码')
     }
 
-    const response = await invoiceApi.request<
-      null,
-      InvoiceOrderAuthCodeCheckRequest
-    >('checkVerificationCode', {
+    const response = await invoiceApi.request<null, InvoiceOrderAuthCodeCheckRequest>('checkVerificationCode', {
       sourceBillNo: normalizedWaybill,
       checkTestCode: normalizedCode
     })

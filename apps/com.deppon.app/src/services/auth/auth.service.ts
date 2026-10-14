@@ -2,13 +2,7 @@ import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
 import { authApi } from './auth.api'
 import { createAppSmsLoginRequest } from './login.rules'
-import {
-  clearAppSession,
-  getCurrentEcoToken,
-  getCurrentUser,
-  recoverCurrentEcoToken,
-  saveCurrentUser
-} from './session'
+import { clearAppSession, getCurrentEcoToken, getCurrentUser, recoverCurrentEcoToken, saveCurrentUser } from './session'
 
 import type { AppUser } from './types'
 
@@ -69,13 +63,7 @@ export function getUserDisplayName(user: AppUser | null) {
     return '未登录'
   }
 
-  return (
-    user.nickName ||
-    user.userName ||
-    maskMobile(user.mobile) ||
-    user.customerCode ||
-    '德邦用户'
-  )
+  return user.nickName || user.userName || maskMobile(user.mobile) || user.customerCode || '德邦用户'
 }
 
 export const authService = {
@@ -133,11 +121,7 @@ export const authService = {
    * @param redirectUrl 登录后返回页面，可选
    * @description 短信验证码登录并保存登录态
    */
-  async loginWithSms(
-    mobile: string,
-    smsCode: string,
-    redirectUrl?: string
-  ): Promise<AuthResult> {
+  async loginWithSms(mobile: string, smsCode: string, redirectUrl?: string): Promise<AuthResult> {
     if (!isValidMobile(mobile)) {
       return {
         status: false,
@@ -154,14 +138,10 @@ export const authService = {
       }
     }
 
-    const response = await authApi.login(
-      createAppSmsLoginRequest(mobile, smsCode, redirectUrl)
-    )
+    const response = await authApi.login(createAppSmsLoginRequest(mobile, smsCode, redirectUrl))
 
     if (response.status && response.result) {
-      const sessionReady =
-        (response.sessionCookieSaved && getCurrentEcoToken()) ||
-        (!getCurrentEcoToken() && (await recoverCurrentEcoToken()))
+      const sessionReady = (response.sessionCookieSaved && getCurrentEcoToken()) || (!getCurrentEcoToken() && (await recoverCurrentEcoToken()))
 
       if (!sessionReady) {
         await clearAppSession()

@@ -29,9 +29,7 @@ function normalizeText(value?: string | null) {
 function getMainContactText(value?: string | null) {
   const normalized = normalizeText(value).toUpperCase()
 
-  return normalized === 'Y' || normalized === '1' || normalized === 'TRUE'
-    ? '主联系人'
-    : '普通联系人'
+  return normalized === 'Y' || normalized === '1' || normalized === 'TRUE' ? '主联系人' : '普通联系人'
 }
 
 /**
@@ -58,9 +56,7 @@ function getPrivateBillText(value?: string | null) {
  * @param raw 客户信息原始数据，可为空
  * @description 组装客户中心展示结构
  */
-function toCustomerCenterView(
-  raw?: CustomerInfoRaw | null
-): CustomerCenterView {
+function toCustomerCenterView(raw?: CustomerInfoRaw | null): CustomerCenterView {
   const code = normalizeText(raw?.cusCode)
   const name = normalizeText(raw?.custName)
   const hasBoundCustomer = Boolean(code || name)
@@ -104,9 +100,7 @@ function toPositiveNumber(value: unknown) {
  * @param raw 客户能力原始数据，可为空
  * @description 归一客户服务能力信息
  */
-export function normalizeCustomerCapability(
-  raw?: CustomerCapabilityRaw | null
-): CustomerCapabilityView {
+export function normalizeCustomerCapability(raw?: CustomerCapabilityRaw | null): CustomerCapabilityView {
   const customerCode = normalizeText(raw?.custNumber)
 
   return {
@@ -129,9 +123,7 @@ function formatCollectionLimit(value: number | null) {
     return '--'
   }
 
-  const text = Number.isInteger(value)
-    ? String(value)
-    : value.toFixed(2).replace(/0+$/, '').replace(/\.$/, '')
+  const text = Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/0+$/, '').replace(/\.$/, '')
 
   return text + ' 元'
 }
@@ -142,29 +134,15 @@ function formatCollectionLimit(value: number | null) {
  * @param customer 客户中心信息，可选
  * @description 组装客户能力汇总展示结构
  */
-export function createCustomerCapabilitySummary(
-  capability: CustomerCapabilityView,
-  customer?: CustomerCenterView | null
-): CustomerCapabilitySummaryView {
-  const available =
-    capability.hasBoundCustomer || customer?.hasBoundCustomer === true
+export function createCustomerCapabilitySummary(capability: CustomerCapabilityView, customer?: CustomerCenterView | null): CustomerCapabilitySummaryView {
+  const available = capability.hasBoundCustomer || customer?.hasBoundCustomer === true
 
   return {
     available,
-    collectionLimitText: available
-      ? formatCollectionLimit(capability.collectionLimit)
-      : '--',
-    contractText: available
-      ? capability.contractEnabled
-        ? '已签约'
-        : '未签约'
-      : '--',
+    collectionLimitText: available ? formatCollectionLimit(capability.collectionLimit) : '--',
+    contractText: available ? (capability.contractEnabled ? '已签约' : '未签约') : '--',
     customerCode: capability.customerCode || customer?.code || '',
-    monthlyPaymentText: available
-      ? capability.monthlyEnabled
-        ? '已开通'
-        : '未开通'
-      : '--'
+    monthlyPaymentText: available ? (capability.monthlyEnabled ? '已开通' : '未开通') : '--'
   }
 }
 
@@ -172,9 +150,7 @@ export function createCustomerCapabilitySummary(
  *
  * @description 查询并组装客户中心信息
  */
-async function queryCustomerCenter(): Promise<
-  DepponResponse<CustomerCenterView>
-> {
+async function queryCustomerCenter(): Promise<DepponResponse<CustomerCenterView>> {
   const response = await customerApi.queryCustomerInfo(false)
 
   if (!response.status) {
@@ -191,9 +167,7 @@ async function queryCustomerCenter(): Promise<
  *
  * @description 查询并组装客户服务额度
  */
-async function queryCustomerCapability(): Promise<
-  DepponResponse<CustomerCapabilityView>
-> {
+async function queryCustomerCapability(): Promise<DepponResponse<CustomerCapabilityView>> {
   const response = await customerApi.queryCustomerCapability(false)
 
   if (!response.status) {
@@ -210,25 +184,11 @@ async function queryCustomerCapability(): Promise<
  *
  * @description 并行查询客户与额度并汇总
  */
-async function queryCustomerOverview(): Promise<
-  DepponResponse<CustomerCenterOverviewView>
-> {
-  const [customerResponse, capabilityResponse] = await Promise.all([
-    queryCustomerCenter(),
-    queryCustomerCapability()
-  ])
-  const customer =
-    customerResponse.status && customerResponse.result
-      ? customerResponse.result
-      : null
-  const capability =
-    capabilityResponse.status && capabilityResponse.result
-      ? createCustomerCapabilitySummary(capabilityResponse.result, customer)
-      : null
-  const warning = [
-    customerResponse.status ? '' : customerResponse.message,
-    capabilityResponse.status ? '' : capabilityResponse.message
-  ]
+async function queryCustomerOverview(): Promise<DepponResponse<CustomerCenterOverviewView>> {
+  const [customerResponse, capabilityResponse] = await Promise.all([queryCustomerCenter(), queryCustomerCapability()])
+  const customer = customerResponse.status && customerResponse.result ? customerResponse.result : null
+  const capability = capabilityResponse.status && capabilityResponse.result ? createCustomerCapabilitySummary(capabilityResponse.result, customer) : null
+  const warning = [customerResponse.status ? '' : customerResponse.message, capabilityResponse.status ? '' : capabilityResponse.message]
     .filter((message): message is string => !!message)
     .join('；')
 

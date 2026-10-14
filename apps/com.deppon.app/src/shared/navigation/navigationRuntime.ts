@@ -28,9 +28,7 @@ const NAVIGATION_CONFIRM_INTERVAL_MS = 32
 const TAB_STACK_BACK_DELTA = 16
 const TAB_STACK_SETTLE_ATTEMPTS = 12
 
-const MAIN_ROUTE_PATHNAMES = APP_MAIN_NAVIGATION.map(item =>
-  getRoutePathname(item.path)
-)
+const MAIN_ROUTE_PATHNAMES = APP_MAIN_NAVIGATION.map(item => getRoutePathname(item.path))
 
 function reportNavigationFailure(options: DispatchAppRouteOptions) {
   options.onFailure?.()
@@ -65,9 +63,7 @@ function getPageRouteUrl(page: PageLike | undefined) {
   const params = page?.options || page?.$router?.params || {}
   const query = createRouteQuery(params)
 
-  return query
-    ? `${normalizeRoutePath(route)}?${query}`
-    : normalizeRoutePath(route)
+  return query ? `${normalizeRoutePath(route)}?${query}` : normalizeRoutePath(route)
 }
 
 function getCurrentRouteUrl() {
@@ -90,11 +86,7 @@ function routeMatches(currentUrl: string, targetUrl: string) {
 
   // RN 页面快照在导航尚未稳定时可能只暴露 pathname。此时还观测不到 query 是否
   // 相等；等当前页面暴露 query 参数后，就走上面对 URL 的精确比较。
-  return (
-    !normalizedCurrent.includes('?') &&
-    normalizedTarget.includes('?') &&
-    getRoutePathname(normalizedCurrent) === getRoutePathname(normalizedTarget)
-  )
+  return !normalizedCurrent.includes('?') && normalizedTarget.includes('?') && getRoutePathname(normalizedCurrent) === getRoutePathname(normalizedTarget)
 }
 
 function delayNavigationConfirmation() {
@@ -136,9 +128,7 @@ function normalizeRouteUrl(url: string) {
 
   const params = new URLSearchParams(query)
 
-  return `${normalizeRoutePath(pathname)}?${createRouteQuery(
-    Object.fromEntries(params.entries())
-  )}`
+  return `${normalizeRoutePath(pathname)}?${createRouteQuery(Object.fromEntries(params.entries()))}`
 }
 
 interface AppRuntimeTabBarGlobal {
@@ -154,8 +144,7 @@ interface AppRuntimeTabBarGlobal {
 // tab 容器只有在 app 配置声明了 tabBar 时才存在。入口早于该配置的
 // 构建产物会把主路由当普通栈页面，此时 switchTab 会静默失效。
 function isTabContainerEnabled() {
-  const list = (globalThis as AppRuntimeTabBarGlobal).__taroAppConfig?.appConfig
-    ?.tabBar?.list
+  const list = (globalThis as AppRuntimeTabBarGlobal).__taroAppConfig?.appConfig?.tabBar?.list
 
   return Array.isArray(list) && list.length > 0
 }
@@ -180,9 +169,7 @@ function getCurrentPageCount() {
 // 转场，也不会压入新页面。若容器上方还压着登录页/详情页，需要先把栈收回
 // 容器，因为 switchTab 是通过当前聚焦的导航器解析 tab 路由的。
 async function switchToMainRoute(url: string) {
-  const needsUnwind =
-    !isMainRoutePathname(getRoutePathname(getCurrentRouteUrl())) &&
-    getCurrentPageCount() > 1
+  const needsUnwind = !isMainRoutePathname(getRoutePathname(getCurrentRouteUrl())) && getCurrentPageCount() > 1
 
   if (needsUnwind) {
     try {
@@ -211,10 +198,7 @@ function runAppNavigation(url: string, replace = false) {
   return replace ? Taro.redirectTo({ url }) : Taro.navigateTo({ url })
 }
 
-export function dispatchAppRoute(
-  url: string,
-  options: DispatchAppRouteOptions = {}
-) {
+export function dispatchAppRoute(url: string, options: DispatchAppRouteOptions = {}) {
   try {
     const navigation = runAppNavigation(url, options.replace)
 
@@ -229,10 +213,7 @@ export function dispatchAppRoute(
   }
 }
 
-export async function dispatchAppRouteAsync(
-  url: string,
-  options: DispatchAppRouteAsyncOptions = {}
-) {
+export async function dispatchAppRouteAsync(url: string, options: DispatchAppRouteAsyncOptions = {}) {
   if (options.verify !== false && isCurrentRoute(url)) {
     return true
   }

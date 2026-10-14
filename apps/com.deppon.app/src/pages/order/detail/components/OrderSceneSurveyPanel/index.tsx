@@ -1,9 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
-import type {
-  OrderSceneSurveyItem,
-  OrderSceneSurveySubmitInput
-} from '@/services/order'
+import type { OrderSceneSurveyItem, OrderSceneSurveySubmitInput } from '@/services/order'
 import { AppButton, AppDialog, AppPressable } from '@/shared/components'
 
 import { OrderNpsSurveyForm } from '../OrderNpsSurveyForm'
@@ -11,11 +8,7 @@ import { OrderSceneScoreForm } from '../OrderSceneScoreForm'
 
 import './index.scss'
 
-function OrderSceneLabelForm(props: {
-  item: OrderSceneSurveyItem
-  submitting: boolean
-  onSubmit: (input: OrderSceneSurveySubmitInput) => void
-}) {
+function OrderSceneLabelForm(props: { item: OrderSceneSurveyItem; submitting: boolean; onSubmit: (input: OrderSceneSurveySubmitInput) => void }) {
   return (
     <View className='order-scene-survey__label-options'>
       {props.item.labels.map(label => (
@@ -31,9 +24,7 @@ function OrderSceneLabelForm(props: {
             })
           }
         >
-          <Text className='order-scene-survey__label-option-text'>
-            {label.name}
-          </Text>
+          <Text className='order-scene-survey__label-option-text'>{label.name}</Text>
         </AppPressable>
       ))}
     </View>
@@ -55,15 +46,9 @@ export function OrderSceneSurveyPanel(props: {
     return null
   }
 
-  const progress =
-    props.total > 1
-      ? `第 ${props.position} 项，共 ${props.total} 项`
-      : '匿名问卷'
-  const unavailableHint =
-    props.failedCount > 0 ? `，另有 ${props.failedCount} 项暂未加载` : ''
-  const description = props.completed
-    ? `本次可填写的问卷已经完成${unavailableHint}`
-    : `${progress}${unavailableHint}`
+  const progress = props.total > 1 ? `第 ${props.position} 项，共 ${props.total} 项` : '匿名问卷'
+  const unavailableHint = props.failedCount > 0 ? `，另有 ${props.failedCount} 项暂未加载` : ''
+  const description = props.completed ? `本次可填写的问卷已经完成${unavailableHint}` : `${progress}${unavailableHint}`
 
   return (
     <AppDialog
@@ -79,16 +64,12 @@ export function OrderSceneSurveyPanel(props: {
       {props.completed ? (
         <View className='order-scene-survey__completed'>
           <Text className='order-scene-survey__completed-title'>提交成功</Text>
-          <Text className='order-scene-survey__completed-summary'>
-            您的意见将帮助我们持续改善服务。
-          </Text>
+          <Text className='order-scene-survey__completed-summary'>您的意见将帮助我们持续改善服务。</Text>
           <AppButton label='关闭' onPress={props.onClose} />
         </View>
       ) : props.activeItem ? (
         <View className='order-scene-survey__body'>
-          <Text className='order-scene-survey__question'>
-            {props.activeItem.title}
-          </Text>
+          <Text className='order-scene-survey__question'>{props.activeItem.title}</Text>
           {props.activeItem.kind === 'SCORE' ? (
             <OrderSceneScoreForm
               item={props.activeItem}
@@ -102,11 +83,7 @@ export function OrderSceneSurveyPanel(props: {
               }
             />
           ) : props.activeItem.kind === 'LABEL' ? (
-            <OrderSceneLabelForm
-              item={props.activeItem}
-              submitting={props.submitting}
-              onSubmit={props.onSubmit}
-            />
+            <OrderSceneLabelForm item={props.activeItem} submitting={props.submitting} onSubmit={props.onSubmit} />
           ) : (
             <OrderNpsSurveyForm
               key={props.activeItem.key}

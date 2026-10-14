@@ -56,9 +56,7 @@ const PRIVACY_LINKS: PrivacyLink[] = [
 ]
 
 const PrivacySettingsPage = () => {
-  const [privacyStatus, setPrivacyStatus] = useState<PrivacyStatusView | null>(
-    null
-  )
+  const [privacyStatus, setPrivacyStatus] = useState<PrivacyStatusView | null>(null)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -179,22 +177,10 @@ const PrivacySettingsPage = () => {
     <ScrollView className='privacy-settings-page' scrollY>
       <View className='privacy-status'>
         <View>
-          <Text className='privacy-status__title'>
-            {privacyStatus?.statusText || (loading ? '同步中' : '待同步')}
-          </Text>
-          <Text className='privacy-status__summary'>
-            {privacyStatus?.summary ||
-              errorMessage ||
-              '进入页面后会自动同步当前账号的隐私政策版本。'}
-          </Text>
+          <Text className='privacy-status__title'>{privacyStatus?.statusText || (loading ? '同步中' : '待同步')}</Text>
+          <Text className='privacy-status__summary'>{privacyStatus?.summary || errorMessage || '进入页面后会自动同步当前账号的隐私政策版本。'}</Text>
         </View>
-        <Text
-          className={
-            privacyStatus?.agreedLatest
-              ? 'privacy-status__tag privacy-status__tag--ok'
-              : 'privacy-status__tag'
-          }
-        >
+        <Text className={privacyStatus?.agreedLatest ? 'privacy-status__tag privacy-status__tag--ok' : 'privacy-status__tag'}>
           {privacyStatus?.agreedLatest ? '已确认' : '需确认'}
         </Text>
       </View>
@@ -202,26 +188,18 @@ const PrivacySettingsPage = () => {
       <View className='privacy-version-card'>
         <View className='privacy-version-card__item'>
           <Text className='privacy-version-card__label'>最新版本</Text>
-          <Text className='privacy-version-card__value'>
-            {privacyStatus?.latestVersion || '--'}
-          </Text>
+          <Text className='privacy-version-card__value'>{privacyStatus?.latestVersion || '--'}</Text>
         </View>
         <View className='privacy-version-card__item'>
           <Text className='privacy-version-card__label'>已同意版本</Text>
-          <Text className='privacy-version-card__value'>
-            {privacyStatus?.agreedVersion || '--'}
-          </Text>
+          <Text className='privacy-version-card__value'>{privacyStatus?.agreedVersion || '--'}</Text>
         </View>
       </View>
 
       <View className='privacy-links'>
         <Text className='privacy-links__title'>协议与清单</Text>
         {PRIVACY_LINKS.map(item => (
-          <AppPressable
-            className='privacy-link'
-            key={item.source}
-            onPress={() => handleOpenLink(item.source)}
-          >
+          <AppPressable className='privacy-link' key={item.source} onPress={() => handleOpenLink(item.source)}>
             <View>
               <Text className='privacy-link__title'>{item.title}</Text>
               <Text className='privacy-link__summary'>{item.summary}</Text>
@@ -232,30 +210,16 @@ const PrivacySettingsPage = () => {
       </View>
 
       <View className='privacy-actions'>
-        <AppPressable
-          flex
-          className='privacy-actions__secondary'
-          onPress={loadPrivacyStatus}
-        >
-          <Text className='privacy-actions__secondary-text'>
-            {loading ? '同步中' : '同步状态'}
-          </Text>
+        <AppPressable flex className='privacy-actions__secondary' onPress={loadPrivacyStatus}>
+          <Text className='privacy-actions__secondary-text'>{loading ? '同步中' : '同步状态'}</Text>
         </AppPressable>
-        <AppPressable
-          flex
-          className='privacy-actions__primary'
-          onPress={handleSaveAgreement}
-        >
-          <Text className='privacy-actions__primary-text'>
-            {saving ? '处理中' : '同意最新条款'}
-          </Text>
+        <AppPressable flex className='privacy-actions__primary' onPress={handleSaveAgreement}>
+          <Text className='privacy-actions__primary-text'>{saving ? '处理中' : '同意最新条款'}</Text>
         </AppPressable>
       </View>
 
       <AppPressable className='privacy-danger' onPress={handleCancelAgreement}>
-        <Text className='privacy-danger__text'>
-          {saving ? '处理中' : '撤销同意条款'}
-        </Text>
+        <Text className='privacy-danger__text'>{saving ? '处理中' : '撤销同意条款'}</Text>
       </AppPressable>
     </ScrollView>
   )

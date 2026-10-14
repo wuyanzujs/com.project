@@ -13,36 +13,19 @@ interface ExpressWeatherBannerProps {
   onPress: () => void
 }
 
-export function ExpressWeatherBanner({
-  text,
-  onPress
-}: ExpressWeatherBannerProps) {
+export function ExpressWeatherBanner({ text, onPress }: ExpressWeatherBannerProps) {
   if (!text) {
     return null
   }
 
   return (
     <View className='express-weather-banner'>
-      <AppPressable
-        accessibilityLabel={`天气提示${text}`}
-        block
-        className='express-weather-banner__inner'
-        layout='row-start'
-        onPress={onPress}
-      >
-        <Image
-          className='express-weather-banner__icon'
-          mode='aspectFit'
-          src={WEATHER_RAIN_ICON}
-        />
+      <AppPressable accessibilityLabel={`天气提示${text}`} block className='express-weather-banner__inner' layout='row-start' onPress={onPress}>
+        <Image className='express-weather-banner__icon' mode='aspectFit' src={WEATHER_RAIN_ICON} />
         <Text className='express-weather-banner__text' numberOfLines={1}>
           {text}
         </Text>
-        <Image
-          className='express-weather-banner__arrow'
-          mode='aspectFit'
-          src={WEATHER_ARROW}
-        />
+        <Image className='express-weather-banner__arrow' mode='aspectFit' src={WEATHER_ARROW} />
       </AppPressable>
     </View>
   )

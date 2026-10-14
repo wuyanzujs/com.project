@@ -53,9 +53,7 @@ function normalizeNumber(value: unknown, fallback = 0) {
  * @param value 仓型
  * @description 归一仓型，非法返回空字符串
  */
-export function normalizeExpressWarehouseType(
-  value: unknown
-): ExpressWarehouseType {
+export function normalizeExpressWarehouseType(value: unknown): ExpressWarehouseType {
   const normalized = normalizeText(value)
   return /^[1-6]$/.test(normalized) ? (normalized as ExpressWarehouseType) : ''
 }
@@ -65,9 +63,7 @@ export function normalizeExpressWarehouseType(
  * @param value 进仓方式
  * @description 归一进仓方式，非法返回空字符串
  */
-export function normalizeExpressWarehouseWay(
-  value: unknown
-): ExpressWarehouseWay {
+export function normalizeExpressWarehouseWay(value: unknown): ExpressWarehouseWay {
   return value === 'APSF' || value === 'AGXSF' ? value : ''
 }
 
@@ -76,13 +72,9 @@ export function normalizeExpressWarehouseWay(
  * @param value 筛单类型
  * @description 归一筛单类型，非法返回 0
  */
-export function normalizeExpressWarehouseScreeningType(
-  value: unknown
-): ExpressWarehouseScreeningType {
+export function normalizeExpressWarehouseScreeningType(value: unknown): ExpressWarehouseScreeningType {
   const normalized = Number(value)
-  return Number.isInteger(normalized) && normalized >= 0 && normalized <= 4
-    ? (normalized as ExpressWarehouseScreeningType)
-    : 0
+  return Number.isInteger(normalized) && normalized >= 0 && normalized <= 4 ? (normalized as ExpressWarehouseScreeningType) : 0
 }
 
 /**
@@ -105,9 +97,7 @@ export function createExpressWarehouseScreeningDraft(): WarehouseScreening {
  * @param value 筛单信息，可为空
  * @description 归一筛单信息
  */
-export function normalizeExpressWarehouseScreening(
-  value?: WarehouseScreeningInput | null
-): ExpressWarehouseScreening {
+export function normalizeExpressWarehouseScreening(value?: WarehouseScreeningInput | null): ExpressWarehouseScreening {
   return {
     inputKey: normalizeText(value?.inputKey),
     type: normalizeExpressWarehouseScreeningType(value?.type),
@@ -142,14 +132,10 @@ export function createExpressWarehouseDraft(): ExpressWarehouseDraft {
  * @param value 送货进仓草稿，可为空
  * @description 归一送货进仓草稿
  */
-export function normalizeExpressWarehouseDraft(
-  value?: WarehouseDraftInput | null
-): ExpressWarehouseDraft {
+export function normalizeExpressWarehouseDraft(value?: WarehouseDraftInput | null): ExpressWarehouseDraft {
   const way = normalizeExpressWarehouseWay(value?.deliverWarehouseWay)
   const fileList = Array.isArray(value?.fileList)
-    ? value.fileList
-        .map(file => ({ previewPath: normalizeText(file?.previewPath) }))
-        .filter(file => !!file.previewPath)
+    ? value.fileList.map(file => ({ previewPath: normalizeText(file?.previewPath) })).filter(file => !!file.previewPath)
     : []
 
   return {
@@ -159,8 +145,7 @@ export function normalizeExpressWarehouseDraft(
     fileList,
     warehouseType: normalizeExpressWarehouseType(value?.warehouseType),
     deliverWarehouseWay: way,
-    warehouseProcess:
-      way === 'AGXSF' ? normalizeText(value?.warehouseProcess) : '',
+    warehouseProcess: way === 'AGXSF' ? normalizeText(value?.warehouseProcess) : '',
     warehouseCode: normalizeText(value?.warehouseCode),
     warehouseRemark: normalizeText(value?.warehouseRemark),
     screening: normalizeExpressWarehouseScreening(value?.screening)
@@ -203,9 +188,7 @@ function getProductCode(draft: ExpressDraft) {
  * @description 取扫码带入的客户 code
  */
 function getCustomerCode(draft: ExpressDraft) {
-  return draft.scanContext?.role === 'shipperNumber'
-    ? normalizeText(draft.scanContext.value)
-    : ''
+  return draft.scanContext?.role === 'shipperNumber' ? normalizeText(draft.scanContext.value) : ''
 }
 
 /**
@@ -224,8 +207,7 @@ export function createExpressWarehouseInputKey(draft: ExpressDraft) {
     transportMode: getProductCode(draft),
     deliveryMode: draft.service.deliveryMode,
     customerCode,
-    limitCust:
-      !!customerCode || draft.service.paymentType === 'MONTH_PAY' ? 1 : 0
+    limitCust: !!customerCode || draft.service.paymentType === 'MONTH_PAY' ? 1 : 0
   })
 }
 
@@ -235,16 +217,8 @@ export function createExpressWarehouseInputKey(draft: ExpressDraft) {
  * @param next 新的筛单信息
  * @description 判断两次筛单输入与结果是否一致
  */
-export function isSameExpressWarehouseScreeningProof(
-  current: ExpressWarehouseScreening,
-  next: ExpressWarehouseScreening
-) {
-  return (
-    current.inputKey === next.inputKey &&
-    current.type === next.type &&
-    current.reason === next.reason &&
-    current.depotType === next.depotType
-  )
+export function isSameExpressWarehouseScreeningProof(current: ExpressWarehouseScreening, next: ExpressWarehouseScreening) {
+  return current.inputKey === next.inputKey && current.type === next.type && current.reason === next.reason && current.depotType === next.depotType
 }
 
 /**
@@ -253,10 +227,7 @@ export function isSameExpressWarehouseScreeningProof(
  * @param screening 筛单信息
  * @description 判断是否满足自动选择送货进仓
  */
-export function shouldAutoSelectExpressWarehouse(
-  draft: ExpressDraft,
-  screening: Pick<ExpressWarehouseScreening, 'type'>
-) {
+export function shouldAutoSelectExpressWarehouse(draft: ExpressDraft, screening: Pick<ExpressWarehouseScreening, 'type'>) {
   const warehouse = normalizeExpressWarehouseDraft(draft.warehouse)
   const productCode = getProductCode(draft)
 
@@ -275,10 +246,7 @@ export function shouldAutoSelectExpressWarehouse(
  * @param response 筛单响应，可为空
  * @description 由筛单结果生成筛单信息
  */
-export function createExpressWarehouseScreening(
-  draft: ExpressDraft,
-  response?: ExpressFilterResponse | null
-): ExpressWarehouseScreening {
+export function createExpressWarehouseScreening(draft: ExpressDraft, response?: ExpressFilterResponse | null): ExpressWarehouseScreening {
   const warehouse = normalizeExpressWarehouseDraft(draft.warehouse)
   const base = normalizeExpressWarehouseScreening({
     inputKey: createExpressWarehouseInputKey(draft),
@@ -286,20 +254,14 @@ export function createExpressWarehouseScreening(
     reason: response?.reason,
     depotType: response?.depotType
   })
-  const sameProof = isSameExpressWarehouseScreeningProof(
-    warehouse.screening,
-    base
-  )
+  const sameProof = isSameExpressWarehouseScreeningProof(warehouse.screening, base)
   const newlyAutoSelected = shouldAutoSelectExpressWarehouse(draft, base)
   const requiresAcknowledgement = base.type >= 2
 
   return {
     ...base,
     autoSelected: newlyAutoSelected,
-    acknowledged:
-      newlyAutoSelected ||
-      !requiresAcknowledgement ||
-      (sameProof && warehouse.screening.acknowledged)
+    acknowledged: newlyAutoSelected || !requiresAcknowledgement || (sameProof && warehouse.screening.acknowledged)
   }
 }
 
@@ -310,10 +272,7 @@ export function createExpressWarehouseScreening(
  */
 export function isExpressWarehouseScreeningCurrent(draft: ExpressDraft) {
   const screening = normalizeExpressWarehouseDraft(draft.warehouse).screening
-  return (
-    !!screening.inputKey &&
-    screening.inputKey === createExpressWarehouseInputKey(draft)
-  )
+  return !!screening.inputKey && screening.inputKey === createExpressWarehouseInputKey(draft)
 }
 
 /**
@@ -322,10 +281,7 @@ export function isExpressWarehouseScreeningCurrent(draft: ExpressDraft) {
  * @param latest 最新筛单结果
  * @description 提交前校验筛单结果是否有效
  */
-export function validateExpressWarehouseScreeningForSubmit(
-  draft: ExpressDraft,
-  latest: ExpressWarehouseScreening
-) {
+export function validateExpressWarehouseScreeningForSubmit(draft: ExpressDraft, latest: ExpressWarehouseScreening) {
   const warehouse = normalizeExpressWarehouseDraft(draft.warehouse)
   const normalizedLatest = normalizeExpressWarehouseScreening(latest)
 
@@ -333,19 +289,13 @@ export function validateExpressWarehouseScreeningForSubmit(
     return ['送货进仓筛单结果已失效，请重新确认']
   }
 
-  const sameProof = isSameExpressWarehouseScreeningProof(
-    warehouse.screening,
-    normalizedLatest
-  )
+  const sameProof = isSameExpressWarehouseScreeningProof(warehouse.screening, normalizedLatest)
 
   if (warehouse.enabled && !sameProof) {
     return ['送货进仓筛单结果已更新，请重新确认']
   }
 
-  if (
-    normalizedLatest.type >= 2 &&
-    (!sameProof || !warehouse.screening.acknowledged)
-  ) {
+  if (normalizedLatest.type >= 2 && (!sameProof || !warehouse.screening.acknowledged)) {
     return [normalizedLatest.reason || '请确认是否需要送货进仓']
   }
 
@@ -358,10 +308,7 @@ export function validateExpressWarehouseScreeningForSubmit(
  * @param options 校验选项，可要求筛单
  * @description 校验送货进仓，返回错误提示
  */
-export function validateExpressWarehouse(
-  draft: ExpressDraft,
-  options: { requireScreening?: boolean } = {}
-) {
+export function validateExpressWarehouse(draft: ExpressDraft, options: { requireScreening?: boolean } = {}) {
   const warehouse = normalizeExpressWarehouseDraft(draft.warehouse)
   const screeningCurrent = isExpressWarehouseScreeningCurrent(draft)
   const messages: string[] = []
@@ -374,11 +321,7 @@ export function validateExpressWarehouse(
     messages.push('送货进仓和派送偏好不能同时选择')
   }
 
-  if (
-    warehouse.enabled &&
-    warehouse.deliverWarehouseWay === 'AGXSF' &&
-    !warehouse.warehouseProcess
-  ) {
+  if (warehouse.enabled && warehouse.deliverWarehouseWay === 'AGXSF' && !warehouse.warehouseProcess) {
     messages.push('请选择进仓工序')
   }
 
@@ -386,12 +329,7 @@ export function validateExpressWarehouse(
     messages.push('送货进仓筛单结果已失效，请重新确认')
   }
 
-  if (
-    options.requireScreening &&
-    screeningCurrent &&
-    warehouse.screening.type >= 2 &&
-    !warehouse.screening.acknowledged
-  ) {
+  if (options.requireScreening && screeningCurrent && warehouse.screening.type >= 2 && !warehouse.screening.acknowledged) {
     messages.push(warehouse.screening.reason || '请确认是否需要送货进仓')
   }
 
@@ -404,10 +342,7 @@ export function validateExpressWarehouse(
  * @param next 新的送货进仓草稿
  * @description 判断影响报价的字段是否变化
  */
-function hasQuoteFieldChanged(
-  current: ExpressWarehouseDraft,
-  next: ExpressWarehouseDraft
-) {
+function hasQuoteFieldChanged(current: ExpressWarehouseDraft, next: ExpressWarehouseDraft) {
   if (current.enabled !== next.enabled) {
     return true
   }
@@ -431,11 +366,7 @@ function hasQuoteFieldChanged(
  * @param options 更新选项，可标记已确认
  * @description 更新送货进仓草稿并按需清空报价
  */
-export function updateExpressWarehouse(
-  draft: ExpressDraft,
-  patch: Partial<ExpressWarehouseDraft>,
-  options: { acknowledge?: boolean } = {}
-): ExpressDraft {
+export function updateExpressWarehouse(draft: ExpressDraft, patch: Partial<ExpressWarehouseDraft>, options: { acknowledge?: boolean } = {}): ExpressDraft {
   const current = normalizeExpressWarehouseDraft(draft.warehouse)
   const explicitlyDecided = options.acknowledge === true
   let next = normalizeExpressWarehouseDraft({ ...current, ...patch })
@@ -445,12 +376,7 @@ export function updateExpressWarehouse(
       ...createExpressWarehouseDraft(),
       screening: {
         ...current.screening,
-        acknowledged:
-          explicitlyDecided &&
-          current.screening.type >= 2 &&
-          isExpressWarehouseScreeningCurrent(draft)
-            ? true
-            : current.screening.acknowledged
+        acknowledged: explicitlyDecided && current.screening.type >= 2 && isExpressWarehouseScreeningCurrent(draft) ? true : current.screening.acknowledged
       }
     }
   } else if (patch.enabled === true && next.screening.type >= 2) {
@@ -462,13 +388,9 @@ export function updateExpressWarehouse(
   return {
     ...draft,
     warehouse: next,
-    deliveryPreference: next.enabled
-      ? createExpressDeliveryPreferenceDraft()
-      : draft.deliveryPreference,
+    deliveryPreference: next.enabled ? createExpressDeliveryPreferenceDraft() : draft.deliveryPreference,
     selectedProduct: quoteChanged ? null : draft.selectedProduct,
-    quoteStaleReason: quoteChanged
-      ? '送货进仓信息变化，请重新获取价格'
-      : draft.quoteStaleReason
+    quoteStaleReason: quoteChanged ? '送货进仓信息变化，请重新获取价格' : draft.quoteStaleReason
   }
 }
 
@@ -487,10 +409,7 @@ export function clearExpressWarehouse(draft: ExpressDraft) {
  * @param value 筛单结果
  * @description 应用筛单结果并同步草稿
  */
-export function applyExpressWarehouseScreening(
-  draft: ExpressDraft,
-  value: ExpressWarehouseScreening
-): ExpressDraft {
+export function applyExpressWarehouseScreening(draft: ExpressDraft, value: ExpressWarehouseScreening): ExpressDraft {
   const current = normalizeExpressWarehouseDraft(draft.warehouse)
   const screening = normalizeExpressWarehouseScreening(value)
 
@@ -498,10 +417,8 @@ export function applyExpressWarehouseScreening(
     return draft
   }
 
-  screening.autoSelected =
-    current.screening.autoSelected || screening.autoSelected
-  const newlyAutoSelected =
-    screening.autoSelected && !current.screening.autoSelected
+  screening.autoSelected = current.screening.autoSelected || screening.autoSelected
+  const newlyAutoSelected = screening.autoSelected && !current.screening.autoSelected
   const depotChanged = current.warehouseType !== screening.depotType
   const next: ExpressWarehouseDraft = {
     ...current,
@@ -517,13 +434,9 @@ export function applyExpressWarehouseScreening(
   return {
     ...draft,
     warehouse: next,
-    deliveryPreference: next.enabled
-      ? createExpressDeliveryPreferenceDraft()
-      : draft.deliveryPreference,
+    deliveryPreference: next.enabled ? createExpressDeliveryPreferenceDraft() : draft.deliveryPreference,
     selectedProduct: quoteChanged ? null : draft.selectedProduct,
-    quoteStaleReason: quoteChanged
-      ? '送货进仓筛单结果已更新，请重新获取价格'
-      : draft.quoteStaleReason
+    quoteStaleReason: quoteChanged ? '送货进仓筛单结果已更新，请重新获取价格' : draft.quoteStaleReason
   }
 }
 
@@ -533,10 +446,7 @@ export function applyExpressWarehouseScreening(
  * @param options 重置选项，可清空服务信息
  * @description 重置送货进仓输入，保留筛单标记
  */
-export function resetExpressWarehouseInput(
-  value: ExpressWarehouseDraft,
-  options: { clearService?: boolean } = {}
-): ExpressWarehouseDraft {
+export function resetExpressWarehouseInput(value: ExpressWarehouseDraft, options: { clearService?: boolean } = {}): ExpressWarehouseDraft {
   const current = normalizeExpressWarehouseDraft(value)
   const screening = {
     ...createExpressWarehouseScreeningDraft(),

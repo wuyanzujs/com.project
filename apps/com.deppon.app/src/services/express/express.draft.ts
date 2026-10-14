@@ -1,33 +1,14 @@
-import {
-  createExpressCollectionDraft,
-  validateExpressCollection
-} from './collection.rules'
+import { createExpressCollectionDraft, validateExpressCollection } from './collection.rules'
 import { createExpressDeliveryPointDraft } from './deliveryPoint.rules'
-import {
-  createExpressDeliveryPreferenceDraft,
-  validateExpressDeliveryPreference
-} from './deliveryPreference.rules'
-import {
-  createExpressInsuranceDraft,
-  validateExpressInsurance
-} from './insurance.rules'
+import { createExpressDeliveryPreferenceDraft, validateExpressDeliveryPreference } from './deliveryPreference.rules'
+import { createExpressInsuranceDraft, validateExpressInsurance } from './insurance.rules'
 import { createExpressPackagingDraft } from './packaging.rules'
 import { validateExpressPickupTime } from './pickupTime.rules'
-import {
-  createExpressReturnBillDraft,
-  validateExpressReturnBill
-} from './valueAdded'
-import {
-  createExpressWarehouseDraft,
-  validateExpressWarehouse
-} from './warehouse.rules'
+import { createExpressReturnBillDraft, validateExpressReturnBill } from './valueAdded'
+import { createExpressWarehouseDraft, validateExpressWarehouse } from './warehouse.rules'
 
 import type { Contact } from '../contact'
-import type {
-  ExpressContact,
-  ExpressDraft,
-  ExpressValidationResult
-} from './types'
+import type { ExpressContact, ExpressDraft, ExpressValidationResult } from './types'
 
 const DEFAULT_GOODS_COUNT = 1
 const DEFAULT_GOODS_WEIGHT = 1
@@ -64,10 +45,7 @@ export function getNowText() {
    */
   const pad = (value: number) => String(value).padStart(2, '0')
 
-  return [
-    `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
-    `${pad(now.getHours())}:${pad(now.getMinutes())}:00`
-  ].join(' ')
+  return [`${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`, `${pad(now.getHours())}:${pad(now.getMinutes())}:00`].join(' ')
 }
 
 /**
@@ -166,15 +144,7 @@ export function createAddressOnlyExpressContact(address: {
  * @description 拼接联系人完整地址
  */
 export function getExpressContactFullAddress(contact: ExpressContact) {
-  return [
-    contact.province,
-    contact.city,
-    contact.county,
-    contact.town,
-    contact.address
-  ]
-    .filter(Boolean)
-    .join('')
+  return [contact.province, contact.city, contact.county, contact.town, contact.address].filter(Boolean).join('')
 }
 
 // 生产 App 在寄件页地址卡展示脱敏手机号，格式为「151 **** 5262」（前 3 后 4，中间空格分隔）。
@@ -198,19 +168,12 @@ export function maskExpressContactMobile(mobile: string | null | undefined) {
  * @description 拼接联系人省市区镇
  */
 export function getExpressContactRegion(contact: ExpressContact) {
-  return [contact.province, contact.city, contact.county, contact.town]
-    .filter(Boolean)
-    .join('')
+  return [contact.province, contact.city, contact.county, contact.town].filter(Boolean).join('')
 }
 
 // 报价接口的省市区格式为「省-市-区,详细地址」（生产端约定），与无分隔拼接的 region 区分。
 export function getExpressContactRegionAddress(contact: ExpressContact) {
-  return [
-    [contact.province, contact.city, contact.county].filter(Boolean).join('-'),
-    contact.address
-  ]
-    .filter(Boolean)
-    .join(',')
+  return [[contact.province, contact.city, contact.county].filter(Boolean).join('-'), contact.address].filter(Boolean).join(',')
 }
 
 /**
@@ -219,10 +182,7 @@ export function getExpressContactRegionAddress(contact: ExpressContact) {
  * @param label 提示语中的角色名
  * @description 校验联系人信息并返回提示
  */
-export function validateExpressContact(
-  contact: ExpressContact | null,
-  label: string
-): string[] {
+export function validateExpressContact(contact: ExpressContact | null, label: string): string[] {
   if (!contact) {
     return [`请选择${label}`]
   }
@@ -274,10 +234,7 @@ export function validateExpressDraft(
     ...validateExpressContact(draft.consignee, '收件人'),
     ...validateExpressInsurance(draft),
     ...validateExpressCollection(draft.collection),
-    ...validateExpressReturnBill(
-      draft.service.returnBill,
-      draft.selectedProduct?.omsProductCode || draft.service.transportMode
-    ),
+    ...validateExpressReturnBill(draft.service.returnBill, draft.selectedProduct?.omsProductCode || draft.service.transportMode),
     ...validateExpressPickupTime(draft),
     ...validateExpressDeliveryPreference(draft, {
       requireProduct: options.requireProduct
@@ -331,10 +288,7 @@ export function validateExpressDraft(
  * @param label 提示语中的角色名
  * @description 校验时效询价所需的地址信息
  */
-function validatePriceTimeContact(
-  contact: ExpressContact | null,
-  label: string
-) {
+function validatePriceTimeContact(contact: ExpressContact | null, label: string) {
   if (!contact) {
     return [`请选择${label}地址`]
   }
@@ -360,13 +314,8 @@ function validatePriceTimeContact(
  * @param draft 寄件草稿
  * @description 校验时效询价所需草稿字段
  */
-export function validateExpressPriceTimeDraft(
-  draft: ExpressDraft
-): ExpressValidationResult {
-  const messages: string[] = [
-    ...validatePriceTimeContact(draft.sender, '寄件'),
-    ...validatePriceTimeContact(draft.consignee, '收件')
-  ]
+export function validateExpressPriceTimeDraft(draft: ExpressDraft): ExpressValidationResult {
+  const messages: string[] = [...validatePriceTimeContact(draft.sender, '寄件'), ...validatePriceTimeContact(draft.consignee, '收件')]
   const weight = toFiniteNumber(draft.goods.weight)
   const count = toFiniteNumber(draft.goods.count)
 

@@ -3,16 +3,8 @@ const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
 const { expressApi } = require('@/services/express/express.api')
-const {
-  applyExpressPickupTime,
-  selectExpressProduct,
-  updateExpressPickup
-} = require('@/services/express/express.draft')
-const {
-  buildCreateOrderRequest,
-  buildFreightRequest,
-  buildPickupTimeRequest
-} = require('@/services/express/express.payload')
+const { applyExpressPickupTime, selectExpressProduct, updateExpressPickup } = require('@/services/express/express.draft')
+const { buildCreateOrderRequest, buildFreightRequest, buildPickupTimeRequest } = require('@/services/express/express.payload')
 const { expressService } = require('@/services/express/express.service')
 const {
   createExpressPickupDateOptions,
@@ -32,10 +24,7 @@ const {
   validateExpressPickupTime
 } = require('@/services/express/pickupTime.rules')
 
-const {
-  createValidExpressDraft,
-  expressProduct
-} = require('../fixtures/express.cjs')
+const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 
 const cases = [
   {
@@ -71,20 +60,8 @@ const cases = [
       assert.equal(pickupRequest.nightOpening, 'Y')
       assert.equal(pickupRequest.nightStartTime, '18:00:00')
       assert.equal(pickupRequest.nightEndTime, '23:00:00')
-      assert.equal(
-        getFreshExpressPickupNightCapability(
-          capableDraft,
-          checkedAt + EXPRESS_NIGHT_PICKUP_CACHE_MS - 1
-        ).enabled,
-        true
-      )
-      assert.equal(
-        getFreshExpressPickupNightCapability(
-          capableDraft,
-          checkedAt + EXPRESS_NIGHT_PICKUP_CACHE_MS
-        ),
-        undefined
-      )
+      assert.equal(getFreshExpressPickupNightCapability(capableDraft, checkedAt + EXPRESS_NIGHT_PICKUP_CACHE_MS - 1).enabled, true)
+      assert.equal(getFreshExpressPickupNightCapability(capableDraft, checkedAt + EXPRESS_NIGHT_PICKUP_CACHE_MS), undefined)
       assert.equal(
         getFreshExpressPickupNightCapability(
           {
@@ -149,9 +126,7 @@ const cases = [
       }
 
       try {
-        const response = await expressService.queryPickupTime(
-          createValidExpressDraft()
-        )
+        const response = await expressService.queryPickupTime(createValidExpressDraft())
 
         assert.equal(nightCalls, 1)
         assert.equal(pickupRequest.nightOpening, 'Y')
@@ -226,9 +201,7 @@ const cases = [
         ['NORMAL', 'DISABLE', 'NIGHT', 'NIGHT']
       )
       assert.equal(
-        response.openingList[0].dateList.some(
-          item => item.type === 'NORMAL' && item.text.includes('小时')
-        ),
+        response.openingList[0].dateList.some(item => item.type === 'NORMAL' && item.text.includes('小时')),
         false
       )
       assert.equal(options[0].timeOptions[1].disabled, true)
@@ -239,9 +212,7 @@ const cases = [
           openingList: [
             {
               date: '2026-07-14',
-              dateList: response.openingList[0].dateList.filter(
-                item => item.type === 'NIGHT'
-              )
+              dateList: response.openingList[0].dateList.filter(item => item.type === 'NIGHT')
             }
           ]
         }),
@@ -321,18 +292,9 @@ const cases = [
         }),
         []
       )
-      assert.equal(
-        isExpressNightPickupTimeValid(selected.pickup.time, atCutoff),
-        false
-      )
-      assert.equal(
-        isExpressNightPickupTimeValid('2026-07-14 06:00-08:00', atCutoff),
-        true
-      )
-      assert.equal(
-        findExpressPickupTimeSelection(response, selected.pickup).type,
-        'NIGHT'
-      )
+      assert.equal(isExpressNightPickupTimeValid(selected.pickup.time, atCutoff), false)
+      assert.equal(isExpressNightPickupTimeValid('2026-07-14 06:00-08:00', atCutoff), true)
+      assert.equal(findExpressPickupTimeSelection(response, selected.pickup).type, 'NIGHT')
 
       const refreshed = applyExpressPickupTime(selected, response)
       const selfSent = updateExpressPickup(refreshed, { dispatch: 'N' })
@@ -400,9 +362,7 @@ const cases = [
 
       assert.equal(quickRequest.receive[0].beginAcceptTime, '下单后 1 小时内')
       assert.equal(quickRequest.receive[0].currentFirstTime, 'Y')
-      assert.deepEqual(quickRequest.receive[0].orderExtendFields, [
-        { key: 'nightAccept', value: 'N' }
-      ])
+      assert.deepEqual(quickRequest.receive[0].orderExtendFields, [{ key: 'nightAccept', value: 'N' }])
 
       assert.equal(normalizeExpressPickup({ type: 0 }).type, 'NORMAL')
     }

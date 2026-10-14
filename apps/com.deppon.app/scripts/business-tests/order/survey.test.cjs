@@ -2,10 +2,7 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  ORDER_NPS_SURVEY_API_ENDPOINTS,
-  orderNpsSurveyApi
-} = require('@/services/order/order.npsSurvey.api')
+const { ORDER_NPS_SURVEY_API_ENDPOINTS, orderNpsSurveyApi } = require('@/services/order/order.npsSurvey.api')
 const {
   createOrderNpsDraft,
   createOrderNpsLabelContent,
@@ -14,13 +11,8 @@ const {
   updateOrderNpsCategory,
   updateOrderNpsScore
 } = require('@/services/order/order.npsSurvey.rules')
-const {
-  ORDER_SCENE_SURVEY_API_ENDPOINTS,
-  orderSceneSurveyApi
-} = require('@/services/order/order.sceneSurvey.api')
-const {
-  orderSceneSurveyOrchestrator
-} = require('@/services/order/order.sceneSurvey.orchestrator')
+const { ORDER_SCENE_SURVEY_API_ENDPOINTS, orderSceneSurveyApi } = require('@/services/order/order.sceneSurvey.api')
+const { orderSceneSurveyOrchestrator } = require('@/services/order/order.sceneSurvey.orchestrator')
 const {
   ORDER_SCENE_SURVEY_WINDOW_MS,
   createOrderSceneLabelSubmitRequest,
@@ -39,13 +31,7 @@ const cases = [
     name: 'order scene survey selects exact role state source and seven day plans',
     run() {
       const now = new Date(2026, 6, 15, 12, 0, 0).getTime()
-      const createContext = (
-        detail,
-        role = 'sender',
-        source = 'ORDER_DETAIL',
-        mobile = '13800138000',
-        publicTrackMode = false
-      ) =>
+      const createContext = (detail, role = 'sender', source = 'ORDER_DETAIL', mobile = '13800138000', publicTrackMode = false) =>
         createOrderSceneSurveyContext({
           detail,
           role,
@@ -61,13 +47,8 @@ const cases = [
           orderTime: new Date(2026, 6, 15, 8, 0, 0).getTime()
         })
       )
-      const earlierSender = createContext(
-        createOrderDetail({ orderTime: now - 24 * 60 * 60 * 1000 })
-      )
-      const transitReceiver = createContext(
-        createOrderDetail({ orderTime: now - 24 * 60 * 60 * 1000 }),
-        'receive'
-      )
+      const earlierSender = createContext(createOrderDetail({ orderTime: now - 24 * 60 * 60 * 1000 }))
+      const transitReceiver = createContext(createOrderDetail({ orderTime: now - 24 * 60 * 60 * 1000 }), 'receive')
       const signedSender = createContext(
         createOrderDetail({
           orderClassification: '2',
@@ -103,12 +84,7 @@ const cases = [
       assert.deepEqual(getCodes(earlierSender), ['S0601', 'T0101', 'T0401'])
       assert.deepEqual(getCodes(transitReceiver), ['S0601'])
       assert.deepEqual(getCodes(signedSender), ['N0101', 'S0908'])
-      assert.deepEqual(getCodes(signedReceiver), [
-        'N0101',
-        'T0201',
-        'S0907_1',
-        'T0501'
-      ])
+      assert.deepEqual(getCodes(signedReceiver), ['N0101', 'T0201', 'S0907_1', 'T0501'])
       assert.deepEqual(getCodes(pdc), ['N0101'])
       assert.deepEqual(getCodes(npsWithoutCachedMobile), ['N0101'])
       assert.equal(
@@ -129,10 +105,7 @@ const cases = [
         ),
         null
       )
-      assert.equal(
-        createContext(createOrderDetail(), 'sender', 'ORDER_DETAIL', '', true),
-        null
-      )
+      assert.equal(createContext(createOrderDetail(), 'sender', 'ORDER_DETAIL', '', true), null)
       assert.equal(parseOrderSceneSurveyTime(Math.floor(now / 1000)), now)
       assert.equal(parseOrderSceneSurveyTime('2026年07月15日 12:00'), now)
       assert.equal(parseOrderSceneSurveyTime('not-a-time'), null)
@@ -253,16 +226,8 @@ const cases = [
         selectedLabelIds: ['NEGATIVE', 'POSITIVE'],
         content: ' 服务很好 '
       }
-      const scoreRequest = createOrderSceneScoreSubmitRequest(
-        context,
-        scoreItem,
-        draft
-      )
-      const labelRequest = createOrderSceneLabelSubmitRequest(
-        context,
-        labelItem,
-        'LABEL_01'
-      )
+      const scoreRequest = createOrderSceneScoreSubmitRequest(context, scoreItem, draft)
+      const labelRequest = createOrderSceneLabelSubmitRequest(context, labelItem, 'LABEL_01')
 
       assert.equal(validateOrderSceneScoreDraft(scoreItem, draft), '')
       assert.equal(
@@ -283,9 +248,7 @@ const cases = [
       assert.equal(scoreRequest.content, '服务很好')
       assert.equal(scoreRequest.channel, 'OWS')
       assert.equal(scoreRequest.childChannel, 'APP')
-      assert.deepEqual(scoreRequest.additionalData, [
-        { field: 'waybillNumber', data: 'DPK123456789' }
-      ])
+      assert.deepEqual(scoreRequest.additionalData, [{ field: 'waybillNumber', data: 'DPK123456789' }])
       assert.deepEqual(labelRequest.question, [
         {
           star: '5',

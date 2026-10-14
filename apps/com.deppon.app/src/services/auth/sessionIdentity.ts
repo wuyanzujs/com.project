@@ -1,15 +1,6 @@
 import type { AppUser } from './types'
 
-const ACCOUNT_IDENTITY_FIELDS = [
-  'id',
-  'mobile',
-  'mobileEncrypt',
-  'unionId',
-  'originalOpenId',
-  'openId',
-  'userName',
-  'thirdBindUserName'
-] as const
+const ACCOUNT_IDENTITY_FIELDS = ['id', 'mobile', 'mobileEncrypt', 'unionId', 'originalOpenId', 'openId', 'userName', 'thirdBindUserName'] as const
 
 /**
  *
@@ -65,11 +56,7 @@ export function isSameAppUser(current: AppUser, next: AppUser) {
  * @param owner 已缓存账号标识，可为空
  * @description 判断是否需要清理账号维度缓存
  */
-export function shouldClearAccountScopedCache(
-  current: AppUser | null,
-  next: AppUser,
-  owner: AppUser | null = null
-) {
+export function shouldClearAccountScopedCache(current: AppUser | null, next: AppUser, owner: AppUser | null = null) {
   if (current && !isSameAppUser(current, next)) {
     return true
   }

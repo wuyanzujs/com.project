@@ -12,9 +12,7 @@ export function OrderPickupScheduleOptions(props: {
   onSelectDate: (date: string) => void
   onSelectTime: (time: string) => void
 }) {
-  const selectedDate = props.schedule.dates.find(
-    item => item.date === props.selectedDate
-  )
+  const selectedDate = props.schedule.dates.find(item => item.date === props.selectedDate)
 
   return (
     <>
@@ -28,23 +26,11 @@ export function OrderPickupScheduleOptions(props: {
               <AppPressable
                 accessibilityLabel={`选择日期 ${date.label}`}
                 block
-                className={
-                  selected
-                    ? 'order-pickup-date order-pickup-date--active'
-                    : 'order-pickup-date'
-                }
+                className={selected ? 'order-pickup-date order-pickup-date--active' : 'order-pickup-date'}
                 selected={selected}
                 onPress={() => props.onSelectDate(date.date)}
               >
-                <Text
-                  className={
-                    selected
-                      ? 'order-pickup-date__text order-pickup-date__text--active'
-                      : 'order-pickup-date__text'
-                  }
-                >
-                  {date.label}
-                </Text>
+                <Text className={selected ? 'order-pickup-date__text order-pickup-date__text--active' : 'order-pickup-date__text'}>{date.label}</Text>
               </AppPressable>
             </View>
           )
@@ -57,30 +43,15 @@ export function OrderPickupScheduleOptions(props: {
           const selected = slot.time === props.selectedTime
 
           return (
-            <View
-              className='order-pickup-slot-slot'
-              key={`${slot.type}-${slot.time}`}
-            >
+            <View className='order-pickup-slot-slot' key={`${slot.type}-${slot.time}`}>
               <AppPressable
                 accessibilityLabel={`选择时段 ${slot.text}`}
                 block
-                className={
-                  selected
-                    ? 'order-pickup-slot order-pickup-slot--active'
-                    : 'order-pickup-slot'
-                }
+                className={selected ? 'order-pickup-slot order-pickup-slot--active' : 'order-pickup-slot'}
                 selected={selected}
                 onPress={() => props.onSelectTime(slot.time)}
               >
-                <Text
-                  className={
-                    selected
-                      ? 'order-pickup-slot__text order-pickup-slot__text--active'
-                      : 'order-pickup-slot__text'
-                  }
-                >
-                  {slot.text}
-                </Text>
+                <Text className={selected ? 'order-pickup-slot__text order-pickup-slot__text--active' : 'order-pickup-slot__text'}>{slot.text}</Text>
               </AppPressable>
             </View>
           )

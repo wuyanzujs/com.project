@@ -60,11 +60,11 @@ test('failed cookie deletion blocks recovery and persists an invalidation marker
   assert.equal(await recoverSessionCookie('https://owstest.deppon.com'), '')
   assert.equal(nativeReads, 0)
 
-  const restart = spawnSync(
-    process.execPath,
-    [path.join(__dirname, '../support/restart-session.cjs')],
-    { input: JSON.stringify([...disk]), encoding: 'utf8', timeout: 10000 }
-  )
+  const restart = spawnSync(process.execPath, [path.join(__dirname, '../support/restart-session.cjs')], {
+    input: JSON.stringify([...disk]),
+    encoding: 'utf8',
+    timeout: 10000
+  })
   assert.equal(restart.status, 0, restart.stderr)
   assert.deepEqual(JSON.parse(restart.stdout), { token: '', nativeReads: 0 })
 })
@@ -150,10 +150,7 @@ test('failed account cache cleanup prevents switching to another user', async t 
   const { disk, Taro } = createSessionFixture(t)
   const originalUser = { mobile: '13800138000' }
   await setStorageValue(CACHE_KEYS.userInfo, JSON.stringify(originalUser))
-  await setStorageValue(
-    CACHE_KEYS.accountCacheOwner,
-    JSON.stringify(originalUser)
-  )
+  await setStorageValue(CACHE_KEYS.accountCacheOwner, JSON.stringify(originalUser))
   const draftKey = createCacheStorageKey(CACHE_KEYS.expressDraft)
   await setStorageValue(draftKey, 'private-old-draft')
   t.mock.method(Taro, 'removeStorage', async ({ key }) => {
@@ -164,14 +161,8 @@ test('failed account cache cleanup prevents switching to another user', async t 
   })
 
   assert.equal(await saveCurrentUser({ mobile: '13900139000' }), false)
-  assert.deepEqual(
-    JSON.parse(getStorageValue(CACHE_KEYS.userInfo)),
-    originalUser
-  )
-  assert.deepEqual(
-    JSON.parse(disk.get(CACHE_KEYS.accountCacheOwner)),
-    originalUser
-  )
+  assert.deepEqual(JSON.parse(getStorageValue(CACHE_KEYS.userInfo)), originalUser)
+  assert.deepEqual(JSON.parse(disk.get(CACHE_KEYS.accountCacheOwner)), originalUser)
   assert.equal(getStorageValue(draftKey), 'private-old-draft')
 })
 

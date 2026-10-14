@@ -16,33 +16,17 @@ interface CouponStatusTabsProps {
   onChange: (status: CouponStatus) => void
 }
 
-export function CouponStatusTabs({
-  activeStatus,
-  onChange,
-  tabs
-}: CouponStatusTabsProps) {
+export function CouponStatusTabs({ activeStatus, onChange, tabs }: CouponStatusTabsProps) {
   return (
     <View className='coupon-tabs'>
       {tabs.map(tab => (
         <AppPressable
           accessibilityLabel={tab.label}
-          className={
-            tab.value === activeStatus
-              ? 'coupon-tab coupon-tab--active'
-              : 'coupon-tab'
-          }
+          className={tab.value === activeStatus ? 'coupon-tab coupon-tab--active' : 'coupon-tab'}
           key={tab.value}
           onPress={() => onChange(tab.value)}
         >
-          <Text
-            className={
-              tab.value === activeStatus
-                ? 'coupon-tab__text coupon-tab__text--active'
-                : 'coupon-tab__text'
-            }
-          >
-            {tab.label}
-          </Text>
+          <Text className={tab.value === activeStatus ? 'coupon-tab__text coupon-tab__text--active' : 'coupon-tab__text'}>{tab.label}</Text>
         </AppPressable>
       ))}
     </View>

@@ -18,30 +18,14 @@ interface ExpressNavBarProps {
 export function ExpressNavBar({ onShare, title }: ExpressNavBarProps) {
   return (
     <View className='express-nav-bar'>
-      <AppPressable
-        accessibilityLabel='返回上一页'
-        className='express-nav-bar__back'
-        onPress={() => Taro.navigateBack()}
-      >
+      <AppPressable accessibilityLabel='返回上一页' className='express-nav-bar__back' onPress={() => Taro.navigateBack()}>
         {/* 生产端返回键是大号粗描边 chevron，墨迹约 53×30。 */}
-        <AppIcon
-          color={APP_STYLE_COLORS.text.heading}
-          name='chevronLeft'
-          size={64}
-        />
+        <AppIcon color={APP_STYLE_COLORS.text.heading} name='chevronLeft' size={64} />
       </AppPressable>
       <Text className='express-nav-bar__title'>{title}</Text>
       {onShare ? (
-        <AppPressable
-          accessibilityLabel='分享寄件入口'
-          className='express-nav-bar__share'
-          onPress={onShare}
-        >
-          <AppIcon
-            color={APP_STYLE_COLORS.text.heading}
-            name='redo'
-            size={48}
-          />
+        <AppPressable accessibilityLabel='分享寄件入口' className='express-nav-bar__share' onPress={onShare}>
+          <AppIcon color={APP_STYLE_COLORS.text.heading} name='redo' size={48} />
           <Text className='express-nav-bar__share-text'>分享</Text>
         </AppPressable>
       ) : (

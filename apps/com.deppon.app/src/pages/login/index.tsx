@@ -6,10 +6,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { authService, isValidMobile, isValidSmsCode } from '@/services/auth'
 import { AppPressable } from '@/shared/components'
 import { AppFormScrollView, AppKeyboardAvoidingView } from '@/shared/native'
-import {
-  navigateToAppRoute,
-  navigateToAppRouteAsync
-} from '@/shared/navigation/appNavigation'
+import { navigateToAppRoute, navigateToAppRouteAsync } from '@/shared/navigation/appNavigation'
 import { hasValidSession } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { normalizeAppRouteUrlParam } from '@/shared/navigation/routeUrl'
@@ -23,34 +20,19 @@ const SMS_COUNTDOWN_SECONDS = 60
 
 const LoginPage = () => {
   const router = useRouter()
-  const redirectUrl = useMemo(
-    () => normalizeAppRouteUrlParam(router.params.redirectUrl),
-    [router.params.redirectUrl]
-  )
+  const redirectUrl = useMemo(() => normalizeAppRouteUrlParam(router.params.redirectUrl), [router.params.redirectUrl])
   const [mobile, setMobile] = useState('')
   const [smsCode, setSmsCode] = useState('')
   const [sending, setSending] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [countdown, setCountdown] = useState(0)
   const [agreementAccepted, setAgreementAccepted] = useState(false)
-  const [sessionReady, setSessionReady] = useState(
-    () => hasValidSession() && Boolean(authService.getCachedUser())
-  )
+  const [sessionReady, setSessionReady] = useState(() => hasValidSession() && Boolean(authService.getCachedUser()))
   const mountedRef = useRef(true)
   const targetUrl = redirectUrl || APP_ROUTES.mine
-  const canSend =
-    !sessionReady && isValidMobile(mobile) && !sending && countdown <= 0
-  const canSubmit =
-    !sessionReady &&
-    isValidMobile(mobile) &&
-    isValidSmsCode(smsCode) &&
-    agreementAccepted &&
-    !submitting
-  const codeButtonLabel = sending
-    ? '发送中'
-    : countdown > 0
-      ? `${countdown}秒后重试`
-      : '获取验证码'
+  const canSend = !sessionReady && isValidMobile(mobile) && !sending && countdown <= 0
+  const canSubmit = !sessionReady && isValidMobile(mobile) && isValidSmsCode(smsCode) && agreementAccepted && !submitting
+  const codeButtonLabel = sending ? '发送中' : countdown > 0 ? `${countdown}秒后重试` : '获取验证码'
 
   useEffect(() => {
     mountedRef.current = true
@@ -91,9 +73,7 @@ const LoginPage = () => {
       }
 
       Taro.showToast({
-        title: response.status
-          ? '验证码已发送'
-          : response.message || '验证码发送失败',
+        title: response.status ? '验证码已发送' : response.message || '验证码发送失败',
         icon: 'none'
       })
 
@@ -224,9 +204,7 @@ const LoginPage = () => {
             <Text className='login-hero__title'>德邦快递</Text>
             <Text className='login-hero__badge'>欢迎登录</Text>
           </View>
-          <Text className='login-hero__summary'>
-            登录后即可寄件、查件、领取优惠
-          </Text>
+          <Text className='login-hero__summary'>登录后即可寄件、查件、领取优惠</Text>
         </View>
 
         <View className='login-card'>
@@ -239,9 +217,7 @@ const LoginPage = () => {
               placeholder='请输入手机号'
               type='number'
               value={mobile}
-              onInput={event =>
-                setMobile(event.detail.value.replace(/\D/g, '').slice(0, 11))
-              }
+              onInput={event => setMobile(event.detail.value.replace(/\D/g, '').slice(0, 11))}
             />
           </View>
 
@@ -253,74 +229,34 @@ const LoginPage = () => {
               placeholder='请输入验证码'
               type='number'
               value={smsCode}
-              onInput={event =>
-                setSmsCode(event.detail.value.replace(/\D/g, '').slice(0, 6))
-              }
+              onInput={event => setSmsCode(event.detail.value.replace(/\D/g, '').slice(0, 6))}
             />
             <AppPressable className='login-code-button' onPress={handleSendSms}>
-              <Text
-                className={
-                  canSend
-                    ? 'login-code-button__text login-code-button__text--active'
-                    : 'login-code-button__text'
-                }
-              >
-                {codeButtonLabel}
-              </Text>
+              <Text className={canSend ? 'login-code-button__text login-code-button__text--active' : 'login-code-button__text'}>{codeButtonLabel}</Text>
             </AppPressable>
           </View>
 
           <View className='login-agreement'>
             <AppPressable
-              className={
-                agreementAccepted
-                  ? 'login-agreement__checkbox login-agreement__checkbox--checked'
-                  : 'login-agreement__checkbox'
-              }
+              className={agreementAccepted ? 'login-agreement__checkbox login-agreement__checkbox--checked' : 'login-agreement__checkbox'}
               onPress={() => setAgreementAccepted(current => !current)}
             >
-              <Text className='login-agreement__check'>
-                {agreementAccepted ? '✓' : ''}
-              </Text>
+              <Text className='login-agreement__check'>{agreementAccepted ? '✓' : ''}</Text>
             </AppPressable>
             <View className='login-agreement__content'>
               <Text className='login-agreement__text'>已阅读并同意</Text>
-              <AppPressable
-                contentElement='text'
-                className='login-agreement__link'
-                onPress={() => handlePolicyPress('AUTH_LOGIN_SERVICE_PROTOCOL')}
-              >
+              <AppPressable contentElement='text' className='login-agreement__link' onPress={() => handlePolicyPress('AUTH_LOGIN_SERVICE_PROTOCOL')}>
                 《服务协议》
               </AppPressable>
               <Text className='login-agreement__text'>与</Text>
-              <AppPressable
-                contentElement='text'
-                className='login-agreement__link'
-                onPress={() => handlePolicyPress('AUTH_LOGIN_PRIVACY_PROTOCOL')}
-              >
+              <AppPressable contentElement='text' className='login-agreement__link' onPress={() => handlePolicyPress('AUTH_LOGIN_PRIVACY_PROTOCOL')}>
                 《隐私政策》
               </AppPressable>
             </View>
           </View>
 
-          <AppPressable
-            block
-            className={
-              canSubmit || sessionReady
-                ? 'login-submit'
-                : 'login-submit login-submit--inactive'
-            }
-            onPress={handleSubmit}
-          >
-            <Text className='login-submit__text'>
-              {submitting
-                ? sessionReady
-                  ? '返回中'
-                  : '登录中'
-                : sessionReady
-                  ? '返回原页面'
-                  : '立即登录'}
-            </Text>
+          <AppPressable block className={canSubmit || sessionReady ? 'login-submit' : 'login-submit login-submit--inactive'} onPress={handleSubmit}>
+            <Text className='login-submit__text'>{submitting ? (sessionReady ? '返回中' : '登录中') : sessionReady ? '返回原页面' : '立即登录'}</Text>
           </AppPressable>
 
           <AppPressable className='login-secondary' onPress={handleSkip}>

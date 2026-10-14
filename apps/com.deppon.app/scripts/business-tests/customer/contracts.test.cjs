@@ -3,16 +3,9 @@ const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
 const { customerApi } = require('@/services/customer/customer.api')
-const {
-  createCustomerCapabilitySummary,
-  customerService,
-  normalizeCustomerCapability
-} = require('@/services/customer/customer.service')
+const { createCustomerCapabilitySummary, customerService, normalizeCustomerCapability } = require('@/services/customer/customer.service')
 const { applyExpressScanContext } = require('@/services/express/express.draft')
-const {
-  buildFilterOrderRequest,
-  buildFreightRequest
-} = require('@/services/express/express.payload')
+const { buildFilterOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
 const { APP_WEB_TARGETS } = require('@/shared/webview/appWeb')
 
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
@@ -21,10 +14,7 @@ const cases = [
   {
     name: 'customer private bill web target points to controlled OWS page',
     run() {
-      assert.equal(
-        APP_WEB_TARGETS.CUSTOMER_PRIVATE_BILL.url,
-        '/depponmobile/mow/customer/privateSetting'
-      )
+      assert.equal(APP_WEB_TARGETS.CUSTOMER_PRIVATE_BILL.url, '/depponmobile/mow/customer/privateSetting')
     }
   },
   {

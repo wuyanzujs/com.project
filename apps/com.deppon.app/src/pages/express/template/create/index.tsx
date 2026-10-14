@@ -16,27 +16,18 @@ import './content.scss'
 
 function getDraftSummary(draft: ExpressDraft) {
   return {
-    sender: draft.sender
-      ? `${draft.sender.name} · ${draft.sender.city || draft.sender.province}`
-      : '--',
-    receiver: draft.consignee
-      ? `${draft.consignee.name} · ${draft.consignee.city || draft.consignee.province}`
-      : '--',
+    sender: draft.sender ? `${draft.sender.name} · ${draft.sender.city || draft.sender.province}` : '--',
+    receiver: draft.consignee ? `${draft.consignee.name} · ${draft.consignee.city || draft.consignee.province}` : '--',
     goods: `${draft.goods.name || '--'} · ${draft.goods.weight || 0}kg`
   }
 }
 
 const ExpressTemplateCreatePage = () => {
-  const [draft] = useState<ExpressDraft | null>(
-    () => templateService.consumeStagedDraft() ?? expressDraftStorage.restore()
-  )
+  const [draft] = useState<ExpressDraft | null>(() => templateService.consumeStagedDraft() ?? expressDraftStorage.restore())
   const [name, setName] = useState('')
   const [defaultFlag, setDefaultFlag] = useState<1 | 2>(2)
   const [saving, setSaving] = useState(false)
-  const summary = useMemo(
-    () => (draft ? getDraftSummary(draft) : null),
-    [draft]
-  )
+  const summary = useMemo(() => (draft ? getDraftSummary(draft) : null), [draft])
 
   useDidShow(() => {
     ensureAuthenticated({
@@ -82,13 +73,8 @@ const ExpressTemplateCreatePage = () => {
   if (!draft || !summary) {
     return (
       <View className='template-create-page template-create-page--empty'>
-        <Text className='template-create-empty__title'>
-          暂无可保存的寄件信息
-        </Text>
-        <AppPressable
-          className='template-create-empty__button'
-          onPress={() => navigateToAppRoute(APP_ROUTES.express)}
-        >
+        <Text className='template-create-empty__title'>暂无可保存的寄件信息</Text>
+        <AppPressable className='template-create-empty__button' onPress={() => navigateToAppRoute(APP_ROUTES.express)}>
           <Text className='template-create-empty__button-text'>返回寄件页</Text>
         </AppPressable>
       </View>
@@ -131,21 +117,11 @@ const ExpressTemplateCreatePage = () => {
           {([2, 1] as const).map(value => (
             <AppPressable
               flex
-              className={
-                defaultFlag === value
-                  ? 'template-create-segment__item template-create-segment__item--active'
-                  : 'template-create-segment__item'
-              }
+              className={defaultFlag === value ? 'template-create-segment__item template-create-segment__item--active' : 'template-create-segment__item'}
               key={value}
               onPress={() => setDefaultFlag(value)}
             >
-              <Text
-                className={
-                  defaultFlag === value
-                    ? 'template-create-segment__text template-create-segment__text--active'
-                    : 'template-create-segment__text'
-                }
-              >
+              <Text className={defaultFlag === value ? 'template-create-segment__text template-create-segment__text--active' : 'template-create-segment__text'}>
                 {value === 1 ? '设为默认' : '普通模板'}
               </Text>
             </AppPressable>
@@ -153,17 +129,8 @@ const ExpressTemplateCreatePage = () => {
         </View>
       </View>
 
-      <AppPressable
-        className={
-          saving
-            ? 'template-create-submit template-create-submit--disabled'
-            : 'template-create-submit'
-        }
-        onPress={handleSave}
-      >
-        <Text className='template-create-submit__text'>
-          {saving ? '保存中' : '保存模板'}
-        </Text>
+      <AppPressable className={saving ? 'template-create-submit template-create-submit--disabled' : 'template-create-submit'} onPress={handleSave}>
+        <Text className='template-create-submit__text'>{saving ? '保存中' : '保存模板'}</Text>
       </AppPressable>
     </ScrollView>
   )

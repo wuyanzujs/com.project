@@ -3,11 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { customerService } from '@/services/customer'
 import type { CustomerCenterView } from '@/services/customer'
 import { createExpressMonthlyPayView } from '@/services/express'
-import type {
-  ExpressDraft,
-  ExpressMonthlyPayView,
-  ExpressPaymentType
-} from '@/services/express'
+import type { ExpressDraft, ExpressMonthlyPayView, ExpressPaymentType } from '@/services/express'
 import { hasValidSession } from '@/shared/navigation/authGuard'
 
 interface UseExpressMonthlyPayParams {
@@ -25,12 +21,8 @@ interface UseExpressMonthlyPayResult {
   handlePaymentTypeSelect: (paymentType: ExpressPaymentType) => void
 }
 
-export function useExpressMonthlyPay({
-  draft,
-  updateService
-}: UseExpressMonthlyPayParams): UseExpressMonthlyPayResult {
-  const [monthlyCustomer, setMonthlyCustomer] =
-    useState<CustomerCenterView | null>(null)
+export function useExpressMonthlyPay({ draft, updateService }: UseExpressMonthlyPayParams): UseExpressMonthlyPayResult {
+  const [monthlyCustomer, setMonthlyCustomer] = useState<CustomerCenterView | null>(null)
   const [monthlyCustomerLoading, setMonthlyCustomerLoading] = useState(false)
   const [monthlyCustomerChecked, setMonthlyCustomerChecked] = useState(false)
   const [monthlyCustomerMessage, setMonthlyCustomerMessage] = useState('')
@@ -90,13 +82,7 @@ export function useExpressMonthlyPay({
         checked: monthlyCustomerChecked,
         errorMessage: monthlyCustomerMessage
       }),
-    [
-      draft.service.paymentType,
-      monthlyCustomer,
-      monthlyCustomerChecked,
-      monthlyCustomerLoading,
-      monthlyCustomerMessage
-    ]
+    [draft.service.paymentType, monthlyCustomer, monthlyCustomerChecked, monthlyCustomerLoading, monthlyCustomerMessage]
   )
 
   const handlePaymentTypeSelect = useCallback(

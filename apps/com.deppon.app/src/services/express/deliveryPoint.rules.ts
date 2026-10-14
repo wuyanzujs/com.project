@@ -48,9 +48,7 @@ export function normalizeExpressDeliveryPointDraft(
  * @param station 网点信息
  * @description 由网点信息生成自提服务点草稿
  */
-export function createExpressDeliveryPointFromStation(
-  station: Pick<StationItem, 'code' | 'id' | 'name'>
-) {
+export function createExpressDeliveryPointFromStation(station: Pick<StationItem, 'code' | 'id' | 'name'>) {
   return normalizeExpressDeliveryPointDraft({
     code: station.id,
     name: station.name
@@ -63,19 +61,11 @@ export function createExpressDeliveryPointFromStation(
  * @param station 选中的网点，可为空
  * @description 更新自提服务点，有变化时标记报价过期
  */
-export function updateExpressDeliveryPoint(
-  draft: ExpressDraft,
-  station: Pick<StationItem, 'code' | 'id' | 'name'> | null
-): ExpressDraft {
+export function updateExpressDeliveryPoint(draft: ExpressDraft, station: Pick<StationItem, 'code' | 'id' | 'name'> | null): ExpressDraft {
   const deliveryPoint =
-    draft.service.deliveryMode === 'PICKSELF' && station
-      ? createExpressDeliveryPointFromStation(station)
-      : createExpressDeliveryPointDraft()
+    draft.service.deliveryMode === 'PICKSELF' && station ? createExpressDeliveryPointFromStation(station) : createExpressDeliveryPointDraft()
 
-  if (
-    draft.deliveryPoint.code === deliveryPoint.code &&
-    draft.deliveryPoint.name === deliveryPoint.name
-  ) {
+  if (draft.deliveryPoint.code === deliveryPoint.code && draft.deliveryPoint.name === deliveryPoint.name) {
     return draft
   }
 
@@ -93,10 +83,7 @@ export function updateExpressDeliveryPoint(
  * @description 生成下单所需的自提点字段
  */
 export function getExpressDeliveryPointOrderFields(draft: ExpressDraft) {
-  const deliveryPoint = normalizeExpressDeliveryPointDraft(
-    draft.deliveryPoint,
-    draft.service.deliveryMode
-  )
+  const deliveryPoint = normalizeExpressDeliveryPointDraft(draft.deliveryPoint, draft.service.deliveryMode)
 
   return {
     receivingToPoint: deliveryPoint.code,

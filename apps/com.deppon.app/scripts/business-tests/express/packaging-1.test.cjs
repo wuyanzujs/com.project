@@ -2,18 +2,9 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  buildCreateOrderRequest,
-  buildFreightRequest
-} = require('@/services/express/express.payload')
-const {
-  createExpressProductQuoteView
-} = require('@/services/express/express.quoteView')
-const {
-  EXPRESS_CARTON_OPTIONS,
-  EXPRESS_UNPACKING_OPTIONS,
-  EXPRESS_WOODEN_PACKAGING_OPTIONS
-} = require('@/services/express/packaging.catalog')
+const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
+const { createExpressProductQuoteView } = require('@/services/express/express.quoteView')
+const { EXPRESS_CARTON_OPTIONS, EXPRESS_UNPACKING_OPTIONS, EXPRESS_WOODEN_PACKAGING_OPTIONS } = require('@/services/express/packaging.catalog')
 const {
   createExpressOrderPackageInfoList,
   createExpressOrderPackingText,
@@ -30,10 +21,7 @@ const {
   normalizeExpressWoodenPackagingCodes
 } = require('@/services/express/packaging.rules')
 
-const {
-  createValidExpressDraft,
-  expressProduct
-} = require('../fixtures/express.cjs')
+const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 
 const cases = [
   {
@@ -53,21 +41,10 @@ const cases = [
           { code: 'ZX_DP_07', volume: 0.12 }
         ]
       )
-      assert.equal(
-        new Set(EXPRESS_CARTON_OPTIONS.map(option => option.code)).size,
-        9
-      )
+      assert.equal(new Set(EXPRESS_CARTON_OPTIONS.map(option => option.code)).size, 9)
       assert.equal(normalizeExpressCartonCode(' ZX_DP_2S '), 'ZX_DP_2S')
 
-      for (const value of [
-        'ZX_DP_08',
-        'ZX_DP_2',
-        'zx_dp',
-        1,
-        null,
-        undefined,
-        {}
-      ]) {
+      for (const value of ['ZX_DP_08', 'ZX_DP_2', 'zx_dp', 1, null, undefined, {}]) {
         assert.equal(normalizeExpressCartonCode(value), '')
       }
     }
@@ -76,14 +53,12 @@ const cases = [
     name: 'express wooden packaging catalog keeps exact order mappings',
     run() {
       assert.deepEqual(
-        EXPRESS_WOODEN_PACKAGING_OPTIONS.map(
-          ({ code, orderType, orderPackageCode, packingName }) => ({
-            code,
-            orderType,
-            orderPackageCode,
-            packingName
-          })
-        ),
+        EXPRESS_WOODEN_PACKAGING_OPTIONS.map(({ code, orderType, orderPackageCode, packingName }) => ({
+          code,
+          orderType,
+          orderPackageCode,
+          packingName
+        })),
         [
           {
             code: 'WOOD_03',
@@ -111,16 +86,7 @@ const cases = [
           }
         ]
       )
-      assert.deepEqual(
-        normalizeExpressWoodenPackagingCodes([
-          ' WOOD_02 ',
-          'WOOD_03',
-          'WOOD_02',
-          'WOOD_UNKNOWN',
-          null
-        ]),
-        ['WOOD_03', 'WOOD_02']
-      )
+      assert.deepEqual(normalizeExpressWoodenPackagingCodes([' WOOD_02 ', 'WOOD_03', 'WOOD_02', 'WOOD_UNKNOWN', null]), ['WOOD_03', 'WOOD_02'])
       assert.deepEqual(
         normalizeExpressPackagingDraft({
           cartonCode: 'ZX_UNKNOWN',
@@ -138,14 +104,12 @@ const cases = [
     name: 'express unpacking catalog keeps exact quantity mappings',
     run() {
       assert.deepEqual(
-        EXPRESS_UNPACKING_OPTIONS.map(
-          ({ code, name, priceLabel, numberField }) => ({
-            code,
-            name,
-            priceLabel,
-            numberField
-          })
-        ),
+        EXPRESS_UNPACKING_OPTIONS.map(({ code, name, priceLabel, numberField }) => ({
+          code,
+          name,
+          priceLabel,
+          numberField
+        })),
         [
           {
             code: 'UNPACKING_01',
@@ -161,16 +125,10 @@ const cases = [
           }
         ]
       )
-      assert.deepEqual(
-        normalizeExpressUnpackingCodes([
-          ' UNPACKING_02 ',
-          'UNPACKING_01',
-          'UNPACKING_02',
-          'UNPACKING_UNKNOWN',
-          null
-        ]),
-        ['UNPACKING_01', 'UNPACKING_02']
-      )
+      assert.deepEqual(normalizeExpressUnpackingCodes([' UNPACKING_02 ', 'UNPACKING_01', 'UNPACKING_02', 'UNPACKING_UNKNOWN', null]), [
+        'UNPACKING_01',
+        'UNPACKING_02'
+      ])
     }
   },
   {
@@ -227,14 +185,8 @@ const cases = [
       const freightRequest = buildFreightRequest(draft)
       const orderRequest = buildCreateOrderRequest(draft)
 
-      assert.deepEqual(
-        createExpressQuotePackageInfoList(draft.packaging),
-        expectedPackageInfoList
-      )
-      assert.deepEqual(
-        createExpressOrderPackageInfoList(draft.packaging),
-        expectedPackageInfoList
-      )
+      assert.deepEqual(createExpressQuotePackageInfoList(draft.packaging), expectedPackageInfoList)
+      assert.deepEqual(createExpressOrderPackageInfoList(draft.packaging), expectedPackageInfoList)
       assert.equal(getExpressPackageLtlType(draft.packaging), '')
       assert.equal(createExpressOrderPackingText(draft.packaging), '')
       assert.equal(freightRequest.totalVolume, 0.036)
@@ -262,28 +214,10 @@ const cases = [
       const unpackagedFreightRequest = buildFreightRequest(unpackagedDraft)
       const unpackagedOrderRequest = buildCreateOrderRequest(unpackagedDraft)
 
-      assert.equal(
-        Object.prototype.hasOwnProperty.call(
-          unpackagedFreightRequest,
-          'packageInfoList'
-        ),
-        false
-      )
-      assert.equal(
-        Object.prototype.hasOwnProperty.call(
-          unpackagedOrderRequest,
-          'packageInfoList'
-        ),
-        false
-      )
-      assert.equal(
-        createExpressQuotePackageInfoList(unpackagedDraft.packaging),
-        undefined
-      )
-      assert.equal(
-        createExpressOrderPackageInfoList(unpackagedDraft.packaging),
-        undefined
-      )
+      assert.equal(Object.prototype.hasOwnProperty.call(unpackagedFreightRequest, 'packageInfoList'), false)
+      assert.equal(Object.prototype.hasOwnProperty.call(unpackagedOrderRequest, 'packageInfoList'), false)
+      assert.equal(createExpressQuotePackageInfoList(unpackagedDraft.packaging), undefined)
+      assert.equal(createExpressOrderPackageInfoList(unpackagedDraft.packaging), undefined)
       assert.equal(unpackagedFreightRequest.packageLtlType, '')
       assert.deepEqual(createExpressUnpackingNumbers(draft.packaging), {
         unpackingNonWoodPackagingNumber: 0,
@@ -307,9 +241,7 @@ const cases = [
           unpackingCodes: []
         }
       }
-      const quotePackageInfoList = [
-        { type: 'COUNT', data: '1', packageCode: 'ZX_DP_04' }
-      ]
+      const quotePackageInfoList = [{ type: 'COUNT', data: '1', packageCode: 'ZX_DP_04' }]
       const orderPackageInfoList = [
         ...quotePackageInfoList,
         { type: 'VOLUME', data: '1', packageCode: 'SJ' },
@@ -320,19 +252,10 @@ const cases = [
       const freightRequest = buildFreightRequest(draft)
       const orderRequest = buildCreateOrderRequest(draft)
 
-      assert.deepEqual(
-        createExpressQuotePackageInfoList(draft.packaging),
-        quotePackageInfoList
-      )
-      assert.deepEqual(
-        createExpressOrderPackageInfoList(draft.packaging),
-        orderPackageInfoList
-      )
+      assert.deepEqual(createExpressQuotePackageInfoList(draft.packaging), quotePackageInfoList)
+      assert.deepEqual(createExpressOrderPackageInfoList(draft.packaging), orderPackageInfoList)
       assert.equal(getExpressPackageLtlType(draft.packaging), 'WOOD_PACKAGE')
-      assert.equal(
-        createExpressOrderPackingText(draft.packaging),
-        '木架,木箱,木托'
-      )
+      assert.equal(createExpressOrderPackingText(draft.packaging), '木架,木箱,木托')
       assert.equal(freightRequest.packageLtlType, 'WOOD_PACKAGE')
       assert.deepEqual(freightRequest.packageInfoList, quotePackageInfoList)
       assert.deepEqual(orderRequest.packageInfoList, orderPackageInfoList)
@@ -350,17 +273,9 @@ const cases = [
       const woodOnlyFreightRequest = buildFreightRequest(woodOnlyDraft)
       const woodOnlyOrderRequest = buildCreateOrderRequest(woodOnlyDraft)
 
-      assert.equal(
-        Object.prototype.hasOwnProperty.call(
-          woodOnlyFreightRequest,
-          'packageInfoList'
-        ),
-        false
-      )
+      assert.equal(Object.prototype.hasOwnProperty.call(woodOnlyFreightRequest, 'packageInfoList'), false)
       assert.equal(woodOnlyFreightRequest.packageLtlType, 'WOOD_PACKAGE')
-      assert.deepEqual(woodOnlyOrderRequest.packageInfoList, [
-        { type: 'VOLUME', data: '1', packageCode: 'BG' }
-      ])
+      assert.deepEqual(woodOnlyOrderRequest.packageInfoList, [{ type: 'VOLUME', data: '1', packageCode: 'BG' }])
       assert.equal(woodOnlyOrderRequest.receive[0].packing, '木箱')
     }
   },
@@ -397,23 +312,15 @@ const cases = [
         ]
       })
 
-      assert.equal(
-        getExpressPackageLtlType(draft.packaging),
-        'WOOD_PACKAGE,UN_PACKAGE'
-      )
+      assert.equal(getExpressPackageLtlType(draft.packaging), 'WOOD_PACKAGE,UN_PACKAGE')
       assert.deepEqual(createExpressUnpackingNumbers(draft.packaging), {
         ...expectedNumbers
       })
-      assert.deepEqual(
-        createExpressOrderUnpackageLtlInfo(draft.packaging),
-        expectedNumbers
-      )
+      assert.deepEqual(createExpressOrderUnpackageLtlInfo(draft.packaging), expectedNumbers)
       assert.equal(freightRequest.packageLtlType, 'WOOD_PACKAGE,UN_PACKAGE')
       assert.equal(freightRequest.unpackingWoodPackagingNumber, 1)
       assert.equal(freightRequest.unpackingNonWoodPackagingNumber, 1)
-      assert.deepEqual(freightRequest.packageInfoList, [
-        { type: 'COUNT', data: '1', packageCode: 'ZX_DP_03' }
-      ])
+      assert.deepEqual(freightRequest.packageInfoList, [{ type: 'COUNT', data: '1', packageCode: 'ZX_DP_03' }])
       assert.deepEqual(orderRequest.unpackageLtlInfo, expectedNumbers)
       assert.deepEqual(orderRequest.packageInfoList, [
         { type: 'COUNT', data: '1', packageCode: 'ZX_DP_03' },

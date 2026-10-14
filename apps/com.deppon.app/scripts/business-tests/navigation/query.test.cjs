@@ -2,12 +2,7 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  appendRouteQuery,
-  createAppRouteUrl,
-  createRouteQuery,
-  normalizeAppRouteUrlParam
-} = require('@/shared/navigation/routeUrl')
+const { appendRouteQuery, createAppRouteUrl, createRouteQuery, normalizeAppRouteUrlParam } = require('@/shared/navigation/routeUrl')
 
 const cases = [
   {
@@ -42,18 +37,8 @@ const cases = [
         }),
         'https://example.com/path?token=abc&pageSource=APP'
       )
-      assert.equal(
-        normalizeAppRouteUrlParam(
-          '/pages/order/detail/index?keyword=A%26B%3DC'
-        ),
-        '/pages/order/detail/index?keyword=A%26B%3DC'
-      )
-      assert.equal(
-        normalizeAppRouteUrlParam(
-          '%2Fpages%2Forder%2Fdetail%2Findex%3Fkeyword%3DA%2526B%253DC'
-        ),
-        '/pages/order/detail/index?keyword=A%26B%3DC'
-      )
+      assert.equal(normalizeAppRouteUrlParam('/pages/order/detail/index?keyword=A%26B%3DC'), '/pages/order/detail/index?keyword=A%26B%3DC')
+      assert.equal(normalizeAppRouteUrlParam('%2Fpages%2Forder%2Fdetail%2Findex%3Fkeyword%3DA%2526B%253DC'), '/pages/order/detail/index?keyword=A%26B%3DC')
       assert.equal(normalizeAppRouteUrlParam('https%3A%2F%2Fexample.com'), '')
     }
   }

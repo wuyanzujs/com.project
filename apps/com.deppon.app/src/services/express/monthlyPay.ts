@@ -5,10 +5,7 @@ import type { ExpressPaymentType } from './types'
 
 export type ExpressMonthlyPayTone = 'info' | 'success' | 'warning'
 
-export type ExpressMonthlyPayActionSource = Extract<
-  AppWebSource,
-  'CUSTOMER_BIND' | 'CUSTOMER_CENTER' | 'CUSTOMER_MONTHLY_CENTER'
->
+export type ExpressMonthlyPayActionSource = Extract<AppWebSource, 'CUSTOMER_BIND' | 'CUSTOMER_CENTER' | 'CUSTOMER_MONTHLY_CENTER'>
 
 export interface ExpressMonthlyPayView {
   title: string
@@ -91,8 +88,7 @@ export function createExpressMonthlyPayView({
   if (checked) {
     return {
       title: '暂未绑定客户编码',
-      summary:
-        '使用月结付款前建议先绑定月结客户编码；提交时仍以后端月结和合同权限校验为准。',
+      summary: '使用月结付款前建议先绑定月结客户编码；提交时仍以后端月结和合同权限校验为准。',
       actionText: '去绑定',
       actionSource: 'CUSTOMER_BIND',
       tone: 'warning'

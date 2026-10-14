@@ -2,21 +2,10 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { type Dispatch, type SetStateAction, useRef } from 'react'
 
-import {
-  isExpressCloudSignType,
-  isExpressReturnBillTypeSupported,
-  updateExpressReturnBillDraft
-} from '@/services/express'
-import type {
-  ExpressDraft,
-  ExpressProductQuote,
-  ExpressReturnBillDraft
-} from '@/services/express'
+import { isExpressCloudSignType, isExpressReturnBillTypeSupported, updateExpressReturnBillDraft } from '@/services/express'
+import type { ExpressDraft, ExpressProductQuote, ExpressReturnBillDraft } from '@/services/express'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
-import {
-  ensureAuthenticated,
-  hasValidSession
-} from '@/shared/navigation/authGuard'
+import { ensureAuthenticated, hasValidSession } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 import { appWebMessageBridge } from '@/shared/webview/appWebMessage'
@@ -31,11 +20,7 @@ function getReturnBillProductCode(draft: ExpressDraft) {
   return draft.selectedProduct?.omsProductCode || draft.service.transportMode
 }
 
-export function useExpressReturnBill({
-  draft,
-  restoreQuotes,
-  setDraft
-}: UseExpressReturnBillOptions) {
+export function useExpressReturnBill({ draft, restoreQuotes, setDraft }: UseExpressReturnBillOptions) {
   const messageContextRef = useRef('')
   const latestDraft = useRef(draft)
 
@@ -61,10 +46,7 @@ export function useExpressReturnBill({
 
     if (
       !isExpressCloudSignType(currentDraft.service.returnBill.type) ||
-      !isExpressReturnBillTypeSupported(
-        currentDraft.service.returnBill.type,
-        getReturnBillProductCode(currentDraft)
-      )
+      !isExpressReturnBillTypeSupported(currentDraft.service.returnBill.type, getReturnBillProductCode(currentDraft))
     ) {
       Taro.showToast({
         title: '当前产品不支持电子云签',
@@ -77,11 +59,7 @@ export function useExpressReturnBill({
       ...current,
       service: {
         ...current.service,
-        returnBill: updateExpressReturnBillDraft(
-          current.service.returnBill,
-          { fileCode: result.fileCode },
-          getReturnBillProductCode(current)
-        )
+        returnBill: updateExpressReturnBillDraft(current.service.returnBill, { fileCode: result.fileCode }, getReturnBillProductCode(current))
       },
       selectedProduct: null,
       agreementAccepted: false,
@@ -100,11 +78,7 @@ export function useExpressReturnBill({
       ...current,
       service: {
         ...current.service,
-        returnBill: updateExpressReturnBillDraft(
-          current.service.returnBill,
-          patch,
-          getReturnBillProductCode(current)
-        )
+        returnBill: updateExpressReturnBillDraft(current.service.returnBill, patch, getReturnBillProductCode(current))
       },
       selectedProduct: null,
       agreementAccepted: false,
@@ -125,10 +99,7 @@ export function useExpressReturnBill({
 
     if (
       !isExpressCloudSignType(currentDraft.service.returnBill.type) ||
-      !isExpressReturnBillTypeSupported(
-        currentDraft.service.returnBill.type,
-        getReturnBillProductCode(currentDraft)
-      )
+      !isExpressReturnBillTypeSupported(currentDraft.service.returnBill.type, getReturnBillProductCode(currentDraft))
     ) {
       return
     }
@@ -145,9 +116,7 @@ export function useExpressReturnBill({
 
     messageContextRef.current = messageContext
 
-    const fileCode = encodeURIComponent(
-      currentDraft.service.returnBill.fileCode
-    )
+    const fileCode = encodeURIComponent(currentDraft.service.returnBill.fileCode)
     const navigated = navigateToAppRoute(
       createAppWebUrl({
         source: 'EXPRESS_RETURN_BILL_CLOUD_SIGN',

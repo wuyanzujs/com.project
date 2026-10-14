@@ -4,14 +4,7 @@ import Taro, { useRouter } from '@tarojs/taro'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { queryService, stationSelection } from '@/services/query'
-import type {
-  DispatchAddress,
-  StationItem,
-  StationQueryOptions,
-  StationQueryResult,
-  StationQueryType,
-  StationSubType
-} from '@/services/query'
+import type { DispatchAddress, StationItem, StationQueryOptions, StationQueryResult, StationQueryType, StationSubType } from '@/services/query'
 import { AppPressable } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -31,14 +24,9 @@ import './selection.scss'
 const QueryStationsPage = () => {
   const router = useRouter()
   const routeParams = router.params
-  const selectionParams = useMemo(
-    () => stationSelection.parseParams(routeParams),
-    [routeParams]
-  )
+  const selectionParams = useMemo(() => stationSelection.parseParams(routeParams), [routeParams])
   const selectionMode = Boolean(selectionParams)
-  const [stationType, setStationType] = useState<StationQueryType>(
-    selectionParams ? 'PICKUP' : 'ALL'
-  )
+  const [stationType, setStationType] = useState<StationQueryType>(selectionParams ? 'PICKUP' : 'ALL')
   const [subType, setSubType] = useState<StationSubType>('EXPRESS')
   const [rawText, setRawText] = useState('')
   const [province, setProvince] = useState(selectionParams?.province ?? '')
@@ -103,14 +91,7 @@ const QueryStationsPage = () => {
         }
 
         applyResolvedAddress(response.result.address)
-        setResult(
-          selectionParams
-            ? stationSelection.filterResult(
-                selectionParams.source,
-                response.result
-              )
-            : response.result
-        )
+        setResult(selectionParams ? stationSelection.filterResult(selectionParams.source, response.result) : response.result)
       } finally {
         setLoading(false)
       }
@@ -129,12 +110,7 @@ const QueryStationsPage = () => {
       return
     }
 
-    const queryKey = [
-      selectionParams.province,
-      selectionParams.city,
-      selectionParams.county,
-      selectionParams.address
-    ].join('|')
+    const queryKey = [selectionParams.province, selectionParams.city, selectionParams.county, selectionParams.address].join('|')
 
     if (initialSelectionQueryKey.current === queryKey) {
       return
@@ -149,10 +125,7 @@ const QueryStationsPage = () => {
       await dialPhone(queryService.getStationPrimaryPhone(item.phone))
     } catch (error) {
       Taro.showToast({
-        title:
-          error instanceof PhoneNumberError
-            ? error.message
-            : getNativeCapabilityErrorMessage(error),
+        title: error instanceof PhoneNumberError ? error.message : getNativeCapabilityErrorMessage(error),
         icon: 'none'
       })
     }
@@ -222,51 +195,28 @@ const QueryStationsPage = () => {
 
   return (
     <ScrollView className='query-stations-page' scrollY>
-      {!selectionMode && (
-        <StationQueryFilters
-          stationType={stationType}
-          subType={subType}
-          onStationTypeChange={setStationType}
-          onSubTypeChange={setSubType}
-        />
-      )}
+      {!selectionMode && <StationQueryFilters stationType={stationType} subType={subType} onStationTypeChange={setStationType} onSubTypeChange={setSubType} />}
 
       <View className='query-stations-section'>
         {selectionParams && (
           <View className='query-stations-selection'>
             <View className='query-stations-selection__content'>
-              <Text className='query-stations-selection__title'>
-                收件自提服务点
-              </Text>
-              <Text className='query-stations-selection__summary'>
-                20 公里内支持自提的快递网点
-              </Text>
+              <Text className='query-stations-selection__title'>收件自提服务点</Text>
+              <Text className='query-stations-selection__summary'>20 公里内支持自提的快递网点</Text>
             </View>
-            <AppPressable
-              className='query-stations-selection__nearest'
-              onPress={() => handleSelectStation(null)}
-            >
-              <Text className='query-stations-selection__nearest-text'>
-                使用最近服务点
-              </Text>
+            <AppPressable className='query-stations-selection__nearest' onPress={() => handleSelectStation(null)}>
+              <Text className='query-stations-selection__nearest-text'>使用最近服务点</Text>
             </AppPressable>
           </View>
         )}
         <View className='query-stations-section__head'>
-          <Text className='query-stations-section__title'>
-            {selectionMode ? '收件地址' : '查询地址'}
-          </Text>
+          <Text className='query-stations-section__title'>{selectionMode ? '收件地址' : '查询地址'}</Text>
           <AppPressable className='query-stations-link' onPress={handleAnalyze}>
             <Text className='query-stations-link__text'>智能识别</Text>
           </AppPressable>
         </View>
 
-        <Input
-          className='query-stations-input'
-          placeholder='粘贴完整地址，或下方手动填写'
-          value={rawText}
-          onInput={event => setRawText(event.detail.value)}
-        />
+        <Input className='query-stations-input' placeholder='粘贴完整地址，或下方手动填写' value={rawText} onInput={event => setRawText(event.detail.value)} />
 
         <View className='query-stations-grid'>
           <Input
@@ -300,9 +250,7 @@ const QueryStationsPage = () => {
       </View>
 
       <AppPressable className='query-stations-submit' onPress={handleQuery}>
-        <Text className='query-stations-submit__text'>
-          {loading ? '查询中...' : selectionMode ? '查询自提网点' : '查询网点'}
-        </Text>
+        <Text className='query-stations-submit__text'>{loading ? '查询中...' : selectionMode ? '查询自提网点' : '查询网点'}</Text>
       </AppPressable>
 
       {errorMessage && (

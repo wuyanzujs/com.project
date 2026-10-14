@@ -3,14 +3,7 @@ import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 import { createContactAddressCheckRequest } from './contact.addressIntegrity'
 import { contactApi } from './contact.api'
 
-import type {
-  Contact,
-  ContactAnalysis,
-  ContactAnalysis4,
-  ContactAddressHint,
-  ContactListOptions,
-  ContactValidationResult
-} from './types'
+import type { Contact, ContactAnalysis, ContactAnalysis4, ContactAddressHint, ContactListOptions, ContactValidationResult } from './types'
 
 const DEFAULT_PAGE_SIZE = 20
 
@@ -43,10 +36,7 @@ function getChineseLength(value: string) {
   return (value.match(/[\u4e00-\u9fa5]/g) ?? []).length
 }
 
-type ContactAddressParts = Pick<
-  Contact,
-  'province' | 'city' | 'county' | 'address' | 'town'
->
+type ContactAddressParts = Pick<Contact, 'province' | 'city' | 'county' | 'address' | 'town'>
 
 /**
  *
@@ -81,15 +71,7 @@ function removeRepeatedPrefix(value: string, prefix: string) {
  * @description 拼接联系人完整地址
  */
 export function getContactFullAddress(contact: ContactAddressParts) {
-  return [
-    contact.province,
-    contact.city,
-    contact.county,
-    contact.town,
-    contact.address
-  ]
-    .filter(Boolean)
-    .join('')
+  return [contact.province, contact.city, contact.county, contact.town, contact.address].filter(Boolean).join('')
 }
 
 /**
@@ -98,8 +80,7 @@ export function getContactFullAddress(contact: ContactAddressParts) {
  * @description 解析地址提示为省市区字段
  */
 export function parseAddressHint(raw: string): ContactAddressHint {
-  const [province = '', city = '', county = '', town = '', ...addressParts] =
-    raw.split(',')
+  const [province = '', city = '', county = '', town = '', ...addressParts] = raw.split(',')
 
   return {
     province: normalizeAddressPart(province),
@@ -119,17 +100,7 @@ export function parseAddressHint(raw: string): ContactAddressHint {
 export function getAddressHintLabel(hint: ContactAddressHint) {
   const town = normalizeAddressPart(hint.town)
 
-  return (
-    [
-      hint.province,
-      hint.city,
-      hint.county,
-      town,
-      removeRepeatedPrefix(normalizeAddressPart(hint.address), town)
-    ]
-      .filter(Boolean)
-      .join('') || hint.raw
-  )
+  return [hint.province, hint.city, hint.county, town, removeRepeatedPrefix(normalizeAddressPart(hint.address), town)].filter(Boolean).join('') || hint.raw
 }
 
 /**
@@ -138,15 +109,9 @@ export function getAddressHintLabel(hint: ContactAddressHint) {
  * @param hint 地址提示
  * @description 将地址提示写入联系人
  */
-export function applyAddressHintToContact(
-  contact: Contact,
-  hint: ContactAddressHint
-): Contact {
+export function applyAddressHintToContact(contact: Contact, hint: ContactAddressHint): Contact {
   const town = normalizeAddressPart(hint.town)
-  const detailAddress = removeRepeatedPrefix(
-    normalizeAddressPart(hint.address),
-    town
-  )
+  const detailAddress = removeRepeatedPrefix(normalizeAddressPart(hint.address), town)
 
   return {
     ...contact,
@@ -196,21 +161,13 @@ function normalizeAnalysisPhone(value?: string | null) {
  * @param analysis 智能识别结果
  * @description 将智能识别结果写入联系人
  */
-export function applyAnalysisToContact(
-  contact: Contact,
-  analysis: ContactAnalysis
-): Contact {
+export function applyAnalysisToContact(contact: Contact, analysis: ContactAnalysis): Contact {
   const region = parseProCityName(analysis.proCityName)
   const telephone = normalizeAnalysisPhone(analysis.telephone)
   const town = normalizeAddressPart(analysis.town)
-  const detailAddress = removeRepeatedPrefix(
-    normalizeAddressPart(analysis.address),
-    town
-  )
+  const detailAddress = removeRepeatedPrefix(normalizeAddressPart(analysis.address), town)
   const canFillRegion = !!(region.province || region.city || region.county)
-  const address = canFillRegion
-    ? detailAddress || contact.address
-    : `${normalizeAddressPart(analysis.proCityName)}${town}${detailAddress}`
+  const address = canFillRegion ? detailAddress || contact.address : `${normalizeAddressPart(analysis.proCityName)}${town}${detailAddress}`
 
   return {
     ...contact,
@@ -231,15 +188,9 @@ export function applyAnalysisToContact(
  * @param analysis 智能识别结果 4
  * @description 将智能识别结果 4 写入联系人
  */
-export function applyAnalysis4ToContact(
-  contact: Contact,
-  analysis: ContactAnalysis4
-): Contact {
+export function applyAnalysis4ToContact(contact: Contact, analysis: ContactAnalysis4): Contact {
   const town = normalizeAddressPart(analysis.town)
-  const detailAddress = removeRepeatedPrefix(
-    normalizeAddressPart(analysis.detailAddress),
-    town
-  )
+  const detailAddress = removeRepeatedPrefix(normalizeAddressPart(analysis.detailAddress), town)
 
   return {
     ...contact,
@@ -420,9 +371,7 @@ export const contactService = {
    * @param contact 省市区与详细地址
    * @description 查询地址提示列表
    */
-  queryAddressHints(
-    contact: Pick<Contact, 'province' | 'city' | 'county' | 'address'>
-  ) {
+  queryAddressHints(contact: Pick<Contact, 'province' | 'city' | 'county' | 'address'>) {
     return contactApi.queryAddressHints({
       province: contact.province,
       city: contact.city,
@@ -449,12 +398,8 @@ export const contactService = {
    * @param contact 省市区与详细地址
    * @description 校验地址详细程度
    */
-  checkAddressDetail(
-    contact: Pick<Contact, 'province' | 'city' | 'county' | 'address'>
-  ) {
-    return contactApi.checkAddressDetail(
-      createContactAddressCheckRequest(contact)
-    )
+  checkAddressDetail(contact: Pick<Contact, 'province' | 'city' | 'county' | 'address'>) {
+    return contactApi.checkAddressDetail(createContactAddressCheckRequest(contact))
   },
 
   /**

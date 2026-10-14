@@ -2,13 +2,8 @@ import Taro from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
-
 import { invoiceService } from '@/services/invoice'
-import type {
-  InvoiceTaxpayerForm,
-  InvoiceTaxpayerMatch,
-  InvoiceTaxpayerType
-} from '@/services/invoice'
+import type { InvoiceTaxpayerForm, InvoiceTaxpayerMatch, InvoiceTaxpayerType } from '@/services/invoice'
 
 interface UseTaxpayerActionsParams {
   form: InvoiceTaxpayerForm
@@ -27,10 +22,7 @@ interface UseTaxpayerActionsResult {
   handleSave: () => Promise<void>
 }
 
-export function useTaxpayerActions({
-  form,
-  updateForm
-}: UseTaxpayerActionsParams): UseTaxpayerActionsResult {
+export function useTaxpayerActions({ form, updateForm }: UseTaxpayerActionsParams): UseTaxpayerActionsResult {
   const [matches, setMatches] = useState<InvoiceTaxpayerMatch[]>([])
   const [matching, setMatching] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -56,10 +48,7 @@ export function useTaxpayerActions({
     setMatching(true)
 
     try {
-      const response = await invoiceService.queryTaxpayerMatches(
-        form.name,
-        form.customerType
-      )
+      const response = await invoiceService.queryTaxpayerMatches(form.name, form.customerType)
 
       if (!response.status || !response.result?.length) {
         setMatches([])

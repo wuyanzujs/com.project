@@ -5,12 +5,7 @@ import { useMemo, useState } from 'react'
 
 import { CACHE_KEYS, dpCache } from '@/cache'
 import { invoiceService } from '@/services/invoice'
-import type {
-  InvoiceApplyBillCategory,
-  InvoiceECardView,
-  InvoiceOrderView,
-  InvoiceTaxpayerView
-} from '@/services/invoice'
+import type { InvoiceApplyBillCategory, InvoiceECardView, InvoiceOrderView, InvoiceTaxpayerView } from '@/services/invoice'
 import { AppPressable } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
@@ -73,32 +68,20 @@ function getMoneyText(value: number) {
 
 const InvoiceApplyPage = () => {
   const router = useRouter()
-  const order = useMemo(
-    () => parseOrder(router.params.order),
-    [router.params.order]
-  )
-  const ecards = useMemo(
-    () => parseECards(router.params.ecards),
-    [router.params.ecards]
-  )
+  const order = useMemo(() => parseOrder(router.params.order), [router.params.order])
+  const ecards = useMemo(() => parseECards(router.params.ecards), [router.params.ecards])
   const applyMode = order ? 'order' : ecards.length ? 'ecard' : 'empty'
   const [taxpayers, setTaxpayers] = useState<InvoiceTaxpayerView[]>([])
-  const [selectedTaxpayerId, setSelectedTaxpayerId] = useState<number | null>(
-    null
-  )
-  const [billCategory, setBillCategory] =
-    useState<InvoiceApplyBillCategory>('06')
-  const [email, setEmail] = useState(
-    () => dpCache.get<string>(CACHE_KEYS.invoiceEmail) || ''
-  )
+  const [selectedTaxpayerId, setSelectedTaxpayerId] = useState<number | null>(null)
+  const [billCategory, setBillCategory] = useState<InvoiceApplyBillCategory>('06')
+  const [email, setEmail] = useState(() => dpCache.get<string>(CACHE_KEYS.invoiceEmail) || '')
   const [unit, setUnit] = useState('')
   const [remark, setRemark] = useState('')
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState('')
 
-  const selectedTaxpayer =
-    taxpayers.find(item => item.id === selectedTaxpayerId) ?? null
+  const selectedTaxpayer = taxpayers.find(item => item.id === selectedTaxpayerId) ?? null
   const preview =
     applyMode === 'order' && order
       ? invoiceService.createApplyPreview({
@@ -120,10 +103,7 @@ const InvoiceApplyPage = () => {
           })
         : null
   const applyAmount = preview?.amount ?? order?.amount ?? 0
-  const billCategoryOptions =
-    applyMode === 'ecard'
-      ? BILL_CATEGORY_OPTIONS.filter(item => item.value === '06')
-      : BILL_CATEGORY_OPTIONS
+  const billCategoryOptions = applyMode === 'ecard' ? BILL_CATEGORY_OPTIONS.filter(item => item.value === '06') : BILL_CATEGORY_OPTIONS
 
   const loadTaxpayers = async () => {
     if (loading) {
@@ -143,8 +123,7 @@ const InvoiceApplyPage = () => {
       }
 
       setTaxpayers(response.result)
-      const defaultTaxpayer =
-        response.result.find(item => item.isDefault) ?? response.result[0]
+      const defaultTaxpayer = response.result.find(item => item.isDefault) ?? response.result[0]
 
       if (defaultTaxpayer && !selectedTaxpayerId) {
         setSelectedTaxpayerId(defaultTaxpayer.id)
@@ -245,16 +224,9 @@ const InvoiceApplyPage = () => {
       <View className='invoice-apply-page invoice-apply-page--empty'>
         <View className='invoice-apply-empty'>
           <Text className='invoice-apply-empty__title'>缺少开票记录</Text>
-          <Text className='invoice-apply-empty__summary'>
-            请从发票中心选择可开票运单或储值卡记录后再申请。
-          </Text>
-          <AppPressable
-            className='invoice-apply-empty__button'
-            onPress={() => navigateToAppRoute(APP_ROUTES.invoiceCenter)}
-          >
-            <Text className='invoice-apply-empty__button-text'>
-              返回发票中心
-            </Text>
+          <Text className='invoice-apply-empty__summary'>请从发票中心选择可开票运单或储值卡记录后再申请。</Text>
+          <AppPressable className='invoice-apply-empty__button' onPress={() => navigateToAppRoute(APP_ROUTES.invoiceCenter)}>
+            <Text className='invoice-apply-empty__button-text'>返回发票中心</Text>
           </AppPressable>
         </View>
       </View>
@@ -266,26 +238,18 @@ const InvoiceApplyPage = () => {
       <View className='invoice-apply-card'>
         <View className='invoice-apply-card__top'>
           <Text className='invoice-apply-card__title'>
-            {applyMode === 'ecard'
-              ? `储值卡 ${ecards[0]?.id || '--'}`
-              : `运单 ${order?.waybillNumber || '--'}`}
+            {applyMode === 'ecard' ? `储值卡 ${ecards[0]?.id || '--'}` : `运单 ${order?.waybillNumber || '--'}`}
           </Text>
-          <Text className='invoice-apply-card__amount'>
-            {getMoneyText(applyAmount)}
-          </Text>
+          <Text className='invoice-apply-card__amount'>{getMoneyText(applyAmount)}</Text>
         </View>
         {applyMode === 'ecard' ? (
-          <Text className='invoice-apply-card__meta'>
-            储值卡（预存卡）充值时间 {ecards[0]?.businessTime || '--'}
-          </Text>
+          <Text className='invoice-apply-card__meta'>储值卡（预存卡）充值时间 {ecards[0]?.businessTime || '--'}</Text>
         ) : (
           <>
             <Text className='invoice-apply-card__meta'>
               {order?.senderText || '--'} → {order?.consigneeText || '--'}
             </Text>
-            <Text className='invoice-apply-card__meta'>
-              {order?.businessTime || '--'}
-            </Text>
+            <Text className='invoice-apply-card__meta'>{order?.businessTime || '--'}</Text>
           </>
         )}
       </View>
@@ -296,31 +260,15 @@ const InvoiceApplyPage = () => {
         </View>
         {billCategoryOptions.map(item => (
           <AppPressable
-            className={
-              item.value === billCategory
-                ? 'invoice-apply-option invoice-apply-option--active'
-                : 'invoice-apply-option'
-            }
+            className={item.value === billCategory ? 'invoice-apply-option invoice-apply-option--active' : 'invoice-apply-option'}
             key={item.value}
-            onPress={() =>
-              applyMode === 'ecard'
-                ? setBillCategory('06')
-                : setBillCategory(item.value)
-            }
+            onPress={() => (applyMode === 'ecard' ? setBillCategory('06') : setBillCategory(item.value))}
           >
             <View>
               <Text className='invoice-apply-option__title'>{item.label}</Text>
-              <Text className='invoice-apply-option__summary'>
-                {item.summary}
-              </Text>
+              <Text className='invoice-apply-option__summary'>{item.summary}</Text>
             </View>
-            <Text
-              className={
-                item.value === billCategory
-                  ? 'invoice-apply-option__radio invoice-apply-option__radio--active'
-                  : 'invoice-apply-option__radio'
-              }
-            >
+            <Text className={item.value === billCategory ? 'invoice-apply-option__radio invoice-apply-option__radio--active' : 'invoice-apply-option__radio'}>
               {item.value === billCategory ? '✓' : ''}
             </Text>
           </AppPressable>
@@ -344,11 +292,7 @@ const InvoiceApplyPage = () => {
 
         {taxpayers.map(item => (
           <AppPressable
-            className={
-              item.id === selectedTaxpayerId
-                ? 'invoice-apply-taxpayer invoice-apply-taxpayer--active'
-                : 'invoice-apply-taxpayer'
-            }
+            className={item.id === selectedTaxpayerId ? 'invoice-apply-taxpayer invoice-apply-taxpayer--active' : 'invoice-apply-taxpayer'}
             key={item.id}
             onPress={() => setSelectedTaxpayerId(item.id)}
           >
@@ -358,20 +302,14 @@ const InvoiceApplyPage = () => {
                 {item.typeText} · {item.taxNumber || '无税号'}
               </Text>
             </View>
-            {item.isDefault && (
-              <Text className='invoice-apply-taxpayer__tag'>默认</Text>
-            )}
+            {item.isDefault && <Text className='invoice-apply-taxpayer__tag'>默认</Text>}
           </AppPressable>
         ))}
 
         {!taxpayers.length && !loading && (
           <View className='invoice-apply-empty-block'>
-            <Text className='invoice-apply-empty-block__title'>
-              暂无发票抬头
-            </Text>
-            <Text className='invoice-apply-empty-block__summary'>
-              请先新增抬头后再申请发票。
-            </Text>
+            <Text className='invoice-apply-empty-block__title'>暂无发票抬头</Text>
+            <Text className='invoice-apply-empty-block__summary'>请先新增抬头后再申请发票。</Text>
           </View>
         )}
       </View>
@@ -390,13 +328,7 @@ const InvoiceApplyPage = () => {
         </View>
         <View className='invoice-apply-field'>
           <Text className='invoice-apply-field__label'>货物单位</Text>
-          <Input
-            className='invoice-apply-input'
-            maxlength={16}
-            placeholder='选填'
-            value={unit}
-            onInput={event => setUnit(event.detail.value)}
-          />
+          <Input className='invoice-apply-input' maxlength={16} placeholder='选填' value={unit} onInput={event => setUnit(event.detail.value)} />
         </View>
         <View className='invoice-apply-field'>
           <Text className='invoice-apply-field__label'>备注</Text>
@@ -414,49 +346,26 @@ const InvoiceApplyPage = () => {
         <Text className='invoice-apply-preview__title'>核对信息</Text>
         <View className='invoice-apply-preview__row'>
           <Text className='invoice-apply-preview__label'>发票类型</Text>
-          <Text className='invoice-apply-preview__value'>
-            {preview?.billCategoryText || '--'}
-          </Text>
+          <Text className='invoice-apply-preview__value'>{preview?.billCategoryText || '--'}</Text>
         </View>
         <View className='invoice-apply-preview__row'>
           <Text className='invoice-apply-preview__label'>发票金额</Text>
-          <Text className='invoice-apply-preview__amount'>
-            {getMoneyText(preview?.amount ?? 0)}
-          </Text>
+          <Text className='invoice-apply-preview__amount'>{getMoneyText(preview?.amount ?? 0)}</Text>
         </View>
         <View className='invoice-apply-preview__row'>
           <Text className='invoice-apply-preview__label'>发票抬头</Text>
-          <Text className='invoice-apply-preview__value'>
-            {preview?.taxpayerName || '--'}
-          </Text>
+          <Text className='invoice-apply-preview__value'>{preview?.taxpayerName || '--'}</Text>
         </View>
         <View className='invoice-apply-preview__row'>
           <Text className='invoice-apply-preview__label'>接收邮箱</Text>
-          <Text className='invoice-apply-preview__value'>
-            {preview?.email || '--'}
-          </Text>
+          <Text className='invoice-apply-preview__value'>{preview?.email || '--'}</Text>
         </View>
-        {(message || preview?.message) && (
-          <Text className='invoice-apply-preview__message'>
-            {message || preview?.message}
-          </Text>
-        )}
+        {(message || preview?.message) && <Text className='invoice-apply-preview__message'>{message || preview?.message}</Text>}
       </View>
 
-      <AppPressable
-        className={
-          submitting
-            ? 'invoice-apply-submit invoice-apply-submit--disabled'
-            : 'invoice-apply-submit'
-        }
-        onPress={handleSubmit}
-      >
-        <Text className='invoice-apply-submit__amount'>
-          {getMoneyText(applyAmount)}
-        </Text>
-        <Text className='invoice-apply-submit__text'>
-          {submitting ? '提交中...' : '提交申请'}
-        </Text>
+      <AppPressable className={submitting ? 'invoice-apply-submit invoice-apply-submit--disabled' : 'invoice-apply-submit'} onPress={handleSubmit}>
+        <Text className='invoice-apply-submit__amount'>{getMoneyText(applyAmount)}</Text>
+        <Text className='invoice-apply-submit__text'>{submitting ? '提交中...' : '提交申请'}</Text>
       </AppPressable>
     </ScrollView>
   )

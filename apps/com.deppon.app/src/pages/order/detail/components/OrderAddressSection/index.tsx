@@ -1,9 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
-import {
-  getOrderReceiverAddress,
-  getOrderSenderAddress
-} from '@/services/order'
+import { getOrderReceiverAddress, getOrderSenderAddress } from '@/services/order'
 import type { OrderDetail } from '@/services/order'
 import { AppPressable } from '@/shared/components'
 
@@ -16,10 +13,7 @@ interface OrderAddressSectionProps {
   onDial: (phoneNumber?: string | null) => void
 }
 
-export function OrderAddressSection({
-  detail,
-  onDial
-}: OrderAddressSectionProps) {
+export function OrderAddressSection({ detail, onDial }: OrderAddressSectionProps) {
   return (
     <OrderDetailSection title='寄收信息'>
       <View className='order-address-card'>
@@ -39,15 +33,11 @@ export function OrderAddressSection({
               </AppPressable>
             ) : null}
           </View>
-          <Text className='order-address-card__address'>
-            {getOrderSenderAddress(detail) || '--'}
-          </Text>
+          <Text className='order-address-card__address'>{getOrderSenderAddress(detail) || '--'}</Text>
         </View>
       </View>
       <View className='order-address-card'>
-        <Text className='order-address-card__tag order-address-card__tag--receive'>
-          收
-        </Text>
+        <Text className='order-address-card__tag order-address-card__tag--receive'>收</Text>
         <View className='order-address-card__content'>
           <View className='order-address-card__head'>
             <Text className='order-address-card__name'>
@@ -63,9 +53,7 @@ export function OrderAddressSection({
               </AppPressable>
             ) : null}
           </View>
-          <Text className='order-address-card__address'>
-            {getOrderReceiverAddress(detail) || '--'}
-          </Text>
+          <Text className='order-address-card__address'>{getOrderReceiverAddress(detail) || '--'}</Text>
         </View>
       </View>
     </OrderDetailSection>

@@ -163,8 +163,7 @@ export interface PaymentOrder {
   couponCode?: string
 }
 
-export type PaymentBackendStatus =
-  'PAYING' | 'CREATE' | 'PAY_FAILED' | 'PAY_SUCCESS' | 'CANCELED' | 'LATER_PAY'
+export type PaymentBackendStatus = 'PAYING' | 'CREATE' | 'PAY_FAILED' | 'PAY_SUCCESS' | 'CANCELED' | 'LATER_PAY'
 
 export interface PaymentConfirmResponse {
   payStatus?: PaymentBackendStatus

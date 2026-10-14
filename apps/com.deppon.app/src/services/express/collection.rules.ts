@@ -1,11 +1,6 @@
 import { markExpressQuoteStale } from './express.mutations'
 
-import type {
-  ExpressCollectionDraft,
-  ExpressCollectionType,
-  ExpressDraft,
-  ExpressProductQuote
-} from './types'
+import type { ExpressCollectionDraft, ExpressCollectionType, ExpressDraft, ExpressProductQuote } from './types'
 
 export const EXPRESS_COLLECTION_DEFAULT_LIMIT = 1000000
 
@@ -77,9 +72,7 @@ export function normalizeExpressCollectionAmountInput(value: string) {
   }
 
   const integer = (normalizedInteger || '0').slice(0, 10)
-  const decimal = decimalParts
-    .join('')
-    .slice(0, Math.min(2, 10 - integer.length))
+  const decimal = decimalParts.join('').slice(0, Math.min(2, 10 - integer.length))
 
   return `${integer}.${decimal}`
 }
@@ -104,20 +97,11 @@ export function createExpressCollectionDraft(): ExpressCollectionDraft {
  * @param value 代收货款草稿，可为空
  * @description 归一草稿中的类型、金额与账户字段
  */
-export function normalizeExpressCollectionDraft(
-  value?: Partial<ExpressCollectionDraft> | null
-): ExpressCollectionDraft {
+export function normalizeExpressCollectionDraft(value?: Partial<ExpressCollectionDraft> | null): ExpressCollectionDraft {
   const defaults = createExpressCollectionDraft()
   const amount = parseExpressCollectionAmount(value?.amount ?? 0)
-  const type =
-    value?.type === 'NORMAL' || value?.type === 'INTRADAY'
-      ? value.type
-      : amount > 0
-        ? 'NORMAL'
-        : ''
-  const limit = parseExpressCollectionAmount(
-    value?.limit ?? EXPRESS_COLLECTION_DEFAULT_LIMIT
-  )
+  const type = value?.type === 'NORMAL' || value?.type === 'INTRADAY' ? value.type : amount > 0 ? 'NORMAL' : ''
+  const limit = parseExpressCollectionAmount(value?.limit ?? EXPRESS_COLLECTION_DEFAULT_LIMIT)
 
   return {
     ...defaults,
@@ -137,10 +121,7 @@ export function normalizeExpressCollectionDraft(
  * @description 按类型取选项，缺省返回第一项
  */
 export function getExpressCollectionOption(type: ExpressCollectionType) {
-  return (
-    EXPRESS_COLLECTION_OPTIONS.find(option => option.value === type) ??
-    EXPRESS_COLLECTION_OPTIONS[0]
-  )
+  return EXPRESS_COLLECTION_OPTIONS.find(option => option.value === type) ?? EXPRESS_COLLECTION_OPTIONS[0]
 }
 
 /**
@@ -175,9 +156,7 @@ export function getExpressCollectionFee(product?: ExpressProductQuote | null) {
     return code === 'HK' || name.includes('代收')
   })
 
-  return detail && Number.isFinite(detail.caculateFee)
-    ? Math.max(0, detail.caculateFee)
-    : null
+  return detail && Number.isFinite(detail.caculateFee) ? Math.max(0, detail.caculateFee) : null
 }
 
 /**
@@ -189,9 +168,7 @@ export function validateExpressCollection(collection: ExpressCollectionDraft) {
   const normalized = normalizeExpressCollectionDraft(collection)
 
   if (!normalized.type) {
-    return normalized.amount || normalized.account
-      ? ['请重新确认代收货款服务']
-      : []
+    return normalized.amount || normalized.account ? ['请重新确认代收货款服务'] : []
   }
 
   const messages: string[] = []
@@ -219,10 +196,7 @@ export function validateExpressCollection(collection: ExpressCollectionDraft) {
  * @param patch 待更新的计价字段
  * @description 更新代收类型与金额并标记报价过期
  */
-export function updateExpressCollectionPricing(
-  draft: ExpressDraft,
-  patch: Partial<Pick<ExpressCollectionDraft, 'type' | 'amount'>>
-) {
+export function updateExpressCollectionPricing(draft: ExpressDraft, patch: Partial<Pick<ExpressCollectionDraft, 'type' | 'amount'>>) {
   return markExpressQuoteStale(
     {
       ...draft,
@@ -243,12 +217,7 @@ export function updateExpressCollectionPricing(
  */
 export function updateExpressCollectionDetails(
   draft: ExpressDraft,
-  patch: Partial<
-    Pick<
-      ExpressCollectionDraft,
-      'account' | 'accountName' | 'limit' | 'agreementAccepted'
-    >
-  >
+  patch: Partial<Pick<ExpressCollectionDraft, 'account' | 'accountName' | 'limit' | 'agreementAccepted'>>
 ) {
   return {
     ...draft,

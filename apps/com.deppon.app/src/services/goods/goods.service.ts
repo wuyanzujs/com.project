@@ -5,12 +5,7 @@ import { expressService } from '../express'
 import { createServiceFailure } from '../serviceResponse'
 
 import type { ExpressGoodsItem } from '../express'
-import type {
-  GoodsCheckInput,
-  GoodsCheckResult,
-  GoodsHistoryItem,
-  GoodsSuggestionView
-} from './types'
+import type { GoodsCheckInput, GoodsCheckResult, GoodsHistoryItem, GoodsSuggestionView } from './types'
 
 const GOODS_HISTORY_LIMIT = 4
 const GOODS_SEARCH_PAGE_SIZE = 20
@@ -121,9 +116,7 @@ function normalizeSuggestion(item: ExpressGoodsItem): GoodsSuggestionView {
  * @param suggestions 品名推荐列表
  * @description 按名称去重推荐项
  */
-function dedupeSuggestions(
-  suggestions: GoodsSuggestionView[]
-): GoodsSuggestionView[] {
+function dedupeSuggestions(suggestions: GoodsSuggestionView[]): GoodsSuggestionView[] {
   const seen = new Set<string>()
 
   return suggestions.filter(item => {
@@ -168,10 +161,7 @@ function getHistory() {
  */
 function saveHistoryItem(result: GoodsCheckResult) {
   const current = getHistory()
-  const next = [
-    toHistoryItem(result),
-    ...current.filter(item => item.goodsName !== result.goodsName)
-  ].slice(0, GOODS_HISTORY_LIMIT)
+  const next = [toHistoryItem(result), ...current.filter(item => item.goodsName !== result.goodsName)].slice(0, GOODS_HISTORY_LIMIT)
 
   return dpCache.set<GoodsHistoryItem[]>(CACHE_KEYS.goodsQueryHistory, {
     data: next,
@@ -212,10 +202,7 @@ export const goodsQueryService = {
    * @param pageSize 分页大小
    * @description 搜索品名推荐并去重
    */
-  async searchGoods(
-    keyword: string,
-    pageSize = GOODS_SEARCH_PAGE_SIZE
-  ): Promise<DepponResponse<GoodsSuggestionView[]>> {
+  async searchGoods(keyword: string, pageSize = GOODS_SEARCH_PAGE_SIZE): Promise<DepponResponse<GoodsSuggestionView[]>> {
     const keyWord = normalizeText(keyword)
 
     if (!keyWord) {
@@ -228,9 +215,7 @@ export const goodsQueryService = {
       return createServiceFailure(response.message || '暂未获取到品名推荐')
     }
 
-    const list = dedupeSuggestions(
-      (response.result?.list ?? []).map(normalizeSuggestion)
-    )
+    const list = dedupeSuggestions((response.result?.list ?? []).map(normalizeSuggestion))
 
     return {
       ...response,
@@ -243,9 +228,7 @@ export const goodsQueryService = {
    * @param input 货物校验入参
    * @description 校验货物名称并记录查询历史
    */
-  async checkGoods(
-    input: GoodsCheckInput
-  ): Promise<DepponResponse<GoodsCheckResult>> {
+  async checkGoods(input: GoodsCheckInput): Promise<DepponResponse<GoodsCheckResult>> {
     const goodsName = normalizeText(input.goodsName)
 
     if (!goodsName) {

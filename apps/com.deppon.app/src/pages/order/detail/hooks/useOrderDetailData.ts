@@ -3,24 +3,14 @@ import { useDidShow } from '@tarojs/taro'
 import { useMemo, useState } from 'react'
 
 import { orderService } from '@/services/order'
-import type {
-  OrderDetail,
-  OrderDetailActionView,
-  OrderStubEntryView,
-  WaybillTrackItem
-} from '@/services/order'
+import type { OrderDetail, OrderDetailActionView, OrderStubEntryView, WaybillTrackItem } from '@/services/order'
 import { paymentService } from '@/services/payment'
 import type { PaymentSummary } from '@/services/payment'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 
 import { useOrderPickupSchedule } from './useOrderPickupSchedule'
 import { useOrderSubscription } from './useOrderSubscription'
-import {
-  createOrderDetailViewModel,
-  getOrderDetailRole,
-  getOrderDetailRouteUrl,
-  type OrderDetailRouteParams
-} from '../orderDetailViewModel'
+import { createOrderDetailViewModel, getOrderDetailRole, getOrderDetailRouteUrl, type OrderDetailRouteParams } from '../orderDetailViewModel'
 
 import type { OrderDetailUrgePanelState } from '../components/OrderUrgePanel'
 
@@ -28,28 +18,14 @@ export function useOrderDetailData(routeParams: OrderDetailRouteParams) {
   const [detail, setDetail] = useState<OrderDetail | null>(null)
   const [tracks, setTracks] = useState<WaybillTrackItem[]>([])
   const [trackState, setTrackState] = useState('')
-  const [paymentSummary, setPaymentSummary] = useState<PaymentSummary | null>(
-    null
-  )
+  const [paymentSummary, setPaymentSummary] = useState<PaymentSummary | null>(null)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [urgeAction, setUrgeAction] = useState<OrderDetailActionView | null>(
-    null
-  )
-  const [urgePanel, setUrgePanel] = useState<OrderDetailUrgePanelState | null>(
-    null
-  )
-  const {
-    action: subscriptionAction,
-    loadStatus: loadSubscriptionStatus,
-    reset: resetSubscription,
-    toggle: toggleSubscription
-  } = useOrderSubscription()
+  const [urgeAction, setUrgeAction] = useState<OrderDetailActionView | null>(null)
+  const [urgePanel, setUrgePanel] = useState<OrderDetailUrgePanelState | null>(null)
+  const { action: subscriptionAction, loadStatus: loadSubscriptionStatus, reset: resetSubscription, toggle: toggleSubscription } = useOrderSubscription()
   const pickupSchedule = useOrderPickupSchedule()
-  const viewModel = useMemo(
-    () => createOrderDetailViewModel(routeParams, detail),
-    [detail, routeParams]
-  )
+  const viewModel = useMemo(() => createOrderDetailViewModel(routeParams, detail), [detail, routeParams])
   const stubEntry = useMemo<OrderStubEntryView | null>(() => {
     if (!detail) {
       return null
@@ -80,9 +56,7 @@ export function useOrderDetailData(routeParams: OrderDetailRouteParams) {
             : action
         )
       : actions
-    const visibleActions = subscriptionAction
-      ? [subscriptionAction, ...orderActions]
-      : orderActions
+    const visibleActions = subscriptionAction ? [subscriptionAction, ...orderActions] : orderActions
 
     if (!urgeAction) {
       return visibleActions
@@ -90,17 +64,8 @@ export function useOrderDetailData(routeParams: OrderDetailRouteParams) {
 
     const [firstAction, ...restActions] = visibleActions
 
-    return firstAction
-      ? [firstAction, urgeAction, ...restActions]
-      : [urgeAction]
-  }, [
-    detail,
-    pickupSchedule.loading,
-    subscriptionAction,
-    urgeAction,
-    viewModel.detailRole,
-    viewModel.publicTrackMode
-  ])
+    return firstAction ? [firstAction, urgeAction, ...restActions] : [urgeAction]
+  }, [detail, pickupSchedule.loading, subscriptionAction, urgeAction, viewModel.detailRole, viewModel.publicTrackMode])
 
   const loadDetail = async () => {
     if (!viewModel.publicTrackMode) {
@@ -123,12 +88,9 @@ export function useOrderDetailData(routeParams: OrderDetailRouteParams) {
       if (viewModel.publicTrackMode) {
         setDetail(null)
 
-        const trackResponse = await orderService.queryTrackList(
-          routeParams.waybillNumber,
-          {
-            login: false
-          }
-        )
+        const trackResponse = await orderService.queryTrackList(routeParams.waybillNumber, {
+          login: false
+        })
 
         if (!trackResponse.status || !trackResponse.result) {
           setTracks([])
@@ -152,28 +114,26 @@ export function useOrderDetailData(routeParams: OrderDetailRouteParams) {
       }
 
       const nextDetail = response.result
-      const waybillNumber =
-        nextDetail.waybillNumber || routeParams.waybillNumber
+      const waybillNumber = nextDetail.waybillNumber || routeParams.waybillNumber
 
       setDetail(nextDetail)
 
       const nextRole = getOrderDetailRole(nextDetail, routeParams.role)
-      const [trackResponse, paymentResponse, nextUrgeAction] =
-        await Promise.all([
-          orderService.queryTrackList(waybillNumber, {
-            login: false
-          }),
-          paymentService.queryUnpaidByWaybill({
-            role: nextRole,
-            waybillNumber,
-            loading: false
-          }),
-          orderService.queryUrgeAction(nextDetail, {
-            publicTrackMode: false,
-            role: nextRole
-          }),
-          loadSubscriptionStatus(waybillNumber)
-        ])
+      const [trackResponse, paymentResponse, nextUrgeAction] = await Promise.all([
+        orderService.queryTrackList(waybillNumber, {
+          login: false
+        }),
+        paymentService.queryUnpaidByWaybill({
+          role: nextRole,
+          waybillNumber,
+          loading: false
+        }),
+        orderService.queryUrgeAction(nextDetail, {
+          publicTrackMode: false,
+          role: nextRole
+        }),
+        loadSubscriptionStatus(waybillNumber)
+      ])
 
       if (trackResponse.status && trackResponse.result) {
         setTrackState(trackResponse.result.billNoState || '')

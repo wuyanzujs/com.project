@@ -2,31 +2,50 @@
 
 /* 双列结构：左列日期灰底、右列时段白底，行高 104，生产弹窗量测规格。 */
 .express-pickup-time-sheet__columns {
-  display: flex; flex-direction: row; height: 520px;
+  display: flex;
+  flex-direction: row;
+  height: 520px;
 }
 .express-pickup-time-sheet__column {
-  display: flex; flex: 1; flex-direction: column; height: 520px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 520px;
 }
 .express-pickup-time-sheet__column--dates {
   background: $dp-color-pickup-column;
 }
 .express-pickup-time-sheet__date {
-  display: flex; flex-direction: row; align-items: center; height: 104px; padding-left: $dp-space-32;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 104px;
+  padding-left: $dp-space-32;
 }
 .express-pickup-time-sheet__date--active {
   background: $dp-color-bg-card;
 }
 .express-pickup-time-sheet__date-text {
-  color: $dp-color-text-heading; font-size: $dp-font-size-label-large; font-weight: $dp-font-weight-regular; line-height: $dp-line-height-42;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-42;
 }
 .express-pickup-time-sheet__date-text--active {
   font-weight: $dp-font-weight-bold;
 }
 .express-pickup-time-sheet__time {
-  display: flex; flex-direction: row; align-items: center; height: 104px; padding-left: $dp-space-32;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 104px;
+  padding-left: $dp-space-32;
 }
 .express-pickup-time-sheet__time-text {
-  color: $dp-color-text-heading; font-size: $dp-font-size-label-large; font-weight: $dp-font-weight-regular; line-height: $dp-line-height-42;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-42;
 }
 .express-pickup-time-sheet__time-text--active {
   font-weight: $dp-font-weight-bold;
@@ -35,23 +54,47 @@
   color: $dp-color-text-subdued;
 }
 .express-pickup-time-sheet__moon {
-  width: $dp-space-32; height: $dp-space-32; margin-left: $dp-space-8;
+  width: $dp-space-32;
+  height: $dp-space-32;
+  margin-left: $dp-space-8;
 }
 .express-pickup-time-sheet__confirm {
-  display: flex; flex: 1; align-items: center; justify-content: center; height: 88px; background: $dp-color-brand; border-radius: $dp-radius-44;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  height: 88px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-44;
 }
 .express-pickup-time-sheet__confirm-text {
-  color: $dp-color-text-inverse; font-size: $dp-font-size-title-large; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-48;
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-48;
 }
 .express-pickup-time-sheet__empty {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; height: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 520px;
 }
 .express-pickup-time-sheet__empty-text {
-  color: $dp-color-text-supporting; font-size: $dp-font-size-label-large; line-height: $dp-line-height-42;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-label-large;
+  line-height: $dp-line-height-42;
 }
 .express-pickup-time-sheet__night-banner {
-  display: flex; flex-direction: row; align-items: center; height: 78px; padding-left: $dp-space-32; background: $dp-color-night-banner-edge;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 78px;
+  padding-left: $dp-space-32;
+  background: $dp-color-night-banner-edge;
 }
 .express-pickup-time-sheet__night-text {
-  color: $dp-color-night-banner-text; font-size: $dp-font-size-label-large; line-height: $dp-line-height-42;
+  color: $dp-color-night-banner-text;
+  font-size: $dp-font-size-label-large;
+  line-height: $dp-line-height-42;
 }

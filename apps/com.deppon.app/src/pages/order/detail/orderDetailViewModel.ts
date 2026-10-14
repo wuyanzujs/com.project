@@ -25,9 +25,7 @@ function getViewMode(value?: string): OrderDetailViewMode {
   return value === 'secure' ? 'secure' : 'public'
 }
 
-export function getOrderDetailRouteParams(
-  params: Record<string, string | undefined>
-): OrderDetailRouteParams {
+export function getOrderDetailRouteParams(params: Record<string, string | undefined>): OrderDetailRouteParams {
   return {
     orderNumber: params.orderNumber || params.orderNo || '',
     waybillNumber: params.waybillNumber || params.waybillNo || '',
@@ -38,18 +36,10 @@ export function getOrderDetailRouteParams(
 }
 
 export function isPublicOrderTrackMode(params: OrderDetailRouteParams) {
-  return (
-    params.view !== 'secure' &&
-    !!params.waybillNumber &&
-    !params.orderNumber &&
-    !params.role
-  )
+  return params.view !== 'secure' && !!params.waybillNumber && !params.orderNumber && !params.role
 }
 
-export function getOrderDetailRole(
-  detail: OrderDetail,
-  routeRole: string
-): OrderRole {
+export function getOrderDetailRole(detail: OrderDetail, routeRole: string): OrderRole {
   if (routeRole === 'receive') {
     return 'receive'
   }
@@ -58,15 +48,10 @@ export function getOrderDetailRole(
     return 'sender'
   }
 
-  return detail.isReceiver === 'Y' && detail.isSender !== 'Y'
-    ? 'receive'
-    : 'sender'
+  return detail.isReceiver === 'Y' && detail.isSender !== 'Y' ? 'receive' : 'sender'
 }
 
-function canCancelOrderDetail(
-  detail: OrderDetail | null,
-  publicTrackMode: boolean
-) {
+function canCancelOrderDetail(detail: OrderDetail | null, publicTrackMode: boolean) {
   if (!detail || publicTrackMode || !detail.orderNumber) {
     return false
   }
@@ -74,10 +59,7 @@ function canCancelOrderDetail(
   return Number(detail.orderClassification) === 0 && detail.modifyFlag !== false
 }
 
-function canDeleteOrderDetail(
-  detail: OrderDetail | null,
-  publicTrackMode: boolean
-) {
+function canDeleteOrderDetail(detail: OrderDetail | null, publicTrackMode: boolean) {
   return !publicTrackMode && !!detail && canDeleteOrder(detail)
 }
 
@@ -85,10 +67,7 @@ function getResendActionText(role: OrderRole) {
   return role === 'receive' ? '一键回寄' : '再来一单'
 }
 
-export function getOrderDetailRouteUrl(
-  params: OrderDetailRouteParams,
-  view: OrderDetailViewMode = params.view
-) {
+export function getOrderDetailRouteUrl(params: OrderDetailRouteParams, view: OrderDetailViewMode = params.view) {
   return createAppRouteUrl(APP_ROUTES.orderDetail, {
     orderNumber: params.orderNumber,
     waybillNumber: params.waybillNumber,
@@ -98,10 +77,7 @@ export function getOrderDetailRouteUrl(
   })
 }
 
-export function createOrderDetailViewModel(
-  params: OrderDetailRouteParams,
-  detail: OrderDetail | null
-): OrderDetailViewModel {
+export function createOrderDetailViewModel(params: OrderDetailRouteParams, detail: OrderDetail | null): OrderDetailViewModel {
   const publicTrackMode = isPublicOrderTrackMode(params)
   const detailRole = detail ? getOrderDetailRole(detail, params.role) : 'sender'
 

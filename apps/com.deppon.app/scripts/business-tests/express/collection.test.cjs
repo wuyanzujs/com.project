@@ -14,15 +14,9 @@ const {
   validateExpressCollection
 } = require('@/services/express/collection.rules')
 const { selectExpressProduct } = require('@/services/express/express.draft')
-const {
-  buildCreateOrderRequest,
-  buildFreightRequest
-} = require('@/services/express/express.payload')
+const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
 
-const {
-  createValidExpressDraft,
-  expressProduct
-} = require('../fixtures/express.cjs')
+const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 
 const cases = [
   {
@@ -42,11 +36,7 @@ const cases = [
           ...emptyCollection,
           type: 'NORMAL'
         }),
-        [
-          '请填写代收货款金额',
-          '请选择代收货款收款账户',
-          '请阅读并同意代收货款服务协议'
-        ]
+        ['请填写代收货款金额', '请选择代收货款收款账户', '请阅读并同意代收货款服务协议']
       )
       assert.equal(
         validateExpressCollection({

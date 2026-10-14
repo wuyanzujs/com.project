@@ -35,14 +35,7 @@ interface ExpressProductAvailabilityInput {
 
 type ExpressProductFreightFields = Pick<
   ExpressFreightRequest,
-  | 'collectMode'
-  | 'customerCode'
-  | 'customerContract'
-  | 'customerMonthly'
-  | 'deliveryMode'
-  | 'isOffSiteTransfer'
-  | 'isRecommendDczp'
-  | 'passProductCode'
+  'collectMode' | 'customerCode' | 'customerContract' | 'customerMonthly' | 'deliveryMode' | 'isOffSiteTransfer' | 'isRecommendDczp' | 'passProductCode'
 >
 
 /**
@@ -67,10 +60,7 @@ function requireExpressContacts(draft: ExpressDraft) {
  * @description 拼接省市县为区域字符串
  */
 function getProductRegion(contact: NonNullable<ExpressDraft['sender']>) {
-  return [contact.province, contact.city, contact.county]
-    .map(trimText)
-    .filter(Boolean)
-    .join('-')
+  return [contact.province, contact.city, contact.county].map(trimText).filter(Boolean).join('-')
 }
 
 /**
@@ -79,9 +69,7 @@ function getProductRegion(contact: NonNullable<ExpressDraft['sender']>) {
  * @description 取扫码场景下的客户 code
  */
 export function getExpressScanCustomerCode(draft: ExpressDraft) {
-  return draft.scanContext?.role === 'shipperNumber'
-    ? trimText(draft.scanContext.value)
-    : ''
+  return draft.scanContext?.role === 'shipperNumber' ? trimText(draft.scanContext.value) : ''
 }
 
 /**
@@ -89,9 +77,7 @@ export function getExpressScanCustomerCode(draft: ExpressDraft) {
  * @param draft 寄件草稿
  * @description 组装货物标签查询请求
  */
-export function createExpressGoodsLabelRequest(
-  draft: ExpressDraft
-): ExpressGoodsLabelRequest {
+export function createExpressGoodsLabelRequest(draft: ExpressDraft): ExpressGoodsLabelRequest {
   return {
     goodsName: trimText(draft.goods.name),
     senderProvinceName: draft.sender?.province,
@@ -108,9 +94,7 @@ export function createExpressGoodsLabelRequest(
  * @param draft 寄件草稿
  * @description 组装产品网点查询请求
  */
-export function createExpressProductPointRequest(
-  draft: ExpressDraft
-): ExpressProductPointRequest {
+export function createExpressProductPointRequest(draft: ExpressDraft): ExpressProductPointRequest {
   const { consignee, sender } = requireExpressContacts(draft)
 
   return {
@@ -126,10 +110,7 @@ export function createExpressProductPointRequest(
  * @param customer 客户能力
  * @description 组装产品切换查询请求
  */
-export function createExpressProductSwitchRequest(
-  draft: ExpressDraft,
-  customer: ExpressProductCustomerCapability
-): ExpressProductSwitchRequest {
+export function createExpressProductSwitchRequest(draft: ExpressDraft, customer: ExpressProductCustomerCapability): ExpressProductSwitchRequest {
   const pointRequest = createExpressProductPointRequest(draft)
 
   return {
@@ -248,10 +229,7 @@ export function resolveExpressProductSwitch(
  * @param productSwitch 产品切换类型
  * @description 取下单透传的产品角色 code
  */
-export function resolveExpressProductRole(
-  draft: ExpressDraft,
-  productSwitch: ExpressProductSwitch
-): ExpressProductRole {
+export function resolveExpressProductRole(draft: ExpressDraft, productSwitch: ExpressProductSwitch): ExpressProductRole {
   const role = draft.scanContext?.role
 
   if (role === 'driverId' || role === 'acceptDept') {
@@ -295,15 +273,10 @@ export function createExpressProductAvailability(
   input: ExpressProductAvailabilityInput = {}
 ): ExpressProductAvailability {
   const isOffSiteTransfer = input.isOffSiteTransfer ?? 'N'
-  const productSwitch = resolveExpressProductSwitch(
-    input.fusionEnabled,
-    input.upgradeResult,
-    customer.contractEnabled
-  )
+  const productSwitch = resolveExpressProductSwitch(input.fusionEnabled, input.upgradeResult, customer.contractEnabled)
   const goodsHasBattery = hasExpressBatteryGoodsLabel(input.goodsLabels ?? [])
   const dczpAvailable = input.dczpAvailable === true
-  const recommendDczp =
-    supportsExpressDczpRecommendation(draft) && dczpAvailable && goodsHasBattery
+  const recommendDczp = supportsExpressDczpRecommendation(draft) && dczpAvailable && goodsHasBattery
 
   return {
     customer,
@@ -331,10 +304,7 @@ export function createExpressProductAvailability(
  * @param availability 产品可用性，可为空
  * @description 组装运费试算的产品相关字段
  */
-export function createExpressProductFreightFields(
-  draft: ExpressDraft,
-  availability?: ExpressProductAvailability
-): ExpressProductFreightFields {
+export function createExpressProductFreightFields(draft: ExpressDraft, availability?: ExpressProductAvailability): ExpressProductFreightFields {
   const scanCustomerCode = getExpressScanCustomerCode(draft)
   const customer = availability?.customer ?? {
     customerCode: scanCustomerCode,
@@ -342,27 +312,14 @@ export function createExpressProductFreightFields(
     contractEnabled: Boolean(scanCustomerCode),
     insuranceLimit: null
   }
-  const passProductCode =
-    availability?.passProductCode ?? resolveExpressProductRole(draft, 'EXP')
+  const passProductCode = availability?.passProductCode ?? resolveExpressProductRole(draft, 'EXP')
   const resolvedCustomer = Boolean(availability)
   const productFields: ExpressProductFreightFields = {
     passProductCode,
     isOffSiteTransfer: availability?.isOffSiteTransfer ?? 'N',
     customerCode: customer.customerCode || undefined,
-    customerMonthly: resolvedCustomer
-      ? customer.monthlyEnabled
-        ? '1'
-        : '0'
-      : scanCustomerCode
-        ? '1'
-        : undefined,
-    customerContract: resolvedCustomer
-      ? customer.contractEnabled
-        ? '1'
-        : '0'
-      : scanCustomerCode
-        ? '1'
-        : undefined
+    customerMonthly: resolvedCustomer ? (customer.monthlyEnabled ? '1' : '0') : scanCustomerCode ? '1' : undefined,
+    customerContract: resolvedCustomer ? (customer.contractEnabled ? '1' : '0') : scanCustomerCode ? '1' : undefined
   }
 
   if (availability?.recommendDczp) {
@@ -371,8 +328,7 @@ export function createExpressProductFreightFields(
 
   if (passProductCode === 'CONTRACT' || passProductCode === 'UNIVERSAL') {
     productFields.collectMode = 'BZLS'
-    productFields.deliveryMode =
-      draft.service.deliveryMode === 'PICKSELF' ? 'ZDZT' : 'BZPS'
+    productFields.deliveryMode = draft.service.deliveryMode === 'PICKSELF' ? 'ZDZT' : 'BZPS'
   }
 
   return productFields
@@ -384,15 +340,9 @@ export function createExpressProductFreightFields(
  * @param recommendDczp 是否推荐 DCZP
  * @description 选择默认选中的产品报价
  */
-export function selectDefaultExpressQuote(
-  products: ExpressProductQuote[],
-  recommendDczp: boolean
-) {
+export function selectDefaultExpressQuote(products: ExpressProductQuote[], recommendDczp: boolean) {
   if (recommendDczp) {
-    const recommended = products.find(
-      product =>
-        product.omsProductCode === 'DCZP' || product.producteCode === 'DCZP'
-    )
+    const recommended = products.find(product => product.omsProductCode === 'DCZP' || product.producteCode === 'DCZP')
 
     if (recommended) {
       return recommended

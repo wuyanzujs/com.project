@@ -1,8 +1,5 @@
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
-import {
-  appendRouteQuery,
-  createRouteQuery
-} from '@/shared/navigation/routeUrl'
+import { appendRouteQuery, createRouteQuery } from '@/shared/navigation/routeUrl'
 
 import { getCurrentEcoToken } from '../auth'
 
@@ -27,10 +24,7 @@ export function createQuery(params: Record<string, string>) {
  * @param params 额外 query 参数
  * @description 拼接带通用参数的 H5 地址
  */
-export function createOrderDetailWebUri(
-  path: string,
-  params: Record<string, string> = {}
-) {
+export function createOrderDetailWebUri(path: string, params: Record<string, string> = {}) {
   return appendRouteQuery(path, {
     sonSource: ORDER_DETAIL_WEB_PARAM_SOURCE,
     ecoToken: getCurrentEcoToken(),
@@ -107,9 +101,7 @@ export function getOrderClass(order: OrderDetail) {
  * @description 拼接订单分类名与状态文案
  */
 export function getOrderStatusText(order: OrderDetail) {
-  return [order.orderClassName, order.orderStatus]
-    .filter((item): item is string => typeof item === 'string')
-    .join('')
+  return [order.orderClassName, order.orderStatus].filter((item): item is string => typeof item === 'string').join('')
 }
 
 /**
@@ -154,15 +146,7 @@ function getOrderSlaveFlag(order: OrderDetail) {
  * @description 取联系电话，兜底客服热线
  */
 export function getOrderContactPhone(order: OrderDetail) {
-  return (
-    getOrderTextField(order, [
-      'postmanPhone',
-      'courierMobile',
-      'exDepartureCourierPhone',
-      'stationPhone',
-      'departmentPhone'
-    ]) || DEFAULT_SERVICE_PHONE
-  )
+  return getOrderTextField(order, ['postmanPhone', 'courierMobile', 'exDepartureCourierPhone', 'stationPhone', 'departmentPhone']) || DEFAULT_SERVICE_PHONE
 }
 
 /**
@@ -171,14 +155,7 @@ export function getOrderContactPhone(order: OrderDetail) {
  * @description 取营业部编码
  */
 export function getOrderStationCode(order: OrderDetail) {
-  return getOrderTextField(order, [
-    'stationCode',
-    'acceptDeptCode',
-    'departmentCode',
-    'deptCode',
-    'senderStation',
-    'consigneeStation'
-  ])
+  return getOrderTextField(order, ['stationCode', 'acceptDeptCode', 'departmentCode', 'deptCode', 'senderStation', 'consigneeStation'])
 }
 
 /**
@@ -187,11 +164,7 @@ export function getOrderStationCode(order: OrderDetail) {
  * @description 取营业部电话
  */
 export function getOrderStationPhone(order: OrderDetail) {
-  return getOrderTextField(order, [
-    'stationPhone',
-    'acceptPhone',
-    'departmentPhone'
-  ])
+  return getOrderTextField(order, ['stationPhone', 'acceptPhone', 'departmentPhone'])
 }
 
 /**
@@ -276,7 +249,5 @@ export function isReceiverDetail(order: OrderDetail, role?: OrderRole) {
  * @description 判断订单是否已签收
  */
 export function isSignedOrder(order: OrderDetail) {
-  return (
-    getOrderClass(order) === 2 || getOrderStatusText(order).includes('签收')
-  )
+  return getOrderClass(order) === 2 || getOrderStatusText(order).includes('签收')
 }

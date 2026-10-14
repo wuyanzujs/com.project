@@ -1,12 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 
 import { orderService } from '@/services/order'
-import type {
-  OrderListItem,
-  OrderPaymentFilter,
-  OrderRole,
-  OrderStatusFilter
-} from '@/services/order'
+import type { OrderListItem, OrderPaymentFilter, OrderRole, OrderStatusFilter } from '@/services/order'
 import { LatestRequestCoordinator } from '@/shared/async/latestRequest'
 
 const PAGE_SIZE = 10
@@ -38,13 +33,7 @@ interface UseOrderListDataResult {
   resetOrders: () => void
 }
 
-export function useOrderListData({
-  role,
-  keyword,
-  orderStatus,
-  paymentType,
-  rangeDays
-}: UseOrderListDataParams): UseOrderListDataResult {
+export function useOrderListData({ role, keyword, orderStatus, paymentType, rangeDays }: UseOrderListDataParams): UseOrderListDataResult {
   const [orders, setOrders] = useState<OrderListItem[]>([])
   const [pageIndex, setPageIndex] = useState(1)
   const [totalPage, setTotalPage] = useState(1)
@@ -54,24 +43,8 @@ export function useOrderListData({
   const requestCoordinator = useRef(new LatestRequestCoordinator()).current
 
   const loadOrders = useCallback(
-    async (
-      nextPage = 1,
-      nextRole = role,
-      nextKeyword = keyword,
-      nextStatus = orderStatus,
-      nextPaymentType = paymentType,
-      nextRangeDays = rangeDays
-    ) => {
-      const requestToken = requestCoordinator.begin(
-        JSON.stringify([
-          nextPage,
-          nextRole,
-          nextKeyword,
-          nextStatus,
-          nextPaymentType,
-          nextRangeDays
-        ])
-      )
+    async (nextPage = 1, nextRole = role, nextKeyword = keyword, nextStatus = orderStatus, nextPaymentType = paymentType, nextRangeDays = rangeDays) => {
+      const requestToken = requestCoordinator.begin(JSON.stringify([nextPage, nextRole, nextKeyword, nextStatus, nextPaymentType, nextRangeDays]))
 
       if (!requestToken) {
         return
@@ -105,11 +78,7 @@ export function useOrderListData({
           return
         }
 
-        setOrders(current =>
-          nextPage === 1
-            ? (response.result?.list ?? [])
-            : [...current, ...(response.result?.list ?? [])]
-        )
+        setOrders(current => (nextPage === 1 ? (response.result?.list ?? []) : [...current, ...(response.result?.list ?? [])]))
         setPageIndex(response.result.pageIndex)
         setTotalPage(response.result.totalPage)
         setTotalRows(response.result.totalRows)
@@ -122,13 +91,10 @@ export function useOrderListData({
     [keyword, orderStatus, paymentType, rangeDays, requestCoordinator, role]
   )
 
-  const removeOrder = useCallback(
-    (predicate: (item: OrderListItem) => boolean) => {
-      setOrders(current => current.filter(item => !predicate(item)))
-      setTotalRows(current => Math.max(0, current - 1))
-    },
-    []
-  )
+  const removeOrder = useCallback((predicate: (item: OrderListItem) => boolean) => {
+    setOrders(current => current.filter(item => !predicate(item)))
+    setTotalRows(current => Math.max(0, current - 1))
+  }, [])
 
   const resetOrders = useCallback(() => {
     setOrders([])

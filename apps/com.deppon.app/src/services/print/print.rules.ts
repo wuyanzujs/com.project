@@ -1,13 +1,6 @@
 import type { DepponResponse } from '@/request/deppon'
 
-import type {
-  PrintDateRangeKey,
-  PrintDateRangeOption,
-  PrintListCounts,
-  PrintListResponse,
-  PrintOrderListItem,
-  PrintSearchType
-} from './types'
+import type { PrintDateRangeKey, PrintDateRangeOption, PrintListCounts, PrintListResponse, PrintOrderListItem, PrintSearchType } from './types'
 
 const PRINT_DATE_RANGE_DEFINITIONS: ReadonlyArray<{
   key: PrintDateRangeKey
@@ -41,9 +34,7 @@ function pad(value: number) {
 function formatDateTime(date: Date, time: 'start' | 'end') {
   const timeText = time === 'start' ? '00:00:00' : '23:59:59'
 
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )} ${timeText}`
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${timeText}`
 }
 
 /**
@@ -60,9 +51,7 @@ function formatDateLabel(date: Date) {
  * @param now 当前时间
  * @description 生成打印日期范围选项列表
  */
-export function createPrintDateRangeOptions(
-  now = new Date()
-): PrintDateRangeOption[] {
+export function createPrintDateRangeOptions(now = new Date()): PrintDateRangeOption[] {
   const endDate = new Date(now)
 
   return PRINT_DATE_RANGE_DEFINITIONS.map(definition => {
@@ -73,10 +62,7 @@ export function createPrintDateRangeOptions(
     return {
       key: definition.key,
       label: definition.label,
-      summary:
-        definition.days === 1
-          ? formatDateLabel(startDate)
-          : `${formatDateLabel(startDate)} 至今`,
+      summary: definition.days === 1 ? formatDateLabel(startDate) : `${formatDateLabel(startDate)} 至今`,
       startTime: formatDateTime(startDate, 'start'),
       endTime: formatDateTime(endDate, 'end')
     }
@@ -89,17 +75,10 @@ export function createPrintDateRangeOptions(
  * @param now 当前时间
  * @description 按 key 取日期范围，缺失用默认值
  */
-export function getPrintDateRange(
-  rangeKey: PrintDateRangeKey = DEFAULT_PRINT_DATE_RANGE_KEY,
-  now = new Date()
-) {
+export function getPrintDateRange(rangeKey: PrintDateRangeKey = DEFAULT_PRINT_DATE_RANGE_KEY, now = new Date()) {
   const options = createPrintDateRangeOptions(now)
 
-  return (
-    options.find(option => option.key === rangeKey) ??
-    options.find(option => option.key === DEFAULT_PRINT_DATE_RANGE_KEY) ??
-    options[0]
-  )
+  return options.find(option => option.key === rangeKey) ?? options.find(option => option.key === DEFAULT_PRINT_DATE_RANGE_KEY) ?? options[0]
 }
 
 /**
@@ -112,10 +91,7 @@ function getResponseCount(response?: DepponResponse<PrintListResponse> | null) {
     return null
   }
 
-  if (
-    response.result.totalRows === null ||
-    response.result.totalRows === undefined
-  ) {
+  if (response.result.totalRows === null || response.result.totalRows === undefined) {
     return response.result.list?.length ?? 0
   }
 
@@ -164,11 +140,7 @@ export function resolvePrintListCounts(
  * @param replace 是否整表替换
  * @description 合并订单分页并按 key 去重
  */
-export function mergePrintOrderPages(
-  current: PrintOrderListItem[],
-  incoming: PrintOrderListItem[],
-  replace = false
-) {
+export function mergePrintOrderPages(current: PrintOrderListItem[], incoming: PrintOrderListItem[], replace = false) {
   const merged = replace ? incoming : [...current, ...incoming]
   const seen = new Set<string>()
 

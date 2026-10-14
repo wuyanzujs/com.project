@@ -3,17 +3,8 @@ import Taro from '@tarojs/taro'
 import { useState } from 'react'
 
 import { expressDraftBridge } from '@/services/express'
-import {
-  createExpressDraftFromOrderDetail,
-  getOrderCopyNumber,
-  orderService
-} from '@/services/order'
-import type {
-  OrderDetail,
-  OrderDetailActionView,
-  OrderRole,
-  OrderStubEntryView
-} from '@/services/order'
+import { createExpressDraftFromOrderDetail, getOrderCopyNumber, orderService } from '@/services/order'
+import type { OrderDetail, OrderDetailActionView, OrderRole, OrderStubEntryView } from '@/services/order'
 import { createPaymentCheckoutUrl } from '@/services/payment'
 import type { PaymentSummary } from '@/services/payment'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
@@ -31,13 +22,9 @@ import type { useOrderPickupSchedule } from './useOrderPickupSchedule'
 import type { OrderDetailUrgePanelState } from '../components/OrderUrgePanel'
 import type { OrderDetailRouteParams } from '../orderDetailViewModel'
 
-export type OrderDetailDialHandler = (
-  phoneNumber?: string | null
-) => Promise<void>
+export type OrderDetailDialHandler = (phoneNumber?: string | null) => Promise<void>
 
-export type OrderPickupScheduleController = ReturnType<
-  typeof useOrderPickupSchedule
->
+export type OrderPickupScheduleController = ReturnType<typeof useOrderPickupSchedule>
 
 export interface UseOrderDetailActionsOptions {
   routeParams: OrderDetailRouteParams
@@ -64,9 +51,7 @@ export function useOrderDetailActions(options: UseOrderDetailActionsOptions) {
   }
 
   const handleBackToList = () => {
-    navigateToAppRoute(
-      options.publicTrackMode ? APP_ROUTES.home : APP_ROUTES.orderList
-    )
+    navigateToAppRoute(options.publicTrackMode ? APP_ROUTES.home : APP_ROUTES.orderList)
   }
 
   const handleCopyNumber = async () => {
@@ -111,10 +96,7 @@ export function useOrderDetailActions(options: UseOrderDetailActionsOptions) {
       await dialPhone(phoneNumber)
     } catch (error) {
       Taro.showToast({
-        title:
-          error instanceof PhoneNumberError
-            ? error.message
-            : getNativeCapabilityErrorMessage(error),
+        title: error instanceof PhoneNumberError ? error.message : getNativeCapabilityErrorMessage(error),
         icon: 'none'
       })
     }
@@ -160,9 +142,7 @@ export function useOrderDetailActions(options: UseOrderDetailActionsOptions) {
       })
 
       Taro.showToast({
-        title: response.status
-          ? '删除成功'
-          : response.message || '删除失败，请稍后重试',
+        title: response.status ? '删除成功' : response.message || '删除失败，请稍后重试',
         icon: 'none'
       })
 
@@ -179,23 +159,14 @@ export function useOrderDetailActions(options: UseOrderDetailActionsOptions) {
       return
     }
 
-    expressDraftBridge.carryFromOrderResend(
-      createExpressDraftFromOrderDetail(
-        options.detail,
-        options.detailRole === 'receive' ? 'return' : 'repeat'
-      )
-    )
+    expressDraftBridge.carryFromOrderResend(createExpressDraftFromOrderDetail(options.detail, options.detailRole === 'receive' ? 'return' : 'repeat'))
     navigateToAppRoute(APP_ROUTES.express, {
       replace: true
     })
   }
 
   const handlePayOrder = () => {
-    if (
-      !options.detail ||
-      !options.paymentSummary ||
-      !options.paymentSummary.canPay
-    ) {
+    if (!options.detail || !options.paymentSummary || !options.paymentSummary.canPay) {
       return
     }
 

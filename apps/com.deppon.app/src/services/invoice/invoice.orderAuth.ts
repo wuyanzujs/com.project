@@ -16,8 +16,7 @@ interface CachedInvoiceOrderAuth {
  */
 export function getCachedInvoiceOrderAuthValue(waybillNumber: string) {
   const normalizedWaybill = waybillNumber.trim()
-  const list =
-    dpCache.get<CachedInvoiceOrderAuth[]>(CACHE_KEYS.invoiceOrderAuth) ?? []
+  const list = dpCache.get<CachedInvoiceOrderAuth[]>(CACHE_KEYS.invoiceOrderAuth) ?? []
 
   return list.find(item => item.id === normalizedWaybill)?.value.trim() ?? ''
 }
@@ -28,10 +27,7 @@ export function getCachedInvoiceOrderAuthValue(waybillNumber: string) {
  * @param value 验证值
  * @description 缓存运单验证值，当日有效
  */
-export async function rememberInvoiceOrderAuthValue(
-  waybillNumber: string,
-  value: string
-) {
+export async function rememberInvoiceOrderAuthValue(waybillNumber: string, value: string) {
   const normalizedWaybill = waybillNumber.trim()
   const normalizedValue = value.trim()
 
@@ -39,8 +35,7 @@ export async function rememberInvoiceOrderAuthValue(
     return false
   }
 
-  const list =
-    dpCache.get<CachedInvoiceOrderAuth[]>(CACHE_KEYS.invoiceOrderAuth) ?? []
+  const list = dpCache.get<CachedInvoiceOrderAuth[]>(CACHE_KEYS.invoiceOrderAuth) ?? []
   const nextList = list.filter(item => item.id !== normalizedWaybill)
 
   nextList.push({ id: normalizedWaybill, value: normalizedValue })
@@ -58,17 +53,12 @@ export async function rememberInvoiceOrderAuthValue(
  * @param now 当前时间
  * @description 计算验证码剩余秒数
  */
-export function calculateInvoiceOrderAuthCountdown(
-  sentAt: number | null | undefined,
-  now = Date.now()
-) {
+export function calculateInvoiceOrderAuthCountdown(sentAt: number | null | undefined, now = Date.now()) {
   if (!sentAt) {
     return 0
   }
 
-  const remaining = Math.ceil(
-    INVOICE_ORDER_AUTH_CODE_SECONDS - (now - sentAt) / 1000
-  )
+  const remaining = Math.ceil(INVOICE_ORDER_AUTH_CODE_SECONDS - (now - sentAt) / 1000)
 
   return Math.min(INVOICE_ORDER_AUTH_CODE_SECONDS, Math.max(0, remaining))
 }
@@ -105,10 +95,7 @@ export function markInvoiceOrderAuthCodeSent(sentAt = Date.now()) {
  * @param value 用户输入值
  * @description 校验用户输入并返回错误文案
  */
-export function getInvoiceOrderAuthValidationMessage(
-  auth: InvoiceOrderAuthChallenge,
-  value: string
-) {
+export function getInvoiceOrderAuthValidationMessage(auth: InvoiceOrderAuthChallenge, value: string) {
   const normalizedValue = value.trim()
 
   if (!normalizedValue) {

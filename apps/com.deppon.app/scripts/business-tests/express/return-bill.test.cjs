@@ -2,14 +2,8 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  createExpressDraft,
-  selectExpressProduct
-} = require('@/services/express/express.draft')
-const {
-  buildCreateOrderRequest,
-  buildFreightRequest
-} = require('@/services/express/express.payload')
+const { createExpressDraft, selectExpressProduct } = require('@/services/express/express.draft')
+const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
 const {
   getExpressReturnBillOptions,
   getExpressReturnBillPpcType,
@@ -19,20 +13,11 @@ const {
   updateExpressReturnBillDraft,
   validateExpressReturnBill
 } = require('@/services/express/valueAdded')
-const {
-  buildTemplateSaveRequest,
-  mapTemplateToExpressDraft
-} = require('@/services/template/template.mapper')
-const {
-  createAppWebUrl,
-  isAllowedAppWebTargetUrl
-} = require('@/shared/webview/appWeb')
+const { buildTemplateSaveRequest, mapTemplateToExpressDraft } = require('@/services/template/template.mapper')
+const { createAppWebUrl, isAllowedAppWebTargetUrl } = require('@/shared/webview/appWeb')
 const { appWebMessageBridge } = require('@/shared/webview/appWebMessage')
 
-const {
-  createValidExpressDraft,
-  expressProduct
-} = require('../fixtures/express.cjs')
+const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 const { createExpressTemplateRaw } = require('../fixtures/template.cjs')
 
 const cases = [
@@ -56,24 +41,13 @@ const cases = [
       })
       assert.equal(getExpressReturnBillPpcType('NO_RETURN_SIGNED'), 'NONE')
       assert.equal(getExpressReturnBillPpcType('CUSTOMER_SIGNED_FAX'), 'FAX')
-      assert.equal(
-        getExpressReturnBillPpcType('CUSTOMER_SIGNED_ORIGINAL'),
-        'ORIGINAL'
-      )
-      assert.equal(
-        getExpressReturnBillPpcType('RETURNBILL_TYPE_ONLINE'),
-        'ONLINE'
-      )
-      assert.equal(
-        getExpressReturnBillPpcType('ORIGINAL_ONLINE'),
-        'ORIGINAL_ONLINE'
-      )
+      assert.equal(getExpressReturnBillPpcType('CUSTOMER_SIGNED_ORIGINAL'), 'ORIGINAL')
+      assert.equal(getExpressReturnBillPpcType('RETURNBILL_TYPE_ONLINE'), 'ONLINE')
+      assert.equal(getExpressReturnBillPpcType('ORIGINAL_ONLINE'), 'ORIGINAL_ONLINE')
       assert.equal(isExpressCloudSignType('RETURNBILL_TYPE_ONLINE'), true)
       assert.equal(isExpressCloudSignType('CUSTOMER_SIGNED_FAX'), false)
       assert.equal(
-        getExpressReturnBillOptions('DCZP').some(item =>
-          isExpressCloudSignType(item.value)
-        ),
+        getExpressReturnBillOptions('DCZP').some(item => isExpressCloudSignType(item.value)),
         false
       )
     }
@@ -161,14 +135,9 @@ const cases = [
       }
       const paperRequest = buildCreateOrderRequest(paperDraft)
 
+      assert.equal(paperRequest.receive[0].returnBillType, 'CUSTOMER_SIGNED_ORIGINAL')
       assert.equal(
-        paperRequest.receive[0].returnBillType,
-        'CUSTOMER_SIGNED_ORIGINAL'
-      )
-      assert.equal(
-        paperRequest.receive[0].orderExtendFields.some(
-          field => field.key === 'returnBillQty' && field.value === 2
-        ),
+        paperRequest.receive[0].orderExtendFields.some(field => field.key === 'returnBillQty' && field.value === 2),
         true
       )
 
@@ -183,9 +152,7 @@ const cases = [
         }
       })
       assert.equal(
-        singlePaperRequest.receive[0].orderExtendFields?.some(
-          field => field.key === 'returnBillQty'
-        ),
+        singlePaperRequest.receive[0].orderExtendFields?.some(field => field.key === 'returnBillQty'),
         false
       )
 
@@ -203,16 +170,11 @@ const cases = [
       }
       const cloudRequest = buildCreateOrderRequest(cloudDraft)
 
-      assert.equal(
-        cloudRequest.receive[0].returnBillType,
-        'RETURNBILL_TYPE_ONLINE'
-      )
+      assert.equal(cloudRequest.receive[0].returnBillType, 'RETURNBILL_TYPE_ONLINE')
       assert.equal(cloudRequest.receive[0].returnRequirement, '')
       assert.equal(cloudRequest.receive[0].customReturnRequirement, '')
       assert.deepEqual(
-        cloudRequest.receive[0].orderExtendFields?.filter(
-          field => field.key === 'fileCode'
-        ),
+        cloudRequest.receive[0].orderExtendFields?.filter(field => field.key === 'fileCode'),
         [{ key: 'fileCode', value: 'FILE-ONLINE' }]
       )
 
@@ -222,16 +184,10 @@ const cases = [
       })
       assert.equal(dcCloudDraft.service.returnBill.type, 'NO_RETURN_SIGNED')
       assert.equal(dcCloudDraft.service.returnBill.fileCode, '')
-      assert.equal(
-        buildCreateOrderRequest(dcCloudDraft).receive[0].returnBillType,
-        'NO_RETURN_SIGNED'
-      )
+      assert.equal(buildCreateOrderRequest(dcCloudDraft).receive[0].returnBillType, 'NO_RETURN_SIGNED')
       assert.equal(buildFreightRequest(dcCloudDraft).returnBillType, 'NONE')
 
-      const switchedToOnline = updateExpressReturnBillDraft(
-        paperDraft.service.returnBill,
-        { type: 'RETURNBILL_TYPE_ONLINE' }
-      )
+      const switchedToOnline = updateExpressReturnBillDraft(paperDraft.service.returnBill, { type: 'RETURNBILL_TYPE_ONLINE' })
       assert.deepEqual(switchedToOnline.requirements, [])
       assert.equal(switchedToOnline.customRequirement, '')
       assert.equal(switchedToOnline.fileCode, '')
@@ -260,16 +216,9 @@ const cases = [
           returnBill: cloud
         }
       }
-      const saved = buildTemplateSaveRequest(
-        saveDraft,
-        { name: '云签件', defaultFlag: 2 },
-        'APP'
-      )
+      const saved = buildTemplateSaveRequest(saveDraft, { name: '云签件', defaultFlag: 2 }, 'APP')
 
-      assert.equal(
-        saved.template.addedService.returnBillType,
-        'ORIGINAL_ONLINE'
-      )
+      assert.equal(saved.template.addedService.returnBillType, 'ORIGINAL_ONLINE')
       assert.equal(saved.template.addedService.returnRequirement, 'R2')
       assert.equal('fileCode' in saved.template.addedService, false)
 
@@ -288,12 +237,7 @@ const cases = [
       )
       assert.equal(loaded.service.returnBill.type, 'RETURNBILL_TYPE_ONLINE')
       assert.equal(loaded.service.returnBill.fileCode, '')
-      assert.equal(
-        validateExpressReturnBill(loaded.service.returnBill).includes(
-          '请先完成电子云签'
-        ),
-        true
-      )
+      assert.equal(validateExpressReturnBill(loaded.service.returnBill).includes('请先完成电子云签'), true)
 
       const dczpTemplate = mapTemplateToExpressDraft(
         createExpressTemplateRaw({
@@ -328,19 +272,8 @@ const cases = [
 
       appWebMessageBridge.clear()
       assert.equal(appWebMessageBridge.expectOnlineSign(context), true)
-      assert.equal(
-        appWebMessageBridge.stage('CUSTOMER_CENTER', validMessage, context)
-          .handled,
-        false
-      )
-      assert.equal(
-        appWebMessageBridge.stage(
-          'EXPRESS_RETURN_BILL_CLOUD_SIGN',
-          validMessage,
-          { messageContext: 'EXPRESS_RETURN_BILL:WRONG' }
-        ).handled,
-        false
-      )
+      assert.equal(appWebMessageBridge.stage('CUSTOMER_CENTER', validMessage, context).handled, false)
+      assert.equal(appWebMessageBridge.stage('EXPRESS_RETURN_BILL_CLOUD_SIGN', validMessage, { messageContext: 'EXPRESS_RETURN_BILL:WRONG' }).handled, false)
       assert.equal(
         appWebMessageBridge.stage(
           'EXPRESS_RETURN_BILL_CLOUD_SIGN',
@@ -352,14 +285,7 @@ const cases = [
         ).handled,
         false
       )
-      assert.deepEqual(
-        appWebMessageBridge.stage(
-          'EXPRESS_RETURN_BILL_CLOUD_SIGN',
-          validMessage,
-          context
-        ),
-        { handled: true, closeAfterReceive: true }
-      )
+      assert.deepEqual(appWebMessageBridge.stage('EXPRESS_RETURN_BILL_CLOUD_SIGN', validMessage, context), { handled: true, closeAfterReceive: true })
       assert.deepEqual(appWebMessageBridge.consumeOnlineSign(context), {
         context,
         fileCode: 'FILE-CLOUD-001'
@@ -368,14 +294,7 @@ const cases = [
 
       assert.equal(appWebMessageBridge.expectOnlineSign(context), true)
       appWebMessageBridge.cancelOnlineSign(context)
-      assert.equal(
-        appWebMessageBridge.stage(
-          'EXPRESS_RETURN_BILL_CLOUD_SIGN',
-          validMessage,
-          context
-        ).handled,
-        false
-      )
+      assert.equal(appWebMessageBridge.stage('EXPRESS_RETURN_BILL_CLOUD_SIGN', validMessage, context).handled, false)
 
       const url = createAppWebUrl({
         source: 'EXPRESS_RETURN_BILL_CLOUD_SIGN',

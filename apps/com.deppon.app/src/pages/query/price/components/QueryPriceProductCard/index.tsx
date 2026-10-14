@@ -11,10 +11,7 @@ interface QueryPriceProductCardProps {
   onExpress: (product: ExpressProductQuote) => void
 }
 
-export function QueryPriceProductCard({
-  product,
-  onExpress
-}: QueryPriceProductCardProps) {
+export function QueryPriceProductCard({ product, onExpress }: QueryPriceProductCardProps) {
   const view = createExpressProductQuoteView(product)
   const feeText = view.feeRows
     .slice(0, 3)
@@ -26,23 +23,12 @@ export function QueryPriceProductCard({
       <View className='query-price-product__main'>
         <Text className='query-price-product__name'>{view.name}</Text>
         <Text className='query-price-product__time'>{view.timeText}</Text>
-        {view.billWeightText && (
-          <Text className='query-price-product__weight'>
-            {view.billWeightText}
-          </Text>
-        )}
-        {feeText && (
-          <Text className='query-price-product__fees'>{feeText}</Text>
-        )}
+        {view.billWeightText && <Text className='query-price-product__weight'>{view.billWeightText}</Text>}
+        {feeText && <Text className='query-price-product__fees'>{feeText}</Text>}
       </View>
       <View className='query-price-product__side'>
-        <Text className='query-price-product__price'>
-          {view.priceWithSuffixText}
-        </Text>
-        <AppPressable
-          className='query-price-product__button'
-          onPress={() => onExpress(product)}
-        >
+        <Text className='query-price-product__price'>{view.priceWithSuffixText}</Text>
+        <AppPressable className='query-price-product__button' onPress={() => onExpress(product)}>
           <Text className='query-price-product__button-text'>去寄件</Text>
         </AppPressable>
       </View>

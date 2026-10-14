@@ -11,11 +11,7 @@ interface OrderPaymentAlertProps {
   onPay: () => void
 }
 
-export function OrderPaymentAlert({
-  paying,
-  summary,
-  onPay
-}: OrderPaymentAlertProps) {
+export function OrderPaymentAlert({ paying, summary, onPay }: OrderPaymentAlertProps) {
   if (!summary) {
     return null
   }
@@ -27,30 +23,14 @@ export function OrderPaymentAlert({
         <Text className='order-payment-alert__summary'>
           共 {summary.count} 笔，合计 ¥{summary.amount.toFixed(2)}
         </Text>
-        {summary.disabledReason ? (
-          <Text className='order-payment-alert__hint'>
-            {summary.disabledReason}
-          </Text>
-        ) : null}
+        {summary.disabledReason ? <Text className='order-payment-alert__hint'>{summary.disabledReason}</Text> : null}
       </View>
       <AppPressable
-        accessibilityLabel={
-          paying
-            ? '支付处理中'
-            : summary.canPay
-              ? '支付订单费用'
-              : '订单费用暂不可付'
-        }
-        className={
-          summary.canPay
-            ? 'order-payment-alert__button'
-            : 'order-payment-alert__button order-payment-alert__button--disabled'
-        }
+        accessibilityLabel={paying ? '支付处理中' : summary.canPay ? '支付订单费用' : '订单费用暂不可付'}
+        className={summary.canPay ? 'order-payment-alert__button' : 'order-payment-alert__button order-payment-alert__button--disabled'}
         onPress={onPay}
       >
-        <Text className='order-payment-alert__button-text'>
-          {paying ? '处理中' : summary.canPay ? '去支付' : '暂不可付'}
-        </Text>
+        <Text className='order-payment-alert__button-text'>{paying ? '处理中' : summary.canPay ? '去支付' : '暂不可付'}</Text>
       </AppPressable>
     </View>
   )

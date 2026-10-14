@@ -64,9 +64,7 @@ export function getSetCookieFromHeaders(headers: unknown): string {
     const rawHeaders = headersLike.raw?.()
     const rawSetCookie =
       rawHeaders && typeof rawHeaders === 'object'
-        ? Object.entries(rawHeaders as Record<string, unknown>).find(
-            ([key]) => key.toLowerCase() === 'set-cookie'
-          )?.[1]
+        ? Object.entries(rawHeaders as Record<string, unknown>).find(([key]) => key.toLowerCase() === 'set-cookie')?.[1]
         : undefined
     const normalizedRawSetCookie = normalizeHeaderValue(rawSetCookie)
 
@@ -79,14 +77,10 @@ export function getSetCookieFromHeaders(headers: unknown): string {
 
   if (headersLike.map && typeof headersLike.map === 'object') {
     const mappedHeaders = headersLike.map as Record<string, unknown>
-    const mappedHeaderKey = Object.keys(mappedHeaders).find(
-      key => key.toLowerCase() === 'set-cookie'
-    )
+    const mappedHeaderKey = Object.keys(mappedHeaders).find(key => key.toLowerCase() === 'set-cookie')
 
     if (mappedHeaderKey) {
-      const mappedSetCookie = normalizeHeaderValue(
-        mappedHeaders[mappedHeaderKey]
-      )
+      const mappedSetCookie = normalizeHeaderValue(mappedHeaders[mappedHeaderKey])
 
       if (mappedSetCookie) {
         return mappedSetCookie
@@ -95,9 +89,7 @@ export function getSetCookieFromHeaders(headers: unknown): string {
   }
 
   const headerRecord = headers as Record<string, unknown>
-  const headerKey = Object.keys(headerRecord).find(
-    key => key.toLowerCase() === 'set-cookie'
-  )
+  const headerKey = Object.keys(headerRecord).find(key => key.toLowerCase() === 'set-cookie')
 
   if (!headerKey) {
     return ''

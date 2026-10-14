@@ -7,10 +7,7 @@ import {
 } from './order.evaluation.rules'
 import { createServiceFailure } from '../serviceResponse'
 
-import type {
-  OrderEvaluationDraft,
-  OrderEvaluationView
-} from './order.evaluation.types'
+import type { OrderEvaluationDraft, OrderEvaluationView } from './order.evaluation.types'
 import type { OrderDetail } from './types'
 
 export const orderEvaluationService = {
@@ -18,29 +15,19 @@ export const orderEvaluationService = {
     const context = createOrderEvaluationContext(detail, routeRole)
 
     if (!context) {
-      return createServiceFailure<OrderEvaluationView>(
-        '当前运单暂不支持服务评价'
-      )
+      return createServiceFailure<OrderEvaluationView>('当前运单暂不支持服务评价')
     }
 
     const response = await orderEvaluationApi.queryDetail(context.query)
 
     if (!response.status || !response.result) {
-      return createServiceFailure<OrderEvaluationView>(
-        response.message || '暂未获取到评价信息'
-      )
+      return createServiceFailure<OrderEvaluationView>(response.message || '暂未获取到评价信息')
     }
 
-    const view = createOrderEvaluationView(
-      context,
-      response.result,
-      response.code
-    )
+    const view = createOrderEvaluationView(context, response.result, response.code)
 
     if (!view) {
-      return createServiceFailure<OrderEvaluationView>(
-        '暂未获取到可评价的快递员信息'
-      )
+      return createServiceFailure<OrderEvaluationView>('暂未获取到可评价的快递员信息')
     }
 
     return {
@@ -56,8 +43,6 @@ export const orderEvaluationService = {
       return Promise.resolve(createServiceFailure<unknown>(validation.message))
     }
 
-    return orderEvaluationApi.submit(
-      createOrderEvaluationSubmitRequest(view, draft)
-    )
+    return orderEvaluationApi.submit(createOrderEvaluationSubmitRequest(view, draft))
   }
 }

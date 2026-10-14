@@ -124,8 +124,7 @@ const cases = [
         },
         '13800138000'
       )
-      const evaluateParams = new URL(evaluateUri, 'https://owstest.deppon.com')
-        .searchParams
+      const evaluateParams = new URL(evaluateUri, 'https://owstest.deppon.com').searchParams
 
       assert.equal(evaluateParams.get('channel'), 'APP')
       assert.equal(evaluateParams.get('mobile'), '13800138000')
@@ -145,18 +144,12 @@ const cases = [
       assert.deepEqual(createPaymentWaybillQuery(' DPK123456789 '), {
         waybillNo: 'DPK123456789'
       })
-      assert.deepEqual(
-        createPaymentWaybillQuery('DPK123456789, DPL987654321，DPK111111111'),
-        {
-          waybillNos: ['DPK123456789', 'DPL987654321', 'DPK111111111']
-        }
-      )
-      assert.deepEqual(
-        createPaymentWaybillQuery('DPK123456789\nDPL987654321'),
-        {
-          waybillNos: ['DPK123456789', 'DPL987654321']
-        }
-      )
+      assert.deepEqual(createPaymentWaybillQuery('DPK123456789, DPL987654321，DPK111111111'), {
+        waybillNos: ['DPK123456789', 'DPL987654321', 'DPK111111111']
+      })
+      assert.deepEqual(createPaymentWaybillQuery('DPK123456789\nDPL987654321'), {
+        waybillNos: ['DPK123456789', 'DPL987654321']
+      })
     }
   },
   {
@@ -221,10 +214,7 @@ const cases = [
         kind: 'settled',
         transactionId: undefined
       })
-      assert.equal(
-        normalizePaymentCommand({ orderInfo: 'alipay-order' }).channel,
-        'alipay'
-      )
+      assert.equal(normalizePaymentCommand({ orderInfo: 'alipay-order' }).channel, 'alipay')
       assert.equal(
         normalizePaymentCommand({
           timeStamp: '1',

@@ -22,10 +22,7 @@ function parseParams(params: Record<string, string | undefined>) {
 
 const ExpressSuccessPage = () => {
   const router = useRouter()
-  const routeParams = useMemo(
-    () => parseParams(router.params as Record<string, string | undefined>),
-    [router.params]
-  )
+  const routeParams = useMemo(() => parseParams(router.params as Record<string, string | undefined>), [router.params])
   const [detail, setDetail] = useState<OrderDetail | null>(null)
 
   useLoad(async () => {
@@ -57,47 +54,30 @@ const ExpressSuccessPage = () => {
       <View className='express-success-hero'>
         <Text className='express-success-hero__icon'>✓</Text>
         <Text className='express-success-hero__title'>预约成功</Text>
-        <Text className='express-success-hero__summary'>
-          {detail
-            ? getOrderIdentityText(detail)
-            : getOrderIdentityText(routeParams)}
-        </Text>
+        <Text className='express-success-hero__summary'>{detail ? getOrderIdentityText(detail) : getOrderIdentityText(routeParams)}</Text>
       </View>
 
       <View className='express-success-section'>
         <Text className='express-success-section__title'>结果信息</Text>
         <View className='express-success-row'>
           <Text className='express-success-row__label'>订单号</Text>
-          <Text className='express-success-row__value'>
-            {routeParams.orderNumber || detail?.orderNumber || '--'}
-          </Text>
+          <Text className='express-success-row__value'>{routeParams.orderNumber || detail?.orderNumber || '--'}</Text>
         </View>
         <View className='express-success-row'>
           <Text className='express-success-row__label'>运单号</Text>
-          <Text className='express-success-row__value'>
-            {routeParams.waybillNumber || detail?.waybillNumber || '待生成'}
-          </Text>
+          <Text className='express-success-row__value'>{routeParams.waybillNumber || detail?.waybillNumber || '待生成'}</Text>
         </View>
         <View className='express-success-row'>
           <Text className='express-success-row__label'>当前状态</Text>
-          <Text className='express-success-row__value'>
-            {detail?.orderClassName || '已提交'}
-          </Text>
+          <Text className='express-success-row__value'>{detail?.orderClassName || '已提交'}</Text>
         </View>
       </View>
 
       <View className='express-success-actions'>
-        <AppPressable
-          className='express-success-secondary'
-          onPress={handleContinue}
-        >
+        <AppPressable className='express-success-secondary' onPress={handleContinue}>
           <Text className='express-success-secondary__text'>继续寄件</Text>
         </AppPressable>
-        <AppPressable
-          flex
-          className='express-success-primary'
-          onPress={handleViewDetail}
-        >
+        <AppPressable flex className='express-success-primary' onPress={handleViewDetail}>
           <Text className='express-success-primary__text'>查看详情</Text>
         </AppPressable>
       </View>

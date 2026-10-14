@@ -4,19 +4,10 @@ const { test } = require('node:test')
 
 const { expressDraftBridge } = require('@/services/express/draftBridge')
 const { expressApi } = require('@/services/express/express.api')
-const {
-  setExpressContact,
-  updateExpressGoods
-} = require('@/services/express/express.draft')
-const {
-  buildCreateOrderRequest,
-  buildFreightRequest,
-  buildInsurancePriceRequest
-} = require('@/services/express/express.payload')
+const { setExpressContact, updateExpressGoods } = require('@/services/express/express.draft')
+const { buildCreateOrderRequest, buildFreightRequest, buildInsurancePriceRequest } = require('@/services/express/express.payload')
 const { expressService } = require('@/services/express/express.service')
-const {
-  getExpressInsuranceProductPolicy
-} = require('@/services/express/insurance.product')
+const { getExpressInsuranceProductPolicy } = require('@/services/express/insurance.product')
 const {
   EXPRESS_INSURANCE_DEFAULT_LIMIT,
   EXPRESS_INSURANCE_FREE_AMOUNT,
@@ -33,27 +24,17 @@ const {
   updateExpressInsurance,
   validateExpressInsurance
 } = require('@/services/express/insurance.rules')
-const {
-  createExpressInsuranceView
-} = require('@/services/express/insurance.view')
+const { createExpressInsuranceView } = require('@/services/express/insurance.view')
 const { templateDraftBridge } = require('@/services/template/template.bridge')
 
-const {
-  consigneeContact,
-  createValidExpressDraft,
-  expressProduct
-} = require('../fixtures/express.cjs')
+const { consigneeContact, createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 
 const cases = [
   {
     name: 'express draft and template bridges isolate insurance capability state',
     run() {
       const draft = createValidExpressDraft()
-      const source = applyExpressInsuranceCapability(
-        draft,
-        createExpressInsuranceCapability(draft, []),
-        750000
-      )
+      const source = applyExpressInsuranceCapability(draft, createExpressInsuranceCapability(draft, []), 750000)
 
       expressDraftBridge.carryFromQueryPrice(source, expressProduct)
       templateDraftBridge.stage(source)
@@ -170,19 +151,11 @@ const cases = [
         insuredAmount: 300,
         orderExtendFields: [{ key: 'bjlx', value: 4 }]
       })
-      assert.equal(
-        createExpressInsuranceView(worryFreeDraft).options.find(
-          option => option.type === 'SXB'
-        ).recommended,
-        true
-      )
+      assert.equal(createExpressInsuranceView(worryFreeDraft).options.find(option => option.type === 'SXB').recommended, true)
       assert.equal(disabledDraft.goods.insuredAmount, 0)
       assert.equal(disabledDraft.insurance.type, 'NORMAL')
       assert.equal(createExpressInsuranceView(disabledDraft).disabled, true)
-      assert.equal(
-        isExpressInsuranceCapabilityCurrent(fragileDraft, fragileCapability),
-        true
-      )
+      assert.equal(isExpressInsuranceCapabilityCurrent(fragileDraft, fragileCapability), true)
     }
   },
   {
@@ -211,11 +184,7 @@ const cases = [
           displayType: 'tips'
         }
       ])
-      const fragile = applyExpressInsuranceCapability(
-        { ...qeb, insurance: { ...qeb.insurance, type: 'NORMAL' } },
-        fragileCapability,
-        750000
-      )
+      const fragile = applyExpressInsuranceCapability({ ...qeb, insurance: { ...qeb.insurance, type: 'NORMAL' } }, fragileCapability, 750000)
 
       assert.equal(buildFreightRequest(qeb).fullCoverage, 'Y')
       assert.equal(buildFreightRequest(qeb).sxb, undefined)
@@ -244,9 +213,7 @@ const cases = [
         null
       )
       const request = buildCreateOrderRequest(freeDraft, capability)
-      const insuranceFields = request.receive[0].orderExtendFields.filter(
-        field => field.key === 'insuranceSource' || field.key === 'bjlx'
-      )
+      const insuranceFields = request.receive[0].orderExtendFields.filter(field => field.key === 'insuranceSource' || field.key === 'bjlx')
 
       assert.equal(EXPRESS_INSURANCE_FREE_AMOUNT, 2000)
       assert.equal(getExpressInsuranceEffectiveAmount(freeDraft), 2000)
@@ -298,11 +265,7 @@ const cases = [
         ),
         false
       )
-      assert.equal(
-        applyExpressInsuranceCapability(current, capability, null).insurance
-          .limit,
-        0
-      )
+      assert.equal(applyExpressInsuranceCapability(current, capability, null).insurance.limit, 0)
     }
   },
   {
@@ -358,10 +321,7 @@ const cases = [
 
       try {
         const accepted = await expressService.submitDraft(draft)
-        const insuranceTypeField =
-          createRequest.receive[0].orderExtendFields.find(
-            field => field.key === 'bjlx'
-          )
+        const insuranceTypeField = createRequest.receive[0].orderExtendFields.find(field => field.key === 'bjlx')
 
         assert.equal(accepted.status, true)
         assert.equal(createCount, 1)

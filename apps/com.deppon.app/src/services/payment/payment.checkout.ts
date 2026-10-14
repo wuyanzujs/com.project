@@ -2,11 +2,7 @@ import type { DepponResponse } from '@/request/deppon'
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
-import {
-  getNativeCapabilityErrorMessage,
-  isNativeCapabilityError,
-  isNativeCapabilityReady
-} from '@/shared/platform/capabilities'
+import { getNativeCapabilityErrorMessage, isNativeCapabilityError, isNativeCapabilityReady } from '@/shared/platform/capabilities'
 import { payWithApp } from '@/shared/platform/payment'
 
 import { paymentApi } from './payment.api'
@@ -45,11 +41,7 @@ function normalizeText(value?: string | null) {
  * @description 生成费用项去重 key
  */
 function getPaymentItemKey(item: PaymentItem) {
-  return [
-    normalizeText(item.accountStatementDetailNo),
-    normalizeText(item.waybillNum),
-    item.orderSubType
-  ].join(':')
+  return [normalizeText(item.accountStatementDetailNo), normalizeText(item.waybillNum), item.orderSubType].join(':')
 }
 
 /**
@@ -58,17 +50,9 @@ function getPaymentItemKey(item: PaymentItem) {
  * @param detailNo 指定明细编号，可选
  * @description 按明细编号筛选并去重费用项
  */
-export function selectPaymentCheckoutItems(
-  items: PaymentItem[],
-  detailNo?: string | null
-) {
+export function selectPaymentCheckoutItems(items: PaymentItem[], detailNo?: string | null) {
   const normalizedDetailNo = normalizeText(detailNo)
-  const candidates = normalizedDetailNo
-    ? items.filter(
-        item =>
-          normalizeText(item.accountStatementDetailNo) === normalizedDetailNo
-      )
-    : items
+  const candidates = normalizedDetailNo ? items.filter(item => normalizeText(item.accountStatementDetailNo) === normalizedDetailNo) : items
   const seenKeys = new Set<string>()
 
   return candidates.filter(item => {
@@ -88,9 +72,7 @@ export function selectPaymentCheckoutItems(
  * @param items 支付费用项列表
  * @description 校验费用项是否可发起支付
  */
-export function validatePaymentCheckout(
-  items: PaymentItem[]
-): PaymentCheckoutValidation {
+export function validatePaymentCheckout(items: PaymentItem[]): PaymentCheckoutValidation {
   if (!items.length) {
     return {
       valid: false,
@@ -141,20 +123,13 @@ export function validatePaymentCheckout(
  * @param items 支付费用项列表
  * @description 组装收银台视图与待支付金额
  */
-export function createPaymentCheckoutView(
-  items: PaymentItem[]
-): PaymentCheckoutView {
+export function createPaymentCheckoutView(items: PaymentItem[]): PaymentCheckoutView {
   const normalizedItems = selectPaymentCheckoutItems(items)
-  const waybillNumbers = Array.from(
-    new Set(normalizedItems.map(item => normalizeText(item.waybillNum)))
-  ).filter(Boolean)
+  const waybillNumbers = Array.from(new Set(normalizedItems.map(item => normalizeText(item.waybillNum)))).filter(Boolean)
 
   return {
     items: normalizedItems,
-    amount: normalizedItems.reduce(
-      (total, item) => total + getPaymentItemAmount(item, 'UNPAID'),
-      0
-    ),
+    amount: normalizedItems.reduce((total, item) => total + getPaymentItemAmount(item, 'UNPAID'), 0),
     count: normalizedItems.length,
     waybillNumbers
   }
@@ -179,9 +154,7 @@ export function createPaymentCheckoutUrl(options: PaymentCheckoutRouteOptions) {
  * @param items 支付费用项列表
  * @description 构造创建支付单请求体
  */
-export function buildPaymentCreateRequest(
-  items: PaymentItem[]
-): PaymentCreateRequest {
+export function buildPaymentCreateRequest(items: PaymentItem[]): PaymentCreateRequest {
   return {
     orderSource: APP_RUNTIME_CONFIG.appClientChannel,
     returnUrl: APP_ROUTES.paymentResult,
@@ -194,9 +167,7 @@ export function buildPaymentCreateRequest(
  * @param order 支付单
  * @description 构造取消支付单请求体
  */
-export function createPaymentCancelRequest(
-  order: PaymentOrder
-): PaymentCancelRequest {
+export function createPaymentCancelRequest(order: PaymentOrder): PaymentCancelRequest {
   return {
     orderSource: order.orderSource,
     appId: order.appId,
@@ -211,9 +182,7 @@ export function createPaymentCancelRequest(
  * @param response 确认支付响应
  * @description 归一支付指令，识别渠道或终态
  */
-export function normalizePaymentCommand(
-  response: PaymentConfirmResponse
-): PaymentCommand {
+export function normalizePaymentCommand(response: PaymentConfirmResponse): PaymentCommand {
   if (response.payStatus === 'PAY_SUCCESS') {
     return {
       kind: 'settled',
@@ -234,12 +203,7 @@ export function normalizePaymentCommand(
     }
   }
 
-  if (
-    response.timeStamp &&
-    response.nonceStr &&
-    response.packages &&
-    response.sign
-  ) {
+  if (response.timeStamp && response.nonceStr && response.packages && response.sign) {
     return {
       kind: 'native',
       channel: 'wechat',
@@ -264,10 +228,7 @@ export function normalizePaymentCommand(
     }
   }
 
-  if (
-    response.payStatus === 'PAY_FAILED' ||
-    response.payStatus === 'CANCELED'
-  ) {
+  if (response.payStatus === 'PAY_FAILED' || response.payStatus === 'CANCELED') {
     return {
       kind: 'invalid',
       message: '支付单当前不可支付，请刷新后重试'
@@ -315,12 +276,7 @@ async function cancelPaymentOrder(order: PaymentOrder | null) {
  * @param transactionId 交易流水号
  * @description 构造支付完成结果
  */
-function createCheckoutResult(
-  order: PaymentOrder,
-  view: PaymentCheckoutView,
-  command: PaymentCommand,
-  transactionId?: string
-): PaymentCheckoutResult {
+function createCheckoutResult(order: PaymentOrder, view: PaymentCheckoutView, command: PaymentCommand, transactionId?: string): PaymentCheckoutResult {
   return {
     amount: view.amount,
     channel: command.kind === 'native' ? command.channel : undefined,
@@ -347,9 +303,7 @@ export const paymentCheckoutService = {
    * @param options 提交支付参数
    * @description 创建支付单、确认并唤起支付
    */
-  async submit(
-    options: SubmitPaymentCheckoutOptions
-  ): Promise<DepponResponse<PaymentCheckoutResult>> {
+  async submit(options: SubmitPaymentCheckoutOptions): Promise<DepponResponse<PaymentCheckoutResult>> {
     const view = createPaymentCheckoutView(options.items)
     const validation = validatePaymentCheckout(view.items)
 
@@ -364,14 +318,10 @@ export const paymentCheckoutService = {
     let order: PaymentOrder | null = null
 
     try {
-      const createResponse = await paymentApi.createOrder(
-        buildPaymentCreateRequest(view.items)
-      )
+      const createResponse = await paymentApi.createOrder(buildPaymentCreateRequest(view.items))
 
       if (!createResponse.status || !createResponse.result) {
-        return createFailure(
-          createResponse.message || '创建支付单失败，请稍后重试'
-        )
+        return createFailure(createResponse.message || '创建支付单失败，请稍后重试')
       }
 
       order = createResponse.result
@@ -383,9 +333,7 @@ export const paymentCheckoutService = {
 
       if (!confirmResponse.status || !confirmResponse.result) {
         await cancelPaymentOrder(order)
-        return createFailure(
-          confirmResponse.message || '确认支付信息失败，请稍后重试'
-        )
+        return createFailure(confirmResponse.message || '确认支付信息失败，请稍后重试')
       }
 
       const command = normalizePaymentCommand(confirmResponse.result)
@@ -399,12 +347,7 @@ export const paymentCheckoutService = {
         return {
           status: true,
           message: '',
-          result: createCheckoutResult(
-            order,
-            view,
-            command,
-            command.transactionId
-          )
+          result: createCheckoutResult(order, view, command, command.transactionId)
         }
       }
 
@@ -426,12 +369,7 @@ export const paymentCheckoutService = {
       return {
         status: true,
         message: '',
-        result: createCheckoutResult(
-          order,
-          view,
-          command,
-          nativeResult.transactionId
-        )
+        result: createCheckoutResult(order, view, command, nativeResult.transactionId)
       }
     } catch (error) {
       await cancelPaymentOrder(order)
@@ -440,9 +378,7 @@ export const paymentCheckoutService = {
         return createFailure(getNativeCapabilityErrorMessage(error))
       }
 
-      return createFailure(
-        error instanceof Error ? error.message : '支付失败，请稍后重试'
-      )
+      return createFailure(error instanceof Error ? error.message : '支付失败，请稍后重试')
     }
   }
 }

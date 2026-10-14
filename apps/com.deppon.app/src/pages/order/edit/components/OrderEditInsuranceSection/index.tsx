@@ -2,10 +2,7 @@ import { Input, Text, View } from '@tarojs/components'
 
 import { useEffect, useState } from 'react'
 
-import {
-  getOrderEditInsuranceSummary,
-  normalizeOrderEditInsuranceAmountInput
-} from '@/services/order'
+import { getOrderEditInsuranceSummary, normalizeOrderEditInsuranceAmountInput } from '@/services/order'
 import type { OrderEditInsuranceDraft } from '@/services/order'
 import { AppPressable } from '@/shared/components'
 import { APP_NATIVE_TOKENS } from '@/styles/nativeTokens'
@@ -19,19 +16,9 @@ interface OrderEditInsuranceSectionProps {
   onOpenRules: () => void
 }
 
-export function OrderEditInsuranceSection({
-  insurance,
-  onAmountChange,
-  onOpenRules
-}: OrderEditInsuranceSectionProps) {
-  const [amountText, setAmountText] = useState(
-    insurance.amount > 0 ? String(insurance.amount) : ''
-  )
-  const canClear =
-    insurance.editable &&
-    !insurance.required &&
-    !insurance.freeCoverage &&
-    insurance.amount > 0
+export function OrderEditInsuranceSection({ insurance, onAmountChange, onOpenRules }: OrderEditInsuranceSectionProps) {
+  const [amountText, setAmountText] = useState(insurance.amount > 0 ? String(insurance.amount) : '')
+  const canClear = insurance.editable && !insurance.required && !insurance.freeCoverage && insurance.amount > 0
 
   useEffect(() => {
     setAmountText(insurance.amount > 0 ? String(insurance.amount) : '')
@@ -49,15 +36,9 @@ export function OrderEditInsuranceSection({
       <View className='order-edit-insurance__header'>
         <View className='order-edit-insurance__header-content'>
           <Text className='order-edit-section__title'>保价服务</Text>
-          <Text className='order-edit-insurance__summary'>
-            {getOrderEditInsuranceSummary(insurance)}
-          </Text>
+          <Text className='order-edit-insurance__summary'>{getOrderEditInsuranceSummary(insurance)}</Text>
         </View>
-        <AppPressable
-          accessibilityLabel='查看保价规则'
-          className='order-edit-insurance__rules'
-          onPress={onOpenRules}
-        >
+        <AppPressable accessibilityLabel='查看保价规则' className='order-edit-insurance__rules' onPress={onOpenRules}>
           <Text className='order-edit-insurance__rules-text'>规则</Text>
         </AppPressable>
       </View>
@@ -65,9 +46,7 @@ export function OrderEditInsuranceSection({
       <View className='order-edit-insurance__amount-row'>
         <View className='order-edit-insurance__amount-labels'>
           <Text className='order-edit-insurance__label'>保价声明金额</Text>
-          <Text className='order-edit-insurance__limit'>
-            最高 {insurance.maxAmount} 元
-          </Text>
+          <Text className='order-edit-insurance__limit'>最高 {insurance.maxAmount} 元</Text>
         </View>
         <View className='order-edit-insurance__amount'>
           <Text className='order-edit-insurance__currency'>¥</Text>
@@ -85,15 +64,9 @@ export function OrderEditInsuranceSection({
       </View>
 
       <View className='order-edit-insurance__footer'>
-        <Text className='order-edit-insurance__notice'>
-          修改后由后端重新核算保价费，实际承保范围以正式协议为准。
-        </Text>
+        <Text className='order-edit-insurance__notice'>修改后由后端重新核算保价费，实际承保范围以正式协议为准。</Text>
         {canClear ? (
-          <AppPressable
-            accessibilityLabel='清除改单保价金额'
-            className='order-edit-insurance__clear'
-            onPress={() => handleAmountInput('')}
-          >
+          <AppPressable accessibilityLabel='清除改单保价金额' className='order-edit-insurance__clear' onPress={() => handleAmountInput('')}>
             <Text className='order-edit-insurance__clear-text'>清除</Text>
           </AppPressable>
         ) : null}

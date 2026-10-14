@@ -55,23 +55,9 @@ export function AppFormField({
   const [focused, setFocused] = useState(false)
 
   return (
-    <View
-      className={[
-        'app-form-field',
-        disabled && 'app-form-field--disabled',
-        className
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
+    <View className={['app-form-field', disabled && 'app-form-field--disabled', className].filter(Boolean).join(' ')}>
       <View className='app-form-field__label-row'>
-        <Text
-          className={['app-form-field__label', labelClassName]
-            .filter(Boolean)
-            .join(' ')}
-        >
-          {label}
-        </Text>
+        <Text className={['app-form-field__label', labelClassName].filter(Boolean).join(' ')}>{label}</Text>
         {required ? <Text className='app-form-field__required'>*</Text> : null}
       </View>
       <View
@@ -87,9 +73,7 @@ export function AppFormField({
       >
         <Input
           ariaLabel={accessibilityLabel ?? label}
-          className={['app-form-field__input', inputClassName]
-            .filter(Boolean)
-            .join(' ')}
+          className={['app-form-field__input', inputClassName].filter(Boolean).join(' ')}
           confirmType={confirmType}
           disabled={disabled}
           maxlength={maxLength}
@@ -106,14 +90,10 @@ export function AppFormField({
           onFocus={() => setFocused(true)}
           onInput={event => onChange(event.detail.value)}
         />
-        {trailing ? (
-          <View className='app-form-field__trailing'>{trailing}</View>
-        ) : null}
+        {trailing ? <View className='app-form-field__trailing'>{trailing}</View> : null}
       </View>
       {error ? <Text className='app-form-field__error'>{error}</Text> : null}
-      {!error && helper ? (
-        <Text className='app-form-field__helper'>{helper}</Text>
-      ) : null}
+      {!error && helper ? <Text className='app-form-field__helper'>{helper}</Text> : null}
     </View>
   )
 }

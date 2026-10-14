@@ -3,8 +3,7 @@ export interface AppWebCollectionAccount {
   accountName: string
 }
 
-export type AppWebCollectionAccountSource =
-  'EXPRESS_COLLECTION_ACCOUNT' | 'ORDER_EDIT_COLLECTION_ACCOUNT'
+export type AppWebCollectionAccountSource = 'EXPRESS_COLLECTION_ACCOUNT' | 'ORDER_EDIT_COLLECTION_ACCOUNT'
 
 export interface AppWebCollectionAccountContext {
   source: AppWebCollectionAccountSource
@@ -84,8 +83,7 @@ const WAREHOUSE_PAYLOAD_KEYS = new Set([
   'warehouseRemark'
 ])
 
-let expectedCollectionAccountContext: AppWebCollectionAccountContext | null =
-  null
+let expectedCollectionAccountContext: AppWebCollectionAccountContext | null = null
 let pendingCollectionAccount: AppWebCollectionAccountResult | null = null
 let expectedWarehouseContext: AppWebWarehouseContext | null = null
 let pendingWarehouse: AppWebWarehouseResult | null = null
@@ -149,13 +147,8 @@ function normalizeText(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-function normalizeCollectionAccount(
-  args: Record<string, unknown>
-): AppWebCollectionAccount | null {
-  const account = normalizeText(args.bankAccount || args.account).replace(
-    /\s+/g,
-    ''
-  )
+function normalizeCollectionAccount(args: Record<string, unknown>): AppWebCollectionAccount | null {
+  const account = normalizeText(args.bankAccount || args.account).replace(/\s+/g, '')
   const accountName = normalizeText(args.countName || args.accountName)
 
   if (account.length < 4 || account.length > 64 || !accountName) {
@@ -185,10 +178,7 @@ function normalizeBoundedText(value: unknown, maxLength: number) {
 function normalizeOnlineSignMessage(value: unknown) {
   const message = parseAppWebMessage(value)
 
-  if (
-    message?.event !== 'ONLINE_SIGN' ||
-    Object.keys(message.args).some(key => key !== 'value')
-  ) {
+  if (message?.event !== 'ONLINE_SIGN' || Object.keys(message.args).some(key => key !== 'value')) {
     return ''
   }
 
@@ -203,12 +193,7 @@ function isSafeWarehouseFileUrl(value: string) {
   try {
     const url = new URL(value)
 
-    return (
-      url.protocol === 'https:' &&
-      Boolean(url.hostname) &&
-      !url.username &&
-      !url.password
-    )
+    return url.protocol === 'https:' && Boolean(url.hostname) && !url.username && !url.password
   } catch {
     return false
   }
@@ -226,18 +211,11 @@ function normalizeWarehouseFiles(value: unknown): AppWebWarehouseFile[] | null {
   const files: AppWebWarehouseFile[] = []
 
   for (const item of value) {
-    if (
-      !isRecord(item) ||
-      Object.keys(item).length !== 1 ||
-      !hasOwn(item, 'previewPath')
-    ) {
+    if (!isRecord(item) || Object.keys(item).length !== 1 || !hasOwn(item, 'previewPath')) {
       return null
     }
 
-    const previewPath = normalizeBoundedText(
-      item.previewPath,
-      MAX_WAREHOUSE_FILE_URL_LENGTH
-    )
+    const previewPath = normalizeBoundedText(item.previewPath, MAX_WAREHOUSE_FILE_URL_LENGTH)
 
     if (!previewPath || !isSafeWarehouseFileUrl(previewPath)) {
       return null
@@ -252,15 +230,7 @@ function normalizeWarehouseFiles(value: unknown): AppWebWarehouseFile[] | null {
 function normalizeWarehouseType(value: unknown): AppWebWarehouseType | null {
   const type = normalizeBoundedText(value, 1)
 
-  return type === '' ||
-    type === '1' ||
-    type === '2' ||
-    type === '3' ||
-    type === '4' ||
-    type === '5' ||
-    type === '6'
-    ? type
-    : null
+  return type === '' || type === '1' || type === '2' || type === '3' || type === '4' || type === '5' || type === '6' ? type : null
 }
 
 function normalizeWarehouseWay(value: unknown): AppWebWarehouseWay | null {
@@ -270,11 +240,7 @@ function normalizeWarehouseWay(value: unknown): AppWebWarehouseWay | null {
 }
 
 function parseWarehousePayload(value: unknown) {
-  if (
-    typeof value !== 'string' ||
-    !value ||
-    value.length > MAX_WAREHOUSE_PAYLOAD_LENGTH
-  ) {
+  if (typeof value !== 'string' || !value || value.length > MAX_WAREHOUSE_PAYLOAD_LENGTH) {
     return null
   }
 
@@ -286,10 +252,7 @@ function parseWarehousePayload(value: unknown) {
     return null
   }
 
-  if (
-    !isRecord(payload) ||
-    Object.keys(payload).some(key => !WAREHOUSE_PAYLOAD_KEYS.has(key))
-  ) {
+  if (!isRecord(payload) || Object.keys(payload).some(key => !WAREHOUSE_PAYLOAD_KEYS.has(key))) {
     return null
   }
 
@@ -341,16 +304,10 @@ function createEmptyWarehouseDraftPatch(): AppWebWarehouseDraftPatch {
   }
 }
 
-function normalizeWarehouseMessage(
-  value: unknown
-): AppWebWarehouseDraftPatch | null {
+function normalizeWarehouseMessage(value: unknown): AppWebWarehouseDraftPatch | null {
   const decoded = decodeMessageValue(value)
 
-  if (
-    !isRecord(decoded) ||
-    decoded.event !== 'SEND_WAREHOUSE' ||
-    !isRecord(decoded.args)
-  ) {
+  if (!isRecord(decoded) || decoded.event !== 'SEND_WAREHOUSE' || !isRecord(decoded.args)) {
     return null
   }
 
@@ -366,13 +323,7 @@ function normalizeWarehouseMessage(
     return null
   }
 
-  if (
-    isWarehousingService === 'N' &&
-    (!hasOwn(args, 'payload') ||
-      args.payload === '' ||
-      args.payload === null ||
-      args.payload === undefined)
-  ) {
+  if (isWarehousingService === 'N' && (!hasOwn(args, 'payload') || args.payload === '' || args.payload === null || args.payload === undefined)) {
     return createEmptyWarehouseDraftPatch()
   }
 
@@ -449,19 +400,11 @@ export const appWebMessageBridge = {
     return true
   },
 
-  stage(
-    source: string,
-    value: unknown,
-    context?: AppWebMessageStageContext
-  ): AppWebMessageStageResult {
+  stage(source: string, value: unknown, context?: AppWebMessageStageContext): AppWebMessageStageResult {
     if (source === 'EXPRESS_RETURN_BILL_CLOUD_SIGN') {
       const messageContext = normalizeBoundedText(context?.messageContext, 256)
 
-      if (
-        !expectedOnlineSignContext ||
-        !messageContext ||
-        expectedOnlineSignContext.messageContext !== messageContext
-      ) {
+      if (!expectedOnlineSignContext || !messageContext || expectedOnlineSignContext.messageContext !== messageContext) {
         return createUnhandledStageResult()
       }
 
@@ -486,11 +429,7 @@ export const appWebMessageBridge = {
     if (source === 'EXPRESS_WAREHOUSE') {
       const activeStagingId = normalizeBoundedText(context?.stagingId, 256)
 
-      if (
-        !expectedWarehouseContext ||
-        !activeStagingId ||
-        activeStagingId !== expectedWarehouseContext.stagingId
-      ) {
+      if (!expectedWarehouseContext || !activeStagingId || activeStagingId !== expectedWarehouseContext.stagingId) {
         return createUnhandledStageResult()
       }
 
@@ -512,10 +451,7 @@ export const appWebMessageBridge = {
       }
     }
 
-    if (
-      source !== 'EXPRESS_COLLECTION_ACCOUNT' &&
-      source !== 'ORDER_EDIT_COLLECTION_ACCOUNT'
-    ) {
+    if (source !== 'EXPRESS_COLLECTION_ACCOUNT' && source !== 'ORDER_EDIT_COLLECTION_ACCOUNT') {
       return createUnhandledStageResult()
     }
 
@@ -575,19 +511,11 @@ export const appWebMessageBridge = {
   cancelCollectionAccount(context: AppWebCollectionAccountContext) {
     const messageContext = normalizeBoundedText(context.messageContext, 256)
 
-    if (
-      expectedCollectionAccountContext?.source === context.source &&
-      messageContext &&
-      expectedCollectionAccountContext.messageContext === messageContext
-    ) {
+    if (expectedCollectionAccountContext?.source === context.source && messageContext && expectedCollectionAccountContext.messageContext === messageContext) {
       expectedCollectionAccountContext = null
     }
 
-    if (
-      pendingCollectionAccount?.context.source === context.source &&
-      messageContext &&
-      pendingCollectionAccount.context.messageContext === messageContext
-    ) {
+    if (pendingCollectionAccount?.context.source === context.source && messageContext && pendingCollectionAccount.context.messageContext === messageContext) {
       pendingCollectionAccount = null
     }
   },
@@ -595,11 +523,7 @@ export const appWebMessageBridge = {
   consumeOnlineSign(context: AppWebOnlineSignContext) {
     const messageContext = normalizeBoundedText(context.messageContext, 256)
 
-    if (
-      !pendingOnlineSign ||
-      !messageContext ||
-      pendingOnlineSign.context.messageContext !== messageContext
-    ) {
+    if (!pendingOnlineSign || !messageContext || pendingOnlineSign.context.messageContext !== messageContext) {
       return null
     }
 
@@ -612,17 +536,11 @@ export const appWebMessageBridge = {
   cancelOnlineSign(context: AppWebOnlineSignContext) {
     const messageContext = normalizeBoundedText(context.messageContext, 256)
 
-    if (
-      messageContext &&
-      expectedOnlineSignContext?.messageContext === messageContext
-    ) {
+    if (messageContext && expectedOnlineSignContext?.messageContext === messageContext) {
       expectedOnlineSignContext = null
     }
 
-    if (
-      messageContext &&
-      pendingOnlineSign?.context.messageContext === messageContext
-    ) {
+    if (messageContext && pendingOnlineSign?.context.messageContext === messageContext) {
       pendingOnlineSign = null
     }
   },

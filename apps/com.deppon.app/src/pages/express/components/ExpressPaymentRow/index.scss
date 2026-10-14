@@ -1,27 +1,59 @@
 @use '@/styles/_tokens.scss' as *;
 
 .express-payment-row {
-  border-bottom-color: $dp-color-border-light; border-bottom-width: $dp-border-width-hairline;
+  border-bottom-color: $dp-color-border-light;
+  border-bottom-width: $dp-border-width-hairline;
 }
 .express-payment-row__entry {
-  display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: flex-start; min-height: 82px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 82px;
 }
 .express-payment-row__label {
-  flex-shrink: 0; color: $dp-color-text-neutral; font-size: $dp-font-size-label-large; font-weight: $dp-font-weight-regular; line-height: $dp-line-height-42;
+  flex-shrink: 0;
+  color: $dp-color-text-neutral;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-42;
 }
 .express-payment-row__badge {
-  position: relative; flex-shrink: 0; height: 32px; margin-left: auto; padding: $dp-space-0 $dp-space-8; background: $dp-color-danger-accent; border-radius: $dp-radius-8;
+  position: relative;
+  flex-shrink: 0;
+  height: 32px;
+  margin-left: auto;
+  padding: $dp-space-0 $dp-space-8;
+  background: $dp-color-danger-accent;
+  border-radius: $dp-radius-8;
 }
 .express-payment-row__badge-text {
-  color: $dp-color-text-inverse; font-size: $dp-font-size-micro; line-height: $dp-line-height-32;
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-micro;
+  line-height: $dp-line-height-32;
 }
 /* 10×10 的方块旋转 45°，贴在角标右侧边缘垂直居中形成尖角。 */
 .express-payment-row__badge-arrow {
-  position: absolute; top: 11px; right: -5px; width: 10px; height: 10px; background: $dp-color-danger-accent; border-radius: $dp-radius-1; transform: rotate(45deg);
+  position: absolute;
+  top: 11px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  background: $dp-color-danger-accent;
+  border-radius: $dp-radius-1;
+  transform: rotate(45deg);
 }
 .express-payment-row__value {
-  flex-shrink: 1; margin: $dp-space-0 $dp-space-8 0 $dp-space-12; color: $dp-color-text-heading; font-size: $dp-font-size-label-large; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-42;
+  flex-shrink: 1;
+  margin: $dp-space-0 $dp-space-8 0 $dp-space-12;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-42;
 }
 .express-payment-row__arrow {
-  flex-shrink: 0; width: $dp-space-24; height: $dp-space-24;
+  flex-shrink: 0;
+  width: $dp-space-24;
+  height: $dp-space-24;
 }

@@ -12,13 +12,8 @@ import type { OrderDetail, OrderRole } from './types'
 
 export const ORDER_SCENE_SURVEY_WINDOW_MS = 7 * 24 * 60 * 60 * 1000
 export const ORDER_SCENE_SURVEY_CONTENT_MAX_LENGTH = 100
-export const ORDER_SCENE_SURVEY_SCORES: OrderSceneSurveyScore[] = [
-  1, 2, 3, 4, 5
-]
-export const ORDER_SCENE_SURVEY_SCORE_TITLES: Record<
-  OrderSceneSurveyScore,
-  string
-> = {
+export const ORDER_SCENE_SURVEY_SCORES: OrderSceneSurveyScore[] = [1, 2, 3, 4, 5]
+export const ORDER_SCENE_SURVEY_SCORE_TITLES: Record<OrderSceneSurveyScore, string> = {
   1: '非常不满意，我要吐槽',
   2: '不满意，我要吐槽',
   3: '一般般，还需改善',
@@ -142,11 +137,7 @@ function isSameLocalDay(left: number, right: number) {
   const leftDate = new Date(left)
   const rightDate = new Date(right)
 
-  return (
-    leftDate.getFullYear() === rightDate.getFullYear() &&
-    leftDate.getMonth() === rightDate.getMonth() &&
-    leftDate.getDate() === rightDate.getDate()
-  )
+  return leftDate.getFullYear() === rightDate.getFullYear() && leftDate.getMonth() === rightDate.getMonth() && leftDate.getDate() === rightDate.getDate()
 }
 
 /**
@@ -154,23 +145,14 @@ function isSameLocalDay(left: number, right: number) {
  * @param options 订单、角色、来源与当前时间
  * @description 按订单类型和来源生成问卷计划
  */
-function getScenePlan(options: {
-  detail: OrderDetail
-  role: OrderRole
-  source: string
-  now: number
-}) {
+function getScenePlan(options: { detail: OrderDetail; role: OrderRole; source: string; now: number }) {
   const { detail, now, role } = options
   const orderClass = Number(detail.orderClassification)
-  const notificationSource = /^(?:PDC|ECS)/.test(
-    options.source.trim().toUpperCase()
-  )
+  const notificationSource = /^(?:PDC|ECS)/.test(options.source.trim().toUpperCase())
   const signedAt = detail.signTime ?? detail.signVoucherTime
 
   if (notificationSource) {
-    return orderClass === 2 && isWithinSurveyWindow(signedAt, now)
-      ? [NPS_PLAN]
-      : []
+    return orderClass === 2 && isWithinSurveyWindow(signedAt, now) ? [NPS_PLAN] : []
   }
 
   if (orderClass === 1) {
@@ -184,25 +166,14 @@ function getScenePlan(options: {
       return [createScenePlan('S0601')]
     }
 
-    return [
-      createScenePlan(isSameLocalDay(orderTime, now) ? 'S0206' : 'S0601'),
-      createScenePlan('T0101'),
-      createScenePlan('T0401')
-    ]
+    return [createScenePlan(isSameLocalDay(orderTime, now) ? 'S0206' : 'S0601'), createScenePlan('T0101'), createScenePlan('T0401')]
   }
 
   if (orderClass !== 2 || !isWithinSurveyWindow(signedAt, now)) {
     return []
   }
 
-  return role === 'receive'
-    ? [
-        NPS_PLAN,
-        createScenePlan('T0201'),
-        createScenePlan('S0907_1'),
-        createScenePlan('T0501')
-      ]
-    : [NPS_PLAN, createScenePlan('S0908')]
+  return role === 'receive' ? [NPS_PLAN, createScenePlan('T0201'), createScenePlan('S0907_1'), createScenePlan('T0501')] : [NPS_PLAN, createScenePlan('S0908')]
 }
 
 /**
@@ -245,16 +216,7 @@ export function createOrderSceneSurveyContext(options: {
   const planKey = plan.map(item => `${item.kind}:${item.code}`).join(',')
 
   return {
-    key: [
-      waybillNumber,
-      options.role,
-      source,
-      detail.orderClassification,
-      stateTime,
-      mobile,
-      childChannel,
-      planKey
-    ].join('|'),
+    key: [waybillNumber, options.role, source, detail.orderClassification, stateTime, mobile, childChannel, planKey].join('|'),
     waybillNumber,
     mobile,
     childChannel,
@@ -289,15 +251,7 @@ function normalizeLabel(value: unknown): OrderSceneSurveyLabel | null {
   const min = Number(record.starMin)
   const max = Number(record.starMax)
 
-  if (
-    !id ||
-    !name ||
-    !Number.isInteger(min) ||
-    !Number.isInteger(max) ||
-    min < 1 ||
-    max > 5 ||
-    min > max
-  ) {
+  if (!id || !name || !Number.isInteger(min) || !Number.isInteger(max) || min < 1 || max > 5 || min > max) {
     return null
   }
 
@@ -320,11 +274,7 @@ export function normalizeOrderSceneSurveyQuestion(
 
   const id = asText(raw.questionId)
   const title = asText(raw.title)
-  const labels = Array.isArray(raw.labelList)
-    ? raw.labelList
-        .map(normalizeLabel)
-        .filter((item): item is OrderSceneSurveyLabel => Boolean(item))
-    : []
+  const labels = Array.isArray(raw.labelList) ? raw.labelList.map(normalizeLabel).filter((item): item is OrderSceneSurveyLabel => Boolean(item)) : []
 
   if (!id || !title || !labels.length) {
     return null
@@ -346,10 +296,7 @@ export function normalizeOrderSceneSurveyQuestion(
  * @param score 评分
  * @description 取出评分区间命中的标签
  */
-export function getOrderSceneScoreLabels(
-  item: OrderSceneSurveyItem,
-  score: OrderSceneSurveyScore | null
-) {
+export function getOrderSceneScoreLabels(item: OrderSceneSurveyItem, score: OrderSceneSurveyScore | null) {
   if (item.kind !== 'SCORE' || score === null) {
     return []
   }
@@ -363,17 +310,12 @@ export function getOrderSceneScoreLabels(
  * @param draft 评分草稿
  * @description 校验评分草稿，返回错误提示文案
  */
-export function validateOrderSceneScoreDraft(
-  item: OrderSceneSurveyItem,
-  draft: OrderSceneScoreDraft
-) {
+export function validateOrderSceneScoreDraft(item: OrderSceneSurveyItem, draft: OrderSceneScoreDraft) {
   if (item.kind !== 'SCORE' || draft.score === null) {
     return '请先选择服务评分'
   }
 
-  const eligibleIds = new Set(
-    getOrderSceneScoreLabels(item, draft.score).map(label => label.id)
-  )
+  const eligibleIds = new Set(getOrderSceneScoreLabels(item, draft.score).map(label => label.id))
   const selected = draft.selectedLabelIds.some(id => eligibleIds.has(id))
 
   if (!selected && !draft.content.trim()) {
@@ -430,9 +372,7 @@ export function createOrderSceneScoreSubmitRequest(
 
   return {
     ...request,
-    content: draft.content
-      .trim()
-      .slice(0, ORDER_SCENE_SURVEY_CONTENT_MAX_LENGTH),
+    content: draft.content.trim().slice(0, ORDER_SCENE_SURVEY_CONTENT_MAX_LENGTH),
     question: eligibleLabels.length
       ? [
           {

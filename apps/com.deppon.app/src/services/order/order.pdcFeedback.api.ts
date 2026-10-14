@@ -7,28 +7,16 @@ export const ORDER_PDC_FEEDBACK_API_ENDPOINTS = {
 
 export const orderPdcFeedbackApi = {
   query(data: { waybillNo: string }) {
-    return depponHttp.post<'Y' | 'N', { waybillNo: string }>(
-      ORDER_PDC_FEEDBACK_API_ENDPOINTS.query,
-      data,
-      {
-        loading: false,
-        login: false,
-        timeout: 3000
-      }
-    )
+    return depponHttp.post<'Y' | 'N', { waybillNo: string }>(ORDER_PDC_FEEDBACK_API_ENDPOINTS.query, data, {
+      loading: false,
+      login: false,
+      timeout: 3000
+    })
   },
 
-  submit(data: {
-    waybillNo: string
-    sendFrequency: 'ONE' | 'TWO'
-    feedbackResult: 'Y' | 'N'
-  }) {
-    return depponHttp.post<unknown, typeof data>(
-      ORDER_PDC_FEEDBACK_API_ENDPOINTS.submit,
-      data,
-      {
-        timeout: 3000
-      }
-    )
+  submit(data: { waybillNo: string; sendFrequency: 'ONE' | 'TWO'; feedbackResult: 'Y' | 'N' }) {
+    return depponHttp.post<unknown, typeof data>(ORDER_PDC_FEEDBACK_API_ENDPOINTS.submit, data, {
+      timeout: 3000
+    })
   }
 }

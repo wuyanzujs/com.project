@@ -1,9 +1,4 @@
-import type {
-  ExpressFlag,
-  ExpressPaymentType,
-  ExpressProductCode,
-  ExpressReturnBillType
-} from '../express'
+import type { ExpressFlag, ExpressPaymentType, ExpressProductCode, ExpressReturnBillType } from '../express'
 
 export interface ExpressTemplateContactRaw {
   id?: string

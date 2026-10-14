@@ -6,17 +6,36 @@
 }
 
 .express-weather-banner__inner {
-  display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: flex-start; height: 68px; min-height: 0; background: $dp-color-weather-background; border-radius: $dp-radius-4 $dp-radius-4 $dp-radius-24 $dp-radius-24;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  height: 68px;
+  min-height: 0;
+  background: $dp-color-weather-background;
+  border-radius: $dp-radius-4 $dp-radius-4 $dp-radius-24 $dp-radius-24;
 }
 
 .express-weather-banner__icon {
-  flex-shrink: 0; width: $dp-space-32; height: $dp-space-32; margin-left: $dp-space-16;
+  flex-shrink: 0;
+  width: $dp-space-32;
+  height: $dp-space-32;
+  margin-left: $dp-space-16;
 }
 
 .express-weather-banner__text {
-  flex: 1; margin-left: $dp-space-8; color: $dp-color-weather-text; font-size: $dp-font-size-label-large; font-weight: $dp-font-weight-regular; line-height: $dp-line-height-42;
+  flex: 1;
+  margin-left: $dp-space-8;
+  color: $dp-color-weather-text;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-42;
 }
 
 .express-weather-banner__arrow {
-  flex-shrink: 0; width: $dp-space-24; height: $dp-space-24; margin-right: $dp-space-16;
+  flex-shrink: 0;
+  width: $dp-space-24;
+  height: $dp-space-24;
+  margin-right: $dp-space-16;
 }

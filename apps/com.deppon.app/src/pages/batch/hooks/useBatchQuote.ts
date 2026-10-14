@@ -18,12 +18,7 @@ interface UseBatchQuoteResult {
   handleQuote: () => Promise<void>
 }
 
-export function useBatchQuote({
-  draft,
-  setDraft,
-  validation,
-  showToast
-}: UseBatchQuoteParams): UseBatchQuoteResult {
+export function useBatchQuote({ draft, setDraft, validation, showToast }: UseBatchQuoteParams): UseBatchQuoteResult {
   const [quoteLoading, setQuoteLoading] = useState(false)
   const [quoteMessage, setQuoteMessage] = useState('')
   const quoteRequestVersion = useRef(0)
@@ -59,21 +54,12 @@ export function useBatchQuote({
         return
       }
 
-      setDraft(current =>
-        applyBatchQuoteResults(current, response.result ?? [])
-      )
+      setDraft(current => applyBatchQuoteResults(current, response.result ?? []))
       setQuoteMessage(`已获取 ${response.result.length} 票产品价格`)
     } finally {
       setQuoteLoading(false)
     }
-  }, [
-    draft,
-    quoteLoading,
-    setDraft,
-    showToast,
-    validation.message,
-    validation.valid
-  ])
+  }, [draft, quoteLoading, setDraft, showToast, validation.message, validation.valid])
 
   return {
     quoteLoading,

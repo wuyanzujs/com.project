@@ -3,18 +3,9 @@ import Taro from '@tarojs/taro'
 
 import { useState } from 'react'
 
-import {
-  createAddressOnlyExpressContact,
-  createExpressDraft,
-  expressDraftBridge
-} from '@/services/express'
+import { createAddressOnlyExpressContact, createExpressDraft, expressDraftBridge } from '@/services/express'
 import { queryService } from '@/services/query'
-import type {
-  DispatchAddress,
-  DispatchProductType,
-  DispatchRangeGroup,
-  DispatchRangeResult
-} from '@/services/query'
+import type { DispatchAddress, DispatchProductType, DispatchRangeGroup, DispatchRangeResult } from '@/services/query'
 import { AppPressable } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -45,9 +36,7 @@ function getFullRegion(address: DispatchAddress | null) {
     return ''
   }
 
-  return [address.province, address.city, address.county]
-    .filter(Boolean)
-    .join('-')
+  return [address.province, address.city, address.county].filter(Boolean).join('-')
 }
 
 const QueryDispatchPage = () => {
@@ -107,10 +96,7 @@ const QueryDispatchPage = () => {
     setResult(null)
 
     try {
-      const response = await queryService.queryDispatchRange(
-        productType,
-        createQuery()
-      )
+      const response = await queryService.queryDispatchRange(productType, createQuery())
 
       if (!response.status || !response.result) {
         setErrorMessage(response.message || '暂未查询到收派范围')
@@ -140,21 +126,11 @@ const QueryDispatchPage = () => {
       <View className='query-dispatch-tabs'>
         {DISPATCH_PRODUCT_OPTIONS.map(option => (
           <AppPressable
-            className={
-              option.value === productType
-                ? 'query-dispatch-tab query-dispatch-tab--active'
-                : 'query-dispatch-tab'
-            }
+            className={option.value === productType ? 'query-dispatch-tab query-dispatch-tab--active' : 'query-dispatch-tab'}
             key={option.value}
             onPress={() => setProductType(option.value)}
           >
-            <Text
-              className={
-                option.value === productType
-                  ? 'query-dispatch-tab__text query-dispatch-tab__text--active'
-                  : 'query-dispatch-tab__text'
-              }
-            >
+            <Text className={option.value === productType ? 'query-dispatch-tab__text query-dispatch-tab__text--active' : 'query-dispatch-tab__text'}>
               {option.label}
             </Text>
           </AppPressable>
@@ -208,9 +184,7 @@ const QueryDispatchPage = () => {
       </View>
 
       <AppPressable className='query-dispatch-submit' onPress={handleQuery}>
-        <Text className='query-dispatch-submit__text'>
-          {loading ? '查询中...' : '查询收派范围'}
-        </Text>
+        <Text className='query-dispatch-submit__text'>{loading ? '查询中...' : '查询收派范围'}</Text>
       </AppPressable>
 
       {errorMessage && (
@@ -223,18 +197,10 @@ const QueryDispatchPage = () => {
         <View className='query-dispatch-results'>
           <View className='query-dispatch-result-head'>
             <View>
-              <Text className='query-dispatch-result-head__title'>
-                {getFullRegion(result.address)}
-              </Text>
-              <Text className='query-dispatch-result-head__summary'>
-                {result.matchedStreet
-                  ? `识别乡镇：${result.matchedStreet}`
-                  : '未识别到具体乡镇'}
-              </Text>
+              <Text className='query-dispatch-result-head__title'>{getFullRegion(result.address)}</Text>
+              <Text className='query-dispatch-result-head__summary'>{result.matchedStreet ? `识别乡镇：${result.matchedStreet}` : '未识别到具体乡镇'}</Text>
             </View>
-            <Text className='query-dispatch-result-head__tag'>
-              {result.productType === 'EXPRESS' ? '快递' : '零担'}
-            </Text>
+            <Text className='query-dispatch-result-head__tag'>{result.productType === 'EXPRESS' ? '快递' : '零担'}</Text>
           </View>
 
           <View className='query-dispatch-hint'>
@@ -247,11 +213,7 @@ const QueryDispatchPage = () => {
               <View className='query-dispatch-streets'>
                 {group.streetList.map((street, index) => (
                   <View
-                    className={
-                      street.streetName === result.matchedStreet
-                        ? 'query-dispatch-street query-dispatch-street--active'
-                        : 'query-dispatch-street'
-                    }
+                    className={street.streetName === result.matchedStreet ? 'query-dispatch-street query-dispatch-street--active' : 'query-dispatch-street'}
                     key={getStreetKey(group, index)}
                   >
                     <Text
@@ -263,11 +225,7 @@ const QueryDispatchPage = () => {
                     >
                       {street.streetName}
                     </Text>
-                    {street.townName && (
-                      <Text className='query-dispatch-street__hint'>
-                        {street.townName}
-                      </Text>
-                    )}
+                    {street.townName && <Text className='query-dispatch-street__hint'>{street.townName}</Text>}
                   </View>
                 ))}
               </View>
@@ -275,10 +233,7 @@ const QueryDispatchPage = () => {
           ))}
 
           {result.canCreateExpress && (
-            <AppPressable
-              className='query-dispatch-express'
-              onPress={handleGoExpress}
-            >
+            <AppPressable className='query-dispatch-express' onPress={handleGoExpress}>
               <Text className='query-dispatch-express__text'>去寄件</Text>
             </AppPressable>
           )}

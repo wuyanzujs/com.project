@@ -20,9 +20,7 @@ function checkNoHardcodedToken() {
   }
 
   if (/process\.env\.APP_[A-Z0-9_]+/.test(content)) {
-    addViolation(
-      'runtime.ts 必须只消费编译期常量，不能在 RN 运行时读取 APP_*。'
-    )
+    addViolation('runtime.ts 必须只消费编译期常量，不能在 RN 运行时读取 APP_*。')
   }
 }
 

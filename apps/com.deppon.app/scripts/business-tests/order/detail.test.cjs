@@ -2,34 +2,13 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  createOrderDetailViewModel,
-  getOrderDetailRouteParams
-} = require('@/pages/order/detail/orderDetailViewModel')
-const {
-  createOrderDetailActions,
-  createOrderUrgeContext
-} = require('@/services/order/order.detailActions')
-const {
-  resolveOrderUrgeMenuAction
-} = require('@/services/order/order.detailUseCases')
-const {
-  formatAmount,
-  formatMeasure,
-  maskMobile,
-  toDisplayText
-} = require('@/services/order/order.display')
-const {
-  createOrderPdcFeedbackContext,
-  createOrderPdcFeedbackRequest
-} = require('@/services/order/order.pdcFeedback')
-const {
-  ORDER_PDC_FEEDBACK_API_ENDPOINTS
-} = require('@/services/order/order.pdcFeedback.api')
-const {
-  createOrderSubscriptionAction,
-  normalizeWaybillSubscription
-} = require('@/services/order/order.subscription')
+const { createOrderDetailViewModel, getOrderDetailRouteParams } = require('@/pages/order/detail/orderDetailViewModel')
+const { createOrderDetailActions, createOrderUrgeContext } = require('@/services/order/order.detailActions')
+const { resolveOrderUrgeMenuAction } = require('@/services/order/order.detailUseCases')
+const { formatAmount, formatMeasure, maskMobile, toDisplayText } = require('@/services/order/order.display')
+const { createOrderPdcFeedbackContext, createOrderPdcFeedbackRequest } = require('@/services/order/order.pdcFeedback')
+const { ORDER_PDC_FEEDBACK_API_ENDPOINTS } = require('@/services/order/order.pdcFeedback.api')
+const { createOrderSubscriptionAction, normalizeWaybillSubscription } = require('@/services/order/order.subscription')
 
 const { createOrderDetail, getActionKinds } = require('../fixtures/order.cjs')
 
@@ -104,10 +83,7 @@ const cases = [
   {
     name: 'order detail view model normalizes public and secure route state',
     run() {
-      const publicView = createOrderDetailViewModel(
-        getOrderDetailRouteParams({ waybillNo: 'DPK123456789' }),
-        null
-      )
+      const publicView = createOrderDetailViewModel(getOrderDetailRouteParams({ waybillNo: 'DPK123456789' }), null)
 
       assert.equal(publicView.publicTrackMode, true)
       assert.equal(publicView.detailRole, 'sender')
@@ -142,14 +118,8 @@ const cases = [
         orderClassification: '2',
         waybillNumber: 'DP123456789'
       }
-      const first = createOrderPdcFeedbackContext(
-        signedOrder,
-        'APP_PDC_KDYZJO_ENTRY'
-      )
-      const second = createOrderPdcFeedbackContext(
-        signedOrder,
-        'APP_PDC_KDYZJT_ENTRY'
-      )
+      const first = createOrderPdcFeedbackContext(signedOrder, 'APP_PDC_KDYZJO_ENTRY')
+      const second = createOrderPdcFeedbackContext(signedOrder, 'APP_PDC_KDYZJT_ENTRY')
 
       assert.deepEqual(first, {
         waybillNumber: 'DP123456789',
@@ -170,21 +140,9 @@ const cases = [
         query: '/gwapi/commentService/eco/comment/secure/queryFeedback',
         submit: '/gwapi/commentService/eco/comment/secure/submitFeedback'
       })
-      assert.equal(
-        createOrderPdcFeedbackContext(
-          { ...signedOrder, orderClassification: '1' },
-          'PDC_KDYZJO'
-        ),
-        null
-      )
-      assert.equal(
-        createOrderPdcFeedbackContext(signedOrder, 'ORDER_DETAIL'),
-        null
-      )
-      assert.equal(
-        createOrderPdcFeedbackContext(signedOrder, 'PDC_KDYZJO', true),
-        null
-      )
+      assert.equal(createOrderPdcFeedbackContext({ ...signedOrder, orderClassification: '1' }, 'PDC_KDYZJO'), null)
+      assert.equal(createOrderPdcFeedbackContext(signedOrder, 'ORDER_DETAIL'), null)
+      assert.equal(createOrderPdcFeedbackContext(signedOrder, 'PDC_KDYZJO', true), null)
     }
   },
   {
@@ -206,9 +164,7 @@ const cases = [
         role: 'sender'
       })
       const modifyOrder = waitActions.find(item => item.kind === 'modifyOrder')
-      const modifyWaybill = transitActions.find(
-        item => item.kind === 'modifyWaybill'
-      )
+      const modifyWaybill = transitActions.find(item => item.kind === 'modifyWaybill')
 
       assert.ok(modifyOrder)
       assert.equal(modifyOrder.target, 'route')
@@ -238,15 +194,7 @@ const cases = [
         role: 'sender'
       })
 
-      assert.deepEqual(kinds, [
-        'service',
-        'notifyDeliver',
-        'invalidWaybill',
-        'evaluate',
-        'complaint',
-        'claim',
-        'modifyWaybill'
-      ])
+      assert.deepEqual(kinds, ['service', 'notifyDeliver', 'invalidWaybill', 'evaluate', 'complaint', 'claim', 'modifyWaybill'])
       assert.deepEqual(urge, {
         voucherNumber: 'DPK123456789',
         voucherType: '1',
@@ -315,8 +263,7 @@ const cases = [
   {
     name: 'order urge menu resolver opens progress web target from modal button',
     run() {
-      const webUri =
-        '/depponmobile/mow/order/urgeProgress?voucherType=1&voucherNumber=DPK123456789'
+      const webUri = '/depponmobile/mow/order/urgeProgress?voucherType=1&voucherNumber=DPK123456789'
       const action = {
         kind: 'urge',
         title: '我要催单',

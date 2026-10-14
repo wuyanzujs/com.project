@@ -26,10 +26,7 @@ interface KnownWebTarget {
   auth?: boolean
 }
 
-export function requiresAppWebLogin(
-  target: Pick<AppWebTarget, 'allowed' | 'auth'>,
-  authenticated: boolean
-) {
+export function requiresAppWebLogin(target: Pick<AppWebTarget, 'allowed' | 'auth'>, authenticated: boolean) {
   return target.allowed && target.auth && !authenticated
 }
 
@@ -287,10 +284,7 @@ export function isAllowedAppWebUrl(url: string) {
   try {
     const parsed = new URL(url)
 
-    return (
-      parsed.protocol === 'https:' &&
-      APP_RUNTIME_CONFIG.webAllowedHosts.includes(parsed.hostname)
-    )
+    return parsed.protocol === 'https:' && APP_RUNTIME_CONFIG.webAllowedHosts.includes(parsed.hostname)
   } catch {
     return false
   }
@@ -334,11 +328,7 @@ export function isAllowedAppWebTargetUrl(source: string, url: string) {
     const targetHashPath = target.hash.split('?')[0]
     const candidateHashPath = candidate.hash.split('?')[0]
 
-    return (
-      candidate.origin === target.origin &&
-      candidate.pathname === target.pathname &&
-      (!targetHashPath || candidateHashPath === targetHashPath)
-    )
+    return candidate.origin === target.origin && candidate.pathname === target.pathname && (!targetHashPath || candidateHashPath === targetHashPath)
   } catch {
     return false
   }
@@ -348,10 +338,7 @@ export function createAppWebUrl(options: AppWebRouteOptions) {
   const knownTarget: KnownWebTarget = APP_WEB_TARGETS[options.source]
   const uri = options.uri || knownTarget?.url || ''
   const title = options.title || knownTarget?.title || ''
-  const auth =
-    options.auth === undefined
-      ? knownTarget?.auth !== false
-      : Boolean(options.auth)
+  const auth = options.auth === undefined ? knownTarget?.auth !== false : Boolean(options.auth)
 
   return createAppRouteUrl(APP_ROUTES.web, {
     source: options.source,
@@ -362,25 +349,16 @@ export function createAppWebUrl(options: AppWebRouteOptions) {
   })
 }
 
-export function resolveAppWebTarget(
-  params: Partial<Record<string, string>>
-): AppWebTarget {
+export function resolveAppWebTarget(params: Partial<Record<string, string>>): AppWebTarget {
   const source = decodeRouteValue(params.source) || 'UNKNOWN'
-  const knownTarget: KnownWebTarget | null = isAppWebSource(source)
-    ? APP_WEB_TARGETS[source]
-    : null
+  const knownTarget: KnownWebTarget | null = isAppWebSource(source) ? APP_WEB_TARGETS[source] : null
   const routeUri = decodeRouteValue(params.uri || params.url)
   const rawUrl = routeUri || knownTarget?.url || ''
   const url = toAbsoluteWebUrl(rawUrl)
-  const title =
-    decodeRouteValue(params.title) || knownTarget?.title || '服务承接'
-  const auth =
-    params.auth === undefined
-      ? knownTarget?.auth !== false
-      : decodeRouteValue(params.auth) !== 'N'
+  const title = decodeRouteValue(params.title) || knownTarget?.title || '服务承接'
+  const auth = params.auth === undefined ? knownTarget?.auth !== false : decodeRouteValue(params.auth) !== 'N'
   const rawMessageContext = decodeRouteValue(params.messageContext).trim()
-  const messageContext =
-    rawMessageContext.length <= 256 ? rawMessageContext : ''
+  const messageContext = rawMessageContext.length <= 256 ? rawMessageContext : ''
   const allowed = isAllowedAppWebTargetUrl(source, url)
 
   return {

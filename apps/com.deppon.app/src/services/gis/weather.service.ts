@@ -51,20 +51,8 @@ async function loadCountyWeatherInfos(adcode: string) {
 
 // 收寄两侧任意一侧天气请求失败时静默跳过该侧，只提示能确认的一侧。
 export async function loadWaterproofText(query: WaterproofQuery) {
-  const senderAdcode = query.sender
-    ? resolveCountyAdcode(
-        query.sender.province,
-        query.sender.city,
-        query.sender.county
-      )
-    : ''
-  const consigneeAdcode = query.consignee
-    ? resolveCountyAdcode(
-        query.consignee.province,
-        query.consignee.city,
-        query.consignee.county
-      )
-    : ''
+  const senderAdcode = query.sender ? resolveCountyAdcode(query.sender.province, query.sender.city, query.sender.county) : ''
+  const consigneeAdcode = query.consignee ? resolveCountyAdcode(query.consignee.province, query.consignee.city, query.consignee.county) : ''
 
   if (!senderAdcode && !consigneeAdcode) {
     return ''
@@ -72,17 +60,11 @@ export async function loadWaterproofText(query: WaterproofQuery) {
 
   const [senderInfos, consigneeInfos] = await Promise.all([
     senderAdcode ? loadCountyWeatherInfos(senderAdcode) : Promise.resolve(null),
-    consigneeAdcode
-      ? loadCountyWeatherInfos(consigneeAdcode)
-      : Promise.resolve(null)
+    consigneeAdcode ? loadCountyWeatherInfos(consigneeAdcode) : Promise.resolve(null)
   ])
 
-  const senderRain = senderInfos
-    ? findCountyRain(senderInfos, query.senderDate).rain
-    : false
-  const consigneeRain = consigneeInfos
-    ? findCountyRain(consigneeInfos, query.consigneeDate).rain
-    : false
+  const senderRain = senderInfos ? findCountyRain(senderInfos, query.senderDate).rain : false
+  const consigneeRain = consigneeInfos ? findCountyRain(consigneeInfos, query.consigneeDate).rain : false
 
   return createWaterproofText(senderRain, consigneeRain)
 }

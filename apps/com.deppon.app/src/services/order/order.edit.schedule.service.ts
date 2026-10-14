@@ -17,9 +17,7 @@ import type { OrderEditDraft, OrderEditPickupTimeResponse } from './types'
  * @param draft 订单修改草稿
  * @description 查询并归一可预约的上门时间
  */
-export async function queryOrderEditPickupTimes(
-  draft: OrderEditDraft
-): Promise<DepponResponse<OrderEditPickupTimeResponse>> {
+export async function queryOrderEditPickupTimes(draft: OrderEditDraft): Promise<DepponResponse<OrderEditPickupTimeResponse>> {
   const nightRequest = buildOrderEditPickupNightRequest(draft)
 
   if (!nightRequest) {
@@ -32,10 +30,7 @@ export async function queryOrderEditPickupTimes(
     try {
       const response = await orderEditScheduleApi.queryPickupNight(nightRequest)
 
-      capability = createOrderEditPickupNightCapability(
-        draft,
-        response.status ? response.result : null
-      )
+      capability = createOrderEditPickupNightCapability(draft, response.status ? response.result : null)
     } catch {
       capability = createOrderEditPickupNightCapability(draft)
     }
@@ -53,15 +48,10 @@ export async function queryOrderEditPickupTimes(
     return createServiceFailure(response.message || '暂未获取到上门时间')
   }
 
-  const result = normalizeOrderEditPickupTimeResponse(
-    response.result,
-    capability
-  )
+  const result = normalizeOrderEditPickupTimeResponse(response.result, capability)
 
   if (result.opening === false || !result.openingList?.length) {
-    return createServiceFailure(
-      result.openingMessage || '当前地址暂无可预约时间'
-    )
+    return createServiceFailure(result.openingMessage || '当前地址暂无可预约时间')
   }
 
   return { ...response, result }

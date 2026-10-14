@@ -1,13 +1,6 @@
 import Taro from '@tarojs/taro'
 
-import {
-  type Dispatch,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from 'react'
+import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 import {
   applyExpressInsuranceCapability,
@@ -25,27 +18,15 @@ interface UseExpressQuoteOptions {
   onProductChange: () => void
 }
 
-export function useExpressQuote({
-  draft,
-  setDraft,
-  onProductChange
-}: UseExpressQuoteOptions) {
+export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpressQuoteOptions) {
   const [quotes, setQuotes] = useState<ExpressProductQuote[]>([])
-  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>(
-    'idle'
-  )
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const requestKey = createExpressQuoteRequestKey(draft)
   const latestDraft = useRef(draft)
   const latestRequestKey = useRef(requestKey)
   const startRequest = useCallback(() => setStatus('loading'), [])
-  const finishRequest = useCallback(
-    () => setStatus(current => (current === 'loading' ? 'idle' : current)),
-    []
-  )
-  const { invalidateLatestRequest, runLatestRequest } = useLatestRequestRunner(
-    startRequest,
-    finishRequest
-  )
+  const finishRequest = useCallback(() => setStatus(current => (current === 'loading' ? 'idle' : current)), [])
+  const { invalidateLatestRequest, runLatestRequest } = useLatestRequestRunner(startRequest, finishRequest)
 
   latestDraft.current = draft
   latestRequestKey.current = requestKey
@@ -72,11 +53,7 @@ export function useExpressQuote({
         }
 
         const availableDraft = availability
-          ? applyExpressInsuranceCapability(
-              currentDraft,
-              availability.insuranceCapability,
-              availability.customer.insuranceLimit
-            )
+          ? applyExpressInsuranceCapability(currentDraft, availability.insuranceCapability, availability.customer.insuranceLimit)
           : currentDraft
 
         if (!response.status || !products.length) {
@@ -92,10 +69,7 @@ export function useExpressQuote({
           return
         }
 
-        const defaultProduct = selectDefaultExpressQuote(
-          products,
-          availability?.recommendDczp === true
-        )
+        const defaultProduct = selectDefaultExpressQuote(products, availability?.recommendDczp === true)
         const nextDraft = selectExpressProduct(availableDraft, defaultProduct)
 
         setQuotes(products)

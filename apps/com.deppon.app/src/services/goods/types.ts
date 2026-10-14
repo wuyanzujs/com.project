@@ -1,9 +1,4 @@
-import type {
-  ExpressGoodsCheckStatus,
-  ExpressGoodsItem,
-  ExpressGoodsLabel,
-  ExpressGoodsLabelRequest
-} from '../express'
+import type { ExpressGoodsCheckStatus, ExpressGoodsItem, ExpressGoodsLabel, ExpressGoodsLabelRequest } from '../express'
 
 export type GoodsQuerySource = 'search' | 'hot'
 export type GoodsCheckStatus = ExpressGoodsCheckStatus

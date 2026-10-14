@@ -1,9 +1,4 @@
-import type {
-  OrderDetail,
-  OrderEditCollectionDraft,
-  OrderEditCollectionType,
-  OrderModifyRequest
-} from './types'
+import type { OrderDetail, OrderEditCollectionDraft, OrderEditCollectionType, OrderModifyRequest } from './types'
 
 export const ORDER_EDIT_COLLECTION_DEFAULT_LIMIT = 1000000
 
@@ -47,14 +42,10 @@ function normalizeAccount(value: unknown) {
  * @param value 代收货款类型
  * @description 归一为 NORMAL 或 INTRADAY 类型
  */
-export function normalizeOrderEditCollectionType(
-  value: unknown
-): OrderEditCollectionType {
+export function normalizeOrderEditCollectionType(value: unknown): OrderEditCollectionType {
   const type = normalizeText(value).toUpperCase()
 
-  return type === 'INTRADAY' || type === 'R1' || type === '即日退'
-    ? 'INTRADAY'
-    : 'NORMAL'
+  return type === 'INTRADAY' || type === 'R1' || type === '即日退' ? 'INTRADAY' : 'NORMAL'
 }
 
 /**
@@ -88,9 +79,7 @@ export function normalizeOrderEditCollectionAmountInput(value: string) {
   }
 
   const integer = (normalizedInteger || '0').slice(0, 10)
-  const decimal = decimalParts
-    .join('')
-    .slice(0, Math.min(2, 10 - integer.length))
+  const decimal = decimalParts.join('').slice(0, Math.min(2, 10 - integer.length))
 
   return integer + '.' + decimal
 }
@@ -100,12 +89,8 @@ export function normalizeOrderEditCollectionAmountInput(value: string) {
  * @param value 代收货款草稿，可为空
  * @description 归一草稿中的类型、金额与收款账户
  */
-export function normalizeOrderEditCollection(
-  value?: Partial<OrderEditCollectionDraft> | null
-): OrderEditCollectionDraft {
-  const limit =
-    parseOrderEditCollectionAmount(value?.limit) ||
-    ORDER_EDIT_COLLECTION_DEFAULT_LIMIT
+export function normalizeOrderEditCollection(value?: Partial<OrderEditCollectionDraft> | null): OrderEditCollectionDraft {
+  const limit = parseOrderEditCollectionAmount(value?.limit) || ORDER_EDIT_COLLECTION_DEFAULT_LIMIT
 
   return {
     enabled: Boolean(value?.enabled),
@@ -123,20 +108,14 @@ export function normalizeOrderEditCollection(
  * @param detail 订单详情
  * @description 从订单详情创建代收货款草稿
  */
-export function createOrderEditCollectionDraft(
-  detail: OrderDetail
-): OrderEditCollectionDraft {
-  const amount = parseOrderEditCollectionAmount(
-    detail.receiverMoneyAmount ?? detail.reviceMoneyAmount
-  )
+export function createOrderEditCollectionDraft(detail: OrderDetail): OrderEditCollectionDraft {
+  const amount = parseOrderEditCollectionAmount(detail.receiverMoneyAmount ?? detail.reviceMoneyAmount)
   const account = normalizeAccount(detail.reciveLoanAccount)
   const enabled = amount > 0 || Boolean(account)
 
   return normalizeOrderEditCollection({
     enabled,
-    type: normalizeOrderEditCollectionType(
-      detail.receiverLoanType ?? detail.reciveLoanType
-    ),
+    type: normalizeOrderEditCollectionType(detail.receiverLoanType ?? detail.reciveLoanType),
     amount,
     account,
     accountName: normalizeText(detail.reciveLoanAccountName),
@@ -150,10 +129,7 @@ export function createOrderEditCollectionDraft(
  * @param patch 待更新字段
  * @description 合并补丁并归一当前草稿
  */
-export function updateOrderEditCollection(
-  collection: OrderEditCollectionDraft,
-  patch: Partial<OrderEditCollectionDraft>
-) {
+export function updateOrderEditCollection(collection: OrderEditCollectionDraft, patch: Partial<OrderEditCollectionDraft>) {
   return normalizeOrderEditCollection({
     ...collection,
     ...patch
@@ -182,9 +158,7 @@ export function clearOrderEditCollection(collection: OrderEditCollectionDraft) {
  * @param collection 代收货款草稿
  * @description 生成代收货款校验提示
  */
-export function validateOrderEditCollection(
-  collection: OrderEditCollectionDraft
-) {
+export function validateOrderEditCollection(collection: OrderEditCollectionDraft) {
   const normalized = normalizeOrderEditCollection(collection)
 
   if (!normalized.enabled) {
@@ -210,21 +184,14 @@ export function validateOrderEditCollection(
   return messages
 }
 
-export type OrderEditCollectionRequestFields = Required<
-  Pick<
-    OrderModifyRequest,
-    'reciveLoanType' | 'reviceMoneyAmount' | 'accountName' | 'reciveLoanAccount'
-  >
->
+export type OrderEditCollectionRequestFields = Required<Pick<OrderModifyRequest, 'reciveLoanType' | 'reviceMoneyAmount' | 'accountName' | 'reciveLoanAccount'>>
 
 /**
  *
  * @param collection 代收货款草稿
  * @description 生成订单修改接口的代收货款字段
  */
-export function createOrderEditCollectionRequestFields(
-  collection: OrderEditCollectionDraft
-): OrderEditCollectionRequestFields {
+export function createOrderEditCollectionRequestFields(collection: OrderEditCollectionDraft): OrderEditCollectionRequestFields {
   const normalized = normalizeOrderEditCollection(collection)
 
   return normalized.enabled
@@ -248,10 +215,7 @@ export function createOrderEditCollectionRequestFields(
  * @param origin 原始草稿
  * @description 判断代收货款是否发生变化
  */
-export function isOrderEditCollectionChanged(
-  collection: OrderEditCollectionDraft,
-  origin: OrderEditCollectionDraft
-) {
+export function isOrderEditCollectionChanged(collection: OrderEditCollectionDraft, origin: OrderEditCollectionDraft) {
   const currentFields = createOrderEditCollectionRequestFields(collection)
   const originFields = createOrderEditCollectionRequestFields(origin)
 

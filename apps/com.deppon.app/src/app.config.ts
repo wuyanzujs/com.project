@@ -1,16 +1,11 @@
-import {
-  APP_PAGE_PATHS,
-  APP_ROUTE_DEFINITIONS
-} from './shared/navigation/routeRegistry'
+import { APP_PAGE_PATHS, APP_ROUTE_DEFINITIONS } from './shared/navigation/routeRegistry'
 import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from './styles/nativeTokens'
 
 // tab 页与路由注册表保持同源。底部栏始终由 AppTabBar 组件渲染，内置
 // tabBar 保持关闭，这里只声明哪些页面属于 tab 容器：这样主路由切换才能
 // 走导航 facade 的 switchTab——既不播放页面栈转场，也不会每次切 tab
 // 都往栈里压一层。
-const APP_TAB_BAR_LIST = APP_ROUTE_DEFINITIONS.filter(
-  item => 'main' in item && item.main
-).map(item => ({
+const APP_TAB_BAR_LIST = APP_ROUTE_DEFINITIONS.filter(item => 'main' in item && item.main).map(item => ({
   pagePath: item.path,
   text: item.title
 }))

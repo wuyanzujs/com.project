@@ -1,11 +1,5 @@
 export type ECardType = '' | 'SC' | 'YC'
-export type ECardTargetPage =
-  | 'HOME'
-  | 'BILL'
-  | 'RECHARGE'
-  | 'HOME_AUTO_REGISTER'
-  | 'PAY_RECHARGE'
-  | 'PAY_SETTING'
+export type ECardTargetPage = 'HOME' | 'BILL' | 'RECHARGE' | 'HOME_AUTO_REGISTER' | 'PAY_RECHARGE' | 'PAY_SETTING'
 
 export interface ECardCenterUrlOptions {
   type?: ECardType

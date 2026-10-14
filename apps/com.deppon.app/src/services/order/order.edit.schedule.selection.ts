@@ -1,9 +1,5 @@
 import { createOrderEditScheduleQueryKey } from './order.edit.schedule'
-import {
-  createOrderEditPickupDateTime,
-  findOrderEditPickupTimeSelection,
-  getFirstOrderEditPickupTimeSelection
-} from './order.edit.schedule.options'
+import { createOrderEditPickupDateTime, findOrderEditPickupTimeSelection, getFirstOrderEditPickupTimeSelection } from './order.edit.schedule.options'
 
 import type { OrderEditPickupTimeSelection } from './order.edit.schedule.options'
 import type { OrderEditDraft, OrderEditPickupTimeResponse } from './types'
@@ -25,18 +21,13 @@ function normalizeNumber(value: unknown) {
  * @param selection 选中的上门时段
  * @description 写入选中的上门时间
  */
-export function selectOrderEditPickupTime(
-  draft: OrderEditDraft,
-  selection: OrderEditPickupTimeSelection
-): OrderEditDraft {
+export function selectOrderEditPickupTime(draft: OrderEditDraft, selection: OrderEditPickupTimeSelection): OrderEditDraft {
   if (selection.type === 'DISABLE') {
     return draft
   }
 
   const time = createOrderEditPickupDateTime(selection.date, selection.time)
-  const changed =
-    time !== draft.schedule.pickup.time ||
-    selection.type !== draft.schedule.pickup.type
+  const changed = time !== draft.schedule.pickup.time || selection.type !== draft.schedule.pickup.type
 
   return {
     ...draft,
@@ -47,10 +38,7 @@ export function selectOrderEditPickupTime(
         time,
         timeSlot: selection.text.trim(),
         type: selection.type,
-        nightNoticeAccepted:
-          selection.type === 'NIGHT' && !changed
-            ? draft.schedule.pickup.nightNoticeAccepted
-            : false,
+        nightNoticeAccepted: selection.type === 'NIGHT' && !changed ? draft.schedule.pickup.nightNoticeAccepted : false,
         selectionKey: createOrderEditScheduleQueryKey(draft)
       }
     }
@@ -63,15 +51,9 @@ export function selectOrderEditPickupTime(
  * @param response 上门时间响应
  * @description 用最新响应刷新草稿中的上门时间
  */
-export function applyOrderEditPickupTimeResponse(
-  draft: OrderEditDraft,
-  response: OrderEditPickupTimeResponse
-): OrderEditDraft {
+export function applyOrderEditPickupTimeResponse(draft: OrderEditDraft, response: OrderEditPickupTimeResponse): OrderEditDraft {
   const queryKey = createOrderEditScheduleQueryKey(draft)
-  const selection = findOrderEditPickupTimeSelection(
-    response,
-    draft.schedule.pickup
-  )
+  const selection = findOrderEditPickupTimeSelection(response, draft.schedule.pickup)
   const pickPeriodTime = normalizeNumber(response.pickPeriodTime)
   const pickup = {
     ...draft.schedule.pickup,
@@ -90,9 +72,7 @@ export function applyOrderEditPickupTimeResponse(
   if (!pickup.time) {
     const firstSelection = getFirstOrderEditPickupTimeSelection(response)
 
-    return firstSelection
-      ? selectOrderEditPickupTime(nextDraft, firstSelection)
-      : nextDraft
+    return firstSelection ? selectOrderEditPickupTime(nextDraft, firstSelection) : nextDraft
   }
 
   if (queryKey !== draft.schedule.initialInputKey) {
@@ -121,10 +101,7 @@ export function applyOrderEditPickupTimeResponse(
  * @description 标记已确认夜间揽收费用提示
  */
 export function acceptOrderEditNightPickupNotice(draft: OrderEditDraft) {
-  if (
-    draft.schedule.pickup.type !== 'NIGHT' ||
-    draft.schedule.pickup.nightNoticeAccepted
-  ) {
+  if (draft.schedule.pickup.type !== 'NIGHT' || draft.schedule.pickup.nightNoticeAccepted) {
     return draft
   }
 

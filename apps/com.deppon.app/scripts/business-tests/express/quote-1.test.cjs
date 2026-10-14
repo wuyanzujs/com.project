@@ -3,11 +3,7 @@ const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
 const { CACHE_KEYS } = require('@/cache/keys')
-const {
-  getStorageValue,
-  removeStorageValue,
-  setStorageValue
-} = require('@/cache/storage')
+const { getStorageValue, removeStorageValue, setStorageValue } = require('@/cache/storage')
 const { customerService } = require('@/services/customer/customer.service')
 const { expressApi } = require('@/services/express/express.api')
 const { applyExpressScanContext } = require('@/services/express/express.draft')
@@ -25,10 +21,7 @@ const {
   supportsExpressProductSwitch
 } = require('@/services/express/productAvailability.rules')
 
-const {
-  createValidExpressDraft,
-  expressProduct
-} = require('../fixtures/express.cjs')
+const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 
 const cases = [
   {
@@ -54,15 +47,12 @@ const cases = [
         contractEnabled: true,
         insuranceLimit: 750000
       })
-      const matchingScanCustomer = resolveExpressProductCustomerCapability(
-        scanDraft,
-        {
-          customerCode: 'CUS_SCAN',
-          monthlyEnabled: true,
-          contractEnabled: true,
-          insuranceLimit: 750000
-        }
-      )
+      const matchingScanCustomer = resolveExpressProductCustomerCapability(scanDraft, {
+        customerCode: 'CUS_SCAN',
+        monthlyEnabled: true,
+        contractEnabled: true,
+        insuranceLimit: 750000
+      })
 
       assert.deepEqual(customer, {
         customerCode: 'CUS_001',
@@ -130,10 +120,7 @@ const cases = [
       assert.equal(resolveExpressProductRole(draft, 'OLD'), '')
       assert.equal(resolveExpressProductRole(courierDraft, 'OLD'), 'EXP')
       assert.equal(resolveExpressProductRole(customerDraft, 'OLD'), '')
-      assert.equal(
-        resolveExpressProductRole(driverDraft, 'CONTRACT'),
-        'DRIVER_QR_CODE'
-      )
+      assert.equal(resolveExpressProductRole(driverDraft, 'CONTRACT'), 'DRIVER_QR_CODE')
       assert.equal(resolveExpressProductRole(businessDraft, 'CONTRACT'), 'EXP')
     }
   },
@@ -189,14 +176,8 @@ const cases = [
       assert.equal(request.customerContract, '1')
       assert.equal(request.isOffSiteTransfer, 'N')
       assert.equal(defaultRequest.passProductCode, 'EXP')
-      assert.equal(
-        selectDefaultExpressQuote([expressProduct, dczpProduct], true),
-        dczpProduct
-      )
-      assert.equal(
-        selectDefaultExpressQuote([expressProduct, dczpProduct], false),
-        expressProduct
-      )
+      assert.equal(selectDefaultExpressQuote([expressProduct, dczpProduct], true), dczpProduct)
+      assert.equal(selectDefaultExpressQuote([expressProduct, dczpProduct], false), expressProduct)
     }
   },
   {
@@ -256,19 +237,13 @@ const cases = [
 
       try {
         const response = await expressService.quote(createValidExpressDraft())
-        const selected = selectDefaultExpressQuote(
-          response.result.products,
-          response.result.availability.recommendDczp
-        )
+        const selected = selectDefaultExpressQuote(response.result.products, response.result.availability.recommendDczp)
 
         assert.equal(response.status, true)
         assert.equal(response.result.availability.productSwitch, 'OLD')
         assert.equal(response.result.availability.passProductCode, '')
         assert.equal(response.result.availability.recommendDczp, true)
-        assert.equal(
-          response.result.availability.insuranceCapability.inputKey.length > 0,
-          true
-        )
+        assert.equal(response.result.availability.insuranceCapability.inputKey.length > 0, true)
         assert.equal(requests.productSwitch.ifExistContract, 0)
         assert.equal(requests.upgrade.pilotType, 'CUSTOMER_REGION')
         assert.equal(requests.labels.goodsName, '文件')
@@ -305,10 +280,7 @@ const cases = [
         assert.equal(degraded.result.availability.productSwitch, 'EXP')
         assert.equal(degraded.result.availability.passProductCode, 'EXP')
         assert.equal(degraded.result.availability.recommendDczp, false)
-        assert.equal(
-          degraded.result.availability.insuranceCapability.inputKey,
-          ''
-        )
+        assert.equal(degraded.result.availability.insuranceCapability.inputKey, '')
         assert.equal(requests.freight.passProductCode, 'EXP')
         assert.equal(requests.freight.isRecommendDczp, undefined)
       } finally {
@@ -381,18 +353,10 @@ const cases = [
       }
 
       try {
-        const accountResponse = await expressService.quote(
-          createValidExpressDraft()
-        )
+        const accountResponse = await expressService.quote(createValidExpressDraft())
 
-        assert.equal(
-          accountResponse.result.availability.passProductCode,
-          'CONTRACT'
-        )
-        assert.equal(
-          accountResponse.result.availability.customer.insuranceLimit,
-          750000
-        )
+        assert.equal(accountResponse.result.availability.passProductCode, 'CONTRACT')
+        assert.equal(accountResponse.result.availability.customer.insuranceLimit, 750000)
         assert.equal(freightRequest.customerCode, 'CUS_ACCOUNT')
         assert.equal(freightRequest.customerMonthly, '1')
         assert.equal(freightRequest.customerContract, '1')
@@ -404,14 +368,8 @@ const cases = [
           })
         )
 
-        assert.equal(
-          scanResponse.result.availability.passProductCode,
-          'UNIVERSAL'
-        )
-        assert.equal(
-          scanResponse.result.availability.customer.insuranceLimit,
-          null
-        )
+        assert.equal(scanResponse.result.availability.passProductCode, 'UNIVERSAL')
+        assert.equal(scanResponse.result.availability.customer.insuranceLimit, null)
         assert.equal(freightRequest.customerCode, 'CUS_SCAN')
         assert.equal(freightRequest.customerMonthly, '0')
         assert.equal(freightRequest.customerContract, '0')

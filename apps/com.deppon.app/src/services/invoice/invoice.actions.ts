@@ -7,10 +7,7 @@ import { createServiceFailure as createFailure } from '../serviceResponse'
 import type { Contact } from '../contact'
 import type { InvoiceBasicRequest, InvoiceModifyAddressRequest } from './types'
 
-type InvoiceAddressContact = Pick<
-  Contact,
-  'name' | 'telephone' | 'province' | 'city' | 'county' | 'town' | 'address'
->
+type InvoiceAddressContact = Pick<Contact, 'name' | 'telephone' | 'province' | 'city' | 'county' | 'town' | 'address'>
 
 /**
  *
@@ -19,11 +16,7 @@ type InvoiceAddressContact = Pick<
  * @param failureMessage 失败提示文案
  * @description 调用发票基础操作接口并统一处理失败
  */
-async function requestInvoiceBasicAction(
-  path: 'cancelInvoiceApply' | 'toRedRush',
-  applyNo: string,
-  failureMessage: string
-): Promise<DepponResponse<null>> {
+async function requestInvoiceBasicAction(path: 'cancelInvoiceApply' | 'toRedRush', applyNo: string, failureMessage: string): Promise<DepponResponse<null>> {
   const normalizedApplyNo = normalizeText(applyNo)
 
   if (!normalizedApplyNo) {
@@ -55,11 +48,7 @@ async function requestInvoiceBasicAction(
  * @description 撤销发票开票申请
  */
 export function cancelInvoiceApply(applyNo: string) {
-  return requestInvoiceBasicAction(
-    'cancelInvoiceApply',
-    applyNo,
-    '撤销失败，请稍后再试'
-  )
+  return requestInvoiceBasicAction('cancelInvoiceApply', applyNo, '撤销失败，请稍后再试')
 }
 
 /**
@@ -93,22 +82,12 @@ function getInvoiceAddressDetail(contact: InvoiceAddressContact) {
  * @param contact 收票地址联系人信息
  * @description 组装修改收票地址的 payload
  */
-export function createInvoiceModifyAddressPayload(
-  applyNo: string,
-  contact: InvoiceAddressContact
-): InvoiceModifyAddressRequest {
+export function createInvoiceModifyAddressPayload(applyNo: string, contact: InvoiceAddressContact): InvoiceModifyAddressRequest {
   return {
     applyNo: normalizeText(applyNo),
     acceptCustomer: normalizeText(contact.name),
     acceptPhone: normalizeText(contact.telephone),
-    acceptAddress: [
-      contact.province,
-      contact.city,
-      contact.county,
-      getInvoiceAddressDetail(contact)
-    ]
-      .map(normalizeText)
-      .join('|')
+    acceptAddress: [contact.province, contact.city, contact.county, getInvoiceAddressDetail(contact)].map(normalizeText).join('|')
   }
 }
 
@@ -117,9 +96,7 @@ export function createInvoiceModifyAddressPayload(
  * @param payload 修改收票地址请求参数
  * @description 校验参数并返回错误文案
  */
-function validateInvoiceModifyAddressPayload(
-  payload: InvoiceModifyAddressRequest
-) {
+function validateInvoiceModifyAddressPayload(payload: InvoiceModifyAddressRequest) {
   const addressParts = payload.acceptAddress.split('|')
 
   if (!payload.applyNo) {
@@ -134,10 +111,7 @@ function validateInvoiceModifyAddressPayload(
     return '请选择正确的收票手机号'
   }
 
-  if (
-    addressParts.length < 4 ||
-    addressParts.some(item => !normalizeText(item))
-  ) {
+  if (addressParts.length < 4 || addressParts.some(item => !normalizeText(item))) {
     return '请选择完整的收票地址'
   }
 
@@ -150,10 +124,7 @@ function validateInvoiceModifyAddressPayload(
  * @param contact 收票地址联系人信息
  * @description 修改发票收票地址
  */
-export async function modifyInvoiceAddress(
-  applyNo: string,
-  contact: InvoiceAddressContact
-): Promise<DepponResponse<null>> {
+export async function modifyInvoiceAddress(applyNo: string, contact: InvoiceAddressContact): Promise<DepponResponse<null>> {
   const payload = createInvoiceModifyAddressPayload(applyNo, contact)
   const validationMessage = validateInvoiceModifyAddressPayload(payload)
 
@@ -161,12 +132,7 @@ export async function modifyInvoiceAddress(
     return createFailure(validationMessage)
   }
 
-  const response = await invoiceApi.request<null, InvoiceModifyAddressRequest>(
-    'alterSendAdress',
-    payload,
-    true,
-    30000
-  )
+  const response = await invoiceApi.request<null, InvoiceModifyAddressRequest>('alterSendAdress', payload, true, 30000)
 
   if (!response.status) {
     return createFailure(response.message || '修改收票地址失败，请稍后再试')

@@ -2,13 +2,7 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  getJsonStorageValue,
-  getStorageValue,
-  removeStorageValue,
-  setJsonStorageValue,
-  setStorageValue
-} = require('@/cache/storage')
+const { getJsonStorageValue, getStorageValue, removeStorageValue, setJsonStorageValue, setStorageValue } = require('@/cache/storage')
 
 const { createDeferred } = require('../support/deferred.cjs')
 const { createStorageFixture } = require('../support/storage-fixture.cjs')
@@ -123,10 +117,7 @@ test('delete then write commits the replacement value', async t => {
   const { disk } = createStorageFixture(t)
   const key = 'TEST_DELETE_WRITE'
   await setStorageValue(key, 'old')
-  assert.deepEqual(
-    await Promise.all([removeStorageValue(key), setStorageValue(key, 'new')]),
-    [true, true]
-  )
+  assert.deepEqual(await Promise.all([removeStorageValue(key), setStorageValue(key, 'new')]), [true, true])
   assert.equal(getStorageValue(key), 'new')
   assert.equal(disk.get(key), 'new')
 })
@@ -142,13 +133,7 @@ test('a failed operation does not prevent the next write', async t => {
     disk.set(target, data)
   })
 
-  assert.deepEqual(
-    await Promise.all([
-      setStorageValue(key, 'failed'),
-      setStorageValue(key, 'recovered')
-    ]),
-    [false, true]
-  )
+  assert.deepEqual(await Promise.all([setStorageValue(key, 'failed'), setStorageValue(key, 'recovered')]), [false, true])
   assert.equal(getStorageValue(key), 'recovered')
   assert.equal(disk.get(key), 'recovered')
 })

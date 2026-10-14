@@ -10,9 +10,7 @@ interface QueryPriceSectionProps {
 }
 
 export function QueryPriceSection(props: QueryPriceSectionProps) {
-  const className = props.className
-    ? `query-price-section ${props.className}`
-    : 'query-price-section'
+  const className = props.className ? `query-price-section ${props.className}` : 'query-price-section'
 
   return <View className={className}>{props.children}</View>
 }

@@ -5,9 +5,7 @@ const { test } = require('node:test')
 const { CACHE_KEYS } = require('@/cache/keys')
 const { getStorageValue, setStorageValue } = require('@/cache/storage')
 const { expressApi } = require('@/services/express/express.api')
-const {
-  stageExpressWarehouse
-} = require('@/services/express/warehouse.service')
+const { stageExpressWarehouse } = require('@/services/express/warehouse.service')
 
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
 
@@ -39,10 +37,7 @@ const cases = [
         }
       }
 
-      await setStorageValue(
-        CACHE_KEYS.cookie,
-        'ECO_TOKEN=warehouse-token+/=; Path=/'
-      )
+      await setStorageValue(CACHE_KEYS.cookie, 'ECO_TOKEN=warehouse-token+/=; Path=/')
       expressApi.stageWarehouse = async request => {
         capturedRequest = request
         return {
@@ -60,9 +55,7 @@ const cases = [
         assert.equal(capturedRequest.code, 'PACKAGE')
         assert.equal(capturedRequest.warehouse.isWarehousingService, 'Y')
         assert.equal(capturedRequest.warehouse.payload.warehouseNo, 'ENTRY-001')
-        assert.deepEqual(capturedRequest.warehouse.payload.fileList, [
-          { previewPath: 'https://owstest.deppon.com/files/warehouse.jpg' }
-        ])
+        assert.deepEqual(capturedRequest.warehouse.payload.fileList, [{ previewPath: 'https://owstest.deppon.com/files/warehouse.jpg' }])
         assert.equal(capturedRequest.params.isWarehousingService, 'Y')
         assert.equal(capturedRequest.params.deliverWarehouseWay, 'APSF')
         assert.equal(capturedRequest.params.warehouseCode, 'WH-CODE-001')

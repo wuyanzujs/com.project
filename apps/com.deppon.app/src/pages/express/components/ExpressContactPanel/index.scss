@@ -16,15 +16,28 @@
   border-radius: $dp-radius-24;
 }
 /* 灰底只在空态出现：寄件人未填，或收件人未填且寄件人已填（对应生产 .bg 规则），双卡齐全时是白底。 */
-.express-contact-card--bg { background: $dp-color-bg-page; }
+.express-contact-card--bg {
+  background: $dp-color-bg-page;
+}
 /* 填充态卡片加 16 底部留白（生产寄→收姓名行距 161 设计单位）；图标列顶端对齐并微调 4，
    使寄图标顶较姓名行行距约 26px 与生产一致；空态图标仍垂直居中。 */
-.express-contact-card--filled { padding-bottom: $dp-space-16; }
-.express-contact-card__main--filled { align-items: flex-start; }
-.express-contact-card__mark--filled { margin-top: $dp-space-4; }
-.express-contact-card__main { padding-left: $dp-space-24; }
+.express-contact-card--filled {
+  padding-bottom: $dp-space-16;
+}
+.express-contact-card__main--filled {
+  align-items: flex-start;
+}
+.express-contact-card__mark--filled {
+  margin-top: $dp-space-4;
+}
+.express-contact-card__main {
+  padding-left: $dp-space-24;
+}
 .express-contact-card__mark {
-  flex-shrink: 0; width: $dp-space-80; height: $dp-space-80; margin-right: $dp-space-16;
+  flex-shrink: 0;
+  width: $dp-space-80;
+  height: $dp-space-80;
+  margin-right: $dp-space-16;
 }
 .express-contact-card__content {
   flex: 1;
@@ -103,6 +116,10 @@
   width: $dp-space-80;
   height: $dp-space-80;
   margin-top: -$dp-space-48;
-  min-width: 0; min-height: 0;
+  min-width: 0;
+  min-height: 0;
 }
-.express-contact-panel__reverse-icon { width: $dp-space-40; height: $dp-space-40; }
+.express-contact-panel__reverse-icon {
+  width: $dp-space-40;
+  height: $dp-space-40;
+}

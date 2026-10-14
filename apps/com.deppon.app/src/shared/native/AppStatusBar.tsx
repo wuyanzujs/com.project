@@ -13,12 +13,5 @@ export function AppStatusBar({
   theme = APP_NATIVE_TOKENS.statusBar.theme,
   translucent = APP_NATIVE_TOKENS.statusBar.translucent
 }: AppStatusBarProps) {
-  return (
-    <StatusBar
-      animated
-      backgroundColor={backgroundColor}
-      barStyle={theme === 'light' ? 'light-content' : 'dark-content'}
-      translucent={translucent}
-    />
-  )
+  return <StatusBar animated backgroundColor={backgroundColor} barStyle={theme === 'light' ? 'light-content' : 'dark-content'} translucent={translucent} />
 }

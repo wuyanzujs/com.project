@@ -4,13 +4,7 @@ import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 import { ecardApi } from './ecard.api'
 import { createServiceFailure } from '../serviceResponse'
 
-import type {
-  ECardCenterUrlOptions,
-  ECardLinkRequest,
-  ECardOverviewView,
-  ECardPromotionRaw,
-  ECardTargetPage
-} from './types'
+import type { ECardCenterUrlOptions, ECardLinkRequest, ECardOverviewView, ECardPromotionRaw, ECardTargetPage } from './types'
 
 /**
  *
@@ -80,10 +74,7 @@ function normalizeOptionalText(value?: string | null) {
  * @param options 可选跳转参数
  * @description 组装 E 卡链接请求参数
  */
-export function createECardLinkRequest(
-  targetPage: ECardTargetPage = 'HOME',
-  options: ECardCenterUrlOptions = {}
-): ECardLinkRequest {
+export function createECardLinkRequest(targetPage: ECardTargetPage = 'HOME', options: ECardCenterUrlOptions = {}): ECardLinkRequest {
   const request: ECardLinkRequest = {
     sysCode: APP_RUNTIME_CONFIG.ecardPmcSystemCode,
     targetPage
@@ -92,8 +83,7 @@ export function createECardLinkRequest(
   const postmanId = normalizeOptionalText(options.postmanId)
   const activityCode = normalizeOptionalText(options.activityCode)
 
-  request.source =
-    normalizeOptionalText(options.targetSource) || 'APP_ECARD_CENTER'
+  request.source = normalizeOptionalText(options.targetSource) || 'APP_ECARD_CENTER'
 
   if (type) {
     request.type = type
@@ -127,10 +117,7 @@ export const ecardService = {
 
     return {
       status: true,
-      message:
-        balanceResponse?.message ||
-        promotionResponse?.message ||
-        'E 卡信息已同步',
+      message: balanceResponse?.message || promotionResponse?.message || 'E 卡信息已同步',
       result: {
         balance,
         balanceText: formatMoney(balance),
@@ -138,9 +125,7 @@ export const ecardService = {
         passwordSet,
         statusText: hasCard ? '已开通储值卡' : '未开通储值卡',
         securityText: passwordSet ? '已设置支付密码' : '暂未设置支付密码',
-        rechargeDesc:
-          normalizeText(rawBalance?.rechargeDesc) ||
-          '充值、开通和账单能力由 E 卡页面承接',
+        rechargeDesc: normalizeText(rawBalance?.rechargeDesc) || '充值、开通和账单能力由 E 卡页面承接',
         promotions: normalizePromotions(promotionResponse?.result)
       }
     }
@@ -152,19 +137,11 @@ export const ecardService = {
    * @param options 可选跳转参数
    * @description 创建 E 卡中心页面链接
    */
-  async createCenterUrl(
-    targetPage: ECardTargetPage = 'HOME',
-    options: ECardCenterUrlOptions = {}
-  ) {
-    const response = await ecardApi.createECardLink(
-      createECardLinkRequest(targetPage, options),
-      false
-    )
+  async createCenterUrl(targetPage: ECardTargetPage = 'HOME', options: ECardCenterUrlOptions = {}) {
+    const response = await ecardApi.createECardLink(createECardLinkRequest(targetPage, options), false)
 
     if (!response.status || !response.result?.form) {
-      return createServiceFailure<string>(
-        response.message || '暂未获取到 E 卡页面'
-      )
+      return createServiceFailure<string>(response.message || '暂未获取到 E 卡页面')
     }
 
     return {
@@ -183,9 +160,7 @@ export const ecardService = {
     })
 
     if (!response.status || !response.result?.form) {
-      return createServiceFailure<string>(
-        response.message || '暂未获取到 E 卡页面'
-      )
+      return createServiceFailure<string>(response.message || '暂未获取到 E 卡页面')
     }
 
     return {

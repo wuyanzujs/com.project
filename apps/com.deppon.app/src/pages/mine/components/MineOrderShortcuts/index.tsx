@@ -14,25 +14,12 @@ interface MineOrderShortcutsProps {
   onSelect: (entry: MineOrderShortcut) => void
 }
 
-export function MineOrderShortcuts({
-  authenticated,
-  onSelect,
-  orderCounts
-}: MineOrderShortcutsProps) {
+export function MineOrderShortcuts({ authenticated, onSelect, orderCounts }: MineOrderShortcutsProps) {
   return (
     <View className='mine-shortcuts'>
       {ORDER_SHORTCUTS.map(entry => (
-        <AppPressable
-          flex
-          accessibilityLabel={entry.title}
-          block
-          className='mine-shortcut'
-          key={entry.title}
-          onPress={() => onSelect(entry)}
-        >
-          <Text className='mine-shortcut__count'>
-            {authenticated ? (orderCounts[entry.countKey] ?? '--') : '--'}
-          </Text>
+        <AppPressable flex accessibilityLabel={entry.title} block className='mine-shortcut' key={entry.title} onPress={() => onSelect(entry)}>
+          <Text className='mine-shortcut__count'>{authenticated ? (orderCounts[entry.countKey] ?? '--') : '--'}</Text>
           <Text className='mine-shortcut__title'>{entry.title}</Text>
         </AppPressable>
       ))}

@@ -1,11 +1,7 @@
 import { useState } from 'react'
 
 import { orderService } from '@/services/order'
-import type {
-  OrderDetail,
-  OrderDetailActionOptions,
-  OrderPickupScheduleView
-} from '@/services/order'
+import type { OrderDetail, OrderDetailActionOptions, OrderPickupScheduleView } from '@/services/order'
 
 function getFirstSelection(schedule: OrderPickupScheduleView) {
   const firstDate = schedule.dates[0]
@@ -31,10 +27,7 @@ export function useOrderPickupSchedule() {
     setSubmitting(false)
   }
 
-  const open = async (
-    order: OrderDetail,
-    options: OrderDetailActionOptions
-  ) => {
+  const open = async (order: OrderDetail, options: OrderDetailActionOptions) => {
     if (loading) {
       return null
     }

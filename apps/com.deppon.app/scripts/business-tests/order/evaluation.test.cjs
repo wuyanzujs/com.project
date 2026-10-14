@@ -2,15 +2,9 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  createOrderDetailActions
-} = require('@/services/order/order.detailActions')
-const {
-  ORDER_EVALUATION_API_ENDPOINTS
-} = require('@/services/order/order.evaluation.api')
-const {
-  getOrderEvaluationLabels
-} = require('@/services/order/order.evaluation.catalog')
+const { createOrderDetailActions } = require('@/services/order/order.detailActions')
+const { ORDER_EVALUATION_API_ENDPOINTS } = require('@/services/order/order.evaluation.api')
+const { getOrderEvaluationLabels } = require('@/services/order/order.evaluation.catalog')
 const {
   ORDER_EVALUATION_SUGGESTION_MAX_LENGTH,
   applyOrderEvaluationSubmission,
@@ -32,14 +26,8 @@ const cases = [
   {
     name: 'order evaluation maps sender receiver and signed contexts exactly',
     run() {
-      const collection = createOrderEvaluationContext(
-        createOrderDetail({ orderClassification: '1' }),
-        'sender'
-      )
-      const signed = createOrderEvaluationContext(
-        createOrderDetail({ orderClassification: '2' }),
-        'sender'
-      )
+      const collection = createOrderEvaluationContext(createOrderDetail({ orderClassification: '1' }), 'sender')
+      const signed = createOrderEvaluationContext(createOrderDetail({ orderClassification: '2' }), 'sender')
       const delivery = createOrderEvaluationContext(
         createOrderDetail({
           isSender: 'N',
@@ -72,35 +60,18 @@ const cases = [
         cateGory: 0,
         sign: 'N'
       })
-      assert.equal(
-        createOrderEvaluationContext(
-          createOrderDetail({ orderClassification: '0' }),
-          'sender'
-        ),
-        null
-      )
-      assert.equal(
-        createOrderEvaluationContext(
-          createOrderDetail({ waybillNumber: '' }),
-          'sender'
-        ),
-        null
-      )
+      assert.equal(createOrderEvaluationContext(createOrderDetail({ orderClassification: '0' }), 'sender'), null)
+      assert.equal(createOrderEvaluationContext(createOrderDetail({ waybillNumber: '' }), 'sender'), null)
       assert.deepEqual(ORDER_EVALUATION_API_ENDPOINTS, {
-        queryDetail:
-          '/gwapi/onlineService/eco/online/evaluate/secure/queryEvaluateDetail',
-        submit:
-          '/gwapi/onlineService/eco/online/courier/evaluation/secure/commit'
+        queryDetail: '/gwapi/onlineService/eco/online/evaluate/secure/queryEvaluateDetail',
+        submit: '/gwapi/onlineService/eco/online/courier/evaluation/secure/commit'
       })
     }
   },
   {
     name: 'order evaluation normalizes pending and committed courier identity',
     run() {
-      const context = createOrderEvaluationContext(
-        createOrderDetail(),
-        'sender'
-      )
+      const context = createOrderEvaluationContext(createOrderDetail(), 'sender')
       const pending = createOrderEvaluationView(
         context,
         {
@@ -186,23 +157,14 @@ const cases = [
       assert.ok(collectionPositive.includes('主动上门取件'))
       assert.ok(deliveryNegative.includes('私自签收/放代收点'))
       assert.ok(deliveryPositive.includes('派送前主动联系'))
-      assert.deepEqual(
-        getOrderEvaluationLabels('COLLECTION', 2),
-        collectionNegative
-      )
-      assert.deepEqual(
-        getOrderEvaluationLabels('DELIVERY', 1),
-        deliveryNegative
-      )
+      assert.deepEqual(getOrderEvaluationLabels('COLLECTION', 2), collectionNegative)
+      assert.deepEqual(getOrderEvaluationLabels('DELIVERY', 1), deliveryNegative)
     }
   },
   {
     name: 'order evaluation draft resets labels and maps validated submit payload',
     run() {
-      const context = createOrderEvaluationContext(
-        createOrderDetail(),
-        'sender'
-      )
+      const context = createOrderEvaluationContext(createOrderDetail(), 'sender')
       const view = createOrderEvaluationView(
         context,
         {
@@ -227,14 +189,8 @@ const cases = [
       assert.equal(validateOrderEvaluationDraft(draft).valid, true)
       draft = updateOrderEvaluationSuggestion(draft, '太短')
       assert.equal(validateOrderEvaluationDraft(draft).valid, false)
-      draft = updateOrderEvaluationSuggestion(
-        draft,
-        '服务很专业，取件也非常及时' + '好'.repeat(300)
-      )
-      assert.equal(
-        draft.suggestion.length,
-        ORDER_EVALUATION_SUGGESTION_MAX_LENGTH
-      )
+      draft = updateOrderEvaluationSuggestion(draft, '服务很专业，取件也非常及时' + '好'.repeat(300))
+      assert.equal(draft.suggestion.length, ORDER_EVALUATION_SUGGESTION_MAX_LENGTH)
       assert.equal(validateOrderEvaluationDraft(draft).valid, true)
       assert.deepEqual(createOrderEvaluationSubmitRequest(view, draft), {
         waybillNo: 'DPK123456789',
@@ -257,16 +213,9 @@ const cases = [
       const action = createOrderDetailActions(order, {
         role: 'sender'
       }).find(item => item.kind === 'evaluate')
-      const senderFallback = new URL(
-        createOrderEvaluationFallbackWebUri(order, 'sender', '13800138000'),
-        'https://owstest.deppon.com'
-      )
+      const senderFallback = new URL(createOrderEvaluationFallbackWebUri(order, 'sender', '13800138000'), 'https://owstest.deppon.com')
       const receiverFallback = new URL(
-        createOrderEvaluationFallbackWebUri(
-          { ...order, isSender: 'N', isReceiver: 'Y' },
-          'receive',
-          '13900139000'
-        ),
+        createOrderEvaluationFallbackWebUri({ ...order, isSender: 'N', isReceiver: 'Y' }, 'receive', '13900139000'),
         'https://owstest.deppon.com'
       )
 

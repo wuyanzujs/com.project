@@ -5,9 +5,7 @@ interface InvoiceDetailMissingStateProps {
   onBack: () => void
 }
 
-export function InvoiceDetailMissingState({
-  onBack
-}: InvoiceDetailMissingStateProps) {
+export function InvoiceDetailMissingState({ onBack }: InvoiceDetailMissingStateProps) {
   return (
     <AppEmptyState
       action={
@@ -30,12 +28,5 @@ export function InvoiceDetailMissingState({
 }
 
 export function InvoiceDetailLoadingState() {
-  return (
-    <AppLoadingState
-      className='invoice-detail-loading'
-      label='正在加载包含运单...'
-      layout='inline'
-      showIndicator={false}
-    />
-  )
+  return <AppLoadingState className='invoice-detail-loading' label='正在加载包含运单...' layout='inline' showIndicator={false} />
 }

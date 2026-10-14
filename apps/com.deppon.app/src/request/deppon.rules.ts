@@ -9,47 +9,21 @@ const OWS_STATUS = {
 } as const
 
 export function isDepponSuccessStatus(status: unknown) {
-  return (
-    status === true ||
-    status === '1' ||
-    status === 0 ||
-    status === OWS_STATUS.success
-  )
+  return status === true || status === '1' || status === 0 || status === OWS_STATUS.success
 }
 
 export function shouldAcceptDepponHttpStatus(statusCode: number) {
-  return (
-    (statusCode >= 200 && statusCode < 300) ||
-    statusCode === HTTP_STATUS.unauthorized ||
-    statusCode === HTTP_STATUS.tooManyRequests
-  )
+  return (statusCode >= 200 && statusCode < 300) || statusCode === HTTP_STATUS.unauthorized || statusCode === HTTP_STATUS.tooManyRequests
 }
 
-export function shouldEmitRateLimitedEvent(
-  statusCode: number,
-  dataStatus: unknown
-) {
-  return (
-    statusCode === HTTP_STATUS.tooManyRequests ||
-    dataStatus === HTTP_STATUS.tooManyRequests
-  )
+export function shouldEmitRateLimitedEvent(statusCode: number, dataStatus: unknown) {
+  return statusCode === HTTP_STATUS.tooManyRequests || dataStatus === HTTP_STATUS.tooManyRequests
 }
 
-export function shouldEmitAuthExpiredEvent(
-  loginRequired: boolean,
-  statusCode: number,
-  dataStatus: unknown
-) {
-  return (
-    loginRequired &&
-    (statusCode === HTTP_STATUS.unauthorized ||
-      dataStatus === OWS_STATUS.logout)
-  )
+export function shouldEmitAuthExpiredEvent(loginRequired: boolean, statusCode: number, dataStatus: unknown) {
+  return loginRequired && (statusCode === HTTP_STATUS.unauthorized || dataStatus === OWS_STATUS.logout)
 }
 
-export function isResponseForCurrentSession(
-  requestCookie: string,
-  currentCookie: string
-) {
+export function isResponseForCurrentSession(requestCookie: string, currentCookie: string) {
   return requestCookie === currentCookie
 }

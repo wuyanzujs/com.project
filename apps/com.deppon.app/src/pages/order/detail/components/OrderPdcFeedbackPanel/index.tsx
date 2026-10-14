@@ -53,21 +53,11 @@ export function OrderPdcFeedbackPanel(props: {
           onPress={() => submit('N')}
         >
           <Text className='order-pdc-feedback__option-title'>否</Text>
-          <Text className='order-pdc-feedback__option-summary'>
-            暂未收到货物
-          </Text>
+          <Text className='order-pdc-feedback__option-summary'>暂未收到货物</Text>
         </AppPressable>
       </View>
-      <AppPressable
-        accessibilityLabel='稍后反馈'
-        block
-        className='order-pdc-feedback__later'
-        disabled={props.submitting}
-        onPress={props.onClose}
-      >
-        <Text className='order-pdc-feedback__later-text'>
-          {props.submitting ? '提交中' : '稍后再说'}
-        </Text>
+      <AppPressable accessibilityLabel='稍后反馈' block className='order-pdc-feedback__later' disabled={props.submitting} onPress={props.onClose}>
+        <Text className='order-pdc-feedback__later-text'>{props.submitting ? '提交中' : '稍后再说'}</Text>
       </AppPressable>
     </AppDialog>
   )

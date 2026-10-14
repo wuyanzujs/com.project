@@ -19,10 +19,7 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
     sender: draft.sender ? { ...draft.sender } : null,
     consignee: draft.consignee ? { ...draft.consignee } : null,
     goods: { ...draft.goods },
-    insurance: normalizeExpressInsuranceDraft(
-      draft.insurance,
-      draft.selectedProduct?.omsProductCode || draft.service.transportMode
-    ),
+    insurance: normalizeExpressInsuranceDraft(draft.insurance, draft.selectedProduct?.omsProductCode || draft.service.transportMode),
     packaging: normalizeExpressPackagingDraft(draft.packaging),
     service: {
       ...draft.service,
@@ -33,20 +30,13 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
       ...draft.deliveryPreference,
       unavailableDates: [...draft.deliveryPreference.unavailableDates]
     },
-    deliveryPoint: normalizeExpressDeliveryPointDraft(
-      draft.deliveryPoint,
-      draft.service.deliveryMode
-    ),
+    deliveryPoint: normalizeExpressDeliveryPointDraft(draft.deliveryPoint, draft.service.deliveryMode),
     warehouse: normalizeExpressWarehouseDraft(draft.warehouse),
     pickup: {
       ...draft.pickup,
-      nightCapability: draft.pickup.nightCapability
-        ? { ...draft.pickup.nightCapability }
-        : undefined
+      nightCapability: draft.pickup.nightCapability ? { ...draft.pickup.nightCapability } : undefined
     },
-    selectedProduct: draft.selectedProduct
-      ? { ...draft.selectedProduct }
-      : null,
+    selectedProduct: draft.selectedProduct ? { ...draft.selectedProduct } : null,
     scanContext: draft.scanContext ? { ...draft.scanContext } : undefined
   }
 }

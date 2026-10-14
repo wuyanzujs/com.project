@@ -4,9 +4,7 @@ const { test } = require('node:test')
 
 const CookieManager = require('@react-native-cookies/cookies')
 
-const {
-  createAppSessionCookieRuntime
-} = require('@/shared/native/AppSessionCookie')
+const { createAppSessionCookieRuntime } = require('@/shared/native/AppSessionCookie')
 
 test('native cookie cleanup expires only configured ECO_TOKEN cookies', async t => {
   const originalSet = CookieManager.set
@@ -31,18 +29,13 @@ test('native cookie cleanup expires only configured ECO_TOKEN cookies', async t 
   }
   CookieManager.flush = async () => true
 
-  const runtime = createAppSessionCookieRuntime([
-    'https://api.example.com/v1',
-    'https://web.example.com'
-  ])
+  const runtime = createAppSessionCookieRuntime(['https://api.example.com/v1', 'https://web.example.com'])
   assert.equal(await runtime.write('ECO_TOKEN=token-1;'), true)
   assert.equal(await runtime.clear(), true)
   assert.equal(clearAllCalls, 0)
   assert.equal(writes.length, 8)
   assert.deepEqual(
-    writes
-      .slice(4)
-      .map(item => [item.url, item.cookie.name, item.cookie.value]),
+    writes.slice(4).map(item => [item.url, item.cookie.name, item.cookie.value]),
     [
       ['https://api.example.com', 'ECO_TOKEN', ''],
       ['https://api.example.com', 'ECO_TOKEN', ''],
@@ -68,9 +61,6 @@ test('native cookie cleanup fails when any configured cookie write fails', async
   }
   CookieManager.flush = async () => true
 
-  const runtime = createAppSessionCookieRuntime([
-    'https://api.example.com',
-    'https://web.example.com'
-  ])
+  const runtime = createAppSessionCookieRuntime(['https://api.example.com', 'https://web.example.com'])
   assert.equal(await runtime.clear(), false)
 })

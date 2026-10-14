@@ -38,12 +38,7 @@ class App extends Component<PropsWithChildren, AppState> {
       return null
     }
 
-    return createElement(
-      SafeAreaProvider,
-      null,
-      createElement(AppStatusBar),
-      this.props.children
-    )
+    return createElement(SafeAreaProvider, null, createElement(AppStatusBar), this.props.children)
   }
 }
 export default App

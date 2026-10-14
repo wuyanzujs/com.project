@@ -22,11 +22,7 @@ function getMoneyText(value: number) {
   return Number.isInteger(value) ? String(value) : value.toFixed(2)
 }
 
-function getOptionClassName(
-  selected: boolean,
-  disabled: boolean,
-  spaced: boolean
-) {
+function getOptionClassName(selected: boolean, disabled: boolean, spaced: boolean) {
   return [
     'express-insurance-option',
     selected && 'express-insurance-option--selected',
@@ -37,10 +33,7 @@ function getOptionClassName(
     .join(' ')
 }
 
-export function ExpressInsuranceCard({
-  controller,
-  draft
-}: ExpressInsuranceCardProps) {
+export function ExpressInsuranceCard({ controller, draft }: ExpressInsuranceCardProps) {
   const [expanded, setExpanded] = useState(false)
   const view = useMemo(() => createExpressInsuranceView(draft), [draft])
   const selectedOption = view.options.find(option => option.type === view.type)
@@ -67,38 +60,24 @@ export function ExpressInsuranceCard({
               <AppPressable
                 accessibilityLabel={`选择${option.label}`}
                 block
-                className={getOptionClassName(
-                  option.type === view.type,
-                  option.disabled,
-                  index > 0
-                )}
+                className={getOptionClassName(option.type === view.type, option.disabled, index > 0)}
                 disabled={option.disabled}
                 key={option.type}
                 selected={option.type === view.type}
                 onPress={() => controller.onTypeChange(option.type)}
               >
                 <View className='express-insurance-option__title-row'>
-                  <Text className='express-insurance-option__title'>
-                    {option.label}
-                  </Text>
-                  {option.recommended && !option.disabled ? (
-                    <Text className='express-insurance-option__badge'>
-                      推荐
-                    </Text>
-                  ) : null}
+                  <Text className='express-insurance-option__title'>{option.label}</Text>
+                  {option.recommended && !option.disabled ? <Text className='express-insurance-option__badge'>推荐</Text> : null}
                 </View>
-                <Text className='express-insurance-option__summary'>
-                  {option.summary}
-                </Text>
+                <Text className='express-insurance-option__summary'>{option.summary}</Text>
               </AppPressable>
             ))}
           </View>
 
           <View className='express-insurance__field-head'>
             <Text className='express-insurance__label'>保价金额</Text>
-            <Text className='express-insurance__limit'>
-              最高 {view.limit} 元
-            </Text>
+            <Text className='express-insurance__limit'>最高 {view.limit} 元</Text>
           </View>
           <View className='express-insurance-amount'>
             <Text className='express-insurance-amount__currency'>¥</Text>
@@ -114,18 +93,10 @@ export function ExpressInsuranceCard({
             />
           </View>
 
-          {view.effectiveAmount !== view.amount ? (
-            <Text className='express-insurance__hint'>
-              下单保障金额 {view.effectiveAmount} 元
-            </Text>
-          ) : null}
+          {view.effectiveAmount !== view.amount ? <Text className='express-insurance__hint'>下单保障金额 {view.effectiveAmount} 元</Text> : null}
 
           <View className='express-insurance__actions'>
-            <AppPressable
-              accessibilityLabel='查看当前保价规则'
-              className='express-insurance__action'
-              onPress={() => controller.onOpenRules(view.type)}
-            >
+            <AppPressable accessibilityLabel='查看当前保价规则' className='express-insurance__action' onPress={() => controller.onOpenRules(view.type)}>
               <Text className='express-insurance__action-text'>规则</Text>
             </AppPressable>
             <AppPressable
@@ -134,23 +105,16 @@ export function ExpressInsuranceCard({
               disabled={view.disabled || controller.loading}
               onPress={controller.onQuery}
             >
-              <Text className='express-insurance__action-text express-insurance__action-text--primary'>
-                {controller.loading ? '试算中' : '试算费用'}
-              </Text>
+              <Text className='express-insurance__action-text express-insurance__action-text--primary'>{controller.loading ? '试算中' : '试算费用'}</Text>
             </AppPressable>
           </View>
 
           {controller.quote ? (
             <Text className='express-insurance__result'>
-              {controller.quote.name || '保价费'}约 ¥
-              {getMoneyText(controller.quote.price)}
+              {controller.quote.name || '保价费'}约 ¥{getMoneyText(controller.quote.price)}
             </Text>
           ) : null}
-          {controller.message ? (
-            <Text className='express-insurance__message'>
-              {controller.message}
-            </Text>
-          ) : null}
+          {controller.message ? <Text className='express-insurance__message'>{controller.message}</Text> : null}
         </View>
       ) : null}
     </ExpressSection>

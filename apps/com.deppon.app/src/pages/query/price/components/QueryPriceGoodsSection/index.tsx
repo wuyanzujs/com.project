@@ -40,11 +40,7 @@ export function QueryPriceGoodsSection(props: QueryPriceGoodsSectionProps) {
     <QueryPriceSection>
       <View className='query-price-section__head'>
         <Text className='query-price-section__title'>货物与服务</Text>
-        {props.draft.quoteStaleReason && (
-          <Text className='query-price-section__hint'>
-            {props.draft.quoteStaleReason}
-          </Text>
-        )}
+        {props.draft.quoteStaleReason && <Text className='query-price-section__hint'>{props.draft.quoteStaleReason}</Text>}
       </View>
 
       <View className='query-price-field'>
@@ -92,20 +88,12 @@ export function QueryPriceGoodsSection(props: QueryPriceGoodsSectionProps) {
       <View className='query-price-chip-group'>
         {DELIVERY_OPTIONS.map(option => (
           <AppPressable
-            className={
-              option.value === props.draft.service.deliveryMode
-                ? 'query-price-chip query-price-chip--active'
-                : 'query-price-chip'
-            }
+            className={option.value === props.draft.service.deliveryMode ? 'query-price-chip query-price-chip--active' : 'query-price-chip'}
             key={option.value}
             onPress={() => props.onDeliveryChange(option.value)}
           >
             <Text
-              className={
-                option.value === props.draft.service.deliveryMode
-                  ? 'query-price-chip__text query-price-chip__text--active'
-                  : 'query-price-chip__text'
-              }
+              className={option.value === props.draft.service.deliveryMode ? 'query-price-chip__text query-price-chip__text--active' : 'query-price-chip__text'}
             >
               {option.label}
             </Text>

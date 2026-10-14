@@ -3,11 +3,7 @@ import Taro, { useDidShow, useLoad, useRouter } from '@tarojs/taro'
 
 import { useCallback, useMemo, useState } from 'react'
 
-import {
-  contactSelection,
-  contactService,
-  getContactFullAddress
-} from '@/services/contact'
+import { contactSelection, contactService, getContactFullAddress } from '@/services/contact'
 import type { Contact } from '@/services/contact'
 import { AppPressable } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
@@ -28,13 +24,7 @@ function getRoleLabel(contact: Contact) {
 
 const ContactListPage = () => {
   const router = useRouter()
-  const selectionParams = useMemo(
-    () =>
-      contactSelection.parseParams(
-        router.params as Record<string, string | undefined>
-      ),
-    [router.params]
-  )
+  const selectionParams = useMemo(() => contactSelection.parseParams(router.params as Record<string, string | undefined>), [router.params])
   const [keyword, setKeyword] = useState('')
   const [contacts, setContacts] = useState<Contact[]>([])
   const [pageIndex, setPageIndex] = useState(1)
@@ -43,10 +33,7 @@ const ContactListPage = () => {
   const [errorMessage, setErrorMessage] = useState('')
   const [processingContactId, setProcessingContactId] = useState('')
   const { checkingKey, checkAddressIntegrity } = useContactAddressIntegrity()
-  const contactListUrl = useMemo(
-    () => createAppRouteUrl(APP_ROUTES.contactList, selectionParams),
-    [selectionParams]
-  )
+  const contactListUrl = useMemo(() => createAppRouteUrl(APP_ROUTES.contactList, selectionParams), [selectionParams])
   const ensureContactAccess = useCallback(
     () =>
       ensureAuthenticated({
@@ -90,9 +77,7 @@ const ContactListPage = () => {
 
         const nextList = response.result.list ?? []
 
-        setContacts(current =>
-          nextPage === 1 ? nextList : [...current, ...nextList]
-        )
+        setContacts(current => (nextPage === 1 ? nextList : [...current, ...nextList]))
         setPageIndex(response.result.pageNum || nextPage)
         setTotalPage(response.result.totalPage || 1)
       } finally {
@@ -139,10 +124,7 @@ const ContactListPage = () => {
       return
     }
 
-    navigateToAppRoute(
-      createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams),
-      { login: true }
-    )
+    navigateToAppRoute(createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams), { login: true })
   }
 
   const handleEdit = (contact: Contact) => {
@@ -151,10 +133,7 @@ const ContactListPage = () => {
     }
 
     contactSelection.setEditingContact(contact)
-    navigateToAppRoute(
-      createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams),
-      { login: true }
-    )
+    navigateToAppRoute(createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams), { login: true })
   }
 
   const handleSetDefault = async (contact: Contact) => {
@@ -261,20 +240,12 @@ const ContactListPage = () => {
       return
     }
 
-    contactSelection.select(
-      selectionParams.target,
-      contact,
-      selectionParams.source
-    )
+    contactSelection.select(selectionParams.target, contact, selectionParams.source)
     Taro.navigateBack()
   }
 
   return (
-    <ScrollView
-      className='contact-list-page'
-      onScrollToLower={handleLoadMore}
-      scrollY
-    >
+    <ScrollView className='contact-list-page' onScrollToLower={handleLoadMore} scrollY>
       {selectionParams.mode === 'select' && (
         <View className='contact-list-selection'>
           <Text className='contact-list-selection__text'>{selectSummary}</Text>
@@ -282,26 +253,15 @@ const ContactListPage = () => {
       )}
 
       <View className='contact-list-search'>
-        <Input
-          className='contact-list-search__input'
-          placeholder='姓名、手机号、地址'
-          value={keyword}
-          onInput={event => setKeyword(event.detail.value)}
-        />
-        <AppPressable
-          className='contact-list-search__button'
-          onPress={handleSearch}
-        >
+        <Input className='contact-list-search__input' placeholder='姓名、手机号、地址' value={keyword} onInput={event => setKeyword(event.detail.value)} />
+        <AppPressable className='contact-list-search__button' onPress={handleSearch}>
           <Text className='contact-list-search__button-text'>搜索</Text>
         </AppPressable>
       </View>
 
       <View className='contact-list-toolbar'>
         <Text className='contact-list-toolbar__title'>常用地址</Text>
-        <AppPressable
-          className='contact-list-toolbar__button'
-          onPress={handleCreate}
-        >
+        <AppPressable className='contact-list-toolbar__button' onPress={handleCreate}>
           <Text className='contact-list-toolbar__button-text'>新增</Text>
         </AppPressable>
       </View>
@@ -309,56 +269,32 @@ const ContactListPage = () => {
       <View className='contact-list-content'>
         {contacts.map(contact => (
           <View className='contact-card' key={contact.id || contact.telephone}>
-            <AppPressable
-              className='contact-card__body'
-              disabled={selectionParams.mode === 'select' && !!checkingKey}
-              onPress={() => handleSelect(contact)}
-            >
+            <AppPressable className='contact-card__body' disabled={selectionParams.mode === 'select' && !!checkingKey} onPress={() => handleSelect(contact)}>
               <View className='contact-card__top'>
                 <Text className='contact-card__name'>{contact.name}</Text>
                 <Text className='contact-card__phone'>{contact.telephone}</Text>
               </View>
-              <Text className='contact-card__address'>
-                {getContactFullAddress(contact)}
-              </Text>
+              <Text className='contact-card__address'>{getContactFullAddress(contact)}</Text>
               <View className='contact-card__meta'>
-                <Text className='contact-card__tag'>
-                  {getRoleLabel(contact)}
-                </Text>
-                {contact.defaultAddress === '1' && (
-                  <Text className='contact-card__tag contact-card__tag--primary'>
-                    默认
-                  </Text>
-                )}
+                <Text className='contact-card__tag'>{getRoleLabel(contact)}</Text>
+                {contact.defaultAddress === '1' && <Text className='contact-card__tag contact-card__tag--primary'>默认</Text>}
               </View>
             </AppPressable>
             <View className='contact-card__footer'>
               {selectionParams.mode === 'manage' && (
                 <AppPressable
                   contentElement='text'
-                  className={
-                    contact.defaultAddress === '1'
-                      ? 'contact-card__action contact-card__action--disabled'
-                      : 'contact-card__action'
-                  }
+                  className={contact.defaultAddress === '1' ? 'contact-card__action contact-card__action--disabled' : 'contact-card__action'}
                   onPress={() => handleSetDefault(contact)}
                 >
                   {contact.defaultAddress === '1' ? '默认地址' : '设为默认'}
                 </AppPressable>
               )}
-              <AppPressable
-                contentElement='text'
-                className='contact-card__action'
-                onPress={() => handleEdit(contact)}
-              >
+              <AppPressable contentElement='text' className='contact-card__action' onPress={() => handleEdit(contact)}>
                 编辑
               </AppPressable>
               {selectionParams.mode === 'manage' && (
-                <AppPressable
-                  contentElement='text'
-                  className='contact-card__action contact-card__action--danger'
-                  onPress={() => handleDelete(contact)}
-                >
+                <AppPressable contentElement='text' className='contact-card__action contact-card__action--danger' onPress={() => handleDelete(contact)}>
                   删除
                 </AppPressable>
               )}
@@ -369,10 +305,7 @@ const ContactListPage = () => {
                   disabled={!!checkingKey}
                   onPress={() => handleSelect(contact)}
                 >
-                  {checkingKey ===
-                  (contact.id || `${contact.telephone}-${contact.address}`)
-                    ? '校验中'
-                    : '选择'}
+                  {checkingKey === (contact.id || `${contact.telephone}-${contact.address}`) ? '校验中' : '选择'}
                 </AppPressable>
               )}
             </View>
@@ -381,20 +314,12 @@ const ContactListPage = () => {
 
         {!contacts.length && !loading && (
           <View className='contact-list-empty'>
-            <Text className='contact-list-empty__title'>
-              {errorMessage || '暂无地址'}
-            </Text>
-            <Text className='contact-list-empty__summary'>
-              可先新增地址，或登录后同步常用地址簿。
-            </Text>
+            <Text className='contact-list-empty__title'>{errorMessage || '暂无地址'}</Text>
+            <Text className='contact-list-empty__summary'>可先新增地址，或登录后同步常用地址簿。</Text>
           </View>
         )}
 
-        {loading && (
-          <Text className='contact-list-loading'>
-            {contacts.length ? '加载更多地址...' : '正在加载地址...'}
-          </Text>
-        )}
+        {loading && <Text className='contact-list-loading'>{contacts.length ? '加载更多地址...' : '正在加载地址...'}</Text>}
       </View>
     </ScrollView>
   )

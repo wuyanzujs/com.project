@@ -5,12 +5,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 
 import { couponService } from '@/services/coupon'
 import type { CouponCardView, CouponStatus } from '@/services/coupon'
-import {
-  createExpressDraft,
-  expressDraftBridge,
-  expressDraftStorage,
-  markExpressQuoteStale
-} from '@/services/express'
+import { createExpressDraft, expressDraftBridge, expressDraftStorage, markExpressQuoteStale } from '@/services/express'
 import { memberService } from '@/services/member'
 import { LatestRequestCoordinator } from '@/shared/async/latestRequest'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
@@ -22,10 +17,7 @@ import { createAppWebUrl } from '@/shared/webview/appWeb'
 import { CouponCard } from './components/CouponCard'
 import { CouponExchangeBar } from './components/CouponExchangeBar'
 import { CouponListStates } from './components/CouponListStates'
-import {
-  CouponStatusTabs,
-  type CouponTabItem
-} from './components/CouponStatusTabs'
+import { CouponStatusTabs, type CouponTabItem } from './components/CouponStatusTabs'
 import { CouponSummary } from './components/CouponSummary'
 
 import './index.scss'
@@ -66,10 +58,7 @@ const CouponListPage = () => {
   const [openingWelfare, setOpeningWelfare] = useState(false)
   const requestCoordinator = useRef(new LatestRequestCoordinator()).current
 
-  const activeTabText = useMemo(
-    () => COUPON_TABS.find(item => item.value === status)?.label || '未使用',
-    [status]
-  )
+  const activeTabText = useMemo(() => COUPON_TABS.find(item => item.value === status)?.label || '未使用', [status])
 
   const ensureCouponAccess = useCallback(
     () =>
@@ -104,14 +93,7 @@ const CouponListPage = () => {
           return
         }
 
-        setCoupons(
-          response.result.list.map(item =>
-            couponService.toCouponCard(
-              item,
-              response.result?.status ?? nextStatus
-            )
-          )
-        )
+        setCoupons(response.result.list.map(item => couponService.toCouponCard(item, response.result?.status ?? nextStatus)))
       } finally {
         if (requestCoordinator.finish(requestToken)) {
           setLoading(false)
@@ -250,22 +232,13 @@ const CouponListPage = () => {
         onExchange={handleExchange}
       />
 
-      <CouponStatusTabs
-        activeStatus={status}
-        tabs={COUPON_TABS}
-        onChange={handleChangeStatus}
-      />
+      <CouponStatusTabs activeStatus={status} tabs={COUPON_TABS} onChange={handleChangeStatus} />
 
       <CouponSummary count={coupons.length} title={activeTabText} />
 
       <View className='coupon-list-content'>
         {coupons.map((coupon, index) => (
-          <CouponCard
-            coupon={coupon}
-            key={getCouponKey(coupon, index)}
-            onOpenDetail={handleOpenDetail}
-            onUse={handleUseCoupon}
-          />
+          <CouponCard coupon={coupon} key={getCouponKey(coupon, index)} onOpenDetail={handleOpenDetail} onUse={handleUseCoupon} />
         ))}
 
         <CouponListStates

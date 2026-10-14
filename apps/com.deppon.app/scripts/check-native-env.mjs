@@ -12,9 +12,7 @@ const requestedTarget = process.argv[2] ?? 'all'
 const validTargets = new Set(['all', 'android', 'ios'])
 
 if (!validTargets.has(requestedTarget)) {
-  console.error(
-    `Unknown native environment target "${requestedTarget}". Use all, android, or ios.`
-  )
+  console.error(`Unknown native environment target "${requestedTarget}". Use all, android, or ios.`)
   process.exit(2)
 }
 
@@ -34,9 +32,7 @@ function getLocalAndroidSdkPath() {
   }
 
   const content = readFileSync(localPropertiesPath, 'utf8')
-  const sdkLine = content
-    .split(/\r?\n/)
-    .find(line => line.trim().startsWith('sdk.dir='))
+  const sdkLine = content.split(/\r?\n/).find(line => line.trim().startsWith('sdk.dir='))
 
   if (!sdkLine) {
     return ''
@@ -94,17 +90,13 @@ function addCheck(name, passed, detail, required = true) {
 }
 
 const nodeVersionFile = path.join(workspaceRoot, '.node-version')
-const expectedNodeVersion = existsSync(nodeVersionFile)
-  ? readFileSync(nodeVersionFile, 'utf8').trim()
-  : ''
+const expectedNodeVersion = existsSync(nodeVersionFile) ? readFileSync(nodeVersionFile, 'utf8').trim() : ''
 const actualNodeVersion = process.versions.node
 
 addCheck(
   'Node.js',
   !!expectedNodeVersion && actualNodeVersion === expectedNodeVersion,
-  expectedNodeVersion
-    ? `需要 Node ${expectedNodeVersion}，当前为 ${actualNodeVersion}`
-    : `缺少 workspace Node 版本文件：${nodeVersionFile}`
+  expectedNodeVersion ? `需要 Node ${expectedNodeVersion}，当前为 ${actualNodeVersion}` : `缺少 workspace Node 版本文件：${nodeVersionFile}`
 )
 
 function getAndroidSdkToolPath(...segments) {
@@ -124,29 +116,13 @@ if (checkAndroid) {
   const javaFromPath = commandExists('java')
   const javacFromPath = commandExists('javac')
   const javaHomeBin = javaHome ? path.join(javaHome, 'bin') : ''
-  const javaHomeHasJava = javaHome
-    ? existsSync(
-        path.join(
-          javaHomeBin,
-          process.platform === 'win32' ? 'java.exe' : 'java'
-        )
-      )
-    : false
-  const javaHomeHasJavac = javaHome
-    ? existsSync(
-        path.join(
-          javaHomeBin,
-          process.platform === 'win32' ? 'javac.exe' : 'javac'
-        )
-      )
-    : false
+  const javaHomeHasJava = javaHome ? existsSync(path.join(javaHomeBin, process.platform === 'win32' ? 'java.exe' : 'java')) : false
+  const javaHomeHasJavac = javaHome ? existsSync(path.join(javaHomeBin, process.platform === 'win32' ? 'javac.exe' : 'javac')) : false
 
   addCheck(
     'JDK',
     (javaFromPath && javacFromPath) || (javaHomeHasJava && javaHomeHasJavac),
-    javaHome
-      ? `JAVA_HOME=${javaHome}`
-      : '未设置 JAVA_HOME，PATH 中也需要可用的 java 和 javac。'
+    javaHome ? `JAVA_HOME=${javaHome}` : '未设置 JAVA_HOME，PATH 中也需要可用的 java 和 javac。'
   )
 
   if (javaFromPath) {
@@ -157,99 +133,46 @@ if (checkAndroid) {
   addCheck(
     'Android SDK',
     !!resolvedAndroidSdk && existsSync(resolvedAndroidSdk),
-    resolvedAndroidSdk
-      ? `SDK=${resolvedAndroidSdk}`
-      : '未设置 ANDROID_HOME/ANDROID_SDK_ROOT，也未在 android/local.properties 中找到 sdk.dir。'
+    resolvedAndroidSdk ? `SDK=${resolvedAndroidSdk}` : '未设置 ANDROID_HOME/ANDROID_SDK_ROOT，也未在 android/local.properties 中找到 sdk.dir。'
   )
 
   if (resolvedAndroidSdk) {
-    const adbPath = getAndroidSdkToolPath(
-      'platform-tools',
-      process.platform === 'win32' ? 'adb.exe' : 'adb'
-    )
-    const sdkmanagerPath = getAndroidSdkToolPath(
-      'cmdline-tools',
-      'latest',
-      'bin',
-      process.platform === 'win32' ? 'sdkmanager.bat' : 'sdkmanager'
-    )
+    const adbPath = getAndroidSdkToolPath('platform-tools', process.platform === 'win32' ? 'adb.exe' : 'adb')
+    const sdkmanagerPath = getAndroidSdkToolPath('cmdline-tools', 'latest', 'bin', process.platform === 'win32' ? 'sdkmanager.bat' : 'sdkmanager')
 
-    addCheck(
-      'Android platform android-34',
-      existsSync(getAndroidSdkToolPath('platforms', 'android-34')),
-      getAndroidSdkToolPath('platforms', 'android-34')
-    )
-    addCheck(
-      'Android build-tools 34.0.0',
-      existsSync(getAndroidSdkToolPath('build-tools', '34.0.0')),
-      getAndroidSdkToolPath('build-tools', '34.0.0')
-    )
-    addCheck(
-      'Android NDK 25.1.8937393',
-      existsSync(getAndroidSdkToolPath('ndk', '25.1.8937393')),
-      getAndroidSdkToolPath('ndk', '25.1.8937393')
-    )
-    addCheck(
-      'Android CMake 3.22.1',
-      existsSync(getAndroidSdkToolPath('cmake', '3.22.1')),
-      getAndroidSdkToolPath('cmake', '3.22.1')
-    )
-    addCheck(
-      'Android platform-tools adb',
-      existsSync(adbPath) || commandExists('adb'),
-      existsSync(adbPath) ? adbPath : '需要 adb 支持设备调试。'
-    )
+    addCheck('Android platform android-34', existsSync(getAndroidSdkToolPath('platforms', 'android-34')), getAndroidSdkToolPath('platforms', 'android-34'))
+    addCheck('Android build-tools 34.0.0', existsSync(getAndroidSdkToolPath('build-tools', '34.0.0')), getAndroidSdkToolPath('build-tools', '34.0.0'))
+    addCheck('Android NDK 25.1.8937393', existsSync(getAndroidSdkToolPath('ndk', '25.1.8937393')), getAndroidSdkToolPath('ndk', '25.1.8937393'))
+    addCheck('Android CMake 3.22.1', existsSync(getAndroidSdkToolPath('cmake', '3.22.1')), getAndroidSdkToolPath('cmake', '3.22.1'))
+    addCheck('Android platform-tools adb', existsSync(adbPath) || commandExists('adb'), existsSync(adbPath) ? adbPath : '需要 adb 支持设备调试。')
     addCheck(
       'Android sdkmanager',
       existsSync(sdkmanagerPath) || commandExists('sdkmanager'),
-      existsSync(sdkmanagerPath)
-        ? sdkmanagerPath
-        : '需要 cmdline-tools/latest/bin/sdkmanager。'
+      existsSync(sdkmanagerPath) ? sdkmanagerPath : '需要 cmdline-tools/latest/bin/sdkmanager。'
     )
   }
 
-  const gradleWrapperPath = path.join(
-    androidRoot,
-    process.platform === 'win32' ? 'gradlew.bat' : 'gradlew'
-  )
+  const gradleWrapperPath = path.join(androidRoot, process.platform === 'win32' ? 'gradlew.bat' : 'gradlew')
   addCheck('Gradle wrapper', existsSync(gradleWrapperPath), gradleWrapperPath)
 }
 
 if (checkIos) {
   if (process.platform === 'darwin') {
-    const xcodeVersion = commandExists('xcodebuild')
-      ? readCommandVersion('xcodebuild', ['-version'])
-      : ''
-    const hasFullXcode =
-      /^Xcode\s+\S+/m.test(xcodeVersion) &&
-      commandExists('xcrun') &&
-      commandSucceeds('xcrun', ['--find', 'simctl'])
+    const xcodeVersion = commandExists('xcodebuild') ? readCommandVersion('xcodebuild', ['-version']) : ''
+    const hasFullXcode = /^Xcode\s+\S+/m.test(xcodeVersion) && commandExists('xcrun') && commandSucceeds('xcrun', ['--find', 'simctl'])
 
     addCheck(
       'Xcode',
       hasFullXcode,
-      hasFullXcode
-        ? xcodeVersion.split(/\r?\n/).join(', ')
-        : '需要完整 Xcode，并确保 xcodebuild 和 xcrun simctl 指向 Xcode Developer 目录。'
+      hasFullXcode ? xcodeVersion.split(/\r?\n/).join(', ') : '需要完整 Xcode，并确保 xcodebuild 和 xcrun simctl 指向 Xcode Developer 目录。'
     )
-    addCheck(
-      'CocoaPods',
-      commandExists('pod'),
-      '需要 pod install 支持 iOS 原生依赖。'
-    )
+    addCheck('CocoaPods', commandExists('pod'), '需要 pod install 支持 iOS 原生依赖。')
   } else {
-    addCheck(
-      'iOS build host',
-      false,
-      `当前系统是 ${os.platform()}，iOS 构建需要 macOS/Xcode 环境。`,
-      requestedTarget === 'ios'
-    )
+    addCheck('iOS build host', false, `当前系统是 ${os.platform()}，iOS 构建需要 macOS/Xcode 环境。`, requestedTarget === 'ios')
   }
 }
 
-const failedRequiredChecks = checks.filter(
-  item => item.required && !item.passed
-)
+const failedRequiredChecks = checks.filter(item => item.required && !item.passed)
 
 for (const item of checks) {
   const marker = item.passed ? 'OK' : item.required ? 'FAIL' : 'SKIP'

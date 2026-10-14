@@ -1,19 +1,9 @@
 import { useDidShow } from '@tarojs/taro'
 
-import {
-  type Dispatch,
-  type SetStateAction,
-  useCallback,
-  useRef,
-  useState
-} from 'react'
+import { type Dispatch, type SetStateAction, useCallback, useRef, useState } from 'react'
 
 import { customerService } from '@/services/customer'
-import {
-  clearOrderEditCollection,
-  parseOrderEditCollectionAmount,
-  updateOrderEditCollection
-} from '@/services/order'
+import { clearOrderEditCollection, parseOrderEditCollectionAmount, updateOrderEditCollection } from '@/services/order'
 import type { OrderEditCollectionType, OrderEditDraft } from '@/services/order'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
@@ -30,10 +20,7 @@ function createCollectionMessageContext(orderNumber: string) {
   return normalized ? 'ORDER_EDIT:' + normalized : ''
 }
 
-export function useOrderEditCollection({
-  orderNumber,
-  setDraft
-}: UseOrderEditCollectionOptions) {
+export function useOrderEditCollection({ orderNumber, setDraft }: UseOrderEditCollectionOptions) {
   const [capabilityLoading, setCapabilityLoading] = useState(false)
   const [capabilityMessage, setCapabilityMessage] = useState('')
   const requestVersion = useRef(0)
@@ -65,23 +52,15 @@ export function useOrderEditCollection({
     setCapabilityMessage('')
 
     try {
-      const [centerResponse, capabilityResponse] = await Promise.all([
-        customerService.queryCustomerCenter(),
-        customerService.queryCustomerCapability()
-      ])
+      const [centerResponse, capabilityResponse] = await Promise.all([customerService.queryCustomerCenter(), customerService.queryCustomerCapability()])
 
       if (requestVersion.current !== version) {
         return
       }
 
-      const centerBound =
-        centerResponse.status && centerResponse.result?.hasBoundCustomer
-      const capability =
-        capabilityResponse.status && capabilityResponse.result
-          ? capabilityResponse.result
-          : null
-      const hasBoundCustomer =
-        Boolean(centerBound) || Boolean(capability?.hasBoundCustomer)
+      const centerBound = centerResponse.status && centerResponse.result?.hasBoundCustomer
+      const capability = capabilityResponse.status && capabilityResponse.result ? capabilityResponse.result : null
+      const hasBoundCustomer = Boolean(centerBound) || Boolean(capability?.hasBoundCustomer)
 
       if (capability?.collectionLimit) {
         patchCollection({ limit: capability.collectionLimit })
@@ -90,9 +69,7 @@ export function useOrderEditCollection({
       if (!hasBoundCustomer) {
         setCapabilityMessage('当前账号尚未绑定客户编码')
       } else if (capability?.collectionLimit) {
-        setCapabilityMessage(
-          '当前代收上限 ' + capability.collectionLimit + ' 元'
-        )
+        setCapabilityMessage('当前代收上限 ' + capability.collectionLimit + ' 元')
       } else {
         setCapabilityMessage('已绑定客户，具体额度以后端修改校验为准')
       }
@@ -154,10 +131,7 @@ export function useOrderEditCollection({
   }
 
   const handleOpenAccount = () => {
-    if (
-      !messageContext ||
-      !appWebMessageBridge.expectCollectionAccount(webContext)
-    ) {
+    if (!messageContext || !appWebMessageBridge.expectCollectionAccount(webContext)) {
       return
     }
 
@@ -209,6 +183,4 @@ export function useOrderEditCollection({
   }
 }
 
-export type OrderEditCollectionController = ReturnType<
-  typeof useOrderEditCollection
->
+export type OrderEditCollectionController = ReturnType<typeof useOrderEditCollection>

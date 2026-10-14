@@ -1,8 +1,5 @@
 require('../support/register.cjs')
-const {
-  createBatchConsigneeDraft,
-  createBatchDraft
-} = require('@/services/batch')
+const { createBatchConsigneeDraft, createBatchDraft } = require('@/services/batch')
 
 function createBatchContact(patch = {}) {
   return {

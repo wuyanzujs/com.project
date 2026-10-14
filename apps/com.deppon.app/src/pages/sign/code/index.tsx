@@ -139,58 +139,26 @@ const SignCodePage = () => {
         <View className='sign-code-card__top'>
           <View>
             <Text className='sign-code-card__label'>当前状态</Text>
-            <Text className='sign-code-card__title'>
-              {signInfo?.statusText || (loading ? '同步中' : '待同步')}
-            </Text>
+            <Text className='sign-code-card__title'>{signInfo?.statusText || (loading ? '同步中' : '待同步')}</Text>
           </View>
-          <Text
-            className={
-              hasSignCode
-                ? 'sign-code-card__badge sign-code-card__badge--ok'
-                : 'sign-code-card__badge'
-            }
-          >
-            {hasSignCode ? '可出示' : '待生成'}
-          </Text>
+          <Text className={hasSignCode ? 'sign-code-card__badge sign-code-card__badge--ok' : 'sign-code-card__badge'}>{hasSignCode ? '可出示' : '待生成'}</Text>
         </View>
-        <Text className='sign-code-card__summary'>
-          {signInfo?.summary ||
-            errorMessage ||
-            '进入页面后会自动同步当前账号的实名签收状态。'}
-        </Text>
+        <Text className='sign-code-card__summary'>{signInfo?.summary || errorMessage || '进入页面后会自动同步当前账号的实名签收状态。'}</Text>
       </View>
 
       {needsRealName && (
         <View className='sign-realname'>
           <Text className='sign-realname__title'>实名签收登记</Text>
-          <Text className='sign-realname__summary'>
-            根据实名签收要求，请填写真实姓名后生成签收码。
-          </Text>
-          <Input
-            className='sign-realname__input'
-            placeholder='请输入签收人真实姓名'
-            value={realName}
-            onInput={event => setRealName(event.detail.value)}
-          />
+          <Text className='sign-realname__summary'>根据实名签收要求，请填写真实姓名后生成签收码。</Text>
+          <Input className='sign-realname__input' placeholder='请输入签收人真实姓名' value={realName} onInput={event => setRealName(event.detail.value)} />
           <View className='sign-realname__protocol'>
-            <Text className='sign-realname__protocol-text'>
-              保存即表示你已阅读并同意
-            </Text>
-            <AppPressable
-              contentElement='text'
-              className='sign-realname__protocol-link'
-              onPress={handleOpenPrivacy}
-            >
+            <Text className='sign-realname__protocol-text'>保存即表示你已阅读并同意</Text>
+            <AppPressable contentElement='text' className='sign-realname__protocol-link' onPress={handleOpenPrivacy}>
               隐私政策
             </AppPressable>
           </View>
-          <AppPressable
-            className='sign-realname__button'
-            onPress={handleSaveRealName}
-          >
-            <Text className='sign-realname__button-text'>
-              {saving ? '保存中' : '保存并生成'}
-            </Text>
+          <AppPressable className='sign-realname__button' onPress={handleSaveRealName}>
+            <Text className='sign-realname__button-text'>{saving ? '保存中' : '保存并生成'}</Text>
           </AppPressable>
         </View>
       )}
@@ -199,35 +167,20 @@ const SignCodePage = () => {
         <View className='sign-code-panel'>
           <Text className='sign-code-panel__title'>给快递员扫描签收码</Text>
           <View className='sign-code-qrcode'>
-            <QRCodeMatrix
-              value={signInfo?.qrPayload || ''}
-              size={APP_NATIVE_TOKENS.qr.presentationSize}
-            />
+            <QRCodeMatrix value={signInfo?.qrPayload || ''} size={APP_NATIVE_TOKENS.qr.presentationSize} />
           </View>
           <View className='sign-code-value'>
             <Text className='sign-code-value__text' selectable>
               {signInfo?.signCode}
             </Text>
           </View>
-          <Text className='sign-code-panel__hint'>
-            {signInfo?.expiresText || '签收码短时有效，请按需刷新'}
-          </Text>
-          <Text className='sign-code-panel__name'>
-            签收人：{signInfo?.realName || '--'}
-          </Text>
+          <Text className='sign-code-panel__hint'>{signInfo?.expiresText || '签收码短时有效，请按需刷新'}</Text>
+          <Text className='sign-code-panel__name'>签收人：{signInfo?.realName || '--'}</Text>
           <View className='sign-code-actions'>
-            <AppPressable
-              className='sign-code-action sign-code-action--ghost'
-              onPress={loadSignCode}
-            >
-              <Text className='sign-code-action__text sign-code-action__text--ghost'>
-                {loading ? '刷新中' : '刷新'}
-              </Text>
+            <AppPressable className='sign-code-action sign-code-action--ghost' onPress={loadSignCode}>
+              <Text className='sign-code-action__text sign-code-action__text--ghost'>{loading ? '刷新中' : '刷新'}</Text>
             </AppPressable>
-            <AppPressable
-              className='sign-code-action'
-              onPress={handleCopySignCode}
-            >
+            <AppPressable className='sign-code-action' onPress={handleCopySignCode}>
               <Text className='sign-code-action__text'>复制签收码</Text>
             </AppPressable>
           </View>
@@ -236,16 +189,9 @@ const SignCodePage = () => {
 
       {!signInfo && !loading && (
         <View className='sign-empty'>
-          <Text className='sign-empty__title'>
-            {errorMessage || '暂未获取到签收码'}
-          </Text>
-          <Text className='sign-empty__summary'>
-            可稍后刷新，或进入客服中心咨询签收授权问题。
-          </Text>
-          <AppPressable
-            className='sign-empty__button'
-            onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
-          >
+          <Text className='sign-empty__title'>{errorMessage || '暂未获取到签收码'}</Text>
+          <Text className='sign-empty__summary'>可稍后刷新，或进入客服中心咨询签收授权问题。</Text>
+          <AppPressable className='sign-empty__button' onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)}>
             <Text className='sign-empty__button-text'>联系客服</Text>
           </AppPressable>
         </View>
@@ -253,15 +199,9 @@ const SignCodePage = () => {
 
       <View className='sign-rules'>
         <Text className='sign-rules__title'>温馨提示</Text>
-        <Text className='sign-rules__text'>
-          1、出示签收码代表你本人或收货人授权确认货物送达，请在核验前仔细确认货物状态。
-        </Text>
-        <Text className='sign-rules__text'>
-          2、如发现货物异常，请拒绝签收并立即向派送人员反馈。
-        </Text>
-        <Text className='sign-rules__text'>
-          3、二维码短时有效，如页面停留时间较长，请点击刷新后再出示。
-        </Text>
+        <Text className='sign-rules__text'>1、出示签收码代表你本人或收货人授权确认货物送达，请在核验前仔细确认货物状态。</Text>
+        <Text className='sign-rules__text'>2、如发现货物异常，请拒绝签收并立即向派送人员反馈。</Text>
+        <Text className='sign-rules__text'>3、二维码短时有效，如页面停留时间较长，请点击刷新后再出示。</Text>
       </View>
     </ScrollView>
   )

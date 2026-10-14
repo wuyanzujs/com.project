@@ -39,9 +39,7 @@ export interface OpenAppFileOptions {
   file: AppFile | DownloadAppFileResult
 }
 
-export async function chooseAppFile(
-  _options: ChooseAppFileOptions
-): Promise<AppFile[]> {
+export async function chooseAppFile(_options: ChooseAppFileOptions): Promise<AppFile[]> {
   ensureNativeCapability('filePicker')
 
   throw new NativeCapabilityError('filePicker')
@@ -53,9 +51,7 @@ export async function uploadAppFile(_options: UploadAppFileOptions) {
   throw new NativeCapabilityError('upload')
 }
 
-export async function downloadAppFile(
-  _options: DownloadAppFileOptions
-): Promise<DownloadAppFileResult> {
+export async function downloadAppFile(_options: DownloadAppFileOptions): Promise<DownloadAppFileResult> {
   ensureNativeCapability('download')
 
   throw new NativeCapabilityError('download')

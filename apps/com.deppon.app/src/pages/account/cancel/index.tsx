@@ -21,9 +21,7 @@ const CANCEL_WARNINGS = [
 ]
 
 const AccountCancelPage = () => {
-  const [overview, setOverview] = useState<AccountOverviewView>(() =>
-    accountService.getOverview()
-  )
+  const [overview, setOverview] = useState<AccountOverviewView>(() => accountService.getOverview())
   const [code, setCode] = useState('')
   const [countDown, setCountDown] = useState(0)
   const [accepted, setAccepted] = useState(false)
@@ -130,9 +128,7 @@ const AccountCancelPage = () => {
     <ScrollView className='account-cancel-page' scrollY>
       <View className='account-cancel-card'>
         <Text className='account-cancel-card__title'>当前账号</Text>
-        <Text className='account-cancel-card__mobile'>
-          {overview.maskedMobile || '--'}
-        </Text>
+        <Text className='account-cancel-card__mobile'>{overview.maskedMobile || '--'}</Text>
       </View>
 
       <View className='account-cancel-section'>
@@ -147,9 +143,7 @@ const AccountCancelPage = () => {
       <View className='account-cancel-section'>
         <View className='account-cancel-section__head'>
           <Text className='account-cancel-section__title'>短信验证</Text>
-          <Text className='account-cancel-section__hint'>
-            {countDown > 0 ? `${countDown}秒` : '验证码'}
-          </Text>
+          <Text className='account-cancel-section__hint'>{countDown > 0 ? `${countDown}秒` : '验证码'}</Text>
         </View>
         <View className='account-cancel-code'>
           <Input
@@ -158,56 +152,23 @@ const AccountCancelPage = () => {
             type='number'
             maxlength={6}
             value={code}
-            onInput={event =>
-              setCode(event.detail.value.replace(/\D/g, '').slice(0, 6))
-            }
+            onInput={event => setCode(event.detail.value.replace(/\D/g, '').slice(0, 6))}
           />
-          <AppPressable
-            className='account-cancel-code__button'
-            onPress={handleSendSms}
-          >
-            <Text className='account-cancel-code__button-text'>
-              {sending
-                ? '发送中'
-                : countDown > 0
-                  ? `${countDown}秒`
-                  : '获取验证码'}
-            </Text>
+          <AppPressable className='account-cancel-code__button' onPress={handleSendSms}>
+            <Text className='account-cancel-code__button-text'>{sending ? '发送中' : countDown > 0 ? `${countDown}秒` : '获取验证码'}</Text>
           </AppPressable>
         </View>
       </View>
 
-      <AppPressable
-        className='account-cancel-agreement'
-        onPress={() => setAccepted(current => !current)}
-      >
-        <View
-          className={
-            accepted
-              ? 'account-cancel-checkbox account-cancel-checkbox--checked'
-              : 'account-cancel-checkbox'
-          }
-        >
-          <Text className='account-cancel-checkbox__text'>
-            {accepted ? '✓' : ''}
-          </Text>
+      <AppPressable className='account-cancel-agreement' onPress={() => setAccepted(current => !current)}>
+        <View className={accepted ? 'account-cancel-checkbox account-cancel-checkbox--checked' : 'account-cancel-checkbox'}>
+          <Text className='account-cancel-checkbox__text'>{accepted ? '✓' : ''}</Text>
         </View>
-        <Text className='account-cancel-agreement__text'>
-          我已知晓注销后账号和相关数据将无法恢复
-        </Text>
+        <Text className='account-cancel-agreement__text'>我已知晓注销后账号和相关数据将无法恢复</Text>
       </AppPressable>
 
-      <AppPressable
-        className={
-          canSubmit
-            ? 'account-cancel-submit'
-            : 'account-cancel-submit account-cancel-submit--disabled'
-        }
-        onPress={handleSubmit}
-      >
-        <Text className='account-cancel-submit__text'>
-          {submitting ? '提交中' : '确认注销'}
-        </Text>
+      <AppPressable className={canSubmit ? 'account-cancel-submit' : 'account-cancel-submit account-cancel-submit--disabled'} onPress={handleSubmit}>
+        <Text className='account-cancel-submit__text'>{submitting ? '提交中' : '确认注销'}</Text>
       </AppPressable>
     </ScrollView>
   )

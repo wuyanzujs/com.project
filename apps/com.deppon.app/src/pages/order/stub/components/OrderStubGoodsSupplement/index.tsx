@@ -1,39 +1,24 @@
 import { Text, View } from '@tarojs/components'
 
-import type {
-  OrderStubPackageFeeGroupView,
-  OrderStubPackageFeeView,
-  OrderStubView
-} from '@/services/order'
+import type { OrderStubPackageFeeGroupView, OrderStubPackageFeeView, OrderStubView } from '@/services/order'
 
 import { OrderStubSection } from '../OrderStubSection'
 
 import './index.scss'
 
-function OrderStubPackageFeeGroup(props: {
-  group: OrderStubPackageFeeGroupView
-}) {
+function OrderStubPackageFeeGroup(props: { group: OrderStubPackageFeeGroupView }) {
   const { group } = props
 
   return (
     <View className='order-stub-package-group'>
       <Text className='order-stub-package-group__title'>{group.title}</Text>
       <View className='order-stub-package-row order-stub-package-row--head'>
-        <Text className='order-stub-package-row__name order-stub-package-row__name--head'>
-          {group.nameTitle}
-        </Text>
-        <Text className='order-stub-package-row__count order-stub-package-row__count--head'>
-          {group.countTitle}
-        </Text>
-        <Text className='order-stub-package-row__amount order-stub-package-row__amount--head'>
-          {group.amountTitle}
-        </Text>
+        <Text className='order-stub-package-row__name order-stub-package-row__name--head'>{group.nameTitle}</Text>
+        <Text className='order-stub-package-row__count order-stub-package-row__count--head'>{group.countTitle}</Text>
+        <Text className='order-stub-package-row__amount order-stub-package-row__amount--head'>{group.amountTitle}</Text>
       </View>
       {group.items.map(item => (
-        <View
-          className='order-stub-package-row'
-          key={`${group.title}-${item.name}-${item.amount}`}
-        >
+        <View className='order-stub-package-row' key={`${group.title}-${item.name}-${item.amount}`}>
           <Text className='order-stub-package-row__name'>{item.name}</Text>
           <Text className='order-stub-package-row__count'>{item.count}</Text>
           <Text className='order-stub-package-row__amount'>{item.amount}</Text>
@@ -43,10 +28,7 @@ function OrderStubPackageFeeGroup(props: {
   )
 }
 
-export function OrderStubGoodsSupplement(props: {
-  packageFee: OrderStubPackageFeeView | null
-  size: OrderStubView['size']
-}) {
+export function OrderStubGoodsSupplement(props: { packageFee: OrderStubPackageFeeView | null; size: OrderStubView['size'] }) {
   if (!props.size.available && !props.packageFee?.available) {
     return null
   }
@@ -68,9 +50,7 @@ export function OrderStubGoodsSupplement(props: {
         <View className='order-stub-package'>
           <View className='order-stub-package__head'>
             <Text className='order-stub-package__title'>包装费用</Text>
-            <Text className='order-stub-package__amount'>
-              {props.packageFee.totalAmount}
-            </Text>
+            <Text className='order-stub-package__amount'>{props.packageFee.totalAmount}</Text>
           </View>
           {props.packageFee.groups.map(group => (
             <OrderStubPackageFeeGroup group={group} key={group.title} />

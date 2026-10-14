@@ -74,17 +74,9 @@ const PrintCenterPage = () => {
       <View className='print-status'>
         <View>
           <Text className='print-status__label'>原生打印能力</Text>
-          <Text className='print-status__value'>
-            {center.nativeReady ? '可用' : '暂不可用'}
-          </Text>
+          <Text className='print-status__value'>{center.nativeReady ? '可用' : '暂不可用'}</Text>
         </View>
-        <Text
-          className={
-            center.nativeReady
-              ? 'print-status__badge print-status__badge--ready'
-              : 'print-status__badge'
-          }
-        >
+        <Text className={center.nativeReady ? 'print-status__badge print-status__badge--ready' : 'print-status__badge'}>
           {center.nativeReady ? 'Ready' : 'Pending'}
         </Text>
       </View>
@@ -92,19 +84,11 @@ const PrintCenterPage = () => {
       {!!center.cloudCode && (
         <View className='print-cloud-code'>
           <View className='print-cloud-code__head'>
-            <Text className='print-cloud-code__title'>
-              {center.cloudCode.title}
-            </Text>
-            <Text className='print-cloud-code__status'>
-              {center.cloudCode.statusText}
-            </Text>
+            <Text className='print-cloud-code__title'>{center.cloudCode.title}</Text>
+            <Text className='print-cloud-code__status'>{center.cloudCode.statusText}</Text>
           </View>
-          <Text className='print-cloud-code__value'>
-            {center.cloudCode.printId}
-          </Text>
-          <Text className='print-cloud-code__summary'>
-            {center.cloudCode.summary}
-          </Text>
+          <Text className='print-cloud-code__value'>{center.cloudCode.printId}</Text>
+          <Text className='print-cloud-code__summary'>{center.cloudCode.summary}</Text>
         </View>
       )}
 
@@ -113,18 +97,12 @@ const PrintCenterPage = () => {
           <Text className='print-section__title'>打印服务</Text>
         </View>
         {center.actions.map(action => (
-          <AppPressable
-            className={getActionClassName(action)}
-            key={action.key}
-            onPress={() => handleAction(action)}
-          >
+          <AppPressable className={getActionClassName(action)} key={action.key} onPress={() => handleAction(action)}>
             <View className='print-action__main'>
               <Text className='print-action__title'>{action.title}</Text>
               <Text className='print-action__summary'>{action.summary}</Text>
             </View>
-            <Text className={getActionStatusClassName(action)}>
-              {action.statusText}
-            </Text>
+            <Text className={getActionStatusClassName(action)}>{action.statusText}</Text>
           </AppPressable>
         ))}
       </View>

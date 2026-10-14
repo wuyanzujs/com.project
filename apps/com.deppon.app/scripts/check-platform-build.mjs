@@ -7,10 +7,7 @@ const appRoot = process.cwd()
 const srcRoot = path.join(appRoot, 'src')
 const packageJsonPath = path.join(appRoot, 'package.json')
 const configPath = path.join(appRoot, 'config/index.ts')
-const androidMainActivityPath = path.join(
-  appRoot,
-  'android/app/src/main/java/com/deppon/app/MainActivity.kt'
-)
+const androidMainActivityPath = path.join(appRoot, 'android/app/src/main/java/com/deppon/app/MainActivity.kt')
 const androidFastfilePath = path.join(appRoot, 'android/fastlane/Fastfile')
 const androidBuildGradlePath = path.join(appRoot, 'android/app/build.gradle')
 const iosAppDelegatePath = path.join(appRoot, 'ios/taroDemo/AppDelegate.mm')
@@ -38,46 +35,24 @@ function requireMatch(content, pattern, label, filePath) {
 }
 
 function hasRnBundleCommand(command, platform) {
-  return (
-    /\btaro\s+build\b/.test(command) &&
-    /--type(?:=|\s+)rn\b/.test(command) &&
-    new RegExp(`--platform(?:=|\\s+)${platform}\\b`).test(command)
-  )
+  return /\btaro\s+build\b/.test(command) && /--type(?:=|\s+)rn\b/.test(command) && new RegExp(`--platform(?:=|\\s+)${platform}\\b`).test(command)
 }
 
 function checkNativeIdentity(configContent) {
-  const androidContent = readRequired(
-    androidMainActivityPath,
-    'Android MainActivity'
-  )
+  const androidContent = readRequired(androidMainActivityPath, 'Android MainActivity')
   const iosContent = readRequired(iosAppDelegatePath, 'iOS AppDelegate')
   const identities = [
     {
       label: 'Taro RN appName',
-      value: requireMatch(
-        configContent,
-        /\bappName\s*:\s*['"]([^'"]+)['"]/,
-        'Taro RN appName',
-        configPath
-      )
+      value: requireMatch(configContent, /\bappName\s*:\s*['"]([^'"]+)['"]/, 'Taro RN appName', configPath)
     },
     {
       label: 'Android moduleName',
-      value: requireMatch(
-        androidContent,
-        /getMainComponentName\(\)\s*:\s*String\s*=\s*"([^"]+)"/,
-        'Android moduleName',
-        androidMainActivityPath
-      )
+      value: requireMatch(androidContent, /getMainComponentName\(\)\s*:\s*String\s*=\s*"([^"]+)"/, 'Android moduleName', androidMainActivityPath)
     },
     {
       label: 'iOS moduleName',
-      value: requireMatch(
-        iosContent,
-        /self\.moduleName\s*=\s*@"([^"]+)"/,
-        'iOS moduleName',
-        iosAppDelegatePath
-      )
+      value: requireMatch(iosContent, /self\.moduleName\s*=\s*@"([^"]+)"/, 'iOS moduleName', iosAppDelegatePath)
     }
   ]
   const configuredIdentities = identities.filter(item => item.value)
@@ -85,9 +60,7 @@ function checkNativeIdentity(configContent) {
 
   for (const identity of configuredIdentities.slice(1)) {
     if (identity.value !== expected) {
-      violations.push(
-        `原生 moduleName 不一致：${identities[0].label}=${expected}，${identity.label}=${identity.value}`
-      )
+      violations.push(`原生 moduleName 不一致：${identities[0].label}=${expected}，${identity.label}=${identity.value}`)
     }
   }
 }
@@ -103,9 +76,7 @@ function checkBundleScripts(packageJson) {
     const command = scripts[scriptName] ?? ''
 
     if (!hasRnBundleCommand(command, platform)) {
-      violations.push(
-        `${scriptName} 必须执行 taro build --type rn --platform ${platform}`
-      )
+      violations.push(`${scriptName} 必须执行 taro build --type rn --platform ${platform}`)
     }
   }
 
@@ -125,18 +96,13 @@ function checkBundleScripts(packageJson) {
     !/--watch\b/.test(resetCommand) ||
     !/--reset-cache\b/.test(resetCommand)
   ) {
-    violations.push(
-      'dev:rn:reset-cache 必须提供 taro build --type rn --watch --reset-cache'
-    )
+    violations.push('dev:rn:reset-cache 必须提供 taro build --type rn --watch --reset-cache')
   }
 }
 
 function checkNativeReleaseLanes() {
   const androidFastfile = readRequired(androidFastfilePath, 'Android Fastfile')
-  const androidBuildGradle = readRequired(
-    androidBuildGradlePath,
-    'Android app build.gradle'
-  )
+  const androidBuildGradle = readRequired(androidBuildGradlePath, 'Android app build.gradle')
   const iosFastfile = readRequired(iosFastfilePath, 'iOS Fastfile')
 
   if (!androidFastfile.includes('pnpm --dir .. install --frozen-lockfile')) {
@@ -151,9 +117,7 @@ function checkNativeReleaseLanes() {
     violations.push('Android Fastlane release 必须使用 production bundle。')
   }
 
-  const debugSigningReferences = [
-    ...androidBuildGradle.matchAll(/signingConfig\s+signingConfigs\.debug/g)
-  ]
+  const debugSigningReferences = [...androidBuildGradle.matchAll(/signingConfig\s+signingConfigs\.debug/g)]
 
   if (debugSigningReferences.length > 1) {
     violations.push('Android release 禁止回退到 debug 签名。')
@@ -166,9 +130,7 @@ function checkNativeReleaseLanes() {
     !androidBuildGradle.includes('verifyProductionRuntimeBundle') ||
     !androidBuildGradle.includes('Release applicationId must be')
   ) {
-    violations.push(
-      'Android release 必须校验签名、production bundle 和固定 applicationId。'
-    )
+    violations.push('Android release 必须校验签名、production bundle 和固定 applicationId。')
   }
 
   if (!iosFastfile.includes('pnpm --dir .. install --frozen-lockfile')) {
@@ -184,26 +146,18 @@ function checkNativeReleaseLanes() {
   }
 
   if (!/ENV\[['"]SKIP_BUNDLING['"]\]\s*=\s*['"]1['"]/.test(iosFastfile)) {
-    violations.push(
-      'iOS Fastlane 必须设置 SKIP_BUNDLING=1，避免原生脚本重复查找 Taro entry。'
-    )
+    violations.push('iOS Fastlane 必须设置 SKIP_BUNDLING=1，避免原生脚本重复查找 Taro entry。')
   }
 
   if (/\bproject\s*:\s*['"][^'"]+\.xcodeproj['"]/.test(iosFastfile)) {
-    violations.push(
-      'iOS Fastlane 禁止直接构建 .xcodeproj，请使用 .xcworkspace。'
-    )
+    violations.push('iOS Fastlane 禁止直接构建 .xcodeproj，请使用 .xcworkspace。')
   }
 
   if (!iosFastfile.includes('iOS release is disabled until signing')) {
-    violations.push(
-      '在锁文件和签名流水线就绪前，iOS Fastlane release 必须显式禁用。'
-    )
+    violations.push('在锁文件和签名流水线就绪前，iOS Fastlane release 必须显式禁用。')
   }
 
-  const workspaceMatches = [
-    ...iosFastfile.matchAll(/\bworkspace\s*:\s*['"]([^'"]+\.xcworkspace)['"]/g)
-  ]
+  const workspaceMatches = [...iosFastfile.matchAll(/\bworkspace\s*:\s*['"]([^'"]+\.xcworkspace)['"]/g)]
 
   if (!workspaceMatches.length) {
     violations.push('iOS Fastlane 必须显式配置 .xcworkspace。')
@@ -227,13 +181,7 @@ function isNativeRuntimeDependency(name) {
     '@react-native-community/cli-platform-android'
   ])
 
-  return (
-    !nativeTooling.has(name) &&
-    (name === 'expo' ||
-      name === 'react-native' ||
-      name.startsWith('react-native-') ||
-      name.startsWith('@react-native/'))
-  )
+  return !nativeTooling.has(name) && (name === 'expo' || name === 'react-native' || name.startsWith('react-native-') || name.startsWith('@react-native/'))
 }
 
 function readDependencyTree() {
@@ -245,35 +193,23 @@ function readDependencyTree() {
   }
 
   try {
-    const output = execFileSync(
-      process.execPath,
-      [packageManagerCli, 'list', '--depth', 'Infinity', '--prod', '--json'],
-      {
-        cwd: appRoot,
-        encoding: 'utf8',
-        maxBuffer: 64 * 1024 * 1024,
-        stdio: ['ignore', 'pipe', 'pipe']
-      }
-    )
+    const output = execFileSync(process.execPath, [packageManagerCli, 'list', '--depth', 'Infinity', '--prod', '--json'], {
+      cwd: appRoot,
+      encoding: 'utf8',
+      maxBuffer: 64 * 1024 * 1024,
+      stdio: ['ignore', 'pipe', 'pipe']
+    })
 
     return JSON.parse(output)
   } catch (error) {
-    violations.push(
-      `无法读取 pnpm 依赖树：${String(error.stderr ?? error.message).trim()}`
-    )
+    violations.push(`无法读取 pnpm 依赖树：${String(error.stderr ?? error.message).trim()}`)
     return []
   }
 }
 
 function checkDuplicateNativeDependencies(packageJson) {
-  const nativeDependencies = new Set(
-    Object.keys(packageJson.dependencies ?? {}).filter(
-      isNativeRuntimeDependency
-    )
-  )
-  const versionsByName = new Map(
-    [...nativeDependencies].map(name => [name, new Set()])
-  )
+  const nativeDependencies = new Set(Object.keys(packageJson.dependencies ?? {}).filter(isNativeRuntimeDependency))
+  const versionsByName = new Map([...nativeDependencies].map(name => [name, new Set()]))
   const stack = [...readDependencyTree()]
 
   while (stack.length) {
@@ -292,17 +228,13 @@ function checkDuplicateNativeDependencies(packageJson) {
 
   for (const [name, versions] of versionsByName) {
     if (versions.size > 1) {
-      violations.push(
-        `RN 原生依赖 ${name} 存在多个版本：${[...versions].join(', ')}`
-      )
+      violations.push(`RN 原生依赖 ${name} 存在多个版本：${[...versions].join(', ')}`)
     }
   }
 }
 
 function getConfigBlock(content, propertyName) {
-  const propertyMatch = new RegExp(`\\b${propertyName}\\s*:\\s*\\{`).exec(
-    content
-  )
+  const propertyMatch = new RegExp(`\\b${propertyName}\\s*:\\s*\\{`).exec(content)
 
   if (!propertyMatch) {
     return ''
@@ -332,8 +264,7 @@ function isVersionAtLeast(value, minimum) {
   if (!actual || !expected) return false
 
   for (let index = 0; index < expected.length; index += 1) {
-    if (actual[index] !== expected[index])
-      return actual[index] > expected[index]
+    if (actual[index] !== expected[index]) return actual[index] > expected[index]
   }
 
   return true
@@ -371,13 +302,10 @@ function checkHarmonyConfig(packageJson, configContent) {
     violations.push('Harmony 插件依赖和 config.harmony 必须同时配置。')
   }
 
-  const taroVersion =
-    allDependencies['@tarojs/cli'] ?? allDependencies['@tarojs/taro'] ?? ''
+  const taroVersion = allDependencies['@tarojs/cli'] ?? allDependencies['@tarojs/taro'] ?? ''
 
   if (!isVersionAtLeast(taroVersion, '4.1.0')) {
-    violations.push(
-      `Harmony-CPP 要求 Taro >= 4.1.0，当前为 ${taroVersion || '未配置'}。`
-    )
+    violations.push(`Harmony-CPP 要求 Taro >= 4.1.0，当前为 ${taroVersion || '未配置'}。`)
   }
 
   const requiredConfig = [
@@ -392,10 +320,7 @@ function checkHarmonyConfig(packageJson, configContent) {
     }
   }
 
-  const sourceFiles = walkSourceFiles(
-    srcRoot,
-    new Set(['.ts', '.tsx', '.scss'])
-  )
+  const sourceFiles = walkSourceFiles(srcRoot, new Set(['.ts', '.tsx', '.scss']))
   const sourceContents = sourceFiles.map(filePath => ({
     filePath,
     content: readFileSync(filePath, 'utf8')
@@ -403,57 +328,35 @@ function checkHarmonyConfig(packageJson, configContent) {
 
   if (
     !sourceContents.some(({ content }) =>
-      new RegExp(
-        [
-          String.raw`<reference\s+path=['"][^'"]*plugin-platform-harmony-cpp`,
-          String.raw`\/types\/define\.d\.ts['"]`
-        ].join('')
-      ).test(content)
+      new RegExp([String.raw`<reference\s+path=['"][^'"]*plugin-platform-harmony-cpp`, String.raw`\/types\/define\.d\.ts['"]`].join('')).test(content)
     )
   ) {
     violations.push('Harmony-CPP 缺少 define.d.ts 的三斜线类型引用。')
   }
 
-  if (
-    !sourceContents.some(({ content }) => content.includes('__taroNotSupport'))
-  ) {
-    violations.push(
-      '启用 Harmony 后必须监听 __taroNotSupport，暴露未实现 Taro API。'
-    )
+  if (!sourceContents.some(({ content }) => content.includes('__taroNotSupport'))) {
+    violations.push('启用 Harmony 后必须监听 __taroNotSupport，暴露未实现 Taro API。')
   }
 
   for (const { filePath, content } of sourceContents) {
     const relativePath = path.relative(appRoot, filePath)
 
     if (/\bdisplay\s*:\s*inline-block\b/.test(content)) {
-      violations.push(
-        `${relativePath} 使用了 Harmony 不支持的 display: inline-block。`
-      )
+      violations.push(`${relativePath} 使用了 Harmony 不支持的 display: inline-block。`)
     }
 
     if (/\bz-index\s*:/.test(content)) {
-      violations.push(
-        `${relativePath} 直接使用了 z-index；Harmony 浮层必须重构为同层级布局后再启用。`
-      )
+      violations.push(`${relativePath} 直接使用了 z-index；Harmony 浮层必须重构为同层级布局后再启用。`)
     }
 
-    if (
-      new RegExp(
-        [
-          String.raw`\bbackground\s*:\s*['"](?!#|rgb\(|rgba\(|hsl\(|`,
-          String.raw`hsla\()[A-Za-z]+['"]`
-        ].join('')
-      ).test(content)
-    ) {
+    if (new RegExp([String.raw`\bbackground\s*:\s*['"](?!#|rgb\(|rgba\(|hsl\(|`, String.raw`hsla\()[A-Za-z]+['"]`].join('')).test(content)) {
       violations.push(`${relativePath} 的内联 background 必须使用明确色值。`)
     }
 
     if (path.extname(filePath) === '.tsx') {
       for (const match of content.matchAll(/<Text\b[^>]*>/g)) {
         if (!/\b(?:className|style)\s*=/.test(match[0])) {
-          violations.push(
-            `${relativePath} 的 Text 必须显式声明 className/style，不能依赖 Harmony 文本样式继承。`
-          )
+          violations.push(`${relativePath} 的 Text 必须显式声明 className/style，不能依赖 Harmony 文本样式继承。`)
         }
       }
     }
@@ -464,10 +367,7 @@ const packageJsonContent = readRequired(packageJsonPath, 'App package.json')
 const packageJson = packageJsonContent ? JSON.parse(packageJsonContent) : {}
 const configContent = readRequired(configPath, 'Taro config')
 
-if (
-  configContent.includes('android/app/src/main/assets/index.android.map') ||
-  !configContent.includes('dist/sourcemaps/index.android.map')
-) {
+if (configContent.includes('android/app/src/main/assets/index.android.map') || !configContent.includes('dist/sourcemaps/index.android.map')) {
   violations.push('Android source map 必须输出到 dist，禁止进入 APK assets。')
 }
 

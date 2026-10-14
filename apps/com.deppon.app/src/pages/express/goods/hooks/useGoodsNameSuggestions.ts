@@ -47,18 +47,10 @@ export function useGoodsNameSuggestions() {
         return
       }
 
-      const list = response.status
-        ? (response.result?.list?.filter(item => !!item.productKeyWord) ?? [])
-        : []
+      const list = response.status ? (response.result?.list?.filter(item => !!item.productKeyWord) ?? []) : []
 
       setSuggestions(list)
-      setMessage(
-        response.status
-          ? list.length
-            ? ''
-            : '未找到匹配品名，可继续手动填写'
-          : response.message || '暂未获取到品名推荐'
-      )
+      setMessage(response.status ? (list.length ? '' : '未找到匹配品名，可继续手动填写') : response.message || '暂未获取到品名推荐')
     } finally {
       if (queryVersion.current === requestVersion) {
         setLoading(false)

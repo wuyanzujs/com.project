@@ -7,13 +7,8 @@ import { OrderDetailSection } from '../OrderDetailSection'
 
 import './index.scss'
 
-function getDetailActionClassName(
-  action: OrderDetailActionView,
-  isFirst: boolean
-) {
-  return `order-service-action order-service-action--${action.tone}${
-    isFirst ? ' order-service-action--first' : ''
-  }`
+function getDetailActionClassName(action: OrderDetailActionView, isFirst: boolean) {
+  return `order-service-action order-service-action--${action.tone}${isFirst ? ' order-service-action--first' : ''}`
 }
 
 function getDetailActionMarkClassName(action: OrderDetailActionView) {
@@ -25,10 +20,7 @@ interface OrderServiceActionsProps {
   onAction: (action: OrderDetailActionView) => void
 }
 
-export function OrderServiceActions({
-  actions,
-  onAction
-}: OrderServiceActionsProps) {
+export function OrderServiceActions({ actions, onAction }: OrderServiceActionsProps) {
   if (!actions.length) {
     return null
   }
@@ -43,23 +35,13 @@ export function OrderServiceActions({
           key={action.kind}
           onPress={() => onAction(action)}
         >
-          <Text className={getDetailActionMarkClassName(action)}>
-            {action.title.slice(0, 1)}
-          </Text>
+          <Text className={getDetailActionMarkClassName(action)}>{action.title.slice(0, 1)}</Text>
           <View className='order-service-action__content'>
             <View className='order-service-action__top'>
-              <Text className='order-service-action__title'>
-                {action.title}
-              </Text>
-              {action.badgeText ? (
-                <Text className='order-service-action__badge'>
-                  {action.badgeText}
-                </Text>
-              ) : null}
+              <Text className='order-service-action__title'>{action.title}</Text>
+              {action.badgeText ? <Text className='order-service-action__badge'>{action.badgeText}</Text> : null}
             </View>
-            <Text className='order-service-action__summary'>
-              {action.summary}
-            </Text>
+            <Text className='order-service-action__summary'>{action.summary}</Text>
           </View>
           <Text className='order-service-action__arrow'>›</Text>
         </AppPressable>

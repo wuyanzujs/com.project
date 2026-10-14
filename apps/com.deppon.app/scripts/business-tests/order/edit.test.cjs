@@ -2,19 +2,9 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  buildOrderModifyRequest,
-  createOrderEditDraft,
-  getOrderEditUnavailableMessage,
-  validateOrderEditDraft
-} = require('@/services/order/order.edit')
-const {
-  clearOrderEditCollection,
-  updateOrderEditCollection
-} = require('@/services/order/order.edit.collection')
-const {
-  updateOrderEditInsuranceAmount
-} = require('@/services/order/order.edit.insurance')
+const { buildOrderModifyRequest, createOrderEditDraft, getOrderEditUnavailableMessage, validateOrderEditDraft } = require('@/services/order/order.edit')
+const { clearOrderEditCollection, updateOrderEditCollection } = require('@/services/order/order.edit.collection')
+const { updateOrderEditInsuranceAmount } = require('@/services/order/order.edit.insurance')
 const {
   ORDER_EDIT_PACKAGING_MAX_COUNT,
   ORDER_EDIT_PACKAGING_UNIT_FEE,
@@ -23,10 +13,7 @@ const {
   updateOrderEditPackagingCount,
   validateOrderEditPackaging
 } = require('@/services/order/order.edit.packaging')
-const {
-  ORDER_EDIT_DELIVERY_OPTIONS,
-  isOrderEditDeliveryModeVisible
-} = require('@/services/order/order.edit.schedule')
+const { ORDER_EDIT_DELIVERY_OPTIONS, isOrderEditDeliveryModeVisible } = require('@/services/order/order.edit.schedule')
 
 const { createOrderDetail } = require('../fixtures/order.cjs')
 
@@ -163,12 +150,7 @@ const cases = [
       )
 
       assert.equal(preview.changed, true)
-      assert.deepEqual(preview.changedFields, [
-        '寄件地区',
-        '货物名称',
-        '货物重量',
-        '备注'
-      ])
+      assert.deepEqual(preview.changedFields, ['寄件地区', '货物名称', '货物重量', '备注'])
       assert.deepEqual(preview.request, {
         orderNumber: 'ORDER_001',
         contactProvince: '江苏省',
@@ -204,13 +186,8 @@ const cases = [
       assert.deepEqual(updateOrderEditPackagingCount(draft.packaging, 1000), {
         count: ORDER_EDIT_PACKAGING_MAX_COUNT
       })
-      assert.equal(
-        getOrderEditPackagingFee(draft.packaging),
-        4 * ORDER_EDIT_PACKAGING_UNIT_FEE
-      )
-      assert.deepEqual(validateOrderEditPackaging({ count: 1.5 }), [
-        '打包服务件数须为 0 到 999 的整数'
-      ])
+      assert.equal(getOrderEditPackagingFee(draft.packaging), 4 * ORDER_EDIT_PACKAGING_UNIT_FEE)
+      assert.deepEqual(validateOrderEditPackaging({ count: 1.5 }), ['打包服务件数须为 0 到 999 的整数'])
     }
   },
   {
@@ -351,14 +328,8 @@ const cases = [
       })
 
       assert.equal(getOrderEditUnavailableMessage(editable), '')
-      assert.equal(
-        getOrderEditUnavailableMessage({ ...editable, modifyFlag: false }),
-        '当前订单不允许修改'
-      )
-      assert.equal(
-        getOrderEditUnavailableMessage({ ...editable, isSender: 'N' }),
-        '您没有权限修改此订单'
-      )
+      assert.equal(getOrderEditUnavailableMessage({ ...editable, modifyFlag: false }), '当前订单不允许修改')
+      assert.equal(getOrderEditUnavailableMessage({ ...editable, isSender: 'N' }), '您没有权限修改此订单')
       assert.equal(
         getOrderEditUnavailableMessage({
           ...editable,
@@ -419,21 +390,15 @@ const cases = [
         }
       })
 
-      assert.ok(
-        invalidCollection.messages.includes('代收货款金额不能超过 1000000 元')
-      )
+      assert.ok(invalidCollection.messages.includes('代收货款金额不能超过 1000000 元'))
       assert.ok(invalidCollection.messages.includes('请选择代收货款收款账户'))
-      assert.ok(
-        invalidCollection.messages.includes('请阅读并同意代收货款服务协议')
-      )
+      assert.ok(invalidCollection.messages.includes('请阅读并同意代收货款服务协议'))
       const invalidPackaging = validateOrderEditDraft({
         ...draft,
         packaging: { count: 1000 }
       })
 
-      assert.ok(
-        invalidPackaging.messages.includes('打包服务件数须为 0 到 999 的整数')
-      )
+      assert.ok(invalidPackaging.messages.includes('打包服务件数须为 0 到 999 的整数'))
       assert.ok(validation.messages.includes('请填写正确的货物重量'))
       assert.ok(validation.messages.includes('请填写正确的货物体积'))
     }

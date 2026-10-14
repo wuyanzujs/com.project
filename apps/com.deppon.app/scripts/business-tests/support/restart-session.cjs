@@ -3,12 +3,7 @@ const Taro = require('@tarojs/taro')
 const { readFileSync } = require('node:fs')
 
 const { hydrateStorage } = require('@/cache/storage')
-const {
-  configureSessionCookieRuntime,
-  getEcoToken,
-  hydrateSessionCookie,
-  recoverSessionCookie
-} = require('@/request/cookieJar')
+const { configureSessionCookieRuntime, getEcoToken, hydrateSessionCookie, recoverSessionCookie } = require('@/request/cookieJar')
 
 async function simulateRestart() {
   const entries = JSON.parse(readFileSync(0, 'utf8'))

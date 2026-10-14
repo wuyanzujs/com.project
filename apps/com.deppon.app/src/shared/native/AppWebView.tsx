@@ -20,15 +20,7 @@ const styles = StyleSheet.create({
   }
 })
 
-export function AppWebView({
-  authenticated,
-  uri,
-  onError,
-  onLoadEnd,
-  onLoadStart,
-  onMessage,
-  onShouldStartLoad
-}: AppWebViewProps) {
+export function AppWebView({ authenticated, uri, onError, onLoadEnd, onLoadStart, onMessage, onShouldStartLoad }: AppWebViewProps) {
   return (
     <WebView
       domStorageEnabled

@@ -1,10 +1,6 @@
 import { ScrollView, Text, View } from '@tarojs/components'
 
-import {
-  EXPRESS_DELIVERY_PREFERENCE_OPTIONS,
-  getExpressDeliveryPreferenceOption,
-  getExpressDeliveryPreferenceSummary
-} from '@/services/express'
+import { EXPRESS_DELIVERY_PREFERENCE_OPTIONS, getExpressDeliveryPreferenceOption, getExpressDeliveryPreferenceSummary } from '@/services/express'
 import type { ExpressDraft } from '@/services/express'
 import { AppPressable } from '@/shared/components'
 
@@ -17,19 +13,14 @@ interface ExpressDeliveryPreferenceCardProps {
   preference: ExpressDraft['deliveryPreference']
 }
 
-export function ExpressDeliveryPreferenceCard({
-  controller,
-  preference
-}: ExpressDeliveryPreferenceCardProps) {
+export function ExpressDeliveryPreferenceCard({ controller, preference }: ExpressDeliveryPreferenceCardProps) {
   const selectedOption = getExpressDeliveryPreferenceOption(preference.type)
 
   return (
     <View className='express-delivery-preference'>
       <View className='express-delivery-preference__header'>
         <Text className='express-option-title'>派送偏好</Text>
-        <Text className='express-delivery-preference__summary'>
-          {getExpressDeliveryPreferenceSummary(preference)}
-        </Text>
+        <Text className='express-delivery-preference__summary'>{getExpressDeliveryPreferenceSummary(preference)}</Text>
       </View>
 
       <View className='express-delivery-preference__options'>
@@ -39,11 +30,7 @@ export function ExpressDeliveryPreferenceCard({
           return (
             <AppPressable
               accessibilityLabel={`选择${option.label}`}
-              className={
-                selected
-                  ? 'express-delivery-preference__option express-delivery-preference__option--active'
-                  : 'express-delivery-preference__option'
-              }
+              className={selected ? 'express-delivery-preference__option express-delivery-preference__option--active' : 'express-delivery-preference__option'}
               key={option.value || 'STANDARD'}
               selected={selected}
               onPress={() => controller.onTypeChange(option.value)}
@@ -62,9 +49,7 @@ export function ExpressDeliveryPreferenceCard({
         })}
       </View>
 
-      <Text className='express-delivery-preference__description'>
-        {selectedOption.summary}
-      </Text>
+      <Text className='express-delivery-preference__description'>{selectedOption.summary}</Text>
 
       {preference.type === 'SCHEDULED' ? (
         <View className='express-delivery-preference__details'>
@@ -76,11 +61,7 @@ export function ExpressDeliveryPreferenceCard({
               return (
                 <AppPressable
                   accessibilityLabel={`选择${option.label}${option.weekday}`}
-                  className={
-                    selected
-                      ? 'express-delivery-preference__date express-delivery-preference__date--active'
-                      : 'express-delivery-preference__date'
-                  }
+                  className={selected ? 'express-delivery-preference__date express-delivery-preference__date--active' : 'express-delivery-preference__date'}
                   key={option.value}
                   selected={selected}
                   onPress={() => controller.onScheduledDateChange(option.value)}
@@ -94,9 +75,7 @@ export function ExpressDeliveryPreferenceCard({
                   >
                     {option.label}
                   </Text>
-                  <Text className='express-delivery-preference__weekday'>
-                    {option.weekday}
-                  </Text>
+                  <Text className='express-delivery-preference__weekday'>{option.weekday}</Text>
                 </AppPressable>
               )
             })}
@@ -110,11 +89,7 @@ export function ExpressDeliveryPreferenceCard({
               return (
                 <AppPressable
                   accessibilityLabel={`选择派送时段${option.label}`}
-                  className={
-                    selected
-                      ? 'express-delivery-preference__time express-delivery-preference__time--active'
-                      : 'express-delivery-preference__time'
-                  }
+                  className={selected ? 'express-delivery-preference__time express-delivery-preference__time--active' : 'express-delivery-preference__time'}
                   key={option.value}
                   selected={selected}
                   onPress={() => controller.onScheduledTimeChange(option.value)}
@@ -128,9 +103,7 @@ export function ExpressDeliveryPreferenceCard({
                   >
                     {option.label}
                   </Text>
-                  <Text className='express-delivery-preference__fee'>
-                    {option.feeText}
-                  </Text>
+                  <Text className='express-delivery-preference__fee'>{option.feeText}</Text>
                 </AppPressable>
               )
             })}
@@ -140,18 +113,11 @@ export function ExpressDeliveryPreferenceCard({
 
       {preference.type === 'NOTIFY_RECEIVER' ? (
         <View className='express-delivery-preference__details'>
-          <Text className='express-delivery-preference__label'>
-            不可收货日期
-          </Text>
-          <ScrollView
-            className='express-delivery-preference__date-scroll'
-            scrollX
-          >
+          <Text className='express-delivery-preference__label'>不可收货日期</Text>
+          <ScrollView className='express-delivery-preference__date-scroll' scrollX>
             <View className='express-delivery-preference__date-track'>
               {controller.unavailableDateOptions.map(option => {
-                const selected = preference.unavailableDates.includes(
-                  option.value
-                )
+                const selected = preference.unavailableDates.includes(option.value)
 
                 return (
                   <AppPressable
@@ -163,9 +129,7 @@ export function ExpressDeliveryPreferenceCard({
                     }
                     key={option.value}
                     selected={selected}
-                    onPress={() =>
-                      controller.onUnavailableDateToggle(option.value)
-                    }
+                    onPress={() => controller.onUnavailableDateToggle(option.value)}
                   >
                     <Text
                       className={
@@ -176,9 +140,7 @@ export function ExpressDeliveryPreferenceCard({
                     >
                       {option.label}
                     </Text>
-                    <Text className='express-delivery-preference__weekday'>
-                      {option.weekday}
-                    </Text>
+                    <Text className='express-delivery-preference__weekday'>{option.weekday}</Text>
                   </AppPressable>
                 )
               })}
@@ -190,9 +152,7 @@ export function ExpressDeliveryPreferenceCard({
       {(controller.availabilityLoading || controller.availabilityMessage) && (
         <View className='express-delivery-preference__message'>
           <Text className='express-delivery-preference__message-text'>
-            {controller.availabilityLoading
-              ? '正在校验定时派送范围'
-              : controller.availabilityMessage}
+            {controller.availabilityLoading ? '正在校验定时派送范围' : controller.availabilityMessage}
           </Text>
         </View>
       )}

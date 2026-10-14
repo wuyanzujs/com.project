@@ -16,15 +16,9 @@ interface ExpressCouponCardProps {
   couponNumber: string
 }
 
-function getCouponSummary(
-  controller: ExpressCouponController,
-  couponNumber: string
-) {
+function getCouponSummary(controller: ExpressCouponController, couponNumber: string) {
   if (couponNumber) {
-    const displayCode =
-      couponNumber.length > 18
-        ? `${couponNumber.slice(0, 10)}...${couponNumber.slice(-4)}`
-        : couponNumber
+    const displayCode = couponNumber.length > 18 ? `${couponNumber.slice(0, 10)}...${couponNumber.slice(-4)}` : couponNumber
 
     return `已选 ${displayCode}`
   }
@@ -41,35 +35,22 @@ function getCouponSummary(
 }
 
 // 生产端选中券后展示红色优惠金额「-¥3」（prod_scroll_coupon.png 量测），非胶囊徽标。
-function isCouponHighlighted(
-  controller: ExpressCouponController,
-  couponNumber: string
-) {
+function isCouponHighlighted(controller: ExpressCouponController, couponNumber: string) {
   return Boolean(couponNumber) || controller.available.length > 0
 }
 
 // 已选券面额展示：现金券为「-¥{面额}」，非现金单位（如折）保持「{面额}{单位}」。
-function getSelectedCouponText(
-  controller: ExpressCouponController,
-  couponNumber: string
-) {
-  const selectedCoupon = couponNumber
-    ? controller.available.find(coupon => coupon.code === couponNumber)
-    : undefined
+function getSelectedCouponText(controller: ExpressCouponController, couponNumber: string) {
+  const selectedCoupon = couponNumber ? controller.available.find(coupon => coupon.code === couponNumber) : undefined
 
   if (!selectedCoupon) {
     return null
   }
 
-  return selectedCoupon.amountUnit === '¥'
-    ? `-¥${selectedCoupon.amountValue}`
-    : `${selectedCoupon.amountValue}${selectedCoupon.amountUnit}`
+  return selectedCoupon.amountUnit === '¥' ? `-¥${selectedCoupon.amountValue}` : `${selectedCoupon.amountValue}${selectedCoupon.amountUnit}`
 }
 
-export function ExpressCouponCard({
-  controller,
-  couponNumber
-}: ExpressCouponCardProps) {
+export function ExpressCouponCard({ controller, couponNumber }: ExpressCouponCardProps) {
   const [visible, setVisible] = useState(false)
 
   const summary = getCouponSummary(controller, couponNumber)
@@ -87,42 +68,18 @@ export function ExpressCouponCard({
 
   return (
     <View className='express-coupon-row'>
-      <AppPressable
-        accessibilityLabel='选择优惠券'
-        block
-        className='express-coupon-row__entry'
-        layout='row-start'
-        onPress={() => setVisible(true)}
-      >
+      <AppPressable accessibilityLabel='选择优惠券' block className='express-coupon-row__entry' layout='row-start' onPress={() => setVisible(true)}>
         <Text className='express-coupon-row__label'>优惠券</Text>
         <View className='express-coupon-row__spacer' />
-        <Text
-          className={
-            highlighted
-              ? 'express-coupon-row__badge express-coupon-row__badge--active'
-              : 'express-coupon-row__badge'
-          }
-          numberOfLines={1}
-        >
+        <Text className={highlighted ? 'express-coupon-row__badge express-coupon-row__badge--active' : 'express-coupon-row__badge'} numberOfLines={1}>
           {selectedCouponText ?? summary}
         </Text>
-        <Image
-          className='express-coupon-row__arrow'
-          mode='aspectFit'
-          src={APP_IMAGE_ICONS.arrowRightGrey}
-        />
+        <Image className='express-coupon-row__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
       </AppPressable>
 
-      {hintText ? (
-        <Text className='express-coupon-row__hint'>{hintText}</Text>
-      ) : null}
+      {hintText ? <Text className='express-coupon-row__hint'>{hintText}</Text> : null}
 
-      <ExpressCouponSheet
-        controller={controller}
-        couponNumber={couponNumber}
-        visible={visible}
-        onClose={() => setVisible(false)}
-      />
+      <ExpressCouponSheet controller={controller} couponNumber={couponNumber} visible={visible} onClose={() => setVisible(false)} />
     </View>
   )
 }

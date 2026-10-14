@@ -4,30 +4,12 @@ module.exports = {
     'at-rule-no-unknown': [
       true,
       {
-        ignoreAtRules: [
-          'use',
-          'forward',
-          'mixin',
-          'include',
-          'if',
-          'else',
-          'each',
-          'for',
-          'while',
-          'function',
-          'return',
-          'debug',
-          'warn',
-          'error'
-        ]
+        ignoreAtRules: ['use', 'forward', 'mixin', 'include', 'if', 'else', 'each', 'for', 'while', 'function', 'return', 'debug', 'warn', 'error']
       }
     ],
     'block-no-empty': true,
     'color-no-invalid-hex': true,
-    'declaration-block-no-duplicate-properties': [
-      true,
-      { ignore: ['consecutive-duplicates-with-different-values'] }
-    ],
+    'declaration-block-no-duplicate-properties': [true, { ignore: ['consecutive-duplicates-with-different-values'] }],
     'declaration-no-important': true,
     'function-calc-no-unspaced-operator': true,
     'function-disallowed-list': [
@@ -39,14 +21,8 @@ module.exports = {
       'repeating-conic-gradient'
     ],
     'no-empty-source': true,
-    'property-disallowed-list': [
-      'float',
-      'inset',
-      'background-image',
-      'box-shadow'
-    ],
-    'selector-class-pattern':
-      '^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:__[a-z0-9]+(?:-[a-z0-9]+)*)?(?:--[a-z0-9]+(?:-[a-z0-9]+)*)?$',
+    'property-disallowed-list': ['float', 'inset', 'background-image', 'box-shadow'],
+    'selector-class-pattern': '^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:__[a-z0-9]+(?:-[a-z0-9]+)*)?(?:--[a-z0-9]+(?:-[a-z0-9]+)*)?$',
     'selector-max-attribute': 0,
     'selector-max-combinators': 0,
     'selector-max-compound-selectors': 1,

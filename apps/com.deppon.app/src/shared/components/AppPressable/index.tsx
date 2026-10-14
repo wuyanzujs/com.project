@@ -6,8 +6,7 @@ import { AppNativePressable } from '@/shared/native'
 import './index.scss'
 
 export type AppPressableVariant = 'plain' | 'surface' | 'ghost'
-export type AppPressableLayout =
-  'center' | 'row-start' | 'row-center' | 'column-start'
+export type AppPressableLayout = 'center' | 'row-start' | 'row-center' | 'column-start'
 
 export interface AppPressableProps extends PropsWithChildren {
   accessibilityLabel?: string
@@ -30,8 +29,7 @@ export interface AppPressableProps extends PropsWithChildren {
   onPress?: () => void
 }
 
-const classNames = (...values: Array<string | false | undefined>) =>
-  values.filter(Boolean).join(' ')
+const classNames = (...values: Array<string | false | undefined>) => values.filter(Boolean).join(' ')
 
 export function AppPressable({
   accessibilityLabel,
@@ -66,11 +64,7 @@ export function AppPressable({
 
   return (
     <View className={contentClassName} style={style}>
-      {contentElement === 'text' ? (
-        <Text className={textClassName}>{children}</Text>
-      ) : (
-        children
-      )}
+      {contentElement === 'text' ? <Text className={textClassName}>{children}</Text> : children}
       <AppNativePressable
         accessibilityLabel={accessibilityLabel}
         allowDisabledPress={allowDisabledPress}

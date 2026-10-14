@@ -2,10 +2,7 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  buildOrderModifyRequest,
-  createOrderEditDraft
-} = require('@/services/order/order.edit')
+const { buildOrderModifyRequest, createOrderEditDraft } = require('@/services/order/order.edit')
 const {
   createOrderEditInsuranceDraft,
   isOrderEditInsuranceChanged,
@@ -85,11 +82,7 @@ const cases = [
       )
       assert.equal(required.insurance.required, true)
       assert.equal(required.insurance.maxAmount, 9990000)
-      assert.ok(
-        validateOrderEditInsurance(required.insurance).includes(
-          '当前产品必须填写保价金额'
-        )
-      )
+      assert.ok(validateOrderEditInsurance(required.insurance).includes('当前产品必须填写保价金额'))
 
       const free = createOrderEditDraft(
         createOrderDetail({
@@ -143,10 +136,7 @@ const cases = [
           insuredAmount: 1000
         })
       )
-      const changedInsurance = updateOrderEditInsuranceAmount(
-        origin.insurance,
-        '2500.129'
-      )
+      const changedInsurance = updateOrderEditInsuranceAmount(origin.insurance, '2500.129')
       const changedDraft = {
         ...origin,
         insurance: changedInsurance
@@ -154,10 +144,7 @@ const cases = [
       const changedPreview = buildOrderModifyRequest(changedDraft, origin)
 
       assert.equal(changedInsurance.amount, 2500.13)
-      assert.equal(
-        isOrderEditInsuranceChanged(changedInsurance, origin.insurance),
-        true
-      )
+      assert.equal(isOrderEditInsuranceChanged(changedInsurance, origin.insurance), true)
       assert.deepEqual(changedPreview.changedFields, ['保价金额'])
       assert.deepEqual(changedPreview.request, {
         orderNumber: 'ORDER_001',
@@ -182,11 +169,7 @@ const cases = [
         ...origin.insurance,
         amount: 1000001
       }
-      assert.ok(
-        validateOrderEditInsurance(invalid).includes(
-          '保价金额最高为 1000000 元'
-        )
-      )
+      assert.ok(validateOrderEditInsurance(invalid).includes('保价金额最高为 1000000 元'))
 
       const freeOrigin = createOrderEditDraft(
         createOrderDetail({

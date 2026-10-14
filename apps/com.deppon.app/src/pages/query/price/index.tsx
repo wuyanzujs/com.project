@@ -14,13 +14,7 @@ import {
   swapExpressContacts,
   validateExpressPriceTimeDraft
 } from '@/services/express'
-import type {
-  ExpressContact,
-  ExpressContactTarget,
-  ExpressDeliveryMode,
-  ExpressDraft,
-  ExpressProductQuote
-} from '@/services/express'
+import type { ExpressContact, ExpressContactTarget, ExpressDeliveryMode, ExpressDraft, ExpressProductQuote } from '@/services/express'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
@@ -61,13 +55,8 @@ function createPriceDraft(): ExpressDraft {
 const QueryPricePage = () => {
   const [draft, setDraft] = useState<ExpressDraft>(() => createPriceDraft())
   const [quotes, setQuotes] = useState<ExpressProductQuote[]>([])
-  const [quoteStatus, setQuoteStatus] = useState<
-    'idle' | 'loading' | 'done' | 'error'
-  >('idle')
-  const validation = useMemo(
-    () => validateExpressPriceTimeDraft(draft),
-    [draft]
-  )
+  const [quoteStatus, setQuoteStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+  const validation = useMemo(() => validateExpressPriceTimeDraft(draft), [draft])
 
   useDidShow(() => {
     const selection = contactSelection.consumeSelection()
@@ -76,19 +65,10 @@ const QueryPricePage = () => {
       return
     }
 
-    setDraft(current =>
-      setExpressContact(
-        current,
-        selection.target,
-        mapContactToExpressContact(selection.contact)
-      )
-    )
+    setDraft(current => setExpressContact(current, selection.target, mapContactToExpressContact(selection.contact)))
   })
 
-  const updateContact = (
-    target: ExpressContactTarget,
-    patch: Partial<ExpressContact>
-  ) => {
+  const updateContact = (target: ExpressContactTarget, patch: Partial<ExpressContact>) => {
     setDraft(current => {
       const contact = current[target] ?? createEmptyPriceContact(target)
 
@@ -115,11 +95,7 @@ const QueryPricePage = () => {
   }
 
   const handleContactSelect = (target: ExpressContactTarget) => {
-    const params = contactSelection.createParams(
-      target,
-      'select',
-      'QUERY_PRICE'
-    )
+    const params = contactSelection.createParams(target, 'select', 'QUERY_PRICE')
     const url = createAppRouteUrl(APP_ROUTES.contactList, params)
 
     navigateToAppRoute(url, {
@@ -193,23 +169,11 @@ const QueryPricePage = () => {
         onSwap={handleSwapContacts}
       />
 
-      <QueryPriceGoodsSection
-        draft={draft}
-        onDeliveryChange={handleDeliveryChange}
-        onGoodsChange={updateGoods}
-      />
+      <QueryPriceGoodsSection draft={draft} onDeliveryChange={handleDeliveryChange} onGoodsChange={updateGoods} />
 
-      <QueryPriceActions
-        loading={quoteStatus === 'loading'}
-        messages={validation.valid ? [] : validation.messages.slice(0, 3)}
-        onSubmit={handleQuote}
-      />
+      <QueryPriceActions loading={quoteStatus === 'loading'} messages={validation.valid ? [] : validation.messages.slice(0, 3)} onSubmit={handleQuote} />
 
-      <QueryPriceResultsState
-        quotes={quotes}
-        status={quoteStatus}
-        onExpress={handleExpress}
-      />
+      <QueryPriceResultsState quotes={quotes} status={quoteStatus} onExpress={handleExpress} />
     </ScrollView>
   )
 }

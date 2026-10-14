@@ -1,27 +1,10 @@
-import {
-  EXPRESS_CARTON_OPTIONS,
-  EXPRESS_UNPACKING_OPTIONS,
-  EXPRESS_WOODEN_PACKAGING_OPTIONS,
-  getExpressCartonOption
-} from './packaging.catalog'
+import { EXPRESS_CARTON_OPTIONS, EXPRESS_UNPACKING_OPTIONS, EXPRESS_WOODEN_PACKAGING_OPTIONS, getExpressCartonOption } from './packaging.catalog'
 
-import type {
-  ExpressCartonCode,
-  ExpressDraft,
-  ExpressPackagingDraft,
-  ExpressUnpackingCode,
-  ExpressWoodenPackagingCode
-} from './types'
+import type { ExpressCartonCode, ExpressDraft, ExpressPackagingDraft, ExpressUnpackingCode, ExpressWoodenPackagingCode } from './types'
 
-const EXPRESS_CARTON_CODES = new Set(
-  EXPRESS_CARTON_OPTIONS.map(option => option.code)
-)
-const EXPRESS_WOODEN_PACKAGING_CODES = new Set(
-  EXPRESS_WOODEN_PACKAGING_OPTIONS.map(option => option.code)
-)
-const EXPRESS_UNPACKING_CODES = new Set(
-  EXPRESS_UNPACKING_OPTIONS.map(option => option.code)
-)
+const EXPRESS_CARTON_CODES = new Set(EXPRESS_CARTON_OPTIONS.map(option => option.code))
+const EXPRESS_WOODEN_PACKAGING_CODES = new Set(EXPRESS_WOODEN_PACKAGING_OPTIONS.map(option => option.code))
+const EXPRESS_UNPACKING_CODES = new Set(EXPRESS_UNPACKING_OPTIONS.map(option => option.code))
 
 /**
  *
@@ -31,9 +14,7 @@ const EXPRESS_UNPACKING_CODES = new Set(
 export function normalizeExpressCartonCode(value: unknown): ExpressCartonCode {
   const code = typeof value === 'string' ? value.trim() : ''
 
-  return EXPRESS_CARTON_CODES.has(code as Exclude<ExpressCartonCode, ''>)
-    ? (code as Exclude<ExpressCartonCode, ''>)
-    : ''
+  return EXPRESS_CARTON_CODES.has(code as Exclude<ExpressCartonCode, ''>) ? (code as Exclude<ExpressCartonCode, ''>) : ''
 }
 
 /**
@@ -41,24 +22,16 @@ export function normalizeExpressCartonCode(value: unknown): ExpressCartonCode {
  * @param value 木包装 code 的数组
  * @description 过滤非法项、去重，木包装
  */
-export function normalizeExpressWoodenPackagingCodes(
-  value: unknown
-): ExpressWoodenPackagingCode[] {
+export function normalizeExpressWoodenPackagingCodes(value: unknown): ExpressWoodenPackagingCode[] {
   if (!Array.isArray(value)) {
     return []
   }
 
   const selectedCodes = new Set(
-    value
-      .map(code => (typeof code === 'string' ? code.trim() : ''))
-      .filter(code =>
-        EXPRESS_WOODEN_PACKAGING_CODES.has(code as ExpressWoodenPackagingCode)
-      )
+    value.map(code => (typeof code === 'string' ? code.trim() : '')).filter(code => EXPRESS_WOODEN_PACKAGING_CODES.has(code as ExpressWoodenPackagingCode))
   )
 
-  return EXPRESS_WOODEN_PACKAGING_OPTIONS.map(option => option.code).filter(
-    code => selectedCodes.has(code)
-  )
+  return EXPRESS_WOODEN_PACKAGING_OPTIONS.map(option => option.code).filter(code => selectedCodes.has(code))
 }
 
 /**
@@ -66,22 +39,16 @@ export function normalizeExpressWoodenPackagingCodes(
  * @param value 拆包装 code 的数组
  * @description 过滤非法项、去重，按目录顺序返回
  */
-export function normalizeExpressUnpackingCodes(
-  value: unknown
-): ExpressUnpackingCode[] {
+export function normalizeExpressUnpackingCodes(value: unknown): ExpressUnpackingCode[] {
   if (!Array.isArray(value)) {
     return []
   }
 
   const selectedCodes = new Set(
-    value
-      .map(code => (typeof code === 'string' ? code.trim() : ''))
-      .filter(code => EXPRESS_UNPACKING_CODES.has(code as ExpressUnpackingCode))
+    value.map(code => (typeof code === 'string' ? code.trim() : '')).filter(code => EXPRESS_UNPACKING_CODES.has(code as ExpressUnpackingCode))
   )
 
-  return EXPRESS_UNPACKING_OPTIONS.map(option => option.code).filter(code =>
-    selectedCodes.has(code)
-  )
+  return EXPRESS_UNPACKING_OPTIONS.map(option => option.code).filter(code => selectedCodes.has(code))
 }
 
 /**
@@ -97,9 +64,7 @@ export function createExpressPackagingDraft(): ExpressPackagingDraft {
  * @param value 包装草稿，可为空
  * @description 归一草稿中的纸箱、木包装、拆包装 code
  */
-export function normalizeExpressPackagingDraft(
-  value?: Partial<ExpressPackagingDraft> | null
-): ExpressPackagingDraft {
+export function normalizeExpressPackagingDraft(value?: Partial<ExpressPackagingDraft> | null): ExpressPackagingDraft {
   return {
     cartonCode: normalizeExpressCartonCode(value?.cartonCode),
     woodenCodes: normalizeExpressWoodenPackagingCodes(value?.woodenCodes),
@@ -114,10 +79,7 @@ export function normalizeExpressPackagingDraft(
  * @description 判断两个 code 列表是否完全一致
  */
 function areCodeListsEqual(left: readonly string[], right: readonly string[]) {
-  return (
-    left.length === right.length &&
-    left.every((code, index) => code === right[index])
-  )
+  return left.length === right.length && left.every((code, index) => code === right[index])
 }
 
 /**
@@ -126,11 +88,8 @@ function areCodeListsEqual(left: readonly string[], right: readonly string[]) {
  * @description 取货物体积与纸箱体积中较大者，作为报价体积
  */
 export function getExpressPackagingQuoteVolume(draft: ExpressDraft) {
-  const goodsVolume = Number.isFinite(draft.goods.volume)
-    ? Math.max(draft.goods.volume, 0)
-    : 0
-  const cartonVolume =
-    getExpressCartonOption(draft.packaging.cartonCode)?.volume ?? 0
+  const goodsVolume = Number.isFinite(draft.goods.volume) ? Math.max(draft.goods.volume, 0) : 0
+  const cartonVolume = getExpressCartonOption(draft.packaging.cartonCode)?.volume ?? 0
 
   return Math.max(goodsVolume, cartonVolume)
 }
@@ -141,10 +100,7 @@ export function getExpressPackagingQuoteVolume(draft: ExpressDraft) {
  * @param patch 待更新的包装字段
  * @description 合并并归一包装信息，有变化时清空选品并标记报价过期
  */
-export function updateExpressPackaging(
-  draft: ExpressDraft,
-  patch: Partial<ExpressPackagingDraft>
-): ExpressDraft {
+export function updateExpressPackaging(draft: ExpressDraft, patch: Partial<ExpressPackagingDraft>): ExpressDraft {
   const currentPackaging = normalizeExpressPackagingDraft(draft.packaging)
   const packaging = normalizeExpressPackagingDraft({
     ...currentPackaging,

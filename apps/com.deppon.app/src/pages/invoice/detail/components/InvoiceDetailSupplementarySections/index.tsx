@@ -1,9 +1,6 @@
 import { Input, Text, View } from '@tarojs/components'
 
-import type {
-  InvoiceHistoryView,
-  InvoiceHistoryWaybillView
-} from '@/services/invoice'
+import type { InvoiceHistoryView, InvoiceHistoryWaybillView } from '@/services/invoice'
 import { AppPressable } from '@/shared/components'
 
 import { getInvoiceDetailMoneyText } from '../../invoiceDetailView'
@@ -48,43 +45,24 @@ export function InvoiceDetailSupplementarySections({
             <Text className='invoice-detail-section__title'>收票地址</Text>
             {invoice.canModifyAddress && (
               <AppPressable
-                accessibilityLabel={
-                  modifyingAddress ? '正在修改收票地址' : '修改收票地址'
-                }
-                className={
-                  modifyingAddress
-                    ? 'invoice-detail-section__button invoice-detail-section__button--disabled'
-                    : 'invoice-detail-section__button'
-                }
+                accessibilityLabel={modifyingAddress ? '正在修改收票地址' : '修改收票地址'}
+                className={modifyingAddress ? 'invoice-detail-section__button invoice-detail-section__button--disabled' : 'invoice-detail-section__button'}
                 disabled={modifyingAddress}
                 onPress={onSelectAddress}
               >
-                <Text className='invoice-detail-section__button-text'>
-                  {modifyingAddress ? '修改中' : '修改'}
-                </Text>
+                <Text className='invoice-detail-section__button-text'>{modifyingAddress ? '修改中' : '修改'}</Text>
               </AppPressable>
             )}
           </View>
 
-          {invoice.contactName ||
-          invoice.contactPhone ||
-          invoice.contactAddress ? (
+          {invoice.contactName || invoice.contactPhone || invoice.contactAddress ? (
             <>
-              <InvoiceDetailRow
-                label='收票人'
-                value={
-                  [invoice.contactName, invoice.contactPhone]
-                    .filter(Boolean)
-                    .join(' ') || '--'
-                }
-              />
+              <InvoiceDetailRow label='收票人' value={[invoice.contactName, invoice.contactPhone].filter(Boolean).join(' ') || '--'} />
               <InvoiceDetailRow address label='收票地址' value={addressText} />
             </>
           ) : (
             <View className='invoice-detail-empty-block'>
-              <Text className='invoice-detail-empty-block__title'>
-                暂无收票地址
-              </Text>
+              <Text className='invoice-detail-empty-block__title'>暂无收票地址</Text>
             </View>
           )}
         </View>
@@ -105,60 +83,36 @@ export function InvoiceDetailSupplementarySections({
             onInput={event => onEmailInput(event.detail.value)}
           />
           <AppPressable
-            accessibilityLabel={
-              sending
-                ? '正在发送发票邮件'
-                : invoice.canSendEmail
-                  ? '发送发票邮件'
-                  : '当前状态暂不可发送发票邮件'
-            }
-            className={
-              invoice.canSendEmail && !sending
-                ? 'invoice-detail-mail__button'
-                : 'invoice-detail-mail__button invoice-detail-mail__button--disabled'
-            }
+            accessibilityLabel={sending ? '正在发送发票邮件' : invoice.canSendEmail ? '发送发票邮件' : '当前状态暂不可发送发票邮件'}
+            className={invoice.canSendEmail && !sending ? 'invoice-detail-mail__button' : 'invoice-detail-mail__button invoice-detail-mail__button--disabled'}
             disabled={sending}
             onPress={onSendEmail}
           >
-            <Text className='invoice-detail-mail__button-text'>
-              {sending ? '发送中' : '发送'}
-            </Text>
+            <Text className='invoice-detail-mail__button-text'>{sending ? '发送中' : '发送'}</Text>
           </AppPressable>
         </View>
-        {!invoice.canSendEmail && (
-          <Text className='invoice-detail-mail__hint'>当前状态暂不可发送</Text>
-        )}
+        {!invoice.canSendEmail && <Text className='invoice-detail-mail__hint'>当前状态暂不可发送</Text>}
       </View>
 
       <View className='invoice-detail-section'>
         <View className='invoice-detail-section__head'>
           <Text className='invoice-detail-section__title'>包含运单</Text>
-          <Text className='invoice-detail-section__summary'>
-            共 {waybills.length} 条
-          </Text>
+          <Text className='invoice-detail-section__summary'>共 {waybills.length} 条</Text>
         </View>
 
         {waybills.map((item, index) => (
           <View className='invoice-detail-waybill' key={item.waybillNumber}>
             <View>
-              <Text className='invoice-detail-waybill__index'>
-                {index + 1}. 运单
-              </Text>
-              <Text className='invoice-detail-waybill__number'>
-                {item.waybillNumber}
-              </Text>
+              <Text className='invoice-detail-waybill__index'>{index + 1}. 运单</Text>
+              <Text className='invoice-detail-waybill__number'>{item.waybillNumber}</Text>
             </View>
-            <Text className='invoice-detail-waybill__amount'>
-              {getInvoiceDetailMoneyText(item.amount)}
-            </Text>
+            <Text className='invoice-detail-waybill__amount'>{getInvoiceDetailMoneyText(item.amount)}</Text>
           </View>
         ))}
 
         {!waybills.length && !loading && (
           <View className='invoice-detail-empty-block'>
-            <Text className='invoice-detail-empty-block__title'>
-              {message || '暂无包含运单信息'}
-            </Text>
+            <Text className='invoice-detail-empty-block__title'>{message || '暂无包含运单信息'}</Text>
           </View>
         )}
       </View>

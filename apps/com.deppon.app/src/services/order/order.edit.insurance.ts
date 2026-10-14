@@ -1,23 +1,10 @@
-import type {
-  OrderDetail,
-  OrderEditInsuranceDraft,
-  OrderEditInsuranceLockedType,
-  OrderModifyRequest
-} from './types'
+import type { OrderDetail, OrderEditInsuranceDraft, OrderEditInsuranceLockedType, OrderModifyRequest } from './types'
 
 export const ORDER_EDIT_INSURANCE_MAX_AMOUNT = 1000000
 export const ORDER_EDIT_INSURANCE_REQUIRED_MAX_AMOUNT = 9990000
 export const ORDER_EDIT_INSURANCE_FREE_AMOUNT = 2000
 
-const REQUIRED_PRODUCT_CODES = new Set([
-  'DJBK',
-  'DJTH',
-  'JZZH',
-  'NJZZH',
-  'YTY',
-  'YTYDS',
-  'NZBRH'
-])
+const REQUIRED_PRODUCT_CODES = new Set(['DJBK', 'DJTH', 'JZZH', 'NJZZH', 'YTY', 'YTYDS', 'NZBRH'])
 
 const FREE_COVERAGE_PRODUCT_CODES = new Set(['NFLF', 'NLRF'])
 
@@ -65,9 +52,7 @@ function normalizeAmount(value: unknown) {
  * @description 读取订单扩展字段的文本值
  */
 function getOrderExtendFieldValue(detail: OrderDetail, key: string) {
-  const fields = Array.isArray(detail.orderExtendFields)
-    ? detail.orderExtendFields
-    : []
+  const fields = Array.isArray(detail.orderExtendFields) ? detail.orderExtendFields : []
   const field = fields.find(item => normalizeText(item?.key) === key)
 
   return field ? normalizeText(field.value) : ''
@@ -97,9 +82,7 @@ function getLockedType(detail: OrderDetail): OrderEditInsuranceLockedType {
  * @param detail 订单详情
  * @description 从订单详情创建保价草稿
  */
-export function createOrderEditInsuranceDraft(
-  detail: OrderDetail
-): OrderEditInsuranceDraft {
+export function createOrderEditInsuranceDraft(detail: OrderDetail): OrderEditInsuranceDraft {
   const productCode = normalizeProductCode(detail.transportMode)
   const required = REQUIRED_PRODUCT_CODES.has(productCode)
   const freeCoverage = FREE_COVERAGE_PRODUCT_CODES.has(productCode)
@@ -108,17 +91,12 @@ export function createOrderEditInsuranceDraft(
   const source = getOrderExtendFieldValue(detail, 'insuranceSource')
 
   return {
-    amount:
-      freeCoverage && rawAmount <= 0
-        ? ORDER_EDIT_INSURANCE_FREE_AMOUNT
-        : rawAmount,
+    amount: freeCoverage && rawAmount <= 0 ? ORDER_EDIT_INSURANCE_FREE_AMOUNT : rawAmount,
     defaultPending: freeCoverage && rawAmount <= 0,
     editable: !lockedType,
     freeCoverage,
     lockedType,
-    maxAmount: required
-      ? ORDER_EDIT_INSURANCE_REQUIRED_MAX_AMOUNT
-      : ORDER_EDIT_INSURANCE_MAX_AMOUNT,
+    maxAmount: required ? ORDER_EDIT_INSURANCE_REQUIRED_MAX_AMOUNT : ORDER_EDIT_INSURANCE_MAX_AMOUNT,
     productCode,
     required,
     source: source || (freeCoverage ? 'DEFAULT' : '')
@@ -152,10 +130,7 @@ export function normalizeOrderEditInsuranceAmountInput(value: string) {
  * @param value 新的保价金额
  * @description 更新保价金额并清除来源标记
  */
-export function updateOrderEditInsuranceAmount(
-  insurance: OrderEditInsuranceDraft,
-  value: unknown
-) {
+export function updateOrderEditInsuranceAmount(insurance: OrderEditInsuranceDraft, value: unknown) {
   if (!insurance.editable) {
     return insurance
   }
@@ -204,34 +179,19 @@ export function validateOrderEditInsurance(insurance: OrderEditInsuranceDraft) {
  * @param origin 原始草稿
  * @description 判断保价金额是否发生变化
  */
-export function isOrderEditInsuranceChanged(
-  insurance: OrderEditInsuranceDraft,
-  origin: OrderEditInsuranceDraft
-) {
-  return (
-    insurance.editable &&
-    origin.editable &&
-    (origin.defaultPending ||
-      normalizeAmount(insurance.amount) !== normalizeAmount(origin.amount))
-  )
+export function isOrderEditInsuranceChanged(insurance: OrderEditInsuranceDraft, origin: OrderEditInsuranceDraft) {
+  return insurance.editable && origin.editable && (origin.defaultPending || normalizeAmount(insurance.amount) !== normalizeAmount(origin.amount))
 }
 
-export type OrderEditInsuranceRequestFields = Required<
-  Pick<OrderModifyRequest, 'insuredAmount' | 'orderExtendFields'>
->
+export type OrderEditInsuranceRequestFields = Required<Pick<OrderModifyRequest, 'insuredAmount' | 'orderExtendFields'>>
 
 /**
  *
  * @param insurance 保价草稿
  * @description 生成订单修改接口的保价字段
  */
-export function createOrderEditInsuranceRequestFields(
-  insurance: OrderEditInsuranceDraft
-): OrderEditInsuranceRequestFields {
-  const useDefaultCoverage =
-    insurance.defaultPending &&
-    insurance.freeCoverage &&
-    normalizeAmount(insurance.amount) === ORDER_EDIT_INSURANCE_FREE_AMOUNT
+export function createOrderEditInsuranceRequestFields(insurance: OrderEditInsuranceDraft): OrderEditInsuranceRequestFields {
+  const useDefaultCoverage = insurance.defaultPending && insurance.freeCoverage && normalizeAmount(insurance.amount) === ORDER_EDIT_INSURANCE_FREE_AMOUNT
 
   return {
     insuredAmount: normalizeAmount(insurance.amount),
@@ -249,12 +209,8 @@ export function createOrderEditInsuranceRequestFields(
  * @param insurance 保价草稿
  * @description 生成保价变更项名称
  */
-export function getOrderEditInsuranceChangedLabel(
-  insurance: OrderEditInsuranceDraft
-) {
-  return insurance.defaultPending &&
-    insurance.freeCoverage &&
-    normalizeAmount(insurance.amount) === ORDER_EDIT_INSURANCE_FREE_AMOUNT
+export function getOrderEditInsuranceChangedLabel(insurance: OrderEditInsuranceDraft) {
+  return insurance.defaultPending && insurance.freeCoverage && normalizeAmount(insurance.amount) === ORDER_EDIT_INSURANCE_FREE_AMOUNT
     ? '免费基础保障'
     : '保价金额'
 }
@@ -264,9 +220,7 @@ export function getOrderEditInsuranceChangedLabel(
  * @param insurance 保价草稿
  * @description 生成保价说明文案
  */
-export function getOrderEditInsuranceSummary(
-  insurance: OrderEditInsuranceDraft
-) {
+export function getOrderEditInsuranceSummary(insurance: OrderEditInsuranceDraft) {
   if (insurance.lockedType === 'QEB') {
     return '全额保订单暂不支持修改保价'
   }

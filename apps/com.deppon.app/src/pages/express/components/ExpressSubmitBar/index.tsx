@@ -20,25 +20,13 @@ interface ExpressSubmitBarProps {
   onSubmit: () => void
 }
 
-export function ExpressSubmitBar({
-  detailView,
-  priceText,
-  quoteLoading,
-  submitting,
-  onQuote,
-  onSubmit
-}: ExpressSubmitBarProps) {
+export function ExpressSubmitBar({ detailView, priceText, quoteLoading, submitting, onQuote, onSubmit }: ExpressSubmitBarProps) {
   const [detailVisible, setDetailVisible] = useState(false)
   const canExpand = Boolean(detailView)
 
   return (
     <View className='express-submit'>
-      {detailVisible && detailView ? (
-        <ExpressPriceDetailPanel
-          view={detailView}
-          onClose={() => setDetailVisible(false)}
-        />
-      ) : null}
+      {detailVisible && detailView ? <ExpressPriceDetailPanel view={detailView} onClose={() => setDetailVisible(false)} /> : null}
       <View className='express-submit__main'>
         <View className='express-submit__summary'>
           <View className='express-submit__price-row'>
@@ -54,9 +42,7 @@ export function ExpressSubmitBar({
             </AppPressable>
             <View className='express-submit__divider' />
             <AppPressable
-              accessibilityLabel={
-                canExpand ? '展开费用明细' : '获取产品价格'
-              }
+              accessibilityLabel={canExpand ? '展开费用明细' : '获取产品价格'}
               className='express-submit__detail-toggle'
               layout='row-center'
               onPress={() => {
@@ -70,11 +56,7 @@ export function ExpressSubmitBar({
             >
               <Text className='express-submit__detail'>明细</Text>
               <Image
-                className={
-                  detailVisible
-                    ? 'express-submit__detail-icon express-submit__detail-icon--open'
-                    : 'express-submit__detail-icon'
-                }
+                className={detailVisible ? 'express-submit__detail-icon express-submit__detail-icon--open' : 'express-submit__detail-icon'}
                 mode='aspectFit'
                 src={APP_IMAGE_ICONS.arrowUpGrey}
               />
@@ -82,15 +64,8 @@ export function ExpressSubmitBar({
           </View>
           <Text className='express-submit__note'>费用以快递员核实为准</Text>
         </View>
-        <AppPressable
-          accessibilityLabel={submitting ? '订单提交中' : '立即下单'}
-          className='express-submit__action'
-          disabled={submitting}
-          onPress={onSubmit}
-        >
-          <Text className='express-submit__text'>
-            {submitting ? '提交中' : '立即下单'}
-          </Text>
+        <AppPressable accessibilityLabel={submitting ? '订单提交中' : '立即下单'} className='express-submit__action' disabled={submitting} onPress={onSubmit}>
+          <Text className='express-submit__text'>{submitting ? '提交中' : '立即下单'}</Text>
         </AppPressable>
       </View>
     </View>

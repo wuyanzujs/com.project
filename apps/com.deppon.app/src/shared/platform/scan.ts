@@ -18,24 +18,14 @@ export interface WaybillScanResult extends ScanCodeResult {
   waybillNumber: string
 }
 
-export type AppScanWaybillRole =
-  'raw' | 'waybillNumber' | 'ltlWaybillNumber' | 'skiingWaybillNumber'
+export type AppScanWaybillRole = 'raw' | 'waybillNumber' | 'ltlWaybillNumber' | 'skiingWaybillNumber'
 
-export type AppScanSendRole =
-  'pickupManId' | 'driverId' | 'acceptDept' | 'businessCode' | 'shipperNumber'
+export type AppScanSendRole = 'pickupManId' | 'driverId' | 'acceptDept' | 'businessCode' | 'shipperNumber'
 
 export type AppScanExpressRole = 'PARTNER'
 
 export type AppScanUnsupportedReason =
-  | 'empty'
-  | 'shortLink'
-  | 'invalidUrl'
-  | 'invalidHost'
-  | 'missingQuery'
-  | 'invalidWaybill'
-  | 'invalidParams'
-  | 'sendQrCode'
-  | 'unknown'
+  'empty' | 'shortLink' | 'invalidUrl' | 'invalidHost' | 'missingQuery' | 'invalidWaybill' | 'invalidParams' | 'sendQrCode' | 'unknown'
 
 export interface AppScanMarketingContext {
   sceneId?: string
@@ -62,10 +52,7 @@ export interface AppUnsupportedScanParseResult extends AppScanMarketingContext {
   value?: string
 }
 
-export type AppScanParseResult =
-  | AppWaybillScanParseResult
-  | AppPrintCodeScanParseResult
-  | AppUnsupportedScanParseResult
+export type AppScanParseResult = AppWaybillScanParseResult | AppPrintCodeScanParseResult | AppUnsupportedScanParseResult
 
 export type AppScanResult = ScanCodeResult & AppScanParseResult
 
@@ -166,12 +153,7 @@ function getUrlHost(value: string) {
 }
 
 function isDepponHost(host: string) {
-  return (
-    host === 'deppon.com' ||
-    host.endsWith('.deppon.com') ||
-    host === 'deppon.com.cn' ||
-    host.endsWith('.deppon.com.cn')
-  )
+  return host === 'deppon.com' || host.endsWith('.deppon.com') || host === 'deppon.com.cn' || host.endsWith('.deppon.com.cn')
 }
 
 function getQueryText(value: string) {
@@ -213,10 +195,7 @@ function parseQueryParams(queryText: string) {
   return params
 }
 
-function findQueryParam(
-  params: Record<string, string>,
-  keys: Array<{ key: string }>
-) {
+function findQueryParam(params: Record<string, string>, keys: Array<{ key: string }>) {
   const item = keys.find(({ key }) => key in params)
 
   if (!item) {
@@ -232,10 +211,7 @@ function findQueryParam(
 function createUnsupportedScanResult(
   reason: AppScanUnsupportedReason,
   message: string,
-  patch: Pick<
-    AppUnsupportedScanParseResult,
-    'role' | 'value' | 'sceneId' | 'expressRole'
-  > = {}
+  patch: Pick<AppUnsupportedScanParseResult, 'role' | 'value' | 'sceneId' | 'expressRole'> = {}
 ): AppUnsupportedScanParseResult {
   return {
     kind: 'unsupported',
@@ -248,20 +224,14 @@ function createUnsupportedScanResult(
 function normalizeBusinessParam(value?: string | null) {
   const normalized = (value ?? '').trim()
 
-  if (
-    !normalized ||
-    normalized.toLowerCase() === 'null' ||
-    normalized.toLowerCase() === 'undefined'
-  ) {
+  if (!normalized || normalized.toLowerCase() === 'null' || normalized.toLowerCase() === 'undefined') {
     return ''
   }
 
   return normalized
 }
 
-function getScanMarketingContext(
-  params: Record<string, string>
-): AppScanMarketingContext {
+function getScanMarketingContext(params: Record<string, string>): AppScanMarketingContext {
   const sceneId = normalizeBusinessParam(params.sceneid)
   const partner = normalizeBusinessParam(params.partner).toUpperCase()
 
@@ -271,10 +241,7 @@ function getScanMarketingContext(
   }
 }
 
-function createWaybillScanResult(
-  role: AppScanWaybillRole,
-  value: string
-): AppWaybillScanParseResult | AppUnsupportedScanParseResult {
+function createWaybillScanResult(role: AppScanWaybillRole, value: string): AppWaybillScanParseResult | AppUnsupportedScanParseResult {
   const normalized = normalizeWaybillNumber(value)
 
   if (!isValidWaybillNumber(normalized)) {
@@ -298,12 +265,7 @@ export function parseAppScanValue(value: string): AppScanParseResult {
   const decodedValue = decodeScanValue(rawValue)
   const plainWaybill = normalizeWaybillNumber(decodedValue)
 
-  if (
-    !isHttpUrl(decodedValue) &&
-    !decodedValue.includes('?') &&
-    !decodedValue.includes('=') &&
-    isValidWaybillNumber(plainWaybill)
-  ) {
+  if (!isHttpUrl(decodedValue) && !decodedValue.includes('?') && !decodedValue.includes('=') && isValidWaybillNumber(plainWaybill)) {
     return createWaybillScanResult('raw', plainWaybill)
   }
 
@@ -315,27 +277,18 @@ export function parseAppScanValue(value: string): AppScanParseResult {
     }
 
     if (host === 'p.url.cn') {
-      return createUnsupportedScanResult(
-        'shortLink',
-        '短链二维码暂未接入 App 解析'
-      )
+      return createUnsupportedScanResult('shortLink', '短链二维码暂未接入 App 解析')
     }
 
     if (!isDepponHost(host)) {
-      return createUnsupportedScanResult(
-        'invalidHost',
-        '非德邦二维码暂不支持识别'
-      )
+      return createUnsupportedScanResult('invalidHost', '非德邦二维码暂不支持识别')
     }
   }
 
   const queryText = getQueryText(decodedValue)
 
   if (!queryText) {
-    return createUnsupportedScanResult(
-      'missingQuery',
-      '二维码缺少可识别的业务参数'
-    )
+    return createUnsupportedScanResult('missingQuery', '二维码缺少可识别的业务参数')
   }
 
   const params = parseQueryParams(queryText)
@@ -343,9 +296,7 @@ export function parseAppScanValue(value: string): AppScanParseResult {
   const waybillParam = findQueryParam(params, WAYBILL_QUERY_KEYS)
 
   if (waybillParam) {
-    const role =
-      WAYBILL_QUERY_KEYS.find(item => item.key === waybillParam.key)?.role ||
-      'waybillNumber'
+    const role = WAYBILL_QUERY_KEYS.find(item => item.key === waybillParam.key)?.role || 'waybillNumber'
 
     return {
       ...createWaybillScanResult(role, waybillParam.value),
@@ -367,31 +318,21 @@ export function parseAppScanValue(value: string): AppScanParseResult {
   const sendQrParam = findQueryParam(params, SEND_QR_QUERY_KEYS)
 
   if (sendQrParam) {
-    const role = SEND_QR_QUERY_KEYS.find(
-      item => item.key === sendQrParam.key
-    )?.role
+    const role = SEND_QR_QUERY_KEYS.find(item => item.key === sendQrParam.key)?.role
     const businessValue = normalizeBusinessParam(sendQrParam.value)
 
     if (!businessValue) {
-      return createUnsupportedScanResult(
-        'invalidParams',
-        '二维码业务参数错误',
-        {
-          role,
-          ...marketingContext
-        }
-      )
+      return createUnsupportedScanResult('invalidParams', '二维码业务参数错误', {
+        role,
+        ...marketingContext
+      })
     }
 
-    return createUnsupportedScanResult(
-      'sendQrCode',
-      '寄件业务二维码暂未接入 App 扫码入口',
-      {
-        role,
-        value: businessValue,
-        ...marketingContext
-      }
-    )
+    return createUnsupportedScanResult('sendQrCode', '寄件业务二维码暂未接入 App 扫码入口', {
+      role,
+      value: businessValue,
+      ...marketingContext
+    })
   }
 
   return createUnsupportedScanResult('unknown', '暂不支持此二维码', {
@@ -407,9 +348,7 @@ export function extractWaybillNumberFromScanValue(value: string) {
   }
 
   const decodedValue = decodeScanValue(value.trim())
-  const queryMatch = decodedValue.match(
-    /(?:waybillNumber|waybillNo|waybillNum|billNo)=([^&#]+)/i
-  )
+  const queryMatch = decodedValue.match(/(?:waybillNumber|waybillNo|waybillNum|billNo)=([^&#]+)/i)
   const candidate = queryMatch ? decodeScanValue(queryMatch[1]) : decodedValue
   const normalized = normalizeWaybillNumber(candidate)
 
@@ -420,9 +359,7 @@ export function extractWaybillNumberFromScanValue(value: string) {
   return ''
 }
 
-export async function scanCode(
-  _options: ScanCodeOptions
-): Promise<ScanCodeResult> {
+export async function scanCode(_options: ScanCodeOptions): Promise<ScanCodeResult> {
   ensureNativeCapability('scan')
 
   throw new NativeCapabilityError('scan')
@@ -436,9 +373,7 @@ export async function scanWaybillCode(source: string) {
   const parsed = parseAppScanValue(result.value)
 
   if (parsed.kind !== 'waybill') {
-    throw new ScanCodeParseError(
-      'message' in parsed ? parsed.message : '云打印码不能用于运单查询'
-    )
+    throw new ScanCodeParseError('message' in parsed ? parsed.message : '云打印码不能用于运单查询')
   }
 
   return {

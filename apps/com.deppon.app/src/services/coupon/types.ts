@@ -1,8 +1,6 @@
-export type CouponStatus =
-  'AVAILABLE' | 'UN_AVAILABLE' | 'USABLE' | 'USED' | 'EXPIRED'
+export type CouponStatus = 'AVAILABLE' | 'UN_AVAILABLE' | 'USABLE' | 'USED' | 'EXPIRED'
 
-export type CouponDiscountType =
-  '1' | '2' | '3' | '4' | '5' | '8' | '9' | string
+export type CouponDiscountType = '1' | '2' | '3' | '4' | '5' | '8' | '9' | string
 
 export interface CouponItem {
   couponCode: string

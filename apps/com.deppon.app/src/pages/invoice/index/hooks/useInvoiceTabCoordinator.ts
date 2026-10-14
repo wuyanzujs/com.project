@@ -73,15 +73,7 @@ export function useInvoiceTabCoordinator({
 
       loadTaxpayers()
     },
-    [
-      loadECards,
-      loadHistory,
-      loadOrderSearch,
-      loadOrders,
-      loadTaxpayers,
-      orderKeyword,
-      tab
-    ]
+    [loadECards, loadHistory, loadOrderSearch, loadOrders, loadTaxpayers, orderKeyword, tab]
   )
 
   const handleChangeTab = useCallback(
@@ -102,20 +94,12 @@ export function useInvoiceTabCoordinator({
       return
     }
 
-    if (
-      tab === 'orders' &&
-      !orderKeyword.trim() &&
-      orderPageIndex < orderTotalPage
-    ) {
+    if (tab === 'orders' && !orderKeyword.trim() && orderPageIndex < orderTotalPage) {
       loadOrders(orderPageIndex + 1)
       return
     }
 
-    if (
-      tab === 'history' &&
-      !historyKeyword.trim() &&
-      historyPageIndex < historyTotalPage
-    ) {
+    if (tab === 'history' && !historyKeyword.trim() && historyPageIndex < historyTotalPage) {
       loadHistory(historyPageIndex + 1)
       return
     }

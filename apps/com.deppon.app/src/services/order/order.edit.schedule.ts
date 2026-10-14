@@ -14,8 +14,7 @@ import type {
 } from './types'
 
 export const ORDER_EDIT_NIGHT_PICKUP_CACHE_MS = 2 * 60 * 60 * 1000
-export const ORDER_EDIT_NIGHT_PICKUP_NOTICE =
-  '夜间揽收服务费标准为 50 元/票，最终费用以后端核价为准。'
+export const ORDER_EDIT_NIGHT_PICKUP_NOTICE = '夜间揽收服务费标准为 50 元/票，最终费用以后端核价为准。'
 
 export const ORDER_EDIT_DELIVERY_OPTIONS: Array<{
   value: Exclude<OrderEditDeliveryMode, ''>
@@ -89,13 +88,9 @@ function normalizeProductCode(value: unknown) {
  * @description 读取订单扩展字段的文本值
  */
 function getExtendFieldValue(detail: OrderDetail, key: string) {
-  const fields = Array.isArray(detail.orderExtendFields)
-    ? detail.orderExtendFields
-    : []
+  const fields = Array.isArray(detail.orderExtendFields) ? detail.orderExtendFields : []
 
-  return normalizeText(
-    fields.find(item => normalizeText(item?.key) === key)?.value
-  )
+  return normalizeText(fields.find(item => normalizeText(item?.key) === key)?.value)
 }
 
 /**
@@ -103,16 +98,10 @@ function getExtendFieldValue(detail: OrderDetail, key: string) {
  * @param value 送货方式
  * @description 归一送货方式，非法值置空
  */
-export function normalizeOrderEditDeliveryMode(
-  value: unknown
-): OrderEditDeliveryMode {
+export function normalizeOrderEditDeliveryMode(value: unknown): OrderEditDeliveryMode {
   const mode = normalizeProductCode(value)
 
-  return mode === 'PICKNOTUPSTAIRS' ||
-    mode === 'PICKUPSTAIRS' ||
-    mode === 'PICKSELF'
-    ? mode
-    : ''
+  return mode === 'PICKNOTUPSTAIRS' || mode === 'PICKUPSTAIRS' || mode === 'PICKSELF' ? mode : ''
 }
 
 /**
@@ -121,10 +110,7 @@ export function normalizeOrderEditDeliveryMode(
  * @param productCode 产品 code
  * @description 生成上门时间查询的入参 key
  */
-function createScheduleInputKey(
-  input: OrderEditScheduleInput,
-  productCode: string
-) {
+function createScheduleInputKey(input: OrderEditScheduleInput, productCode: string) {
   return [
     input.sender.province,
     input.sender.city,
@@ -155,15 +141,7 @@ export function createOrderEditScheduleQueryKey(draft: OrderEditDraft) {
  * @description 生成寄件地址的比对 key
  */
 function createPickupAddressKey(draft: OrderEditDraft) {
-  return [
-    draft.sender.province,
-    draft.sender.city,
-    draft.sender.county,
-    draft.sender.town,
-    draft.sender.address
-  ]
-    .map(normalizeText)
-    .join('|')
+  return [draft.sender.province, draft.sender.city, draft.sender.county, draft.sender.town, draft.sender.address].map(normalizeText).join('|')
 }
 
 /**
@@ -172,13 +150,9 @@ function createPickupAddressKey(draft: OrderEditDraft) {
  * @param input 上门时间入参
  * @description 从订单详情创建上门时间草稿
  */
-export function createOrderEditScheduleDraft(
-  detail: OrderDetail,
-  input: OrderEditScheduleInput
-): OrderEditScheduleDraft {
+export function createOrderEditScheduleDraft(detail: OrderDetail, input: OrderEditScheduleInput): OrderEditScheduleDraft {
   const productCode = normalizeProductCode(detail.transportMode)
-  const pickupType: OrderEditPickupTimeType =
-    getExtendFieldValue(detail, 'nightAccept') === 'Y' ? 'NIGHT' : 'NORMAL'
+  const pickupType: OrderEditPickupTimeType = getExtendFieldValue(detail, 'nightAccept') === 'Y' ? 'NIGHT' : 'NORMAL'
   const pickPeriodTime = normalizeNumber(detail.pickPeriodTime)
 
   return {
@@ -222,10 +196,7 @@ function isLogisticsOrder(schedule: OrderEditScheduleDraft) {
     return true
   }
 
-  return !(
-    /^(5|6|7|8|9|0)/.test(waybillNumber) &&
-    (waybillNumber.length === 10 || waybillNumber.length === 14)
-  )
+  return !(/^(5|6|7|8|9|0)/.test(waybillNumber) && (waybillNumber.length === 10 || waybillNumber.length === 14))
 }
 
 /**
@@ -238,11 +209,7 @@ export function isOrderEditDeliveryModeVisible(draft: OrderEditDraft) {
     return false
   }
 
-  return (
-    isLogisticsOrder(draft.schedule) ||
-    draft.totalWeight > 60 ||
-    draft.totalVolume > 0.36
-  )
+  return isLogisticsOrder(draft.schedule) || draft.totalWeight > 60 || draft.totalVolume > 0.36
 }
 
 /**
@@ -250,17 +217,13 @@ export function isOrderEditDeliveryModeVisible(draft: OrderEditDraft) {
  * @param draft 订单修改草稿
  * @description 组装夜间揽收能力查询请求
  */
-export function buildOrderEditPickupNightRequest(
-  draft: OrderEditDraft
-): OrderEditPickupNightRequest | null {
+export function buildOrderEditPickupNightRequest(draft: OrderEditDraft): OrderEditPickupNightRequest | null {
   const province = normalizeText(draft.sender.province)
   const city = normalizeText(draft.sender.city)
   const county = normalizeText(draft.sender.county)
   const address = normalizeText(draft.sender.address)
 
-  return province && city && county && address
-    ? { province, city, county, address }
-    : null
+  return province && city && county && address ? { province, city, county, address } : null
 }
 
 /**
@@ -277,8 +240,7 @@ export function createOrderEditPickupNightCapability(
 ): OrderEditPickupNightCapability {
   const startTime = normalizeText(response?.startTime)
   const endTime = normalizeText(response?.endTime)
-  const enabled =
-    response?.nightPickUpEnable === true && !!startTime && !!endTime
+  const enabled = response?.nightPickUpEnable === true && !!startTime && !!endTime
 
   return {
     addressKey: createPickupAddressKey(draft),
@@ -295,10 +257,7 @@ export function createOrderEditPickupNightCapability(
  * @param now 当前时间戳
  * @description 取未过期且地址一致的夜间揽收能力
  */
-export function getFreshOrderEditPickupNightCapability(
-  draft: OrderEditDraft,
-  now = Date.now()
-) {
+export function getFreshOrderEditPickupNightCapability(draft: OrderEditDraft, now = Date.now()) {
   const capability = draft.schedule.pickup.nightCapability
 
   if (
@@ -321,10 +280,7 @@ export function getFreshOrderEditPickupNightCapability(
  * @param capability 夜间揽收能力
  * @description 组装上门时间查询请求
  */
-export function buildOrderEditPickupTimeRequest(
-  draft: OrderEditDraft,
-  capability?: OrderEditPickupNightCapability
-): OrderEditPickupTimeRequest | null {
+export function buildOrderEditPickupTimeRequest(draft: OrderEditDraft, capability?: OrderEditPickupNightCapability): OrderEditPickupTimeRequest | null {
   const address = buildOrderEditPickupNightRequest(draft)
 
   if (!address) {
@@ -355,22 +311,14 @@ export function buildOrderEditPickupTimeRequest(
  * @description 解析上门时间为时间戳
  */
 function parsePickupDateTime(value: string) {
-  const match = normalizeText(value).match(
-    /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/
-  )
+  const match = normalizeText(value).match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/)
 
   if (!match) {
     return null
   }
 
   const values = match.slice(1).map(Number)
-  const timestamp = Date.UTC(
-    values[0],
-    values[1] - 1,
-    values[2],
-    values[3],
-    values[4]
-  )
+  const timestamp = Date.UTC(values[0], values[1] - 1, values[2], values[3], values[4])
   const date = new Date(timestamp)
 
   return date.getUTCFullYear() === values[0] &&
@@ -388,10 +336,7 @@ function parsePickupDateTime(value: string) {
  * @param now 当前时间
  * @description 校验夜间上门时间是否可预约
  */
-export function isOrderEditNightPickupTimeValid(
-  pickupTime: string,
-  now = new Date()
-) {
+export function isOrderEditNightPickupTimeValid(pickupTime: string, now = new Date()) {
   const selected = parsePickupDateTime(pickupTime)
 
   if (!selected) {
@@ -404,15 +349,7 @@ export function isOrderEditNightPickupTimeValid(
     return true
   }
 
-  return (
-    selected >=
-    Date.UTC(
-      beijingNow.getUTCFullYear(),
-      beijingNow.getUTCMonth(),
-      beijingNow.getUTCDate() + 1,
-      6
-    )
-  )
+  return selected >= Date.UTC(beijingNow.getUTCFullYear(), beijingNow.getUTCMonth(), beijingNow.getUTCDate() + 1, 6)
 }
 
 /**
@@ -421,29 +358,20 @@ export function isOrderEditNightPickupTimeValid(
  * @param options 可选的校验选项
  * @description 生成上门时间与送货方式校验提示
  */
-export function validateOrderEditSchedule(
-  draft: OrderEditDraft,
-  options: { now?: Date } = {}
-) {
+export function validateOrderEditSchedule(draft: OrderEditDraft, options: { now?: Date } = {}) {
   const messages: string[] = []
   const pickup = draft.schedule.pickup
   const queryKey = createOrderEditScheduleQueryKey(draft)
 
   if (!pickup.time) {
     messages.push('请选择期望上门时间')
-  } else if (
-    queryKey !== draft.schedule.initialInputKey &&
-    pickup.selectionKey !== queryKey
-  ) {
+  } else if (queryKey !== draft.schedule.initialInputKey && pickup.selectionKey !== queryKey) {
     messages.push('订单信息已变化，请重新获取并选择上门时间')
   }
 
   if (pickup.type === 'NIGHT') {
     const now = options.now ?? new Date()
-    const capability = getFreshOrderEditPickupNightCapability(
-      draft,
-      now.getTime()
-    )
+    const capability = getFreshOrderEditPickupNightCapability(draft, now.getTime())
 
     if (!capability?.enabled) {
       messages.push('夜间揽收能力已失效，请重新获取上门时间')
@@ -467,19 +395,12 @@ export function validateOrderEditSchedule(
  * @param origin 原始草稿
  * @description 生成上门时间与送货方式的字段差异
  */
-export function createOrderEditScheduleRequestDiff(
-  draft: OrderEditDraft,
-  origin: OrderEditDraft
-): OrderEditScheduleRequestDiff {
+export function createOrderEditScheduleRequestDiff(draft: OrderEditDraft, origin: OrderEditDraft): OrderEditScheduleRequestDiff {
   const request: Partial<OrderModifyRequest> = {}
   const changedFields: string[] = []
-  const pickupChanged =
-    draft.schedule.pickup.time.trim() !== origin.schedule.pickup.time.trim() ||
-    draft.schedule.pickup.type !== origin.schedule.pickup.type
+  const pickupChanged = draft.schedule.pickup.time.trim() !== origin.schedule.pickup.time.trim() || draft.schedule.pickup.type !== origin.schedule.pickup.type
 
-  if (
-    draft.schedule.pickup.time.trim() !== origin.schedule.pickup.time.trim()
-  ) {
+  if (draft.schedule.pickup.time.trim() !== origin.schedule.pickup.time.trim()) {
     request.beginAcceptTime = draft.schedule.pickup.time.trim()
 
     if (origin.schedule.orderChannel.toLowerCase() === 'servicepoint') {
@@ -504,10 +425,7 @@ export function createOrderEditScheduleRequestDiff(
     changedFields.push('期望上门时间')
   }
 
-  if (
-    isOrderEditDeliveryModeVisible(draft) &&
-    draft.schedule.deliveryMode !== origin.schedule.deliveryMode
-  ) {
+  if (isOrderEditDeliveryModeVisible(draft) && draft.schedule.deliveryMode !== origin.schedule.deliveryMode) {
     request.deliveryMode = draft.schedule.deliveryMode
     changedFields.push('送货方式')
   }

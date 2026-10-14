@@ -1,17 +1,7 @@
 import { Text, Textarea, View } from '@tarojs/components'
 
-import {
-  ORDER_EVALUATION_LEVELS,
-  ORDER_EVALUATION_SUGGESTION_MAX_LENGTH,
-  ORDER_EVALUATION_TITLES,
-  getOrderEvaluationLabels
-} from '@/services/order'
-import type {
-  OrderEvaluationDraft,
-  OrderEvaluationLevel,
-  OrderEvaluationRecordType,
-  OrderEvaluationValidation
-} from '@/services/order'
+import { ORDER_EVALUATION_LEVELS, ORDER_EVALUATION_SUGGESTION_MAX_LENGTH, ORDER_EVALUATION_TITLES, getOrderEvaluationLabels } from '@/services/order'
+import type { OrderEvaluationDraft, OrderEvaluationLevel, OrderEvaluationRecordType, OrderEvaluationValidation } from '@/services/order'
 import { AppPressable } from '@/shared/components'
 import { AppIcon } from '@/shared/components/AppIcon'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
@@ -33,9 +23,7 @@ export function OrderEvaluationForm(props: {
       <View className='order-evaluation-section'>
         <View className='order-evaluation-section__head'>
           <Text className='order-evaluation-section__title'>服务评分</Text>
-          <Text className='order-evaluation-section__hint'>
-            {ORDER_EVALUATION_TITLES[props.draft.level]}
-          </Text>
+          <Text className='order-evaluation-section__hint'>{ORDER_EVALUATION_TITLES[props.draft.level]}</Text>
         </View>
         <View className='order-evaluation-stars'>
           {ORDER_EVALUATION_LEVELS.map(level => {
@@ -44,11 +32,7 @@ export function OrderEvaluationForm(props: {
             return (
               <AppPressable
                 accessibilityLabel={`${level} 星`}
-                className={[
-                  'order-evaluation-star',
-                  selected && 'order-evaluation-star--selected',
-                  level === 5 && 'order-evaluation-star--last'
-                ]
+                className={['order-evaluation-star', selected && 'order-evaluation-star--selected', level === 5 && 'order-evaluation-star--last']
                   .filter(Boolean)
                   .join(' ')}
                 flex
@@ -56,15 +40,7 @@ export function OrderEvaluationForm(props: {
                 selected={selected}
                 onPress={() => props.onLevelChange(level)}
               >
-                <AppIcon
-                  color={
-                    selected
-                      ? APP_STYLE_COLORS.status.warningAccent
-                      : APP_STYLE_COLORS.text.placeholder
-                  }
-                  name='star'
-                  size={26}
-                />
+                <AppIcon color={selected ? APP_STYLE_COLORS.status.warningAccent : APP_STYLE_COLORS.text.placeholder} name='star' size={26} />
                 <Text className='order-evaluation-star__label'>{level}</Text>
               </AppPressable>
             )
@@ -84,22 +60,12 @@ export function OrderEvaluationForm(props: {
             return (
               <AppPressable
                 accessibilityLabel={label}
-                className={
-                  selected
-                    ? 'order-evaluation-label order-evaluation-label--selected'
-                    : 'order-evaluation-label'
-                }
+                className={selected ? 'order-evaluation-label order-evaluation-label--selected' : 'order-evaluation-label'}
                 key={label}
                 selected={selected}
                 onPress={() => props.onLabelToggle(label)}
               >
-                <Text
-                  className={
-                    selected
-                      ? 'order-evaluation-label__text order-evaluation-label__text--selected'
-                      : 'order-evaluation-label__text'
-                  }
-                >
+                <Text className={selected ? 'order-evaluation-label__text order-evaluation-label__text--selected' : 'order-evaluation-label__text'}>
                   {label}
                 </Text>
               </AppPressable>
@@ -112,8 +78,7 @@ export function OrderEvaluationForm(props: {
         <View className='order-evaluation-section__head'>
           <Text className='order-evaluation-section__title'>补充建议</Text>
           <Text className='order-evaluation-section__hint'>
-            {props.draft.suggestion.length}/
-            {ORDER_EVALUATION_SUGGESTION_MAX_LENGTH}
+            {props.draft.suggestion.length}/{ORDER_EVALUATION_SUGGESTION_MAX_LENGTH}
           </Text>
         </View>
         <Textarea
@@ -123,11 +88,7 @@ export function OrderEvaluationForm(props: {
           value={props.draft.suggestion}
           onInput={event => props.onSuggestionChange(event.detail.value)}
         />
-        {!props.validation.valid && (
-          <Text className='order-evaluation-validation'>
-            {props.validation.message}
-          </Text>
-        )}
+        {!props.validation.valid && <Text className='order-evaluation-validation'>{props.validation.message}</Text>}
       </View>
     </>
   )

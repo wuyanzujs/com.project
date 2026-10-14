@@ -4,23 +4,13 @@ import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-import {
-  collectProjectSnapshot,
-  compareBaselineEvolution,
-  compareSnapshot,
-  createNextBaseline,
-  getSnapshotSummary
-} from './style-governance-lib.mjs'
+import { collectProjectSnapshot, compareBaselineEvolution, compareSnapshot, createNextBaseline, getSnapshotSummary } from './style-governance-lib.mjs'
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url))
 const appRoot = path.resolve(scriptDirectory, '..')
-const baselinePath = path.join(
-  scriptDirectory,
-  'style-governance-baseline.json'
-)
+const baselinePath = path.join(scriptDirectory, 'style-governance-baseline.json')
 const repoRoot = path.resolve(appRoot, '..', '..')
-const baselineRepoPath =
-  'apps/com.deppon.app/scripts/style-governance-baseline.json'
+const baselineRepoPath = 'apps/com.deppon.app/scripts/style-governance-baseline.json'
 const supportedModes = new Map([
   ['', 'daily'],
   ['--strict', 'strict'],
@@ -38,9 +28,7 @@ const isTruthyEnvironmentValue = value =>
   )
 
 if (!mode) {
-  console.error(
-    '[style-governance] 参数无效。支持：--strict、--report、--update-baseline'
-  )
+  console.error('[style-governance] 参数无效。支持：--strict、--report、--update-baseline')
   process.exit(1)
 }
 
@@ -48,9 +36,7 @@ const readBaseline = () => {
   try {
     return JSON.parse(fs.readFileSync(baselinePath, 'utf8'))
   } catch (error) {
-    console.error(
-      `[style-governance] 无法读取基线：${error instanceof Error ? error.message : String(error)}`
-    )
+    console.error(`[style-governance] 无法读取基线：${error instanceof Error ? error.message : String(error)}`)
     process.exit(1)
   }
 }
@@ -59,29 +45,19 @@ const readReferenceBaseline = reference => {
   if (!reference || /^0+$/.test(reference)) return null
 
   try {
-    const content = execFileSync(
-      'git',
-      ['show', `${reference}:${baselineRepoPath}`],
-      { cwd: repoRoot, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }
-    )
+    const content = execFileSync('git', ['show', `${reference}:${baselineRepoPath}`], { cwd: repoRoot, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
     return JSON.parse(content)
   } catch (error) {
-    console.error(
-      `[style-governance] 无法读取参考基线 ${reference}：${error instanceof Error ? error.message : String(error)}`
-    )
+    console.error(`[style-governance] 无法读取参考基线 ${reference}：${error instanceof Error ? error.message : String(error)}`)
     process.exit(1)
   }
 }
 
 const printSummary = snapshot => {
   const summary = getSnapshotSummary(snapshot)
-  const adoption = summary.scssFiles
-    ? ((summary.tokenFiles / summary.scssFiles) * 100).toFixed(1)
-    : '100.0'
+  const adoption = summary.scssFiles ? ((summary.tokenFiles / summary.scssFiles) * 100).toFixed(1) : '100.0'
 
-  console.log(
-    `[style-governance] 业务 SCSS ${summary.scssFiles} 个，共 ${summary.lines} 行，token 接入 ${summary.tokenFiles} 个（${adoption}%）`
-  )
+  console.log(`[style-governance] 业务 SCSS ${summary.scssFiles} 个，共 ${summary.lines} 行，token 接入 ${summary.tokenFiles} 个（${adoption}%）`)
   console.log(
     `[style-governance] 存量：颜色 ${summary.rawColors}，字号 ${summary.rawFontSizes}，行高 ${summary.rawLineHeights}，圆角 ${summary.rawRadii}，字重 ${summary.rawFontWeights}，间距 ${summary.rawSpaces}`
   )
@@ -95,9 +71,7 @@ const printFailures = (failures, limit = 80) => {
     console.error(`- ${failure}`)
   }
   if (failures.length > limit) {
-    console.error(
-      `- 其余 ${failures.length - limit} 项已省略，请使用 --report 查看治理概况`
-    )
+    console.error(`- 其余 ${failures.length - limit} 项已省略，请使用 --report 查看治理概况`)
   }
 }
 
@@ -111,9 +85,7 @@ const baseline = readBaseline()
 const snapshot = collectProjectSnapshot(appRoot)
 printSummary(snapshot)
 
-const referenceBaseline = readReferenceBaseline(
-  process.env.STYLE_GOVERNANCE_BASE_REF
-)
+const referenceBaseline = readReferenceBaseline(process.env.STYLE_GOVERNANCE_BASE_REF)
 if (referenceBaseline && mode !== 'report') {
   const evolution = compareBaselineEvolution(baseline, referenceBaseline)
   if (!evolution.ok) {
@@ -131,19 +103,11 @@ if (mode === 'report') {
   if (strictResult.ok) {
     console.log('[style-governance] 全量 CSS 治理目标已满足')
   } else {
-    console.log(
-      `[style-governance] 严格门禁尚有 ${strictResult.failures.length} 项待治理`
-    )
+    console.log(`[style-governance] 严格门禁尚有 ${strictResult.failures.length} 项待治理`)
     const debtFiles = Object.entries(snapshot.scss.files)
       .map(([file, metrics]) => ({
         file,
-        debt:
-          metrics.rawColors +
-          metrics.rawFontSizes +
-          metrics.rawLineHeights +
-          metrics.rawRadii +
-          metrics.rawFontWeights +
-          metrics.rawSpaces,
+        debt: metrics.rawColors + metrics.rawFontSizes + metrics.rawLineHeights + metrics.rawRadii + metrics.rawFontWeights + metrics.rawSpaces,
         lines: metrics.lines
       }))
       .sort((left, right) => right.debt - left.debt || right.lines - left.lines)
@@ -180,17 +144,9 @@ const result = compareSnapshot(snapshot, baseline, {
 })
 
 if (!result.ok) {
-  console.error(
-    mode === 'strict'
-      ? `[style-governance] 严格门禁失败，共 ${result.failures.length} 项：`
-      : '[style-governance] 日常门禁失败：'
-  )
+  console.error(mode === 'strict' ? `[style-governance] 严格门禁失败，共 ${result.failures.length} 项：` : '[style-governance] 日常门禁失败：')
   printFailures(result.failures)
   process.exit(1)
 }
 
-console.log(
-  mode === 'strict'
-    ? '[style-governance] 严格门禁通过（全量 CSS 治理完成）'
-    : '[style-governance] 日常门禁通过（逐文件债务只降不增）'
-)
+console.log(mode === 'strict' ? '[style-governance] 严格门禁通过（全量 CSS 治理完成）' : '[style-governance] 日常门禁通过（逐文件债务只降不增）')

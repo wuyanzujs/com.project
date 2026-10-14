@@ -1,11 +1,4 @@
-import {
-  type Dispatch,
-  type SetStateAction,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { type Dispatch, type SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   acceptExpressNightPickupNotice,
@@ -14,11 +7,7 @@ import {
   expressService,
   selectExpressPickupTime
 } from '@/services/express'
-import type {
-  ExpressDraft,
-  ExpressPickupTimeResponse,
-  ExpressPickupTimeSelection
-} from '@/services/express'
+import type { ExpressDraft, ExpressPickupTimeResponse, ExpressPickupTimeSelection } from '@/services/express'
 
 interface UseExpressPickupTimeOptions {
   draft: ExpressDraft
@@ -47,31 +36,20 @@ function getPickupDate(value: string) {
   return value.match(/^(\d{4}-\d{2}-\d{2})/)?.[1] ?? ''
 }
 
-function getSelection(
-  response: ExpressPickupTimeResponse | null,
-  date: string,
-  time: string
-): ExpressPickupTimeSelection | null {
+function getSelection(response: ExpressPickupTimeResponse | null, date: string, time: string): ExpressPickupTimeSelection | null {
   const opening = response?.openingList.find(item => item.date === date)
 
   if (!opening) {
     return null
   }
 
-  const item = opening.dateList.find(
-    candidate => candidate.time === time && candidate.type !== 'DISABLE'
-  )
+  const item = opening.dateList.find(candidate => candidate.time === time && candidate.type !== 'DISABLE')
 
   return item ? { date, ...item } : null
 }
 
-export function useExpressPickupTime({
-  draft,
-  setDraft
-}: UseExpressPickupTimeOptions) {
-  const [response, setResponse] = useState<ExpressPickupTimeResponse | null>(
-    null
-  )
+export function useExpressPickupTime({ draft, setDraft }: UseExpressPickupTimeOptions) {
+  const [response, setResponse] = useState<ExpressPickupTimeResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const requestVersion = useRef(0)
@@ -94,10 +72,7 @@ export function useExpressPickupTime({
     []
   )
 
-  const dateOptions = useMemo(
-    () => createExpressPickupDateOptions(response),
-    [response]
-  )
+  const dateOptions = useMemo(() => createExpressPickupDateOptions(response), [response])
   const selectedDate = getPickupDate(draft.pickup.time)
 
   const handleQuery = async () => {
@@ -120,10 +95,7 @@ export function useExpressPickupTime({
     try {
       const nextResponse = await expressService.queryPickupTime(draft)
 
-      if (
-        requestVersion.current !== version ||
-        latestQueryKey.current !== requestKey
-      ) {
+      if (requestVersion.current !== version || latestQueryKey.current !== requestKey) {
         return
       }
 
@@ -142,11 +114,7 @@ export function useExpressPickupTime({
         return applyExpressPickupTime(current, pickupTimeResponse)
       })
       setResponse(pickupTimeResponse)
-      setMessage(
-        pickupTimeResponse.nightCapability?.enabled
-          ? '已加载普通和夜间取件时段，夜间揽收会产生额外费用'
-          : '已加载可用取件时段'
-      )
+      setMessage(pickupTimeResponse.nightCapability?.enabled ? '已加载普通和夜间取件时段，夜间揽收会产生额外费用' : '已加载可用取件时段')
     } catch {
       if (requestVersion.current === version) {
         setMessage('取件时间查询失败，请稍后重试')
@@ -161,9 +129,7 @@ export function useExpressPickupTime({
   const handleDateChange = (date: string) => {
     const dateOption = dateOptions.find(option => option.value === date)
     const selection =
-      dateOption?.timeOptions.find(
-        option => !option.disabled && option.type === 'NORMAL'
-      ) ?? dateOption?.timeOptions.find(option => !option.disabled)
+      dateOption?.timeOptions.find(option => !option.disabled && option.type === 'NORMAL') ?? dateOption?.timeOptions.find(option => !option.disabled)
 
     if (!selection) {
       return
@@ -188,11 +154,7 @@ export function useExpressPickupTime({
 
   // pickup.time 与槽位 time 同为「日期 时间戳」全格式，直接精确匹配；
   // 旧逻辑剥掉日期前缀后只剩时刻，永远匹配不上导致 selectedTime 恒为空。
-  const selectedTimeOption = getSelection(
-    response,
-    selectedDate,
-    draft.pickup.time
-  )
+  const selectedTimeOption = getSelection(response, selectedDate, draft.pickup.time)
 
   return {
     dateOptions,
@@ -204,11 +166,8 @@ export function useExpressPickupTime({
     onTimeChange: handleTimeChange,
     selectedDate,
     selectedTime: selectedTimeOption?.time ?? '',
-    showNightNotice:
-      draft.pickup.type === 'NIGHT' && !draft.pickup.nightNoticeAccepted
+    showNightNotice: draft.pickup.type === 'NIGHT' && !draft.pickup.nightNoticeAccepted
   }
 }
 
-export type ExpressPickupTimeController = ReturnType<
-  typeof useExpressPickupTime
->
+export type ExpressPickupTimeController = ReturnType<typeof useExpressPickupTime>

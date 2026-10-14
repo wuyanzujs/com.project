@@ -24,17 +24,9 @@ interface OrderEditCollectionSectionProps {
   controller: OrderEditCollectionController
 }
 
-export function OrderEditCollectionSection({
-  collection,
-  controller
-}: OrderEditCollectionSectionProps) {
-  const [amountText, setAmountText] = useState(
-    collection.amount > 0 ? String(collection.amount) : ''
-  )
-  const selectedOption =
-    ORDER_EDIT_COLLECTION_OPTIONS.find(
-      option => option.value === collection.type
-    ) ?? ORDER_EDIT_COLLECTION_OPTIONS[0]
+export function OrderEditCollectionSection({ collection, controller }: OrderEditCollectionSectionProps) {
+  const [amountText, setAmountText] = useState(collection.amount > 0 ? String(collection.amount) : '')
+  const selectedOption = ORDER_EDIT_COLLECTION_OPTIONS.find(option => option.value === collection.type) ?? ORDER_EDIT_COLLECTION_OPTIONS[0]
   const accountText = maskOrderEditCollectionAccount(collection.account)
 
   useEffect(() => {
@@ -43,10 +35,7 @@ export function OrderEditCollectionSection({
         return ''
       }
 
-      if (
-        current &&
-        parseOrderEditCollectionAmount(current) === collection.amount
-      ) {
+      if (current && parseOrderEditCollectionAmount(current) === collection.amount) {
         return current
       }
 
@@ -67,26 +56,18 @@ export function OrderEditCollectionSection({
         <View className='order-edit-collection__header-content'>
           <Text className='order-edit-section__title'>代收货款</Text>
           <Text className='order-edit-collection__summary'>
-            {collection.enabled
-              ? selectedOption.label + ' · ' + collection.amount + ' 元'
-              : '由快递员向收件人代收货款并返款'}
+            {collection.enabled ? selectedOption.label + ' · ' + collection.amount + ' 元' : '由快递员向收件人代收货款并返款'}
           </Text>
         </View>
         <AppPressable
-          accessibilityLabel={
-            collection.enabled ? '关闭改单代收货款' : '开启改单代收货款'
-          }
+          accessibilityLabel={collection.enabled ? '关闭改单代收货款' : '开启改单代收货款'}
           className='order-edit-collection-toggle'
           selected={collection.enabled}
-          onPress={
-            collection.enabled ? controller.onClear : controller.onEnable
-          }
+          onPress={collection.enabled ? controller.onClear : controller.onEnable}
         >
           <View
             className={
-              collection.enabled
-                ? 'order-edit-collection-toggle__track order-edit-collection-toggle__track--active'
-                : 'order-edit-collection-toggle__track'
+              collection.enabled ? 'order-edit-collection-toggle__track order-edit-collection-toggle__track--active' : 'order-edit-collection-toggle__track'
             }
           >
             <View className='order-edit-collection-toggle__thumb' />
@@ -104,37 +85,23 @@ export function OrderEditCollectionSection({
               return (
                 <AppPressable
                   accessibilityLabel={'选择' + option.label}
-                  className={
-                    selected
-                      ? 'order-edit-collection-type order-edit-collection-type--active'
-                      : 'order-edit-collection-type'
-                  }
+                  className={selected ? 'order-edit-collection-type order-edit-collection-type--active' : 'order-edit-collection-type'}
                   key={option.value}
                   selected={selected}
                   onPress={() => controller.onTypeChange(option.value)}
                 >
-                  <Text
-                    className={
-                      selected
-                        ? 'order-edit-collection-type__text order-edit-collection-type__text--active'
-                        : 'order-edit-collection-type__text'
-                    }
-                  >
+                  <Text className={selected ? 'order-edit-collection-type__text order-edit-collection-type__text--active' : 'order-edit-collection-type__text'}>
                     {option.label}
                   </Text>
                 </AppPressable>
               )
             })}
           </View>
-          <Text className='order-edit-collection__hint'>
-            {selectedOption.summary}
-          </Text>
+          <Text className='order-edit-collection__hint'>{selectedOption.summary}</Text>
 
           <View className='order-edit-collection__amount-head'>
             <Text className='order-edit-collection__label'>代收金额</Text>
-            <Text className='order-edit-collection__limit'>
-              上限 {collection.limit} 元
-            </Text>
+            <Text className='order-edit-collection__limit'>上限 {collection.limit} 元</Text>
           </View>
           <View className='order-edit-collection__amount'>
             <Text className='order-edit-collection__currency'>¥</Text>
@@ -159,25 +126,15 @@ export function OrderEditCollectionSection({
             <View className='order-edit-collection-account__content'>
               <Text className='order-edit-collection__label'>收款账户</Text>
               <Text className='order-edit-collection-account__value'>
-                {accountText
-                  ? collection.accountName + ' ' + accountText
-                  : '请选择已审核通过的账户'}
+                {accountText ? collection.accountName + ' ' + accountText : '请选择已审核通过的账户'}
               </Text>
             </View>
-            <AppIcon
-              color={APP_STYLE_COLORS.text.supporting}
-              name='chevronRight'
-              size={APP_NATIVE_TOKENS.icon.small}
-            />
+            <AppIcon color={APP_STYLE_COLORS.text.supporting} name='chevronRight' size={APP_NATIVE_TOKENS.icon.small} />
           </AppPressable>
 
           <View className='order-edit-collection-agreement'>
             <AppPressable
-              accessibilityLabel={
-                collection.agreementAccepted
-                  ? '取消同意代收货款服务协议'
-                  : '同意代收货款服务协议'
-              }
+              accessibilityLabel={collection.agreementAccepted ? '取消同意代收货款服务协议' : '同意代收货款服务协议'}
               className='order-edit-collection-agreement__check'
               layout='row-start'
               selected={collection.agreementAccepted}
@@ -190,35 +147,19 @@ export function OrderEditCollectionSection({
                     : 'order-edit-collection-agreement__box'
                 }
               >
-                {collection.agreementAccepted ? (
-                  <AppIcon
-                    color={APP_STYLE_COLORS.text.inverse}
-                    name='badgeCheck'
-                    size={APP_NATIVE_TOKENS.icon.small}
-                  />
-                ) : null}
+                {collection.agreementAccepted ? <AppIcon color={APP_STYLE_COLORS.text.inverse} name='badgeCheck' size={APP_NATIVE_TOKENS.icon.small} /> : null}
               </View>
-              <Text className='order-edit-collection-agreement__text'>
-                已阅读并同意代收货款服务协议
-              </Text>
+              <Text className='order-edit-collection-agreement__text'>已阅读并同意代收货款服务协议</Text>
             </AppPressable>
-            <AppPressable
-              accessibilityLabel='查看代收货款服务协议'
-              className='order-edit-collection-agreement__rules'
-              onPress={controller.onOpenRules}
-            >
-              <Text className='order-edit-collection-agreement__rules-text'>
-                查看
-              </Text>
+            <AppPressable accessibilityLabel='查看代收货款服务协议' className='order-edit-collection-agreement__rules' onPress={controller.onOpenRules}>
+              <Text className='order-edit-collection-agreement__rules-text'>查看</Text>
             </AppPressable>
           </View>
 
           {controller.capabilityLoading || controller.capabilityMessage ? (
             <View className='order-edit-collection-message'>
               <Text className='order-edit-collection-message__text'>
-                {controller.capabilityLoading
-                  ? '正在同步代收货款额度'
-                  : controller.capabilityMessage}
+                {controller.capabilityLoading ? '正在同步代收货款额度' : controller.capabilityMessage}
               </Text>
               {!controller.capabilityLoading ? (
                 <AppPressable
@@ -226,9 +167,7 @@ export function OrderEditCollectionSection({
                   className='order-edit-collection-message__action'
                   onPress={controller.onRefreshCapability}
                 >
-                  <Text className='order-edit-collection-message__action-text'>
-                    刷新
-                  </Text>
+                  <Text className='order-edit-collection-message__action-text'>刷新</Text>
                 </AppPressable>
               ) : null}
             </View>

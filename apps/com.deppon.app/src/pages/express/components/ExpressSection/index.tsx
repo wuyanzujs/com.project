@@ -18,43 +18,20 @@ interface ExpressSectionProps extends PropsWithChildren {
   onHeaderPress?: () => void
 }
 
-export function ExpressSection({
-  children,
-  expanded = false,
-  hint,
-  plain = false,
-  summary,
-  summaryMuted = false,
-  title,
-  onHeaderPress
-}: ExpressSectionProps) {
+export function ExpressSection({ children, expanded = false, hint, plain = false, summary, summaryMuted = false, title, onHeaderPress }: ExpressSectionProps) {
   // 基础信息卡里的行按生产端 82px 行高，卡片内的折叠段沿用原来的紧凑行高。
-  const headClassName = plain
-    ? 'express-section__head express-section__head--row'
-    : 'express-section__head'
+  const headClassName = plain ? 'express-section__head express-section__head--row' : 'express-section__head'
 
   const header = (
     <>
       <Text className='express-section__title'>{title}</Text>
       {hint ? <Text className='express-section__hint'>{hint}</Text> : null}
       {summary ? (
-        <Text
-          className={
-            summaryMuted
-              ? 'express-section__summary express-section__summary--muted'
-              : 'express-section__summary'
-          }
-        >
-          {summary}
-        </Text>
+        <Text className={summaryMuted ? 'express-section__summary express-section__summary--muted' : 'express-section__summary'}>{summary}</Text>
       ) : null}
       {onHeaderPress ? (
         <Image
-          className={
-            expanded
-              ? 'express-section__arrow express-section__arrow--expanded'
-              : 'express-section__arrow'
-          }
+          className={expanded ? 'express-section__arrow express-section__arrow--expanded' : 'express-section__arrow'}
           mode='aspectFit'
           src={APP_IMAGE_ICONS.arrowRightGrey}
         />
@@ -63,11 +40,7 @@ export function ExpressSection({
   )
 
   return (
-    <View
-      className={
-        plain ? 'express-section' : 'express-section express-section--card'
-      }
-    >
+    <View className={plain ? 'express-section' : 'express-section express-section--card'}>
       {onHeaderPress ? (
         <AppPressable
           accessibilityLabel={expanded ? `收起${title}` : `展开${title}`}

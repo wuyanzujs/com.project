@@ -85,9 +85,7 @@ export function hasValidSession() {
 
 export function getCurrentRouteUrl(fallback: string = APP_ROUTES.mine) {
   const page = getCurrentPage()
-  const path = normalizeRoutePath(
-    page?.route || page?.__route__ || page?.$router?.path
-  )
+  const path = normalizeRoutePath(page?.route || page?.__route__ || page?.$router?.path)
 
   if (!page || !path) {
     return fallback

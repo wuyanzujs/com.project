@@ -4,23 +4,13 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 import { useCallback, useRef, useState } from 'react'
 
 import type { DepponResponse } from '@/request/deppon'
-import type {
-  InvoiceHistoryView,
-  InvoiceOrderSearchView,
-  InvoiceOrderView
-} from '@/services/invoice'
+import type { InvoiceHistoryView, InvoiceOrderSearchView, InvoiceOrderView } from '@/services/invoice'
 import { useLatestRequestRunner } from '@/shared/async/useLatestRequest'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 
-import {
-  InvoiceHistoryPanel,
-  InvoiceLoading,
-  InvoiceOrdersPanel,
-  InvoiceTabs,
-  InvoiceTaxpayersPanel
-} from './components/InvoiceCenterSections'
+import { InvoiceHistoryPanel, InvoiceLoading, InvoiceOrdersPanel, InvoiceTabs, InvoiceTaxpayersPanel } from './components/InvoiceCenterSections'
 import { InvoiceECardPanel } from './components/InvoiceECardPanel'
 import { OrderAuthDialog } from './components/OrderAuthDialog'
 import { useInvoiceECards } from './hooks/useInvoiceECards'
@@ -57,10 +47,7 @@ const InvoiceCenterPage = () => {
     setErrorMessage('')
   }, [])
   const finishLatestRequest = useCallback(() => setLoading(false), [])
-  const { invalidateLatestRequest, runLatestRequest } = useLatestRequestRunner(
-    startLatestRequest,
-    finishLatestRequest
-  )
+  const { invalidateLatestRequest, runLatestRequest } = useLatestRequestRunner(startLatestRequest, finishLatestRequest)
 
   const ensureInvoiceAccess = useCallback(
     () =>
@@ -78,16 +65,13 @@ const InvoiceCenterPage = () => {
     })
   }, [])
 
-  const applyOrderSearchResponseRef = useRef<
-    (response: OrderSearchResponse) => boolean
-  >(() => false)
+  const applyOrderSearchResponseRef = useRef<(response: OrderSearchResponse) => boolean>(() => false)
 
   const orderAuth = useInvoiceOrderAuth({
     runLatestRequest,
     invalidateLatestRequest,
     showPendingToast,
-    applyOrderSearchResponse: (response: OrderSearchResponse) =>
-      applyOrderSearchResponseRef.current(response)
+    applyOrderSearchResponse: (response: OrderSearchResponse) => applyOrderSearchResponseRef.current(response)
   })
 
   const ordersHook = useInvoiceOrders({
@@ -101,8 +85,7 @@ const InvoiceCenterPage = () => {
     setOrderAuth: orderAuth.setOrderAuth,
     setOrderAuthValue: orderAuth.setOrderAuthValue,
     setOrderAuthMessage: orderAuth.setOrderAuthMessage,
-    applyOrderSearchResponse: (response: OrderSearchResponse) =>
-      applyOrderSearchResponseRef.current(response)
+    applyOrderSearchResponse: (response: OrderSearchResponse) => applyOrderSearchResponseRef.current(response)
   })
 
   const applyOrderSearchResponse = useCallback(
@@ -156,8 +139,7 @@ const InvoiceCenterPage = () => {
     runLatestRequest,
     setErrorMessage,
     showPendingToast,
-    navigateToApply: items =>
-      navigateToAppRoute(createInvoiceECardApplyUrl(items), { login: true })
+    navigateToApply: items => navigateToAppRoute(createInvoiceECardApplyUrl(items), { login: true })
   })
 
   const taxpayers = useInvoiceTaxpayers({
@@ -225,16 +207,8 @@ const InvoiceCenterPage = () => {
   }
 
   return (
-    <ScrollView
-      className='invoice-page'
-      scrollY
-      onScrollToLower={coordinator.handleLoadMore}
-    >
-      <InvoiceTabs
-        tabs={INVOICE_CENTER_TABS}
-        activeTab={coordinator.tab}
-        onChange={coordinator.handleChangeTab}
-      />
+    <ScrollView className='invoice-page' scrollY onScrollToLower={coordinator.handleLoadMore}>
+      <InvoiceTabs tabs={INVOICE_CENTER_TABS} activeTab={coordinator.tab} onChange={coordinator.handleChangeTab} />
 
       {coordinator.tab === 'orders' && (
         <InvoiceOrdersPanel
@@ -281,12 +255,7 @@ const InvoiceCenterPage = () => {
       )}
 
       {coordinator.tab === 'taxpayers' && (
-        <InvoiceTaxpayersPanel
-          taxpayers={taxpayers.taxpayers}
-          loading={loading}
-          errorMessage={errorMessage}
-          onManage={handleManageTaxpayers}
-        />
+        <InvoiceTaxpayersPanel taxpayers={taxpayers.taxpayers} loading={loading} errorMessage={errorMessage} onManage={handleManageTaxpayers} />
       )}
 
       {orderAuth.orderAuth && (

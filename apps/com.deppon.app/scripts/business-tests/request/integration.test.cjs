@@ -3,11 +3,7 @@ const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
 const { configureRequest, onRequestEvent } = require('@/request')
-const {
-  clearSessionCookie,
-  getEcoToken,
-  setSessionCookie
-} = require('@/request/cookieJar')
+const { clearSessionCookie, getEcoToken, setSessionCookie } = require('@/request/cookieJar')
 const { depponHttp } = require('@/request/deppon')
 
 const { createDeferred } = require('../support/deferred.cjs')

@@ -2,10 +2,7 @@ import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
 import type { LoginRegisterRecord, LoginRequest } from './types'
 
-const EMPTY_REGISTER_RECORD: Omit<
-  LoginRegisterRecord,
-  'registerPage' | 'sysCode'
-> = {
+const EMPTY_REGISTER_RECORD: Omit<LoginRegisterRecord, 'registerPage' | 'sysCode'> = {
   lanuchScene: '',
   lanuchPage: '',
   marketClass: '',
@@ -41,9 +38,7 @@ function normalizeRegisterPage(redirectUrl?: string) {
  * OWS 登录接口仍要求旧版 registerRecord 结构。App 端无法采集小程序的营销/设备
  * 字段，因此这些字段保持为空，只填安全的返回页面和系统编码。
  */
-export function createAppLoginRegisterRecord(
-  redirectUrl?: string
-): LoginRegisterRecord {
+export function createAppLoginRegisterRecord(redirectUrl?: string): LoginRegisterRecord {
   return {
     ...EMPTY_REGISTER_RECORD,
     registerPage: normalizeRegisterPage(redirectUrl),
@@ -58,11 +53,7 @@ export function createAppLoginRegisterRecord(
  * @param redirectUrl 返回页面地址，可选
  * @description 组装 App 短信登录请求参数
  */
-export function createAppSmsLoginRequest(
-  mobile: string,
-  smsCode: string,
-  redirectUrl?: string
-): LoginRequest {
+export function createAppSmsLoginRequest(mobile: string, smsCode: string, redirectUrl?: string): LoginRequest {
   return {
     account: mobile.trim(),
     verifyCode: smsCode.trim(),

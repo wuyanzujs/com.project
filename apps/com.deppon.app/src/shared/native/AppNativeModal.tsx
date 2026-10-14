@@ -11,12 +11,7 @@ interface AppNativeModalProps extends PropsWithChildren {
   animationType?: 'none' | 'fade' | 'slide'
 }
 
-export function AppNativeModal({
-  animationType,
-  children,
-  onRequestClose,
-  visible
-}: AppNativeModalProps) {
+export function AppNativeModal({ animationType, children, onRequestClose, visible }: AppNativeModalProps) {
   return (
     <Modal
       animationType={animationType ?? APP_NATIVE_TOKENS.dialog.animation}

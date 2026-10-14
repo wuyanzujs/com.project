@@ -2,12 +2,7 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  authApi,
-  authService,
-  createAppLoginRegisterRecord,
-  createAppSmsLoginRequest
-} = require('@/services/auth')
+const { authApi, authService, createAppLoginRegisterRecord, createAppSmsLoginRequest } = require('@/services/auth')
 
 const cases = [
   {
@@ -35,10 +30,7 @@ const cases = [
         }
 
         const smsResponse = await authService.sendLoginSms('13800138000')
-        const loginResponse = await authService.loginWithSms(
-          '13800138000',
-          '123456'
-        )
+        const loginResponse = await authService.loginWithSms('13800138000', '123456')
 
         assert.equal(smsResponse.status, true)
         assert.deepEqual(smsRequest, {
@@ -64,27 +56,17 @@ const cases = [
   {
     name: 'App login register record keeps only safe return context',
     run() {
-      assert.deepEqual(
-        createAppSmsLoginRequest(
-          ' 13800138000 ',
-          ' 123456 ',
-          '/pages/express/index?source=LOGIN'
-        ),
-        {
-          account: '13800138000',
-          verifyCode: '123456',
-          loginType: 'MOBILE_VERIFICATION_CODE',
-          sysCode: 'APP',
-          registerRecord: {
-            ...createAppLoginRegisterRecord('/pages/express/index'),
-            registerPage: 'pages/express/index'
-          }
+      assert.deepEqual(createAppSmsLoginRequest(' 13800138000 ', ' 123456 ', '/pages/express/index?source=LOGIN'), {
+        account: '13800138000',
+        verifyCode: '123456',
+        loginType: 'MOBILE_VERIFICATION_CODE',
+        sysCode: 'APP',
+        registerRecord: {
+          ...createAppLoginRegisterRecord('/pages/express/index'),
+          registerPage: 'pages/express/index'
         }
-      )
-      assert.equal(
-        createAppLoginRegisterRecord('https://example.com').registerPage,
-        ''
-      )
+      })
+      assert.equal(createAppLoginRegisterRecord('https://example.com').registerPage, '')
     }
   }
 ]

@@ -11,13 +11,7 @@ interface CouponExchangeBarProps {
   onExchange: () => void
 }
 
-export function CouponExchangeBar({
-  exchanging,
-  onBlur,
-  onChange,
-  onExchange,
-  value
-}: CouponExchangeBarProps) {
+export function CouponExchangeBar({ exchanging, onBlur, onChange, onExchange, value }: CouponExchangeBarProps) {
   return (
     <View className='coupon-exchange'>
       <Input
@@ -28,14 +22,8 @@ export function CouponExchangeBar({
         onBlur={event => onBlur(event.detail.value)}
         onInput={event => onChange(event.detail.value)}
       />
-      <AppPressable
-        accessibilityLabel={exchanging ? '正在兑换' : '兑换'}
-        className='coupon-exchange__button'
-        onPress={onExchange}
-      >
-        <Text className='coupon-exchange__button-text'>
-          {exchanging ? '兑换中' : '兑换'}
-        </Text>
+      <AppPressable accessibilityLabel={exchanging ? '正在兑换' : '兑换'} className='coupon-exchange__button' onPress={onExchange}>
+        <Text className='coupon-exchange__button-text'>{exchanging ? '兑换中' : '兑换'}</Text>
       </AppPressable>
     </View>
   )

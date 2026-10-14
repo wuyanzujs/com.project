@@ -1,8 +1,4 @@
-import type {
-  InvoiceOrderRaw,
-  InvoiceOrderView,
-  InvoiceStatusClass
-} from './types'
+import type { InvoiceOrderRaw, InvoiceOrderView, InvoiceStatusClass } from './types'
 
 /**
  *
@@ -19,11 +15,7 @@ function pad(value: number) {
  * @description 格式化为日期时间字符串
  */
 function formatDateTime(date: Date) {
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
-    date.getSeconds()
-  )}`
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
 
 /**
@@ -144,18 +136,8 @@ export function normalizeInvoiceOrder(item: InvoiceOrderRaw): InvoiceOrderView {
     id: item.orderNo,
     waybillNumber: item.sourceBillNo,
     businessTime: formatTimestamp(item.businessDate),
-    senderText: [
-      truncateText(normalizeText(item.departurecity), 6),
-      truncateText(normalizeText(item.consignorContacts), 8)
-    ]
-      .filter(Boolean)
-      .join(' '),
-    consigneeText: [
-      truncateText(normalizeText(item.arrivalcity), 6),
-      truncateText(normalizeText(item.consignee), 8)
-    ]
-      .filter(Boolean)
-      .join(' '),
+    senderText: [truncateText(normalizeText(item.departurecity), 6), truncateText(normalizeText(item.consignorContacts), 8)].filter(Boolean).join(' '),
+    consigneeText: [truncateText(normalizeText(item.arrivalcity), 6), truncateText(normalizeText(item.consignee), 8)].filter(Boolean).join(' '),
     amount: toFiniteNumber(item.unbilledAmount ?? item.unbillAmount),
     unverAmount: toFiniteNumber(item.unverAmount),
     unpaidAmount: toFiniteNumber(item.unPayAmount),

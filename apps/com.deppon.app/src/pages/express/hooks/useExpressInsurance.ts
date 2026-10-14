@@ -1,25 +1,9 @@
 import Taro from '@tarojs/taro'
 
-import {
-  type Dispatch,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from 'react'
+import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
-import {
-  expressInsuranceRules,
-  expressService,
-  normalizeExpressInsuranceAmount,
-  updateExpressInsurance
-} from '@/services/express'
-import type {
-  ExpressDraft,
-  ExpressInsuranceQuote,
-  ExpressInsuranceType
-} from '@/services/express'
+import { expressInsuranceRules, expressService, normalizeExpressInsuranceAmount, updateExpressInsurance } from '@/services/express'
+import type { ExpressDraft, ExpressInsuranceQuote, ExpressInsuranceType } from '@/services/express'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 
 interface UseExpressInsuranceOptions {
@@ -39,10 +23,7 @@ function createInsurancePriceKey(draft: ExpressDraft) {
   ])
 }
 
-export function useExpressInsurance({
-  draft,
-  setDraft
-}: UseExpressInsuranceOptions) {
+export function useExpressInsurance({ draft, setDraft }: UseExpressInsuranceOptions) {
   const [quote, setQuote] = useState<ExpressInsuranceQuote | null>(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -105,10 +86,7 @@ export function useExpressInsurance({
     try {
       const response = await expressService.queryInsurancePrice(draft)
 
-      if (
-        requestVersion.current !== version ||
-        latestRequestKey.current !== requestKey
-      ) {
+      if (requestVersion.current !== version || latestRequestKey.current !== requestKey) {
         return
       }
 

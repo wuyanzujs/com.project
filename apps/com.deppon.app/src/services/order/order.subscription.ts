@@ -4,11 +4,7 @@ import { orderApi } from './order.api'
 import { getOrderClassLabel } from './order.mapper'
 import { createServiceFailure } from '../serviceResponse'
 
-import type {
-  OrderDetailActionView,
-  WaybillSubscriptionRaw,
-  WaybillSubscriptionView
-} from './types'
+import type { OrderDetailActionView, WaybillSubscriptionRaw, WaybillSubscriptionView } from './types'
 
 /**
  *
@@ -43,9 +39,7 @@ function formatSubscriptionTime(value: unknown) {
    */
   const pad = (item: number) => String(item).padStart(2, '0')
 
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
 /**
@@ -53,9 +47,7 @@ function formatSubscriptionTime(value: unknown) {
  * @param raw 关注运单原始数据
  * @description 归一关注运单为视图数据
  */
-export function normalizeWaybillSubscription(
-  raw: WaybillSubscriptionRaw
-): WaybillSubscriptionView | null {
+export function normalizeWaybillSubscription(raw: WaybillSubscriptionRaw): WaybillSubscriptionView | null {
   const waybillNumber = normalizeText(raw.wayBillNo)
 
   if (!waybillNumber) {
@@ -73,9 +65,7 @@ export function normalizeWaybillSubscription(
     consigneeName: normalizeText(raw.consignee),
     consigneeCity: normalizeText(raw.consignCity),
     waybillNumber,
-    statusText: Number.isFinite(orderClass)
-      ? getOrderClassLabel(orderClass, rawStatusText)
-      : rawStatusText || '未知状态',
+    statusText: Number.isFinite(orderClass) ? getOrderClassLabel(orderClass, rawStatusText) : rawStatusText || '未知状态',
     createdAt: formatSubscriptionTime(raw.createWaybillTime),
     isExpress: raw.tableType === '2' || raw.tableType === 'EXPRESS'
   }
@@ -87,10 +77,7 @@ export function normalizeWaybillSubscription(
  * @param loading 是否处理中
  * @description 生成关注或取消关注操作项
  */
-export function createOrderSubscriptionAction(
-  subscribed: boolean | null,
-  loading = false
-): OrderDetailActionView | null {
+export function createOrderSubscriptionAction(subscribed: boolean | null, loading = false): OrderDetailActionView | null {
   if (subscribed === null) {
     return null
   }
@@ -142,9 +129,7 @@ export const orderSubscriptionService = {
     const response = await orderApi.querySubscriptionStatus(normalizedNumber)
 
     if (!response.status || typeof response.result !== 'boolean') {
-      return createServiceFailure<boolean>(
-        response.message || '暂未获取到关注状态'
-      )
+      return createServiceFailure<boolean>(response.message || '暂未获取到关注状态')
     }
 
     return response as DepponResponse<boolean>
@@ -170,10 +155,7 @@ export const orderSubscriptionService = {
         })
 
     if (!response.status || response.result === false) {
-      return createServiceFailure<null>(
-        response.message ||
-          (subscribed ? '关注失败，请稍后再试' : '取消关注失败，请稍后再试')
-      )
+      return createServiceFailure<null>(response.message || (subscribed ? '关注失败，请稍后再试' : '取消关注失败，请稍后再试'))
     }
 
     return {

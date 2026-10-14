@@ -18,23 +18,12 @@ import {
   isOrderEditPackagingChanged,
   validateOrderEditPackaging
 } from './order.edit.packaging'
-import {
-  createOrderEditScheduleDraft,
-  createOrderEditScheduleRequestDiff,
-  validateOrderEditSchedule
-} from './order.edit.schedule'
+import { createOrderEditScheduleDraft, createOrderEditScheduleRequestDiff, validateOrderEditSchedule } from './order.edit.schedule'
 import { validateContact } from '../contact'
 import { createServiceFailure } from '../serviceResponse'
 
 import type { Contact } from '../contact'
-import type {
-  OrderDetail,
-  OrderEditContact,
-  OrderEditDraft,
-  OrderEditValidationResult,
-  OrderModifyPreview,
-  OrderModifyRequest
-} from './types'
+import type { OrderDetail, OrderEditContact, OrderEditDraft, OrderEditValidationResult, OrderModifyPreview, OrderModifyRequest } from './types'
 
 /**
  *
@@ -63,10 +52,7 @@ function normalizeNumber(value: unknown, fallback: number) {
  * @param role 联系人角色
  * @description 从订单详情提取寄件人或收件人
  */
-function createEditContact(
-  detail: OrderDetail,
-  role: 'sender' | 'receiver'
-): OrderEditContact {
+function createEditContact(detail: OrderDetail, role: 'sender' | 'receiver'): OrderEditContact {
   if (role === 'sender') {
     return {
       name: normalizeText(detail.contactName),
@@ -189,9 +175,7 @@ export function getOrderEditUnavailableMessage(detail: OrderDetail) {
  * @param draft 订单修改草稿
  * @description 生成订单修改草稿的校验提示
  */
-export function validateOrderEditDraft(
-  draft: OrderEditDraft
-): OrderEditValidationResult {
+export function validateOrderEditDraft(draft: OrderEditDraft): OrderEditValidationResult {
   const messages: string[] = []
   const senderValidation = validateContact(toContact(draft.sender, 0))
   const receiverValidation = validateContact(toContact(draft.receiver, 1))
@@ -200,10 +184,7 @@ export function validateOrderEditDraft(
     messages.push('缺少订单号')
   }
 
-  messages.push(
-    ...senderValidation.messages.map(message => `寄件人：${message}`),
-    ...receiverValidation.messages.map(message => `收件人：${message}`)
-  )
+  messages.push(...senderValidation.messages.map(message => `寄件人：${message}`), ...receiverValidation.messages.map(message => `收件人：${message}`))
 
   messages.push(...validateOrderEditCollection(draft.collection))
   messages.push(...validateOrderEditInsurance(draft.insurance))
@@ -274,19 +255,13 @@ function setChangedText(
  * @param fields 待合并字段
  * @description 合并修改字段，扩展字段追加写入
  */
-function assignOrderModifyFields(
-  request: OrderModifyRequest,
-  fields: Partial<OrderModifyRequest>
-) {
+function assignOrderModifyFields(request: OrderModifyRequest, fields: Partial<OrderModifyRequest>) {
   const { orderExtendFields = [], ...topLevelFields } = fields
 
   Object.assign(request, topLevelFields)
 
   if (orderExtendFields.length) {
-    request.orderExtendFields = [
-      ...(request.orderExtendFields ?? []),
-      ...orderExtendFields
-    ]
+    request.orderExtendFields = [...(request.orderExtendFields ?? []), ...orderExtendFields]
   }
 }
 
@@ -296,31 +271,14 @@ function assignOrderModifyFields(
  * @param origin 原始草稿
  * @description 对比草稿生成订单修改请求与变更项
  */
-export function buildOrderModifyRequest(
-  draft: OrderEditDraft,
-  origin: OrderEditDraft
-): OrderModifyPreview {
+export function buildOrderModifyRequest(draft: OrderEditDraft, origin: OrderEditDraft): OrderModifyPreview {
   const request: OrderModifyRequest = {
     orderNumber: draft.orderNumber.trim()
   }
   const changedFields: string[] = []
 
-  setChangedText(
-    request,
-    changedFields,
-    'contactName',
-    '寄件人姓名',
-    draft.sender.name,
-    origin.sender.name
-  )
-  setChangedText(
-    request,
-    changedFields,
-    'contactMobile',
-    '寄件人手机号',
-    draft.sender.mobile,
-    origin.sender.mobile
-  )
+  setChangedText(request, changedFields, 'contactName', '寄件人姓名', draft.sender.name, origin.sender.name)
+  setChangedText(request, changedFields, 'contactMobile', '寄件人手机号', draft.sender.mobile, origin.sender.mobile)
 
   if (
     draft.sender.province.trim() !== origin.sender.province.trim() ||
@@ -333,30 +291,9 @@ export function buildOrderModifyRequest(
     changedFields.push('寄件地区')
   }
 
-  setChangedText(
-    request,
-    changedFields,
-    'contactAddress',
-    '寄件详细地址',
-    draft.sender.address,
-    origin.sender.address
-  )
-  setChangedText(
-    request,
-    changedFields,
-    'receiverCustName',
-    '收件人姓名',
-    draft.receiver.name,
-    origin.receiver.name
-  )
-  setChangedText(
-    request,
-    changedFields,
-    'receiverCustMobile',
-    '收件人手机号',
-    draft.receiver.mobile,
-    origin.receiver.mobile
-  )
+  setChangedText(request, changedFields, 'contactAddress', '寄件详细地址', draft.sender.address, origin.sender.address)
+  setChangedText(request, changedFields, 'receiverCustName', '收件人姓名', draft.receiver.name, origin.receiver.name)
+  setChangedText(request, changedFields, 'receiverCustMobile', '收件人手机号', draft.receiver.mobile, origin.receiver.mobile)
 
   if (
     draft.receiver.province.trim() !== origin.receiver.province.trim() ||
@@ -369,22 +306,8 @@ export function buildOrderModifyRequest(
     changedFields.push('收件地区')
   }
 
-  setChangedText(
-    request,
-    changedFields,
-    'receiverCustAddress',
-    '收件详细地址',
-    draft.receiver.address,
-    origin.receiver.address
-  )
-  setChangedText(
-    request,
-    changedFields,
-    'goodsName',
-    '货物名称',
-    draft.goodsName,
-    origin.goodsName
-  )
+  setChangedText(request, changedFields, 'receiverCustAddress', '收件详细地址', draft.receiver.address, origin.receiver.address)
+  setChangedText(request, changedFields, 'goodsName', '货物名称', draft.goodsName, origin.goodsName)
 
   if (draft.goodsNumber !== origin.goodsNumber) {
     request.goodsNumber = draft.goodsNumber
@@ -402,26 +325,17 @@ export function buildOrderModifyRequest(
   }
 
   if (isOrderEditPackagingChanged(draft.packaging, origin.packaging)) {
-    assignOrderModifyFields(
-      request,
-      createOrderEditPackagingRequestFields(draft.packaging)
-    )
+    assignOrderModifyFields(request, createOrderEditPackagingRequestFields(draft.packaging))
     changedFields.push('打包服务')
   }
 
   if (isOrderEditCollectionChanged(draft.collection, origin.collection)) {
-    assignOrderModifyFields(
-      request,
-      createOrderEditCollectionRequestFields(draft.collection)
-    )
+    assignOrderModifyFields(request, createOrderEditCollectionRequestFields(draft.collection))
     changedFields.push('代收货款')
   }
 
   if (isOrderEditInsuranceChanged(draft.insurance, origin.insurance)) {
-    assignOrderModifyFields(
-      request,
-      createOrderEditInsuranceRequestFields(draft.insurance)
-    )
+    assignOrderModifyFields(request, createOrderEditInsuranceRequestFields(draft.insurance))
     changedFields.push(getOrderEditInsuranceChangedLabel(draft.insurance))
   }
 
@@ -465,9 +379,7 @@ export const orderEditService = {
     const response = await orderApi.modifyOrder(preview.request)
 
     if (!response.status || response.result === false) {
-      return createServiceFailure<null>(
-        response.message || '修改失败，请稍后再试'
-      )
+      return createServiceFailure<null>(response.message || '修改失败，请稍后再试')
     }
 
     return {

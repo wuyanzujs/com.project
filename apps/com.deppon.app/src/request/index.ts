@@ -2,15 +2,7 @@ import Taro from '@tarojs/taro'
 
 import { RequestError } from './error'
 
-import type {
-  HttpResponse,
-  RequestHeaders,
-  RequestMethod,
-  RequestOptions,
-  RequestRuntimeConfig,
-  RequestShortcutOptions,
-  TokenGetter
-} from './types'
+import type { HttpResponse, RequestHeaders, RequestMethod, RequestOptions, RequestRuntimeConfig, RequestShortcutOptions, TokenGetter } from './types'
 
 const DEFAULT_TIMEOUT = 15000
 const DEFAULT_AUTH_HEADER = 'Authorization'
@@ -83,11 +75,7 @@ function defaultValidateStatus(statusCode: number) {
   return statusCode >= 200 && statusCode < 300
 }
 
-function normalizeResponse(
-  response: Taro.request.SuccessCallbackResult<any>,
-  url: string,
-  method: RequestMethod
-): HttpResponse<unknown> {
+function normalizeResponse(response: Taro.request.SuccessCallbackResult<any>, url: string, method: RequestMethod): HttpResponse<unknown> {
   const responseRecord = response as Taro.request.SuccessCallbackResult<any> & {
     headers?: unknown
   }
@@ -103,9 +91,7 @@ function normalizeResponse(
   }
 }
 
-export async function request<TResult = unknown, TData = unknown>(
-  options: RequestOptions<TData, TResult>
-): Promise<TResult> {
+export async function request<TResult = unknown, TData = unknown>(options: RequestOptions<TData, TResult>): Promise<TResult> {
   const method = options.method ?? 'GET'
   const url = joinURL(options.baseURL ?? runtimeBaseURL, options.url)
   const headers = await createHeaders(options)
@@ -158,10 +144,7 @@ export async function request<TResult = unknown, TData = unknown>(
 export const http = {
   request,
 
-  get<TResult = unknown>(
-    url: string,
-    options?: RequestShortcutOptions<TResult>
-  ) {
+  get<TResult = unknown>(url: string, options?: RequestShortcutOptions<TResult>) {
     return request<TResult>({
       ...options,
       url,
@@ -169,11 +152,7 @@ export const http = {
     })
   },
 
-  post<TResult = unknown, TData = unknown>(
-    url: string,
-    data?: TData,
-    options?: RequestShortcutOptions<TResult>
-  ) {
+  post<TResult = unknown, TData = unknown>(url: string, data?: TData, options?: RequestShortcutOptions<TResult>) {
     return request<TResult, TData>({
       ...options,
       url,
@@ -182,11 +161,7 @@ export const http = {
     })
   },
 
-  put<TResult = unknown, TData = unknown>(
-    url: string,
-    data?: TData,
-    options?: RequestShortcutOptions<TResult>
-  ) {
+  put<TResult = unknown, TData = unknown>(url: string, data?: TData, options?: RequestShortcutOptions<TResult>) {
     return request<TResult, TData>({
       ...options,
       url,
@@ -195,11 +170,7 @@ export const http = {
     })
   },
 
-  patch<TResult = unknown, TData = unknown>(
-    url: string,
-    data?: TData,
-    options?: RequestShortcutOptions<TResult>
-  ) {
+  patch<TResult = unknown, TData = unknown>(url: string, data?: TData, options?: RequestShortcutOptions<TResult>) {
     return request<TResult, TData>({
       ...options,
       url,
@@ -208,10 +179,7 @@ export const http = {
     })
   },
 
-  delete<TResult = unknown>(
-    url: string,
-    options?: RequestShortcutOptions<TResult>
-  ) {
+  delete<TResult = unknown>(url: string, options?: RequestShortcutOptions<TResult>) {
     return request<TResult>({
       ...options,
       url,
@@ -224,12 +192,4 @@ export { RequestError }
 export * from './cookieJar'
 export * from './deppon'
 export * from './events'
-export type {
-  HttpResponse,
-  RequestHeaders,
-  RequestMethod,
-  RequestOptions,
-  RequestRuntimeConfig,
-  RequestShortcutOptions,
-  TokenGetter
-}
+export type { HttpResponse, RequestHeaders, RequestMethod, RequestOptions, RequestRuntimeConfig, RequestShortcutOptions, TokenGetter }

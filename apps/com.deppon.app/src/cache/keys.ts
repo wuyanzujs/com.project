@@ -30,15 +30,6 @@ export const ACCOUNT_SCOPED_CACHE_KEYS = [
   CACHE_KEYS.invoiceEmail
 ] as const
 
-export const ACCOUNT_SCOPED_STORAGE_KEYS = Array.from(
-  new Set(
-    ACCOUNT_SCOPED_CACHE_KEYS.flatMap(key => [key, createCacheStorageKey(key)])
-  )
-)
+export const ACCOUNT_SCOPED_STORAGE_KEYS = Array.from(new Set(ACCOUNT_SCOPED_CACHE_KEYS.flatMap(key => [key, createCacheStorageKey(key)])))
 
-export const APP_STORAGE_KEYS = Array.from(
-  new Set([
-    ...Object.values(CACHE_KEYS),
-    ...Object.values(CACHE_KEYS).map(createCacheStorageKey)
-  ])
-)
+export const APP_STORAGE_KEYS = Array.from(new Set([...Object.values(CACHE_KEYS), ...Object.values(CACHE_KEYS).map(createCacheStorageKey)]))

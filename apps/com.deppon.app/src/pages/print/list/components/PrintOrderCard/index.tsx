@@ -18,10 +18,7 @@ export function PrintOrderCard({ item, status }: PrintOrderCardProps) {
           <Text className='print-order-card__eyebrow'>运单号</Text>
           <Text className='print-order-card__number'>{item.waybillNumber}</Text>
         </View>
-        <AppStatusTag
-          label={status === '1' ? '待打印' : '已打印'}
-          tone={status === '1' ? 'brand' : 'success'}
-        />
+        <AppStatusTag label={status === '1' ? '待打印' : '已打印'} tone={status === '1' ? 'brand' : 'success'} />
       </View>
 
       <View className='print-order-card__recipient'>

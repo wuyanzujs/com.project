@@ -3,10 +3,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { invoiceService } from '@/services/invoice'
 import type { InvoiceECardView } from '@/services/invoice'
 
-import {
-  getSelectedInvoiceECards,
-  getSelectedInvoiceECardAmount
-} from '../invoiceCenterViewModel'
+import { getSelectedInvoiceECards, getSelectedInvoiceECardAmount } from '../invoiceCenterViewModel'
 import { INVOICE_PAGE_SIZE } from './latestRequestTypes'
 
 import type { LatestRequestRunner } from './latestRequestTypes'
@@ -31,12 +28,7 @@ interface UseInvoiceECardsParams {
   navigateToApply: (items: InvoiceECardView[]) => void
 }
 
-export function useInvoiceECards({
-  runLatestRequest,
-  setErrorMessage,
-  showPendingToast,
-  navigateToApply
-}: UseInvoiceECardsParams): UseInvoiceECardsResult {
+export function useInvoiceECards({ runLatestRequest, setErrorMessage, showPendingToast, navigateToApply }: UseInvoiceECardsParams): UseInvoiceECardsResult {
   const [ecards, setECards] = useState<InvoiceECardView[]>([])
   const [selectedECardIds, setSelectedECardIds] = useState<string[]>([])
   const [ecardPageIndex, setECardPageIndex] = useState(1)
@@ -62,11 +54,7 @@ export function useInvoiceECards({
           if (nextPage === 1) {
             setSelectedECardIds([])
           }
-          setECards(current =>
-            nextPage === 1
-              ? (response.result?.list ?? [])
-              : [...current, ...(response.result?.list ?? [])]
-          )
+          setECards(current => (nextPage === 1 ? (response.result?.list ?? []) : [...current, ...(response.result?.list ?? [])]))
           setECardPageIndex(response.result.pageIndex)
           setECardTotalPage(response.result.totalPage)
           setECardTotalRows(response.result.totalRows)
@@ -77,11 +65,7 @@ export function useInvoiceECards({
   )
 
   const handleToggleECard = useCallback((item: InvoiceECardView) => {
-    setSelectedECardIds(current =>
-      current.includes(item.id)
-        ? current.filter(id => id !== item.id)
-        : [...current, item.id]
-    )
+    setSelectedECardIds(current => (current.includes(item.id) ? current.filter(id => id !== item.id) : [...current, item.id]))
   }, [])
 
   const handleApplySelectedECards = useCallback(() => {
@@ -95,10 +79,7 @@ export function useInvoiceECards({
     navigateToApply(selectedItems)
   }, [ecards, navigateToApply, selectedECardIds, showPendingToast])
 
-  const selectedECardAmount = useMemo(
-    () => getSelectedInvoiceECardAmount(ecards, selectedECardIds),
-    [ecards, selectedECardIds]
-  )
+  const selectedECardAmount = useMemo(() => getSelectedInvoiceECardAmount(ecards, selectedECardIds), [ecards, selectedECardIds])
 
   return {
     ecards,

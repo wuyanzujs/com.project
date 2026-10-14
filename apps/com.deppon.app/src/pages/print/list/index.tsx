@@ -3,17 +3,8 @@ import { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useMemo, useRef, useState } from 'react'
 
-import {
-  DEFAULT_PRINT_DATE_RANGE_KEY,
-  mergePrintOrderPages,
-  printService
-} from '@/services/print'
-import type {
-  PrintDateRangeKey,
-  PrintListCounts,
-  PrintOrderListItem,
-  PrintSearchType
-} from '@/services/print'
+import { DEFAULT_PRINT_DATE_RANGE_KEY, mergePrintOrderPages, printService } from '@/services/print'
+import type { PrintDateRangeKey, PrintListCounts, PrintOrderListItem, PrintSearchType } from '@/services/print'
 import { LatestRequestCoordinator } from '@/shared/async/latestRequest'
 import { AppPage } from '@/shared/components'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
@@ -34,9 +25,7 @@ const EMPTY_COUNTS: PrintListCounts = {
 
 const PrintListPage = () => {
   const [status, setStatus] = useState<PrintSearchType>('1')
-  const [rangeKey, setRangeKey] = useState<PrintDateRangeKey>(
-    DEFAULT_PRINT_DATE_RANGE_KEY
-  )
+  const [rangeKey, setRangeKey] = useState<PrintDateRangeKey>(DEFAULT_PRINT_DATE_RANGE_KEY)
   const [orders, setOrders] = useState<PrintOrderListItem[]>([])
   const [counts, setCounts] = useState<PrintListCounts>(EMPTY_COUNTS)
   const [countMessage, setCountMessage] = useState('')
@@ -48,8 +37,7 @@ const PrintListPage = () => {
   const listCoordinator = useRef(new LatestRequestCoordinator()).current
   const countCoordinator = useRef(new LatestRequestCoordinator()).current
   const dateOptions = useMemo(() => printService.getDateRangeOptions(), [])
-  const selectedRange =
-    dateOptions.find(option => option.key === rangeKey) ?? dateOptions[0]
+  const selectedRange = dateOptions.find(option => option.key === rangeKey) ?? dateOptions[0]
 
   const ensurePrintListAccess = useCallback(
     () =>
@@ -61,16 +49,8 @@ const PrintListPage = () => {
   )
 
   const loadOrders = useCallback(
-    async (
-      nextPage = 1,
-      nextStatus = status,
-      nextRangeKey = rangeKey,
-      force = false
-    ) => {
-      const requestToken = listCoordinator.begin(
-        JSON.stringify([nextPage, nextStatus, nextRangeKey]),
-        { force }
-      )
+    async (nextPage = 1, nextStatus = status, nextRangeKey = rangeKey, force = false) => {
+      const requestToken = listCoordinator.begin(JSON.stringify([nextPage, nextStatus, nextRangeKey]), { force })
 
       if (!requestToken) {
         return
@@ -105,9 +85,7 @@ const PrintListPage = () => {
 
         const result = response.result
 
-        setOrders(current =>
-          mergePrintOrderPages(current, result.list, nextPage === 1)
-        )
+        setOrders(current => mergePrintOrderPages(current, result.list, nextPage === 1))
         setPageIndex(result.pageIndex)
         setTotalPage(result.totalPage)
         setTotalRows(result.totalRows)
@@ -214,11 +192,7 @@ const PrintListPage = () => {
           onStatusChange={handleStatusChange}
         />
 
-        <ScrollView
-          className='print-list-scroll'
-          onScrollToLower={handleLoadMore}
-          scrollY
-        >
+        <ScrollView className='print-list-scroll' onScrollToLower={handleLoadMore} scrollY>
           <View className='print-list-content'>
             {orders.map(item => (
               <PrintOrderCard item={item} key={item.key} status={status} />

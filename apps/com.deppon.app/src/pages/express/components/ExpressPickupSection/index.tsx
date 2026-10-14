@@ -69,48 +69,26 @@ export function ExpressPickupSection({
         />
         <View
           className={
-            isDoorPickup
-              ? 'express-pickup-section__cap express-pickup-section__cap--left'
-              : 'express-pickup-section__cap express-pickup-section__cap--right'
+            isDoorPickup ? 'express-pickup-section__cap express-pickup-section__cap--left' : 'express-pickup-section__cap express-pickup-section__cap--right'
           }
         />
         <AppPressable
           accessibilityLabel='选择上门取件'
-          className={
-            isDoorPickup
-              ? 'express-pickup-section__mode express-pickup-section__mode--active'
-              : 'express-pickup-section__mode'
-          }
+          className={isDoorPickup ? 'express-pickup-section__mode express-pickup-section__mode--active' : 'express-pickup-section__mode'}
           flex
           onPress={() => onModeChange('Y')}
         >
-          <Text
-            className={
-              isDoorPickup
-                ? 'express-pickup-section__mode-text express-pickup-section__mode-text--active'
-                : 'express-pickup-section__mode-text'
-            }
-          >
+          <Text className={isDoorPickup ? 'express-pickup-section__mode-text express-pickup-section__mode-text--active' : 'express-pickup-section__mode-text'}>
             上门取件
           </Text>
         </AppPressable>
         <AppPressable
           accessibilityLabel='选择自送服务点'
-          className={
-            isDoorPickup
-              ? 'express-pickup-section__mode'
-              : 'express-pickup-section__mode express-pickup-section__mode--active'
-          }
+          className={isDoorPickup ? 'express-pickup-section__mode' : 'express-pickup-section__mode express-pickup-section__mode--active'}
           flex
           onPress={() => onModeChange('N')}
         >
-          <Text
-            className={
-              isDoorPickup
-                ? 'express-pickup-section__mode-text'
-                : 'express-pickup-section__mode-text express-pickup-section__mode-text--active'
-            }
-          >
+          <Text className={isDoorPickup ? 'express-pickup-section__mode-text' : 'express-pickup-section__mode-text express-pickup-section__mode-text--active'}>
             自送服务点
           </Text>
         </AppPressable>
@@ -127,35 +105,20 @@ export function ExpressPickupSection({
                 layout='row-start'
                 onPress={handleOpenTimeSheet}
               >
-                <Text className='express-pickup-section__label express-pickup-section__label--flush'>
-                  期望上门时间
-                </Text>
-                <Text
-                  className='express-pickup-section__value'
-                  numberOfLines={1}
-                >
+                <Text className='express-pickup-section__label express-pickup-section__label--flush'>期望上门时间</Text>
+                <Text className='express-pickup-section__value' numberOfLines={1}>
                   {pickupTime}
                 </Text>
-                <Image
-                  className='express-pickup-section__chevron'
-                  mode='aspectFit'
-                  src={APP_IMAGE_ICONS.arrowRightGrey}
-                />
+                <Image className='express-pickup-section__chevron' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
               </AppPressable>
 
-              <ExpressPickupTimeSheet
-                controller={pickupTimeController}
-                visible={timeSheetVisible}
-                onClose={() => setTimeSheetVisible(false)}
-              />
+              <ExpressPickupTimeSheet controller={pickupTimeController} visible={timeSheetVisible} onClose={() => setTimeSheetVisible(false)} />
             </>
           ) : null}
 
           <View className='express-pickup-section__contact-row'>
             <View className='express-pickup-section__contact-label'>
-              <Text className='express-pickup-section__label express-pickup-section__label--flush'>
-                提前电话联系
-              </Text>
+              <Text className='express-pickup-section__label express-pickup-section__label--flush'>提前电话联系</Text>
               <Text className='express-pickup-section__required'>必填</Text>
             </View>
             <View className='express-pickup-section__contact-options'>
@@ -171,20 +134,10 @@ export function ExpressPickupSection({
                     selected={selected}
                     onPress={() => onNeedContactChange(option.value)}
                   >
-                    <View
-                      className={
-                        selected
-                          ? 'express-pickup-section__radio express-pickup-section__radio--active'
-                          : 'express-pickup-section__radio'
-                      }
-                    >
-                      {selected ? (
-                        <View className='express-pickup-section__radio-dot' />
-                      ) : null}
+                    <View className={selected ? 'express-pickup-section__radio express-pickup-section__radio--active' : 'express-pickup-section__radio'}>
+                      {selected ? <View className='express-pickup-section__radio-dot' /> : null}
                     </View>
-                    <Text className='express-pickup-section__contact-text'>
-                      {option.label}
-                    </Text>
+                    <Text className='express-pickup-section__contact-text'>{option.label}</Text>
                   </AppPressable>
                 )
               })}
@@ -200,20 +153,12 @@ export function ExpressPickupSection({
             layout='row-start'
             onPress={onOpenStations}
           >
-            <AppIcon
-              color={APP_STYLE_COLORS.brand.default}
-              name='mapPin'
-              size={APP_NATIVE_TOKENS.icon.small}
-            />
+            <AppIcon color={APP_STYLE_COLORS.brand.default} name='mapPin' size={APP_NATIVE_TOKENS.icon.small} />
             <Text className='express-pickup-section__label'>自送服务点</Text>
             <Text className='express-pickup-section__value' numberOfLines={1}>
               {stationName}
             </Text>
-            <Image
-              className='express-pickup-section__chevron'
-              mode='aspectFit'
-              src={APP_IMAGE_ICONS.arrowRightGrey}
-            />
+            <Image className='express-pickup-section__chevron' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
           </AppPressable>
         </View>
       )}

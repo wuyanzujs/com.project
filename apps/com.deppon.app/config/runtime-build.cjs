@@ -2,8 +2,7 @@ const DEFAULT_RUNTIME_CONFIG = {
   env: 'test',
   apiBaseURL: 'https://owstest.deppon.com',
   webBaseURL: 'https://owstest.deppon.com',
-  serviceWebURL:
-    'https://osstest.deppon.com.cn/dzfront/web/home?showChat=true&layout=true',
+  serviceWebURL: 'https://osstest.deppon.com.cn/dzfront/web/home?showChat=true&layout=true',
   memberWebURL: 'https://mastest.deppon.com.cn/cms-h5/h5.html#/welfare-center',
   webAllowedHosts: [
     'owstest.deppon.com',
@@ -27,13 +26,7 @@ const DEFAULT_RUNTIME_CONFIG = {
   supportSurveyConfigKey: 'app_survey_config'
 }
 
-const SUPPORTED_APP_ENVS = new Set([
-  'local',
-  'dev',
-  'test',
-  'staging',
-  'production'
-])
+const SUPPORTED_APP_ENVS = new Set(['local', 'dev', 'test', 'staging', 'production'])
 
 const PRODUCTION_REQUIRED_VARS = [
   'APP_API_BASE_URL',
@@ -47,19 +40,9 @@ const PRODUCTION_REQUIRED_VARS = [
   'APP_ECARD_PMC_SYSTEM_CODE'
 ]
 
-const URL_ENV_VARS = [
-  'APP_API_BASE_URL',
-  'APP_WEB_BASE_URL',
-  'APP_SERVICE_WEB_URL',
-  'APP_MEMBER_WEB_URL'
-]
+const URL_ENV_VARS = ['APP_API_BASE_URL', 'APP_WEB_BASE_URL', 'APP_SERVICE_WEB_URL', 'APP_MEMBER_WEB_URL']
 
-const PRODUCTION_FORBIDDEN_HOST_MARKERS = [
-  'owstest',
-  'osstest',
-  'mastest',
-  'matest'
-]
+const PRODUCTION_FORBIDDEN_HOST_MARKERS = ['owstest', 'osstest', 'mastest', 'matest']
 
 function getEnvValue(env, name) {
   const value = env[name]
@@ -91,9 +74,7 @@ function getAllowedHosts(env) {
 function isForbiddenProductionHost(hostname) {
   const normalized = hostname.toLowerCase()
 
-  return PRODUCTION_FORBIDDEN_HOST_MARKERS.some(marker =>
-    normalized.includes(marker)
-  )
+  return PRODUCTION_FORBIDDEN_HOST_MARKERS.some(marker => normalized.includes(marker))
 }
 
 function hasTokenLikeQueryParam(parsed) {
@@ -105,9 +86,7 @@ function hasTokenLikeQueryParam(parsed) {
     searchParams.push(new URLSearchParams(hashValue.slice(hashQueryIndex + 1)))
   }
 
-  return searchParams.some(params =>
-    Array.from(params.keys()).some(key => /token/i.test(key))
-  )
+  return searchParams.some(params => Array.from(params.keys()).some(key => /token/i.test(key)))
 }
 
 function resolveUrlValue(env, name) {
@@ -118,9 +97,7 @@ function resolveUrlValue(env, name) {
   }
 
   if (name === 'APP_WEB_BASE_URL') {
-    return (
-      getEnvValue(env, 'APP_API_BASE_URL') || DEFAULT_RUNTIME_CONFIG.webBaseURL
-    )
+    return getEnvValue(env, 'APP_API_BASE_URL') || DEFAULT_RUNTIME_CONFIG.webBaseURL
   }
 
   const defaults = {
@@ -138,20 +115,14 @@ function validateRuntimeEnvironment(env = process.env) {
   const production = appEnv === 'production'
 
   if (!SUPPORTED_APP_ENVS.has(appEnv)) {
-    violations.push(
-      `APP_ENV 仅支持 ${Array.from(SUPPORTED_APP_ENVS).join(', ')}，当前为：${appEnv}`
-    )
+    violations.push(`APP_ENV 仅支持 ${Array.from(SUPPORTED_APP_ENVS).join(', ')}，当前为：${appEnv}`)
   }
 
   if (production) {
-    const missingVars = PRODUCTION_REQUIRED_VARS.filter(
-      name => !getEnvValue(env, name)
-    )
+    const missingVars = PRODUCTION_REQUIRED_VARS.filter(name => !getEnvValue(env, name))
 
     if (missingVars.length) {
-      violations.push(
-        `APP_ENV=production 时必须显式配置：${missingVars.join(', ')}`
-      )
+      violations.push(`APP_ENV=production 时必须显式配置：${missingVars.join(', ')}`)
     }
   }
 
@@ -190,10 +161,7 @@ function validateRuntimeEnvironment(env = process.env) {
       violations.push(`${name} 不得在 URL 中配置固定用户名或密码。`)
     }
 
-    if (
-      name !== 'APP_API_BASE_URL' &&
-      !allowedHosts.includes(parsed.hostname)
-    ) {
+    if (name !== 'APP_API_BASE_URL' && !allowedHosts.includes(parsed.hostname)) {
       violations.push(`${name} 的 host 必须加入 APP_WEB_ALLOWED_HOSTS。`)
     }
 
@@ -223,22 +191,12 @@ function createRuntimeBuildConfig(env = process.env) {
     serviceWebURL: resolveUrlValue(env, 'APP_SERVICE_WEB_URL'),
     memberWebURL: resolveUrlValue(env, 'APP_MEMBER_WEB_URL'),
     webAllowedHosts: getAllowedHosts(env),
-    systemCode:
-      getEnvValue(env, 'APP_SYSTEM_CODE') || DEFAULT_RUNTIME_CONFIG.systemCode,
-    appClientChannel:
-      getEnvValue(env, 'APP_CLIENT_CHANNEL') ||
-      DEFAULT_RUNTIME_CONFIG.appClientChannel,
-    omsChannel:
-      getEnvValue(env, 'APP_OMS_CHANNEL') || DEFAULT_RUNTIME_CONFIG.omsChannel,
-    ecardPmcSystemCode:
-      getEnvValue(env, 'APP_ECARD_PMC_SYSTEM_CODE') ||
-      DEFAULT_RUNTIME_CONFIG.ecardPmcSystemCode,
-    mobileLoginType:
-      getEnvValue(env, 'APP_MOBILE_LOGIN_TYPE') ||
-      DEFAULT_RUNTIME_CONFIG.mobileLoginType,
-    supportSurveyConfigKey:
-      getEnvValue(env, 'APP_SURVEY_CONFIG_KEY') ||
-      DEFAULT_RUNTIME_CONFIG.supportSurveyConfigKey
+    systemCode: getEnvValue(env, 'APP_SYSTEM_CODE') || DEFAULT_RUNTIME_CONFIG.systemCode,
+    appClientChannel: getEnvValue(env, 'APP_CLIENT_CHANNEL') || DEFAULT_RUNTIME_CONFIG.appClientChannel,
+    omsChannel: getEnvValue(env, 'APP_OMS_CHANNEL') || DEFAULT_RUNTIME_CONFIG.omsChannel,
+    ecardPmcSystemCode: getEnvValue(env, 'APP_ECARD_PMC_SYSTEM_CODE') || DEFAULT_RUNTIME_CONFIG.ecardPmcSystemCode,
+    mobileLoginType: getEnvValue(env, 'APP_MOBILE_LOGIN_TYPE') || DEFAULT_RUNTIME_CONFIG.mobileLoginType,
+    supportSurveyConfigKey: getEnvValue(env, 'APP_SURVEY_CONFIG_KEY') || DEFAULT_RUNTIME_CONFIG.supportSurveyConfigKey
   }
 }
 

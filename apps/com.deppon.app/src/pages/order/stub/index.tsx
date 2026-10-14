@@ -4,12 +4,7 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 import { useMemo, useState } from 'react'
 
 import { orderService } from '@/services/order'
-import type {
-  OrderStubDocumentView,
-  OrderStubImagesView,
-  OrderStubPackageFeeView,
-  OrderStubView
-} from '@/services/order'
+import type { OrderStubDocumentView, OrderStubImagesView, OrderStubPackageFeeView, OrderStubView } from '@/services/order'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -24,10 +19,7 @@ import { OrderStubHeader } from './components/OrderStubHeader'
 import { OrderStubImageEvidence } from './components/OrderStubImageEvidence'
 import { OrderStubImagePreview } from './components/OrderStubImagePreview'
 import { OrderStubNoticeList } from './components/OrderStubNoticeList'
-import {
-  OrderStubEmptyState,
-  OrderStubLoadingState
-} from './components/OrderStubPageState'
+import { OrderStubEmptyState, OrderStubLoadingState } from './components/OrderStubPageState'
 import { OrderStubSummaryCard } from './components/OrderStubSummaryCard'
 
 import type { OrderStubImagePreviewState } from './components/OrderStubImagePreview'
@@ -41,9 +33,7 @@ interface OrderStubRouteParams {
   source: string
 }
 
-function getRouteParams(
-  params: Record<string, string | undefined>
-): OrderStubRouteParams {
+function getRouteParams(params: Record<string, string | undefined>): OrderStubRouteParams {
   return {
     orderNumber: params.orderNumber || params.orderNo || '',
     waybillNumber: params.waybillNumber || params.waybillNo || '',
@@ -73,20 +63,14 @@ function getOrderDetailUrl(params: OrderStubRouteParams) {
 
 const OrderStubPage = () => {
   const router = useRouter()
-  const routeParams = useMemo(
-    () => getRouteParams(router.params as Record<string, string | undefined>),
-    [router.params]
-  )
+  const routeParams = useMemo(() => getRouteParams(router.params as Record<string, string | undefined>), [router.params])
   const [stub, setStub] = useState<OrderStubView | null>(null)
   const [images, setImages] = useState<OrderStubImagesView | null>(null)
   const [document, setDocument] = useState<OrderStubDocumentView | null>(null)
-  const [packageFee, setPackageFee] = useState<OrderStubPackageFeeView | null>(
-    null
-  )
+  const [packageFee, setPackageFee] = useState<OrderStubPackageFeeView | null>(null)
   const [loading, setLoading] = useState(false)
   const [imagesLoading, setImagesLoading] = useState(false)
-  const [previewImage, setPreviewImage] =
-    useState<OrderStubImagePreviewState | null>(null)
+  const [previewImage, setPreviewImage] = useState<OrderStubImagePreviewState | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
 
   const loadStub = async () => {
@@ -123,12 +107,11 @@ const OrderStubPage = () => {
       setImagesLoading(true)
 
       try {
-        const [imageResponse, documentResponse, packageFeeResponse] =
-          await Promise.all([
-            orderService.queryStubImages(nextDetail),
-            orderService.queryStubDocument(nextDetail),
-            orderService.queryStubPackageFee(nextDetail)
-          ])
+        const [imageResponse, documentResponse, packageFeeResponse] = await Promise.all([
+          orderService.queryStubImages(nextDetail),
+          orderService.queryStubDocument(nextDetail),
+          orderService.queryStubPackageFee(nextDetail)
+        ])
 
         setImages(
           imageResponse.result || {
@@ -207,38 +190,18 @@ const OrderStubPage = () => {
 
       {loading && !stub && <OrderStubLoadingState />}
 
-      {!loading && !stub && (
-        <OrderStubEmptyState
-          message={errorMessage}
-          onBack={handleBackToDetail}
-        />
-      )}
+      {!loading && !stub && <OrderStubEmptyState message={errorMessage} onBack={handleBackToDetail} />}
 
       {stub && (
         <>
           <OrderStubSummaryCard stub={stub} onCopy={handleCopy} />
-          <OrderStubDetailSections
-            sections={stub.sections}
-            onCopy={handleCopy}
-          />
+          <OrderStubDetailSections sections={stub.sections} onCopy={handleCopy} />
           <OrderStubGoodsSupplement packageFee={packageFee} size={stub.size} />
-          <OrderStubImageEvidence
-            images={images}
-            loading={imagesLoading}
-            onPreview={(group, image, index) =>
-              setPreviewImage({ group, image, index })
-            }
-          />
-          <OrderStubDocumentSection
-            document={document}
-            onOpen={handleOpenDocument}
-          />
+          <OrderStubImageEvidence images={images} loading={imagesLoading} onPreview={(group, image, index) => setPreviewImage({ group, image, index })} />
+          <OrderStubDocumentSection document={document} onOpen={handleOpenDocument} />
           <OrderStubNoticeList notices={stub.notices} />
           <OrderStubActions onBack={handleBackToDetail} onRefresh={loadStub} />
-          <OrderStubImagePreview
-            preview={previewImage}
-            onClose={() => setPreviewImage(null)}
-          />
+          <OrderStubImagePreview preview={previewImage} onClose={() => setPreviewImage(null)} />
         </>
       )}
     </ScrollView>

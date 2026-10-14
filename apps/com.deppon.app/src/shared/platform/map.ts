@@ -26,12 +26,7 @@ export interface ChooseMapLocationResult extends AppMapLocation {
 }
 
 function isValidCoordinate(location: AppMapLocation) {
-  return (
-    Number.isFinite(location.latitude) &&
-    Number.isFinite(location.longitude) &&
-    Math.abs(location.latitude) <= 90 &&
-    Math.abs(location.longitude) <= 180
-  )
+  return Number.isFinite(location.latitude) && Number.isFinite(location.longitude) && Math.abs(location.latitude) <= 90 && Math.abs(location.longitude) <= 180
 }
 
 export async function openMapLocation(options: OpenMapLocationOptions) {
@@ -44,9 +39,7 @@ export async function openMapLocation(options: OpenMapLocationOptions) {
   throw new NativeCapabilityError('map')
 }
 
-export async function chooseMapLocation(
-  _options: ChooseMapLocationOptions
-): Promise<ChooseMapLocationResult> {
+export async function chooseMapLocation(_options: ChooseMapLocationOptions): Promise<ChooseMapLocationResult> {
   ensureNativeCapability('map')
 
   throw new NativeCapabilityError('map')

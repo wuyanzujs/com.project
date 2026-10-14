@@ -6,18 +6,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AppPressable } from '@/shared/components'
 import { AppWebView } from '@/shared/native'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
-import {
-  ensureAuthenticated,
-  getCurrentRouteUrl,
-  hasValidSession
-} from '@/shared/navigation/authGuard'
+import { ensureAuthenticated, getCurrentRouteUrl, hasValidSession } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
-import {
-  getAppWebWarehouseStagingId,
-  isAllowedAppWebTargetUrl,
-  requiresAppWebLogin,
-  resolveAppWebTarget
-} from '@/shared/webview/appWeb'
+import { getAppWebWarehouseStagingId, isAllowedAppWebTargetUrl, requiresAppWebLogin, resolveAppWebTarget } from '@/shared/webview/appWeb'
 import { appWebMessageBridge } from '@/shared/webview/appWebMessage'
 import './index.scss'
 import './content.scss'
@@ -26,10 +17,7 @@ const WebPage = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [loadError, setLoadError] = useState(false)
-  const target = useMemo(
-    () => resolveAppWebTarget(router.params),
-    [router.params]
-  )
+  const target = useMemo(() => resolveAppWebTarget(router.params), [router.params])
   const activeWebUrl = useRef(target.url)
   const loginRequired = requiresAppWebLogin(target, hasValidSession())
 
@@ -97,9 +85,7 @@ const WebPage = () => {
       <View className='web-page web-page--fallback' style={{ flex: 1 }}>
         <View className='web-fallback'>
           <Text className='web-fallback__label'>Web</Text>
-          <Text className='web-fallback__title'>
-            {loadError ? '页面加载失败' : target.message}
-          </Text>
+          <Text className='web-fallback__title'>{loadError ? '页面加载失败' : target.message}</Text>
           <Text className='web-fallback__summary'>来源：{target.source}</Text>
           <AppPressable className='web-fallback__button' onPress={handleBack}>
             <Text className='web-fallback__button-text'>返回</Text>
@@ -116,10 +102,7 @@ const WebPage = () => {
           <Text className='web-fallback__label'>Web</Text>
           <Text className='web-fallback__title'>请先登录</Text>
           <Text className='web-fallback__summary'>登录后继续访问当前服务</Text>
-          <AppPressable
-            className='web-fallback__button'
-            onPress={handleRequireLogin}
-          >
+          <AppPressable className='web-fallback__button' onPress={handleRequireLogin}>
             <Text className='web-fallback__button-text'>去登录</Text>
           </AppPressable>
         </View>

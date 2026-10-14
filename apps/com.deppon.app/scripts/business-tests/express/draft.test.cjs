@@ -2,9 +2,7 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  updateExpressDeliveryPreference
-} = require('@/services/express/deliveryPreference.rules')
+const { updateExpressDeliveryPreference } = require('@/services/express/deliveryPreference.rules')
 const {
   applyExpressPickupTime,
   createExpressDraft,
@@ -18,11 +16,7 @@ const {
   validateExpressDraft
 } = require('@/services/express/express.draft')
 
-const {
-  createValidExpressDraft,
-  expressProduct,
-  senderContact
-} = require('../fixtures/express.cjs')
+const { createValidExpressDraft, expressProduct, senderContact } = require('../fixtures/express.cjs')
 
 const cases = [
   {
@@ -76,10 +70,7 @@ const cases = [
       assert.equal(goodsDraft.selectedProduct, null)
       assert.equal(goodsDraft.quoteStaleReason, '货物信息变化，请重新获取价格')
       assert.equal(serviceDraft.service.paymentType, 'MONTH_PAY')
-      assert.equal(
-        serviceDraft.quoteStaleReason,
-        '服务方式变化，请重新获取价格'
-      )
+      assert.equal(serviceDraft.quoteStaleReason, '服务方式变化，请重新获取价格')
       assert.equal(pickupDraft.pickup.dispatch, 'N')
       assert.equal(pickupDraft.quoteStaleReason, '取件方式变化，请重新获取价格')
 
@@ -96,10 +87,7 @@ const cases = [
   {
     name: 'express mutations normalize coupon and map pickup response',
     run() {
-      const couponDraft = updateExpressCouponNumber(
-        createValidExpressDraft(),
-        ' cp n 001 '
-      )
+      const couponDraft = updateExpressCouponNumber(createValidExpressDraft(), ' cp n 001 ')
       const pickupDraft = applyExpressPickupTime(createValidExpressDraft(), {
         deptCode: '021A001',
         deptName: '青浦服务点',
@@ -134,10 +122,7 @@ const cases = [
   {
     name: 'express mutations select product and reset cross-region pickup state',
     run() {
-      const selectedDraft = selectExpressProduct(
-        createExpressDraft(),
-        expressProduct
-      )
+      const selectedDraft = selectExpressProduct(createExpressDraft(), expressProduct)
       const draftWithPickup = {
         ...createValidExpressDraft(),
         pickup: {
@@ -158,25 +143,15 @@ const cases = [
       assert.equal(swappedDraft.consignee.name, '张三')
       assert.equal(swappedDraft.pickup.time, '')
       assert.equal(swappedDraft.pickup.stationCode, '')
-      assert.equal(
-        swappedDraft.quoteStaleReason,
-        '收寄地址互换，请重新获取价格'
-      )
+      assert.equal(swappedDraft.quoteStaleReason, '收寄地址互换，请重新获取价格')
 
-      const senderUpdated = setExpressContact(
-        createValidExpressDraft(),
-        'sender',
-        {
-          ...senderContact,
-          city: '苏州市'
-        }
-      )
+      const senderUpdated = setExpressContact(createValidExpressDraft(), 'sender', {
+        ...senderContact,
+        city: '苏州市'
+      })
       assert.equal(senderUpdated.selectedProduct, null)
       assert.equal(senderUpdated.pickup.time, '')
-      assert.equal(
-        senderUpdated.quoteStaleReason,
-        '寄件地址变化，请重新获取价格'
-      )
+      assert.equal(senderUpdated.quoteStaleReason, '寄件地址变化，请重新获取价格')
     }
   }
 ]

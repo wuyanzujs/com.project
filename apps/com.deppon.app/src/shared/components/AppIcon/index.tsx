@@ -124,9 +124,7 @@ export function AppIcon({
 }: AppIconProps) {
   const Icon = APP_ICONS[name]
 
-  return (
-    <Icon color={color} size={designPxToDp(size)} strokeWidth={strokeWidth} />
-  )
+  return <Icon color={color} size={designPxToDp(size)} strokeWidth={strokeWidth} />
 }
 
 export { APP_IMAGE_ICONS } from './images'

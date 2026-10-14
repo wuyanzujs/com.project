@@ -33,9 +33,7 @@ function hydrateStorageKey(key: string) {
 
 export function hydrateStorage() {
   if (!hydrationPromise) {
-    hydrationPromise = Promise.all(
-      APP_STORAGE_KEYS.map(hydrateStorageKey)
-    ).then(() => undefined)
+    hydrationPromise = Promise.all(APP_STORAGE_KEYS.map(hydrateStorageKey)).then(() => undefined)
   }
 
   return hydrationPromise
@@ -45,10 +43,7 @@ export function getStorageValue(key: string): string {
   return storageValues.get(key) ?? ''
 }
 
-function enqueueStorageOperation<T>(
-  key: string,
-  operation: () => Promise<T>
-): Promise<T> {
+function enqueueStorageOperation<T>(key: string, operation: () => Promise<T>): Promise<T> {
   const previous = storageOperationQueues.get(key) ?? Promise.resolve()
   const current = previous.then(operation, operation)
   const settled = current.then(

@@ -1,13 +1,7 @@
 import { validateEmail } from './invoice.apply'
 import { normalizeText, toFiniteNumber } from './invoice.shared'
 
-import type {
-  InvoiceApplyPreview,
-  InvoiceECardApplyDraft,
-  InvoiceECardApplySubmitRequest,
-  InvoiceECardRaw,
-  InvoiceECardView
-} from './types'
+import type { InvoiceApplyPreview, InvoiceECardApplyDraft, InvoiceECardApplySubmitRequest, InvoiceECardRaw, InvoiceECardView } from './types'
 
 const ECARD_APPLY_SYSTEM = {
   applyType: '171',
@@ -55,11 +49,7 @@ function formatTimestamp(value?: number | null) {
     return '--'
   }
 
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
-    date.getSeconds()
-  )}`
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
 
 /**
@@ -69,9 +59,7 @@ function formatTimestamp(value?: number | null) {
  */
 export function normalizeInvoiceECard(raw: InvoiceECardRaw): InvoiceECardView {
   const id = normalizeText(raw.payNo || raw.orderNo || raw.id)
-  const timestamp = normalizeTimestamp(
-    raw.chargeAmountTime || raw.cashAmountTime || raw.modifTime
-  )
+  const timestamp = normalizeTimestamp(raw.chargeAmountTime || raw.cashAmountTime || raw.modifTime)
 
   return {
     id,
@@ -95,9 +83,7 @@ export function getInvoiceECardTotalAmount(items: InvoiceECardView[]) {
  * @param draft 储值卡开票草稿
  * @description 生成储值卡开票预览与校验结果
  */
-export function createECardApplyPreview(
-  draft: InvoiceECardApplyDraft
-): InvoiceApplyPreview {
+export function createECardApplyPreview(draft: InvoiceECardApplyDraft): InvoiceApplyPreview {
   const amount = getInvoiceECardTotalAmount(draft.ecards)
   const emailMessage = validateEmail(draft.email)
   let message = ''
@@ -134,9 +120,7 @@ export function createECardApplyPreview(
  * @param draft 储值卡开票草稿
  * @description 组装储值卡开票提交的 payload
  */
-export function createECardApplySubmitPayload(
-  draft: InvoiceECardApplyDraft
-): InvoiceECardApplySubmitRequest {
+export function createECardApplySubmitPayload(draft: InvoiceECardApplyDraft): InvoiceECardApplySubmitRequest {
   const taxpayer = draft.taxpayer
   const amount = getInvoiceECardTotalAmount(draft.ecards)
   const includeCompanyInfo = taxpayer?.customerType === '1'

@@ -12,10 +12,7 @@ export class LatestRequestCoordinator {
   private latestTokenId = 0
   private readonly pendingTokens = new Map<string, LatestRequestToken>()
 
-  begin(
-    key: string,
-    options: LatestRequestOptions = {}
-  ): LatestRequestToken | null {
+  begin(key: string, options: LatestRequestOptions = {}): LatestRequestToken | null {
     const pendingToken = this.pendingTokens.get(key)
 
     if (pendingToken && !options.force) {

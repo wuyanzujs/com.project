@@ -33,11 +33,7 @@ const AppTabBar = ({ active }: AppTabBarProps) => {
 
   return (
     <View className='app-tab-bar'>
-      <AppSafeAreaView
-        backgroundColor={APP_STYLE_COLORS.surface.card}
-        edges={['bottom']}
-        fill={false}
-      >
+      <AppSafeAreaView backgroundColor={APP_STYLE_COLORS.surface.card} edges={['bottom']} fill={false}>
         <View className='app-tab-bar__inner'>
           {APP_MAIN_NAVIGATION.map(item => {
             const isActive = item.name === active
@@ -52,29 +48,13 @@ const AppTabBar = ({ active }: AppTabBarProps) => {
               >
                 <View className='app-tab-bar__icon'>
                   <AppIcon
-                    color={
-                      isActive
-                        ? APP_STYLE_COLORS.brand.default
-                        : APP_STYLE_COLORS.text.heading
-                    }
+                    color={isActive ? APP_STYLE_COLORS.brand.default : APP_STYLE_COLORS.text.heading}
                     name={TAB_ICONS[item.name]}
                     size={APP_NATIVE_TOKENS.icon.hero}
-                    strokeWidth={
-                      isActive
-                        ? APP_NATIVE_TOKENS.icon.strokeActive
-                        : APP_NATIVE_TOKENS.icon.strokeSubtle
-                    }
+                    strokeWidth={isActive ? APP_NATIVE_TOKENS.icon.strokeActive : APP_NATIVE_TOKENS.icon.strokeSubtle}
                   />
                 </View>
-                <Text
-                  className={
-                    isActive
-                      ? 'app-tab-bar__text app-tab-bar__text--active'
-                      : 'app-tab-bar__text'
-                  }
-                >
-                  {item.title}
-                </Text>
+                <Text className={isActive ? 'app-tab-bar__text app-tab-bar__text--active' : 'app-tab-bar__text'}>{item.title}</Text>
               </AppPressable>
             )
           })}

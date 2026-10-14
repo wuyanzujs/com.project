@@ -1,31 +1,17 @@
 import type { ExpressProductCode } from './types'
 
-const REQUIRED_PRODUCTS = new Set<ExpressProductCode>([
-  'DJBK',
-  'DJTH',
-  'JZZH',
-  'NJZZH',
-  'YTY',
-  'YTYDS',
-  'NZBRH'
-])
+const REQUIRED_PRODUCTS = new Set<ExpressProductCode>(['DJBK', 'DJTH', 'JZZH', 'NJZZH', 'YTY', 'YTYDS', 'NZBRH'])
 
 const FREE_PRODUCTS = new Set<ExpressProductCode>(['NFLF', 'NLRF'])
 const LOGISTICS_PRODUCTS = new Set<ExpressProductCode>(['JZKH', 'JZQY_LONG'])
-const SXB_BLOCKED_PRODUCTS = new Set<ExpressProductCode>([
-  ...REQUIRED_PRODUCTS,
-  ...FREE_PRODUCTS,
-  ...LOGISTICS_PRODUCTS
-])
+const SXB_BLOCKED_PRODUCTS = new Set<ExpressProductCode>([...REQUIRED_PRODUCTS, ...FREE_PRODUCTS, ...LOGISTICS_PRODUCTS])
 
 /**
  *
  * @param productCode 产品 code
  * @description 取产品的保价策略
  */
-export function getExpressInsuranceProductPolicy(
-  productCode: ExpressProductCode
-) {
+export function getExpressInsuranceProductPolicy(productCode: ExpressProductCode) {
   const required = REQUIRED_PRODUCTS.has(productCode)
   const free = FREE_PRODUCTS.has(productCode)
 

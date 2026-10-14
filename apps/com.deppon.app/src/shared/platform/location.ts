@@ -19,9 +19,7 @@ export interface AppLocationResult {
   address?: string
 }
 
-export async function getCurrentAppLocation(
-  _options: AppLocationOptions
-): Promise<AppLocationResult> {
+export async function getCurrentAppLocation(_options: AppLocationOptions): Promise<AppLocationResult> {
   ensureNativeCapability('location')
 
   throw new NativeCapabilityError('location')

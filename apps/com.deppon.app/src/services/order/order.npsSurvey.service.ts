@@ -2,11 +2,7 @@ import { orderNpsSurveyApi } from './order.npsSurvey.api'
 import { createOrderNpsSubmitRequest } from './order.npsSurvey.rules'
 import { createServiceFailure } from '../serviceResponse'
 
-import type {
-  OrderNpsDraft,
-  OrderSceneSurveyContext,
-  OrderSceneSurveyItem
-} from './order.sceneSurvey.types'
+import type { OrderNpsDraft, OrderSceneSurveyContext, OrderSceneSurveyItem } from './order.sceneSurvey.types'
 
 const NPS_ITEM: OrderSceneSurveyItem = {
   key: 'NPS:N0101',
@@ -26,9 +22,7 @@ export const orderNpsSurveyService = {
     })
 
     if (!response.status || typeof response.result !== 'boolean') {
-      return createServiceFailure<OrderSceneSurveyItem>(
-        response.message || '推荐意愿问卷状态查询失败'
-      )
+      return createServiceFailure<OrderSceneSurveyItem>(response.message || '推荐意愿问卷状态查询失败')
     }
 
     return {
@@ -46,10 +40,6 @@ export const orderNpsSurveyService = {
 
     const response = await orderNpsSurveyApi.submit(request)
 
-    return response.status && response.result
-      ? response
-      : createServiceFailure<boolean>(
-          response.message || '推荐意愿问卷提交失败'
-        )
+    return response.status && response.result ? response : createServiceFailure<boolean>(response.message || '推荐意愿问卷提交失败')
   }
 }

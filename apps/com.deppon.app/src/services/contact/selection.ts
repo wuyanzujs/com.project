@@ -2,8 +2,7 @@ import type { Contact } from './types'
 
 export type ContactSelectionTarget = 'sender' | 'consignee'
 export type ContactSelectionMode = 'select' | 'manage'
-export type ContactSelectionSource =
-  'EXPRESS' | 'QUERY_PRICE' | 'INVOICE_DETAIL' | 'BATCH'
+export type ContactSelectionSource = 'EXPRESS' | 'QUERY_PRICE' | 'INVOICE_DETAIL' | 'BATCH'
 export type ContactSelectionReturnDelta = '1' | '2'
 
 export interface ContactSelectionParams {
@@ -29,9 +28,7 @@ let pendingEditingContact: Contact | null = null
  * @param value 待判定值
  * @description 判定是否为联系人选择目标
  */
-function isContactSelectionTarget(
-  value: unknown
-): value is ContactSelectionTarget {
+function isContactSelectionTarget(value: unknown): value is ContactSelectionTarget {
   return value === 'sender' || value === 'consignee'
 }
 
@@ -49,15 +46,8 @@ function isContactSelectionMode(value: unknown): value is ContactSelectionMode {
  * @param value 待判定值
  * @description 判定是否为联系人选择来源
  */
-function isContactSelectionSource(
-  value: unknown
-): value is ContactSelectionSource {
-  return (
-    value === 'EXPRESS' ||
-    value === 'QUERY_PRICE' ||
-    value === 'INVOICE_DETAIL' ||
-    value === 'BATCH'
-  )
+function isContactSelectionSource(value: unknown): value is ContactSelectionSource {
+  return value === 'EXPRESS' || value === 'QUERY_PRICE' || value === 'INVOICE_DETAIL' || value === 'BATCH'
 }
 
 /**
@@ -65,9 +55,7 @@ function isContactSelectionSource(
  * @param value 待判定值
  * @description 判定是否为返回增量标识
  */
-function isContactSelectionReturnDelta(
-  value: unknown
-): value is ContactSelectionReturnDelta {
+function isContactSelectionReturnDelta(value: unknown): value is ContactSelectionReturnDelta {
   return value === '1' || value === '2'
 }
 
@@ -99,20 +87,12 @@ export const contactSelection = {
    * @param params 路由 query 参数
    * @description 解析并归一路由 query 参数
    */
-  parseParams(
-    params: Record<string, string | undefined> = {}
-  ): ContactSelectionParams {
+  parseParams(params: Record<string, string | undefined> = {}): ContactSelectionParams {
     return {
       mode: isContactSelectionMode(params.mode) ? params.mode : 'manage',
-      target: isContactSelectionTarget(params.target)
-        ? params.target
-        : 'sender',
-      source: isContactSelectionSource(params.source)
-        ? params.source
-        : 'EXPRESS',
-      returnDelta: isContactSelectionReturnDelta(params.returnDelta)
-        ? params.returnDelta
-        : '2'
+      target: isContactSelectionTarget(params.target) ? params.target : 'sender',
+      source: isContactSelectionSource(params.source) ? params.source : 'EXPRESS',
+      returnDelta: isContactSelectionReturnDelta(params.returnDelta) ? params.returnDelta : '2'
     }
   },
 
@@ -123,11 +103,7 @@ export const contactSelection = {
    * @param source 选择来源
    * @description 暂存选中的联系人
    */
-  select(
-    target: ContactSelectionTarget,
-    contact: Contact,
-    source: ContactSelectionSource = 'EXPRESS'
-  ) {
+  select(target: ContactSelectionTarget, contact: Contact, source: ContactSelectionSource = 'EXPRESS') {
     pendingSelection = {
       target,
       source,
@@ -142,10 +118,7 @@ export const contactSelection = {
    * @param source 选择来源，可选
    * @description 取出并清空暂存的选中联系人
    */
-  consumeSelection(
-    target?: ContactSelectionTarget,
-    source?: ContactSelectionSource
-  ) {
+  consumeSelection(target?: ContactSelectionTarget, source?: ContactSelectionSource) {
     if (!pendingSelection) {
       return null
     }

@@ -4,11 +4,7 @@ import { expressApi } from './express.api'
 import { validateExpressContact } from './express.draft'
 import { buildPickupTimeRequest } from './express.payload'
 import { normalizeExpressPickupTimeResponse } from './pickupTime.options'
-import {
-  buildExpressPickupNightRequest,
-  createExpressPickupNightCapability,
-  getFreshExpressPickupNightCapability
-} from './pickupTime.rules'
+import { buildExpressPickupNightRequest, createExpressPickupNightCapability, getFreshExpressPickupNightCapability } from './pickupTime.rules'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type { ExpressDraft, ExpressPickupTimeResponse } from './types'
@@ -18,9 +14,7 @@ import type { ExpressDraft, ExpressPickupTimeResponse } from './types'
  * @param draft 寄件草稿
  * @description 查询取件时间并归一响应
  */
-export async function queryExpressPickupTime(
-  draft: ExpressDraft
-): Promise<DepponResponse<ExpressPickupTimeResponse>> {
+export async function queryExpressPickupTime(draft: ExpressDraft): Promise<DepponResponse<ExpressPickupTimeResponse>> {
   const senderMessages = validateExpressContact(draft.sender, '寄件人')
 
   if (senderMessages.length) {
@@ -31,23 +25,15 @@ export async function queryExpressPickupTime(
 
   if (!nightCapability) {
     try {
-      const nightResponse = await expressApi.queryPickupNight(
-        buildExpressPickupNightRequest(draft)
-      )
+      const nightResponse = await expressApi.queryPickupNight(buildExpressPickupNightRequest(draft))
 
-      nightCapability = createExpressPickupNightCapability(
-        draft,
-        nightResponse.status ? nightResponse.result : null
-      )
+      nightCapability = createExpressPickupNightCapability(draft, nightResponse.status ? nightResponse.result : null)
     } catch {
       nightCapability = createExpressPickupNightCapability(draft)
     }
   }
 
-  const response = await expressApi.queryPickupTime(
-    buildPickupTimeRequest(draft, nightCapability),
-    false
-  )
+  const response = await expressApi.queryPickupTime(buildPickupTimeRequest(draft, nightCapability), false)
 
   if (!response.status || !response.result) {
     return response

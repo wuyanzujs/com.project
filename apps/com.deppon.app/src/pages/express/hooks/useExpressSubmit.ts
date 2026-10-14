@@ -2,17 +2,10 @@ import Taro from '@tarojs/taro'
 
 import { useCallback, useEffect, useState } from 'react'
 
-import {
-  expressDraftStorage,
-  expressService,
-  validateExpressDraft
-} from '@/services/express'
+import { expressDraftStorage, expressService, validateExpressDraft } from '@/services/express'
 import type { ExpressDraft } from '@/services/express'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
-import {
-  ensureAuthenticated,
-  hasValidSession
-} from '@/shared/navigation/authGuard'
+import { ensureAuthenticated, hasValidSession } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
@@ -33,10 +26,7 @@ interface UseExpressSubmitResult {
   handleSubmit: () => Promise<void>
 }
 
-export function useExpressSubmit({
-  draft,
-  warehouseController
-}: UseExpressSubmitParams): UseExpressSubmitResult {
+export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmitParams): UseExpressSubmitResult {
   const [submiting, setSubmiting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
 
@@ -111,10 +101,7 @@ export function useExpressSubmit({
       }
 
       const orderNumber = response.result.orderNumbers?.[0] || ''
-      const waybillNumber =
-        response.result.waybillNumber ||
-        response.result.waybillNumbers?.[0] ||
-        ''
+      const waybillNumber = response.result.waybillNumber || response.result.waybillNumbers?.[0] || ''
 
       if (!(await expressDraftStorage.clear())) {
         Taro.showToast({ title: '订单已提交，草稿清理失败', icon: 'none' })

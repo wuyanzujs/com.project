@@ -4,16 +4,10 @@ import process from 'node:process'
 
 const appRoot = process.cwd()
 const srcRoot = path.join(appRoot, 'src')
-const routeRegistryPath = path.join(
-  srcRoot,
-  'shared/navigation/routeRegistry.ts'
-)
+const routeRegistryPath = path.join(srcRoot, 'shared/navigation/routeRegistry.ts')
 const appConfigPath = path.join(srcRoot, 'app.config.ts')
 const routesPath = path.join(srcRoot, 'shared/navigation/routes.ts')
-const appNavigationPath = path.join(
-  srcRoot,
-  'shared/navigation/appNavigation.ts'
-)
+const appNavigationPath = path.join(srcRoot, 'shared/navigation/appNavigation.ts')
 
 const violations = []
 
@@ -27,9 +21,7 @@ function readText(filePath) {
 
 function getRouteDefinitions() {
   const content = readText(routeRegistryPath)
-  const listMatch = content.match(
-    /APP_ROUTE_DEFINITIONS\s*=\s*\[([\s\S]*?)\]\s*as const/
-  )
+  const listMatch = content.match(/APP_ROUTE_DEFINITIONS\s*=\s*\[([\s\S]*?)\]\s*as const/)
 
   if (!listMatch) {
     addViolation('routeRegistry.ts 缺少 APP_ROUTE_DEFINITIONS 注册表。')
@@ -90,9 +82,7 @@ function checkRouteDefinitions(routes) {
   const expectedMainRoutes = ['home', 'orderList', 'memberCenter', 'mine']
 
   if (mainRouteNames.join(',') !== expectedMainRoutes.join(',')) {
-    addViolation(
-      `主导航必须保持 ${expectedMainRoutes.join(', ')}，当前为 ${mainRouteNames.join(', ')}。`
-    )
+    addViolation(`主导航必须保持 ${expectedMainRoutes.join(', ')}，当前为 ${mainRouteNames.join(', ')}。`)
   }
 
   if (!routes.some(item => item.name === 'login')) {
@@ -135,9 +125,7 @@ function checkDerivedConsumers() {
   }
 
   if (!appNavigation.includes('APP_LOGIN_ROUTE_PATHS')) {
-    addViolation(
-      'appNavigation.ts 的登录守卫必须从 APP_LOGIN_ROUTE_PATHS 派生。'
-    )
+    addViolation('appNavigation.ts 的登录守卫必须从 APP_LOGIN_ROUTE_PATHS 派生。')
   }
 }
 

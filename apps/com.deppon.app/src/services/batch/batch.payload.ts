@@ -1,18 +1,9 @@
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
-import {
-  getExpressContactRegion,
-  getNowText,
-  toFiniteNumber,
-  trimText
-} from '../express/express.draft'
+import { getExpressContactRegion, getNowText, toFiniteNumber, trimText } from '../express/express.draft'
 
 import type { BatchConsigneeDraft, BatchDraft } from './types'
-import type {
-  CreateExpressOrderRequest,
-  ExpressReceiveOrder,
-  ExpressScanContext
-} from '../express/types'
+import type { CreateExpressOrderRequest, ExpressReceiveOrder, ExpressScanContext } from '../express/types'
 
 /**
  *
@@ -60,11 +51,7 @@ function getScanOrderFields(scanContext?: ExpressScanContext) {
  * @param pickupTime 取件时间
  * @description 组装单个收货人的下单明细
  */
-function buildReceiveOrder(
-  item: BatchConsigneeDraft,
-  draft: BatchDraft,
-  pickupTime: string
-): ExpressReceiveOrder {
+function buildReceiveOrder(item: BatchConsigneeDraft, draft: BatchDraft, pickupTime: string): ExpressReceiveOrder {
   if (!item.contact) {
     throw new Error('缺少收货人信息')
   }
@@ -111,9 +98,7 @@ function buildReceiveOrder(
  * @param draft 批量草稿
  * @description 组装批量创建订单的请求体
  */
-export function buildBatchCreateOrderRequest(
-  draft: BatchDraft
-): CreateExpressOrderRequest {
+export function buildBatchCreateOrderRequest(draft: BatchDraft): CreateExpressOrderRequest {
   if (!draft.sender) {
     throw new Error('缺少发货人信息')
   }
@@ -124,10 +109,7 @@ export function buildBatchCreateOrderRequest(
 
   const pickupTime = trimText(draft.pickup.time) || getNowText()
   const scanOrderFields = getScanOrderFields(draft.scanContext)
-  const contactIdList = [
-    draft.sender.id,
-    ...draft.consignees.map(item => item.contact?.id)
-  ].filter((id): id is string => !!id)
+  const contactIdList = [draft.sender.id, ...draft.consignees.map(item => item.contact?.id)].filter((id): id is string => !!id)
 
   return {
     batch: true,
@@ -148,8 +130,6 @@ export function buildBatchCreateOrderRequest(
     pickupManId: scanOrderFields.pickupManId,
     dispatchFlag: draft.pickup.dispatch,
     passwordSigning: 'N',
-    receive: draft.consignees.map(item =>
-      buildReceiveOrder(item, draft, pickupTime)
-    )
+    receive: draft.consignees.map(item => buildReceiveOrder(item, draft, pickupTime))
   }
 }

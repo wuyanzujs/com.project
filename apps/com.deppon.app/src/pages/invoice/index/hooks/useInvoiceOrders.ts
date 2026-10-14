@@ -1,16 +1,8 @@
 import { useCallback, useState } from 'react'
 
 import type { DepponResponse } from '@/request/deppon'
-import {
-  invoiceOrderAuth,
-  invoiceOrderSearchService,
-  invoiceService
-} from '@/services/invoice'
-import type {
-  InvoiceOrderAuthChallenge,
-  InvoiceOrderSearchView,
-  InvoiceOrderView
-} from '@/services/invoice'
+import { invoiceOrderAuth, invoiceOrderSearchService, invoiceService } from '@/services/invoice'
+import type { InvoiceOrderAuthChallenge, InvoiceOrderSearchView, InvoiceOrderView } from '@/services/invoice'
 import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
 import { scanAppCode } from '@/shared/platform/scan'
 
@@ -22,19 +14,14 @@ interface UseInvoiceOrdersParams {
   runLatestRequest: LatestRequestRunner
   setErrorMessage: (next: string) => void
   showPendingToast: (title: string) => void
-  setOrders: (
-    next:
-      InvoiceOrderView[] | ((current: InvoiceOrderView[]) => InvoiceOrderView[])
-  ) => void
+  setOrders: (next: InvoiceOrderView[] | ((current: InvoiceOrderView[]) => InvoiceOrderView[])) => void
   setOrderPageIndex: (next: number) => void
   setOrderTotalPage: (next: number) => void
   setOrderTotalRows: (next: number) => void
   setOrderAuth: (next: InvoiceOrderAuthChallenge | null) => void
   setOrderAuthValue: (next: string) => void
   setOrderAuthMessage: (next: string) => void
-  applyOrderSearchResponse: (
-    response: DepponResponse<InvoiceOrderSearchView>
-  ) => boolean
+  applyOrderSearchResponse: (response: DepponResponse<InvoiceOrderSearchView>) => boolean
 }
 
 interface UseInvoiceOrdersResult {
@@ -77,25 +64,14 @@ export function useInvoiceOrders({
             return
           }
 
-          setOrders(current =>
-            nextPage === 1
-              ? (response.result?.list ?? [])
-              : [...current, ...(response.result?.list ?? [])]
-          )
+          setOrders(current => (nextPage === 1 ? (response.result?.list ?? []) : [...current, ...(response.result?.list ?? [])]))
           setOrderPageIndex(response.result.pageIndex)
           setOrderTotalPage(response.result.totalPage)
           setOrderTotalRows(response.result.totalRows)
         }
       )
     },
-    [
-      runLatestRequest,
-      setErrorMessage,
-      setOrders,
-      setOrderPageIndex,
-      setOrderTotalPage,
-      setOrderTotalRows
-    ]
+    [runLatestRequest, setErrorMessage, setOrders, setOrderPageIndex, setOrderTotalPage, setOrderTotalRows]
   )
 
   const loadOrderSearch = useCallback(
@@ -112,10 +88,7 @@ export function useInvoiceOrders({
           const cachedValue = invoiceOrderAuth.getCachedValue(normalizedKeyword)
 
           if (cachedValue) {
-            const cachedResponse = await invoiceOrderSearchService.verifyPhone(
-              normalizedKeyword,
-              cachedValue
-            )
+            const cachedResponse = await invoiceOrderSearchService.verifyPhone(normalizedKeyword, cachedValue)
 
             if (cachedResponse.status && cachedResponse.result?.list.length) {
               return cachedResponse
@@ -147,11 +120,7 @@ export function useInvoiceOrders({
       const result = await scanAppCode('INVOICE_ORDER_SEARCH')
 
       if (result.kind !== 'waybill') {
-        showPendingToast(
-          result.kind === 'unsupported'
-            ? result.message
-            : '云打印码不能用于发票查询'
-        )
+        showPendingToast(result.kind === 'unsupported' ? result.message : '云打印码不能用于发票查询')
         return
       }
 
@@ -170,13 +139,7 @@ export function useInvoiceOrders({
     setOrderAuthValue('')
     setOrderAuthMessage('')
     loadOrders(1)
-  }, [
-    loadOrders,
-    setOrderAuth,
-    setOrderAuthMessage,
-    setOrderAuthValue,
-    setOrders
-  ])
+  }, [loadOrders, setOrderAuth, setOrderAuthMessage, setOrderAuthValue, setOrders])
 
   return {
     orderKeyword,

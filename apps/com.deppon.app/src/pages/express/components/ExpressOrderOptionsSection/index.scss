@@ -1,12 +1,56 @@
 @use '@/styles/_tokens.scss' as *;
 
 /* 生产端协议勾选是空心圆 radio：未选中灰环，选中白底 + 品牌环 + 品牌点。 */
-.express-order-options { margin-bottom: $dp-space-16; }
-.express-order-options__agreement { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; min-height: 72px; }
-.express-order-options__radio { align-items: center; justify-content: center; width: $dp-space-28; height: $dp-space-28; margin-right: $dp-space-10; background: $dp-color-bg-card; border-color: $dp-color-bg-track; border-radius: $dp-radius-circle; border-width: 3px; }
-.express-order-options__radio--checked { border-color: $dp-color-brand; }
-.express-order-options__radio-dot { width: 12px; height: 12px; background: $dp-color-brand; border-radius: $dp-radius-circle; }
-.express-order-options__agreement-text { color: $dp-color-text-neutral; font-size: $dp-font-size-body; line-height: $dp-line-height-36; }
-.express-order-options__agreement-link { color: $dp-color-text-heading; font-size: $dp-font-size-body; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-36; }
-.express-order-options__validation { margin-top: $dp-space-8; padding: $dp-space-10 $dp-space-12; background: $dp-color-warning-background; border-radius: $dp-radius-sm; }
-.express-order-options__validation-message { display: flex; color: $dp-color-status-warning-text; font-size: $dp-font-size-caption; line-height: $dp-line-height-caption; }
+.express-order-options {
+  margin-bottom: $dp-space-16;
+}
+.express-order-options__agreement {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 72px;
+}
+.express-order-options__radio {
+  align-items: center;
+  justify-content: center;
+  width: $dp-space-28;
+  height: $dp-space-28;
+  margin-right: $dp-space-10;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-bg-track;
+  border-radius: $dp-radius-circle;
+  border-width: 3px;
+}
+.express-order-options__radio--checked {
+  border-color: $dp-color-brand;
+}
+.express-order-options__radio-dot {
+  width: 12px;
+  height: 12px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-circle;
+}
+.express-order-options__agreement-text {
+  color: $dp-color-text-neutral;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-36;
+}
+.express-order-options__agreement-link {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-36;
+}
+.express-order-options__validation {
+  margin-top: $dp-space-8;
+  padding: $dp-space-10 $dp-space-12;
+  background: $dp-color-warning-background;
+  border-radius: $dp-radius-sm;
+}
+.express-order-options__validation-message {
+  display: flex;
+  color: $dp-color-status-warning-text;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}

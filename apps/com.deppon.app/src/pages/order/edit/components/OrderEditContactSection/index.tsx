@@ -5,11 +5,7 @@ import type { OrderEditContact } from '@/services/order'
 import './index.scss'
 import '../OrderEditSection.scss'
 
-export function OrderEditContactSection(props: {
-  title: string
-  contact: OrderEditContact
-  onChange: (patch: Partial<OrderEditContact>) => void
-}) {
+export function OrderEditContactSection(props: { title: string; contact: OrderEditContact; onChange: (patch: Partial<OrderEditContact>) => void }) {
   return (
     <View className='order-edit-section'>
       <Text className='order-edit-section__title'>{props.title}</Text>

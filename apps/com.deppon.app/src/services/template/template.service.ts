@@ -53,15 +53,10 @@ export const templateService = {
   },
 
   prepareExpress(template: ExpressTemplateView) {
-    expressDraftBridge.carryFromTemplate(
-      mapTemplateToExpressDraft(template.raw)
-    )
+    expressDraftBridge.carryFromTemplate(mapTemplateToExpressDraft(template.raw))
   },
 
-  async saveDraft(
-    draft: ExpressDraft,
-    meta: ExpressTemplateDraftMeta
-  ): Promise<DepponResponse<null>> {
+  async saveDraft(draft: ExpressDraft, meta: ExpressTemplateDraftMeta): Promise<DepponResponse<null>> {
     const message = validateTemplateDraft(draft) || validateTemplateMeta(meta)
 
     if (message) {
@@ -71,18 +66,14 @@ export const templateService = {
     const listResponse = await templateApi.query({ id: '' })
 
     if (!listResponse.status || !listResponse.result) {
-      return createServiceFailure(
-        listResponse.message || '暂未获取到模板数量，请稍后再试'
-      )
+      return createServiceFailure(listResponse.message || '暂未获取到模板数量，请稍后再试')
     }
 
     if (listResponse.result.length >= EXPRESS_TEMPLATE_LIMIT) {
       return createServiceFailure(`最多只能添加${EXPRESS_TEMPLATE_LIMIT}个模板`)
     }
 
-    const response = await templateApi.save(
-      buildTemplateSaveRequest(draft, meta, APP_RUNTIME_CONFIG.systemCode)
-    )
+    const response = await templateApi.save(buildTemplateSaveRequest(draft, meta, APP_RUNTIME_CONFIG.systemCode))
 
     if (!response.status || response.result === false) {
       return createServiceFailure(response.message || '保存失败，请稍后再试')
@@ -94,10 +85,7 @@ export const templateService = {
     }
   },
 
-  async updateMetadata(
-    template: ExpressTemplateView,
-    meta: ExpressTemplateDraftMeta
-  ): Promise<DepponResponse<null>> {
+  async updateMetadata(template: ExpressTemplateView, meta: ExpressTemplateDraftMeta): Promise<DepponResponse<null>> {
     const message = validateTemplateMeta(meta)
 
     if (message) {
@@ -112,13 +100,7 @@ export const templateService = {
       return createServiceFailure('您还没有修改模板信息')
     }
 
-    const response = await templateApi.save(
-      buildTemplateMetadataSaveRequest(
-        template,
-        meta,
-        APP_RUNTIME_CONFIG.systemCode
-      )
-    )
+    const response = await templateApi.save(buildTemplateMetadataSaveRequest(template, meta, APP_RUNTIME_CONFIG.systemCode))
 
     if (!response.status || response.result === false) {
       return createServiceFailure(response.message || '修改失败，请稍后再试')
@@ -130,9 +112,7 @@ export const templateService = {
     }
   },
 
-  async setDefault(
-    template: ExpressTemplateView
-  ): Promise<DepponResponse<null>> {
+  async setDefault(template: ExpressTemplateView): Promise<DepponResponse<null>> {
     const response = await templateApi.save({
       ...template.raw,
       defaultFlag: template.isDefault ? 2 : 1,

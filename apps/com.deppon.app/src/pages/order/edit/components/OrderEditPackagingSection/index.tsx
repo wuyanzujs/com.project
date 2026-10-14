@@ -23,26 +23,16 @@ interface OrderEditPackagingSectionProps {
   onCountChange: (value: number) => void
 }
 
-export function OrderEditPackagingSection({
-  packaging,
-  onCountChange
-}: OrderEditPackagingSectionProps) {
+export function OrderEditPackagingSection({ packaging, onCountChange }: OrderEditPackagingSectionProps) {
   const enabled = packaging.count > 0
-  const [countText, setCountText] = useState(
-    String(enabled ? packaging.count : ORDER_EDIT_PACKAGING_MIN_COUNT)
-  )
+  const [countText, setCountText] = useState(String(enabled ? packaging.count : ORDER_EDIT_PACKAGING_MIN_COUNT))
 
   useEffect(() => {
-    setCountText(
-      String(enabled ? packaging.count : ORDER_EDIT_PACKAGING_MIN_COUNT)
-    )
+    setCountText(String(enabled ? packaging.count : ORDER_EDIT_PACKAGING_MIN_COUNT))
   }, [enabled, packaging.count])
 
   const commitCount = (value: unknown) => {
-    const count = Math.max(
-      ORDER_EDIT_PACKAGING_MIN_COUNT,
-      normalizeOrderEditPackagingCount(value)
-    )
+    const count = Math.max(ORDER_EDIT_PACKAGING_MIN_COUNT, normalizeOrderEditPackagingCount(value))
 
     setCountText(String(count))
     onCountChange(count)
@@ -76,9 +66,7 @@ export function OrderEditPackagingSection({
         <View className='order-edit-packaging__header-content'>
           <Text className='order-edit-section__title'>打包服务</Text>
           <Text className='order-edit-packaging__summary'>
-            {enabled
-              ? `打包 ${packaging.count} 件 · 参考 ¥${estimatedFee}`
-              : '由快递员按现场难度完成打包，可按件选择'}
+            {enabled ? `打包 ${packaging.count} 件 · 参考 ¥${estimatedFee}` : '由快递员按现场难度完成打包，可按件选择'}
           </Text>
         </View>
         <AppPressable
@@ -87,13 +75,7 @@ export function OrderEditPackagingSection({
           selected={enabled}
           onPress={handleToggle}
         >
-          <View
-            className={
-              enabled
-                ? 'order-edit-packaging-toggle__track order-edit-packaging-toggle__track--active'
-                : 'order-edit-packaging-toggle__track'
-            }
-          >
+          <View className={enabled ? 'order-edit-packaging-toggle__track order-edit-packaging-toggle__track--active' : 'order-edit-packaging-toggle__track'}>
             <View className='order-edit-packaging-toggle__thumb' />
           </View>
         </AppPressable>
@@ -104,9 +86,7 @@ export function OrderEditPackagingSection({
           <View className='order-edit-packaging__count-row'>
             <View className='order-edit-packaging__labels'>
               <Text className='order-edit-packaging__label'>打包件数</Text>
-              <Text className='order-edit-packaging__limit'>
-                最多 {ORDER_EDIT_PACKAGING_MAX_COUNT} 件
-              </Text>
+              <Text className='order-edit-packaging__limit'>最多 {ORDER_EDIT_PACKAGING_MAX_COUNT} 件</Text>
             </View>
             <View className='order-edit-packaging-stepper'>
               <AppPressable
@@ -115,11 +95,7 @@ export function OrderEditPackagingSection({
                 disabled={packaging.count <= ORDER_EDIT_PACKAGING_MIN_COUNT}
                 onPress={() => commitCount(packaging.count - 1)}
               >
-                <AppIcon
-                  color={APP_STYLE_COLORS.text.body}
-                  name='minus'
-                  size={APP_NATIVE_TOKENS.icon.small}
-                />
+                <AppIcon color={APP_STYLE_COLORS.text.body} name='minus' size={APP_NATIVE_TOKENS.icon.small} />
               </AppPressable>
               <View className='order-edit-packaging-stepper__input-wrap'>
                 <Input
@@ -138,18 +114,11 @@ export function OrderEditPackagingSection({
                 disabled={packaging.count >= ORDER_EDIT_PACKAGING_MAX_COUNT}
                 onPress={() => commitCount(packaging.count + 1)}
               >
-                <AppIcon
-                  color={APP_STYLE_COLORS.text.body}
-                  name='plus'
-                  size={APP_NATIVE_TOKENS.icon.small}
-                />
+                <AppIcon color={APP_STYLE_COLORS.text.body} name='plus' size={APP_NATIVE_TOKENS.icon.small} />
               </AppPressable>
             </View>
           </View>
-          <Text className='order-edit-packaging__notice'>
-            参考收费 {ORDER_EDIT_PACKAGING_UNIT_FEE}{' '}
-            元/件，实际费用以后端修改结果和揽收确认结果为准。
-          </Text>
+          <Text className='order-edit-packaging__notice'>参考收费 {ORDER_EDIT_PACKAGING_UNIT_FEE} 元/件，实际费用以后端修改结果和揽收确认结果为准。</Text>
         </View>
       ) : null}
     </View>

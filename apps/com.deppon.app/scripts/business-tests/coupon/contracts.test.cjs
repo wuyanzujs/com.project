@@ -2,12 +2,7 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  couponService,
-  createCouponDetailView,
-  expressCouponService,
-  validateCouponExchangeCode
-} = require('@/services/coupon')
+const { couponService, createCouponDetailView, expressCouponService, validateCouponExchangeCode } = require('@/services/coupon')
 const { expressCouponApi } = require('@/services/coupon/expressCoupon.api')
 const {
   EXPRESS_COUPON_AUTO_QUERY_DELAY_MS,
@@ -15,15 +10,9 @@ const {
   createExpressCouponRequestKey,
   getExpressCouponOriginalFee
 } = require('@/services/express/couponOrder.rules')
-const {
-  buildCreateOrderRequest,
-  buildFreightRequest
-} = require('@/services/express/express.payload')
+const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
 
-const {
-  createValidExpressDraft,
-  expressProduct
-} = require('../fixtures/express.cjs')
+const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 
 const cases = [
   {
@@ -32,10 +21,7 @@ const cases = [
       assert.equal(validateCouponExchangeCode(''), '请输入兑换码')
       assert.equal(validateCouponExchangeCode('ABC123'), '请输入正确的兑换码')
       assert.equal(validateCouponExchangeCode(' ABCDE12345 '), '')
-      assert.equal(
-        validateCouponExchangeCode('123456789012345678901'),
-        '兑换码不能超过20个字符'
-      )
+      assert.equal(validateCouponExchangeCode('123456789012345678901'), '兑换码不能超过20个字符')
     }
   },
   {
@@ -96,12 +82,7 @@ const cases = [
       assert.equal(discountCard.validityText, '2026.07.01-2026.07.31 有效')
       assert.equal(discountCard.usageTimeText, '限周日一使用')
       assert.equal(discountCard.labelText, '即将到期')
-      assert.deepEqual(discountCard.tags, [
-        '即将到期',
-        '限周日一使用',
-        '快递',
-        'App专享'
-      ])
+      assert.deepEqual(discountCard.tags, ['即将到期', '限周日一使用', '快递', 'App专享'])
       assert.equal(discountCard.canUse, true)
       assert.equal(disabledCard.amountValue, '5')
       assert.equal(disabledCard.thresholdText, '满20元可用')
@@ -198,13 +179,7 @@ const cases = [
         sendAnAddress: '上海市-上海市-青浦区',
         receivesAnAddress: '广东省-深圳市-南山区'
       })
-      assert.equal(
-        getExpressCouponOriginalFee(
-          { ...selectedProduct, couponRankType: '' },
-          'FRT'
-        ),
-        26
-      )
+      assert.equal(getExpressCouponOriginalFee({ ...selectedProduct, couponRankType: '' }, 'FRT'), 26)
       assert.equal(
         createExpressCouponRequestKey({
           ...draft,
@@ -275,9 +250,7 @@ const cases = [
         assert.equal(response.result.available[0].canUse, true)
         assert.equal(response.result.unavailable.length, 1)
         assert.equal(response.result.unavailable[0].canUse, false)
-        assert.deepEqual(response.result.unavailable[0].raw.useLimit, [
-          '当前产品不可用'
-        ])
+        assert.deepEqual(response.result.unavailable[0].raw.useLimit, ['当前产品不可用'])
       } finally {
         expressCouponApi.queryOrderCoupons = originalQueryOrderCoupons
       }
@@ -321,9 +294,7 @@ const cases = [
       }
       const freightRequest = buildFreightRequest(draft)
       const orderRequest = buildCreateOrderRequest(draft)
-      const noCouponFreightRequest = buildFreightRequest(
-        createValidExpressDraft()
-      )
+      const noCouponFreightRequest = buildFreightRequest(createValidExpressDraft())
 
       assert.equal(freightRequest.promotionsCode, 'CPN001')
       assert.equal(freightRequest.customerMobile, '13800138000')

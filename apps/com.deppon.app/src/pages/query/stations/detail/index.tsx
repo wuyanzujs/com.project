@@ -31,12 +31,7 @@ function isValidCoordinate(detail: StationDetailView) {
   const latitude = Number(detail.lat)
   const longitude = Number(detail.lng)
 
-  return (
-    Number.isFinite(latitude) &&
-    Number.isFinite(longitude) &&
-    Math.abs(latitude) <= 90 &&
-    Math.abs(longitude) <= 180
-  )
+  return Number.isFinite(latitude) && Number.isFinite(longitude) && Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180
 }
 
 function renderInfo(label: string, value?: string) {
@@ -107,10 +102,7 @@ const QueryStationDetailPage = () => {
       await dialPhone(queryService.getStationPrimaryPhone(detail.phone))
     } catch (error) {
       Taro.showToast({
-        title:
-          error instanceof PhoneNumberError
-            ? error.message
-            : getNativeCapabilityErrorMessage(error),
+        title: error instanceof PhoneNumberError ? error.message : getNativeCapabilityErrorMessage(error),
         icon: 'none'
       })
     }
@@ -166,38 +158,24 @@ const QueryStationDetailPage = () => {
   return (
     <ScrollView className='station-detail-page' scrollY>
       <View className='station-detail-header'>
-        <Text className='station-detail-header__title'>
-          {detail?.name || '网点详情'}
-        </Text>
-        <Text className='station-detail-header__summary'>
-          {detail?.address || '正在读取网点地址、营业时间和联系方式'}
-        </Text>
+        <Text className='station-detail-header__title'>{detail?.name || '网点详情'}</Text>
+        <Text className='station-detail-header__summary'>{detail?.address || '正在读取网点地址、营业时间和联系方式'}</Text>
       </View>
 
-      {loading && !detail && (
-        <Text className='station-detail-loading'>正在加载网点详情...</Text>
-      )}
+      {loading && !detail && <Text className='station-detail-loading'>正在加载网点详情...</Text>}
 
       {!loading && !detail && (
         <View className='station-detail-empty'>
-          <Text className='station-detail-empty__title'>
-            {errorMessage || '暂未获取到网点信息'}
-          </Text>
-          <Text className='station-detail-empty__summary'>
-            可返回网点查询页，补充地址后重新查询。
-          </Text>
+          <Text className='station-detail-empty__title'>{errorMessage || '暂未获取到网点信息'}</Text>
+          <Text className='station-detail-empty__summary'>可返回网点查询页，补充地址后重新查询。</Text>
         </View>
       )}
 
       {detail && (
         <>
           <View className='station-detail-map-panel'>
-            <Text className='station-detail-map-panel__title'>
-              {isValidCoordinate(detail) ? '网点位置' : '暂无坐标'}
-            </Text>
-            <Text className='station-detail-map-panel__address'>
-              {detail.address || '暂无地址'}
-            </Text>
+            <Text className='station-detail-map-panel__title'>{isValidCoordinate(detail) ? '网点位置' : '暂无坐标'}</Text>
+            <Text className='station-detail-map-panel__address'>{detail.address || '暂无地址'}</Text>
             {isValidCoordinate(detail) && (
               <Text className='station-detail-map-panel__coord'>
                 {detail.lat}, {detail.lng}
@@ -206,28 +184,14 @@ const QueryStationDetailPage = () => {
           </View>
 
           <View className='station-detail-actions'>
-            <AppPressable
-              flex
-              className='station-detail-action station-detail-action--outline'
-              onPress={handleFeedback}
-            >
+            <AppPressable flex className='station-detail-action station-detail-action--outline' onPress={handleFeedback}>
               <Text className='station-detail-action__outline-text'>反馈</Text>
             </AppPressable>
-            <AppPressable
-              flex
-              className='station-detail-action station-detail-action--outline'
-              onPress={handleOpenMap}
-            >
+            <AppPressable flex className='station-detail-action station-detail-action--outline' onPress={handleOpenMap}>
               <Text className='station-detail-action__outline-text'>导航</Text>
             </AppPressable>
-            <AppPressable
-              flex
-              className='station-detail-action station-detail-action--primary'
-              onPress={handleDial}
-            >
-              <Text className='station-detail-action__primary-text'>
-                拨打电话
-              </Text>
+            <AppPressable flex className='station-detail-action station-detail-action--primary' onPress={handleDial}>
+              <Text className='station-detail-action__primary-text'>拨打电话</Text>
             </AppPressable>
           </View>
 

@@ -50,10 +50,7 @@ export function getRequestFailureMessage(error: unknown) {
     return null
   }
 
-  if (
-    error.statusCode === 408 ||
-    /timeout|timed out|超时/i.test(getCauseMessage(error.cause))
-  ) {
+  if (error.statusCode === 408 || /timeout|timed out|超时/i.test(getCauseMessage(error.cause))) {
     return '请求超时，请稍后重试'
   }
 

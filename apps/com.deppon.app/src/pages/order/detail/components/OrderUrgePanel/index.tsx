@@ -1,10 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
-import type {
-  OrderDetailActionView,
-  OrderDetailUrgePanelView,
-  OrderUrgeButtonRaw
-} from '@/services/order'
+import type { OrderDetailActionView, OrderDetailUrgePanelView, OrderUrgeButtonRaw } from '@/services/order'
 import { AppDialog, AppPressable } from '@/shared/components'
 
 import './index.scss'
@@ -44,33 +40,16 @@ export function OrderUrgePanel(props: {
             <AppPressable
               accessibilityLabel={label}
               block
-              className={
-                primary
-                  ? 'order-urge-card__button order-urge-card__button--primary'
-                  : 'order-urge-card__button'
-              }
+              className={primary ? 'order-urge-card__button order-urge-card__button--primary' : 'order-urge-card__button'}
               key={`${menu.buttonCode}-${menu.buttonName}`}
               onPress={() => props.onSelect(menu)}
             >
-              <Text
-                className={
-                  primary
-                    ? 'order-urge-card__button-text order-urge-card__button-text--primary'
-                    : 'order-urge-card__button-text'
-                }
-              >
-                {label}
-              </Text>
+              <Text className={primary ? 'order-urge-card__button-text order-urge-card__button-text--primary' : 'order-urge-card__button-text'}>{label}</Text>
             </AppPressable>
           )
         })}
       </View>
-      <AppPressable
-        accessibilityLabel='取消催单'
-        block
-        className='order-urge-card__cancel'
-        onPress={props.onClose}
-      >
+      <AppPressable accessibilityLabel='取消催单' block className='order-urge-card__cancel' onPress={props.onClose}>
         <Text className='order-urge-card__cancel-text'>取消</Text>
       </AppPressable>
     </AppDialog>

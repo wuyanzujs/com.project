@@ -3,25 +3,17 @@ import Taro from '@tarojs/taro'
 import { useState } from 'react'
 
 import { orderService } from '@/services/order'
-import type {
-  OrderDetailActionView,
-  OrderUrgeButtonRaw
-} from '@/services/order'
+import type { OrderDetailActionView, OrderUrgeButtonRaw } from '@/services/order'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 
-import type {
-  OrderDetailDialHandler,
-  UseOrderDetailActionsOptions as DetailOptions
-} from './useOrderDetailActions'
+import type { OrderDetailDialHandler, UseOrderDetailActionsOptions as DetailOptions } from './useOrderDetailActions'
 
 export interface UseOrderDetailServiceActionsOptions extends DetailOptions {
   handleDial: OrderDetailDialHandler
 }
 
-export function useOrderDetailServiceActions(
-  options: UseOrderDetailServiceActionsOptions
-) {
+export function useOrderDetailServiceActions(options: UseOrderDetailServiceActionsOptions) {
   const [notifyingDeliver, setNotifyingDeliver] = useState(false)
   const [invalidingWaybill, setInvalidingWaybill] = useState(false)
   const [urgeLoading, setUrgeLoading] = useState(false)
@@ -110,13 +102,10 @@ export function useOrderDetailServiceActions(
       })
 
       if (options.detail) {
-        const refreshedAction = await orderService.queryUrgeAction(
-          options.detail,
-          {
-            publicTrackMode: options.publicTrackMode,
-            role: options.detailRole
-          }
-        )
+        const refreshedAction = await orderService.queryUrgeAction(options.detail, {
+          publicTrackMode: options.publicTrackMode,
+          role: options.detailRole
+        })
 
         options.setUrgeAction(refreshedAction)
       }
@@ -196,9 +185,7 @@ export function useOrderDetailServiceActions(
       const response = await orderService.notifyDeliver(options.detail)
 
       Taro.showToast({
-        title: response.status
-          ? '已通知派送'
-          : response.message || '通知失败，请稍后再试',
+        title: response.status ? '已通知派送' : response.message || '通知失败，请稍后再试',
         icon: 'none'
       })
 
@@ -217,8 +204,7 @@ export function useOrderDetailServiceActions(
 
     const confirm = await Taro.showModal({
       title: '拦截作废',
-      content:
-        '提交后我司核实无误会立即作废，已支付运费将按规则原路退回。如 24 小时未收到退款，请联系营业部或快递员处理。',
+      content: '提交后我司核实无误会立即作废，已支付运费将按规则原路退回。如 24 小时未收到退款，请联系营业部或快递员处理。',
       cancelText: '取消',
       confirmText: '确认作废'
     })
@@ -268,8 +254,7 @@ export function useOrderDetailServiceActions(
 
       await Taro.showModal({
         title: '拦截作废',
-        content:
-          result?.message || response.message || '拦截作废失败，请稍后再试',
+        content: result?.message || response.message || '拦截作废失败，请稍后再试',
         showCancel: false,
         confirmText: '知道了'
       })
@@ -287,9 +272,7 @@ export function useOrderDetailServiceActions(
       return
     }
 
-    const response = await orderService.resolveDepartmentPhone(
-      action.departmentPhone
-    )
+    const response = await orderService.resolveDepartmentPhone(action.departmentPhone)
 
     if (response.message && response.result === '95353') {
       Taro.showToast({
@@ -320,10 +303,7 @@ export function useOrderDetailServiceActions(
   }
 
   const handleConfirmPickupSchedule = async () => {
-    if (
-      !options.pickupSchedule.selectedTime ||
-      options.pickupSchedule.submitting
-    ) {
+    if (!options.pickupSchedule.selectedTime || options.pickupSchedule.submitting) {
       return
     }
 

@@ -11,17 +11,12 @@ import './index.scss'
 interface QueryPriceContactsSectionProps {
   sender: ExpressContact
   consignee: ExpressContact
-  onContactChange: (
-    target: ExpressContactTarget,
-    patch: Partial<ExpressContact>
-  ) => void
+  onContactChange: (target: ExpressContactTarget, patch: Partial<ExpressContact>) => void
   onContactSelect: (target: ExpressContactTarget) => void
   onSwap: () => void
 }
 
-export function QueryPriceContactsSection(
-  props: QueryPriceContactsSectionProps
-) {
+export function QueryPriceContactsSection(props: QueryPriceContactsSectionProps) {
   return (
     <QueryPriceSection>
       <QueryPriceContactForm

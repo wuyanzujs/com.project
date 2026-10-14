@@ -1,13 +1,6 @@
 import Taro from '@tarojs/taro'
 
-import {
-  type Dispatch,
-  type SetStateAction,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { type Dispatch, type SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   EXPRESS_DELIVERY_TIME_WINDOWS,
@@ -22,10 +15,7 @@ import {
   isExpressScheduledDeliveryProductSupported,
   updateExpressDeliveryPreference
 } from '@/services/express'
-import type {
-  ExpressDeliveryPreferenceType,
-  ExpressDraft
-} from '@/services/express'
+import type { ExpressDeliveryPreferenceType, ExpressDraft } from '@/services/express'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 
 interface UseExpressDeliveryPreferenceOptions {
@@ -46,15 +36,10 @@ function confirmWarehouseReplacement() {
   })
 }
 
-export function useExpressDeliveryPreference({
-  draft,
-  setDraft
-}: UseExpressDeliveryPreferenceOptions) {
+export function useExpressDeliveryPreference({ draft, setDraft }: UseExpressDeliveryPreferenceOptions) {
   const [availabilityLoading, setAvailabilityLoading] = useState(false)
   const [availabilityMessage, setAvailabilityMessage] = useState('')
-  const [arrivalReference, setArrivalReference] = useState(
-    draft.selectedProduct?.arriveDate ?? ''
-  )
+  const [arrivalReference, setArrivalReference] = useState(draft.selectedProduct?.arriveDate ?? '')
   const requestVersion = useRef(0)
   const availabilityQueryKey = createExpressDeliveryAvailabilityKey(draft)
   const latestAvailabilityQueryKey = useRef(availabilityQueryKey)
@@ -81,23 +66,12 @@ export function useExpressDeliveryPreference({
   )
 
   const scheduledDateOptions = useMemo(
-    () =>
-      createExpressScheduledDateOptions(
-        arrivalReference,
-        draft.deliveryPreference.scheduledWindow
-      ),
+    () => createExpressScheduledDateOptions(arrivalReference, draft.deliveryPreference.scheduledWindow),
     [arrivalReference, draft.deliveryPreference.scheduledWindow]
   )
-  const unavailableDateOptions = useMemo(
-    () => createExpressUnavailableDateOptions(),
-    []
-  )
-  const selectedScheduledDate = getExpressScheduledDate(
-    draft.deliveryPreference.scheduledWindow
-  )
-  const selectedTimeWindow = getExpressScheduledTimeWindow(
-    draft.deliveryPreference.scheduledWindow
-  )
+  const unavailableDateOptions = useMemo(() => createExpressUnavailableDateOptions(), [])
+  const selectedScheduledDate = getExpressScheduledDate(draft.deliveryPreference.scheduledWindow)
+  const selectedTimeWindow = getExpressScheduledTimeWindow(draft.deliveryPreference.scheduledWindow)
 
   const handleScheduledMode = async () => {
     if (!draft.selectedProduct?.arriveDate) {
@@ -105,11 +79,7 @@ export function useExpressDeliveryPreference({
       return
     }
 
-    if (
-      !isExpressScheduledDeliveryProductSupported(
-        draft.selectedProduct.omsProductCode
-      )
-    ) {
+    if (!isExpressScheduledDeliveryProductSupported(draft.selectedProduct.omsProductCode)) {
       setAvailabilityMessage('当前产品暂不支持定时派送')
       return
     }
@@ -132,10 +102,7 @@ export function useExpressDeliveryPreference({
     try {
       const response = await expressService.queryDeliveryAppointment(draft)
 
-      if (
-        requestVersion.current !== version ||
-        latestAvailabilityQueryKey.current !== requestKey
-      ) {
+      if (requestVersion.current !== version || latestAvailabilityQueryKey.current !== requestKey) {
         return
       }
 
@@ -166,10 +133,7 @@ export function useExpressDeliveryPreference({
 
         return updateExpressDeliveryPreference(clearExpressWarehouse(current), {
           type: 'SCHEDULED',
-          scheduledWindow: createExpressScheduledWindow(
-            firstDate.value,
-            firstTime.value
-          ),
+          scheduledWindow: createExpressScheduledWindow(firstDate.value, firstTime.value),
           availabilityKey: requestKey
         })
       })
@@ -195,11 +159,7 @@ export function useExpressDeliveryPreference({
       return
     }
 
-    if (
-      type &&
-      draft.warehouse.enabled &&
-      !(await confirmWarehouseReplacement())
-    ) {
+    if (type && draft.warehouse.enabled && !(await confirmWarehouseReplacement())) {
       return
     }
 
@@ -219,8 +179,7 @@ export function useExpressDeliveryPreference({
   }
 
   const handleScheduledDateChange = (date: string) => {
-    const timeWindow =
-      selectedTimeWindow || EXPRESS_DELIVERY_TIME_WINDOWS[0]?.value || ''
+    const timeWindow = selectedTimeWindow || EXPRESS_DELIVERY_TIME_WINDOWS[0]?.value || ''
 
     setDraft(current =>
       updateExpressDeliveryPreference(current, {
@@ -243,9 +202,7 @@ export function useExpressDeliveryPreference({
 
   const handleUnavailableDateToggle = (date: string) => {
     const selected = draft.deliveryPreference.unavailableDates
-    const unavailableDates = selected.includes(date)
-      ? selected.filter(item => item !== date)
-      : [...selected, date]
+    const unavailableDates = selected.includes(date) ? selected.filter(item => item !== date) : [...selected, date]
 
     setDraft(current =>
       updateExpressDeliveryPreference(current, {
@@ -270,6 +227,4 @@ export function useExpressDeliveryPreference({
   }
 }
 
-export type ExpressDeliveryPreferenceController = ReturnType<
-  typeof useExpressDeliveryPreference
->
+export type ExpressDeliveryPreferenceController = ReturnType<typeof useExpressDeliveryPreference>

@@ -9,26 +9,12 @@ const {
   updateExpressDeliveryPoint
 } = require('@/services/express/deliveryPoint.rules')
 const { expressDraftBridge } = require('@/services/express/draftBridge')
-const {
-  setExpressContact,
-  updateExpressService
-} = require('@/services/express/express.draft')
-const {
-  buildCreateOrderRequest
-} = require('@/services/express/express.payload')
-const {
-  EXPRESS_DELIVERY_POINT_MAX_DISTANCE_KM,
-  stationSelection
-} = require('@/services/query')
-const {
-  getStationMatchTypes,
-  normalizeAddressStation
-} = require('@/services/query/query.station')
+const { setExpressContact, updateExpressService } = require('@/services/express/express.draft')
+const { buildCreateOrderRequest } = require('@/services/express/express.payload')
+const { EXPRESS_DELIVERY_POINT_MAX_DISTANCE_KM, stationSelection } = require('@/services/query')
+const { getStationMatchTypes, normalizeAddressStation } = require('@/services/query/query.station')
 
-const {
-  consigneeContact,
-  createValidExpressDraft
-} = require('../fixtures/express.cjs')
+const { consigneeContact, createValidExpressDraft } = require('../fixtures/express.cjs')
 
 const cases = [
   {
@@ -111,22 +97,12 @@ const cases = [
         },
         type: 'PICKUP',
         subType: 'EXPRESS',
-        list: [
-          addressStation,
-          boundaryStation,
-          farStation,
-          negativeDistanceStation,
-          missingDeptNoStation,
-          unsupportedStation,
-          cityStation
-        ],
+        list: [addressStation, boundaryStation, farStation, negativeDistanceStation, missingDeptNoStation, unsupportedStation, cityStation],
         totalRows: 7,
         source: 'Address'
       })
 
-      assert.deepEqual(getStationMatchTypes('PICKUP', 'EXPRESS'), [
-        'expressPickup'
-      ])
+      assert.deepEqual(getStationMatchTypes('PICKUP', 'EXPRESS'), ['expressPickup'])
       assert.equal(addressStation.id, 'DP_NO_001')
       assert.equal(addressStation.code, 'DP_CODE_001')
       assert.equal(addressStation.pickupSelf, true)
@@ -145,10 +121,7 @@ const cases = [
       assert.equal(filtered.list[1], boundaryStation)
 
       stationSelection.select(params.source, addressStation)
-      assert.equal(
-        stationSelection.consumeSelection(params.source).station.id,
-        'DP_NO_001'
-      )
+      assert.equal(stationSelection.consumeSelection(params.source).station.id, 'DP_NO_001')
       assert.equal(stationSelection.consumeSelection(params.source), null)
     }
   },
@@ -172,14 +145,10 @@ const cases = [
       const homeDeliveryDraft = updateExpressService(selectedDraft, {
         deliveryMode: 'PICKNOTUPSTAIRS'
       })
-      const changedConsigneeDraft = setExpressContact(
-        selectedDraft,
-        'consignee',
-        {
-          ...consigneeContact,
-          address: '科技园科苑路300号'
-        }
-      )
+      const changedConsigneeDraft = setExpressContact(selectedDraft, 'consignee', {
+        ...consigneeContact,
+        address: '科技园科苑路300号'
+      })
       const bridgedDraft = expressDraftBridge.carryFromCoupon(selectedDraft)
       const consumedDraft = expressDraftBridge.consume().draft
 
@@ -200,19 +169,13 @@ const cases = [
         receivingToPointName: ''
       })
       assert.equal(selectedDraft.selectedProduct, null)
-      assert.equal(
-        selectedDraft.quoteStaleReason,
-        '自提服务点变化，请重新获取价格'
-      )
+      assert.equal(selectedDraft.quoteStaleReason, '自提服务点变化，请重新获取价格')
       assert.deepEqual(getExpressDeliveryPointOrderFields(selectedDraft), {
         receivingToPoint: 'DP_NO_001',
         receivingToPointName: '深圳南山自提点'
       })
       assert.equal(orderRequest.receive[0].receivingToPoint, 'DP_NO_001')
-      assert.equal(
-        orderRequest.receive[0].receivingToPointName,
-        '深圳南山自提点'
-      )
+      assert.equal(orderRequest.receive[0].receivingToPointName, '深圳南山自提点')
       assert.deepEqual(homeDeliveryDraft.deliveryPoint, {
         code: '',
         name: ''
@@ -222,13 +185,7 @@ const cases = [
         name: ''
       })
       assert.deepEqual(consumedDraft.deliveryPoint, selectedDraft.deliveryPoint)
-      assert.deepEqual(
-        normalizeExpressDeliveryPointDraft(
-          { code: 'DP_NO_001', name: '深圳南山自提点' },
-          'PICKNOTUPSTAIRS'
-        ),
-        { code: '', name: '' }
-      )
+      assert.deepEqual(normalizeExpressDeliveryPointDraft({ code: 'DP_NO_001', name: '深圳南山自提点' }, 'PICKNOTUPSTAIRS'), { code: '', name: '' })
       assert.equal(bridgedDraft, undefined)
     }
   }

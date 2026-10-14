@@ -1,10 +1,7 @@
 import type { DepponResponse } from '@/request/deppon'
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 import { APP_ROUTES } from '@/shared/navigation/routes'
-import {
-  appendRouteQuery,
-  createAppRouteUrl
-} from '@/shared/navigation/routeUrl'
+import { appendRouteQuery, createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
 import { queryApi } from './query.api'
 import { getCurrentUser } from '../auth'
@@ -42,10 +39,7 @@ function normalizeText(value?: string | null) {
  * @param subType 业务子类型
  * @description 按查询类型生成网点的 matchtypes
  */
-export function getStationMatchTypes(
-  type: StationQueryType,
-  subType: 'EXPRESS' | 'LOGISTICS'
-) {
+export function getStationMatchTypes(type: StationQueryType, subType: 'EXPRESS' | 'LOGISTICS') {
   if (type === 'LEAVE') {
     return ['leave']
   }
@@ -138,11 +132,7 @@ export function getStationPrimaryPhone(value?: string | null) {
     .map(item => item.trim())
     .filter(Boolean)
 
-  return (
-    candidates.find(item => /^(\+?\d{5,20}|\d{3,4}-?\d{7,14})$/.test(item)) ||
-    candidates.find(item => /\d{5,}/.test(item)) ||
-    normalizeText(value)
-  )
+  return candidates.find(item => /^(\+?\d{5,20}|\d{3,4}-?\d{7,14})$/.test(item)) || candidates.find(item => /\d{5,}/.test(item)) || normalizeText(value)
 }
 
 /**
@@ -151,10 +141,7 @@ export function getStationPrimaryPhone(value?: string | null) {
  * @param address 查询地址
  * @description 生成网点反馈的 rowData
  */
-function createStationFeedbackRowData(
-  station: Pick<StationItem, 'code'> | null,
-  address: DispatchAddress | null
-) {
+function createStationFeedbackRowData(station: Pick<StationItem, 'code'> | null, address: DispatchAddress | null) {
   return JSON.stringify([
     {
       field: 'deptCode',
@@ -172,9 +159,7 @@ function createStationFeedbackRowData(
  * @param item 地址网点原始数据
  * @description 地址网点原始数据转网点结构
  */
-export function normalizeAddressStation(
-  item: AddressStationRawItem
-): StationItem {
+export function normalizeAddressStation(item: AddressStationRawItem): StationItem {
   return {
     id: item.deptNo,
     code: item.deptCode,
@@ -232,9 +217,7 @@ function normalizeStationDetail(
   const lat = normalizeText(item.latitude || item.baiduLat)
 
   return {
-    id:
-      normalizeText(item.unifiedCode || item.deptCode || item.code) ||
-      options.code,
+    id: normalizeText(item.unifiedCode || item.deptCode || item.code) || options.code,
     code: normalizeText(item.code || item.deptCode) || options.code,
     name: normalizeText(item.name || item.deptName) || '德邦网点',
     address: normalizeText(item.address || item.deptAddress),
@@ -243,10 +226,7 @@ function normalizeStationDetail(
     lng,
     lat,
     distance: normalizeText(options.distance),
-    time: normalizeStationTime(
-      normalizeText(item.startTime),
-      normalizeText(item.endTime)
-    ),
+    time: normalizeStationTime(normalizeText(item.startTime), normalizeText(item.endTime)),
     source: 'Detail',
     coordinateSystem: item.baiduLng || item.baiduLat ? 'bd09' : 'unknown'
   }
@@ -258,10 +238,7 @@ function normalizeStationDetail(
  * @param source 来源标识
  * @description 创建网点详情的路由 URL
  */
-export function createStationDetailRoute(
-  item: Pick<StationItem, 'code' | 'id' | 'distance'>,
-  source = 'QUERY_STATIONS'
-) {
+export function createStationDetailRoute(item: Pick<StationItem, 'code' | 'id' | 'distance'>, source = 'QUERY_STATIONS') {
   const code = getStationPrimaryCode(item)
 
   if (!code) {
@@ -281,10 +258,7 @@ export function createStationDetailRoute(
  * @param address 查询地址
  * @description 创建网点反馈的 WebView URI
  */
-export function createStationFeedbackWebUri(
-  station?: Pick<StationItem, 'code'> | null,
-  address?: DispatchAddress | null
-) {
+export function createStationFeedbackWebUri(station?: Pick<StationItem, 'code'> | null, address?: DispatchAddress | null) {
   const deptCode = normalizeText(station?.code)
   const user = getCurrentUser()
 
@@ -301,9 +275,7 @@ export function createStationFeedbackWebUri(
  * @param options 网点查询条件
  * @description 查询附近或城市网点列表
  */
-export async function queryStations(
-  options: StationQueryOptions
-): Promise<DepponResponse<StationQueryResult>> {
+export async function queryStations(options: StationQueryOptions): Promise<DepponResponse<StationQueryResult>> {
   const addressResponse = await resolveDispatchAddress(options)
 
   if (!addressResponse.status || !addressResponse.result) {

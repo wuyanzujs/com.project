@@ -2,17 +2,10 @@ import Taro from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
-import {
-  batchDraftStorage,
-  batchService,
-  createBatchSubmitSummary
-} from '@/services/batch'
+import { batchDraftStorage, batchService, createBatchSubmitSummary } from '@/services/batch'
 import type { BatchDraft } from '@/services/batch'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
-import {
-  ensureAuthenticated,
-  hasValidSession
-} from '@/shared/navigation/authGuard'
+import { ensureAuthenticated, hasValidSession } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 
 interface UseBatchSubmitParams {
@@ -28,11 +21,7 @@ interface UseBatchSubmitResult {
   handleSubmit: () => Promise<void>
 }
 
-export function useBatchSubmit({
-  draft,
-  submitValidation,
-  showToast
-}: UseBatchSubmitParams): UseBatchSubmitResult {
+export function useBatchSubmit({ draft, submitValidation, showToast }: UseBatchSubmitParams): UseBatchSubmitResult {
   const [submiting, setSubmiting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
 
@@ -95,13 +84,7 @@ export function useBatchSubmit({
     } finally {
       setSubmiting(false)
     }
-  }, [
-    draft,
-    showToast,
-    submitValidation.message,
-    submitValidation.valid,
-    submiting
-  ])
+  }, [draft, showToast, submitValidation.message, submitValidation.valid, submiting])
 
   return {
     submiting,

@@ -9,11 +9,7 @@ interface OrderDetailSectionProps extends PropsWithChildren {
   title: string
 }
 
-export function OrderDetailSection({
-  children,
-  hint,
-  title
-}: OrderDetailSectionProps) {
+export function OrderDetailSection({ children, hint, title }: OrderDetailSectionProps) {
   return (
     <View className='order-detail-section'>
       {hint !== undefined ? (

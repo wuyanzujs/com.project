@@ -11,55 +11,29 @@ interface ExpressOrderOptionsSectionProps {
   onToggleAgreement: () => void
 }
 
-export function ExpressOrderOptionsSection({
-  agreementAccepted,
-  submitMessage,
-  validationMessages,
-  onToggleAgreement
-}: ExpressOrderOptionsSectionProps) {
+export function ExpressOrderOptionsSection({ agreementAccepted, submitMessage, validationMessages, onToggleAgreement }: ExpressOrderOptionsSectionProps) {
   return (
     <View className='express-order-options'>
       <AppPressable
-        accessibilityLabel={
-          agreementAccepted ? '取消同意电子运单协议' : '同意电子运单协议'
-        }
+        accessibilityLabel={agreementAccepted ? '取消同意电子运单协议' : '同意电子运单协议'}
         block
         className='express-order-options__agreement'
         layout='row-start'
         onPress={onToggleAgreement}
       >
         {/* 生产端是空心圆 radio：选中为白底 + 品牌色圆环 + 品牌色圆点。 */}
-        <View
-          className={
-            agreementAccepted
-              ? 'express-order-options__radio express-order-options__radio--checked'
-              : 'express-order-options__radio'
-          }
-        >
-          {agreementAccepted ? (
-            <View className='express-order-options__radio-dot' />
-          ) : null}
+        <View className={agreementAccepted ? 'express-order-options__radio express-order-options__radio--checked' : 'express-order-options__radio'}>
+          {agreementAccepted ? <View className='express-order-options__radio-dot' /> : null}
         </View>
-        <Text className='express-order-options__agreement-text'>
-          已读并同意
-        </Text>
-        <Text className='express-order-options__agreement-link'>
-          《电子运单服务协议》
-        </Text>
+        <Text className='express-order-options__agreement-text'>已读并同意</Text>
+        <Text className='express-order-options__agreement-link'>《电子运单服务协议》</Text>
       </AppPressable>
 
       {submitMessage || validationMessages.length ? (
         <View className='express-order-options__validation'>
-          {submitMessage ? (
-            <Text className='express-order-options__validation-message'>
-              {submitMessage}
-            </Text>
-          ) : null}
+          {submitMessage ? <Text className='express-order-options__validation-message'>{submitMessage}</Text> : null}
           {validationMessages.slice(0, 3).map(message => (
-            <Text
-              className='express-order-options__validation-message'
-              key={message}
-            >
+            <Text className='express-order-options__validation-message' key={message}>
               {message}
             </Text>
           ))}

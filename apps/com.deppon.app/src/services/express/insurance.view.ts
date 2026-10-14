@@ -38,12 +38,9 @@ export interface ExpressInsuranceView {
  * @param draft 寄件草稿
  * @description 生成保价页面的展示模型
  */
-export function createExpressInsuranceView(
-  draft: ExpressDraft
-): ExpressInsuranceView {
+export function createExpressInsuranceView(draft: ExpressDraft): ExpressInsuranceView {
   const capability = getFreshExpressInsuranceCapability(draft)
-  const productCode =
-    draft.selectedProduct?.omsProductCode || draft.service.transportMode
+  const productCode = draft.selectedProduct?.omsProductCode || draft.service.transportMode
   const policy = getExpressInsuranceProductPolicy(productCode)
   const disabled = capability?.disabled === true
   const fragile = capability?.fragile === true
@@ -72,9 +69,7 @@ export function createExpressInsuranceView(
       recommended: worryFree && policy.supportsSxb
     }
   ]
-  let summary = capability?.inputKey
-    ? '保价类型和额度已按当前货物、地址及产品归一。'
-    : '获取产品价格后同步货物保价标签和客户额度。'
+  let summary = capability?.inputKey ? '保价类型和额度已按当前货物、地址及产品归一。' : '获取产品价格后同步货物保价标签和客户额度。'
 
   if (disabled) {
     summary = '当前货物被后端标记为暂不支持保价。'

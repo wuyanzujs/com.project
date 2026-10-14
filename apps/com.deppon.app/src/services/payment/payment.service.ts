@@ -22,10 +22,7 @@ const DEFAULT_PAYMENT_RANGE_DAYS = 30
 const PAID_PAYMENT_RANGE_DAYS = 180
 const DEFAULT_PAGE_SIZE = 10
 const PAYMENT_EVALUATE_WEB_PATH = '/depponmobile/survey/land'
-const PAYMENT_WRITE_OFF_STATUS: Record<
-  PaymentListStatus,
-  PaymentWriteOffStatus
-> = {
+const PAYMENT_WRITE_OFF_STATUS: Record<PaymentListStatus, PaymentWriteOffStatus> = {
   UNPAID: 0,
   PAID: 1
 }
@@ -45,11 +42,7 @@ function pad(value: number) {
  * @description 格式化为接口需要的日期时间串
  */
 function formatPaymentDateTime(date: Date) {
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
-    date.getSeconds()
-  )}`
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
 
 /**
@@ -60,8 +53,7 @@ function formatPaymentDateTime(date: Date) {
 function getPaymentDateRange(days = DEFAULT_PAYMENT_RANGE_DAYS) {
   const endDate = new Date()
   const startDate = new Date()
-  const rangeDays =
-    Number.isFinite(days) && days > 0 ? days : DEFAULT_PAYMENT_RANGE_DAYS
+  const rangeDays = Number.isFinite(days) && days > 0 ? days : DEFAULT_PAYMENT_RANGE_DAYS
 
   endDate.setHours(23, 59, 59, 0)
   startDate.setDate(startDate.getDate() - rangeDays)
@@ -96,9 +88,7 @@ function normalizeText(value?: string | null) {
  * @param status 支付列表状态
  * @description 取状态对应的核销状态值
  */
-export function getPaymentWriteOffStatus(
-  status: PaymentListStatus = 'UNPAID'
-): PaymentWriteOffStatus {
+export function getPaymentWriteOffStatus(status: PaymentListStatus = 'UNPAID'): PaymentWriteOffStatus {
   return PAYMENT_WRITE_OFF_STATUS[status]
 }
 
@@ -108,9 +98,7 @@ export function getPaymentWriteOffStatus(
  * @description 取状态对应的查询天数
  */
 export function getPaymentRangeDays(status: PaymentListStatus = 'UNPAID') {
-  return status === 'PAID'
-    ? PAID_PAYMENT_RANGE_DAYS
-    : DEFAULT_PAYMENT_RANGE_DAYS
+  return status === 'PAID' ? PAID_PAYMENT_RANGE_DAYS : DEFAULT_PAYMENT_RANGE_DAYS
 }
 
 /**
@@ -159,10 +147,7 @@ function createPaymentEvaluateRowData(item: PaymentItem) {
  * @param mobile 评价手机号
  * @description 创建评价页面 URI
  */
-export function createPaymentEvaluateWebUri(
-  item: PaymentItem,
-  mobile = authService.getCachedUser()?.mobile || ''
-) {
+export function createPaymentEvaluateWebUri(item: PaymentItem, mobile = authService.getCachedUser()?.mobile || '') {
   return appendRouteQuery(PAYMENT_EVALUATE_WEB_PATH, {
     channel: APP_RUNTIME_CONFIG.systemCode,
     mobile: normalizeText(mobile),
@@ -243,16 +228,9 @@ function getFirstFiniteAmount(...values: unknown[]) {
  * @param status 支付列表状态
  * @description 按状态取费用项的支付金额
  */
-export function getPaymentItemAmount(
-  item: PaymentItem,
-  status: PaymentListStatus = 'UNPAID'
-) {
+export function getPaymentItemAmount(item: PaymentItem, status: PaymentListStatus = 'UNPAID') {
   if (status === 'PAID') {
-    return getFirstFiniteAmount(
-      item.writeoffAmount,
-      item.totalAmount,
-      item.unWriteoffAmount
-    )
+    return getFirstFiniteAmount(item.writeoffAmount, item.totalAmount, item.unWriteoffAmount)
   }
 
   return getFirstFiniteAmount(item.unWriteoffAmount, item.totalAmount)
@@ -265,15 +243,8 @@ export function getPaymentItemAmount(
  * @param disabledReason 不可支付原因，可选
  * @description 构造运单的待支付汇总
  */
-function createPaymentSummary(
-  waybillNumber: string,
-  items: PaymentItem[],
-  disabledReason?: string
-): PaymentSummary {
-  const amount = items.reduce(
-    (total, item) => total + getPaymentItemAmount(item, 'UNPAID'),
-    0
-  )
+function createPaymentSummary(waybillNumber: string, items: PaymentItem[], disabledReason?: string): PaymentSummary {
+  const amount = items.reduce((total, item) => total + getPaymentItemAmount(item, 'UNPAID'), 0)
 
   return {
     waybillNumber,
@@ -314,14 +285,8 @@ function normalizePaymentList(items: PaymentItem[], status: PaymentListStatus) {
  * @param status 支付列表状态
  * @description 汇总费用项的支付金额
  */
-function getTotalPaymentAmount(
-  items: PaymentItem[],
-  status: PaymentListStatus
-) {
-  return items.reduce(
-    (total, item) => total + getPaymentItemAmount(item, status),
-    0
-  )
+function getTotalPaymentAmount(items: PaymentItem[], status: PaymentListStatus) {
+  return items.reduce((total, item) => total + getPaymentItemAmount(item, status), 0)
 }
 
 export const paymentService = {
@@ -334,9 +299,7 @@ export const paymentService = {
    * @param options 列表查询参数
    * @description 查询待支付或已支付记录列表
    */
-  async queryPaymentList(
-    options: QueryPaymentListOptions = {}
-  ): Promise<DepponResponse<PaymentListResult>> {
+  async queryPaymentList(options: QueryPaymentListOptions = {}): Promise<DepponResponse<PaymentListResult>> {
     const status = options.status ?? 'UNPAID'
     const dateRange = getPaymentDateRange(getPaymentRangeDays(status))
     const pageIndex = options.pageIndex ?? 1
@@ -355,10 +318,7 @@ export const paymentService = {
     )
 
     if (!response.status || !response.result) {
-      return createServiceFailure(
-        response.message ||
-          (status === 'PAID' ? '暂未获取到支付记录' : '暂未获取到待支付运单')
-      )
+      return createServiceFailure(response.message || (status === 'PAID' ? '暂未获取到支付记录' : '暂未获取到待支付运单'))
     }
 
     const list = normalizePaymentList(response.result.list ?? [], status)
@@ -370,9 +330,7 @@ export const paymentService = {
         list,
         pageIndex: response.result.pageNum ?? pageIndex,
         pageSize: response.result.pageSize ?? pageSize,
-        totalPage:
-          response.result.totalPage ??
-          Math.max(1, Math.ceil(totalRows / pageSize)),
+        totalPage: response.result.totalPage ?? Math.max(1, Math.ceil(totalRows / pageSize)),
         totalRows,
         pageAmount: getTotalPaymentAmount(list, status)
       }
@@ -384,9 +342,7 @@ export const paymentService = {
    * @param options 列表查询参数
    * @description 查询待支付运单列表
    */
-  queryUnpaidList(
-    options: QueryUnpaidPaymentListOptions = {}
-  ): Promise<DepponResponse<PaymentListResult>> {
+  queryUnpaidList(options: QueryUnpaidPaymentListOptions = {}): Promise<DepponResponse<PaymentListResult>> {
     return this.queryPaymentList({
       ...options,
       status: 'UNPAID'
@@ -398,9 +354,7 @@ export const paymentService = {
    * @param options 查询参数
    * @description 按运单号查询待支付费用汇总
    */
-  async queryUnpaidByWaybill(
-    options: QueryUnpaidPaymentOptions
-  ): Promise<DepponResponse<PaymentSummary>> {
+  async queryUnpaidByWaybill(options: QueryUnpaidPaymentOptions): Promise<DepponResponse<PaymentSummary>> {
     const waybillNumber = options.waybillNumber?.trim()
 
     if (!waybillNumber) {
@@ -428,10 +382,7 @@ export const paymentService = {
 
     const rawItems = response.result.list ?? []
     const normalItems = filterUnsupportedPayments(rawItems)
-    const disabledReason =
-      rawItems.length > 0 && normalItems.length === 0
-        ? '该运单暂不支持 App 在线支付'
-        : undefined
+    const disabledReason = rawItems.length > 0 && normalItems.length === 0 ? '该运单暂不支持 App 在线支付' : undefined
 
     return {
       ...response,

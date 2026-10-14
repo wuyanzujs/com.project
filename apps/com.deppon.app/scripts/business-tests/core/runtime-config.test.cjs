@@ -9,8 +9,7 @@ const cases = [
     name: 'runtime config rejects credentials embedded in every app url',
     run() {
       const tokenViolations = runtimeBuild.validateRuntimeEnvironment({
-        APP_MEMBER_WEB_URL:
-          'https://mastest.deppon.com.cn/cms-h5/h5.html#/welfare?access_Token=fixed'
+        APP_MEMBER_WEB_URL: 'https://mastest.deppon.com.cn/cms-h5/h5.html#/welfare?access_Token=fixed'
       })
       const userInfoViolations = runtimeBuild.validateRuntimeEnvironment({
         APP_API_BASE_URL: 'https://user:password@owstest.deppon.com'

@@ -1,8 +1,4 @@
-import {
-  clearSessionCookie,
-  getSessionCookie,
-  saveSessionCookieFromResponse
-} from './cookieJar'
+import { clearSessionCookie, getSessionCookie, saveSessionCookieFromResponse } from './cookieJar'
 import {
   isDepponSuccessStatus,
   isResponseForCurrentSession,
@@ -14,12 +10,7 @@ import { getRequestFailureMessage } from './error'
 import { emitRequestEvent } from './events'
 import { http } from './index'
 
-import type {
-  HttpResponse,
-  RequestHeaders,
-  RequestMethod,
-  RequestShortcutOptions
-} from './types'
+import type { HttpResponse, RequestHeaders, RequestMethod, RequestShortcutOptions } from './types'
 
 export interface DepponResponse<TResult = unknown> {
   status: boolean
@@ -36,10 +27,7 @@ export interface DepponResponse<TResult = unknown> {
   sessionCookieSaved?: boolean
 }
 
-export interface DepponRequestOptions<
-  TData = unknown,
-  TResult = unknown
-> extends RequestShortcutOptions<DepponResponse<TResult>> {
+export interface DepponRequestOptions<TData = unknown, TResult = unknown> extends RequestShortcutOptions<DepponResponse<TResult>> {
   url: string
   method?: RequestMethod
   data?: TData
@@ -53,9 +41,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value)
 }
 
-function createRequestHeaders<TData, TResult>(
-  options: DepponRequestOptions<TData, TResult>
-): RequestHeaders {
+function createRequestHeaders<TData, TResult>(options: DepponRequestOptions<TData, TResult>): RequestHeaders {
   const headers: RequestHeaders = {
     'content-type': options.contentType ?? 'application/json; charset=UTF-8',
     ...options.headers
@@ -69,11 +55,7 @@ function createRequestHeaders<TData, TResult>(
   return headers
 }
 
-function createFallbackResponse<TResult>(
-  message = '',
-  transportFailure = false,
-  authExpired = false
-): DepponResponse<TResult> {
+function createFallbackResponse<TResult>(message = '', transportFailure = false, authExpired = false): DepponResponse<TResult> {
   return {
     status: false,
     message,
@@ -91,15 +73,9 @@ async function normalizeOwsResponse<TResult>(
 ): Promise<DepponResponse<TResult>> {
   const data = response.data
   const dataStatus = isRecord(data) ? data.status : undefined
-  const message =
-    isRecord(data) && typeof data.message === 'string' ? data.message : null
-  const currentSession = isResponseForCurrentSession(
-    requestCookie,
-    getSessionCookie()
-  )
-  const authExpired =
-    currentSession &&
-    shouldEmitAuthExpiredEvent(loginRequired, response.statusCode, dataStatus)
+  const message = isRecord(data) && typeof data.message === 'string' ? data.message : null
+  const currentSession = isResponseForCurrentSession(requestCookie, getSessionCookie())
+  const authExpired = currentSession && shouldEmitAuthExpiredEvent(loginRequired, response.statusCode, dataStatus)
 
   const sessionCookie =
     currentSession && !authExpired
@@ -108,10 +84,7 @@ async function normalizeOwsResponse<TResult>(
         })
       : ''
 
-  if (
-    currentSession &&
-    shouldEmitRateLimitedEvent(response.statusCode, dataStatus)
-  ) {
+  if (currentSession && shouldEmitRateLimitedEvent(response.statusCode, dataStatus)) {
     emitRequestEvent('rateLimited', {
       url: response.url,
       statusCode: response.statusCode,
@@ -147,9 +120,7 @@ function validateDepponStatus(statusCode: number) {
   return shouldAcceptDepponHttpStatus(statusCode)
 }
 
-export function depponRequest<TResult = unknown, TData = unknown>(
-  options: DepponRequestOptions<TData, TResult>
-): Promise<DepponResponse<TResult>> {
+export function depponRequest<TResult = unknown, TData = unknown>(options: DepponRequestOptions<TData, TResult>): Promise<DepponResponse<TResult>> {
   const headers = createRequestHeaders(options)
   const requestCookie = headers.Cookie ?? ''
 
@@ -158,13 +129,7 @@ export function depponRequest<TResult = unknown, TData = unknown>(
       ...options,
       headers,
       validateStatus: options.validateStatus ?? validateDepponStatus,
-      transformResponse: response =>
-        normalizeOwsResponse<TResult>(
-          response,
-          options.login !== false,
-          requestCookie,
-          options.sessionLogin === true
-        )
+      transformResponse: response => normalizeOwsResponse<TResult>(response, options.login !== false, requestCookie, options.sessionLogin === true)
     })
     .catch((error: unknown) => {
       const message = getRequestFailureMessage(error)
@@ -180,10 +145,7 @@ export function depponRequest<TResult = unknown, TData = unknown>(
 export const depponHttp = {
   request: depponRequest,
 
-  get<TResult = unknown>(
-    url: string,
-    options?: Omit<DepponRequestOptions<unknown, TResult>, 'url' | 'method'>
-  ) {
+  get<TResult = unknown>(url: string, options?: Omit<DepponRequestOptions<unknown, TResult>, 'url' | 'method'>) {
     return depponRequest<TResult>({
       ...options,
       url,
@@ -191,14 +153,7 @@ export const depponHttp = {
     })
   },
 
-  post<TResult = unknown, TData = unknown>(
-    url: string,
-    data?: TData,
-    options?: Omit<
-      DepponRequestOptions<TData, TResult>,
-      'url' | 'method' | 'data'
-    >
-  ) {
+  post<TResult = unknown, TData = unknown>(url: string, data?: TData, options?: Omit<DepponRequestOptions<TData, TResult>, 'url' | 'method' | 'data'>) {
     return depponRequest<TResult, TData>({
       ...options,
       url,

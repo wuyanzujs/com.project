@@ -13,17 +13,10 @@ interface UseInvoiceTaxpayersParams {
 interface UseInvoiceTaxpayersResult {
   taxpayers: InvoiceTaxpayerView[]
   loadTaxpayers: () => Promise<void>
-  setTaxpayers: (
-    next:
-      | InvoiceTaxpayerView[]
-      | ((current: InvoiceTaxpayerView[]) => InvoiceTaxpayerView[])
-  ) => void
+  setTaxpayers: (next: InvoiceTaxpayerView[] | ((current: InvoiceTaxpayerView[]) => InvoiceTaxpayerView[])) => void
 }
 
-export function useInvoiceTaxpayers({
-  runLatestRequest,
-  setErrorMessage
-}: UseInvoiceTaxpayersParams): UseInvoiceTaxpayersResult {
+export function useInvoiceTaxpayers({ runLatestRequest, setErrorMessage }: UseInvoiceTaxpayersParams): UseInvoiceTaxpayersResult {
   const [taxpayers, setTaxpayers] = useState<InvoiceTaxpayerView[]>([])
 
   const loadTaxpayers = useCallback(async () => {

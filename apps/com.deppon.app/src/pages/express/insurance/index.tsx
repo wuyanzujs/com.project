@@ -4,11 +4,7 @@ import { useRouter } from '@tarojs/taro'
 import { useMemo, useState } from 'react'
 
 import { expressInsuranceRules } from '@/services/express'
-import type {
-  ExpressInsuranceRuleTable,
-  ExpressInsuranceRuleTableRow,
-  ExpressInsuranceRuleType
-} from '@/services/express'
+import type { ExpressInsuranceRuleTable, ExpressInsuranceRuleTableRow, ExpressInsuranceRuleType } from '@/services/express'
 import { AppPressable } from '@/shared/components'
 
 import './index.scss'
@@ -34,28 +30,16 @@ function normalizeType(value?: string): ExpressInsuranceRuleType {
   return 'NORMAL'
 }
 
-function getRuleOptionClassName(
-  type: ExpressInsuranceRuleType,
-  activeType: ExpressInsuranceRuleType
-) {
-  return type === activeType
-    ? 'insurance-rule-option insurance-rule-option--active'
-    : 'insurance-rule-option'
+function getRuleOptionClassName(type: ExpressInsuranceRuleType, activeType: ExpressInsuranceRuleType) {
+  return type === activeType ? 'insurance-rule-option insurance-rule-option--active' : 'insurance-rule-option'
 }
 
-function getRuleOptionTextClassName(
-  type: ExpressInsuranceRuleType,
-  activeType: ExpressInsuranceRuleType
-) {
-  return type === activeType
-    ? 'insurance-rule-option__text insurance-rule-option__text--active'
-    : 'insurance-rule-option__text'
+function getRuleOptionTextClassName(type: ExpressInsuranceRuleType, activeType: ExpressInsuranceRuleType) {
+  return type === activeType ? 'insurance-rule-option__text insurance-rule-option__text--active' : 'insurance-rule-option__text'
 }
 
 function getTableRowClassName(row: ExpressInsuranceRuleTableRow) {
-  return row.tone === 'warning'
-    ? 'insurance-rule-table__row insurance-rule-table__row--warning'
-    : 'insurance-rule-table__row'
+  return row.tone === 'warning' ? 'insurance-rule-table__row insurance-rule-table__row--warning' : 'insurance-rule-table__row'
 }
 
 function renderTable(table: ExpressInsuranceRuleTable) {
@@ -72,30 +56,21 @@ function renderTable(table: ExpressInsuranceRuleTable) {
       {table.rows.map((row, rowIndex) => (
         <View className={getTableRowClassName(row)} key={`${rowIndex}`}>
           {row.cells.map((cell, cellIndex) => (
-            <Text
-              className='insurance-rule-table__cell'
-              key={`${rowIndex}-${cellIndex}`}
-            >
+            <Text className='insurance-rule-table__cell' key={`${rowIndex}-${cellIndex}`}>
               {cell}
             </Text>
           ))}
         </View>
       ))}
-      {!!table.note && (
-        <Text className='insurance-rule-table__note'>{table.note}</Text>
-      )}
+      {!!table.note && <Text className='insurance-rule-table__note'>{table.note}</Text>}
     </View>
   )
 }
 
 const ExpressInsurancePage = () => {
   const router = useRouter()
-  const initialType = useMemo(
-    () => normalizeType(decodeParam(router.params.type)),
-    [router.params.type]
-  )
-  const [activeType, setActiveType] =
-    useState<ExpressInsuranceRuleType>(initialType)
+  const initialType = useMemo(() => normalizeType(decodeParam(router.params.type)), [router.params.type])
+  const [activeType, setActiveType] = useState<ExpressInsuranceRuleType>(initialType)
   const options = useMemo(() => expressInsuranceRules.getRuleTypes(), [])
   const rule = expressInsuranceRules.getRule(activeType)
 
@@ -103,17 +78,8 @@ const ExpressInsurancePage = () => {
     <ScrollView className='insurance-rule-page' scrollY>
       <View className='insurance-rule-tabs'>
         {options.map(option => (
-          <AppPressable
-            flex
-            className={getRuleOptionClassName(option.type, activeType)}
-            key={option.type}
-            onPress={() => setActiveType(option.type)}
-          >
-            <Text
-              className={getRuleOptionTextClassName(option.type, activeType)}
-            >
-              {option.title}
-            </Text>
+          <AppPressable flex className={getRuleOptionClassName(option.type, activeType)} key={option.type} onPress={() => setActiveType(option.type)}>
+            <Text className={getRuleOptionTextClassName(option.type, activeType)}>{option.title}</Text>
           </AppPressable>
         ))}
       </View>
@@ -130,10 +96,7 @@ const ExpressInsurancePage = () => {
         <View className='insurance-rule-card' key={section.title}>
           <Text className='insurance-rule-section__title'>{section.title}</Text>
           {section.content.map((item, index) => (
-            <Text
-              className='insurance-rule-section__text'
-              key={`${section.title}-${index}`}
-            >
+            <Text className='insurance-rule-section__text' key={`${section.title}-${index}`}>
               {item}
             </Text>
           ))}
@@ -142,9 +105,7 @@ const ExpressInsurancePage = () => {
       ))}
 
       <View className='insurance-rule-notice'>
-        <Text className='insurance-rule-notice__text'>
-          具体可保范围、保价上限、费率和赔付结论以后端、网点开单及正式协议为准。
-        </Text>
+        <Text className='insurance-rule-notice__text'>具体可保范围、保价上限、费率和赔付结论以后端、网点开单及正式协议为准。</Text>
       </View>
     </ScrollView>
   )

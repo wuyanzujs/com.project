@@ -5,12 +5,7 @@ import { privacyApi } from './privacy.api'
 import { getCurrentEcoToken } from '../auth'
 import { createServiceFailure } from '../serviceResponse'
 
-import type {
-  PrivacyBehaviorRequest,
-  PrivacyHomePromptView,
-  PrivacyStatusView,
-  PrivacyVersionResponse
-} from './types'
+import type { PrivacyBehaviorRequest, PrivacyHomePromptView, PrivacyStatusView, PrivacyVersionResponse } from './types'
 
 /**
  *
@@ -40,9 +35,7 @@ let dismissedHomePromptKey = ''
  * @description 拼接首页提示去重 key
  */
 function createHomePromptKey(status: PrivacyStatusView) {
-  return `${status.latestVersion || 'latest-empty'}:${
-    status.agreedVersion || 'agreed-empty'
-  }`
+  return `${status.latestVersion || 'latest-empty'}:${status.agreedVersion || 'agreed-empty'}`
 }
 
 /**
@@ -50,9 +43,7 @@ function createHomePromptKey(status: PrivacyStatusView) {
  * @param status 隐私状态
  * @description 按隐私状态创建首页提示，无需提示返回 null
  */
-function createHomePrivacyPrompt(
-  status: PrivacyStatusView
-): PrivacyHomePromptView | null {
+function createHomePrivacyPrompt(status: PrivacyStatusView): PrivacyHomePromptView | null {
   if (status.agreedLatest || !status.latestVersion) {
     return null
   }
@@ -81,9 +72,7 @@ function createHomePrivacyPrompt(
  * @param response 隐私版本接口返回
  * @description 转隐私状态展示数据
  */
-function toPrivacyStatusView(
-  response: PrivacyVersionResponse
-): PrivacyStatusView {
+function toPrivacyStatusView(response: PrivacyVersionResponse): PrivacyStatusView {
   const latestVersion = normalizeVersion(response.versionNumber)
   const agreedVersion = normalizeVersion(response.lastVersionNumber)
   const agreedLatest = !!latestVersion && latestVersion === agreedVersion
@@ -141,14 +130,10 @@ export const privacyService = {
    * @description 保存隐私协议同意状态
    */
   async savePrivacyAgreement() {
-    const response = await privacyApi.savePrivacyVersion(
-      createPrivacyBehaviorRequest()
-    )
+    const response = await privacyApi.savePrivacyVersion(createPrivacyBehaviorRequest())
 
     if (!response.status) {
-      return createServiceFailure(
-        response.message || '同意条款失败，请稍后再试'
-      )
+      return createServiceFailure(response.message || '同意条款失败，请稍后再试')
     }
 
     return response
@@ -159,9 +144,7 @@ export const privacyService = {
    * @description 撤销隐私协议同意
    */
   async cancelPrivacyAgreement() {
-    const response = await privacyApi.cancelPrivacyVersion(
-      createPrivacyBehaviorRequest()
-    )
+    const response = await privacyApi.cancelPrivacyVersion(createPrivacyBehaviorRequest())
 
     if (!response.status) {
       return createServiceFailure(response.message || '撤销失败，请稍后再试')

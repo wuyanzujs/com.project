@@ -29,23 +29,16 @@ export function sanitizeAppRouteUrl(url: string) {
 export function isAppMainRoute(url: string) {
   const pathname = getRoutePathname(url)
 
-  return MAIN_ROUTE_PATHS.includes(
-    pathname as (typeof MAIN_ROUTE_PATHS)[number]
-  )
+  return MAIN_ROUTE_PATHS.includes(pathname as (typeof MAIN_ROUTE_PATHS)[number])
 }
 
 function shouldRequireLogin(url: string, options: NavigateToAppRouteOptions) {
   const pathname = getRoutePathname(url)
 
-  return (
-    options.login || APP_LOGIN_ROUTE_PATHS.includes(pathname as AppRoutePath)
-  )
+  return options.login || APP_LOGIN_ROUTE_PATHS.includes(pathname as AppRoutePath)
 }
 
-export function navigateToAppRoute(
-  url: string,
-  options: NavigateToAppRouteOptions = {}
-) {
+export function navigateToAppRoute(url: string, options: NavigateToAppRouteOptions = {}) {
   const targetUrl = sanitizeAppRouteUrl(url)
 
   if (shouldRequireLogin(targetUrl, options)) {
@@ -65,10 +58,7 @@ export function navigateToAppRoute(
   })
 }
 
-export async function navigateToAppRouteAsync(
-  url: string,
-  options: NavigateToAppRouteOptions = {}
-) {
+export async function navigateToAppRouteAsync(url: string, options: NavigateToAppRouteOptions = {}) {
   const targetUrl = sanitizeAppRouteUrl(url)
 
   if (shouldRequireLogin(targetUrl, options)) {

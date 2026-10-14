@@ -13,21 +13,14 @@ const {
   getFreshOrderEditPickupNightCapability,
   validateOrderEditSchedule
 } = require('@/services/order/order.edit.schedule')
-const {
-  orderEditScheduleApi
-} = require('@/services/order/order.edit.schedule.api')
-const {
-  createOrderEditPickupDateOptions,
-  normalizeOrderEditPickupTimeResponse
-} = require('@/services/order/order.edit.schedule.options')
+const { orderEditScheduleApi } = require('@/services/order/order.edit.schedule.api')
+const { createOrderEditPickupDateOptions, normalizeOrderEditPickupTimeResponse } = require('@/services/order/order.edit.schedule.options')
 const {
   acceptOrderEditNightPickupNotice,
   applyOrderEditPickupTimeResponse,
   selectOrderEditPickupTime
 } = require('@/services/order/order.edit.schedule.selection')
-const {
-  queryOrderEditPickupTimes
-} = require('@/services/order/order.edit.schedule.service')
+const { queryOrderEditPickupTimes } = require('@/services/order/order.edit.schedule.service')
 
 const { createOrderDetail } = require('../fixtures/order.cjs')
 
@@ -88,24 +81,9 @@ const cases = [
         nightStartTime: '18:00',
         nightEndTime: '23:00'
       })
-      assert.equal(
-        getFreshOrderEditPickupNightCapability(
-          withCapability,
-          checkedAt + ORDER_EDIT_NIGHT_PICKUP_CACHE_MS - 1
-        )?.enabled,
-        true
-      )
-      assert.equal(
-        getFreshOrderEditPickupNightCapability(
-          withCapability,
-          checkedAt + ORDER_EDIT_NIGHT_PICKUP_CACHE_MS
-        ),
-        undefined
-      )
-      assert.notEqual(
-        createOrderEditScheduleQueryKey(draft),
-        createOrderEditScheduleQueryKey({ ...draft, totalWeight: 13 })
-      )
+      assert.equal(getFreshOrderEditPickupNightCapability(withCapability, checkedAt + ORDER_EDIT_NIGHT_PICKUP_CACHE_MS - 1)?.enabled, true)
+      assert.equal(getFreshOrderEditPickupNightCapability(withCapability, checkedAt + ORDER_EDIT_NIGHT_PICKUP_CACHE_MS), undefined)
+      assert.notEqual(createOrderEditScheduleQueryKey(draft), createOrderEditScheduleQueryKey({ ...draft, totalWeight: 13 }))
     }
   },
   {
@@ -143,19 +121,14 @@ const cases = [
 
       assert.equal(options.length, 1)
       assert.equal(
-        items.some(
-          item => item.type === 'NORMAL' && item.text.includes('小时')
-        ),
+        items.some(item => item.type === 'NORMAL' && item.text.includes('小时')),
         false
       )
       assert.equal(
         items.some(item => item.type === 'NIGHT'),
         true
       )
-      assert.equal(
-        options[0].timeOptions.find(item => item.time === '14:00').disabled,
-        true
-      )
+      assert.equal(options[0].timeOptions.find(item => item.time === '14:00').disabled, true)
     }
   },
   {
@@ -221,21 +194,13 @@ const cases = [
       assert.equal(selected.schedule.pickup.nightNoticeAccepted, false)
       assert.equal(hydratedNight.schedule.pickup.timeSlot, '20:00-21:00')
       assert.equal(hydratedNight.schedule.pickup.nightNoticeAccepted, true)
-      assert.ok(
-        validateOrderEditSchedule(selected, { now }).includes(
-          '请先确认夜间揽收费用提示'
-        )
-      )
+      assert.ok(validateOrderEditSchedule(selected, { now }).includes('请先确认夜间揽收费用提示'))
 
       const accepted = acceptOrderEditNightPickupNotice(selected)
       assert.deepEqual(validateOrderEditSchedule(accepted, { now }), [])
 
       const stale = { ...accepted, totalWeight: 2 }
-      assert.ok(
-        validateOrderEditSchedule(stale, { now }).includes(
-          '订单信息已变化，请重新获取并选择上门时间'
-        )
-      )
+      assert.ok(validateOrderEditSchedule(stale, { now }).includes('订单信息已变化，请重新获取并选择上门时间'))
 
       const invalidated = applyOrderEditPickupTimeResponse(stale, {
         opening: true,
@@ -378,17 +343,13 @@ const cases = [
               openingList: [
                 {
                   date: '2026-07-15',
-                  dateList: [
-                    { time: '10:00', text: '10:00-12:00', type: 'NORMAL' }
-                  ]
+                  dateList: [{ time: '10:00', text: '10:00-12:00', type: 'NORMAL' }]
                 }
               ],
               nightOpeningList: [
                 {
                   date: '2026-07-15',
-                  dateList: [
-                    { time: '20:00', text: '20:00-21:00', type: 'NIGHT' }
-                  ]
+                  dateList: [{ time: '20:00', text: '20:00-21:00', type: 'NIGHT' }]
                 }
               ]
             }

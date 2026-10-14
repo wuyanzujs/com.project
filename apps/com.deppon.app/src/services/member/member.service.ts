@@ -5,13 +5,7 @@ import { appendRouteQuery } from '@/shared/navigation/routeUrl'
 import { authService } from '../auth'
 import { memberApi } from './member.api'
 
-import type {
-  MemberBenefitView,
-  MemberLevelRaw,
-  MemberOverviewView,
-  MemberSvipRaw,
-  MemberWebAction
-} from './types'
+import type { MemberBenefitView, MemberLevelRaw, MemberOverviewView, MemberSvipRaw, MemberWebAction } from './types'
 
 const MEMBER_MAS_PATHS: Record<MemberWebAction, string> = {
   MEMBER_CENTER: '/member/home',
@@ -101,15 +95,10 @@ function getSvipStatusText(status: number) {
  * @param svip SVIP 原始数据，可为空
  * @description 组装会员概览展示结构
  */
-function normalizeOverview(
-  level?: MemberLevelRaw | null,
-  svip?: MemberSvipRaw | null
-): MemberOverviewView {
+function normalizeOverview(level?: MemberLevelRaw | null, svip?: MemberSvipRaw | null): MemberOverviewView {
   const growthValue = toFiniteNumber(level?.growthValue)
   const maxGrowthValue = toFiniteNumber(level?.maxGrowthValue)
-  const growthPercent = maxGrowthValue
-    ? Math.min(100, Math.round((growthValue / maxGrowthValue) * 100))
-    : 0
+  const growthPercent = maxGrowthValue ? Math.min(100, Math.round((growthValue / maxGrowthValue) * 100)) : 0
   const svipStatus = toFiniteNumber(svip?.status)
 
   return {
@@ -134,10 +123,7 @@ function normalizeOverview(
  * @param message 提示文案
  * @description 组装成功响应结构
  */
-function createSuccessResponse<TResult>(
-  result: TResult,
-  message = ''
-): DepponResponse<TResult> {
+function createSuccessResponse<TResult>(result: TResult, message = ''): DepponResponse<TResult> {
   return {
     status: true,
     message,
@@ -152,11 +138,7 @@ function createSuccessResponse<TResult>(
  * @param code 临时 token
  * @description 拼接福利中心页面 URL
  */
-export function createMemberWelfareUrl(
-  baseUrl: string,
-  source: string,
-  code = ''
-) {
+export function createMemberWelfareUrl(baseUrl: string, source: string, code = '') {
   return appendRouteQuery(baseUrl, {
     code,
     source
@@ -169,10 +151,7 @@ export function createMemberWelfareUrl(
  * @param baseUrl 基础地址
  * @description 拼接 MAS 页面基础地址
  */
-function createMemberMasBaseUrl(
-  path: string,
-  baseUrl = APP_RUNTIME_CONFIG.memberWebURL
-) {
+function createMemberMasBaseUrl(path: string, baseUrl = APP_RUNTIME_CONFIG.memberWebURL) {
   try {
     const parsed = new URL(baseUrl || APP_RUNTIME_CONFIG.memberWebURL)
 
@@ -190,19 +169,11 @@ function createMemberMasBaseUrl(
  * @param baseUrl 基础地址
  * @description 拼接 MAS 页面 URL
  */
-export function createMemberMasUrl(
-  action: MemberWebAction,
-  source: string,
-  code = '',
-  baseUrl = APP_RUNTIME_CONFIG.memberWebURL
-) {
-  return appendRouteQuery(
-    createMemberMasBaseUrl(MEMBER_MAS_PATHS[action], baseUrl),
-    {
-      code,
-      source
-    }
-  )
+export function createMemberMasUrl(action: MemberWebAction, source: string, code = '', baseUrl = APP_RUNTIME_CONFIG.memberWebURL) {
+  return appendRouteQuery(createMemberMasBaseUrl(MEMBER_MAS_PATHS[action], baseUrl), {
+    code,
+    source
+  })
 }
 
 export const memberService = {
@@ -211,16 +182,9 @@ export const memberService = {
    * @description 查询等级与 SVIP 信息并组装概览
    */
   async queryOverview(): Promise<DepponResponse<MemberOverviewView>> {
-    const [levelResponse, svipResponse] = await Promise.all([
-      memberApi.queryLevel().catch(() => null),
-      memberApi.querySvipInfo().catch(() => null)
-    ])
-    const overview = normalizeOverview(
-      levelResponse?.status ? levelResponse.result : null,
-      svipResponse?.status ? svipResponse.result : null
-    )
-    const message =
-      levelResponse?.message || svipResponse?.message || '会员信息已同步'
+    const [levelResponse, svipResponse] = await Promise.all([memberApi.queryLevel().catch(() => null), memberApi.querySvipInfo().catch(() => null)])
+    const overview = normalizeOverview(levelResponse?.status ? levelResponse.result : null, svipResponse?.status ? svipResponse.result : null)
+    const message = levelResponse?.message || svipResponse?.message || '会员信息已同步'
 
     return createSuccessResponse(overview, message)
   },
@@ -231,23 +195,13 @@ export const memberService = {
    * @param baseUrl 基础地址
    * @description 创建带临时 token 的福利中心 URL
    */
-  async createWelfareCenterUrl(
-    source = 'MEMBER_INDEX',
-    baseUrl = APP_RUNTIME_CONFIG.memberWebURL
-  ) {
+  async createWelfareCenterUrl(source = 'MEMBER_INDEX', baseUrl = APP_RUNTIME_CONFIG.memberWebURL) {
     try {
       const token = await authService.generateTmpToken(source)
 
-      return createMemberWelfareUrl(
-        baseUrl || APP_RUNTIME_CONFIG.memberWebURL,
-        source,
-        token
-      )
+      return createMemberWelfareUrl(baseUrl || APP_RUNTIME_CONFIG.memberWebURL, source, token)
     } catch {
-      return createMemberWelfareUrl(
-        baseUrl || APP_RUNTIME_CONFIG.memberWebURL,
-        source
-      )
+      return createMemberWelfareUrl(baseUrl || APP_RUNTIME_CONFIG.memberWebURL, source)
     }
   },
 
@@ -258,11 +212,7 @@ export const memberService = {
    * @param baseUrl 基础地址
    * @description 创建带临时 token 的 MAS 页面 URL
    */
-  async createMasUrl(
-    action: MemberWebAction,
-    source = 'MEMBER_INDEX',
-    baseUrl = APP_RUNTIME_CONFIG.memberWebURL
-  ) {
+  async createMasUrl(action: MemberWebAction, source = 'MEMBER_INDEX', baseUrl = APP_RUNTIME_CONFIG.memberWebURL) {
     try {
       const token = await authService.generateTmpToken(source)
 

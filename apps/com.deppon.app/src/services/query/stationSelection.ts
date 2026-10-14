@@ -1,8 +1,4 @@
-import type {
-  StationItem,
-  StationQueryOptions,
-  StationQueryResult
-} from './types'
+import type { StationItem, StationQueryOptions, StationQueryResult } from './types'
 
 export type StationSelectionSource = 'EXPRESS_DELIVERY_POINT'
 
@@ -48,9 +44,7 @@ function normalizeText(value?: string | null) {
  * @param value 待判断的值
  * @description 判断是否为网点选择来源
  */
-function isStationSelectionSource(
-  value: unknown
-): value is StationSelectionSource {
+function isStationSelectionSource(value: unknown): value is StationSelectionSource {
   return value === 'EXPRESS_DELIVERY_POINT'
 }
 
@@ -62,20 +56,13 @@ export const stationSelection = {
    * @param selectedCode 已选网点 code
    * @description 创建网点选择页参数
    */
-  createParams(
-    source: StationSelectionSource,
-    address: StationSelectionAddress,
-    selectedCode = ''
-  ): StationSelectionParams {
+  createParams(source: StationSelectionSource, address: StationSelectionAddress, selectedCode = ''): StationSelectionParams {
     return {
       source,
       province: normalizeText(address.province),
       city: normalizeText(address.city),
       county: normalizeText(address.county),
-      address: [address.town, address.address]
-        .map(normalizeText)
-        .filter(Boolean)
-        .join(''),
+      address: [address.town, address.address].map(normalizeText).filter(Boolean).join(''),
       selectedCode: normalizeText(selectedCode)
     }
   },
@@ -85,9 +72,7 @@ export const stationSelection = {
    * @param params 路由 query 参数
    * @description 解析网点选择页参数
    */
-  parseParams(
-    params: Record<string, string | undefined> = {}
-  ): StationSelectionParams | null {
+  parseParams(params: Record<string, string | undefined> = {}): StationSelectionParams | null {
     if (!isStationSelectionSource(params.source)) {
       return null
     }
@@ -124,10 +109,7 @@ export const stationSelection = {
    * @param result 网点查询结果
    * @description 按来源过滤网点查询结果
    */
-  filterResult(
-    source: StationSelectionSource,
-    result: StationQueryResult
-  ): StationQueryResult {
+  filterResult(source: StationSelectionSource, result: StationQueryResult): StationQueryResult {
     const list =
       source === 'EXPRESS_DELIVERY_POINT'
         ? result.list.filter(

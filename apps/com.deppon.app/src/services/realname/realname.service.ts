@@ -4,26 +4,10 @@ import { verifyRealName } from '@/shared/platform/realName'
 import { realNameApi } from './realname.api'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
-import type {
-  RealNameAuthRaw,
-  RealNameAuthView,
-  RealNameValidationResult
-} from './types'
+import type { RealNameAuthRaw, RealNameAuthView, RealNameValidationResult } from './types'
 
 const ID_CARD_WEIGHTS = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
-const ID_CARD_CHECK_CODES = [
-  '1',
-  '0',
-  'X',
-  '9',
-  '8',
-  '7',
-  '6',
-  '5',
-  '4',
-  '3',
-  '2'
-]
+const ID_CARD_CHECK_CODES = ['1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2']
 
 /**
  *
@@ -64,13 +48,7 @@ function isValidBirthday(value: string) {
   const day = Number(value.slice(12, 14))
   const date = new Date(year, month - 1, day)
 
-  return (
-    date.getFullYear() === year &&
-    date.getMonth() + 1 === month &&
-    date.getDate() === day &&
-    year >= 1900 &&
-    date.getTime() <= Date.now()
-  )
+  return date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day && year >= 1900 && date.getTime() <= Date.now()
 }
 
 /**
@@ -88,10 +66,7 @@ export function isValidIdCardNo(idCardNo: string) {
   const sum = value
     .slice(0, 17)
     .split('')
-    .reduce(
-      (total, item, index) => total + Number(item) * ID_CARD_WEIGHTS[index],
-      0
-    )
+    .reduce((total, item, index) => total + Number(item) * ID_CARD_WEIGHTS[index], 0)
 
   return ID_CARD_CHECK_CODES[sum % 11] === value[17]
 }
@@ -131,9 +106,7 @@ function toRealNameView(raw?: RealNameAuthRaw | null): RealNameAuthView {
     idCardNo,
     maskedIdCardNo: maskIdCardNo(idCardNo),
     statusText: authenticated ? '已完成实名认证' : '待实名认证',
-    summary: authenticated
-      ? '本人寄件时仅需出示有效身份证件供查验，无需重复采集实名信息。'
-      : '根据实名收寄要求，寄件前需完成身份信息登记或核验。'
+    summary: authenticated ? '本人寄件时仅需出示有效身份证件供查验，无需重复采集实名信息。' : '根据实名收寄要求，寄件前需完成身份信息登记或核验。'
   }
 }
 
@@ -211,10 +184,7 @@ export const realNameService = {
    * @param idCardNo 身份证号
    * @description 校验后提交手工实名认证
    */
-  async submitManual(
-    name: string,
-    idCardNo: string
-  ): Promise<DepponResponse<boolean>> {
+  async submitManual(name: string, idCardNo: string): Promise<DepponResponse<boolean>> {
     const validation = realNameService.validate(name, idCardNo)
 
     if (!validation.valid) {
@@ -234,9 +204,7 @@ export const realNameService = {
    * @param current 当前实名信息
    * @description 删除实名认证信息
    */
-  async deleteRealName(
-    current: RealNameAuthView | null
-  ): Promise<DepponResponse<boolean>> {
+  async deleteRealName(current: RealNameAuthView | null): Promise<DepponResponse<boolean>> {
     if (!current?.authenticated) {
       return createFailure('当前账号暂无实名信息')
     }
@@ -273,12 +241,7 @@ export const realNameService = {
     }
 
     const rawResult = authResult.rawResult
-    const idCardAuthData =
-      rawResult &&
-      typeof rawResult === 'object' &&
-      'idCardAuthData' in rawResult
-        ? String(rawResult.idCardAuthData || '')
-        : ''
+    const idCardAuthData = rawResult && typeof rawResult === 'object' && 'idCardAuthData' in rawResult ? String(rawResult.idCardAuthData || '') : ''
 
     if (!idCardAuthData) {
       return createFailure('实名授权结果缺少凭证')

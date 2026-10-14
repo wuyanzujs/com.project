@@ -4,10 +4,7 @@ import Taro, { useDidShow } from '@tarojs/taro'
 import { useCallback, useMemo, useState } from 'react'
 
 import { customerService } from '@/services/customer'
-import type {
-  CustomerCapabilitySummaryView,
-  CustomerCenterView
-} from '@/services/customer'
+import type { CustomerCapabilitySummaryView, CustomerCenterView } from '@/services/customer'
 import { AppPressable } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
@@ -45,9 +42,7 @@ const CUSTOMER_WEB_ACTIONS: CustomerWebAction[] = [
   }
 ]
 
-function getPrimaryCustomerAction(
-  customer: CustomerCenterView | null
-): CustomerWebAction {
+function getPrimaryCustomerAction(customer: CustomerCenterView | null): CustomerWebAction {
   if (customer?.hasBoundCustomer) {
     return {
       title: '管理客户',
@@ -65,15 +60,11 @@ function getPrimaryCustomerAction(
 
 const CustomerCenterPage = () => {
   const [customer, setCustomer] = useState<CustomerCenterView | null>(null)
-  const [capability, setCapability] =
-    useState<CustomerCapabilitySummaryView | null>(null)
+  const [capability, setCapability] = useState<CustomerCapabilitySummaryView | null>(null)
   const [capabilityMessage, setCapabilityMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const customerWebActions = useMemo(
-    () => [getPrimaryCustomerAction(customer), ...CUSTOMER_WEB_ACTIONS],
-    [customer]
-  )
+  const customerWebActions = useMemo(() => [getPrimaryCustomerAction(customer), ...CUSTOMER_WEB_ACTIONS], [customer])
 
   const ensureCustomerAccess = useCallback(
     () =>
@@ -153,68 +144,39 @@ const CustomerCenterPage = () => {
         <View className='customer-card__top'>
           <View>
             <Text className='customer-card__label'>绑定状态</Text>
-            <Text className='customer-card__title'>
-              {customer?.statusText || (loading ? '同步中' : '待同步')}
-            </Text>
+            <Text className='customer-card__title'>{customer?.statusText || (loading ? '同步中' : '待同步')}</Text>
           </View>
-          <Text
-            className={
-              customer?.hasBoundCustomer
-                ? 'customer-card__badge customer-card__badge--ok'
-                : 'customer-card__badge'
-            }
-          >
+          <Text className={customer?.hasBoundCustomer ? 'customer-card__badge customer-card__badge--ok' : 'customer-card__badge'}>
             {customer?.hasBoundCustomer ? '已绑定' : '未绑定'}
           </Text>
         </View>
-        <Text className='customer-card__summary'>
-          {customer?.summary ||
-            errorMessage ||
-            '进入页面后会自动同步当前账号的客户绑定状态。'}
-        </Text>
+        <Text className='customer-card__summary'>{customer?.summary || errorMessage || '进入页面后会自动同步当前账号的客户绑定状态。'}</Text>
       </View>
 
-      <CustomerCapabilitySection
-        capability={capability}
-        loading={loading}
-        message={capabilityMessage}
-      />
+      <CustomerCapabilitySection capability={capability} loading={loading} message={capabilityMessage} />
 
       <View className='customer-section'>
         <Text className='customer-section__title'>客户资料</Text>
         <View className='customer-info-row'>
           <Text className='customer-info-row__label'>客户编码</Text>
-          <Text className='customer-info-row__value'>
-            {customer?.code || '--'}
-          </Text>
+          <Text className='customer-info-row__value'>{customer?.code || '--'}</Text>
         </View>
         <View className='customer-info-row'>
           <Text className='customer-info-row__label'>客户名称</Text>
-          <Text className='customer-info-row__value'>
-            {customer?.name || '--'}
-          </Text>
+          <Text className='customer-info-row__value'>{customer?.name || '--'}</Text>
         </View>
         <View className='customer-info-row'>
           <Text className='customer-info-row__label'>联系人身份</Text>
-          <Text className='customer-info-row__value'>
-            {customer?.mainContactText || '--'}
-          </Text>
+          <Text className='customer-info-row__value'>{customer?.mainContactText || '--'}</Text>
         </View>
         <View className='customer-info-row'>
           <Text className='customer-info-row__label'>隐私面单</Text>
-          <Text className='customer-info-row__value'>
-            {customer?.privateBillText || '--'}
-          </Text>
+          <Text className='customer-info-row__value'>{customer?.privateBillText || '--'}</Text>
         </View>
 
         <View className='customer-actions'>
-          <AppPressable
-            className='customer-action customer-action--ghost'
-            onPress={loadCustomer}
-          >
-            <Text className='customer-action__text customer-action__text--ghost'>
-              {loading ? '同步中' : '刷新'}
-            </Text>
+          <AppPressable className='customer-action customer-action--ghost' onPress={loadCustomer}>
+            <Text className='customer-action__text customer-action__text--ghost'>{loading ? '同步中' : '刷新'}</Text>
           </AppPressable>
           <AppPressable className='customer-action' onPress={handleCopyCode}>
             <Text className='customer-action__text'>复制编码</Text>
@@ -225,11 +187,7 @@ const CustomerCenterPage = () => {
       <View className='customer-section'>
         <Text className='customer-section__title'>客户服务</Text>
         {customerWebActions.map(item => (
-          <AppPressable
-            className='customer-link'
-            key={item.source}
-            onPress={() => handleOpenWeb(item.source)}
-          >
+          <AppPressable className='customer-link' key={item.source} onPress={() => handleOpenWeb(item.source)}>
             <View>
               <Text className='customer-link__title'>{item.title}</Text>
               <Text className='customer-link__summary'>{item.summary}</Text>
@@ -241,13 +199,8 @@ const CustomerCenterPage = () => {
 
       <View className='customer-support'>
         <Text className='customer-support__title'>需要人工协助？</Text>
-        <Text className='customer-support__summary'>
-          可进入客服中心咨询客户绑定、月结和合同客户相关问题。
-        </Text>
-        <AppPressable
-          className='customer-support__button'
-          onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
-        >
+        <Text className='customer-support__summary'>可进入客服中心咨询客户绑定、月结和合同客户相关问题。</Text>
+        <AppPressable className='customer-support__button' onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)}>
           <Text className='customer-support__button-text'>联系客服</Text>
         </AppPressable>
       </View>

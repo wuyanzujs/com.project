@@ -26,11 +26,7 @@ function getRelativeDayLabel(value: string) {
     return ''
   }
 
-  const target = Date.UTC(
-    Number(match[1]),
-    Number(match[2]) - 1,
-    Number(match[3])
-  )
+  const target = Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
   const now = new Date()
   const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
   const days = Math.round((target - today) / 86400000)
@@ -43,30 +39,17 @@ function getRelativeDayLabel(value: string) {
 }
 
 // 与生产一致：切日期后默认选当日第一个可选的普通时段，没有普通时段再取首个可选时段。
-function getDefaultTimeOption(
-  controller: ExpressPickupTimeController,
-  date: string
-) {
-  const dateOption = controller.dateOptions.find(
-    option => option.value === date
-  )
+function getDefaultTimeOption(controller: ExpressPickupTimeController, date: string) {
+  const dateOption = controller.dateOptions.find(option => option.value === date)
 
   if (!dateOption) {
     return undefined
   }
 
-  return (
-    dateOption.timeOptions.find(
-      option => !option.disabled && option.type === 'NORMAL'
-    ) ?? dateOption.timeOptions.find(option => !option.disabled)
-  )
+  return dateOption.timeOptions.find(option => !option.disabled && option.type === 'NORMAL') ?? dateOption.timeOptions.find(option => !option.disabled)
 }
 
-export function ExpressPickupTimeSheet({
-  controller,
-  onClose,
-  visible
-}: ExpressPickupTimeSheetProps) {
+export function ExpressPickupTimeSheet({ controller, onClose, visible }: ExpressPickupTimeSheetProps) {
   const [dateValue, setDateValue] = useState('')
   const [timeValue, setTimeValue] = useState('')
   const [prevVisible, setPrevVisible] = useState(false)
@@ -76,38 +59,25 @@ export function ExpressPickupTimeSheet({
     setPrevVisible(visible)
 
     if (visible) {
-      const seededDate =
-        controller.selectedDate || controller.dateOptions[0]?.value || ''
+      const seededDate = controller.selectedDate || controller.dateOptions[0]?.value || ''
 
       setDateValue(seededDate)
-      setTimeValue(
-        controller.selectedTime ||
-          getDefaultTimeOption(controller, seededDate)?.time ||
-          ''
-      )
+      setTimeValue(controller.selectedTime || getDefaultTimeOption(controller, seededDate)?.time || '')
     }
   }
 
   // 打开瞬间查询可能还在途（seed 时 dateOptions 为空会落空），数据到位后补一次
   // 跟随：优先草稿选中，日期无效则回退首日，时段回退当日首个可选普通时段。
   if (visible && !timeValue && controller.dateOptions.length) {
-    const nextDate = controller.dateOptions.some(
-      option => option.value === dateValue
-    )
+    const nextDate = controller.dateOptions.some(option => option.value === dateValue)
       ? dateValue
       : controller.selectedDate || controller.dateOptions[0]?.value || ''
 
     setDateValue(nextDate)
-    setTimeValue(
-      controller.selectedTime ||
-        getDefaultTimeOption(controller, nextDate)?.time ||
-        ''
-    )
+    setTimeValue(controller.selectedTime || getDefaultTimeOption(controller, nextDate)?.time || '')
   }
 
-  const activeDate = controller.dateOptions.find(
-    option => option.value === dateValue
-  )
+  const activeDate = controller.dateOptions.find(option => option.value === dateValue)
   const timeOptions = activeDate?.timeOptions ?? []
 
   const handleDatePress = (date: string) => {
@@ -134,12 +104,7 @@ export function ExpressPickupTimeSheet({
       titleSize={40}
       visible={visible}
       footer={
-        <AppPressable
-          accessibilityLabel='确定期望上门时间'
-          block
-          className='express-pickup-time-sheet__confirm'
-          onPress={handleConfirm}
-        >
+        <AppPressable accessibilityLabel='确定期望上门时间' block className='express-pickup-time-sheet__confirm' onPress={handleConfirm}>
           <Text className='express-pickup-time-sheet__confirm-text'>确定</Text>
         </AppPressable>
       }
@@ -147,10 +112,7 @@ export function ExpressPickupTimeSheet({
     >
       {controller.dateOptions.length ? (
         <View className='express-pickup-time-sheet__columns'>
-          <ScrollView
-            className='express-pickup-time-sheet__column express-pickup-time-sheet__column--dates'
-            scrollY
-          >
+          <ScrollView className='express-pickup-time-sheet__column express-pickup-time-sheet__column--dates' scrollY>
             {controller.dateOptions.map(option => {
               const selected = option.value === dateValue
               const relativeLabel = getRelativeDayLabel(option.value)
@@ -158,24 +120,16 @@ export function ExpressPickupTimeSheet({
               return (
                 <AppPressable
                   accessibilityLabel={`选择${option.value}${relativeLabel}`}
-                  className={
-                    selected
-                      ? 'express-pickup-time-sheet__date express-pickup-time-sheet__date--active'
-                      : 'express-pickup-time-sheet__date'
-                  }
+                  className={selected ? 'express-pickup-time-sheet__date express-pickup-time-sheet__date--active' : 'express-pickup-time-sheet__date'}
                   key={option.value}
                   onPress={() => handleDatePress(option.value)}
                 >
                   <Text
                     className={
-                      selected
-                        ? 'express-pickup-time-sheet__date-text express-pickup-time-sheet__date-text--active'
-                        : 'express-pickup-time-sheet__date-text'
+                      selected ? 'express-pickup-time-sheet__date-text express-pickup-time-sheet__date-text--active' : 'express-pickup-time-sheet__date-text'
                     }
                   >
-                    {relativeLabel
-                      ? `${option.value}(${relativeLabel})`
-                      : option.value}
+                    {relativeLabel ? `${option.value}(${relativeLabel})` : option.value}
                   </Text>
                 </AppPressable>
               )
@@ -205,20 +159,8 @@ export function ExpressPickupTimeSheet({
                   >
                     {option.label}
                   </Text>
-                  {option.night ? (
-                    <Image
-                      className='express-pickup-time-sheet__moon'
-                      mode='aspectFit'
-                      src={APP_IMAGE_ICONS.nightPickupMoon}
-                    />
-                  ) : null}
-                  {selected ? (
-                    <AppIcon
-                      color={APP_STYLE_COLORS.brand.default}
-                      name='check'
-                      size={32}
-                    />
-                  ) : null}
+                  {option.night ? <Image className='express-pickup-time-sheet__moon' mode='aspectFit' src={APP_IMAGE_ICONS.nightPickupMoon} /> : null}
+                  {selected ? <AppIcon color={APP_STYLE_COLORS.brand.default} name='check' size={32} /> : null}
                 </AppPressable>
               )
             })}
@@ -227,27 +169,15 @@ export function ExpressPickupTimeSheet({
       ) : (
         <View className='express-pickup-time-sheet__empty'>
           <Text className='express-pickup-time-sheet__empty-text'>
-            {controller.loading
-              ? '正在查询可用取件时段'
-              : controller.message || '暂未获取到取件时间'}
+            {controller.loading ? '正在查询可用取件时段' : controller.message || '暂未获取到取件时间'}
           </Text>
         </View>
       )}
 
       {controller.showNightNotice ? (
-        <AppPressable
-          accessibilityLabel='夜间揽收费用说明'
-          className='express-pickup-time-sheet__night-banner'
-          onPress={controller.onAcceptNightNotice}
-        >
-          <Text className='express-pickup-time-sheet__night-text'>
-            提供夜间收件服务，24小时保障发货
-          </Text>
-          <Image
-            className='express-pickup-time-sheet__moon'
-            mode='aspectFit'
-            src={APP_IMAGE_ICONS.nightPickupMoon}
-          />
+        <AppPressable accessibilityLabel='夜间揽收费用说明' className='express-pickup-time-sheet__night-banner' onPress={controller.onAcceptNightNotice}>
+          <Text className='express-pickup-time-sheet__night-text'>提供夜间收件服务，24小时保障发货</Text>
+          <Image className='express-pickup-time-sheet__moon' mode='aspectFit' src={APP_IMAGE_ICONS.nightPickupMoon} />
         </AppPressable>
       ) : null}
     </ExpressSheet>

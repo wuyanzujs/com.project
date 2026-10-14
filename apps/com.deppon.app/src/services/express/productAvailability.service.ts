@@ -14,21 +14,14 @@ import {
 import { getCurrentEcoToken } from '../auth/session'
 import { customerService } from '../customer/customer.service'
 
-import type {
-  ExpressDraft,
-  ExpressGoodsLabel,
-  ExpressProductCustomerCapability,
-  ExpressProductUpgradeResult
-} from './types'
+import type { ExpressDraft, ExpressGoodsLabel, ExpressProductCustomerCapability, ExpressProductUpgradeResult } from './types'
 
 /**
  *
  * @param result 接口聚合结果
  * @description 取成功的接口响应，否则返回 null
  */
-function getSuccessfulResponse<TResult>(
-  result: PromiseSettledResult<DepponResponse<TResult> | null>
-) {
+function getSuccessfulResponse<TResult>(result: PromiseSettledResult<DepponResponse<TResult> | null>) {
   if (result.status !== 'fulfilled' || !result.value?.status) {
     return null
   }
@@ -49,10 +42,7 @@ async function resolveQuoteCustomerCapability(draft: ExpressDraft) {
   try {
     const response = await customerService.queryCustomerCapability()
 
-    return resolveExpressProductCustomerCapability(
-      draft,
-      response.status ? response.result : null
-    )
+    return resolveExpressProductCustomerCapability(draft, response.status ? response.result : null)
   } catch {
     return resolveExpressProductCustomerCapability(draft)
   }
@@ -64,10 +54,7 @@ async function resolveQuoteCustomerCapability(draft: ExpressDraft) {
  * @param customer 客户能力
  * @description 创建默认产品可用性
  */
-function createDefaultAvailability(
-  draft: ExpressDraft,
-  customer: ExpressProductCustomerCapability
-) {
+function createDefaultAvailability(draft: ExpressDraft, customer: ExpressProductCustomerCapability) {
   return createExpressProductAvailability(draft, customer)
 }
 
@@ -83,48 +70,21 @@ export async function queryExpressProductAvailability(draft: ExpressDraft) {
   const goodsLabelEnabled = Boolean(draft.goods.name.trim())
 
   try {
-    const [pointResult, switchResult, upgradeResult, goodsLabelResult] =
-      await Promise.allSettled([
-        dczpEnabled
-          ? expressApi.queryProductPointCity(
-              createExpressProductPointRequest(draft)
-            )
-          : Promise.resolve(null),
-        productSwitchEnabled
-          ? expressApi.queryProductSwitch(
-              createExpressProductSwitchRequest(draft, customer)
-            )
-          : Promise.resolve(null),
-        productSwitchEnabled
-          ? expressApi.queryProductUpgrade(
-              createExpressProductUpgradeRequest(draft, customer)
-            )
-          : Promise.resolve(null),
-        goodsLabelEnabled
-          ? expressApi.queryGoodsLabels(
-              createExpressGoodsLabelRequest(draft),
-              false
-            )
-          : Promise.resolve(null)
-      ])
+    const [pointResult, switchResult, upgradeResult, goodsLabelResult] = await Promise.allSettled([
+      dczpEnabled ? expressApi.queryProductPointCity(createExpressProductPointRequest(draft)) : Promise.resolve(null),
+      productSwitchEnabled ? expressApi.queryProductSwitch(createExpressProductSwitchRequest(draft, customer)) : Promise.resolve(null),
+      productSwitchEnabled ? expressApi.queryProductUpgrade(createExpressProductUpgradeRequest(draft, customer)) : Promise.resolve(null),
+      goodsLabelEnabled ? expressApi.queryGoodsLabels(createExpressGoodsLabelRequest(draft), false) : Promise.resolve(null)
+    ])
     const pointResponse = getSuccessfulResponse<boolean>(pointResult)
     const switchResponse = getSuccessfulResponse<boolean>(switchResult)
-    const upgradeResponse =
-      getSuccessfulResponse<ExpressProductUpgradeResult>(upgradeResult)
-    const goodsLabelResponse =
-      getSuccessfulResponse<ExpressGoodsLabel[]>(goodsLabelResult)
+    const upgradeResponse = getSuccessfulResponse<ExpressProductUpgradeResult>(upgradeResult)
+    const goodsLabelResponse = getSuccessfulResponse<ExpressGoodsLabel[]>(goodsLabelResult)
 
     return createExpressProductAvailability(draft, customer, {
       dczpAvailable: pointResponse?.result === true,
-      fusionEnabled:
-        switchResponse?.result === true
-          ? true
-          : switchResponse?.result === false
-            ? false
-            : undefined,
-      goodsLabels: goodsLabelResponse
-        ? (goodsLabelResponse.result ?? [])
-        : undefined,
+      fusionEnabled: switchResponse?.result === true ? true : switchResponse?.result === false ? false : undefined,
+      goodsLabels: goodsLabelResponse ? (goodsLabelResponse.result ?? []) : undefined,
       upgradeResult: upgradeResponse?.result ?? undefined
     })
   } catch {

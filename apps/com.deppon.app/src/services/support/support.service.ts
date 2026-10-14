@@ -6,11 +6,7 @@ import { APP_WEB_TARGETS } from '@/shared/webview/appWeb'
 import { supportApi } from './support.api'
 import { getCurrentEcoToken } from '../auth'
 
-import type {
-  SupportEntryView,
-  SupportSectionView,
-  SupportSurveyConfig
-} from './types'
+import type { SupportEntryView, SupportSectionView, SupportSurveyConfig } from './types'
 
 type SurveyConfigList = SupportSurveyConfig[]
 
@@ -33,9 +29,7 @@ function createSecureWebPath(path: string, source: string) {
  * @param item 问卷配置
  * @description 判断问卷配置是否可用
  */
-function isValidSurveyConfig(
-  item: SupportSurveyConfig
-): item is Required<Pick<SupportSurveyConfig, 'url'>> & SupportSurveyConfig {
+function isValidSurveyConfig(item: SupportSurveyConfig): item is Required<Pick<SupportSurveyConfig, 'url'>> & SupportSurveyConfig {
   return typeof item.url === 'string' && item.url.trim().startsWith('https://')
 }
 
@@ -45,16 +39,11 @@ function isValidSurveyConfig(
  * @param index 问卷序号
  * @description 转问卷入口展示数据
  */
-function mapSurveyConfigToEntry(
-  item: SupportSurveyConfig,
-  index: number
-): SupportEntryView {
+function mapSurveyConfigToEntry(item: SupportSurveyConfig, index: number): SupportEntryView {
   return {
     id: `survey-${index}`,
     title: index === 0 ? '体验调研' : `体验调研 ${index + 1}`,
-    summary: item.image
-      ? '参与服务体验问卷，帮助我们优化 App 服务。'
-      : '参与服务体验问卷。',
+    summary: item.image ? '参与服务体验问卷，帮助我们优化 App 服务。' : '参与服务体验问卷。',
     kind: 'web',
     tone: 'primary',
     badgeText: index === 0 ? 'HOT' : '问卷',
@@ -81,18 +70,13 @@ export const supportService = {
    */
   async querySurveyEntries(): Promise<SupportEntryView[]> {
     try {
-      const response = await supportApi.fetchSwitchConfig<SurveyConfigList>(
-        APP_RUNTIME_CONFIG.supportSurveyConfigKey,
-        false
-      )
+      const response = await supportApi.fetchSwitchConfig<SurveyConfigList>(APP_RUNTIME_CONFIG.supportSurveyConfigKey, false)
 
       if (!response.status || !response.result?.length) {
         return []
       }
 
-      return response.result
-        .filter(isValidSurveyConfig)
-        .map(mapSurveyConfigToEntry)
+      return response.result.filter(isValidSurveyConfig).map(mapSurveyConfigToEntry)
     } catch {
       return []
     }

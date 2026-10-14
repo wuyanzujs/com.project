@@ -1,9 +1,4 @@
-import type {
-  CourierLabelRaw,
-  CourierLabelView,
-  CourierRaw,
-  CourierView
-} from './types'
+import type { CourierLabelRaw, CourierLabelView, CourierRaw, CourierView } from './types'
 
 /**
  *

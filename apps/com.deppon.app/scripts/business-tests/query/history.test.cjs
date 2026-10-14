@@ -22,12 +22,10 @@ test('goods checking waits for history persistence before exposing completion', 
     disk.set(key, data)
   })
   let completed = false
-  const checking = goodsQueryService
-    .checkGoods({ goodsName: '文件' })
-    .then(result => {
-      completed = true
-      return result
-    })
+  const checking = goodsQueryService.checkGoods({ goodsName: '文件' }).then(result => {
+    completed = true
+    return result
+  })
   await started.promise
   assert.equal(completed, false)
   release.resolve()

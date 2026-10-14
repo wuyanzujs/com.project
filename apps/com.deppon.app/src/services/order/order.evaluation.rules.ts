@@ -35,15 +35,10 @@ function normalizeText(value: unknown) {
  * @param fallback 兜底星级
  * @description 校验 1 到 5 星级，非法时取兜底值
  */
-function normalizeLevel(
-  value: unknown,
-  fallback: OrderEvaluationLevel = 5
-): OrderEvaluationLevel {
+function normalizeLevel(value: unknown, fallback: OrderEvaluationLevel = 5): OrderEvaluationLevel {
   const level = Number(value)
 
-  return level === 1 || level === 2 || level === 3 || level === 4 || level === 5
-    ? level
-    : fallback
+  return level === 1 || level === 2 || level === 3 || level === 4 || level === 5 ? level : fallback
 }
 
 /**
@@ -76,10 +71,7 @@ function normalizeCourierRole(value: unknown): OrderEvaluationCourierRole {
  * @param routeRole 路由角色
  * @description 根据寄收双方标识判断评价角色
  */
-export function getOrderEvaluationRole(
-  detail: OrderDetail,
-  routeRole?: string
-): OrderRole {
+export function getOrderEvaluationRole(detail: OrderDetail, routeRole?: string): OrderRole {
   if (detail.isReceiver === 'Y' && detail.isSender !== 'Y') {
     return 'receive'
   }
@@ -97,17 +89,11 @@ export function getOrderEvaluationRole(
  * @param routeRole 路由角色
  * @description 创建评价上下文，不满足条件返回 null
  */
-export function createOrderEvaluationContext(
-  detail: OrderDetail,
-  routeRole?: string
-): OrderEvaluationContext | null {
+export function createOrderEvaluationContext(detail: OrderDetail, routeRole?: string): OrderEvaluationContext | null {
   const role = getOrderEvaluationRole(detail, routeRole)
   const orderClass = Number(detail.orderClassification)
   const waybillNumber = normalizeText(detail.waybillNumber)
-  const eligible =
-    role === 'receive'
-      ? orderClass === 2 || orderClass === 6
-      : orderClass === 1 || orderClass === 2
+  const eligible = role === 'receive' ? orderClass === 2 || orderClass === 6 : orderClass === 1 || orderClass === 2
 
   if (!eligible || !waybillNumber) {
     return null
@@ -134,10 +120,7 @@ export function createOrderEvaluationContext(
  * @param routeRole 路由角色
  * @description 创建订单评价页跳转路由
  */
-export function createOrderEvaluationRoute(
-  detail: OrderDetail,
-  routeRole?: string
-) {
+export function createOrderEvaluationRoute(detail: OrderDetail, routeRole?: string) {
   const context = createOrderEvaluationContext(detail, routeRole)
 
   if (!context) {
@@ -159,11 +142,7 @@ export function createOrderEvaluationRoute(
  * @param mobile 手机号
  * @description 创建评价兜底 H5 的 WebView URI
  */
-export function createOrderEvaluationFallbackWebUri(
-  detail: OrderDetail,
-  routeRole: string,
-  mobile: string
-) {
+export function createOrderEvaluationFallbackWebUri(detail: OrderDetail, routeRole: string, mobile: string) {
   const role = getOrderEvaluationRole(detail, routeRole)
   const scene = role === 'sender' ? 'S0505' : 'S0907'
 
@@ -206,9 +185,7 @@ export function createOrderEvaluationView(
     return null
   }
 
-  const committed = responseCode
-    ? responseCode !== ORDER_EVALUATION_PENDING_CODE
-    : Boolean(evaluatedCourier && !pendingCourier)
+  const committed = responseCode ? responseCode !== ORDER_EVALUATION_PENDING_CODE : Boolean(evaluatedCourier && !pendingCourier)
   const evaluatedDetail = pendingCourier ? null : evaluatedCourier
 
   return {
@@ -216,9 +193,7 @@ export function createOrderEvaluationView(
     courierCode,
     courierName,
     courierPhone: normalizeText(courier?.courierPhone),
-    courierRole: normalizeCourierRole(
-      pendingCourier ? result.evaluateType : evaluatedDetail?.courierRole
-    ),
+    courierRole: normalizeCourierRole(pendingCourier ? result.evaluateType : evaluatedDetail?.courierRole),
     courierCompany: pendingCourier?.courierType === 'JD' ? 'JD' : 'DP',
     committed,
     averageLevel: normalizeAverageLevel(result.avgStarLevel),
@@ -232,9 +207,7 @@ export function createOrderEvaluationView(
  * @param level 初始星级
  * @description 创建评价草稿
  */
-export function createOrderEvaluationDraft(
-  level: OrderEvaluationLevel = 5
-): OrderEvaluationDraft {
+export function createOrderEvaluationDraft(level: OrderEvaluationLevel = 5): OrderEvaluationDraft {
   return {
     level,
     selectedLabels: [],
@@ -248,10 +221,7 @@ export function createOrderEvaluationDraft(
  * @param level 评价星级
  * @description 更新星级并清空已选标签
  */
-export function updateOrderEvaluationLevel(
-  draft: OrderEvaluationDraft,
-  level: OrderEvaluationLevel
-): OrderEvaluationDraft {
+export function updateOrderEvaluationLevel(draft: OrderEvaluationDraft, level: OrderEvaluationLevel): OrderEvaluationDraft {
   return {
     ...draft,
     level,
@@ -266,11 +236,7 @@ export function updateOrderEvaluationLevel(
  * @param label 评价标签
  * @description 切换评价标签的选中状态
  */
-export function toggleOrderEvaluationLabel(
-  draft: OrderEvaluationDraft,
-  recordType: OrderEvaluationView['recordType'],
-  label: string
-): OrderEvaluationDraft {
+export function toggleOrderEvaluationLabel(draft: OrderEvaluationDraft, recordType: OrderEvaluationView['recordType'], label: string): OrderEvaluationDraft {
   const allowedLabels = getOrderEvaluationLabels(recordType, draft.level)
 
   if (!allowedLabels.includes(label)) {
@@ -279,9 +245,7 @@ export function toggleOrderEvaluationLabel(
 
   return {
     ...draft,
-    selectedLabels: draft.selectedLabels.includes(label)
-      ? draft.selectedLabels.filter(item => item !== label)
-      : [...draft.selectedLabels, label]
+    selectedLabels: draft.selectedLabels.includes(label) ? draft.selectedLabels.filter(item => item !== label) : [...draft.selectedLabels, label]
   }
 }
 
@@ -291,10 +255,7 @@ export function toggleOrderEvaluationLabel(
  * @param suggestion 评价建议
  * @description 更新评价建议并按长度上限截断
  */
-export function updateOrderEvaluationSuggestion(
-  draft: OrderEvaluationDraft,
-  suggestion: string
-): OrderEvaluationDraft {
+export function updateOrderEvaluationSuggestion(draft: OrderEvaluationDraft, suggestion: string): OrderEvaluationDraft {
   return {
     ...draft,
     suggestion: suggestion.slice(0, ORDER_EVALUATION_SUGGESTION_MAX_LENGTH)
@@ -306,9 +267,7 @@ export function updateOrderEvaluationSuggestion(
  * @param draft 评价草稿
  * @description 校验评价草稿并返回提示文案
  */
-export function validateOrderEvaluationDraft(
-  draft: OrderEvaluationDraft
-): OrderEvaluationValidation {
+export function validateOrderEvaluationDraft(draft: OrderEvaluationDraft): OrderEvaluationValidation {
   if (!draft.selectedLabels.length) {
     return {
       valid: false,
@@ -318,10 +277,7 @@ export function validateOrderEvaluationDraft(
 
   const suggestion = draft.suggestion.trim()
 
-  if (
-    suggestion &&
-    suggestion.length < ORDER_EVALUATION_SUGGESTION_MIN_LENGTH
-  ) {
+  if (suggestion && suggestion.length < ORDER_EVALUATION_SUGGESTION_MIN_LENGTH) {
     return {
       valid: false,
       message: '评价建议至少填写 8 个字，或保持为空'
@@ -340,10 +296,7 @@ export function validateOrderEvaluationDraft(
  * @param draft 评价草稿
  * @description 创建评价提交 payload
  */
-export function createOrderEvaluationSubmitRequest(
-  view: OrderEvaluationView,
-  draft: OrderEvaluationDraft
-): OrderEvaluationSubmitRequest {
+export function createOrderEvaluationSubmitRequest(view: OrderEvaluationView, draft: OrderEvaluationDraft): OrderEvaluationSubmitRequest {
   return {
     waybillNo: view.waybillNumber,
     recordType: view.recordType,
@@ -361,10 +314,7 @@ export function createOrderEvaluationSubmitRequest(
  * @param draft 评价草稿
  * @description 提交成功后回写评价状态
  */
-export function applyOrderEvaluationSubmission(
-  view: OrderEvaluationView,
-  draft: OrderEvaluationDraft
-): OrderEvaluationView {
+export function applyOrderEvaluationSubmission(view: OrderEvaluationView, draft: OrderEvaluationDraft): OrderEvaluationView {
   return {
     ...view,
     committed: true,

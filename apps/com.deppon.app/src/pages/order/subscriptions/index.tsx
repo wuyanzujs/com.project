@@ -90,22 +90,15 @@ const OrderSubscriptionsPage = () => {
     setProcessingId(item.id)
 
     try {
-      const response = await orderSubscriptionService.setSubscribed(
-        item.waybillNumber,
-        false
-      )
+      const response = await orderSubscriptionService.setSubscribed(item.waybillNumber, false)
 
       Taro.showToast({
-        title: response.status
-          ? '已取消关注'
-          : response.message || '取消关注失败，请稍后再试',
+        title: response.status ? '已取消关注' : response.message || '取消关注失败，请稍后再试',
         icon: 'none'
       })
 
       if (response.status) {
-        setItems(current =>
-          current.filter(currentItem => currentItem.id !== item.id)
-        )
+        setItems(current => current.filter(currentItem => currentItem.id !== item.id))
       }
     } finally {
       setProcessingId('')
@@ -115,75 +108,41 @@ const OrderSubscriptionsPage = () => {
   return (
     <ScrollView className='subscriptions-page' scrollY>
       <View className='subscriptions-toolbar'>
-        <Text className='subscriptions-toolbar__summary'>
-          共 {items.length} 条
-        </Text>
-        <AppPressable
-          className='subscriptions-toolbar__button'
-          onPress={loadSubscriptions}
-        >
-          <Text className='subscriptions-toolbar__button-text'>
-            {loading ? '刷新中' : '刷新'}
-          </Text>
+        <Text className='subscriptions-toolbar__summary'>共 {items.length} 条</Text>
+        <AppPressable className='subscriptions-toolbar__button' onPress={loadSubscriptions}>
+          <Text className='subscriptions-toolbar__button-text'>{loading ? '刷新中' : '刷新'}</Text>
         </AppPressable>
       </View>
 
       <View className='subscriptions-content'>
         {items.map(item => (
           <View className='subscription-card' key={item.id}>
-            <AppPressable
-              className='subscription-card__body'
-              onPress={() => handleOpenDetail(item)}
-            >
+            <AppPressable className='subscription-card__body' onPress={() => handleOpenDetail(item)}>
               <View className='subscription-card__top'>
-                <Text className='subscription-card__status'>
-                  {item.statusText}
-                </Text>
-                <Text className='subscription-card__type'>
-                  {item.isExpress ? '快递' : '零担'}
-                </Text>
+                <Text className='subscription-card__status'>{item.statusText}</Text>
+                <Text className='subscription-card__type'>{item.isExpress ? '快递' : '零担'}</Text>
               </View>
               <View className='subscription-card__route'>
                 <View className='subscription-card__party'>
-                  <Text className='subscription-card__city'>
-                    {item.senderCity || '--'}
-                  </Text>
-                  <Text className='subscription-card__name'>
-                    {item.senderName || '--'}
-                  </Text>
+                  <Text className='subscription-card__city'>{item.senderCity || '--'}</Text>
+                  <Text className='subscription-card__name'>{item.senderName || '--'}</Text>
                 </View>
                 <Text className='subscription-card__arrow'>→</Text>
                 <View className='subscription-card__party subscription-card__party--end'>
-                  <Text className='subscription-card__city'>
-                    {item.consigneeCity || '--'}
-                  </Text>
-                  <Text className='subscription-card__name'>
-                    {item.consigneeName || '--'}
-                  </Text>
+                  <Text className='subscription-card__city'>{item.consigneeCity || '--'}</Text>
+                  <Text className='subscription-card__name'>{item.consigneeName || '--'}</Text>
                 </View>
               </View>
               <View className='subscription-card__meta'>
-                <Text className='subscription-card__number'>
-                  运单 {item.waybillNumber}
-                </Text>
-                <Text className='subscription-card__time'>
-                  {item.createdAt || '--'}
-                </Text>
+                <Text className='subscription-card__number'>运单 {item.waybillNumber}</Text>
+                <Text className='subscription-card__time'>{item.createdAt || '--'}</Text>
               </View>
             </AppPressable>
             <View className='subscription-card__actions'>
-              <AppPressable
-                className='subscription-card__button subscription-card__button--quiet'
-                onPress={() => handleCancel(item)}
-              >
-                <Text className='subscription-card__button-text subscription-card__button-text--quiet'>
-                  {processingId === item.id ? '处理中' : '取消关注'}
-                </Text>
+              <AppPressable className='subscription-card__button subscription-card__button--quiet' onPress={() => handleCancel(item)}>
+                <Text className='subscription-card__button-text subscription-card__button-text--quiet'>{processingId === item.id ? '处理中' : '取消关注'}</Text>
               </AppPressable>
-              <AppPressable
-                className='subscription-card__button'
-                onPress={() => handleOpenDetail(item)}
-              >
+              <AppPressable className='subscription-card__button' onPress={() => handleOpenDetail(item)}>
                 <Text className='subscription-card__button-text'>查看详情</Text>
               </AppPressable>
             </View>
@@ -192,13 +151,8 @@ const OrderSubscriptionsPage = () => {
 
         {!items.length && !loading && (
           <View className='subscriptions-empty'>
-            <Text className='subscriptions-empty__title'>
-              {errorMessage || '暂无关注运单'}
-            </Text>
-            <AppPressable
-              className='subscriptions-empty__button'
-              onPress={loadSubscriptions}
-            >
+            <Text className='subscriptions-empty__title'>{errorMessage || '暂无关注运单'}</Text>
+            <AppPressable className='subscriptions-empty__button' onPress={loadSubscriptions}>
               <Text className='subscriptions-empty__button-text'>重新加载</Text>
             </AppPressable>
           </View>

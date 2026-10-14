@@ -55,11 +55,7 @@ function stubRouteStack(t, initialRoute) {
 }
 
 test('寄件主页在路由注册表中声明为登录必需', () => {
-  assert.equal(
-    APP_LOGIN_ROUTE_PATHS.includes(APP_ROUTES.express),
-    true,
-    '寄件主页必须受登录守卫保护'
-  )
+  assert.equal(APP_LOGIN_ROUTE_PATHS.includes(APP_ROUTES.express), true, '寄件主页必须受登录守卫保护')
 })
 
 test('未登录进入寄件页会跳登录并携带回跳地址', async t => {
@@ -69,9 +65,7 @@ test('未登录进入寄件页会跳登录并携带回跳地址', async t => {
   await flushNavigation()
   await flushNavigation()
 
-  assert.deepEqual(navigations, [
-    `/pages/login/index?redirectUrl=${encodeURIComponent(APP_ROUTES.express)}`
-  ])
+  assert.deepEqual(navigations, [`/pages/login/index?redirectUrl=${encodeURIComponent(APP_ROUTES.express)}`])
 })
 
 test('寄件页携带来源参数进入时回跳地址保留 query', async t => {
@@ -82,9 +76,7 @@ test('寄件页携带来源参数进入时回跳地址保留 query', async t => 
   await flushNavigation()
   await flushNavigation()
 
-  assert.deepEqual(navigations, [
-    `/pages/login/index?redirectUrl=${encodeURIComponent(targetUrl)}`
-  ])
+  assert.deepEqual(navigations, [`/pages/login/index?redirectUrl=${encodeURIComponent(targetUrl)}`])
 })
 
 test('已登录进入寄件页按普通导航直接打开', async t => {

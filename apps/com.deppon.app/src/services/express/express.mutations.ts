@@ -1,16 +1,7 @@
 import { createExpressDeliveryPointDraft } from './deliveryPoint.rules'
-import {
-  createExpressDeliveryAvailabilityKey,
-  createExpressDeliveryPreferenceDraft
-} from './deliveryPreference.rules'
-import {
-  normalizeExpressInsuranceDraft,
-  resetExpressInsuranceCapability
-} from './insurance.rules'
-import {
-  findExpressPickupTimeSelection,
-  getFirstExpressPickupTimeSelection
-} from './pickupTime.options'
+import { createExpressDeliveryAvailabilityKey, createExpressDeliveryPreferenceDraft } from './deliveryPreference.rules'
+import { normalizeExpressInsuranceDraft, resetExpressInsuranceCapability } from './insurance.rules'
+import { findExpressPickupTimeSelection, getFirstExpressPickupTimeSelection } from './pickupTime.options'
 import { selectExpressPickupTime } from './pickupTime.rules'
 import { normalizeExpressReturnBillDraft } from './valueAdded'
 import { resetExpressWarehouseInput } from './warehouse.rules'
@@ -43,10 +34,7 @@ function trimValue(value: string | undefined) {
  * @param clearNightCapability 是否清空夜间取件能力
  * @description 清空取件时间与驿站选择
  */
-function clearPickupSelection(
-  pickup: ExpressDraft['pickup'],
-  clearNightCapability = false
-) {
+function clearPickupSelection(pickup: ExpressDraft['pickup'], clearNightCapability = false) {
   return {
     ...pickup,
     time: '',
@@ -111,10 +99,7 @@ export function resetConsigneeDependencies(draft: ExpressDraft): ExpressDraft {
  * @param reason 报价过期提示文案
  * @description 清空选品并标记报价过期
  */
-export function markExpressQuoteStale(
-  draft: ExpressDraft,
-  reason: string
-): ExpressDraft {
+export function markExpressQuoteStale(draft: ExpressDraft, reason: string): ExpressDraft {
   return {
     ...draft,
     selectedProduct: null,
@@ -129,16 +114,10 @@ export function markExpressQuoteStale(
  * @param reason 报价过期提示文案
  * @description 更新货物信息并联动重置相关依赖
  */
-export function updateExpressGoods(
-  draft: ExpressDraft,
-  patch: Partial<ExpressDraft['goods']>,
-  reason = '货物信息变化，请重新获取价格'
-): ExpressDraft {
+export function updateExpressGoods(draft: ExpressDraft, patch: Partial<ExpressDraft['goods']>, reason = '货物信息变化，请重新获取价格'): ExpressDraft {
   const warehouseInputChanged =
-    (patch.name !== undefined && patch.name !== draft.goods.name) ||
-    (patch.weight !== undefined && patch.weight !== draft.goods.weight)
-  const insuranceInputChanged =
-    patch.name !== undefined && patch.name !== draft.goods.name
+    (patch.name !== undefined && patch.name !== draft.goods.name) || (patch.weight !== undefined && patch.weight !== draft.goods.weight)
+  const insuranceInputChanged = patch.name !== undefined && patch.name !== draft.goods.name
   const nextDraft: ExpressDraft = {
     ...draft,
     goods: {
@@ -146,21 +125,11 @@ export function updateExpressGoods(
       ...patch
     },
     pickup: clearPickupSelection(draft.pickup),
-    warehouse: warehouseInputChanged
-      ? resetExpressWarehouseInput(draft.warehouse)
-      : draft.warehouse,
-    deliveryPreference:
-      draft.deliveryPreference.type === 'SCHEDULED'
-        ? createExpressDeliveryPreferenceDraft()
-        : draft.deliveryPreference
+    warehouse: warehouseInputChanged ? resetExpressWarehouseInput(draft.warehouse) : draft.warehouse,
+    deliveryPreference: draft.deliveryPreference.type === 'SCHEDULED' ? createExpressDeliveryPreferenceDraft() : draft.deliveryPreference
   }
 
-  return markExpressQuoteStale(
-    insuranceInputChanged
-      ? resetExpressInsuranceCapability(nextDraft)
-      : nextDraft,
-    reason
-  )
+  return markExpressQuoteStale(insuranceInputChanged ? resetExpressInsuranceCapability(nextDraft) : nextDraft, reason)
 }
 
 /**
@@ -170,16 +139,10 @@ export function updateExpressGoods(
  * @param reason 报价过期提示文案
  * @description 更新服务方式并归一关联字段
  */
-export function updateExpressService(
-  draft: ExpressDraft,
-  patch: Partial<ExpressServiceOptions>,
-  reason = '服务方式变化，请重新获取价格'
-): ExpressDraft {
+export function updateExpressService(draft: ExpressDraft, patch: Partial<ExpressServiceOptions>, reason = '服务方式变化，请重新获取价格'): ExpressDraft {
   const warehouseInputChanged =
-    (patch.transportMode !== undefined &&
-      patch.transportMode !== draft.service.transportMode) ||
-    (patch.deliveryMode !== undefined &&
-      patch.deliveryMode !== draft.service.deliveryMode)
+    (patch.transportMode !== undefined && patch.transportMode !== draft.service.transportMode) ||
+    (patch.deliveryMode !== undefined && patch.deliveryMode !== draft.service.deliveryMode)
   const nextTransportMode = patch.transportMode ?? draft.service.transportMode
   const nextService = {
     ...draft.service,
@@ -197,18 +160,9 @@ export function updateExpressService(
     {
       ...draft,
       service: nextService,
-      insurance: normalizeExpressInsuranceDraft(
-        draft.insurance,
-        nextTransportMode
-      ),
-      deliveryPoint:
-        nextService.deliveryMode === 'PICKSELF'
-          ? draft.deliveryPoint
-          : createExpressDeliveryPointDraft(),
-      deliveryPreference:
-        patch.deliveryMode === 'PICKSELF'
-          ? createExpressDeliveryPreferenceDraft()
-          : draft.deliveryPreference,
+      insurance: normalizeExpressInsuranceDraft(draft.insurance, nextTransportMode),
+      deliveryPoint: nextService.deliveryMode === 'PICKSELF' ? draft.deliveryPoint : createExpressDeliveryPointDraft(),
+      deliveryPreference: patch.deliveryMode === 'PICKSELF' ? createExpressDeliveryPreferenceDraft() : draft.deliveryPreference,
       warehouse: warehouseInputChanged
         ? resetExpressWarehouseInput(draft.warehouse, {
             clearService: patch.deliveryMode === 'PICKSELF'
@@ -226,13 +180,8 @@ export function updateExpressService(
  * @param reason 报价过期提示文案
  * @description 更新取件方式与时间信息
  */
-export function updateExpressPickup(
-  draft: ExpressDraft,
-  patch: Partial<ExpressDraft['pickup']>,
-  reason = '取件方式变化，请重新获取价格'
-): ExpressDraft {
-  const modeChanged =
-    patch.dispatch !== undefined && patch.dispatch !== draft.pickup.dispatch
+export function updateExpressPickup(draft: ExpressDraft, patch: Partial<ExpressDraft['pickup']>, reason = '取件方式变化，请重新获取价格'): ExpressDraft {
+  const modeChanged = patch.dispatch !== undefined && patch.dispatch !== draft.pickup.dispatch
   const nextPickup = modeChanged
     ? {
         ...clearPickupSchedule(draft.pickup),
@@ -241,10 +190,7 @@ export function updateExpressPickup(
     : {
         ...draft.pickup,
         ...patch,
-        nightNoticeAccepted:
-          patch.type && patch.type !== draft.pickup.type
-            ? false
-            : draft.pickup.nightNoticeAccepted
+        nightNoticeAccepted: patch.type && patch.type !== draft.pickup.type ? false : draft.pickup.nightNoticeAccepted
       }
 
   return markExpressQuoteStale(
@@ -262,10 +208,7 @@ export function updateExpressPickup(
  * @param value 优惠券号
  * @description 更新并归一优惠券号
  */
-export function updateExpressCouponNumber(
-  draft: ExpressDraft,
-  value: string
-): ExpressDraft {
+export function updateExpressCouponNumber(draft: ExpressDraft, value: string): ExpressDraft {
   return markExpressQuoteStale(
     {
       ...draft,
@@ -281,10 +224,7 @@ export function updateExpressCouponNumber(
  * @param value 隐私面单开关值
  * @description 设置隐私面单开关
  */
-export function setExpressPrivacyProtection(
-  draft: ExpressDraft,
-  value: ExpressDraft['service']['privacyProtection']
-): ExpressDraft {
+export function setExpressPrivacyProtection(draft: ExpressDraft, value: ExpressDraft['service']['privacyProtection']): ExpressDraft {
   return {
     ...draft,
     service: {
@@ -300,44 +240,29 @@ export function setExpressPrivacyProtection(
  * @param product 选中的报价产品
  * @description 选择报价产品并同步服务与保价
  */
-export function selectExpressProduct(
-  draft: ExpressDraft,
-  product: ExpressProductQuote | null
-): ExpressDraft {
-  const currentProductCode =
-    draft.selectedProduct?.omsProductCode || draft.service.transportMode
+export function selectExpressProduct(draft: ExpressDraft, product: ExpressProductQuote | null): ExpressDraft {
+  const currentProductCode = draft.selectedProduct?.omsProductCode || draft.service.transportMode
   const nextProductCode = product?.omsProductCode || draft.service.transportMode
   const nextService = product
     ? {
         ...draft.service,
         transportMode: product.omsProductCode,
-        returnBill: normalizeExpressReturnBillDraft(
-          draft.service.returnBill,
-          product.omsProductCode
-        )
+        returnBill: normalizeExpressReturnBillDraft(draft.service.returnBill, product.omsProductCode)
       }
     : {
         ...draft.service,
-        returnBill: normalizeExpressReturnBillDraft(
-          draft.service.returnBill,
-          nextProductCode
-        )
+        returnBill: normalizeExpressReturnBillDraft(draft.service.returnBill, nextProductCode)
       }
   const nextDraft: ExpressDraft = {
     ...draft,
     selectedProduct: product,
     service: nextService,
     insurance: normalizeExpressInsuranceDraft(draft.insurance, nextProductCode),
-    warehouse:
-      currentProductCode === nextProductCode
-        ? draft.warehouse
-        : resetExpressWarehouseInput(draft.warehouse),
+    warehouse: currentProductCode === nextProductCode ? draft.warehouse : resetExpressWarehouseInput(draft.warehouse),
     quoteStaleReason: ''
   }
   const keepDeliveryPreference =
-    draft.deliveryPreference.type !== 'SCHEDULED' ||
-    draft.deliveryPreference.availabilityKey ===
-      createExpressDeliveryAvailabilityKey(nextDraft)
+    draft.deliveryPreference.type !== 'SCHEDULED' || draft.deliveryPreference.availabilityKey === createExpressDeliveryAvailabilityKey(nextDraft)
 
   return keepDeliveryPreference
     ? nextDraft
@@ -353,13 +278,8 @@ export function selectExpressProduct(
  * @param response 取件时间查询响应
  * @description 应用取件时间响应并选中时段
  */
-export function applyExpressPickupTime(
-  draft: ExpressDraft,
-  response: ExpressPickupTimeResponse
-): ExpressDraft {
-  const selection =
-    findExpressPickupTimeSelection(response, draft.pickup) ??
-    getFirstExpressPickupTimeSelection(response)
+export function applyExpressPickupTime(draft: ExpressDraft, response: ExpressPickupTimeResponse): ExpressDraft {
+  const selection = findExpressPickupTimeSelection(response, draft.pickup) ?? getFirstExpressPickupTimeSelection(response)
   const responseDraft: ExpressDraft = {
     ...draft,
     pickup: {
@@ -410,17 +330,11 @@ export function applyExpressPickupTime(
  * @param context 扫码上下文
  * @description 归一扫码上下文，无效时返回空
  */
-function normalizeExpressScanContext(
-  context: ExpressScanContext
-): ExpressScanContext | null {
+function normalizeExpressScanContext(context: ExpressScanContext): ExpressScanContext | null {
   const value = trimValue(context.value)
   const sceneId = trimValue(context.sceneId)
 
-  if (
-    !value ||
-    value.toLowerCase() === 'null' ||
-    value.toLowerCase() === 'undefined'
-  ) {
+  if (!value || value.toLowerCase() === 'null' || value.toLowerCase() === 'undefined') {
     return null
   }
 
@@ -438,10 +352,7 @@ function normalizeExpressScanContext(
  * @param context 扫码上下文
  * @description 应用扫码信息并重置相关依赖
  */
-export function applyExpressScanContext(
-  draft: ExpressDraft,
-  context: ExpressScanContext
-): ExpressDraft {
+export function applyExpressScanContext(draft: ExpressDraft, context: ExpressScanContext): ExpressDraft {
   const scanContext = normalizeExpressScanContext(context)
 
   if (!scanContext) {
@@ -494,19 +405,13 @@ export function clearExpressScanContext(draft: ExpressDraft): ExpressDraft {
  * @param contact 联系人信息
  * @description 设置联系人并重置对应依赖
  */
-export function setExpressContact(
-  draft: ExpressDraft,
-  target: ExpressContactTarget,
-  contact: ExpressContact
-): ExpressDraft {
+export function setExpressContact(draft: ExpressDraft, target: ExpressContactTarget, contact: ExpressContact): ExpressDraft {
   const nextDraft = {
     ...draft,
     [target]: contact
   }
 
-  return target === 'sender'
-    ? resetSenderDependencies(nextDraft)
-    : resetConsigneeDependencies(nextDraft)
+  return target === 'sender' ? resetSenderDependencies(nextDraft) : resetConsigneeDependencies(nextDraft)
 }
 
 /**

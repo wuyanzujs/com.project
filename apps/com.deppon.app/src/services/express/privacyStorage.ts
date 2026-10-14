@@ -10,16 +10,13 @@ export const expressPrivacyStorage = {
   },
 
   confirm() {
-    return dpCache.set<ExpressPrivacyConfirmCache>(
-      CACHE_KEYS.expressPrivacyConfirm,
-      {
-        data: {
-          confirmedAt: Date.now()
-        },
-        expire: {
-          type: DPCacheExpireType.INFINITY
-        }
+    return dpCache.set<ExpressPrivacyConfirmCache>(CACHE_KEYS.expressPrivacyConfirm, {
+      data: {
+        confirmedAt: Date.now()
+      },
+      expire: {
+        type: DPCacheExpireType.INFINITY
       }
-    )
+    })
   }
 }

@@ -46,9 +46,7 @@ function normalizeText(value?: string | null) {
  * @param value 时段类型
  * @description 判断是否为可选的时段类型
  */
-function isAvailablePickupType(
-  value: OrderEditPickupOpeningType
-): value is OrderEditPickupTimeType {
+function isAvailablePickupType(value: OrderEditPickupOpeningType): value is OrderEditPickupTimeType {
   return value === 'NORMAL' || value === 'NIGHT'
 }
 
@@ -98,10 +96,7 @@ export function normalizeOrderEditPickupTimeResponse(
   response: OrderEditPickupTimeResponse,
   nightCapability?: OrderEditPickupNightCapability
 ): OrderEditPickupTimeResponse {
-  const openingByDate = new Map<
-    string,
-    Map<string, OrderEditPickupOpeningItem>
-  >()
+  const openingByDate = new Map<string, Map<string, OrderEditPickupOpeningItem>>()
 
   appendOpeningList(openingByDate, response.openingList, 'NORMAL')
   appendOpeningList(openingByDate, response.nightOpeningList, 'NIGHT')
@@ -110,25 +105,15 @@ export function normalizeOrderEditPickupTimeResponse(
   const openingList = Array.from(openingByDate.entries())
     .sort(([left], [right]) => left.localeCompare(right))
     .map(([date, timeMap]) => {
-      const dateList = Array.from(timeMap.values()).sort((left, right) =>
-        left.time.localeCompare(right.time)
-      )
-      const hasNightQuickPickup = dateList.some(
-        item => item.type === 'NIGHT' && item.text.includes('小时')
-      )
+      const dateList = Array.from(timeMap.values()).sort((left, right) => left.time.localeCompare(right.time))
+      const hasNightQuickPickup = dateList.some(item => item.type === 'NIGHT' && item.text.includes('小时'))
 
       return {
         date,
-        dateList: hasNightQuickPickup
-          ? dateList.filter(
-              item => item.type !== 'NORMAL' || !item.text.includes('小时')
-            )
-          : dateList
+        dateList: hasNightQuickPickup ? dateList.filter(item => item.type !== 'NORMAL' || !item.text.includes('小时')) : dateList
       }
     })
-    .filter(opening =>
-      opening.dateList.some(item => isAvailablePickupType(item.type))
-    )
+    .filter(opening => opening.dateList.some(item => isAvailablePickupType(item.type)))
 
   return {
     ...response,
@@ -154,11 +139,7 @@ function parseDate(value: string) {
   const day = Number(match[3])
   const date = new Date(Date.UTC(year, month - 1, day))
 
-  return date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day
-    ? date
-    : null
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day ? date : null
 }
 
 /**
@@ -166,17 +147,13 @@ function parseDate(value: string) {
  * @param response 上门时间响应
  * @description 生成上门日期与时段选项
  */
-export function createOrderEditPickupDateOptions(
-  response?: OrderEditPickupTimeResponse | null
-): OrderEditPickupDateOption[] {
+export function createOrderEditPickupDateOptions(response?: OrderEditPickupTimeResponse | null): OrderEditPickupDateOption[] {
   return (response?.openingList ?? []).map(opening => {
     const date = parseDate(opening.date)
 
     return {
       value: opening.date,
-      label: date
-        ? `${date.getUTCMonth() + 1}月${date.getUTCDate()}日`
-        : opening.date,
+      label: date ? `${date.getUTCMonth() + 1}月${date.getUTCDate()}日` : opening.date,
       weekday: date ? WEEKDAY_LABELS[date.getUTCDay()] : '',
       timeOptions: opening.dateList.map(item => ({
         date: opening.date,
@@ -200,9 +177,7 @@ export function createOrderEditPickupDateOptions(
 export function createOrderEditPickupDateTime(date: string, time: string) {
   const normalizedTime = normalizeText(time)
 
-  return /^\d{4}-\d{2}-\d{2}/.test(normalizedTime)
-    ? normalizedTime
-    : `${normalizeText(date)} ${normalizedTime}`.trim()
+  return /^\d{4}-\d{2}-\d{2}/.test(normalizedTime) ? normalizedTime : `${normalizeText(date)} ${normalizedTime}`.trim()
 }
 
 /**
@@ -210,9 +185,7 @@ export function createOrderEditPickupDateTime(date: string, time: string) {
  * @param response 上门时间响应
  * @description 取首个可用的上门时段
  */
-export function getFirstOrderEditPickupTimeSelection(
-  response: OrderEditPickupTimeResponse
-): OrderEditPickupTimeSelection | null {
+export function getFirstOrderEditPickupTimeSelection(response: OrderEditPickupTimeResponse): OrderEditPickupTimeSelection | null {
   for (const opening of response.openingList ?? []) {
     const item = opening.dateList.find(time => time.type === 'NORMAL')
 
@@ -237,10 +210,7 @@ export function findOrderEditPickupTimeSelection(
   for (const opening of response.openingList ?? []) {
     const item = opening.dateList.find(
       candidate =>
-        isAvailablePickupType(candidate.type) &&
-        candidate.type === pickup.type &&
-        createOrderEditPickupDateTime(opening.date, candidate.time) ===
-          pickup.time
+        isAvailablePickupType(candidate.type) && candidate.type === pickup.type && createOrderEditPickupDateTime(opening.date, candidate.time) === pickup.time
     )
 
     if (item) {
@@ -258,21 +228,14 @@ export function findOrderEditPickupTimeSelection(
  * @param time 时段
  * @description 取指定日期时段的选中项
  */
-export function getOrderEditPickupTimeSelection(
-  response: OrderEditPickupTimeResponse | null,
-  date: string,
-  time: string
-): OrderEditPickupTimeSelection | null {
+export function getOrderEditPickupTimeSelection(response: OrderEditPickupTimeResponse | null, date: string, time: string): OrderEditPickupTimeSelection | null {
   const opening = response?.openingList?.find(item => item.date === date)
 
   if (!opening) {
     return null
   }
 
-  const item = opening.dateList.find(
-    candidate =>
-      candidate.time === time && isAvailablePickupType(candidate.type)
-  )
+  const item = opening.dateList.find(candidate => candidate.time === time && isAvailablePickupType(candidate.type))
 
   return item ? { date, ...item } : null
 }

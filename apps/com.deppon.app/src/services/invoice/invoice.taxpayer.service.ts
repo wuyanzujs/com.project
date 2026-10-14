@@ -1,12 +1,7 @@
 import type { DepponResponse } from '@/request/deppon'
 
 import { invoiceApi } from './invoice.api'
-import {
-  createFormFromTaxpayer,
-  createTaxpayerPayload,
-  normalizeTaxpayer,
-  validateTaxpayer
-} from './invoice.taxpayer'
+import { createFormFromTaxpayer, createTaxpayerPayload, normalizeTaxpayer, validateTaxpayer } from './invoice.taxpayer'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type {
@@ -26,11 +21,7 @@ export const invoiceTaxpayerService = {
   validateTaxpayer,
 
   async queryTaxpayers(): Promise<DepponResponse<InvoiceTaxpayerView[]>> {
-    const response = await invoiceApi.request<InvoiceTaxpayerRaw[]>(
-      'queryTaxpayerInfo',
-      undefined,
-      false
-    )
+    const response = await invoiceApi.request<InvoiceTaxpayerRaw[]>('queryTaxpayerInfo', undefined, false)
 
     if (!response.status || !response.result) {
       return createFailure(response.message || '暂未获取到发票抬头')
@@ -42,10 +33,7 @@ export const invoiceTaxpayerService = {
     }
   },
 
-  async queryTaxpayerMatches(
-    taxName: string,
-    customerType: InvoiceTaxpayerType
-  ): Promise<DepponResponse<InvoiceTaxpayerMatch[]>> {
+  async queryTaxpayerMatches(taxName: string, customerType: InvoiceTaxpayerType): Promise<DepponResponse<InvoiceTaxpayerMatch[]>> {
     const keyword = taxName.trim()
 
     if (!keyword || keyword.length <= 3 || customerType !== '1') {
@@ -56,10 +44,7 @@ export const invoiceTaxpayerService = {
       }
     }
 
-    const response = await invoiceApi.request<
-      InvoiceTaxpayerMatch[],
-      InvoiceTaxpayerMatchRequest
-    >(
+    const response = await invoiceApi.request<InvoiceTaxpayerMatch[], InvoiceTaxpayerMatchRequest>(
       'queryCustomerTaxName',
       {
         taxName: keyword,
@@ -76,9 +61,7 @@ export const invoiceTaxpayerService = {
     return response
   },
 
-  async saveTaxpayer(
-    form: InvoiceTaxpayerForm
-  ): Promise<DepponResponse<unknown>> {
+  async saveTaxpayer(form: InvoiceTaxpayerForm): Promise<DepponResponse<unknown>> {
     const message = validateTaxpayer(form)
 
     if (message) {
@@ -86,10 +69,7 @@ export const invoiceTaxpayerService = {
     }
 
     const path = form.id ? 'alterTaxpayerInfo' : 'addTaxpayerInfo'
-    const response = await invoiceApi.request<
-      unknown,
-      InvoiceTaxpayerSaveRequest
-    >(path, createTaxpayerPayload(form))
+    const response = await invoiceApi.request<unknown, InvoiceTaxpayerSaveRequest>(path, createTaxpayerPayload(form))
 
     if (!response.status) {
       return createFailure(response.message || '保存失败，请稍后再试')
@@ -99,10 +79,7 @@ export const invoiceTaxpayerService = {
   },
 
   async deleteTaxpayer(id: number): Promise<DepponResponse<unknown>> {
-    const response = await invoiceApi.request<
-      unknown,
-      InvoiceTaxpayerDeleteRequest
-    >('deleteTaxpayerInfo', { id: [id] })
+    const response = await invoiceApi.request<unknown, InvoiceTaxpayerDeleteRequest>('deleteTaxpayerInfo', { id: [id] })
 
     if (!response.status) {
       return createFailure(response.message || '删除失败，请稍后再试')

@@ -8,10 +8,7 @@ const { authService } = require('@/services/auth/auth.service')
 const { clearAppSession, getCurrentUser } = require('@/services/auth/session')
 const { expressDraftStorage } = require('@/services/express/draftStorage')
 const { expressService } = require('@/services/express/express.service')
-const {
-  applyExpressInsuranceCapability,
-  createExpressInsuranceCapability
-} = require('@/services/express/insurance.rules')
+const { applyExpressInsuranceCapability, createExpressInsuranceCapability } = require('@/services/express/insurance.rules')
 const { orderService } = require('@/services/order/order.service')
 
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
@@ -52,17 +49,11 @@ function createFlow(t, interceptAllowed = true) {
   ])
   t.mock.method(Taro, 'request', async request => {
     const pathname = new URL(request.url).pathname
-    assert.equal(
-      responses.has(pathname),
-      true,
-      'Unexpected endpoint: ' + pathname
-    )
+    assert.equal(responses.has(pathname), true, 'Unexpected endpoint: ' + pathname)
     calls.push({ pathname, request })
     return {
       statusCode: 200,
-      header: pathname.endsWith('/login')
-        ? { 'set-cookie': 'ECO_TOKEN=flow-token; Path=/; HttpOnly' }
-        : {},
+      header: pathname.endsWith('/login') ? { 'set-cookie': 'ECO_TOKEN=flow-token; Path=/; HttpOnly' } : {},
       data: { status: true, result: responses.get(pathname) }
     }
   })
@@ -71,11 +62,7 @@ function createFlow(t, interceptAllowed = true) {
 
 function createPreparedDraft() {
   const draft = createValidExpressDraft()
-  return applyExpressInsuranceCapability(
-    draft,
-    createExpressInsuranceCapability(draft, []),
-    750000
-  )
+  return applyExpressInsuranceCapability(draft, createExpressInsuranceCapability(draft, []), 750000)
 }
 
 test('login, persist draft, submit, query orders and logout share a consistent session', async t => {
@@ -87,9 +74,7 @@ test('login, persist draft, submit, query orders and logout share a consistent s
 
   const draft = createPreparedDraft()
   assert.equal(await expressDraftStorage.save(draft), true)
-  const submitted = await expressService.submitDraft(
-    expressDraftStorage.restore()
-  )
+  const submitted = await expressService.submitDraft(expressDraftStorage.restore())
   assert.equal(submitted.status, true, submitted.message)
   assert.deepEqual(submitted.result.orderNumbers, ['ORDER_FLOW'])
   assert.equal(await expressDraftStorage.clear(), true)
@@ -111,15 +96,10 @@ test('login, persist draft, submit, query orders and logout share a consistent s
 
 test('a rejected submission preserves the committed draft and never creates an order', async t => {
   const { calls } = createFlow(t, false)
-  assert.equal(
-    (await authService.loginWithSms('13800138000', '123456')).status,
-    true
-  )
+  assert.equal((await authService.loginWithSms('13800138000', '123456')).status, true)
   const draft = createPreparedDraft()
   await expressDraftStorage.save(draft)
-  const response = await expressService.submitDraft(
-    expressDraftStorage.restore()
-  )
+  const response = await expressService.submitDraft(expressDraftStorage.restore())
 
   assert.equal(response.status, false)
   assert.equal(

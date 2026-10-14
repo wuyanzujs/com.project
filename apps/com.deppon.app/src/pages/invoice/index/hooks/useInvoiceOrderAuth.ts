@@ -9,11 +9,7 @@ interface UseInvoiceOrderAuthParams {
   runLatestRequest: LatestRequestRunner
   invalidateLatestRequest: () => void
   showPendingToast: (title: string) => void
-  applyOrderSearchResponse: (
-    response: import('@/request/deppon').DepponResponse<
-      import('@/services/invoice').InvoiceOrderSearchView
-    >
-  ) => boolean
+  applyOrderSearchResponse: (response: import('@/request/deppon').DepponResponse<import('@/services/invoice').InvoiceOrderSearchView>) => boolean
 }
 
 interface UseInvoiceOrderAuthResult {
@@ -37,9 +33,7 @@ export function useInvoiceOrderAuth({
   showPendingToast,
   applyOrderSearchResponse
 }: UseInvoiceOrderAuthParams): UseInvoiceOrderAuthResult {
-  const [orderAuth, setOrderAuth] = useState<InvoiceOrderAuthChallenge | null>(
-    null
-  )
+  const [orderAuth, setOrderAuth] = useState<InvoiceOrderAuthChallenge | null>(null)
   const [orderAuthValue, setOrderAuthValue] = useState('')
   const [orderAuthMessage, setOrderAuthMessage] = useState('')
   const [orderAuthCountdown, setOrderAuthCountdown] = useState(0)
@@ -78,12 +72,7 @@ export function useInvoiceOrderAuth({
   }, [invalidateLatestRequest])
 
   const handleSendOrderAuthCode = useCallback(async () => {
-    if (
-      !orderAuth ||
-      orderAuth.authType !== '04' ||
-      orderAuthCountdown > 0 ||
-      orderAuthSending
-    ) {
+    if (!orderAuth || orderAuth.authType !== '04' || orderAuthCountdown > 0 || orderAuthSending) {
       return
     }
 
@@ -91,9 +80,7 @@ export function useInvoiceOrderAuth({
     setOrderAuthMessage('')
 
     try {
-      const response = await invoiceOrderSearchService.sendAuthCode(
-        orderAuth.waybillNumber
-      )
+      const response = await invoiceOrderSearchService.sendAuthCode(orderAuth.waybillNumber)
 
       if (!response.status) {
         setOrderAuthMessage(response.message || '发送失败，请稍后再试')
@@ -116,10 +103,7 @@ export function useInvoiceOrderAuth({
     const auth = orderAuth
     const requestId = ++orderAuthRequestId.current
     const normalizedValue = orderAuthValue.trim()
-    const validationMessage = invoiceOrderAuth.validateValue(
-      auth,
-      normalizedValue
-    )
+    const validationMessage = invoiceOrderAuth.validateValue(auth, normalizedValue)
 
     if (validationMessage) {
       showPendingToast(validationMessage)
@@ -134,11 +118,7 @@ export function useInvoiceOrderAuth({
         `order-auth:${auth.waybillNumber}`,
         async () => {
           if (auth.authType === '04') {
-            const verifyResponse =
-              await invoiceOrderSearchService.verifyAuthCode(
-                auth.waybillNumber,
-                normalizedValue
-              )
+            const verifyResponse = await invoiceOrderSearchService.verifyAuthCode(auth.waybillNumber, normalizedValue)
 
             if (!verifyResponse.status) {
               return {
@@ -149,17 +129,12 @@ export function useInvoiceOrderAuth({
 
             return {
               kind: 'result' as const,
-              response: await invoiceOrderSearchService.queryByWaybill(
-                auth.waybillNumber
-              ),
+              response: await invoiceOrderSearchService.queryByWaybill(auth.waybillNumber),
               shouldCache: false
             }
           }
 
-          const response = await invoiceOrderSearchService.verifyPhone(
-            auth.waybillNumber,
-            normalizedValue
-          )
+          const response = await invoiceOrderSearchService.verifyPhone(auth.waybillNumber, normalizedValue)
 
           return response.status
             ? { kind: 'result' as const, response, shouldCache: true }
@@ -176,10 +151,7 @@ export function useInvoiceOrderAuth({
 
           if (applyOrderSearchResponse(result.response)) {
             if (result.shouldCache) {
-              await invoiceOrderAuth.rememberValue(
-                auth.waybillNumber,
-                normalizedValue
-              )
+              await invoiceOrderAuth.rememberValue(auth.waybillNumber, normalizedValue)
             }
             showPendingToast('验证通过')
           }
@@ -191,14 +163,7 @@ export function useInvoiceOrderAuth({
         setOrderAuthSubmitting(false)
       }
     }
-  }, [
-    applyOrderSearchResponse,
-    orderAuth,
-    orderAuthSubmitting,
-    orderAuthValue,
-    runLatestRequest,
-    showPendingToast
-  ])
+  }, [applyOrderSearchResponse, orderAuth, orderAuthSubmitting, orderAuthValue, runLatestRequest, showPendingToast])
 
   return {
     orderAuth,

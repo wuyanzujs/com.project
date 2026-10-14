@@ -45,12 +45,7 @@ const PAYMENT_OPTIONS: ExpressPaymentSheetOption[] = [
   }
 ]
 
-export function ExpressPaymentSheet({
-  onClose,
-  onSelect,
-  value,
-  visible
-}: ExpressPaymentSheetProps) {
+export function ExpressPaymentSheet({ onClose, onSelect, value, visible }: ExpressPaymentSheetProps) {
   const [draftValue, setDraftValue] = useState<ExpressPaymentType>(value)
   const [prevVisible, setPrevVisible] = useState(false)
 
@@ -78,12 +73,7 @@ export function ExpressPaymentSheet({
       titleSize={36}
       visible={visible}
       footer={
-        <AppPressable
-          accessibilityLabel='确定付款方式'
-          block
-          className='express-payment-sheet__confirm'
-          onPress={handleConfirm}
-        >
+        <AppPressable accessibilityLabel='确定付款方式' block className='express-payment-sheet__confirm' onPress={handleConfirm}>
           <Text className='express-payment-sheet__confirm-text'>确定</Text>
         </AppPressable>
       }
@@ -97,29 +87,21 @@ export function ExpressPaymentSheet({
             <AppPressable
               accessibilityLabel={`选择${option.label}`}
               block
-              className={
-                [
-                  selected
-                    ? 'express-payment-sheet__option express-payment-sheet__option--selected'
-                    : 'express-payment-sheet__option',
-                  index > 0 ? 'express-payment-sheet__option--stacked' : ''
-                ]
-                  .filter(Boolean)
-                  .join(' ')
-              }
+              className={[
+                selected ? 'express-payment-sheet__option express-payment-sheet__option--selected' : 'express-payment-sheet__option',
+                index > 0 ? 'express-payment-sheet__option--stacked' : ''
+              ]
+                .filter(Boolean)
+                .join(' ')}
               key={option.value}
               onPress={() => setDraftValue(option.value)}
             >
               <View className='express-payment-sheet__option-main'>
                 <View className='express-payment-sheet__option-head'>
-                  <Text className='express-payment-sheet__option-label'>
-                    {option.label}
-                  </Text>
+                  <Text className='express-payment-sheet__option-label'>{option.label}</Text>
                   {option.tag ? (
                     <View className='express-payment-sheet__option-tag'>
-                      <Text className='express-payment-sheet__option-tag-text'>
-                        {option.tag}
-                      </Text>
+                      <Text className='express-payment-sheet__option-tag-text'>{option.tag}</Text>
                     </View>
                   ) : null}
                 </View>
@@ -134,20 +116,8 @@ export function ExpressPaymentSheet({
                 </Text>
               </View>
 
-              <View
-                className={
-                  selected
-                    ? 'express-payment-sheet__radio express-payment-sheet__radio--active'
-                    : 'express-payment-sheet__radio'
-                }
-              >
-                {selected ? (
-                  <AppIcon
-                    color={APP_STYLE_COLORS.text.inverse}
-                    name='check'
-                    size={26}
-                  />
-                ) : null}
+              <View className={selected ? 'express-payment-sheet__radio express-payment-sheet__radio--active' : 'express-payment-sheet__radio'}>
+                {selected ? <AppIcon color={APP_STYLE_COLORS.text.inverse} name='check' size={26} /> : null}
               </View>
             </AppPressable>
           )

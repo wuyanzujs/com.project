@@ -2,27 +2,21 @@ import type { DepponResponse } from '@/request/deppon'
 
 import type { Contact, ContactAddressCheckRequest } from './types'
 
-export type ContactAddressIntegrityKind =
-  'pass' | 'review' | 'unavailable' | 'blocked'
+export type ContactAddressIntegrityKind = 'pass' | 'review' | 'unavailable' | 'blocked'
 
 export interface ContactAddressIntegrityOutcome {
   kind: ContactAddressIntegrityKind
   message: string
 }
 
-type ContactAddressParts = Pick<
-  Contact,
-  'province' | 'city' | 'county' | 'address'
->
+type ContactAddressParts = Pick<Contact, 'province' | 'city' | 'county' | 'address'>
 
 /**
  *
  * @param contact 地址字段
  * @description 组装地址完整性校验请求参数
  */
-export function createContactAddressCheckRequest(
-  contact: ContactAddressParts
-): ContactAddressCheckRequest {
+export function createContactAddressCheckRequest(contact: ContactAddressParts): ContactAddressCheckRequest {
   return {
     province: contact.province.trim(),
     city: contact.city.trim(),
@@ -37,10 +31,7 @@ export function createContactAddressCheckRequest(
  * @description 归一地址完整性校验结果
  */
 export function resolveContactAddressIntegrity(
-  response: Pick<
-    DepponResponse<unknown>,
-    'status' | 'message' | 'transportFailure' | 'authExpired'
-  >
+  response: Pick<DepponResponse<unknown>, 'status' | 'message' | 'transportFailure' | 'authExpired'>
 ): ContactAddressIntegrityOutcome {
   const message = response.message?.trim() || ''
 

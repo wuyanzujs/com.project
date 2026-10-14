@@ -18,10 +18,7 @@ const {
 } = require('@/services/batch')
 const { expressApi } = require('@/services/express/express.api')
 
-const {
-  createBatchContact,
-  createValidBatchDraft
-} = require('../fixtures/batch.cjs')
+const { createBatchContact, createValidBatchDraft } = require('../fixtures/batch.cjs')
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
 
 const cases = [
@@ -100,9 +97,7 @@ const cases = [
     name: 'batch entry view exposes guarded App, copy and pending capabilities',
     run() {
       const view = batchService.getEntryView()
-      const actionStatuses = Object.fromEntries(
-        view.actions.map(item => [item.key, item.status])
-      )
+      const actionStatuses = Object.fromEntries(view.actions.map(item => [item.key, item.status]))
 
       assert.equal(view.maxConsigneeCount, BATCH_MAX_CONSIGNEE_COUNT)
       assert.equal(actionStatuses.singleExpress, 'ready')
@@ -121,21 +116,12 @@ const cases = [
         consigneeIndex: -1,
         message: ''
       })
-      assert.equal(
-        validateBatchDraft(createValidBatchDraft({ sender: null })).message,
-        '请选择发货人'
-      )
-      assert.equal(
-        validateBatchDraft(createValidBatchDraft({ consignees: [] })).message,
-        '请至少添加 1 个收货人'
-      )
+      assert.equal(validateBatchDraft(createValidBatchDraft({ sender: null })).message, '请选择发货人')
+      assert.equal(validateBatchDraft(createValidBatchDraft({ consignees: [] })).message, '请至少添加 1 个收货人')
       assert.equal(
         validateBatchDraft(
           createValidBatchDraft({
-            consignees: Array.from(
-              { length: BATCH_MAX_CONSIGNEE_COUNT + 1 },
-              () => createValidBatchDraft().consignees[0]
-            )
+            consignees: Array.from({ length: BATCH_MAX_CONSIGNEE_COUNT + 1 }, () => createValidBatchDraft().consignees[0])
           })
         ).message,
         `最多只能添加 ${BATCH_MAX_CONSIGNEE_COUNT} 个收货人`
@@ -153,9 +139,7 @@ const cases = [
       assert.equal(
         validateBatchDraft(
           createValidBatchDraft({
-            consignees: [
-              createBatchConsigneeDraft(createBatchContact(), '文件')
-            ]
+            consignees: [createBatchConsigneeDraft(createBatchContact(), '文件')]
           })
         ).step,
         'address'
@@ -195,17 +179,10 @@ const cases = [
     name: 'batch address recognition parses local text and reports invalid lines',
     run() {
       const result = batchService.recognizeAddressText(
-        [
-          '李四 13900139000 广东省 深圳市 南山区 科技园科苑路200号 文件',
-          '王五 123 广东省 广州市 天河区 体育西路1号 配件'
-        ].join('\n')
+        ['李四 13900139000 广东省 深圳市 南山区 科技园科苑路200号 文件', '王五 123 广东省 广州市 天河区 体育西路1号 配件'].join('\n')
       )
       const overflow = batchService.recognizeAddressText(
-        Array.from(
-          { length: BATCH_MAX_CONSIGNEE_COUNT + 2 },
-          (_, index) =>
-            `客户${index} 13900139000 广东省 深圳市 南山区 科技园${index}号 文件`
-        ).join('\n')
+        Array.from({ length: BATCH_MAX_CONSIGNEE_COUNT + 2 }, (_, index) => `客户${index} 13900139000 广东省 深圳市 南山区 科技园${index}号 文件`).join('\n')
       )
 
       assert.equal(result.totalLines, 2)
@@ -290,11 +267,7 @@ const cases = [
       })
 
       assert.equal(request.batch, true)
-      assert.deepEqual(request.contactIdList, [
-        'SENDER_001',
-        'CONSIGNEE_001',
-        'CONSIGNEE_002'
-      ])
+      assert.deepEqual(request.contactIdList, ['SENDER_001', 'CONSIGNEE_001', 'CONSIGNEE_002'])
       assert.equal(request.acceptDept, 'DEPT_001')
       assert.equal(request.receive.length, 2)
       assert.equal(request.receive[0].goodsName, '文件')
@@ -302,10 +275,7 @@ const cases = [
       assert.equal(request.receive[1].transportMode, 'PACKAGE')
       assert.equal(request.receive[1].insuredAmount, 500)
       assert.equal(request.receive[1].waybillNumber, 'DPK0002')
-      assert.equal(
-        request.receive[0].beginAcceptTime,
-        request.receive[1].beginAcceptTime
-      )
+      assert.equal(request.receive[0].beginAcceptTime, request.receive[1].beginAcceptTime)
     }
   },
   {
@@ -387,10 +357,7 @@ const cases = [
 
         assert.equal(response.status, true)
         assert.equal(response.result.length, 2)
-        assert.deepEqual(requestedReceivers, [
-          '科技园科苑路200号',
-          '体育西路1号'
-        ])
+        assert.deepEqual(requestedReceivers, ['科技园科苑路200号', '体育西路1号'])
         assert.equal(response.result[1].productCode, 'PACKAGE')
         assert.equal(response.result[1].estimatedFee, 20)
 

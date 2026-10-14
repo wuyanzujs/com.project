@@ -52,29 +52,18 @@ const cases = [
         }).address,
         '明珠路100号'
       )
-      assert.deepEqual(
-        parseAddressHint('上海市,上海市,青浦区,null,明珠路100号'),
-        {
-          province: '上海市',
-          city: '上海市',
-          county: '青浦区',
-          town: '',
-          address: '明珠路100号',
-          raw: '上海市,上海市,青浦区,null,明珠路100号'
-        }
-      )
-      const hint = parseAddressHint(
-        '上海市,上海市,青浦区,徐泾镇,徐泾镇明珠路100号'
-      )
+      assert.deepEqual(parseAddressHint('上海市,上海市,青浦区,null,明珠路100号'), {
+        province: '上海市',
+        city: '上海市',
+        county: '青浦区',
+        town: '',
+        address: '明珠路100号',
+        raw: '上海市,上海市,青浦区,null,明珠路100号'
+      })
+      const hint = parseAddressHint('上海市,上海市,青浦区,徐泾镇,徐泾镇明珠路100号')
 
-      assert.equal(
-        getAddressHintLabel(hint),
-        '上海市上海市青浦区徐泾镇明珠路100号'
-      )
-      assert.equal(
-        applyAddressHintToContact(contact, hint).address,
-        '明珠路100号'
-      )
+      assert.equal(getAddressHintLabel(hint), '上海市上海市青浦区徐泾镇明珠路100号')
+      assert.equal(applyAddressHintToContact(contact, hint).address, '明珠路100号')
     }
   },
   {
@@ -120,13 +109,10 @@ const cases = [
         }),
         { kind: 'blocked', message: '登录状态已失效，请重新登录' }
       )
-      assert.deepEqual(
-        resolveContactAddressIntegrity({ status: false, message: '' }),
-        {
-          kind: 'review',
-          message: '地址可能不完整，请确认是否继续使用'
-        }
-      )
+      assert.deepEqual(resolveContactAddressIntegrity({ status: false, message: '' }), {
+        kind: 'review',
+        message: '地址可能不完整，请确认是否继续使用'
+      })
     }
   },
   {

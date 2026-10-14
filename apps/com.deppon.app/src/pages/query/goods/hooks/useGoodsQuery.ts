@@ -1,17 +1,8 @@
 import { useCallback, useState } from 'react'
 
-import {
-  createExpressDraft,
-  expressDraftBridge,
-  expressDraftStorage,
-  markExpressQuoteStale
-} from '@/services/express'
+import { createExpressDraft, expressDraftBridge, expressDraftStorage, markExpressQuoteStale } from '@/services/express'
 import { goodsQueryService } from '@/services/goods'
-import type {
-  GoodsCheckResult,
-  GoodsHistoryItem,
-  GoodsSuggestionView
-} from '@/services/goods'
+import type { GoodsCheckResult, GoodsHistoryItem, GoodsSuggestionView } from '@/services/goods'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
@@ -34,14 +25,10 @@ interface UseGoodsQueryResult {
   handleCarryToExpress: () => void
 }
 
-export function useGoodsQuery(
-  showToast: (title: string) => void
-): UseGoodsQueryResult {
+export function useGoodsQuery(showToast: (title: string) => void): UseGoodsQueryResult {
   const [keyword, setKeyword] = useState('')
   const [suggestions, setSuggestions] = useState<GoodsSuggestionView[]>([])
-  const [history, setHistory] = useState<GoodsHistoryItem[]>(() =>
-    goodsQueryService.getHistory()
-  )
+  const [history, setHistory] = useState<GoodsHistoryItem[]>(() => goodsQueryService.getHistory())
   const [result, setResult] = useState<GoodsCheckResult | null>(null)
   const [message, setMessage] = useState('')
   const [searching, setSearching] = useState(false)

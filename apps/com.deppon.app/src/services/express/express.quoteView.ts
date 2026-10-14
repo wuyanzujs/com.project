@@ -66,10 +66,7 @@ export function getExpressQuoteKey(product: ExpressProductQuote) {
  * @param suffix 金额后缀文案
  * @description 生成报价价格展示文本
  */
-export function getExpressQuotePriceText(
-  product: ExpressProductQuote | null | undefined,
-  suffix = ''
-) {
+export function getExpressQuotePriceText(product: ExpressProductQuote | null | undefined, suffix = '') {
   const amount = getQuoteAmount(product)
 
   if (amount === null) {
@@ -88,11 +85,7 @@ export function getExpressQuoteTimeProduct(product: ExpressProductQuote) {
   const first = product.timeProducts?.[0]
 
   return {
-    name:
-      first?.timeProductsName ||
-      product.productName ||
-      product.omsProductCode ||
-      '德邦快递',
+    name: first?.timeProductsName || product.productName || product.omsProductCode || '德邦快递',
     code: first?.timeProductsCode || product.omsProductCode
   }
 }
@@ -103,10 +96,7 @@ export function getExpressQuoteTimeProduct(product: ExpressProductQuote) {
  * @description 取运费口径的明细金额
  */
 export function getExpressQuoteFreight(product: ExpressProductQuote) {
-  const freight = product.detail?.find(
-    item =>
-      item.priceEntryCode.trim().toUpperCase() === EXPRESS_FREIGHT_ENTRY_CODE
-  )
+  const freight = product.detail?.find(item => item.priceEntryCode.trim().toUpperCase() === EXPRESS_FREIGHT_ENTRY_CODE)
 
   return toFiniteAmount(freight?.caculateFee)
 }
@@ -121,21 +111,10 @@ export function existsExpressQuotePrice(product: ExpressProductQuote) {
   }
 
   if (product.detail?.length && product.discount?.length) {
-    const freight = product.detail.find(
-      item =>
-        item.priceEntryCode.trim().toUpperCase() === EXPRESS_FREIGHT_ENTRY_CODE
-    )
-    const coupon = product.discount.find(
-      item => item.marketCode === 'YHJ' || item.marketCode === 'YHQ'
-    )
+    const freight = product.detail.find(item => item.priceEntryCode.trim().toUpperCase() === EXPRESS_FREIGHT_ENTRY_CODE)
+    const coupon = product.discount.find(item => item.marketCode === 'YHJ' || item.marketCode === 'YHQ')
 
-    if (
-      freight &&
-      coupon &&
-      freight.discountFee &&
-      coupon.reduceFee &&
-      freight.discountFee === coupon.reduceFee.toString()
-    ) {
+    if (freight && coupon && freight.discountFee && coupon.reduceFee && freight.discountFee === coupon.reduceFee.toString()) {
       return { free: true, visible: true }
     }
   }
@@ -149,9 +128,7 @@ export function existsExpressQuotePrice(product: ExpressProductQuote) {
  * @description 取产品时效展示文案
  */
 export function getExpressQuoteTimeText(product: ExpressProductQuote) {
-  return (
-    product.daysFormat || product.days || product.arriveDate || '时效待确认'
-  )
+  return product.daysFormat || product.days || product.arriveDate || '时效待确认'
 }
 
 /**
@@ -193,12 +170,8 @@ function createFeeRow(detail: ExpressPriceDetail): ExpressQuoteFeeRow | null {
  * @param product 报价产品
  * @description 组装费用明细展示行列表
  */
-export function createExpressQuoteFeeRows(
-  product: ExpressProductQuote
-): ExpressQuoteFeeRow[] {
-  return (product.detail ?? [])
-    .map(createFeeRow)
-    .filter((row): row is ExpressQuoteFeeRow => Boolean(row))
+export function createExpressQuoteFeeRows(product: ExpressProductQuote): ExpressQuoteFeeRow[] {
+  return (product.detail ?? []).map(createFeeRow).filter((row): row is ExpressQuoteFeeRow => Boolean(row))
 }
 
 /**
@@ -206,9 +179,7 @@ export function createExpressQuoteFeeRows(
  * @param product 报价产品
  * @description 组装报价产品展示模型
  */
-export function createExpressProductQuoteView(
-  product: ExpressProductQuote
-): ExpressProductQuoteView {
+export function createExpressProductQuoteView(product: ExpressProductQuote): ExpressProductQuoteView {
   const freight = getExpressQuoteFreight(product)
 
   return {

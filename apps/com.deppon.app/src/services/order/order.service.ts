@@ -13,38 +13,15 @@ import {
   submitOrderUrge
 } from './order.detailUseCases'
 import { dispatchOrderPickup, queryOrderPickupSchedule } from './order.dispatch'
-import {
-  getOrderClassLabel,
-  normalizeConsigneeOrder,
-  normalizeSenderOrder,
-  normalizeWaybillDetail
-} from './order.mapper'
-import {
-  queryOrderStubDocument,
-  queryOrderStubImages,
-  queryOrderStubPackageFee
-} from './order.stubAssets'
+import { getOrderClassLabel, normalizeConsigneeOrder, normalizeSenderOrder, normalizeWaybillDetail } from './order.mapper'
+import { queryOrderStubDocument, queryOrderStubImages, queryOrderStubPackageFee } from './order.stubAssets'
 import { createOrderStubEntry, createOrderStubView } from './order.stubView'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
-import type {
-  OrderDetail,
-  OrderListOptions,
-  OrderListResult,
-  OrderRole,
-  WaybillTrackListResponse
-} from './types'
+import type { OrderDetail, OrderListOptions, OrderListResult, OrderRole, WaybillTrackListResponse } from './types'
 
-export {
-  createExpressDraftFromOrderDetail,
-  getOrderClassLabel
-} from './order.mapper'
-export {
-  getOrderCopyNumber,
-  getOrderIdentityText,
-  getOrderReceiverAddress,
-  getOrderSenderAddress
-} from './order.stubView'
+export { createExpressDraftFromOrderDetail, getOrderClassLabel } from './order.mapper'
+export { getOrderCopyNumber, getOrderIdentityText, getOrderReceiverAddress, getOrderSenderAddress } from './order.stubView'
 
 export type { OrderResendMode } from './order.mapper'
 
@@ -73,11 +50,7 @@ function pad(value: number) {
  * @description 格式化为接口请求时间文案
  */
 function formatRequestDateTime(date: Date) {
-  return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(
-    date.getDate()
-  )} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
-    date.getSeconds()
-  )}`
+  return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
 
 /**
@@ -88,8 +61,7 @@ function formatRequestDateTime(date: Date) {
 export function getOrderDateRange(days = DEFAULT_RANGE_DAYS) {
   const endDate = new Date()
   const startDate = new Date()
-  const rangeDays =
-    Number.isFinite(days) && days > 0 ? days : DEFAULT_RANGE_DAYS
+  const rangeDays = Number.isFinite(days) && days > 0 ? days : DEFAULT_RANGE_DAYS
 
   endDate.setHours(23, 59, 59, 0)
   startDate.setDate(startDate.getDate() - rangeDays)
@@ -122,10 +94,7 @@ export function canDeleteOrder(order: {
 }) {
   const orderClass = Number(order.orderClass ?? order.orderClassification)
 
-  return (
-    DELETABLE_ORDER_CLASSES.has(orderClass) &&
-    (!!order.orderNumber || !!order.waybillNumber)
-  )
+  return DELETABLE_ORDER_CLASSES.has(orderClass) && (!!order.orderNumber || !!order.waybillNumber)
 }
 
 export const orderService = {
@@ -152,9 +121,7 @@ export const orderService = {
    * @param options 列表查询条件
    * @description 按角色分页查询订单列表
    */
-  async queryList(
-    options: OrderListOptions = {}
-  ): Promise<DepponResponse<OrderListResult>> {
+  async queryList(options: OrderListOptions = {}): Promise<DepponResponse<OrderListResult>> {
     const range = getDefaultDateRange()
     const role: OrderRole = options.role ?? 'sender'
     const pageIndex = options.pageIndex ?? 1
@@ -187,10 +154,7 @@ export const orderService = {
           list: (response.result.row ?? []).map(normalizeConsigneeOrder),
           pageIndex: response.result.pageIndex || pageIndex,
           pageSize: response.result.pageSize || pageSize,
-          totalPage: Math.max(
-            1,
-            Math.ceil((response.result.total || 0) / pageSize)
-          ),
+          totalPage: Math.max(1, Math.ceil((response.result.total || 0) / pageSize)),
           totalRows: response.result.total || 0
         }
       }
@@ -222,10 +186,7 @@ export const orderService = {
    * @param data 订单号或运单号
    * @description 按运单号或订单号查询详情
    */
-  async queryDetail(data: {
-    orderNumber?: string
-    waybillNumber?: string
-  }): Promise<DepponResponse<OrderDetail>> {
+  async queryDetail(data: { orderNumber?: string; waybillNumber?: string }): Promise<DepponResponse<OrderDetail>> {
     if (data.waybillNumber) {
       const response = await orderApi.queryWaybillDetail({
         waybillNumber: data.waybillNumber,
@@ -279,10 +240,7 @@ export const orderService = {
    * @param options 轨迹查询选项
    * @description 查询运单物流轨迹列表
    */
-  queryTrackList(
-    waybillNumber?: string | null,
-    options: OrderTrackQueryOptions = {}
-  ): Promise<DepponResponse<WaybillTrackListResponse>> {
+  queryTrackList(waybillNumber?: string | null, options: OrderTrackQueryOptions = {}): Promise<DepponResponse<WaybillTrackListResponse>> {
     if (!waybillNumber) {
       return Promise.resolve(createFailure('缺少运单号，暂无法查询轨迹'))
     }
@@ -313,15 +271,9 @@ export const orderService = {
    * @param data 订单号或运单号与角色
    * @description 按角色删除订单或运单
    */
-  deleteOrder(data: {
-    role: OrderRole
-    orderNumber?: string | null
-    waybillNumber?: string | null
-  }) {
+  deleteOrder(data: { role: OrderRole; orderNumber?: string | null; waybillNumber?: string | null }) {
     if (!data.orderNumber && !data.waybillNumber) {
-      return Promise.resolve(
-        createFailure<boolean>('缺少订单号或运单号，无法删除')
-      )
+      return Promise.resolve(createFailure<boolean>('缺少订单号或运单号，无法删除'))
     }
 
     return orderApi.deleteOrder({

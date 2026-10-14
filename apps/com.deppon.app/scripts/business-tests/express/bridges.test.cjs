@@ -10,22 +10,11 @@ const {
   createExpressDraft,
   markExpressQuoteStale
 } = require('@/services/express/express.draft')
-const {
-  buildCreateOrderRequest,
-  buildFilterOrderRequest,
-  buildFreightRequest
-} = require('@/services/express/express.payload')
-const {
-  createExpressPickupNightCapability
-} = require('@/services/express/pickupTime.rules')
-const {
-  createExpressScanContextView
-} = require('@/services/express/scanContext')
+const { buildCreateOrderRequest, buildFilterOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
+const { createExpressPickupNightCapability } = require('@/services/express/pickupTime.rules')
+const { createExpressScanContextView } = require('@/services/express/scanContext')
 
-const {
-  createValidExpressDraft,
-  expressProduct
-} = require('../fixtures/express.cjs')
+const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 
 const cases = [
   {
@@ -51,10 +40,7 @@ const cases = [
       const carried = expressDraftBridge.consume()
 
       assert.equal(carried.draft.pickup.nightCapability.startTime, '18:00:00')
-      assert.notEqual(
-        carried.draft.pickup.nightCapability,
-        source.pickup.nightCapability
-      )
+      assert.notEqual(carried.draft.pickup.nightCapability, source.pickup.nightCapability)
     }
   },
   {
@@ -185,17 +171,11 @@ const cases = [
       assert.equal(clearedDraft.scanContext, undefined)
       assert.equal(clearedDraft.selectedProduct, null)
       assert.equal(clearedDraft.agreementAccepted, false)
-      assert.equal(
-        clearedDraft.quoteStaleReason,
-        '扫码寄件信息已移除，请重新获取价格'
-      )
+      assert.equal(clearedDraft.quoteStaleReason, '扫码寄件信息已移除，请重新获取价格')
       assert.equal(request.pickupManId, '')
       assert.equal(request.shipperNumber, '')
       assert.equal(request.acceptDept, '')
-      assert.equal(
-        clearExpressScanContext(createValidExpressDraft()).scanContext,
-        undefined
-      )
+      assert.equal(clearExpressScanContext(createValidExpressDraft()).scanContext, undefined)
     }
   },
   {
@@ -228,10 +208,7 @@ const cases = [
       assert.equal(carried.draft.goods.name, '文件')
       assert.equal(carried.draft.selectedProduct, null)
       assert.equal(carried.draft.agreementAccepted, false)
-      assert.equal(
-        carried.draft.quoteStaleReason,
-        '批量识别带入，请重新获取价格'
-      )
+      assert.equal(carried.draft.quoteStaleReason, '批量识别带入，请重新获取价格')
       assert.deepEqual(carried.quotes, [])
     }
   },
@@ -259,10 +236,7 @@ const cases = [
       assert.equal(carried.draft.goods.name, '电子配件')
       assert.equal(carried.draft.selectedProduct, null)
       assert.equal(carried.draft.agreementAccepted, false)
-      assert.equal(
-        carried.draft.quoteStaleReason,
-        '货物名称来自违禁品查询，请重新获取价格'
-      )
+      assert.equal(carried.draft.quoteStaleReason, '货物名称来自违禁品查询，请重新获取价格')
       assert.deepEqual(carried.quotes, [])
     }
   },
@@ -282,10 +256,7 @@ const cases = [
       assert.equal(carried.draft.scanContext.value, 'CUS_002')
       assert.equal(carried.draft.selectedProduct, null)
       assert.equal(carried.draft.agreementAccepted, false)
-      assert.equal(
-        carried.draft.quoteStaleReason,
-        '扫码寄件信息变化，请重新获取价格'
-      )
+      assert.equal(carried.draft.quoteStaleReason, '扫码寄件信息变化，请重新获取价格')
       assert.deepEqual(carried.quotes, [])
     }
   },
@@ -317,10 +288,7 @@ const cases = [
       assert.equal(carried.draft.consignee.address, '明珠路100号')
       assert.equal(carried.draft.selectedProduct, null)
       assert.equal(carried.draft.agreementAccepted, false)
-      assert.equal(
-        carried.draft.quoteStaleReason,
-        '收派范围查询带入，请重新获取价格'
-      )
+      assert.equal(carried.draft.quoteStaleReason, '收派范围查询带入，请重新获取价格')
       assert.deepEqual(carried.quotes, [])
     }
   }

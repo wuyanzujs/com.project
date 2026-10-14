@@ -13,9 +13,7 @@ export interface RealNameVerifyResult {
   rawResult?: unknown
 }
 
-export async function verifyRealName(
-  _options: RealNameVerifyOptions
-): Promise<RealNameVerifyResult> {
+export async function verifyRealName(_options: RealNameVerifyOptions): Promise<RealNameVerifyResult> {
   ensureNativeCapability('realName')
 
   throw new NativeCapabilityError('realName')

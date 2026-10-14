@@ -1,22 +1,47 @@
 @use '@/styles/_tokens.scss' as *;
 
 .express-coupon-row__entry {
-  display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: flex-start; min-height: 90px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 90px;
 }
 .express-coupon-row__label {
-  flex-shrink: 0; color: $dp-color-text-neutral; font-size: $dp-font-size-label-large; font-weight: $dp-font-weight-regular; line-height: $dp-line-height-42;
+  flex-shrink: 0;
+  color: $dp-color-text-neutral;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-42;
 }
 .express-coupon-row__spacer {
-  flex: 1; min-width: $dp-space-8;
+  flex: 1;
+  min-width: $dp-space-8;
 }
 .express-coupon-row__badge {
-  flex-shrink: 0; margin-right: $dp-space-8; color: $dp-color-text-subdued; font-size: $dp-font-size-label-large; font-weight: $dp-font-weight-regular; line-height: $dp-line-height-42;
+  flex-shrink: 0;
+  margin-right: $dp-space-8;
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-42;
 }
 /* 生产端选中券为红色纯文字「-¥3」（量测 bbox 36×20 设计px，无胶囊底）。 */
-.express-coupon-row__badge--active { color: $dp-color-danger-accent; font-weight: $dp-font-weight-medium; }
+.express-coupon-row__badge--active {
+  color: $dp-color-danger-accent;
+  font-weight: $dp-font-weight-medium;
+}
 .express-coupon-row__hint {
-  display: flex; padding-bottom: $dp-space-8; color: $dp-color-text-subdued; font-size: $dp-font-size-body; line-height: $dp-line-height-36; text-align: right;
+  display: flex;
+  padding-bottom: $dp-space-8;
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-36;
+  text-align: right;
 }
 .express-coupon-row__arrow {
-  flex-shrink: 0; width: $dp-space-24; height: $dp-space-24;
+  flex-shrink: 0;
+  width: $dp-space-24;
+  height: $dp-space-24;
 }

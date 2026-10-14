@@ -4,20 +4,11 @@ import type { OrderStubView } from '@/services/order'
 
 import './index.scss'
 
-export function OrderStubNoticeList(props: {
-  notices: OrderStubView['notices']
-}) {
+export function OrderStubNoticeList(props: { notices: OrderStubView['notices'] }) {
   return (
     <>
       {props.notices.map(notice => (
-        <View
-          className={
-            notice.tone === 'warning'
-              ? 'order-stub-notice order-stub-notice--warning'
-              : 'order-stub-notice'
-          }
-          key={notice.title}
-        >
+        <View className={notice.tone === 'warning' ? 'order-stub-notice order-stub-notice--warning' : 'order-stub-notice'} key={notice.title}>
           <Text className='order-stub-notice__title'>{notice.title}</Text>
           <Text className='order-stub-notice__content'>{notice.content}</Text>
         </View>

@@ -18,10 +18,7 @@ export type NativeCapability =
 
 export type NativeCapabilityStatus = 'ready' | 'pending' | 'unsupported'
 
-export const APP_NATIVE_CAPABILITIES: Record<
-  NativeCapability,
-  NativeCapabilityStatus
-> = {
+export const APP_NATIVE_CAPABILITIES: Record<NativeCapability, NativeCapabilityStatus> = {
   auth: 'pending',
   payment: 'pending',
   phone: 'ready',
@@ -63,9 +60,7 @@ export class NativeCapabilityError extends Error {
   readonly capability: NativeCapability
 
   constructor(capability: NativeCapability) {
-    super(
-      `Native capability "${capability}" has not been wired for App runtime.`
-    )
+    super(`Native capability "${capability}" has not been wired for App runtime.`)
     this.name = 'NativeCapabilityError'
     this.capability = capability
     Object.setPrototypeOf(this, NativeCapabilityError.prototype)
@@ -76,9 +71,7 @@ export function getNativeCapabilityLabel(capability: NativeCapability) {
   return NATIVE_CAPABILITY_LABELS[capability]
 }
 
-export function isNativeCapabilityError(
-  error: unknown
-): error is NativeCapabilityError {
+export function isNativeCapabilityError(error: unknown): error is NativeCapabilityError {
   return error instanceof NativeCapabilityError
 }
 

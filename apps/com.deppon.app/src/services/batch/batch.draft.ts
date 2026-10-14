@@ -1,11 +1,4 @@
-import type {
-  BatchContact,
-  BatchRecognizedConsignee,
-  BatchConsigneeDraft,
-  BatchDraft,
-  BatchGoodsDraft,
-  BatchServiceDraft
-} from './types'
+import type { BatchContact, BatchRecognizedConsignee, BatchConsigneeDraft, BatchDraft, BatchGoodsDraft, BatchServiceDraft } from './types'
 import type { Contact } from '../contact/types'
 import type { ExpressContact, ExpressDraft } from '../express/types'
 
@@ -46,10 +39,7 @@ export function createBatchServiceDraft(): BatchServiceDraft {
  * @param goodsName 货物名称
  * @description 创建单个收货人的批量草稿
  */
-export function createBatchConsigneeDraft(
-  contact: BatchContact | null = null,
-  goodsName = ''
-): BatchConsigneeDraft {
+export function createBatchConsigneeDraft(contact: BatchContact | null = null, goodsName = ''): BatchConsigneeDraft {
   return {
     contact,
     goods: createBatchGoodsDraft(goodsName),
@@ -73,9 +63,7 @@ export function createBatchConsigneeDraft(
 export function getBatchContactKey(consignee: BatchConsigneeDraft) {
   const contact = consignee.contact
 
-  return [contact?.id, contact?.mobile, contact?.province, contact?.address]
-    .filter(Boolean)
-    .join('|')
+  return [contact?.id, contact?.mobile, contact?.province, contact?.address].filter(Boolean).join('|')
 }
 
 /**
@@ -83,9 +71,7 @@ export function getBatchContactKey(consignee: BatchConsigneeDraft) {
  * @param contact 寄件联系人
  * @description 寄件联系人转为批量联系人
  */
-export function mapExpressContactToBatchContact(
-  contact: ExpressContact | null
-): BatchContact | null {
+export function mapExpressContactToBatchContact(contact: ExpressContact | null): BatchContact | null {
   if (!contact) {
     return null
   }
@@ -123,9 +109,7 @@ export function mapContactToBatchContact(contact: Contact): BatchContact {
  * @param contact 批量联系人
  * @description 批量联系人转为寄件联系人
  */
-export function mapBatchContactToExpressContact(
-  contact: BatchContact | null
-): ExpressContact | null {
+export function mapBatchContactToExpressContact(contact: BatchContact | null): ExpressContact | null {
   if (!contact) {
     return null
   }
@@ -148,11 +132,7 @@ export function mapBatchContactToExpressContact(
  * @param patch 待更新的货物字段
  * @description 更新收货人货物并清空已获取的价格
  */
-export function updateBatchConsigneeGoods(
-  draft: BatchDraft,
-  index: number,
-  patch: Partial<BatchGoodsDraft>
-): BatchDraft {
+export function updateBatchConsigneeGoods(draft: BatchDraft, index: number, patch: Partial<BatchGoodsDraft>): BatchDraft {
   return {
     ...draft,
     consignees: draft.consignees.map((item, itemIndex) =>
@@ -204,9 +184,7 @@ export function applyBatchQuoteResults(
     estimatedFee: number | null
   }>
 ): BatchDraft {
-  const resultMap = new Map(
-    results.map(result => [result.consigneeIndex, result])
-  )
+  const resultMap = new Map(results.map(result => [result.consigneeIndex, result]))
 
   return {
     ...draft,
@@ -230,9 +208,7 @@ export function applyBatchQuoteResults(
  * @param item 识别出的收货人
  * @description 由识别结果创建收货人草稿
  */
-export function createBatchConsigneeFromRecognition(
-  item: BatchRecognizedConsignee
-): BatchConsigneeDraft | null {
+export function createBatchConsigneeFromRecognition(item: BatchRecognizedConsignee): BatchConsigneeDraft | null {
   if (item.status !== 'ready' || !item.contact) {
     return null
   }
@@ -265,9 +241,7 @@ export function createBatchDraft(): BatchDraft {
  * @param expressDraft 寄件草稿
  * @description 由寄件草稿创建批量草稿，继承发货人与取件信息
  */
-export function createBatchDraftFromExpressDraft(
-  expressDraft: ExpressDraft | null
-): BatchDraft {
+export function createBatchDraftFromExpressDraft(expressDraft: ExpressDraft | null): BatchDraft {
   const draft = createBatchDraft()
 
   if (!expressDraft) {

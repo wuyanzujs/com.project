@@ -1,11 +1,6 @@
-import type {
-  OrderEvaluationLevel,
-  OrderEvaluationRecordType
-} from './order.evaluation.types'
+import type { OrderEvaluationLevel, OrderEvaluationRecordType } from './order.evaluation.types'
 
-export const ORDER_EVALUATION_LEVELS: readonly OrderEvaluationLevel[] = [
-  1, 2, 3, 4, 5
-]
+export const ORDER_EVALUATION_LEVELS: readonly OrderEvaluationLevel[] = [1, 2, 3, 4, 5]
 
 export const ORDER_EVALUATION_TITLES: Record<OrderEvaluationLevel, string> = {
   1: '非常不满意，我要吐槽',
@@ -75,10 +70,7 @@ const DELIVERY_POSITIVE_LABELS = [
  * @param level 评价星级
  * @description 按记录类型和星级返回可选评价标签
  */
-export function getOrderEvaluationLabels(
-  recordType: OrderEvaluationRecordType,
-  level: OrderEvaluationLevel
-): readonly string[] {
+export function getOrderEvaluationLabels(recordType: OrderEvaluationRecordType, level: OrderEvaluationLevel): readonly string[] {
   if (recordType === 'COLLECTION') {
     return level === 5 ? COLLECTION_POSITIVE_LABELS : COLLECTION_NEGATIVE_LABELS
   }

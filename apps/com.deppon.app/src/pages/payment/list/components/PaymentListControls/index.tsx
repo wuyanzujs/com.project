@@ -50,21 +50,11 @@ export function PaymentListControls(props: PaymentListControlsProps) {
           <AppPressable
             flex
             accessibilityLabel={tab.label}
-            className={
-              tab.value === props.status
-                ? 'payment-status-tab payment-status-tab--active'
-                : 'payment-status-tab'
-            }
+            className={tab.value === props.status ? 'payment-status-tab payment-status-tab--active' : 'payment-status-tab'}
             key={tab.value}
             onPress={() => props.onStatusChange(tab.value)}
           >
-            <Text
-              className={
-                tab.value === props.status
-                  ? 'payment-status-tab__text payment-status-tab__text--active'
-                  : 'payment-status-tab__text'
-              }
-            >
+            <Text className={tab.value === props.status ? 'payment-status-tab__text payment-status-tab__text--active' : 'payment-status-tab__text'}>
               {tab.label}
             </Text>
           </AppPressable>
@@ -75,23 +65,11 @@ export function PaymentListControls(props: PaymentListControlsProps) {
         {PAYMENT_ROLE_TABS.map(tab => (
           <AppPressable
             accessibilityLabel={tab.label}
-            className={
-              tab.value === props.role
-                ? 'payment-tab payment-tab--active'
-                : 'payment-tab'
-            }
+            className={tab.value === props.role ? 'payment-tab payment-tab--active' : 'payment-tab'}
             key={tab.value}
             onPress={() => props.onRoleChange(tab.value)}
           >
-            <Text
-              className={
-                tab.value === props.role
-                  ? 'payment-tab__text payment-tab__text--active'
-                  : 'payment-tab__text'
-              }
-            >
-              {tab.label}
-            </Text>
+            <Text className={tab.value === props.role ? 'payment-tab__text payment-tab__text--active' : 'payment-tab__text'}>{tab.label}</Text>
           </AppPressable>
         ))}
       </View>
@@ -103,29 +81,19 @@ export function PaymentListControls(props: PaymentListControlsProps) {
           value={props.keyword}
           onInput={event => props.onKeywordChange(event.detail.value)}
         />
-        <AppPressable
-          accessibilityLabel='搜索待支付费用'
-          className='payment-search__button'
-          onPress={props.onSearch}
-        >
+        <AppPressable accessibilityLabel='搜索待支付费用' className='payment-search__button' onPress={props.onSearch}>
           <Text className='payment-search__button-text'>搜索</Text>
         </AppPressable>
       </View>
 
       <View className='payment-summary'>
         <View>
-          <Text className='payment-summary__title'>
-            {props.status === 'PAID' ? '最近180天' : '最近一个月'}
-          </Text>
-          <Text className='payment-summary__count'>
-            共 {props.totalRows} 笔费用
-          </Text>
+          <Text className='payment-summary__title'>{props.status === 'PAID' ? '最近180天' : '最近一个月'}</Text>
+          <Text className='payment-summary__count'>共 {props.totalRows} 笔费用</Text>
         </View>
         <View className='payment-summary__side'>
           <Text className='payment-summary__hint'>已加载合计</Text>
-          <Text className='payment-summary__amount'>
-            ¥{props.loadedAmount.toFixed(2)}
-          </Text>
+          <Text className='payment-summary__amount'>¥{props.loadedAmount.toFixed(2)}</Text>
         </View>
       </View>
     </>

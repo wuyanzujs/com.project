@@ -2,18 +2,12 @@ import Taro from '@tarojs/taro'
 
 import { useCallback, useMemo, useState } from 'react'
 
-import {
-  createOrderSubscriptionAction,
-  orderSubscriptionService
-} from '@/services/order'
+import { createOrderSubscriptionAction, orderSubscriptionService } from '@/services/order'
 
 export function useOrderSubscription() {
   const [subscribed, setSubscribed] = useState<boolean | null>(null)
   const [loading, setLoading] = useState(false)
-  const action = useMemo(
-    () => createOrderSubscriptionAction(subscribed, loading),
-    [loading, subscribed]
-  )
+  const action = useMemo(() => createOrderSubscriptionAction(subscribed, loading), [loading, subscribed])
 
   const reset = useCallback(() => {
     setSubscribed(null)
@@ -22,11 +16,7 @@ export function useOrderSubscription() {
   const loadStatus = useCallback(async (waybillNumber?: string | null) => {
     const response = await orderSubscriptionService.queryStatus(waybillNumber)
 
-    setSubscribed(
-      response.status && typeof response.result === 'boolean'
-        ? response.result
-        : null
-    )
+    setSubscribed(response.status && typeof response.result === 'boolean' ? response.result : null)
 
     return response
   }, [])
@@ -54,17 +44,10 @@ export function useOrderSubscription() {
 
       try {
         const nextSubscribed = !subscribed
-        const response = await orderSubscriptionService.setSubscribed(
-          waybillNumber,
-          nextSubscribed
-        )
+        const response = await orderSubscriptionService.setSubscribed(waybillNumber, nextSubscribed)
 
         Taro.showToast({
-          title: response.status
-            ? nextSubscribed
-              ? '关注成功'
-              : '已取消关注'
-            : response.message || '操作失败，请稍后再试',
+          title: response.status ? (nextSubscribed ? '关注成功' : '已取消关注') : response.message || '操作失败，请稍后再试',
           icon: 'none'
         })
 

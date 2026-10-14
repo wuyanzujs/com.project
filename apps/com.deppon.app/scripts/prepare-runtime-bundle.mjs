@@ -3,11 +3,7 @@ import path from 'node:path'
 import process from 'node:process'
 
 const runtimeArtifacts = {
-  android: [
-    'android/app/src/main/assets/index.android.bundle',
-    'android/app/src/main/assets/index.android.map',
-    'dist/sourcemaps/index.android.map'
-  ],
+  android: ['android/app/src/main/assets/index.android.bundle', 'android/app/src/main/assets/index.android.map', 'dist/sourcemaps/index.android.map'],
   ios: ['ios/main.jsbundle', 'ios/main.map', 'dist/sourcemaps/main.ios.map']
 }
 

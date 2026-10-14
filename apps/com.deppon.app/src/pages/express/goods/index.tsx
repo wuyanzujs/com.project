@@ -3,11 +3,7 @@ import Taro from '@tarojs/taro'
 
 import { useMemo, useState } from 'react'
 
-import {
-  createExpressDraft,
-  expressDraftStorage,
-  expressGoodsBridge
-} from '@/services/express'
+import { createExpressDraft, expressDraftStorage, expressGoodsBridge } from '@/services/express'
 import type { ExpressGoods } from '@/services/express'
 import { goodsQueryService } from '@/services/goods'
 import { AppPage, AppPressable, AppSwitch } from '@/shared/components'
@@ -47,14 +43,7 @@ interface GoodsStepperProps {
 
 // 生产端总重量/货物件数是胶囊步进器：灰轨道两端 − +，中间白色输入 pill，
 // 单位（kg/件）显示在白色 pill 内右侧。
-function GoodsStepper({
-  max,
-  min,
-  onChange,
-  step,
-  unit,
-  value
-}: GoodsStepperProps) {
+function GoodsStepper({ max, min, onChange, step, unit, value }: GoodsStepperProps) {
   const amount = parseAmount(value)
   const disabledMinus = amount <= min
   const disabledPlus = amount >= max
@@ -69,11 +58,7 @@ function GoodsStepper({
     <View className='express-goods-stepper'>
       <AppPressable
         accessibilityLabel='减少'
-        className={
-          disabledMinus
-            ? 'express-goods-stepper__button express-goods-stepper__button--disabled'
-            : 'express-goods-stepper__button'
-        }
+        className={disabledMinus ? 'express-goods-stepper__button express-goods-stepper__button--disabled' : 'express-goods-stepper__button'}
         disabled={disabledMinus}
         onPress={() => stepTo(-1)}
       >
@@ -95,11 +80,7 @@ function GoodsStepper({
       </View>
       <AppPressable
         accessibilityLabel='增加'
-        className={
-          disabledPlus
-            ? 'express-goods-stepper__button express-goods-stepper__button--disabled'
-            : 'express-goods-stepper__button'
-        }
+        className={disabledPlus ? 'express-goods-stepper__button express-goods-stepper__button--disabled' : 'express-goods-stepper__button'}
         disabled={disabledPlus}
         onPress={() => stepTo(1)}
       >
@@ -110,21 +91,12 @@ function GoodsStepper({
 }
 
 const ExpressGoodsPage = () => {
-  const initialGoods = useMemo<ExpressGoods>(
-    () => expressDraftStorage.restore()?.goods ?? createExpressDraft().goods,
-    []
-  )
+  const initialGoods = useMemo<ExpressGoods>(() => expressDraftStorage.restore()?.goods ?? createExpressDraft().goods, [])
   const [name, setName] = useState(initialGoods.name)
-  const [weightText, setWeightText] = useState(
-    String(initialGoods.weight > 0 ? initialGoods.weight : WEIGHT_MIN)
-  )
-  const [countText, setCountText] = useState(
-    String(initialGoods.count >= COUNT_MIN ? initialGoods.count : COUNT_MIN)
-  )
+  const [weightText, setWeightText] = useState(String(initialGoods.weight > 0 ? initialGoods.weight : WEIGHT_MIN))
+  const [countText, setCountText] = useState(String(initialGoods.count >= COUNT_MIN ? initialGoods.count : COUNT_MIN))
   const [volumeOn, setVolumeOn] = useState(initialGoods.volume > 0)
-  const [volumeText, setVolumeText] = useState(
-    initialGoods.volume > 0 ? String(initialGoods.volume) : ''
-  )
+  const [volumeText, setVolumeText] = useState(initialGoods.volume > 0 ? String(initialGoods.volume) : '')
   const hotGoods = useMemo(() => goodsQueryService.getHotGoods(), [])
   const nameSuggestion = useGoodsNameSuggestions()
 
@@ -175,9 +147,7 @@ const ExpressGoodsPage = () => {
             className='express-goods-footer__button express-goods-footer__button--voice'
             onPress={handleVoiceInput}
           >
-            <Text className='express-goods-footer__text express-goods-footer__text--voice'>
-              语音填写
-            </Text>
+            <Text className='express-goods-footer__text express-goods-footer__text--voice'>语音填写</Text>
           </AppPressable>
           <AppPressable
             accessibilityLabel='确认货物信息'
@@ -199,22 +169,14 @@ const ExpressGoodsPage = () => {
           <View className='express-goods-card__head'>
             <Text className='express-goods-card__title'>物品名称</Text>
             <Text className='express-goods-card__hint'>必填</Text>
-            <AppPressable
-              accessibilityLabel='违禁品查询'
-              className='express-goods-check'
-              onPress={() => navigateToAppRoute(APP_ROUTES.goodsQuery)}
-            >
+            <AppPressable accessibilityLabel='违禁品查询' className='express-goods-check' onPress={() => navigateToAppRoute(APP_ROUTES.goodsQuery)}>
               <Text className='express-goods-check__text'>违禁品查询 ›</Text>
             </AppPressable>
           </View>
           {name ? (
             <View className='express-goods-name-pill'>
               <Text className='express-goods-name-pill__text'>{name}</Text>
-              <AppPressable
-                accessibilityLabel='清除物品名称'
-                className='express-goods-name-pill__clear'
-                onPress={() => setName('')}
-              >
+              <AppPressable accessibilityLabel='清除物品名称' className='express-goods-name-pill__clear' onPress={() => setName('')}>
                 <Text className='express-goods-name-pill__clear-text'>×</Text>
               </AppPressable>
             </View>
@@ -239,25 +201,15 @@ const ExpressGoodsPage = () => {
                       key={`${item.productKeyWord}-${item.secondCategory}-${index}`}
                       onPress={() => handleSelectName(item.productKeyWord)}
                     >
-                      <Text className='express-goods-suggestion__name'>
-                        {item.productKeyWord}
-                      </Text>
+                      <Text className='express-goods-suggestion__name'>{item.productKeyWord}</Text>
                       <Text className='express-goods-suggestion__desc'>
-                        {[item.firstCategory, item.secondCategory]
-                          .filter(Boolean)
-                          .join(' / ') || '常用品名'}
+                        {[item.firstCategory, item.secondCategory].filter(Boolean).join(' / ') || '常用品名'}
                       </Text>
                     </AppPressable>
                   ))}
                 </View>
               )}
-              {nameSuggestion.message && (
-                <Text className='express-goods-message'>
-                  {nameSuggestion.loading
-                    ? '推荐查询中'
-                    : nameSuggestion.message}
-                </Text>
-              )}
+              {nameSuggestion.message && <Text className='express-goods-message'>{nameSuggestion.loading ? '推荐查询中' : nameSuggestion.message}</Text>}
               <View className='express-goods-chips'>
                 {hotGoods.map(item => (
                   <AppPressable
@@ -266,9 +218,7 @@ const ExpressGoodsPage = () => {
                     key={item.name}
                     onPress={() => handleSelectName(item.name)}
                   >
-                    <Text className='express-goods-chip__text'>
-                      {item.name}
-                    </Text>
+                    <Text className='express-goods-chip__text'>{item.name}</Text>
                   </AppPressable>
                 ))}
               </View>
@@ -279,38 +229,23 @@ const ExpressGoodsPage = () => {
         <View className='express-goods-card'>
           {/* 生产端红气泡位于计费卡内右上角、贴总重量行上方 */}
           <View className='express-goods-notice'>
-            <Text className='express-goods-notice__text'>
-              填写重量/体积计费更准确
-            </Text>
+            <Text className='express-goods-notice__text'>填写重量/体积计费更准确</Text>
           </View>
           {/* 生产端标签与步进器同一行，步进器右对齐（量测宽 401、高 80 设计px） */}
           <View className='express-goods-card__head express-goods-card__head--stepper'>
             <Text className='express-goods-card__title'>总重量</Text>
-            <GoodsStepper
-              max={WEIGHT_MAX}
-              min={WEIGHT_MIN}
-              step={WEIGHT_STEP}
-              unit='kg'
-              value={weightText}
-              onChange={setWeightText}
-            />
+            <GoodsStepper max={WEIGHT_MAX} min={WEIGHT_MIN} step={WEIGHT_STEP} unit='kg' value={weightText} onChange={setWeightText} />
           </View>
 
           <View className='express-goods-card__head express-goods-card__head--field'>
             <Text className='express-goods-card__title'>总体积</Text>
             {/* RN 样式不支持后代选择器，开关左间距用包一层实现（生产端量测标签→开关、开关→提示均≈20） */}
             <View className='express-goods-card__switch'>
-              <AppSwitch
-                accessibilityLabel='是否填写体积'
-                checked={volumeOn}
-                onChange={setVolumeOn}
-              />
+              <AppSwitch accessibilityLabel='是否填写体积' checked={volumeOn} onChange={setVolumeOn} />
             </View>
             <Text className='express-goods-card__switch-hint'>
               添加货物较大时，补充
-              <Text className='express-goods-card__switch-hint-accent'>
-                体积
-              </Text>
+              <Text className='express-goods-card__switch-hint-accent'>体积</Text>
               预估费用更准确
             </Text>
           </View>
@@ -326,14 +261,7 @@ const ExpressGoodsPage = () => {
 
           <View className='express-goods-card__head express-goods-card__head--field express-goods-card__head--stepper'>
             <Text className='express-goods-card__title'>货物件数</Text>
-            <GoodsStepper
-              max={COUNT_MAX}
-              min={COUNT_MIN}
-              step={1}
-              unit='件'
-              value={countText}
-              onChange={setCountText}
-            />
+            <GoodsStepper max={COUNT_MAX} min={COUNT_MIN} step={1} unit='件' value={countText} onChange={setCountText} />
           </View>
 
           <View className='express-goods-info'>

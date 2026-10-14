@@ -5,10 +5,7 @@ import type { OrderEditDraft } from '@/services/order'
 import './index.scss'
 import '../OrderEditSection.scss'
 
-export function OrderEditGoodsSection(props: {
-  draft: OrderEditDraft
-  onChange: (patch: Partial<OrderEditDraft>) => void
-}) {
+export function OrderEditGoodsSection(props: { draft: OrderEditDraft; onChange: (patch: Partial<OrderEditDraft>) => void }) {
   return (
     <View className='order-edit-section'>
       <Text className='order-edit-section__title'>货物信息</Text>
@@ -32,9 +29,7 @@ export function OrderEditGoodsSection(props: {
             placeholder='1'
             type='number'
             value={String(props.draft.goodsNumber)}
-            onInput={event =>
-              props.onChange({ goodsNumber: Number(event.detail.value) })
-            }
+            onInput={event => props.onChange({ goodsNumber: Number(event.detail.value) })}
           />
         </View>
         <View className='order-edit-metric order-edit-metric--middle'>
@@ -44,9 +39,7 @@ export function OrderEditGoodsSection(props: {
             placeholder='1'
             type='digit'
             value={String(props.draft.totalWeight)}
-            onInput={event =>
-              props.onChange({ totalWeight: Number(event.detail.value) })
-            }
+            onInput={event => props.onChange({ totalWeight: Number(event.detail.value) })}
           />
         </View>
         <View className='order-edit-metric'>
@@ -56,9 +49,7 @@ export function OrderEditGoodsSection(props: {
             placeholder='0'
             type='digit'
             value={String(props.draft.totalVolume)}
-            onInput={event =>
-              props.onChange({ totalVolume: Number(event.detail.value) })
-            }
+            onInput={event => props.onChange({ totalVolume: Number(event.detail.value) })}
           />
         </View>
       </View>

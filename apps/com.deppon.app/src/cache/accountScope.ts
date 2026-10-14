@@ -1,8 +1,4 @@
-import {
-  ACCOUNT_SCOPED_CACHE_KEYS,
-  ACCOUNT_SCOPED_STORAGE_KEYS,
-  createCacheStorageKey
-} from './keys'
+import { ACCOUNT_SCOPED_CACHE_KEYS, ACCOUNT_SCOPED_STORAGE_KEYS, createCacheStorageKey } from './keys'
 import { removeStorageValue } from './storage'
 
 type AccountScopedCacheKey = (typeof ACCOUNT_SCOPED_CACHE_KEYS)[number]
@@ -29,22 +25,14 @@ function consumePendingLoginReturnStorageKeys() {
   return preserved
 }
 
-export async function clearAccountScopedCache(
-  options: { preserveLoginReturnDrafts?: boolean } = {}
-) {
-  const preservedKeys = options.preserveLoginReturnDrafts
-    ? consumePendingLoginReturnStorageKeys()
-    : new Set<string>()
+export async function clearAccountScopedCache(options: { preserveLoginReturnDrafts?: boolean } = {}) {
+  const preservedKeys = options.preserveLoginReturnDrafts ? consumePendingLoginReturnStorageKeys() : new Set<string>()
 
   if (!options.preserveLoginReturnDrafts) {
     pendingLoginReturnDrafts.clear()
   }
 
-  const results = await Promise.all(
-    ACCOUNT_SCOPED_STORAGE_KEYS.filter(key => !preservedKeys.has(key)).map(
-      key => removeStorageValue(key)
-    )
-  )
+  const results = await Promise.all(ACCOUNT_SCOPED_STORAGE_KEYS.filter(key => !preservedKeys.has(key)).map(key => removeStorageValue(key)))
 
   return results.every(Boolean)
 }

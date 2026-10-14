@@ -3,12 +3,7 @@ import type { DepponResponse } from '@/request/deppon'
 import { orderNpsSurveyService } from './order.npsSurvey.service'
 import { orderSceneSurveyService } from './order.sceneSurvey.service'
 
-import type {
-  OrderSceneSurveyContext,
-  OrderSceneSurveyItem,
-  OrderSceneSurveyQueryResult,
-  OrderSceneSurveySubmitInput
-} from './order.sceneSurvey.types'
+import type { OrderSceneSurveyContext, OrderSceneSurveyItem, OrderSceneSurveyQueryResult, OrderSceneSurveySubmitInput } from './order.sceneSurvey.types'
 
 /**
  *
@@ -19,9 +14,7 @@ import type {
 async function queryPlanItem(context: OrderSceneSurveyContext, index: number) {
   const plan = context.plan[index]
 
-  return plan.kind === 'NPS'
-    ? orderNpsSurveyService.query(context)
-    : orderSceneSurveyService.queryOne(context, plan)
+  return plan.kind === 'NPS' ? orderNpsSurveyService.query(context) : orderSceneSurveyService.queryOne(context, plan)
 }
 
 export const orderSceneSurveyOrchestrator = {
@@ -30,21 +23,13 @@ export const orderSceneSurveyOrchestrator = {
    * @param context 场景问卷上下文
    * @description 并发查询所有问卷并汇总结果
    */
-  async query(
-    context: OrderSceneSurveyContext
-  ): Promise<OrderSceneSurveyQueryResult> {
-    const results = await Promise.allSettled(
-      context.plan.map((_, index) => queryPlanItem(context, index))
-    )
+  async query(context: OrderSceneSurveyContext): Promise<OrderSceneSurveyQueryResult> {
+    const results = await Promise.allSettled(context.plan.map((_, index) => queryPlanItem(context, index)))
     const items: OrderSceneSurveyItem[] = []
     let failedCount = 0
 
     for (const result of results) {
-      if (
-        result.status === 'fulfilled' &&
-        result.value.status &&
-        result.value.result
-      ) {
+      if (result.status === 'fulfilled' && result.value.status && result.value.result) {
         items.push(result.value.result)
       } else if (result.status === 'rejected' || !result.value.status) {
         failedCount += 1
@@ -61,11 +46,7 @@ export const orderSceneSurveyOrchestrator = {
    * @param input 提交入参
    * @description 按问卷类型分发提交
    */
-  submit(
-    context: OrderSceneSurveyContext,
-    item: OrderSceneSurveyItem,
-    input: OrderSceneSurveySubmitInput
-  ): Promise<DepponResponse<unknown>> {
+  submit(context: OrderSceneSurveyContext, item: OrderSceneSurveyItem, input: OrderSceneSurveySubmitInput): Promise<DepponResponse<unknown>> {
     if (item.kind === 'NPS' && input.kind === 'NPS') {
       return orderNpsSurveyService.submit(context, input.draft)
     }

@@ -2,7 +2,6 @@ import Taro from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
-
 import { contactService } from '@/services/contact'
 import type { Contact } from '@/services/contact'
 
@@ -21,11 +20,7 @@ interface UseContactAddressActionsResult {
   handleRefineAddress: () => Promise<void>
 }
 
-export function useContactAddressActions({
-  contact,
-  setContact,
-  ensureAccess
-}: UseContactAddressActionsParams): UseContactAddressActionsResult {
+export function useContactAddressActions({ contact, setContact, ensureAccess }: UseContactAddressActionsParams): UseContactAddressActionsResult {
   const [analysisText, setAnalysisText] = useState('')
   const [analyzing, setAnalyzing] = useState(false)
   const [refiningAddress, setRefiningAddress] = useState(false)
@@ -60,9 +55,7 @@ export function useContactAddressActions({
 
       const analysis = response.result
 
-      setContact(current =>
-        contactService.applyAnalysisToContact(current, analysis)
-      )
+      setContact(current => contactService.applyAnalysisToContact(current, analysis))
       Taro.showToast({
         title: '识别成功，请核对',
         icon: 'none'
@@ -107,9 +100,7 @@ export function useContactAddressActions({
           const hint = hints[selected.tapIndex]
 
           if (hint) {
-            setContact(current =>
-              contactService.applyAddressHintToContact(current, hint)
-            )
+            setContact(current => contactService.applyAddressHintToContact(current, hint))
             Taro.showToast({
               title: '已应用地址候选，请核对',
               icon: 'none'
@@ -131,9 +122,7 @@ export function useContactAddressActions({
 
       const analysis = response.result
 
-      setContact(current =>
-        contactService.applyAnalysis4ToContact(current, analysis)
-      )
+      setContact(current => contactService.applyAnalysis4ToContact(current, analysis))
       Taro.showToast({
         title: '地址已补全，请核对',
         icon: 'none'

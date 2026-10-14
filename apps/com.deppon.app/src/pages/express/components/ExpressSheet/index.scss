@@ -2,39 +2,78 @@
 
 /* 寄快递页底部弹层基件：遮罩压暗全屏，白面板贴底、顶部 32 圆角。 */
 .express-sheet {
-  display: flex; flex: 1; flex-direction: column; background: $dp-color-overlay-sheet;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  background: $dp-color-overlay-sheet;
 }
 .express-sheet__aligner {
-  display: flex; flex: 1; flex-direction: column; justify-content: flex-end;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 .express-sheet__panel {
-  display: flex; flex-direction: column; width: 100%; max-height: 100%; overflow: hidden; background: $dp-color-bg-card; border-top-left-radius: $dp-radius-32; border-top-right-radius: $dp-radius-32;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  background: $dp-color-bg-card;
+  border-top-left-radius: $dp-radius-32;
+  border-top-right-radius: $dp-radius-32;
 }
 .express-sheet__header {
-  display: flex; flex-direction: row; justify-content: space-between; min-height: 132px; padding-left: $dp-space-32;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  min-height: 132px;
+  padding-left: $dp-space-32;
 }
 .express-sheet__heading {
-  display: flex; flex-direction: column; justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .express-sheet__title {
-  color: $dp-color-text-heading; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-52;
+  color: $dp-color-text-heading;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-52;
 }
-.express-sheet__title--36 { font-size: $dp-font-size-heading; }
-.express-sheet__title--40 { font-size: $dp-font-size-display-small; }
-.express-sheet__title--42 { font-size: $dp-font-size-page-title; }
+.express-sheet__title--36 {
+  font-size: $dp-font-size-heading;
+}
+.express-sheet__title--40 {
+  font-size: $dp-font-size-display-small;
+}
+.express-sheet__title--42 {
+  font-size: $dp-font-size-page-title;
+}
 .express-sheet__subtitle {
-  margin-top: $dp-space-2; color: $dp-color-text-subdued; font-size: $dp-font-size-body; line-height: $dp-line-height-36;
+  margin-top: $dp-space-2;
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-36;
 }
 .express-sheet__close {
-  align-items: center; justify-content: center; width: $dp-space-56; height: 132px; padding-top: $dp-space-16;
+  align-items: center;
+  justify-content: center;
+  width: $dp-space-56;
+  height: 132px;
+  padding-top: $dp-space-16;
 }
 /* 内容撑高、超出面板限高时收缩为可滚区域；不能用 flex:1（basis 0 会在自适应高度面板里塌成 0 高）。 */
 .express-sheet__scroll {
-  display: flex; flex-shrink: 1;
+  display: flex;
+  flex-shrink: 1;
 }
 .express-sheet__content {
-  display: flex; flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 .express-sheet__footer {
-  display: flex; flex-direction: row; align-items: center; padding: $dp-space-32 $dp-space-32 $dp-space-8;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: $dp-space-32 $dp-space-32 $dp-space-8;
 }

@@ -1,20 +1,7 @@
 import { createExpressDraft } from '../express'
 
-import type {
-  ConsigneeOrderItem,
-  OrderDetail,
-  OrderListItem,
-  SenderOrderItem,
-  WaybillDetailRaw
-} from './types'
-import type {
-  ExpressCollectionType,
-  ExpressContact,
-  ExpressDeliveryMode,
-  ExpressDraft,
-  ExpressPaymentType,
-  ExpressProductCode
-} from '../express'
+import type { ConsigneeOrderItem, OrderDetail, OrderListItem, SenderOrderItem, WaybillDetailRaw } from './types'
+import type { ExpressCollectionType, ExpressContact, ExpressDeliveryMode, ExpressDraft, ExpressPaymentType, ExpressProductCode } from '../express'
 
 export type OrderResendMode = 'repeat' | 'return'
 
@@ -39,41 +26,13 @@ const CONSIGNEE_STATUS_TO_CLASS: Record<string, number> = {
   已作废: 5
 }
 
-const EXPRESS_PRODUCT_CODES = new Set<ExpressProductCode>([
-  '',
-  'PACKAGE',
-  'DEAP',
-  'RCP',
-  'PCP',
-  'DCZP',
-  'DJBK',
-  'DJTK',
-  'XJBK',
-  'XJTK',
-  'XJTH',
-  'DJTH',
-  'YTY'
-])
+const EXPRESS_PRODUCT_CODES = new Set<ExpressProductCode>(['', 'PACKAGE', 'DEAP', 'RCP', 'PCP', 'DCZP', 'DJBK', 'DJTK', 'XJBK', 'XJTK', 'XJTH', 'DJTH', 'YTY'])
 
-const EXPRESS_PAYMENT_TYPES = new Set<ExpressPaymentType>([
-  'MP',
-  'PAY_ARIIVE',
-  'MONTH_PAY'
-])
+const EXPRESS_PAYMENT_TYPES = new Set<ExpressPaymentType>(['MP', 'PAY_ARIIVE', 'MONTH_PAY'])
 
-const EXPRESS_DELIVERY_MODES = new Set<ExpressDeliveryMode>([
-  '',
-  'PICKNOTUPSTAIRS',
-  'PICKSELF',
-  'PICKUPSTAIRS',
-  'BIGUPSTAIRS'
-])
+const EXPRESS_DELIVERY_MODES = new Set<ExpressDeliveryMode>(['', 'PICKNOTUPSTAIRS', 'PICKSELF', 'PICKUPSTAIRS', 'BIGUPSTAIRS'])
 
-const EXPRESS_COLLECTION_TYPES = new Set<ExpressCollectionType>([
-  '',
-  'NORMAL',
-  'INTRADAY'
-])
+const EXPRESS_COLLECTION_TYPES = new Set<ExpressCollectionType>(['', 'NORMAL', 'INTRADAY'])
 
 /**
  *
@@ -100,9 +59,7 @@ function formatDateTime(value: string | number | Date | null | undefined) {
     return String(value)
   }
 
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
 /**
@@ -130,10 +87,7 @@ function getConsigneeOrderClass(statusName: string) {
  * @description 校验并归一寄件产品 code
  */
 function asExpressProductCode(value: unknown): ExpressProductCode {
-  return typeof value === 'string' &&
-    EXPRESS_PRODUCT_CODES.has(value as ExpressProductCode)
-    ? (value as ExpressProductCode)
-    : ''
+  return typeof value === 'string' && EXPRESS_PRODUCT_CODES.has(value as ExpressProductCode) ? (value as ExpressProductCode) : ''
 }
 
 /**
@@ -142,14 +96,8 @@ function asExpressProductCode(value: unknown): ExpressProductCode {
  * @param fallback 兜底付款方式
  * @description 校验并归一付款方式
  */
-function asExpressPaymentType(
-  value: unknown,
-  fallback: ExpressPaymentType
-): ExpressPaymentType {
-  return typeof value === 'string' &&
-    EXPRESS_PAYMENT_TYPES.has(value as ExpressPaymentType)
-    ? (value as ExpressPaymentType)
-    : fallback
+function asExpressPaymentType(value: unknown, fallback: ExpressPaymentType): ExpressPaymentType {
+  return typeof value === 'string' && EXPRESS_PAYMENT_TYPES.has(value as ExpressPaymentType) ? (value as ExpressPaymentType) : fallback
 }
 
 /**
@@ -158,14 +106,8 @@ function asExpressPaymentType(
  * @param fallback 兜底送货方式
  * @description 校验并归一送货方式
  */
-function asExpressDeliveryMode(
-  value: unknown,
-  fallback: ExpressDeliveryMode
-): ExpressDeliveryMode {
-  return typeof value === 'string' &&
-    EXPRESS_DELIVERY_MODES.has(value as ExpressDeliveryMode)
-    ? (value as ExpressDeliveryMode)
-    : fallback
+function asExpressDeliveryMode(value: unknown, fallback: ExpressDeliveryMode): ExpressDeliveryMode {
+  return typeof value === 'string' && EXPRESS_DELIVERY_MODES.has(value as ExpressDeliveryMode) ? (value as ExpressDeliveryMode) : fallback
 }
 
 /**
@@ -174,14 +116,8 @@ function asExpressDeliveryMode(
  * @param fallback 兜底类型
  * @description 校验并归一代收货款类型
  */
-function asExpressCollectionType(
-  value: unknown,
-  fallback: ExpressCollectionType
-): ExpressCollectionType {
-  return typeof value === 'string' &&
-    EXPRESS_COLLECTION_TYPES.has(value as ExpressCollectionType)
-    ? (value as ExpressCollectionType)
-    : fallback
+function asExpressCollectionType(value: unknown, fallback: ExpressCollectionType): ExpressCollectionType {
+  return typeof value === 'string' && EXPRESS_COLLECTION_TYPES.has(value as ExpressCollectionType) ? (value as ExpressCollectionType) : fallback
 }
 
 /**
@@ -237,9 +173,7 @@ export function normalizeSenderOrder(item: SenderOrderItem): OrderListItem {
  * @param item 收件订单原始数据
  * @description 归一收件订单为列表项
  */
-export function normalizeConsigneeOrder(
-  item: ConsigneeOrderItem
-): OrderListItem {
+export function normalizeConsigneeOrder(item: ConsigneeOrderItem): OrderListItem {
   const orderClass = getConsigneeOrderClass(item.statustype)
 
   return {
@@ -332,10 +266,7 @@ function createOrderReceiverContact(order: OrderDetail): ExpressContact {
  * @param mode 重下单模式
  * @description 由订单详情生成寄件草稿
  */
-export function createExpressDraftFromOrderDetail(
-  order: OrderDetail,
-  mode: OrderResendMode = 'repeat'
-): ExpressDraft {
+export function createExpressDraftFromOrderDetail(order: OrderDetail, mode: OrderResendMode = 'repeat'): ExpressDraft {
   const draft = createExpressDraft()
   const productCode = asExpressProductCode(order.transportMode)
   const sender = createOrderSenderContact(order)
@@ -357,29 +288,18 @@ export function createExpressDraftFromOrderDetail(
     service: {
       ...draft.service,
       transportMode: productCode,
-      deliveryMode: asExpressDeliveryMode(
-        order.deliveryType,
-        draft.service.deliveryMode
-      ),
-      paymentType: asExpressPaymentType(
-        order.paymentType,
-        draft.service.paymentType
-      )
+      deliveryMode: asExpressDeliveryMode(order.deliveryType, draft.service.deliveryMode),
+      paymentType: asExpressPaymentType(order.paymentType, draft.service.paymentType)
     },
     collection: isReturn
       ? draft.collection
       : {
           ...draft.collection,
-          type: asExpressCollectionType(
-            order.reciveLoanType,
-            draft.collection.type
-          ),
+          type: asExpressCollectionType(order.reciveLoanType, draft.collection.type),
           amount: Math.max(0, asNumber(order.reviceMoneyAmount)),
           account: asText(order.reciveLoanAccount),
           accountName: asText(order.reciveLoanAccountName)
         },
-    quoteStaleReason: isReturn
-      ? '一键回寄，请重新获取价格'
-      : '再来一单，请重新获取价格'
+    quoteStaleReason: isReturn ? '一键回寄，请重新获取价格' : '再来一单，请重新获取价格'
   }
 }

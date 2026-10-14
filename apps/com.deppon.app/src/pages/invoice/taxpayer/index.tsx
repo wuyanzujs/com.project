@@ -121,12 +121,7 @@ const InvoiceTaxpayerListPage = () => {
       current
         .map(next => ({
           ...next,
-          isDefault:
-            next.id === item.id
-              ? !item.isDefault
-              : item.isDefault
-                ? next.isDefault
-                : false
+          isDefault: next.id === item.id ? !item.isDefault : item.isDefault ? next.isDefault : false
         }))
         .sort((left, right) => Number(right.isDefault) - Number(left.isDefault))
     )
@@ -141,14 +136,9 @@ const InvoiceTaxpayerListPage = () => {
       <View className='invoice-taxpayer-toolbar'>
         <View>
           <Text className='invoice-taxpayer-toolbar__title'>抬头列表</Text>
-          <Text className='invoice-taxpayer-toolbar__summary'>
-            共 {taxpayers.length} 条，最多建议保留 20 条
-          </Text>
+          <Text className='invoice-taxpayer-toolbar__summary'>共 {taxpayers.length} 条，最多建议保留 20 条</Text>
         </View>
-        <AppPressable
-          className='invoice-taxpayer-toolbar__button'
-          onPress={handleCreate}
-        >
+        <AppPressable className='invoice-taxpayer-toolbar__button' onPress={handleCreate}>
           <Text className='invoice-taxpayer-toolbar__button-text'>新增</Text>
         </AppPressable>
       </View>
@@ -157,27 +147,13 @@ const InvoiceTaxpayerListPage = () => {
         {taxpayers.map(item => (
           <View className='invoice-taxpayer-card' key={item.id}>
             <View className='invoice-taxpayer-card__top'>
-              <Text className='invoice-taxpayer-card__title'>
-                {item.name || '--'}
-              </Text>
-              {item.isDefault && (
-                <Text className='invoice-taxpayer-card__tag'>默认</Text>
-              )}
+              <Text className='invoice-taxpayer-card__title'>{item.name || '--'}</Text>
+              {item.isDefault && <Text className='invoice-taxpayer-card__tag'>默认</Text>}
             </View>
             <Text className='invoice-taxpayer-card__meta'>{item.typeText}</Text>
-            <Text className='invoice-taxpayer-card__meta'>
-              税号 {item.taxNumber || '--'}
-            </Text>
-            {item.phone && (
-              <Text className='invoice-taxpayer-card__meta'>
-                电话 {item.phone}
-              </Text>
-            )}
-            {item.address && (
-              <Text className='invoice-taxpayer-card__meta'>
-                地址 {item.address}
-              </Text>
-            )}
+            <Text className='invoice-taxpayer-card__meta'>税号 {item.taxNumber || '--'}</Text>
+            {item.phone && <Text className='invoice-taxpayer-card__meta'>电话 {item.phone}</Text>}
+            {item.address && <Text className='invoice-taxpayer-card__meta'>地址 {item.address}</Text>}
             {(item.bank || item.bankAccount) && (
               <Text className='invoice-taxpayer-card__meta'>
                 银行 {item.bank || '--'} {item.bankAccount || ''}
@@ -185,29 +161,14 @@ const InvoiceTaxpayerListPage = () => {
             )}
 
             <View className='invoice-taxpayer-card__actions'>
-              <AppPressable
-                className='invoice-taxpayer-card__outline-button'
-                onPress={() => handleToggleDefault(item)}
-              >
-                <Text className='invoice-taxpayer-card__outline-button-text'>
-                  {item.isDefault ? '取消默认' : '设为默认'}
-                </Text>
+              <AppPressable className='invoice-taxpayer-card__outline-button' onPress={() => handleToggleDefault(item)}>
+                <Text className='invoice-taxpayer-card__outline-button-text'>{item.isDefault ? '取消默认' : '设为默认'}</Text>
               </AppPressable>
-              <AppPressable
-                className='invoice-taxpayer-card__outline-button'
-                onPress={() => handleEdit(item)}
-              >
-                <Text className='invoice-taxpayer-card__outline-button-text'>
-                  编辑
-                </Text>
+              <AppPressable className='invoice-taxpayer-card__outline-button' onPress={() => handleEdit(item)}>
+                <Text className='invoice-taxpayer-card__outline-button-text'>编辑</Text>
               </AppPressable>
-              <AppPressable
-                className='invoice-taxpayer-card__danger-button'
-                onPress={() => handleDelete(item)}
-              >
-                <Text className='invoice-taxpayer-card__danger-button-text'>
-                  删除
-                </Text>
+              <AppPressable className='invoice-taxpayer-card__danger-button' onPress={() => handleDelete(item)}>
+                <Text className='invoice-taxpayer-card__danger-button-text'>删除</Text>
               </AppPressable>
             </View>
           </View>
@@ -215,18 +176,12 @@ const InvoiceTaxpayerListPage = () => {
 
         {!taxpayers.length && !loading && (
           <View className='invoice-taxpayer-empty'>
-            <Text className='invoice-taxpayer-empty__title'>
-              {errorMessage || '暂无发票抬头'}
-            </Text>
-            <Text className='invoice-taxpayer-empty__summary'>
-              新增抬头后，可在发票申请链路中复用。
-            </Text>
+            <Text className='invoice-taxpayer-empty__title'>{errorMessage || '暂无发票抬头'}</Text>
+            <Text className='invoice-taxpayer-empty__summary'>新增抬头后，可在发票申请链路中复用。</Text>
           </View>
         )}
 
-        {loading && (
-          <Text className='invoice-taxpayer-loading'>正在加载发票抬头...</Text>
-        )}
+        {loading && <Text className='invoice-taxpayer-loading'>正在加载发票抬头...</Text>}
       </View>
     </ScrollView>
   )

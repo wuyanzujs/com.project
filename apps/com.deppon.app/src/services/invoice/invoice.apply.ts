@@ -1,10 +1,6 @@
 import { toFiniteNumber } from './invoice.shared'
 
-import type {
-  InvoiceApplyDraft,
-  InvoiceApplyPreview,
-  InvoiceApplySubmitRequest
-} from './types'
+import type { InvoiceApplyDraft, InvoiceApplyPreview, InvoiceApplySubmitRequest } from './types'
 
 const EXPRESS_APPLY_SYSTEM = {
   applyType: '241',
@@ -43,9 +39,7 @@ function getApplyBillCategoryText(category: InvoiceApplyDraft['billCategory']) {
  * @param draft 开票申请草稿
  * @description 生成开票申请的预览与校验结果
  */
-export function createApplyPreview(
-  draft: InvoiceApplyDraft
-): InvoiceApplyPreview {
+export function createApplyPreview(draft: InvoiceApplyDraft): InvoiceApplyPreview {
   const emailMessage = validateEmail(draft.email)
   let message = ''
 
@@ -55,10 +49,7 @@ export function createApplyPreview(
     message = '缺少开票运单号'
   } else if (!draft.taxpayer) {
     message = '请选择发票抬头'
-  } else if (
-    draft.billCategory === '13' &&
-    draft.taxpayer.customerType !== '1'
-  ) {
+  } else if (draft.billCategory === '13' && draft.taxpayer.customerType !== '1') {
     message = '电子专票需要选择单位抬头'
   } else if (draft.billCategory === '13' && !draft.order.electronSupported) {
     message = '当前运单暂未开通电子专票'
@@ -86,9 +77,7 @@ export function createApplyPreview(
  * @param draft 开票申请草稿
  * @description 组装开票申请提交的 payload
  */
-export function createApplySubmitPayload(
-  draft: InvoiceApplyDraft
-): InvoiceApplySubmitRequest {
+export function createApplySubmitPayload(draft: InvoiceApplyDraft): InvoiceApplySubmitRequest {
   const taxpayer = draft.taxpayer
   const amount = toFiniteNumber(draft.order.amount)
   const openAmount = draft.billCategory === '06' ? 0 : amount

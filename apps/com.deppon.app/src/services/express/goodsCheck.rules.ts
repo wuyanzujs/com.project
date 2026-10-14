@@ -1,10 +1,6 @@
 import { trimText } from './express.draft'
 
-import type {
-  ExpressGoodsCheckResult,
-  ExpressGoodsCheckStatus,
-  ExpressGoodsLabel
-} from './types'
+import type { ExpressGoodsCheckResult, ExpressGoodsCheckStatus, ExpressGoodsLabel } from './types'
 
 /**
  *
@@ -20,9 +16,7 @@ export function getBlockingExpressGoodsLabel(labels: ExpressGoodsLabel[]) {
  * @param label 货物标签
  * @description 由标签推导货物校验状态
  */
-function getGoodsLabelStatus(
-  label: ExpressGoodsLabel
-): ExpressGoodsCheckStatus {
+function getGoodsLabelStatus(label: ExpressGoodsLabel): ExpressGoodsCheckStatus {
   if (label.displayType === 'forbid') {
     return 'forbid'
   }
@@ -40,10 +34,7 @@ function getGoodsLabelStatus(
  * @param next 新状态
  * @description 取两者中更严重的一个状态
  */
-function compareGoodsStatus(
-  current: ExpressGoodsCheckStatus,
-  next: ExpressGoodsCheckStatus
-) {
+function compareGoodsStatus(current: ExpressGoodsCheckStatus, next: ExpressGoodsCheckStatus) {
   const rank: Record<ExpressGoodsCheckStatus, number> = {
     ok: 0,
     risk: 1,
@@ -60,10 +51,7 @@ function compareGoodsStatus(
  * @description 汇总所有标签得出最终校验状态
  */
 function getGoodsCheckStatus(labels: ExpressGoodsLabel[]) {
-  return labels.reduce<ExpressGoodsCheckStatus>(
-    (status, label) => compareGoodsStatus(status, getGoodsLabelStatus(label)),
-    'ok'
-  )
+  return labels.reduce<ExpressGoodsCheckStatus>((status, label) => compareGoodsStatus(status, getGoodsLabelStatus(label)), 'ok')
 }
 
 /**
@@ -90,10 +78,7 @@ function getGoodsCheckTitle(status: ExpressGoodsCheckStatus) {
  * @param labels 货物标签列表
  * @description 优先取标签提示，否则按状态取默认文案
  */
-function getGoodsCheckMessage(
-  status: ExpressGoodsCheckStatus,
-  labels: ExpressGoodsLabel[]
-) {
+function getGoodsCheckMessage(status: ExpressGoodsCheckStatus, labels: ExpressGoodsLabel[]) {
   const message = labels.map(label => trimText(label.tip)).find(Boolean)
 
   if (message) {
@@ -118,10 +103,7 @@ function getGoodsCheckMessage(
  * @param labels 货物标签列表
  * @description 组装货物校验结果
  */
-export function normalizeExpressGoodsCheckResult(
-  goodsName: string,
-  labels: ExpressGoodsLabel[]
-): ExpressGoodsCheckResult {
+export function normalizeExpressGoodsCheckResult(goodsName: string, labels: ExpressGoodsLabel[]): ExpressGoodsCheckResult {
   const status = getGoodsCheckStatus(labels)
 
   return {

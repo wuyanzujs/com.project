@@ -1,9 +1,4 @@
-import type {
-  PaymentChargeItem,
-  PaymentFeeRow,
-  PaymentFeeSummary,
-  PaymentItem
-} from './types'
+import type { PaymentChargeItem, PaymentFeeRow, PaymentFeeSummary, PaymentItem } from './types'
 
 const PAYMENT_SERVICE_FEE_FIELDS: Array<{
   key: keyof PaymentItem
@@ -59,12 +54,7 @@ function roundPaymentAmount(value: number) {
  * @param tone 展示色调，可选
  * @description 构造费用行，金额非正返回 null
  */
-function createPaymentFeeRow(
-  key: string,
-  label: string,
-  amount: number,
-  tone?: PaymentFeeRow['tone']
-): PaymentFeeRow | null {
+function createPaymentFeeRow(key: string, label: string, amount: number, tone?: PaymentFeeRow['tone']): PaymentFeeRow | null {
   const normalizedAmount = roundPaymentAmount(amount)
 
   if (normalizedAmount <= 0) {
@@ -85,11 +75,7 @@ function createPaymentFeeRow(
  * @description 将费用明细转为费用行
  */
 function getChargeItemRow(item: PaymentChargeItem) {
-  return createPaymentFeeRow(
-    item.feeAttribute,
-    item.feeName,
-    toPaymentAmount(item.feeMoney)
-  )
+  return createPaymentFeeRow(item.feeAttribute, item.feeName, toPaymentAmount(item.feeMoney))
 }
 
 /**
@@ -99,38 +85,26 @@ function getChargeItemRow(item: PaymentChargeItem) {
  */
 export function createPaymentFeeSummary(item: PaymentItem): PaymentFeeSummary {
   const serviceRows: PaymentFeeRow[] = []
-  const favorFeeFromDetail =
-    item.basicFeeDetail?.find(detail => detail.feeAttribute === 'favorFee')
-      ?.feeMoney ?? item.favorFee
+  const favorFeeFromDetail = item.basicFeeDetail?.find(detail => detail.feeAttribute === 'favorFee')?.feeMoney ?? item.favorFee
 
   for (const field of PAYMENT_SERVICE_FEE_FIELDS) {
-    const row = createPaymentFeeRow(
-      field.key,
-      field.label,
-      toPaymentAmount(item[field.key])
-    )
+    const row = createPaymentFeeRow(field.key, field.label, toPaymentAmount(item[field.key]))
 
     if (row) {
       serviceRows.push(row)
     }
   }
 
-  const interceptFee = item.incrementFeeDetail?.find(
-    detail => detail.feeAttribute === 'interceptFee'
-  )
+  const interceptFee = item.incrementFeeDetail?.find(detail => detail.feeAttribute === 'interceptFee')
   const interceptAmount = toPaymentAmount(interceptFee?.feeMoney)
 
   if (interceptAmount > 0) {
-    const transferIndex = serviceRows.findIndex(
-      row => row.key === 'transferFee'
-    )
+    const transferIndex = serviceRows.findIndex(row => row.key === 'transferFee')
 
     if (transferIndex >= 0) {
       serviceRows[transferIndex] = {
         ...serviceRows[transferIndex],
-        amount: roundPaymentAmount(
-          serviceRows[transferIndex].amount + interceptAmount
-        )
+        amount: roundPaymentAmount(serviceRows[transferIndex].amount + interceptAmount)
       }
     } else {
       serviceRows.unshift({
@@ -142,11 +116,7 @@ export function createPaymentFeeSummary(item: PaymentItem): PaymentFeeSummary {
   }
 
   for (const detail of item.incrementFeeDetail ?? []) {
-    if (
-      detail.feeAttribute === 'returnFee' ||
-      detail.feeAttribute === 'transferFee' ||
-      detail.feeAttribute === 'interceptFee'
-    ) {
+    if (detail.feeAttribute === 'returnFee' || detail.feeAttribute === 'transferFee' || detail.feeAttribute === 'interceptFee') {
       continue
     }
 
@@ -157,16 +127,9 @@ export function createPaymentFeeSummary(item: PaymentItem): PaymentFeeSummary {
     }
   }
 
-  const serviceAmount = roundPaymentAmount(
-    serviceRows.reduce((total, row) => total + row.amount, 0)
-  )
+  const serviceAmount = roundPaymentAmount(serviceRows.reduce((total, row) => total + row.amount, 0))
   const totalCharge = toPaymentAmount(item.totalCharge)
-  const otherAmount = roundPaymentAmount(
-    totalCharge -
-      toPaymentAmount(item.dshk) -
-      toPaymentAmount(item.releasePriceFee) -
-      serviceAmount
-  )
+  const otherAmount = roundPaymentAmount(totalCharge - toPaymentAmount(item.dshk) - toPaymentAmount(item.releasePriceFee) - serviceAmount)
 
   if (otherAmount > 0) {
     serviceRows.push({
@@ -188,9 +151,7 @@ export function createPaymentFeeSummary(item: PaymentItem): PaymentFeeSummary {
 
   return {
     baseAmount,
-    serviceAmount: roundPaymentAmount(
-      serviceRows.reduce((total, row) => total + row.amount, 0)
-    ),
+    serviceAmount: roundPaymentAmount(serviceRows.reduce((total, row) => total + row.amount, 0)),
     discountAmount,
     paidAmount,
     rows,

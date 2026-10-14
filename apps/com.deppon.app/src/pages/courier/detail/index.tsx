@@ -87,10 +87,7 @@ const CourierDetailPage = () => {
       await dialPhone(detail.courier.mobile || '95353')
     } catch (error) {
       Taro.showToast({
-        title:
-          error instanceof PhoneNumberError
-            ? error.message
-            : getNativeCapabilityErrorMessage(error),
+        title: error instanceof PhoneNumberError ? error.message : getNativeCapabilityErrorMessage(error),
         icon: 'none'
       })
     }
@@ -140,13 +137,9 @@ const CourierDetailPage = () => {
     const isBound = detail.bindingState === 'bound'
     const confirm = await Taro.showModal({
       title: isBound ? '取消关注' : '关注快递员',
-      content: isBound
-        ? `确定取消关注 ${detail.courier.name} 吗？`
-        : `确定关注 ${detail.courier.name} 吗？`,
+      content: isBound ? `确定取消关注 ${detail.courier.name} 吗？` : `确定关注 ${detail.courier.name} 吗？`,
       confirmText: isBound ? '取消关注' : '确认关注',
-      confirmColor: isBound
-        ? APP_STYLE_COLORS.status.dangerTextStrong
-        : APP_STYLE_COLORS.brand.default
+      confirmColor: isBound ? APP_STYLE_COLORS.status.dangerTextStrong : APP_STYLE_COLORS.brand.default
     })
 
     if (!confirm.confirm) {
@@ -156,9 +149,7 @@ const CourierDetailPage = () => {
     setProcessing(true)
 
     try {
-      const response = isBound
-        ? await courierService.unbind(detail.courier.id)
-        : await courierService.bind(detail.courier.id)
+      const response = isBound ? await courierService.unbind(detail.courier.id) : await courierService.bind(detail.courier.id)
 
       if (!response.status) {
         Taro.showToast({
@@ -190,15 +181,9 @@ const CourierDetailPage = () => {
       <View className='courier-detail-header'>
         <Image className='courier-detail-header__avatar' src={COURIER_AVATAR} />
         <View className='courier-detail-header__body'>
-          <Text className='courier-detail-header__name'>
-            {detail?.courier.name || '快递员详情'}
-          </Text>
+          <Text className='courier-detail-header__name'>{detail?.courier.name || '快递员详情'}</Text>
           <Text className='courier-detail-header__summary'>
-            {detail
-              ? `${detail.courier.ratingText} · 工号 ${detail.courier.id}`
-              : loading
-                ? '正在同步快递员信息'
-                : errorMessage || '暂未获取到快递员信息'}
+            {detail ? `${detail.courier.ratingText} · 工号 ${detail.courier.id}` : loading ? '正在同步快递员信息' : errorMessage || '暂未获取到快递员信息'}
           </Text>
         </View>
       </View>
@@ -206,35 +191,15 @@ const CourierDetailPage = () => {
       {detail && (
         <>
           <View className='courier-detail-actions'>
-            <AppPressable
-              flex
-              className='courier-detail-action courier-detail-action--quiet'
-              onPress={handleDial}
-            >
+            <AppPressable flex className='courier-detail-action courier-detail-action--quiet' onPress={handleDial}>
+              <Text className='courier-detail-action__text courier-detail-action__text--quiet'>联系</Text>
+            </AppPressable>
+            <AppPressable flex className='courier-detail-action courier-detail-action--quiet' onPress={handleBinding}>
               <Text className='courier-detail-action__text courier-detail-action__text--quiet'>
-                联系
+                {processing ? '处理中' : detail.bindingState === 'bound' ? '取消关注' : detail.bindingState === 'unbound' ? '关注' : '重试状态'}
               </Text>
             </AppPressable>
-            <AppPressable
-              flex
-              className='courier-detail-action courier-detail-action--quiet'
-              onPress={handleBinding}
-            >
-              <Text className='courier-detail-action__text courier-detail-action__text--quiet'>
-                {processing
-                  ? '处理中'
-                  : detail.bindingState === 'bound'
-                    ? '取消关注'
-                    : detail.bindingState === 'unbound'
-                      ? '关注'
-                      : '重试状态'}
-              </Text>
-            </AppPressable>
-            <AppPressable
-              flex
-              className='courier-detail-action'
-              onPress={handleExpress}
-            >
+            <AppPressable flex className='courier-detail-action' onPress={handleExpress}>
               <Text className='courier-detail-action__text'>找他寄件</Text>
             </AppPressable>
           </View>
@@ -243,40 +208,27 @@ const CourierDetailPage = () => {
             <Text className='courier-detail-section__title'>服务信息</Text>
             <View className='courier-detail-stats'>
               <View className='courier-detail-stat courier-detail-stat--right'>
-                <Text className='courier-detail-stat__value'>
-                  {detail.courier.signedCount || '--'}
-                </Text>
+                <Text className='courier-detail-stat__value'>{detail.courier.signedCount || '--'}</Text>
                 <Text className='courier-detail-stat__label'>累计服务</Text>
               </View>
               <View className='courier-detail-stat'>
-                <Text className='courier-detail-stat__value'>
-                  {detail.courier.rewardTimes || '--'}
-                </Text>
+                <Text className='courier-detail-stat__value'>{detail.courier.rewardTimes || '--'}</Text>
                 <Text className='courier-detail-stat__label'>获得认可</Text>
               </View>
             </View>
 
             <View className='courier-detail-row'>
               <Text className='courier-detail-row__label'>联系电话</Text>
-              <Text className='courier-detail-row__value'>
-                {detail.courier.mobile || '95353'}
-              </Text>
+              <Text className='courier-detail-row__value'>{detail.courier.mobile || '95353'}</Text>
             </View>
             <View className='courier-detail-row'>
               <Text className='courier-detail-row__label'>所属网点</Text>
-              <Text className='courier-detail-row__value'>
-                {detail.courier.departmentName || '--'}
-              </Text>
+              <Text className='courier-detail-row__value'>{detail.courier.departmentName || '--'}</Text>
             </View>
 
             {!!detail.courier.departmentCode && (
-              <AppPressable
-                className='courier-detail-department'
-                onPress={handleOpenDepartment}
-              >
-                <Text className='courier-detail-department__text'>
-                  查看网点详情
-                </Text>
+              <AppPressable className='courier-detail-department' onPress={handleOpenDepartment}>
+                <Text className='courier-detail-department__text'>查看网点详情</Text>
               </AppPressable>
             )}
           </View>
@@ -301,13 +253,8 @@ const CourierDetailPage = () => {
 
       {!detail && !loading && (
         <View className='courier-detail-empty'>
-          <Text className='courier-detail-empty__title'>
-            {errorMessage || '未查询到快递员信息'}
-          </Text>
-          <AppPressable
-            className='courier-detail-empty__button'
-            onPress={loadDetail}
-          >
+          <Text className='courier-detail-empty__title'>{errorMessage || '未查询到快递员信息'}</Text>
+          <AppPressable className='courier-detail-empty__button' onPress={loadDetail}>
             <Text className='courier-detail-empty__button-text'>重新加载</Text>
           </AppPressable>
         </View>

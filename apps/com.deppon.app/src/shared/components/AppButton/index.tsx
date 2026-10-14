@@ -45,32 +45,13 @@ export function AppButton({
     <AppPressable
       accessibilityLabel={accessibilityLabel ?? currentLabel}
       block={block}
-      className={[
-        'app-button',
-        `app-button--${variant}`,
-        `app-button--${density}`,
-        className
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      className={['app-button', `app-button--${variant}`, `app-button--${density}`, className].filter(Boolean).join(' ')}
       disabled={disabled || loading}
       onPress={onPress}
     >
       {leading ? <View className='app-button__leading'>{leading}</View> : null}
-      <Text
-        className={[
-          'app-button__label',
-          `app-button__label--${variant}`,
-          labelClassName
-        ]
-          .filter(Boolean)
-          .join(' ')}
-      >
-        {currentLabel}
-      </Text>
-      {trailing ? (
-        <View className='app-button__trailing'>{trailing}</View>
-      ) : null}
+      <Text className={['app-button__label', `app-button__label--${variant}`, labelClassName].filter(Boolean).join(' ')}>{currentLabel}</Text>
+      {trailing ? <View className='app-button__trailing'>{trailing}</View> : null}
     </AppPressable>
   )
 }

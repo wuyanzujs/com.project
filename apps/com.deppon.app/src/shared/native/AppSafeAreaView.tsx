@@ -24,10 +24,7 @@ export function AppSafeAreaView({
   fill = true
 }: AppSafeAreaViewProps) {
   return (
-    <SafeAreaView
-      edges={edges}
-      style={{ ...(fill ? { flex: 1 } : {}), backgroundColor }}
-    >
+    <SafeAreaView edges={edges} style={{ ...(fill ? { flex: 1 } : {}), backgroundColor }}>
       {children}
     </SafeAreaView>
   )

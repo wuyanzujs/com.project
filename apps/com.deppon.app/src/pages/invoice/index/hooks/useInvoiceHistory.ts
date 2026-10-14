@@ -28,11 +28,7 @@ interface UseInvoiceHistoryResult {
   handleClearHistory: () => void
 }
 
-export function useInvoiceHistory({
-  runLatestRequest,
-  setErrorMessage,
-  showPendingToast
-}: UseInvoiceHistoryParams): UseInvoiceHistoryResult {
+export function useInvoiceHistory({ runLatestRequest, setErrorMessage, showPendingToast }: UseInvoiceHistoryParams): UseInvoiceHistoryResult {
   const [history, setHistory] = useState<InvoiceHistoryView[]>([])
   const [historyPageIndex, setHistoryPageIndex] = useState(1)
   const [historyTotalPage, setHistoryTotalPage] = useState(1)
@@ -54,11 +50,7 @@ export function useInvoiceHistory({
             return
           }
 
-          setHistory(current =>
-            nextPage === 1
-              ? (response.result?.list ?? [])
-              : [...current, ...(response.result?.list ?? [])]
-          )
+          setHistory(current => (nextPage === 1 ? (response.result?.list ?? []) : [...current, ...(response.result?.list ?? [])]))
           setHistoryPageIndex(response.result.pageIndex)
           setHistoryTotalPage(response.result.totalPage)
           setHistoryTotalRows(response.result.totalRows)
@@ -78,11 +70,7 @@ export function useInvoiceHistory({
       const result = await scanAppCode('INVOICE_HISTORY_SEARCH')
 
       if (result.kind !== 'waybill') {
-        showPendingToast(
-          result.kind === 'unsupported'
-            ? result.message
-            : '云打印码不能用于开票历史查询'
-        )
+        showPendingToast(result.kind === 'unsupported' ? result.message : '云打印码不能用于开票历史查询')
         return
       }
 

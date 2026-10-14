@@ -5,10 +5,7 @@ import { useCallback } from 'react'
 import type { ExpressDraft } from '@/services/express'
 import { templateService } from '@/services/template'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
-import {
-  ensureAuthenticated,
-  hasValidSession
-} from '@/shared/navigation/authGuard'
+import { ensureAuthenticated, hasValidSession } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 
 interface UseExpressEntryNavigationParams {
@@ -24,9 +21,7 @@ interface UseExpressEntryNavigationResult {
   handleSaveTemplate: () => void
 }
 
-export function useExpressEntryNavigation({
-  draft
-}: UseExpressEntryNavigationParams): UseExpressEntryNavigationResult {
+export function useExpressEntryNavigation({ draft }: UseExpressEntryNavigationParams): UseExpressEntryNavigationResult {
   const handleOpenTemplates = useCallback(() => {
     navigateToAppRoute(APP_ROUTES.expressTemplateList, {
       login: true

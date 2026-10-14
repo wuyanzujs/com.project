@@ -7,10 +7,7 @@ import { CACHE_KEYS, DPCacheExpireType, dpCache } from '@/cache'
 import { contactSelection, getContactFullAddress } from '@/services/contact'
 import type { Contact } from '@/services/contact'
 import { invoiceService } from '@/services/invoice'
-import type {
-  InvoiceHistoryView,
-  InvoiceHistoryWaybillView
-} from '@/services/invoice'
+import type { InvoiceHistoryView, InvoiceHistoryWaybillView } from '@/services/invoice'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -18,10 +15,7 @@ import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import { InvoiceDetailOverviewCard } from './components/InvoiceDetailOverviewCard'
-import {
-  InvoiceDetailLoadingState,
-  InvoiceDetailMissingState
-} from './components/InvoiceDetailStates'
+import { InvoiceDetailLoadingState, InvoiceDetailMissingState } from './components/InvoiceDetailStates'
 import { InvoiceDetailSupplementarySections } from './components/InvoiceDetailSupplementarySections'
 
 import './index.scss'
@@ -47,16 +41,7 @@ function createPreviewUrl(invoice: InvoiceHistoryView) {
 }
 
 function getInvoiceAddressText(invoice: InvoiceHistoryView) {
-  return (
-    [
-      invoice.contactProvince,
-      invoice.contactCity,
-      invoice.contactCounty,
-      invoice.contactAddress
-    ]
-      .filter(Boolean)
-      .join('') || '--'
-  )
+  return [invoice.contactProvince, invoice.contactCity, invoice.contactCounty, invoice.contactAddress].filter(Boolean).join('') || '--'
 }
 
 function getContactDetailAddress(contact: Contact) {
@@ -83,14 +68,10 @@ function createInvoiceContactPatch(contact: Contact) {
 
 const InvoiceDetailPage = () => {
   const router = useRouter()
-  const [invoice, setInvoice] = useState<InvoiceHistoryView | null>(() =>
-    parseHistory(router.params.data)
-  )
+  const [invoice, setInvoice] = useState<InvoiceHistoryView | null>(() => parseHistory(router.params.data))
   const [waybills, setWaybills] = useState<InvoiceHistoryWaybillView[]>([])
   const [loadedApplyNo, setLoadedApplyNo] = useState('')
-  const [email, setEmail] = useState(
-    () => invoice?.email || dpCache.get<string>(CACHE_KEYS.invoiceEmail) || ''
-  )
+  const [email, setEmail] = useState(() => invoice?.email || dpCache.get<string>(CACHE_KEYS.invoiceEmail) || '')
   const [loading, setLoading] = useState(false)
   const [sending, setSending] = useState(false)
   const [processingAction, setProcessingAction] = useState('')
@@ -182,10 +163,7 @@ const InvoiceDetailPage = () => {
       return
     }
 
-    const selection = contactSelection.consumeSelection(
-      'consignee',
-      'INVOICE_DETAIL'
-    )
+    const selection = contactSelection.consumeSelection('consignee', 'INVOICE_DETAIL')
 
     if (selection) {
       handleSelectedInvoiceContact(selection.contact)
@@ -257,14 +235,9 @@ const InvoiceDetailPage = () => {
       return
     }
 
-    const params = contactSelection.createParams(
-      'consignee',
-      'select',
-      'INVOICE_DETAIL',
-      {
-        returnDelta: '2'
-      }
-    )
+    const params = contactSelection.createParams('consignee', 'select', 'INVOICE_DETAIL', {
+      returnDelta: '2'
+    })
 
     navigateToAppRoute(createAppRouteUrl(APP_ROUTES.contactList, params), {
       login: true
@@ -286,9 +259,7 @@ const InvoiceDetailPage = () => {
 
     const confirm = await Taro.showModal({
       title: isCancel ? '撤销申请' : '作废发票',
-      content: isCancel
-        ? '确定要撤销当前发票申请吗？'
-        : '确定要将当前发票作废吗？作废后请在开票历史查看处理结果。',
+      content: isCancel ? '确定要撤销当前发票申请吗？' : '确定要将当前发票作废吗？作废后请在开票历史查看处理结果。',
       confirmText: isCancel ? '确认撤销' : '确认作废',
       confirmColor: APP_STYLE_COLORS.status.dangerTextStrong
     })
@@ -301,13 +272,10 @@ const InvoiceDetailPage = () => {
     setMessage('')
 
     try {
-      const response = isCancel
-        ? await invoiceService.cancelApply(invoice.id)
-        : await invoiceService.reverseInvoice(invoice.id)
+      const response = isCancel ? await invoiceService.cancelApply(invoice.id) : await invoiceService.reverseInvoice(invoice.id)
 
       if (!response.status) {
-        const nextMessage =
-          response.message || (isCancel ? '撤销失败' : '作废失败')
+        const nextMessage = response.message || (isCancel ? '撤销失败' : '作废失败')
 
         setMessage(nextMessage)
         showToast(nextMessage)
@@ -348,9 +316,7 @@ const InvoiceDetailPage = () => {
   if (!invoice) {
     return (
       <View className='invoice-detail-page invoice-detail-page--empty'>
-        <InvoiceDetailMissingState
-          onBack={() => navigateToAppRoute(APP_ROUTES.invoiceCenter)}
-        />
+        <InvoiceDetailMissingState onBack={() => navigateToAppRoute(APP_ROUTES.invoiceCenter)} />
       </View>
     )
   }

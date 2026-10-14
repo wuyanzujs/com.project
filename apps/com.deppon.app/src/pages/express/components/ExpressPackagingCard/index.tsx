@@ -10,11 +10,7 @@ import {
   getExpressUnpackingOption,
   getExpressWoodenPackagingOption
 } from '@/services/express'
-import type {
-  ExpressPackagingDraft,
-  ExpressUnpackingCode,
-  ExpressWoodenPackagingCode
-} from '@/services/express'
+import type { ExpressPackagingDraft, ExpressUnpackingCode, ExpressWoodenPackagingCode } from '@/services/express'
 import { AppPressable } from '@/shared/components'
 import { AppIcon } from '@/shared/components/AppIcon'
 import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
@@ -30,18 +26,10 @@ interface ExpressPackagingCardProps {
 }
 
 function getOptionClassName(selected: boolean) {
-  return selected
-    ? 'express-packaging-option express-packaging-option--selected'
-    : 'express-packaging-option'
+  return selected ? 'express-packaging-option express-packaging-option--selected' : 'express-packaging-option'
 }
 
-function PackagingIndicator({
-  multiple = false,
-  selected
-}: {
-  multiple?: boolean
-  selected: boolean
-}) {
+function PackagingIndicator({ multiple = false, selected }: { multiple?: boolean; selected: boolean }) {
   const className = multiple
     ? selected
       ? 'express-packaging-option__indicator express-packaging-option__indicator--multiple express-packaging-option__indicator--selected'
@@ -52,35 +40,19 @@ function PackagingIndicator({
 
   return (
     <View className={className}>
-      {selected ? (
-        <AppIcon
-          color={APP_STYLE_COLORS.brand.default}
-          name='badgeCheck'
-          size={APP_NATIVE_TOKENS.icon.small}
-        />
-      ) : null}
+      {selected ? <AppIcon color={APP_STYLE_COLORS.brand.default} name='badgeCheck' size={APP_NATIVE_TOKENS.icon.small} /> : null}
     </View>
   )
 }
 
-export function ExpressPackagingCard({
-  packaging,
-  onChange
-}: ExpressPackagingCardProps) {
+export function ExpressPackagingCard({ packaging, onChange }: ExpressPackagingCardProps) {
   const [expanded, setExpanded] = useState(false)
-  const selectedOption = useMemo(
-    () => getExpressCartonOption(packaging.cartonCode),
-    [packaging.cartonCode]
-  )
+  const selectedOption = useMemo(() => getExpressCartonOption(packaging.cartonCode), [packaging.cartonCode])
   const summary = useMemo(() => {
     const names = [
       selectedOption?.name,
-      ...packaging.woodenCodes.map(
-        code => getExpressWoodenPackagingOption(code)?.name
-      ),
-      ...packaging.unpackingCodes.map(
-        code => getExpressUnpackingOption(code)?.name
-      )
+      ...packaging.woodenCodes.map(code => getExpressWoodenPackagingOption(code)?.name),
+      ...packaging.unpackingCodes.map(code => getExpressUnpackingOption(code)?.name)
     ].filter((name): name is string => !!name)
 
     if (names.length === 0) {
@@ -89,15 +61,10 @@ export function ExpressPackagingCard({
 
     return names.length <= 2 ? names.join('、') : `已选${names.length}项`
   }, [packaging.unpackingCodes, packaging.woodenCodes, selectedOption])
-  const noneSelected =
-    !packaging.cartonCode &&
-    packaging.woodenCodes.length === 0 &&
-    packaging.unpackingCodes.length === 0
+  const noneSelected = !packaging.cartonCode && packaging.woodenCodes.length === 0 && packaging.unpackingCodes.length === 0
 
   const toggleWoodenPackaging = (code: ExpressWoodenPackagingCode) => {
-    const woodenCodes = packaging.woodenCodes.includes(code)
-      ? packaging.woodenCodes.filter(item => item !== code)
-      : [...packaging.woodenCodes, code]
+    const woodenCodes = packaging.woodenCodes.includes(code) ? packaging.woodenCodes.filter(item => item !== code) : [...packaging.woodenCodes, code]
 
     onChange({ woodenCodes })
   }
@@ -111,13 +78,7 @@ export function ExpressPackagingCard({
   }
 
   return (
-    <ExpressSection
-      expanded={expanded}
-      hint='选填'
-      summary={summary}
-      title='包装服务'
-      onHeaderPress={() => setExpanded(current => !current)}
-    >
+    <ExpressSection expanded={expanded} hint='选填' summary={summary} title='包装服务' onHeaderPress={() => setExpanded(current => !current)}>
       {expanded ? (
         <View className='express-packaging-list'>
           <View className='express-packaging-group__head'>
@@ -140,17 +101,11 @@ export function ExpressPackagingCard({
             }
           >
             <View className='express-packaging-option__visual express-packaging-option__visual--empty'>
-              <AppIcon
-                color={APP_STYLE_COLORS.text.supporting}
-                name='package'
-                size={APP_NATIVE_TOKENS.icon.default}
-              />
+              <AppIcon color={APP_STYLE_COLORS.text.supporting} name='package' size={APP_NATIVE_TOKENS.icon.default} />
             </View>
             <View className='express-packaging-option__main'>
               <Text className='express-packaging-option__name'>无需包装</Text>
-              <Text className='express-packaging-option__detail'>
-                使用自备包装
-              </Text>
+              <Text className='express-packaging-option__detail'>使用自备包装</Text>
             </View>
             <PackagingIndicator selected={noneSelected} />
           </AppPressable>
@@ -166,37 +121,20 @@ export function ExpressPackagingCard({
                 key={option.code}
                 layout='row-start'
                 selected={selected}
-                onPress={() =>
-                  selected ? undefined : onChange({ cartonCode: option.code })
-                }
+                onPress={() => (selected ? undefined : onChange({ cartonCode: option.code }))}
               >
-                <Image
-                  className='express-packaging-option__visual'
-                  mode='aspectFit'
-                  src={option.imageUrl}
-                />
+                <Image className='express-packaging-option__visual' mode='aspectFit' src={option.imageUrl} />
                 <View className='express-packaging-option__main'>
                   <View className='express-packaging-option__title-row'>
-                    <Text className='express-packaging-option__name'>
-                      {option.name}
-                    </Text>
-                    {option.tag ? (
-                      <Text className='express-packaging-option__tag'>
-                        {option.tag}
-                      </Text>
-                    ) : null}
+                    <Text className='express-packaging-option__name'>{option.name}</Text>
+                    {option.tag ? <Text className='express-packaging-option__tag'>{option.tag}</Text> : null}
                   </View>
-                  <Text
-                    className='express-packaging-option__detail'
-                    numberOfLines={1}
-                  >
+                  <Text className='express-packaging-option__detail' numberOfLines={1}>
                     {option.dimensions} · {option.suitableFor}
                   </Text>
                 </View>
                 <View className='express-packaging-option__aside'>
-                  <Text className='express-packaging-option__price'>
-                    {option.priceLabel}
-                  </Text>
+                  <Text className='express-packaging-option__price'>{option.priceLabel}</Text>
                   <PackagingIndicator selected={selected} />
                 </View>
               </AppPressable>
@@ -205,16 +143,12 @@ export function ExpressPackagingCard({
 
           <View className='express-packaging-group__head express-packaging-group__head--divided'>
             <Text className='express-packaging-group__title'>木包装</Text>
-            <Text className='express-packaging-group__note'>
-              价格以快递员核实为准
-            </Text>
+            <Text className='express-packaging-group__note'>价格以快递员核实为准</Text>
           </View>
 
           {EXPRESS_WOODEN_PACKAGING_OPTIONS.map(option => {
             const selected = packaging.woodenCodes.includes(option.code)
-            const detail = option.minimumPriceLabel
-              ? `${option.suitableFor} · ${option.minimumPriceLabel}`
-              : option.suitableFor
+            const detail = option.minimumPriceLabel ? `${option.suitableFor} · ${option.minimumPriceLabel}` : option.suitableFor
 
             return (
               <AppPressable
@@ -226,26 +160,15 @@ export function ExpressPackagingCard({
                 selected={selected}
                 onPress={() => toggleWoodenPackaging(option.code)}
               >
-                <Image
-                  className='express-packaging-option__visual'
-                  mode='aspectFit'
-                  src={option.imageUrl}
-                />
+                <Image className='express-packaging-option__visual' mode='aspectFit' src={option.imageUrl} />
                 <View className='express-packaging-option__main'>
-                  <Text className='express-packaging-option__name'>
-                    {option.name}
-                  </Text>
-                  <Text
-                    className='express-packaging-option__detail'
-                    numberOfLines={1}
-                  >
+                  <Text className='express-packaging-option__name'>{option.name}</Text>
+                  <Text className='express-packaging-option__detail' numberOfLines={1}>
                     {detail}
                   </Text>
                 </View>
                 <View className='express-packaging-option__aside'>
-                  <Text className='express-packaging-option__price'>
-                    {option.priceLabel}
-                  </Text>
+                  <Text className='express-packaging-option__price'>{option.priceLabel}</Text>
                   <PackagingIndicator multiple selected={selected} />
                 </View>
               </AppPressable>
@@ -270,27 +193,16 @@ export function ExpressPackagingCard({
                 onPress={() => toggleUnpacking(option.code)}
               >
                 <View className='express-packaging-option__visual express-packaging-option__visual--empty'>
-                  <AppIcon
-                    color={APP_STYLE_COLORS.text.supporting}
-                    name='package'
-                    size={APP_NATIVE_TOKENS.icon.default}
-                  />
+                  <AppIcon color={APP_STYLE_COLORS.text.supporting} name='package' size={APP_NATIVE_TOKENS.icon.default} />
                 </View>
                 <View className='express-packaging-option__main'>
-                  <Text className='express-packaging-option__name'>
-                    {option.name}
-                  </Text>
-                  <Text
-                    className='express-packaging-option__detail'
-                    numberOfLines={1}
-                  >
+                  <Text className='express-packaging-option__name'>{option.name}</Text>
+                  <Text className='express-packaging-option__detail' numberOfLines={1}>
                     {option.description}
                   </Text>
                 </View>
                 <View className='express-packaging-option__aside'>
-                  <Text className='express-packaging-option__price'>
-                    {option.priceLabel}
-                  </Text>
+                  <Text className='express-packaging-option__price'>{option.priceLabel}</Text>
                   <PackagingIndicator multiple selected={selected} />
                 </View>
               </AppPressable>

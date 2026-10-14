@@ -5,10 +5,7 @@ const path = require('path')
 const appRoot = __dirname
 const workspaceRoot = path.resolve(appRoot, '../..')
 const configuredMaxWorkers = Number(process.env.METRO_MAX_WORKERS)
-const maxWorkers =
-  Number.isInteger(configuredMaxWorkers) && configuredMaxWorkers > 0
-    ? configuredMaxWorkers
-    : 2
+const maxWorkers = Number.isInteger(configuredMaxWorkers) && configuredMaxWorkers > 0 ? configuredMaxWorkers : 2
 
 /**
  * Metro 配置
@@ -21,10 +18,7 @@ const config = {
   projectRoot: appRoot,
   watchFolders: [workspaceRoot],
   resolver: {
-    nodeModulesPaths: [
-      path.resolve(appRoot, 'node_modules'),
-      path.resolve(workspaceRoot, 'node_modules')
-    ],
+    nodeModulesPaths: [path.resolve(appRoot, 'node_modules'), path.resolve(workspaceRoot, 'node_modules')],
     unstable_enableSymlinks: true
   }
 }

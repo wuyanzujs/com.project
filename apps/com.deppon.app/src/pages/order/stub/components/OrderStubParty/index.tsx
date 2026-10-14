@@ -5,29 +5,18 @@ import { AppPressable } from '@/shared/components'
 
 import './index.scss'
 
-export function OrderStubParty(props: {
-  party: OrderStubPartyView
-  onCopy: (value: string, successText?: string) => void
-}) {
+export function OrderStubParty(props: { party: OrderStubPartyView; onCopy: (value: string, successText?: string) => void }) {
   const { party } = props
 
   return (
     <View className='order-stub-party'>
-      <Text
-        className={
-          party.role === 'sender'
-            ? 'order-stub-party__tag'
-            : 'order-stub-party__tag order-stub-party__tag--receiver'
-        }
-      >
+      <Text className={party.role === 'sender' ? 'order-stub-party__tag' : 'order-stub-party__tag order-stub-party__tag--receiver'}>
         {party.role === 'sender' ? '寄' : '收'}
       </Text>
       <View className='order-stub-party__content'>
         <View className='order-stub-party__head'>
           <Text className='order-stub-party__label'>{party.label}</Text>
-          {party.encrypted && (
-            <Text className='order-stub-party__badge'>隐私保护</Text>
-          )}
+          {party.encrypted && <Text className='order-stub-party__badge'>隐私保护</Text>}
         </View>
         <Text className='order-stub-party__name'>
           {party.name} {party.mobile}

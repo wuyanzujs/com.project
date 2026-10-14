@@ -6,13 +6,8 @@ const { CACHE_KEYS } = require('@/cache/keys')
 const { getStorageValue, setStorageValue } = require('@/cache/storage')
 const { expressDraftBridge } = require('@/services/express/draftBridge')
 const { expressApi } = require('@/services/express/express.api')
-const {
-  createExpressWarehouseScreening
-} = require('@/services/express/warehouse.rules')
-const {
-  queryExpressWarehouseScreening,
-  stageExpressWarehouse
-} = require('@/services/express/warehouse.service')
+const { createExpressWarehouseScreening } = require('@/services/express/warehouse.rules')
+const { queryExpressWarehouseScreening, stageExpressWarehouse } = require('@/services/express/warehouse.service')
 const { templateDraftBridge } = require('@/services/template/template.bridge')
 const { getAppWebWarehouseStagingId } = require('@/shared/webview/appWeb')
 const { appWebMessageBridge } = require('@/shared/webview/appWebMessage')
@@ -37,8 +32,7 @@ const cases = [
           warehouseNo: 'ENTRY-001',
           fileList: [
             {
-              previewPath:
-                'https://owstest.deppon.com/files/warehouse-original.jpg'
+              previewPath: 'https://owstest.deppon.com/files/warehouse-original.jpg'
             }
           ],
           screening
@@ -46,35 +40,24 @@ const cases = [
       }
 
       expressDraftBridge.carryFromCoupon(source)
-      source.warehouse.fileList[0].previewPath =
-        'https://owstest.deppon.com/files/warehouse-mutated.jpg'
+      source.warehouse.fileList[0].previewPath = 'https://owstest.deppon.com/files/warehouse-mutated.jpg'
       source.warehouse.screening.reason = '已修改'
 
       const carried = expressDraftBridge.consume().draft
 
-      assert.equal(
-        carried.warehouse.fileList[0].previewPath,
-        'https://owstest.deppon.com/files/warehouse-original.jpg'
-      )
+      assert.equal(carried.warehouse.fileList[0].previewPath, 'https://owstest.deppon.com/files/warehouse-original.jpg')
       assert.equal(carried.warehouse.screening.reason, '可能产生进仓费用')
       assert.notEqual(carried.warehouse.fileList, source.warehouse.fileList)
-      assert.notEqual(
-        carried.warehouse.fileList[0],
-        source.warehouse.fileList[0]
-      )
+      assert.notEqual(carried.warehouse.fileList[0], source.warehouse.fileList[0])
       assert.notEqual(carried.warehouse.screening, source.warehouse.screening)
 
       templateDraftBridge.stage(carried)
-      carried.warehouse.fileList[0].previewPath =
-        'https://owstest.deppon.com/files/template-mutated.jpg'
+      carried.warehouse.fileList[0].previewPath = 'https://owstest.deppon.com/files/template-mutated.jpg'
       carried.warehouse.screening.reason = '模板已修改'
 
       const staged = templateDraftBridge.consume()
 
-      assert.equal(
-        staged.warehouse.fileList[0].previewPath,
-        'https://owstest.deppon.com/files/warehouse-original.jpg'
-      )
+      assert.equal(staged.warehouse.fileList[0].previewPath, 'https://owstest.deppon.com/files/warehouse-original.jpg')
       assert.equal(staged.warehouse.screening.reason, '可能产生进仓费用')
       assert.notEqual(staged.warehouse.fileList, carried.warehouse.fileList)
       assert.notEqual(staged.warehouse.screening, carried.warehouse.screening)
@@ -85,9 +68,7 @@ const cases = [
     name: 'warehouse web messages enforce source event flags fields and one time consumption',
     run() {
       const payload = {
-        fileList: [
-          { previewPath: 'https://owstest.deppon.com/files/warehouse.jpg' }
-        ],
+        fileList: [{ previewPath: 'https://owstest.deppon.com/files/warehouse.jpg' }],
         warehouseNo: ' ENTRY-001 ',
         warehouseTime: ' 2026-07-20 10:00:00 ',
         warehouseType: '3',
@@ -107,9 +88,7 @@ const cases = [
       }
 
       assert.equal(
-        getAppWebWarehouseStagingId(
-          'https://owstest.deppon.com/depponmobile/mow/send/warehouse/index?warehouseId=WAREHOUSE-STAGE-ENABLED'
-        ),
+        getAppWebWarehouseStagingId('https://owstest.deppon.com/depponmobile/mow/send/warehouse/index?warehouseId=WAREHOUSE-STAGE-ENABLED'),
         enabledContext.stagingId
       )
 
@@ -125,10 +104,7 @@ const cases = [
         ).handled,
         false
       )
-      assert.deepEqual(
-        appWebMessageBridge.stage('EXPRESS_WAREHOUSE', enabledMessage),
-        { handled: false, closeAfterReceive: false }
-      )
+      assert.deepEqual(appWebMessageBridge.stage('EXPRESS_WAREHOUSE', enabledMessage), { handled: false, closeAfterReceive: false })
       assert.equal(appWebMessageBridge.consumeWarehouse(), null)
       assert.equal(appWebMessageBridge.expectWarehouse(enabledContext), true)
       assert.equal(
@@ -171,21 +147,12 @@ const cases = [
         ).handled,
         false
       )
-      assert.deepEqual(
-        appWebMessageBridge.stage(
-          'EXPRESS_WAREHOUSE',
-          enabledMessage,
-          enabledContext
-        ),
-        { handled: true, closeAfterReceive: true }
-      )
+      assert.deepEqual(appWebMessageBridge.stage('EXPRESS_WAREHOUSE', enabledMessage, enabledContext), { handled: true, closeAfterReceive: true })
       assert.deepEqual(appWebMessageBridge.consumeWarehouse(), {
         context: enabledContext,
         warehouse: {
           enabled: true,
-          fileList: [
-            { previewPath: 'https://owstest.deppon.com/files/warehouse.jpg' }
-          ],
+          fileList: [{ previewPath: 'https://owstest.deppon.com/files/warehouse.jpg' }],
           warehouseNo: 'ENTRY-001',
           warehouseTime: '2026-07-20 10:00:00',
           warehouseType: '3',
@@ -278,14 +245,7 @@ const cases = [
 
       appWebMessageBridge.clear()
       const safeContext = expectWarehouse()
-      assert.equal(
-        appWebMessageBridge.stage(
-          'EXPRESS_WAREHOUSE',
-          createMessage(safeFiles),
-          safeContext
-        ).handled,
-        true
-      )
+      assert.equal(appWebMessageBridge.stage('EXPRESS_WAREHOUSE', createMessage(safeFiles), safeContext).handled, true)
       const safeResult = appWebMessageBridge.consumeWarehouse()
 
       assert.deepEqual(safeResult.context, safeContext)
@@ -294,21 +254,14 @@ const cases = [
       assert.equal(
         appWebMessageBridge.stage(
           'EXPRESS_WAREHOUSE',
-          createMessage([
-            ...safeFiles,
-            { previewPath: 'https://owstest.deppon.com/files/10.jpg' }
-          ]),
+          createMessage([...safeFiles, { previewPath: 'https://owstest.deppon.com/files/10.jpg' }]),
           excessiveContext
         ).handled,
         false
       )
       const unsafeProtocolContext = expectWarehouse()
       assert.equal(
-        appWebMessageBridge.stage(
-          'EXPRESS_WAREHOUSE',
-          createMessage([{ previewPath: 'http://example.com/unsafe.jpg' }]),
-          unsafeProtocolContext
-        ).handled,
+        appWebMessageBridge.stage('EXPRESS_WAREHOUSE', createMessage([{ previewPath: 'http://example.com/unsafe.jpg' }]), unsafeProtocolContext).handled,
         false
       )
       const credentialContext = expectWarehouse()
@@ -349,13 +302,7 @@ const cases = [
       const draft = createValidExpressDraft()
 
       try {
-        for (const result of [
-          null,
-          {},
-          { type: null },
-          { type: 5 },
-          { type: '03' }
-        ]) {
+        for (const result of [null, {}, { type: null }, { type: 5 }, { type: '03' }]) {
           expressApi.filterOrder = async () => ({ status: true, result })
 
           const response = await queryExpressWarehouseScreening(draft)
@@ -389,10 +336,7 @@ const cases = [
         selectedProduct: null
       }
 
-      await setStorageValue(
-        CACHE_KEYS.cookie,
-        'ECO_TOKEN=warehouse-stale-product-token;'
-      )
+      await setStorageValue(CACHE_KEYS.cookie, 'ECO_TOKEN=warehouse-stale-product-token;')
 
       try {
         const queryResponse = await queryExpressWarehouseScreening(draft)

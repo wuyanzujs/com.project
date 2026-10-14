@@ -4,11 +4,7 @@ import { useDidShow } from '@tarojs/taro'
 import { useState } from 'react'
 
 import { memberService } from '@/services/member'
-import type {
-  MemberBenefitView,
-  MemberOverviewView,
-  MemberWebAction
-} from '@/services/member'
+import type { MemberBenefitView, MemberOverviewView, MemberWebAction } from '@/services/member'
 import { AppPressable, AppPage, AppStatusTag } from '@/shared/components'
 import AppTabBar from '@/shared/components/AppTabBar'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
@@ -44,10 +40,7 @@ const MemberCenterPage = () => {
     try {
       const overviewResponse = await memberService.queryOverview()
       const overviewResult = overviewResponse.result ?? null
-      const nextWelfareUrl = await memberService.createWelfareCenterUrl(
-        'MEMBER_INDEX',
-        overviewResult?.svipUrl
-      )
+      const nextWelfareUrl = await memberService.createWelfareCenterUrl('MEMBER_INDEX', overviewResult?.svipUrl)
 
       if (!overviewResponse.status || !overviewResponse.result) {
         setOverview(null)
@@ -73,10 +66,7 @@ const MemberCenterPage = () => {
     }
   })
 
-  const handleOpenWelfare = (
-    source: AppWebSource = 'MEMBER_WELFARE_CENTER',
-    title = '会员权益'
-  ) => {
+  const handleOpenWelfare = (source: AppWebSource = 'MEMBER_WELFARE_CENTER', title = '会员权益') => {
     navigateToAppRoute(
       createAppWebUrl({
         source,
@@ -89,10 +79,7 @@ const MemberCenterPage = () => {
     )
   }
 
-  const handleOpenMemberWeb = async (
-    action: MemberWebAction,
-    title: string
-  ) => {
+  const handleOpenMemberWeb = async (action: MemberWebAction, title: string) => {
     const uri = await memberService.createMasUrl(action, action)
 
     navigateToAppRoute(
@@ -122,13 +109,7 @@ const MemberCenterPage = () => {
   }
 
   return (
-    <AppPage
-      className='member-page-shell'
-      footer={<AppTabBar active='memberCenter' />}
-      safeArea='top'
-      statusBar='dark'
-      surface='brand-soft'
-    >
+    <AppPage className='member-page-shell' footer={<AppTabBar active='memberCenter' />} safeArea='top' statusBar='dark' surface='brand-soft'>
       <ScrollView className='member-page' scrollY>
         <View className='member-header'>
           <Text className='member-header__title'>会员权益</Text>
@@ -138,23 +119,15 @@ const MemberCenterPage = () => {
           <View className='member-card__top'>
             <View>
               <Text className='member-card__label'>当前等级</Text>
-              <Text className='member-card__title member-card__title--hero'>
-                {overview?.levelName || '普通会员'}
-              </Text>
+              <Text className='member-card__title member-card__title--hero'>{overview?.levelName || '普通会员'}</Text>
             </View>
-            <Text className='member-card__badge'>
-              Lv.{overview?.levelCode ?? 0}
-            </Text>
+            <Text className='member-card__badge'>Lv.{overview?.levelCode ?? 0}</Text>
           </View>
           <View className='member-progress'>
-            <View
-              className='member-progress__bar'
-              style={{ width: `${overview?.growthPercent ?? 0}%` }}
-            />
+            <View className='member-progress__bar' style={{ width: `${overview?.growthPercent ?? 0}%` }} />
           </View>
           <Text className='member-card__summary member-card__summary--hero'>
-            成长值 {overview?.growthValue ?? 0} /{' '}
-            {overview?.maxGrowthValue || '--'}
+            成长值 {overview?.growthValue ?? 0} / {overview?.maxGrowthValue || '--'}
           </Text>
         </View>
 
@@ -162,33 +135,17 @@ const MemberCenterPage = () => {
           <View className='member-card__top'>
             <View>
               <Text className='member-card__label'>积分</Text>
-              <Text className='member-card__title'>
-                {overview?.points ?? 0}
-              </Text>
+              <Text className='member-card__title'>{overview?.points ?? 0}</Text>
             </View>
-            <Text className='member-card__badge member-card__badge--dark'>
-              {overview?.svipStatusText || '普通会员'}
-            </Text>
+            <Text className='member-card__badge member-card__badge--dark'>{overview?.svipStatusText || '普通会员'}</Text>
           </View>
-          <Text className='member-card__summary'>
-            {overview?.svipMessage || '更多权益由福利中心承接'}
-          </Text>
+          <Text className='member-card__summary'>{overview?.svipMessage || '更多权益由福利中心承接'}</Text>
           <View className='member-actions'>
-            <AppPressable
-              className='member-action'
-              onPress={() => handleOpenWelfare()}
-            >
-              <Text className='member-action__text'>
-                {overview?.svipButtonText || '查看权益'}
-              </Text>
+            <AppPressable className='member-action' onPress={() => handleOpenWelfare()}>
+              <Text className='member-action__text'>{overview?.svipButtonText || '查看权益'}</Text>
             </AppPressable>
-            <AppPressable
-              className='member-action member-action--ghost'
-              onPress={() => navigateToAppRoute(APP_ROUTES.couponList)}
-            >
-              <Text className='member-action__text member-action__text--ghost'>
-                我的优惠券
-              </Text>
+            <AppPressable className='member-action member-action--ghost' onPress={() => navigateToAppRoute(APP_ROUTES.couponList)}>
+              <Text className='member-action__text member-action__text--ghost'>我的优惠券</Text>
             </AppPressable>
           </View>
         </View>
@@ -196,38 +153,22 @@ const MemberCenterPage = () => {
         <View className='member-section'>
           <Text className='member-section__title'>权益服务</Text>
           {(overview?.benefits ?? []).map(item => (
-            <AppPressable
-              className='member-benefit'
-              key={item.title}
-              onPress={() => handleBenefit(item)}
-            >
+            <AppPressable className='member-benefit' key={item.title} onPress={() => handleBenefit(item)}>
               <View>
                 <Text className='member-benefit__title'>{item.title}</Text>
                 <Text className='member-benefit__summary'>{item.summary}</Text>
               </View>
               <AppStatusTag
-                className={
-                  item.status === 'ready'
-                    ? 'member-benefit__tag'
-                    : `member-benefit__tag member-benefit__tag--${item.status}`
-                }
+                className={item.status === 'ready' ? 'member-benefit__tag' : `member-benefit__tag member-benefit__tag--${item.status}`}
                 label={item.badgeText}
-                tone={
-                  item.status === 'ready'
-                    ? 'success'
-                    : item.status === 'pending'
-                      ? 'warning'
-                      : 'brand'
-                }
+                tone={item.status === 'ready' ? 'success' : item.status === 'pending' ? 'warning' : 'brand'}
               />
             </AppPressable>
           ))}
 
           {!overview && !loading && (
             <View className='member-empty'>
-              <Text className='member-empty__title'>
-                {message || '暂未获取到会员权益'}
-              </Text>
+              <Text className='member-empty__title'>{message || '暂未获取到会员权益'}</Text>
             </View>
           )}
         </View>

@@ -1,28 +1,54 @@
 @use '@/styles/_tokens.scss' as *;
 .express-section--card {
-  margin-bottom: $dp-space-16; padding: $dp-space-16 $dp-space-20; background: $dp-color-bg-card; border-radius: $dp-radius-sm;
+  margin-bottom: $dp-space-16;
+  padding: $dp-space-16 $dp-space-20;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
 }
 .express-section__head {
-  display: flex; flex-direction: row; align-items: center; justify-content: flex-start; min-height: 52px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 52px;
 }
 /* 基础信息卡里的货物信息行按生产端规格，行高 82px。 */
 .express-section__head--row {
   min-height: 82px;
 }
 .express-section__title {
-  color: $dp-color-text-neutral; font-size: $dp-font-size-label-large; font-weight: $dp-font-weight-regular; line-height: $dp-line-height-42;
+  color: $dp-color-text-neutral;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-42;
 }
 .express-section__hint {
-  height: 28px; margin-left: $dp-space-16; padding: 0 $dp-space-14; color: $dp-color-brand; font-size: $dp-font-size-micro; line-height: $dp-line-height-28; background: $dp-color-brand-soft; border-radius: $dp-radius-16;
+  height: 28px;
+  margin-left: $dp-space-16;
+  padding: 0 $dp-space-14;
+  color: $dp-color-brand;
+  font-size: $dp-font-size-micro;
+  line-height: $dp-line-height-28;
+  background: $dp-color-brand-soft;
+  border-radius: $dp-radius-16;
 }
 .express-section__summary {
-  flex: 1; margin: 0 $dp-space-8 0 $dp-space-16; color: $dp-color-text-heading; font-size: $dp-font-size-label-large; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-42; text-align: right;
+  flex: 1;
+  margin: 0 $dp-space-8 0 $dp-space-16;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-42;
+  text-align: right;
 }
 .express-section__summary--muted {
-  color: $dp-color-text-subdued; font-weight: $dp-font-weight-regular;
+  color: $dp-color-text-subdued;
+  font-weight: $dp-font-weight-regular;
 }
 .express-section__arrow {
-  flex-shrink: 0; width: $dp-space-24; height: $dp-space-24;
+  flex-shrink: 0;
+  width: $dp-space-24;
+  height: $dp-space-24;
 }
 .express-section__arrow--expanded {
   transform: rotate(90deg);

@@ -4,17 +4,8 @@ const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
 const { CACHE_KEYS } = require('@/cache/keys')
-const {
-  getStorageValue,
-  removeStorageValue,
-  setStorageValue
-} = require('@/cache/storage')
-const {
-  createEcoSessionCookie,
-  extractEcoToken,
-  getSetCookieFromHeaders,
-  normalizeCookieList
-} = require('@/request/cookie.rules')
+const { getStorageValue, removeStorageValue, setStorageValue } = require('@/cache/storage')
+const { createEcoSessionCookie, extractEcoToken, getSetCookieFromHeaders, normalizeCookieList } = require('@/request/cookie.rules')
 const {
   clearSessionCookie,
   configureSessionCookieRuntime,
@@ -23,27 +14,16 @@ const {
   saveSessionCookieFromResponse
 } = require('@/request/cookieJar')
 const { depponHttp } = require('@/request/deppon')
-const {
-  authApi,
-  authService,
-  clearAppSession,
-  createAppSmsLoginRequest
-} = require('@/services/auth')
+const { authApi, authService, clearAppSession, createAppSmsLoginRequest } = require('@/services/auth')
 const authSession = require('@/services/auth/session')
 
 const cases = [
   {
     name: 'cookie rules extract ECO_TOKEN from response headers and cookie lists',
     run() {
-      assert.equal(
-        extractEcoToken('foo=bar; ECO_TOKEN=token-123; path=/'),
-        'token-123'
-      )
+      assert.equal(extractEcoToken('foo=bar; ECO_TOKEN=token-123; path=/'), 'token-123')
       assert.equal(extractEcoToken('foo=bar;'), '')
-      assert.equal(
-        createEcoSessionCookie('foo=bar; ECO_TOKEN=token-123; path=/'),
-        'ECO_TOKEN=token-123;'
-      )
+      assert.equal(createEcoSessionCookie('foo=bar; ECO_TOKEN=token-123; path=/'), 'ECO_TOKEN=token-123;')
       assert.equal(
         getSetCookieFromHeaders({
           'set-cookie': ['foo=bar', 'ECO_TOKEN=token-456; Path=/']
@@ -52,9 +32,7 @@ const cases = [
       )
       const fetchHeaders = {
         get(name) {
-          return name === 'set-cookie'
-            ? 'foo=bar; Path=/, ECO_TOKEN=rn-token; Path=/'
-            : null
+          return name === 'set-cookie' ? 'foo=bar; Path=/, ECO_TOKEN=rn-token; Path=/' : null
         }
       }
       const fetchHeadersWithSetCookie = {
@@ -63,22 +41,10 @@ const cases = [
         }
       }
 
-      assert.equal(
-        getSetCookieFromHeaders(fetchHeaders),
-        'foo=bar; Path=/, ECO_TOKEN=rn-token; Path=/'
-      )
-      assert.equal(
-        extractEcoToken(getSetCookieFromHeaders(fetchHeaders)),
-        'rn-token'
-      )
-      assert.equal(
-        extractEcoToken(getSetCookieFromHeaders(fetchHeadersWithSetCookie)),
-        'rn-set-cookie-token'
-      )
-      assert.equal(
-        normalizeCookieList(['foo=bar', 'ECO_TOKEN=token-789; Path=/']),
-        'foo=bar;ECO_TOKEN=token-789; Path=/'
-      )
+      assert.equal(getSetCookieFromHeaders(fetchHeaders), 'foo=bar; Path=/, ECO_TOKEN=rn-token; Path=/')
+      assert.equal(extractEcoToken(getSetCookieFromHeaders(fetchHeaders)), 'rn-token')
+      assert.equal(extractEcoToken(getSetCookieFromHeaders(fetchHeadersWithSetCookie)), 'rn-set-cookie-token')
+      assert.equal(normalizeCookieList(['foo=bar', 'ECO_TOKEN=token-789; Path=/']), 'foo=bar;ECO_TOKEN=token-789; Path=/')
       assert.equal(
         normalizeCookieList([
           { name: 'foo', value: 'bar' },
@@ -148,8 +114,7 @@ const cases = [
 
       try {
         Taro.setStorage = () => Promise.resolve({ errMsg: 'setStorage:ok' })
-        Taro.removeStorage = () =>
-          Promise.resolve({ errMsg: 'removeStorage:ok' })
+        Taro.removeStorage = () => Promise.resolve({ errMsg: 'removeStorage:ok' })
         await removeStorageValue(CACHE_KEYS.cookie)
 
         const savedCookie = await saveSessionCookieFromResponse({
@@ -165,20 +130,12 @@ const cases = [
         })
 
         assert.equal(savedCookie, 'ECO_TOKEN=native-login-token;')
-        assert.equal(
-          getStorageValue(CACHE_KEYS.cookie),
-          'ECO_TOKEN=native-login-token;'
-        )
-        assert.deepEqual(readUrls, [
-          'https://owstest.deppon.com/gwapi/user/login'
-        ])
+        assert.equal(getStorageValue(CACHE_KEYS.cookie), 'ECO_TOKEN=native-login-token;')
+        assert.deepEqual(readUrls, ['https://owstest.deppon.com/gwapi/user/login'])
         assert.deepEqual(writtenCookies, ['ECO_TOKEN=native-login-token;'])
 
         await removeStorageValue(CACHE_KEYS.cookie)
-        assert.equal(
-          await hydrateSessionCookie('https://owstest.deppon.com'),
-          'ECO_TOKEN=native-login-token;'
-        )
+        assert.equal(await hydrateSessionCookie('https://owstest.deppon.com'), 'ECO_TOKEN=native-login-token;')
         await clearSessionCookie()
         assert.equal(clearCount, 1)
         assert.equal(getStorageValue(CACHE_KEYS.cookie), '')
@@ -217,10 +174,7 @@ const cases = [
           return { status: true, result: null }
         }
 
-        await authApi.login(
-          createAppSmsLoginRequest('13800138000', '123456'),
-          false
-        )
+        await authApi.login(createAppSmsLoginRequest('13800138000', '123456'), false)
         await authApi.sendSmsMessage({
           mobile: '13800138000',
           sysCode: 'APP',
@@ -250,14 +204,8 @@ const cases = [
     async run() {
       const originalLogin = authApi.login
       const originalSaveCurrentUser = authSession.saveCurrentUser
-      const sessionKeys = [
-        CACHE_KEYS.cookie,
-        CACHE_KEYS.userInfo,
-        CACHE_KEYS.accountCacheOwner
-      ]
-      const originalValues = new Map(
-        sessionKeys.map(key => [key, getStorageValue(key)])
-      )
+      const sessionKeys = [CACHE_KEYS.cookie, CACHE_KEYS.userInfo, CACHE_KEYS.accountCacheOwner]
+      const originalValues = new Map(sessionKeys.map(key => [key, getStorageValue(key)]))
 
       try {
         await clearAppSession()
@@ -266,10 +214,7 @@ const cases = [
           result: { mobile: '13800138000' }
         })
 
-        const missingCookie = await authService.loginWithSms(
-          '13800138000',
-          '123456'
-        )
+        const missingCookie = await authService.loginWithSms('13800138000', '123456')
 
         assert.equal(missingCookie.status, false)
         assert.equal(missingCookie.message, '登录凭证保存失败，请重试')
@@ -283,10 +228,7 @@ const cases = [
           sessionCookieSaved: true
         })
 
-        const authenticated = await authService.loginWithSms(
-          '13800138000',
-          '123456'
-        )
+        const authenticated = await authService.loginWithSms('13800138000', '123456')
 
         assert.equal(authenticated.status, true)
         assert.equal(authenticated.user.mobile, '13800138000')
@@ -310,14 +252,8 @@ const cases = [
     async run() {
       const originalLogin = authApi.login
       const originalSaveCurrentUser = authSession.saveCurrentUser
-      const sessionKeys = [
-        CACHE_KEYS.cookie,
-        CACHE_KEYS.userInfo,
-        CACHE_KEYS.accountCacheOwner
-      ]
-      const originalValues = new Map(
-        sessionKeys.map(key => [key, getStorageValue(key)])
-      )
+      const sessionKeys = [CACHE_KEYS.cookie, CACHE_KEYS.userInfo, CACHE_KEYS.accountCacheOwner]
+      const originalValues = new Map(sessionKeys.map(key => [key, getStorageValue(key)]))
       let readCount = 0
 
       try {
@@ -341,18 +277,12 @@ const cases = [
           result: { mobile: '13800138000' }
         })
 
-        const authenticated = await authService.loginWithSms(
-          '13800138000',
-          '123456'
-        )
+        const authenticated = await authService.loginWithSms('13800138000', '123456')
 
         assert.equal(authenticated.status, true)
         assert.equal(authenticated.user.mobile, '13800138000')
         assert.equal(readCount, 3)
-        assert.equal(
-          getStorageValue(CACHE_KEYS.cookie),
-          'ECO_TOKEN=delayed-native-token;'
-        )
+        assert.equal(getStorageValue(CACHE_KEYS.cookie), 'ECO_TOKEN=delayed-native-token;')
       } finally {
         configureSessionCookieRuntime(null)
         authApi.login = originalLogin

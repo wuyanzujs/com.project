@@ -1,20 +1,9 @@
 import type { DepponResponse } from '@/request/deppon'
 
-import {
-  cancelInvoiceApply,
-  modifyInvoiceAddress,
-  reverseInvoice as reverseInvoiceAction
-} from './invoice.actions'
+import { cancelInvoiceApply, modifyInvoiceAddress, reverseInvoice as reverseInvoiceAction } from './invoice.actions'
 import { invoiceApi } from './invoice.api'
-import {
-  createApplyPreview,
-  createApplySubmitPayload,
-  validateEmail
-} from './invoice.apply'
-import {
-  createECardApplyPreview,
-  createECardApplySubmitPayload
-} from './invoice.ecard'
+import { createApplyPreview, createApplySubmitPayload, validateEmail } from './invoice.apply'
+import { createECardApplyPreview, createECardApplySubmitPayload } from './invoice.ecard'
 import { normalizeHistoryWaybills, normalizePreview } from './invoice.history'
 import { normalizeText } from './invoice.shared'
 import { createServiceFailure as createFailure } from '../serviceResponse'
@@ -35,29 +24,26 @@ import type {
 } from './types'
 import type { Contact } from '../contact'
 
-type InvoiceAddressContact = Pick<
-  Contact,
-  'name' | 'telephone' | 'province' | 'city' | 'county' | 'town' | 'address'
->
+type InvoiceAddressContact = Pick<Contact, 'name' | 'telephone' | 'province' | 'city' | 'county' | 'town' | 'address'>
 
 export const invoiceApplyService = {
   createApplyPreview,
   createECardApplyPreview,
   validateEmail,
 
-  async submitApplyDraft(
-    draft: InvoiceApplyDraft
-  ): Promise<DepponResponse<InvoiceApplySubmitResult | null>> {
+  async submitApplyDraft(draft: InvoiceApplyDraft): Promise<DepponResponse<InvoiceApplySubmitResult | null>> {
     const preview = createApplyPreview(draft)
 
     if (!preview.canSubmit) {
       return createFailure(preview.message || '缺少开票信息')
     }
 
-    const response = await invoiceApi.request<
-      InvoiceApplySubmitResult | null,
-      InvoiceApplySubmitRequest
-    >('addTaskInfoByEle', createApplySubmitPayload(draft), true, 30000)
+    const response = await invoiceApi.request<InvoiceApplySubmitResult | null, InvoiceApplySubmitRequest>(
+      'addTaskInfoByEle',
+      createApplySubmitPayload(draft),
+      true,
+      30000
+    )
 
     if (!response.status) {
       return createFailure(response.message || '提交失败，请稍后再试')
@@ -69,19 +55,19 @@ export const invoiceApplyService = {
     }
   },
 
-  async submitECardApplyDraft(
-    draft: InvoiceECardApplyDraft
-  ): Promise<DepponResponse<InvoiceApplySubmitResult | null>> {
+  async submitECardApplyDraft(draft: InvoiceECardApplyDraft): Promise<DepponResponse<InvoiceApplySubmitResult | null>> {
     const preview = createECardApplyPreview(draft)
 
     if (!preview.canSubmit) {
       return createFailure(preview.message || '缺少储值卡开票信息')
     }
 
-    const response = await invoiceApi.request<
-      InvoiceApplySubmitResult | null,
-      InvoiceECardApplySubmitRequest
-    >('addPrepayCardTask', createECardApplySubmitPayload(draft), true, 30000)
+    const response = await invoiceApi.request<InvoiceApplySubmitResult | null, InvoiceECardApplySubmitRequest>(
+      'addPrepayCardTask',
+      createECardApplySubmitPayload(draft),
+      true,
+      30000
+    )
 
     if (!response.status) {
       return createFailure(response.message || '提交失败，请稍后再试')
@@ -93,20 +79,14 @@ export const invoiceApplyService = {
     }
   },
 
-  async queryPreview(
-    applyNo: string,
-    title = '电子发票'
-  ): Promise<DepponResponse<InvoicePreviewView>> {
+  async queryPreview(applyNo: string, title = '电子发票'): Promise<DepponResponse<InvoicePreviewView>> {
     const normalizedApplyNo = normalizeText(applyNo)
 
     if (!normalizedApplyNo) {
       return createFailure('缺少发票申请号')
     }
 
-    const response = await invoiceApi.request<
-      InvoicePreviewRaw,
-      InvoicePreviewRequest
-    >(
+    const response = await invoiceApi.request<InvoicePreviewRaw, InvoicePreviewRequest>(
       'lookInvoice',
       {
         applyNo: normalizedApplyNo
@@ -130,10 +110,7 @@ export const invoiceApplyService = {
     }
   },
 
-  async sendInvoiceEmail(
-    applyNo: string,
-    email: string
-  ): Promise<DepponResponse<null>> {
+  async sendInvoiceEmail(applyNo: string, email: string): Promise<DepponResponse<null>> {
     const normalizedApplyNo = normalizeText(applyNo)
     const normalizedEmail = normalizeText(email)
     const emailMessage = validateEmail(normalizedEmail)
@@ -146,13 +123,10 @@ export const invoiceApplyService = {
       return createFailure(emailMessage)
     }
 
-    const response = await invoiceApi.request<null, InvoiceSendEmailRequest>(
-      'sendEmail',
-      {
-        applyNo: normalizedApplyNo,
-        email: normalizedEmail
-      }
-    )
+    const response = await invoiceApi.request<null, InvoiceSendEmailRequest>('sendEmail', {
+      applyNo: normalizedApplyNo,
+      email: normalizedEmail
+    })
 
     if (!response.status) {
       return createFailure(response.message || '发送失败，请稍后再试')
@@ -172,26 +146,18 @@ export const invoiceApplyService = {
     return reverseInvoiceAction(applyNo)
   },
 
-  async modifyAddress(
-    applyNo: string,
-    contact: InvoiceAddressContact
-  ): Promise<DepponResponse<null>> {
+  async modifyAddress(applyNo: string, contact: InvoiceAddressContact): Promise<DepponResponse<null>> {
     return modifyInvoiceAddress(applyNo, contact)
   },
 
-  async queryHistoryWaybills(
-    applyNo: string
-  ): Promise<DepponResponse<InvoiceHistoryWaybillView[]>> {
+  async queryHistoryWaybills(applyNo: string): Promise<DepponResponse<InvoiceHistoryWaybillView[]>> {
     const normalizedApplyNo = normalizeText(applyNo)
 
     if (!normalizedApplyNo) {
       return createFailure('缺少发票申请号')
     }
 
-    const response = await invoiceApi.request<
-      InvoiceHistoryWaybillRaw,
-      InvoiceHistoryWaybillRequest
-    >(
+    const response = await invoiceApi.request<InvoiceHistoryWaybillRaw, InvoiceHistoryWaybillRequest>(
       'queryContainWaybill',
       {
         applyNo: normalizedApplyNo

@@ -2,12 +2,7 @@ import { ScrollView, Text, View } from '@tarojs/components'
 
 import type { PropsWithChildren, ReactNode } from 'react'
 
-import {
-  AppKeyboardAvoidingView,
-  AppNativeModal,
-  AppNativePressable,
-  AppSafeAreaView
-} from '@/shared/native'
+import { AppKeyboardAvoidingView, AppNativeModal, AppNativePressable, AppSafeAreaView } from '@/shared/native'
 import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './index.scss'
@@ -51,75 +46,17 @@ export function AppDialog({
   return (
     <AppNativeModal visible={visible} onRequestClose={onClose}>
       <AppKeyboardAvoidingView>
-        <AppSafeAreaView
-          backgroundColor={APP_STYLE_COLORS.transparent}
-          edges={[...APP_NATIVE_TOKENS.safeArea.defaultEdges]}
-        >
-          <AppNativePressable
-            fill
-            onPress={closeOnBackdropPress ? onClose : undefined}
-          >
-            <View
-              className={[
-                'app-dialog',
-                `app-dialog--${placement}`,
-                backdropClassName
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
+        <AppSafeAreaView backgroundColor={APP_STYLE_COLORS.transparent} edges={[...APP_NATIVE_TOKENS.safeArea.defaultEdges]}>
+          <AppNativePressable fill onPress={closeOnBackdropPress ? onClose : undefined}>
+            <View className={['app-dialog', `app-dialog--${placement}`, backdropClassName].filter(Boolean).join(' ')}>
               <AppNativePressable onPress={event => event.stopPropagation()}>
-                <View
-                  className={[
-                    'app-dialog__panel',
-                    `app-dialog__panel--${placement}`,
-                    panelClassName
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
+                <View className={['app-dialog__panel', `app-dialog__panel--${placement}`, panelClassName].filter(Boolean).join(' ')}>
                   <ScrollView className='app-dialog__body' scrollY>
-                    {title ? (
-                      <Text
-                        className={['app-dialog__title', titleClassName]
-                          .filter(Boolean)
-                          .join(' ')}
-                      >
-                        {title}
-                      </Text>
-                    ) : null}
-                    {description ? (
-                      <Text
-                        className={[
-                          'app-dialog__description',
-                          descriptionClassName
-                        ]
-                          .filter(Boolean)
-                          .join(' ')}
-                      >
-                        {description}
-                      </Text>
-                    ) : null}
-                    <View
-                      className={[
-                        contentSpacing && 'app-dialog__content',
-                        contentClassName
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                    >
-                      {children}
-                    </View>
+                    {title ? <Text className={['app-dialog__title', titleClassName].filter(Boolean).join(' ')}>{title}</Text> : null}
+                    {description ? <Text className={['app-dialog__description', descriptionClassName].filter(Boolean).join(' ')}>{description}</Text> : null}
+                    <View className={[contentSpacing && 'app-dialog__content', contentClassName].filter(Boolean).join(' ')}>{children}</View>
                   </ScrollView>
-                  {footer ? (
-                    <View
-                      className={['app-dialog__footer', footerClassName]
-                        .filter(Boolean)
-                        .join(' ')}
-                    >
-                      {footer}
-                    </View>
-                  ) : null}
+                  {footer ? <View className={['app-dialog__footer', footerClassName].filter(Boolean).join(' ')}>{footer}</View> : null}
                 </View>
               </AppNativePressable>
             </View>

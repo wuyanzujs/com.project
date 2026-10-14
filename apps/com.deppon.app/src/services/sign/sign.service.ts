@@ -53,9 +53,7 @@ function validateRealName(realName: string) {
 export function createSignCodePayload(signCode: string) {
   const normalizedCode = normalizeText(signCode)
 
-  return normalizedCode
-    ? `https://www.deppon.com/user/sign?code=${encodeURIComponent(normalizedCode)}`
-    : ''
+  return normalizedCode ? `https://www.deppon.com/user/sign?code=${encodeURIComponent(normalizedCode)}` : ''
 }
 
 /**
@@ -64,10 +62,7 @@ export function createSignCodePayload(signCode: string) {
  * @param hasRealName 是否已实名
  * @description 转签收码展示数据
  */
-function toSignCodeView(
-  raw?: UserSignCodeRaw | null,
-  hasRealName = true
-): SignCodeView {
+function toSignCodeView(raw?: UserSignCodeRaw | null, hasRealName = true): SignCodeView {
   const signCode = normalizeText(raw?.signCode)
   const realName = normalizeText(raw?.realName)
 
@@ -77,9 +72,7 @@ function toSignCodeView(
     qrPayload: createSignCodePayload(signCode),
     realName,
     statusText: signCode ? '已生成签收码' : '待生成签收码',
-    summary: signCode
-      ? '请在确认货物状态无异常后，再向派送人员出示签收码。'
-      : '完成实名登记后可生成签收码。',
+    summary: signCode ? '请在确认货物状态无异常后，再向派送人员出示签收码。' : '完成实名登记后可生成签收码。',
     expiresText: signCode ? '有效 2 分钟，请按需刷新' : ''
   }
 }

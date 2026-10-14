@@ -10,8 +10,7 @@ import type {
   ExpressScanContext
 } from '../express/types'
 
-export type BatchEntryActionKind =
-  'singleExpress' | 'addressRecognition' | 'excelImport' | 'print'
+export type BatchEntryActionKind = 'singleExpress' | 'addressRecognition' | 'excelImport' | 'print'
 
 export type BatchEntryActionStatus = 'ready' | 'copy' | 'pending'
 

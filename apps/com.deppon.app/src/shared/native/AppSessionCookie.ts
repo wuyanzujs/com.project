@@ -18,13 +18,9 @@ function extractSessionToken(cookie: string) {
 async function readCookieStore(url: string, useWebKit: boolean) {
   try {
     const cookies = await CookieManager.get(url, useWebKit)
-    const sessionCookie =
-      cookies[SESSION_COOKIE_NAME] ??
-      Object.values(cookies).find(cookie => cookie.name === SESSION_COOKIE_NAME)
+    const sessionCookie = cookies[SESSION_COOKIE_NAME] ?? Object.values(cookies).find(cookie => cookie.name === SESSION_COOKIE_NAME)
 
-    return sessionCookie?.value
-      ? `${SESSION_COOKIE_NAME}=${sessionCookie.value};`
-      : ''
+    return sessionCookie?.value ? `${SESSION_COOKIE_NAME}=${sessionCookie.value};` : ''
   } catch {
     return ''
   }
@@ -41,10 +37,7 @@ export function createAppSessionCookieRuntime(urls: string[]) {
         return ''
       }
 
-      return (
-        (await readCookieStore(cookieUrl, false)) ||
-        (await readCookieStore(cookieUrl, true))
-      )
+      return (await readCookieStore(cookieUrl, false)) || (await readCookieStore(cookieUrl, true))
     },
 
     async write(cookie: string) {
@@ -74,9 +67,7 @@ export function createAppSessionCookieRuntime(urls: string[]) {
 
       await CookieManager.flush().catch(() => undefined)
 
-      return results.some(
-        result => result.status === 'fulfilled' && result.value
-      )
+      return results.some(result => result.status === 'fulfilled' && result.value)
     },
 
     async clear() {

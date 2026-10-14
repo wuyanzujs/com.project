@@ -13,8 +13,7 @@ import type {
 } from './types'
 
 export const EXPRESS_NIGHT_PICKUP_CACHE_MS = 2 * 60 * 60 * 1000
-export const EXPRESS_NIGHT_PICKUP_NOTICE =
-  '夜间揽收服务费标准为 50 元/票，最终以重新报价明细为准。'
+export const EXPRESS_NIGHT_PICKUP_NOTICE = '夜间揽收服务费标准为 50 元/票，最终以重新报价明细为准。'
 
 /**
  *
@@ -30,9 +29,7 @@ function normalizeText(value?: string | null) {
  * @param value 取件时段类型
  * @description 判断是否为可预约时段类型
  */
-function isAvailablePickupType(
-  value: ExpressPickupTimeOpeningType
-): value is ExpressPickupTimeType {
+function isAvailablePickupType(value: ExpressPickupTimeOpeningType): value is ExpressPickupTimeType {
   return value === 'NORMAL' || value === 'NIGHT'
 }
 
@@ -61,15 +58,7 @@ function createPickupAddressKey(draft: Pick<ExpressDraft, 'sender'>) {
     return ''
   }
 
-  return [
-    sender.province,
-    sender.city,
-    sender.county,
-    sender.town,
-    sender.address
-  ]
-    .map(normalizeText)
-    .join('|')
+  return [sender.province, sender.city, sender.county, sender.town, sender.address].map(normalizeText).join('|')
 }
 
 /**
@@ -77,9 +66,7 @@ function createPickupAddressKey(draft: Pick<ExpressDraft, 'sender'>) {
  * @param value 夜间揽收能力
  * @description 归一夜间揽收能力，非法返回空
  */
-function normalizeNightCapability(
-  value?: Partial<ExpressPickupNightCapability> | null
-) {
+function normalizeNightCapability(value?: Partial<ExpressPickupNightCapability> | null) {
   const addressKey = normalizeText(value?.addressKey)
   const checkedAt = Number(value?.checkedAt)
 
@@ -105,9 +92,7 @@ function normalizeNightCapability(
  * @param value 取件信息，可为空
  * @description 归一取件信息
  */
-export function normalizeExpressPickup(
-  value?: Partial<ExpressPickup> | null
-): ExpressPickup {
+export function normalizeExpressPickup(value?: Partial<ExpressPickup> | null): ExpressPickup {
   const type = normalizePickupTimeType(value?.type)
 
   return {
@@ -118,9 +103,7 @@ export function normalizeExpressPickup(
     type,
     stationCode: normalizeText(value?.stationCode),
     stationName: normalizeText(value?.stationName),
-    pickPeriodTime: Number.isFinite(value?.pickPeriodTime)
-      ? value?.pickPeriodTime
-      : undefined,
+    pickPeriodTime: Number.isFinite(value?.pickPeriodTime) ? value?.pickPeriodTime : undefined,
     nightCapability: normalizeNightCapability(value?.nightCapability),
     nightNoticeAccepted: type === 'NIGHT' && value?.nightNoticeAccepted === true
   }
@@ -131,9 +114,7 @@ export function normalizeExpressPickup(
  * @param draft 寄件草稿
  * @description 构造夜间揽收查询入参
  */
-export function buildExpressPickupNightRequest(
-  draft: ExpressDraft
-): ExpressPickupNightRequest {
+export function buildExpressPickupNightRequest(draft: ExpressDraft): ExpressPickupNightRequest {
   if (!draft.sender) {
     throw new Error('请先填写寄件地址')
   }
@@ -160,8 +141,7 @@ export function createExpressPickupNightCapability(
 ): ExpressPickupNightCapability {
   const startTime = normalizeText(response?.startTime)
   const endTime = normalizeText(response?.endTime)
-  const enabled =
-    response?.nightPickUpEnable === true && !!startTime && !!endTime
+  const enabled = response?.nightPickUpEnable === true && !!startTime && !!endTime
 
   return {
     addressKey: createPickupAddressKey(draft),
@@ -178,10 +158,7 @@ export function createExpressPickupNightCapability(
  * @param now 当前时间戳
  * @description 取仍在有效期内的夜间揽收能力
  */
-export function getFreshExpressPickupNightCapability(
-  draft: ExpressDraft,
-  now = Date.now()
-) {
+export function getFreshExpressPickupNightCapability(draft: ExpressDraft, now = Date.now()) {
   const capability = normalizeNightCapability(draft.pickup.nightCapability)
 
   if (
@@ -202,22 +179,15 @@ export function getFreshExpressPickupNightCapability(
  * @param selection 选中的取件时段
  * @description 选中取件时段并清空已选产品
  */
-export function selectExpressPickupTime(
-  draft: ExpressDraft,
-  selection: ExpressPickupTimeSelection
-): ExpressDraft {
+export function selectExpressPickupTime(draft: ExpressDraft, selection: ExpressPickupTimeSelection): ExpressDraft {
   if (!isAvailablePickupType(selection.type)) {
     return draft
   }
 
-  const type: ExpressPickupTimeType =
-    selection.type === 'NIGHT' ? 'NIGHT' : 'NORMAL'
+  const type: ExpressPickupTimeType = selection.type === 'NIGHT' ? 'NIGHT' : 'NORMAL'
   const time = createExpressPickupDateTime(selection.date, selection.time)
   const text = normalizeText(selection.text)
-  const sameSelection =
-    draft.pickup.time === time &&
-    draft.pickup.timeSlot === text &&
-    draft.pickup.type === type
+  const sameSelection = draft.pickup.time === time && draft.pickup.timeSlot === text && draft.pickup.type === type
 
   if (sameSelection) {
     return draft
@@ -262,9 +232,7 @@ export function acceptExpressNightPickupNotice(draft: ExpressDraft) {
  * @description 解析取件时间，非法返回 null
  */
 function parsePickupDateTime(value: string) {
-  const match = normalizeText(value).match(
-    /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/
-  )
+  const match = normalizeText(value).match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/)
 
   if (!match) {
     return null
@@ -293,10 +261,7 @@ function parsePickupDateTime(value: string) {
  * @param now 当前时间
  * @description 校验夜间取件时间是否可预约
  */
-export function isExpressNightPickupTimeValid(
-  pickupTime: string,
-  now = new Date()
-) {
+export function isExpressNightPickupTimeValid(pickupTime: string, now = new Date()) {
   const selected = parsePickupDateTime(pickupTime)
 
   if (!selected) {
@@ -309,12 +274,7 @@ export function isExpressNightPickupTimeValid(
     return true
   }
 
-  const nextMorning = Date.UTC(
-    beijingNow.getUTCFullYear(),
-    beijingNow.getUTCMonth(),
-    beijingNow.getUTCDate() + 1,
-    6
-  )
+  const nextMorning = Date.UTC(beijingNow.getUTCFullYear(), beijingNow.getUTCMonth(), beijingNow.getUTCDate() + 1, 6)
 
   return selected >= nextMorning
 }
@@ -325,10 +285,7 @@ export function isExpressNightPickupTimeValid(
  * @param options 可选的当前时间
  * @description 校验取件时间，返回错误提示
  */
-export function validateExpressPickupTime(
-  draft: ExpressDraft,
-  options: { now?: Date } = {}
-) {
+export function validateExpressPickupTime(draft: ExpressDraft, options: { now?: Date } = {}) {
   if (draft.pickup.dispatch !== 'Y') {
     return draft.pickup.type === 'NIGHT' ? ['自送服务点不能选择夜间揽收'] : []
   }
@@ -366,10 +323,7 @@ export function validateExpressPickupTime(
  */
 export function createExpressPickupQuoteFields(draft: ExpressDraft) {
   return {
-    nightAccept:
-      draft.pickup.dispatch === 'Y' && draft.pickup.type === 'NIGHT'
-        ? ('Y' as const)
-        : ('N' as const)
+    nightAccept: draft.pickup.dispatch === 'Y' && draft.pickup.type === 'NIGHT' ? ('Y' as const) : ('N' as const)
   }
 }
 
@@ -378,17 +332,13 @@ export function createExpressPickupQuoteFields(draft: ExpressDraft) {
  * @param draft 寄件草稿
  * @description 生成下单用的取件扩展字段
  */
-export function createExpressPickupOrderFields(
-  draft: ExpressDraft
-): ExpressOrderExtendField[] {
+export function createExpressPickupOrderFields(draft: ExpressDraft): ExpressOrderExtendField[] {
   if (draft.pickup.dispatch !== 'Y') {
     return []
   }
 
   const night = draft.pickup.type === 'NIGHT'
-  const fields: ExpressOrderExtendField[] = [
-    { key: 'nightAccept', value: night ? 'Y' : 'N' }
-  ]
+  const fields: ExpressOrderExtendField[] = [{ key: 'nightAccept', value: night ? 'Y' : 'N' }]
 
   if (night) {
     fields.push({ key: 'nightAcceptStatus', value: -1 })

@@ -2,12 +2,7 @@ import type { DepponResponse } from '@/request/deppon'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 
 import { orderApi } from './order.api'
-import {
-  createRouteUrl,
-  getDetailWaybillNumber,
-  getOrderNumberField,
-  getOrderTextField
-} from './order.detailRules'
+import { createRouteUrl, getDetailWaybillNumber, getOrderNumberField, getOrderTextField } from './order.detailRules'
 import { formatAmount } from './order.display'
 import { asNumber } from './order.mapper'
 
@@ -56,13 +51,10 @@ function getOrderContractStatusText(status: OrderContractStatus) {
  * @description 创建合同预览 URI
  */
 function createContractPreviewUri(fileCode: string, waybillNumber: string) {
-  return createRouteUrl(
-    '/gwapi/onlineService/eco/online/secure/contractPreview',
-    {
-      fileCode,
-      waybillNumber
-    }
-  )
+  return createRouteUrl('/gwapi/onlineService/eco/online/secure/contractPreview', {
+    fileCode,
+    waybillNumber
+  })
 }
 
 /**
@@ -86,10 +78,7 @@ function createContractPreviewRoute(fileCode: string, waybillNumber: string) {
  * @param status 合同状态
  * @description 组装电子合同存根视图
  */
-function createOrderStubDocumentView(
-  order: OrderDetail,
-  status: OrderContractStatus
-): OrderStubDocumentView {
+function createOrderStubDocumentView(order: OrderDetail, status: OrderContractStatus): OrderStubDocumentView {
   const fileCode = getOrderContractFileCode(order)
   const waybillNumber = getDetailWaybillNumber(order)
   const statusText = getOrderContractStatusText(status)
@@ -99,14 +88,10 @@ function createOrderStubDocumentView(
     available: !!fileCode && !!waybillNumber,
     title: '电子合同.PDF',
     statusText,
-    summary: canPreview
-      ? '电子合同已签署，文件存储时间为 3 个月，请及时查看。'
-      : '到达派送环节收件人签署单据后，可查看带签名的签收回单。',
+    summary: canPreview ? '电子合同已签署，文件存储时间为 3 个月，请及时查看。' : '到达派送环节收件人签署单据后，可查看带签名的签收回单。',
     actionText: canPreview ? '查看合同' : '暂不可查看',
     canPreview,
-    route: canPreview
-      ? createContractPreviewRoute(fileCode, waybillNumber)
-      : '',
+    route: canPreview ? createContractPreviewRoute(fileCode, waybillNumber) : '',
     fileCode,
     waybillNumber
   }
@@ -117,9 +102,7 @@ function createOrderStubDocumentView(
  * @param order 订单详情
  * @description 查询订单电子合同存根
  */
-export async function queryOrderStubDocument(
-  order: OrderDetail
-): Promise<DepponResponse<OrderStubDocumentView>> {
+export async function queryOrderStubDocument(order: OrderDetail): Promise<DepponResponse<OrderStubDocumentView>> {
   const contractId = getOrderContractFileCode(order)
   const waybillNumber = getDetailWaybillNumber(order)
 
@@ -153,12 +136,7 @@ export async function queryOrderStubDocument(
  * @param amountTitle 金额列标题
  * @description 创建空的包装费用分组
  */
-function createPackageFeeGroup(
-  title: string,
-  nameTitle: string,
-  countTitle: string,
-  amountTitle: string
-): OrderStubPackageFeeGroupView {
+function createPackageFeeGroup(title: string, nameTitle: string, countTitle: string, amountTitle: string): OrderStubPackageFeeGroupView {
   return {
     title,
     nameTitle,
@@ -175,11 +153,7 @@ function createPackageFeeGroup(
  * @param amount 金额
  * @description 创建费用明细项，金额无效返回 null
  */
-function createPackageFeeItem(
-  name: string,
-  count: string,
-  amount: unknown
-): OrderStubPackageFeeItemView | null {
+function createPackageFeeItem(name: string, count: string, amount: unknown): OrderStubPackageFeeItemView | null {
   const value = formatAmount(amount)
 
   if (!value) {
@@ -199,10 +173,7 @@ function createPackageFeeItem(
  * @param item 费用明细项
  * @description 将非空明细项追加到分组
  */
-function addPackageFeeItem(
-  group: OrderStubPackageFeeGroupView,
-  item: OrderStubPackageFeeItemView | null
-) {
+function addPackageFeeItem(group: OrderStubPackageFeeGroupView, item: OrderStubPackageFeeItemView | null) {
   if (item) {
     group.items.push(item)
   }
@@ -220,15 +191,9 @@ function getOrderPackageCharge(order: OrderDetail) {
     return directCharge
   }
 
-  const serviceChargeList = Array.isArray(order.serviceChargeList)
-    ? order.serviceChargeList
-    : []
+  const serviceChargeList = Array.isArray(order.serviceChargeList) ? order.serviceChargeList : []
   const pickCharge = serviceChargeList.find(item => {
-    return (
-      !!item &&
-      typeof item === 'object' &&
-      (item as Record<string, unknown>).feeAttribute === 'pickCharge'
-    )
+    return !!item && typeof item === 'object' && (item as Record<string, unknown>).feeAttribute === 'pickCharge'
   }) as Record<string, unknown> | undefined
 
   return pickCharge ? asNumber(pickCharge.feeMoney) : 0
@@ -239,9 +204,7 @@ function getOrderPackageCharge(order: OrderDetail) {
  * @param order 订单详情
  * @description 查询订单包装费用明细存根
  */
-export async function queryOrderStubPackageFee(
-  order: OrderDetail
-): Promise<DepponResponse<OrderStubPackageFeeView>> {
+export async function queryOrderStubPackageFee(order: OrderDetail): Promise<DepponResponse<OrderStubPackageFeeView>> {
   const waybillNumber = getDetailWaybillNumber(order)
   const packageCharge = getOrderPackageCharge(order)
 
@@ -275,66 +238,28 @@ export async function queryOrderStubPackageFee(
   }
 
   const detail = response.result
-  const woodenGroup = createPackageFeeGroup(
-    '木包装',
-    '包装类型',
-    '规格',
-    '金额'
-  )
-  const cartonGroup = createPackageFeeGroup(
-    '非木包装',
-    '包装类型',
-    '件数',
-    '金额'
-  )
+  const woodenGroup = createPackageFeeGroup('木包装', '包装类型', '规格', '金额')
+  const cartonGroup = createPackageFeeGroup('非木包装', '包装类型', '件数', '金额')
   let totalPrice = 0
 
   if (detail.woodenFrameFee) {
     totalPrice += detail.woodenFrameFee
-    addPackageFeeItem(
-      woodenGroup,
-      createPackageFeeItem(
-        '木架',
-        detail.standVolume ? `${detail.standVolume}m³` : '--',
-        detail.woodenFrameFee
-      )
-    )
+    addPackageFeeItem(woodenGroup, createPackageFeeItem('木架', detail.standVolume ? `${detail.standVolume}m³` : '--', detail.woodenFrameFee))
   }
 
   if (detail.woodenCaseFee) {
     totalPrice += detail.woodenCaseFee
-    addPackageFeeItem(
-      woodenGroup,
-      createPackageFeeItem(
-        '木箱',
-        detail.boxVolume ? `${detail.boxVolume}m³` : '--',
-        detail.woodenCaseFee
-      )
-    )
+    addPackageFeeItem(woodenGroup, createPackageFeeItem('木箱', detail.boxVolume ? `${detail.boxVolume}m³` : '--', detail.woodenCaseFee))
   }
 
   if (detail.swoodenPalletFee) {
     totalPrice += detail.swoodenPalletFee
-    addPackageFeeItem(
-      woodenGroup,
-      createPackageFeeItem(
-        '标准木托',
-        detail.salverNum ? String(detail.salverNum) : '--',
-        detail.swoodenPalletFee
-      )
-    )
+    addPackageFeeItem(woodenGroup, createPackageFeeItem('标准木托', detail.salverNum ? String(detail.salverNum) : '--', detail.swoodenPalletFee))
   }
 
   if (detail.nwoodenPalletFee) {
     totalPrice += detail.nwoodenPalletFee
-    addPackageFeeItem(
-      woodenGroup,
-      createPackageFeeItem(
-        '非标准木托',
-        detail.nonSalverNum ? String(detail.nonSalverNum) : '--',
-        detail.nwoodenPalletFee
-      )
-    )
+    addPackageFeeItem(woodenGroup, createPackageFeeItem('非标准木托', detail.nonSalverNum ? String(detail.nonSalverNum) : '--', detail.nwoodenPalletFee))
   }
 
   ;(detail.waybillPackageList ?? []).forEach(item => {
@@ -343,14 +268,7 @@ export async function queryOrderStubPackageFee(
     }
 
     totalPrice += item.calcAmount
-    addPackageFeeItem(
-      cartonGroup,
-      createPackageFeeItem(
-        item.thirdClassName,
-        item.packageTotal ? String(item.packageTotal) : '--',
-        item.calcAmount
-      )
-    )
+    addPackageFeeItem(cartonGroup, createPackageFeeItem(item.thirdClassName, item.packageTotal ? String(item.packageTotal) : '--', item.calcAmount))
   })
 
   if (totalPrice > packageCharge) {
@@ -367,19 +285,10 @@ export async function queryOrderStubPackageFee(
   }
 
   if (totalPrice < packageCharge) {
-    addPackageFeeItem(
-      cartonGroup,
-      createPackageFeeItem(
-        '其他',
-        '1',
-        Math.floor((packageCharge - totalPrice) * 100) / 100
-      )
-    )
+    addPackageFeeItem(cartonGroup, createPackageFeeItem('其他', '1', Math.floor((packageCharge - totalPrice) * 100) / 100))
   }
 
-  const groups = [woodenGroup, cartonGroup].filter(
-    group => group.items.length > 0
-  )
+  const groups = [woodenGroup, cartonGroup].filter(group => group.items.length > 0)
 
   return {
     ...response,

@@ -3,12 +3,7 @@ import Taro, { useLoad, useRouter } from '@tarojs/taro'
 
 import { useCallback, useMemo, useState } from 'react'
 
-import {
-  contactSelection,
-  contactService,
-  createEmptyContact,
-  validateContact
-} from '@/services/contact'
+import { contactSelection, contactService, createEmptyContact, validateContact } from '@/services/contact'
 import type { Contact } from '@/services/contact'
 import { AppPressable, AppFormField } from '@/shared/components'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
@@ -27,23 +22,12 @@ function getRoleByTarget(target: 'sender' | 'consignee'): Contact['type'] {
 
 const ContactEditPage = () => {
   const router = useRouter()
-  const selectionParams = useMemo(
-    () =>
-      contactSelection.parseParams(
-        router.params as Record<string, string | undefined>
-      ),
-    [router.params]
-  )
-  const [contact, setContact] = useState<Contact>(() =>
-    createEmptyContact(getRoleByTarget(selectionParams.target))
-  )
+  const selectionParams = useMemo(() => contactSelection.parseParams(router.params as Record<string, string | undefined>), [router.params])
+  const [contact, setContact] = useState<Contact>(() => createEmptyContact(getRoleByTarget(selectionParams.target)))
   const [saving, setSaving] = useState(false)
   const { checkingKey, checkAddressIntegrity } = useContactAddressIntegrity()
   const validation = useMemo(() => validateContact(contact), [contact])
-  const contactEditUrl = useMemo(
-    () => createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams),
-    [selectionParams]
-  )
+  const contactEditUrl = useMemo(() => createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams), [selectionParams])
   const ensureContactEditAccess = useCallback(
     () =>
       ensureAuthenticated({
@@ -119,11 +103,7 @@ const ContactEditPage = () => {
       const savedContact = response.result ?? contact
 
       if (selectionParams.mode === 'select') {
-        contactSelection.select(
-          selectionParams.target,
-          savedContact,
-          selectionParams.source
-        )
+        contactSelection.select(selectionParams.target, savedContact, selectionParams.source)
         Taro.navigateBack({ delta: Number(selectionParams.returnDelta) })
         return
       }
@@ -139,13 +119,8 @@ const ContactEditPage = () => {
       <View className='contact-edit-analysis'>
         <View className='contact-edit-analysis__head'>
           <Text className='contact-edit-analysis__title'>智能识别</Text>
-          <AppPressable
-            className='contact-edit-analysis__button'
-            onPress={addressActions.handleAnalyze}
-          >
-            <Text className='contact-edit-analysis__button-text'>
-              {addressActions.analyzing ? '识别中' : '识别'}
-            </Text>
+          <AppPressable className='contact-edit-analysis__button' onPress={addressActions.handleAnalyze}>
+            <Text className='contact-edit-analysis__button-text'>{addressActions.analyzing ? '识别中' : '识别'}</Text>
           </AppPressable>
         </View>
         <Textarea
@@ -193,24 +168,14 @@ const ContactEditPage = () => {
           </View>
           <View className='contact-edit-grid__item contact-edit-grid__item--right'>
             <Text className='contact-edit-row__label'>城市</Text>
-            <Input
-              className='contact-edit-input'
-              placeholder='城市'
-              value={contact.city}
-              onInput={event => updateContact({ city: event.detail.value })}
-            />
+            <Input className='contact-edit-input' placeholder='城市' value={contact.city} onInput={event => updateContact({ city: event.detail.value })} />
           </View>
         </View>
 
         <View className='contact-edit-grid'>
           <View className='contact-edit-grid__item'>
             <Text className='contact-edit-row__label'>区县</Text>
-            <Input
-              className='contact-edit-input'
-              placeholder='区县'
-              value={contact.county}
-              onInput={event => updateContact({ county: event.detail.value })}
-            />
+            <Input className='contact-edit-input' placeholder='区县' value={contact.county} onInput={event => updateContact({ county: event.detail.value })} />
           </View>
           <View className='contact-edit-grid__item contact-edit-grid__item--right'>
             <Text className='contact-edit-row__label'>乡镇</Text>
@@ -234,16 +199,9 @@ const ContactEditPage = () => {
         </View>
 
         <View className='contact-edit-address-tools'>
-          <Text className='contact-edit-address-tools__hint'>
-            已填写详细地址时，可尝试补全省市区和乡镇街道。
-          </Text>
-          <AppPressable
-            className='contact-edit-address-tools__button'
-            onPress={addressActions.handleRefineAddress}
-          >
-            <Text className='contact-edit-address-tools__button-text'>
-              {addressActions.refiningAddress ? '补全中' : '补全地址'}
-            </Text>
+          <Text className='contact-edit-address-tools__hint'>已填写详细地址时，可尝试补全省市区和乡镇街道。</Text>
+          <AppPressable className='contact-edit-address-tools__button' onPress={addressActions.handleRefineAddress}>
+            <Text className='contact-edit-address-tools__button-text'>{addressActions.refiningAddress ? '补全中' : '补全地址'}</Text>
           </AppPressable>
         </View>
 
@@ -262,21 +220,11 @@ const ContactEditPage = () => {
           <View className='contact-edit-switch'>
             {([0, 1] as const).map(type => (
               <AppPressable
-                className={
-                  contact.type === type
-                    ? 'contact-edit-chip contact-edit-chip--active'
-                    : 'contact-edit-chip'
-                }
+                className={contact.type === type ? 'contact-edit-chip contact-edit-chip--active' : 'contact-edit-chip'}
                 key={type}
                 onPress={() => updateContact({ type })}
               >
-                <Text
-                  className={
-                    contact.type === type
-                      ? 'contact-edit-chip__text contact-edit-chip__text--active'
-                      : 'contact-edit-chip__text'
-                  }
-                >
+                <Text className={contact.type === type ? 'contact-edit-chip__text contact-edit-chip__text--active' : 'contact-edit-chip__text'}>
                   {type === 0 ? '寄件人' : '收件人'}
                 </Text>
               </AppPressable>
@@ -297,9 +245,7 @@ const ContactEditPage = () => {
       )}
 
       <AppPressable className='contact-edit-submit' onPress={handleSave}>
-        <Text className='contact-edit-submit__text'>
-          {saving ? '保存中' : '保存地址'}
-        </Text>
+        <Text className='contact-edit-submit__text'>{saving ? '保存中' : '保存地址'}</Text>
       </AppPressable>
     </ScrollView>
   )

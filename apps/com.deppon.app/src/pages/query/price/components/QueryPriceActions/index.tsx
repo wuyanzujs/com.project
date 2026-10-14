@@ -26,9 +26,7 @@ export function QueryPriceActions(props: QueryPriceActionsProps) {
       )}
 
       <AppPressable className='query-price-submit' onPress={props.onSubmit}>
-        <Text className='query-price-submit__text'>
-          {props.loading ? '查询中' : '查询价格时效'}
-        </Text>
+        <Text className='query-price-submit__text'>{props.loading ? '查询中' : '查询价格时效'}</Text>
       </AppPressable>
     </>
   )

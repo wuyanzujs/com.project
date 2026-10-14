@@ -23,21 +23,9 @@ registerHooks({
       return { url: cookieMockURL, format: 'commonjs', shortCircuit: true }
     }
 
-    if (
-      specifier.startsWith('@/') ||
-      (specifier.startsWith('.') && context.parentURL?.startsWith('file:'))
-    ) {
-      const base = specifier.startsWith('@/')
-        ? path.join(srcRoot, specifier.slice(2))
-        : path.resolve(
-            path.dirname(fileURLToPath(context.parentURL)),
-            specifier
-          )
-      const target = [
-        `${base}.ts`,
-        `${base}.tsx`,
-        path.join(base, 'index.ts')
-      ].find(existsSync)
+    if (specifier.startsWith('@/') || (specifier.startsWith('.') && context.parentURL?.startsWith('file:'))) {
+      const base = specifier.startsWith('@/') ? path.join(srcRoot, specifier.slice(2)) : path.resolve(path.dirname(fileURLToPath(context.parentURL)), specifier)
+      const target = [`${base}.ts`, `${base}.tsx`, path.join(base, 'index.ts')].find(existsSync)
 
       if (!target && specifier.startsWith('@/')) {
         throw new Error(`Unknown application import: ${specifier}`)

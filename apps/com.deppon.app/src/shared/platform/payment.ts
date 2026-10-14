@@ -18,9 +18,7 @@ export interface AppPaymentResult {
   rawResult?: unknown
 }
 
-export async function payWithApp(
-  _options: AppPaymentOptions
-): Promise<AppPaymentResult> {
+export async function payWithApp(_options: AppPaymentOptions): Promise<AppPaymentResult> {
   ensureNativeCapability('payment')
 
   throw new NativeCapabilityError('payment')

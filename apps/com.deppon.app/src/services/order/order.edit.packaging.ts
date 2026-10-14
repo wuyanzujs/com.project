@@ -1,8 +1,4 @@
-import type {
-  OrderDetail,
-  OrderEditPackagingDraft,
-  OrderModifyRequest
-} from './types'
+import type { OrderDetail, OrderEditPackagingDraft, OrderModifyRequest } from './types'
 
 export const ORDER_EDIT_PACKAGING_EXTEND_KEY = 'packingService'
 export const ORDER_EDIT_PACKAGING_MIN_COUNT = 1
@@ -29,9 +25,7 @@ function normalizeText(value: unknown) {
  * @description 倒序读取订单扩展字段的值
  */
 function getOrderExtendFieldValue(detail: OrderDetail, key: string) {
-  const fields = Array.isArray(detail.orderExtendFields)
-    ? detail.orderExtendFields
-    : []
+  const fields = Array.isArray(detail.orderExtendFields) ? detail.orderExtendFields : []
 
   for (let index = fields.length - 1; index >= 0; index -= 1) {
     const field = fields[index]
@@ -56,10 +50,7 @@ export function normalizeOrderEditPackagingCount(value: unknown) {
     return 0
   }
 
-  return Math.min(
-    ORDER_EDIT_PACKAGING_MAX_COUNT,
-    Math.max(ORDER_EDIT_PACKAGING_MIN_COUNT, Math.trunc(count))
-  )
+  return Math.min(ORDER_EDIT_PACKAGING_MAX_COUNT, Math.max(ORDER_EDIT_PACKAGING_MIN_COUNT, Math.trunc(count)))
 }
 
 /**
@@ -79,13 +70,9 @@ export function normalizeOrderEditPackagingCountInput(value: string) {
  * @param detail 订单详情
  * @description 从订单详情创建打包服务草稿
  */
-export function createOrderEditPackagingDraft(
-  detail: OrderDetail
-): OrderEditPackagingDraft {
+export function createOrderEditPackagingDraft(detail: OrderDetail): OrderEditPackagingDraft {
   return {
-    count: normalizeOrderEditPackagingCount(
-      getOrderExtendFieldValue(detail, ORDER_EDIT_PACKAGING_EXTEND_KEY)
-    )
+    count: normalizeOrderEditPackagingCount(getOrderExtendFieldValue(detail, ORDER_EDIT_PACKAGING_EXTEND_KEY))
   }
 }
 
@@ -95,10 +82,7 @@ export function createOrderEditPackagingDraft(
  * @param value 新的件数
  * @description 更新打包服务件数
  */
-export function updateOrderEditPackagingCount(
-  packaging: OrderEditPackagingDraft,
-  value: unknown
-): OrderEditPackagingDraft {
+export function updateOrderEditPackagingCount(packaging: OrderEditPackagingDraft, value: unknown): OrderEditPackagingDraft {
   const count = normalizeOrderEditPackagingCount(value)
 
   return count === packaging.count ? packaging : { count }
@@ -112,12 +96,7 @@ export function updateOrderEditPackagingCount(
 export function validateOrderEditPackaging(packaging: OrderEditPackagingDraft) {
   const count = packaging.count
 
-  if (
-    !Number.isFinite(count) ||
-    !Number.isInteger(count) ||
-    count < 0 ||
-    count > ORDER_EDIT_PACKAGING_MAX_COUNT
-  ) {
+  if (!Number.isFinite(count) || !Number.isInteger(count) || count < 0 || count > ORDER_EDIT_PACKAGING_MAX_COUNT) {
     return [`打包服务件数须为 0 到 ${ORDER_EDIT_PACKAGING_MAX_COUNT} 的整数`]
   }
 
@@ -130,10 +109,7 @@ export function validateOrderEditPackaging(packaging: OrderEditPackagingDraft) {
  * @description 计算打包服务总费用
  */
 export function getOrderEditPackagingFee(packaging: OrderEditPackagingDraft) {
-  return (
-    normalizeOrderEditPackagingCount(packaging.count) *
-    ORDER_EDIT_PACKAGING_UNIT_FEE
-  )
+  return normalizeOrderEditPackagingCount(packaging.count) * ORDER_EDIT_PACKAGING_UNIT_FEE
 }
 
 /**
@@ -142,14 +118,8 @@ export function getOrderEditPackagingFee(packaging: OrderEditPackagingDraft) {
  * @param origin 原始草稿
  * @description 判断打包件数是否发生变化
  */
-export function isOrderEditPackagingChanged(
-  packaging: OrderEditPackagingDraft,
-  origin: OrderEditPackagingDraft
-) {
-  return (
-    normalizeOrderEditPackagingCount(packaging.count) !==
-    normalizeOrderEditPackagingCount(origin.count)
-  )
+export function isOrderEditPackagingChanged(packaging: OrderEditPackagingDraft, origin: OrderEditPackagingDraft) {
+  return normalizeOrderEditPackagingCount(packaging.count) !== normalizeOrderEditPackagingCount(origin.count)
 }
 
 /**
@@ -157,9 +127,7 @@ export function isOrderEditPackagingChanged(
  * @param packaging 打包服务草稿
  * @description 生成订单修改接口的打包字段
  */
-export function createOrderEditPackagingRequestFields(
-  packaging: OrderEditPackagingDraft
-): Pick<OrderModifyRequest, 'orderExtendFields'> {
+export function createOrderEditPackagingRequestFields(packaging: OrderEditPackagingDraft): Pick<OrderModifyRequest, 'orderExtendFields'> {
   return {
     orderExtendFields: [
       {

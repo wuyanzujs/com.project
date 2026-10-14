@@ -2,13 +2,7 @@ import type { DepponResponse } from '@/request/deppon'
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
 import { accountApi } from './account.api'
-import {
-  authService,
-  clearAppSession,
-  getUserDisplayName,
-  isValidSmsCode,
-  maskMobile
-} from '../auth'
+import { authService, clearAppSession, getUserDisplayName, isValidSmsCode, maskMobile } from '../auth'
 import { createServiceFailure } from '../serviceResponse'
 
 import type { AccountOverviewView } from './types'

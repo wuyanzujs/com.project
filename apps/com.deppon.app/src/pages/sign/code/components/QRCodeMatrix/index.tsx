@@ -23,19 +23,14 @@ interface QRModules {
   get: (column: number, row: number) => boolean | number
 }
 
-function createMatrix(
-  value: string,
-  errorCorrectionLevel: QRErrorCorrectionLevel
-) {
+function createMatrix(value: string, errorCorrectionLevel: QRErrorCorrectionLevel) {
   const qrCode = QRCode.create(value, {
     errorCorrectionLevel
   })
   const modules = qrCode.modules as unknown as QRModules
 
   return Array.from({ length: modules.size }, (_rowItem, rowIndex) =>
-    Array.from({ length: modules.size }, (_columnItem, columnIndex) =>
-      Boolean(modules.get(columnIndex, rowIndex))
-    )
+    Array.from({ length: modules.size }, (_columnItem, columnIndex) => Boolean(modules.get(columnIndex, rowIndex)))
   )
 }
 
@@ -47,13 +42,7 @@ const QRCodeMatrix = ({
   errorCorrectionLevel = 'M'
 }: QRCodeMatrixProps) => {
   const normalizedValue = value.trim()
-  const matrix = useMemo(
-    () =>
-      normalizedValue
-        ? createMatrix(normalizedValue, errorCorrectionLevel)
-        : [],
-    [errorCorrectionLevel, normalizedValue]
-  )
+  const matrix = useMemo(() => (normalizedValue ? createMatrix(normalizedValue, errorCorrectionLevel) : []), [errorCorrectionLevel, normalizedValue])
 
   if (!normalizedValue || matrix.length === 0) {
     return (
@@ -63,10 +52,7 @@ const QRCodeMatrix = ({
     )
   }
 
-  const moduleSize = Math.max(
-    APP_NATIVE_TOKENS.qr.minimumModuleSize,
-    Math.floor(size / matrix.length)
-  )
+  const moduleSize = Math.max(APP_NATIVE_TOKENS.qr.minimumModuleSize, Math.floor(size / matrix.length))
   const actualSize = moduleSize * matrix.length
 
   return (

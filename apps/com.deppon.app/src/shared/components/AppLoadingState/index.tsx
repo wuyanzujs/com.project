@@ -11,23 +11,9 @@ export interface AppLoadingStateProps {
   showIndicator?: boolean
 }
 
-export function AppLoadingState({
-  className,
-  label = '加载中',
-  layout = 'page',
-  showIndicator = true
-}: AppLoadingStateProps) {
+export function AppLoadingState({ className, label = '加载中', layout = 'page', showIndicator = true }: AppLoadingStateProps) {
   return (
-    <View
-      className={[
-        'app-loading-state',
-        `app-loading-state--${layout}`,
-        className
-      ]
-        .filter(Boolean)
-        .join(' ')}
-      role='status'
-    >
+    <View className={['app-loading-state', `app-loading-state--${layout}`, className].filter(Boolean).join(' ')} role='status'>
       {showIndicator ? (
         <View className='app-loading-state__indicator'>
           <View className='app-loading-state__dot' />

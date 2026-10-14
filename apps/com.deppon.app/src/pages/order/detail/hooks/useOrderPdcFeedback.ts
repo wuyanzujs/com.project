@@ -2,17 +2,10 @@ import Taro from '@tarojs/taro'
 
 import { useEffect, useMemo, useState } from 'react'
 
-import {
-  createOrderPdcFeedbackContext,
-  orderPdcFeedbackService
-} from '@/services/order'
+import { createOrderPdcFeedbackContext, orderPdcFeedbackService } from '@/services/order'
 import type { OrderDetail, OrderPdcFeedbackResult } from '@/services/order'
 
-export function useOrderPdcFeedback(options: {
-  detail: OrderDetail | null
-  source: string
-  publicTrackMode: boolean
-}) {
+export function useOrderPdcFeedback(options: { detail: OrderDetail | null; source: string; publicTrackMode: boolean }) {
   const [visible, setVisible] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const hasDetail = Boolean(options.detail)
@@ -30,13 +23,7 @@ export function useOrderPdcFeedback(options: {
         options.source,
         options.publicTrackMode
       ),
-    [
-      hasDetail,
-      orderClassification,
-      options.publicTrackMode,
-      options.source,
-      waybillNumber
-    ]
+    [hasDetail, orderClassification, options.publicTrackMode, options.source, waybillNumber]
   )
 
   useEffect(() => {
@@ -79,10 +66,7 @@ export function useOrderPdcFeedback(options: {
     setSubmitting(true)
 
     try {
-      const response = await orderPdcFeedbackService.submit(
-        context,
-        feedbackResult
-      )
+      const response = await orderPdcFeedbackService.submit(context, feedbackResult)
 
       if (!response.status) {
         Taro.showToast({

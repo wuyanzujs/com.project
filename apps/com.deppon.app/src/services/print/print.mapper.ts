@@ -1,9 +1,4 @@
-import type {
-  PrintListResponse,
-  PrintListResult,
-  PrintOrderListItem,
-  PrintOrderRaw
-} from './types'
+import type { PrintListResponse, PrintListResult, PrintOrderListItem, PrintOrderRaw } from './types'
 
 interface PrintListPaginationFallback {
   pageIndex: number
@@ -78,12 +73,7 @@ export function maskPrintRecipientPhone(value: unknown) {
  * @param address 详细地址
  * @description 拼接收件人省市区与详细地址
  */
-export function createPrintRecipientAddress(
-  province: unknown,
-  city: unknown,
-  area: unknown,
-  address: unknown
-) {
+export function createPrintRecipientAddress(province: unknown, city: unknown, area: unknown, address: unknown) {
   const segments = [province, city, area, address]
     .map(normalizeText)
     .filter(Boolean)
@@ -98,10 +88,7 @@ export function createPrintRecipientAddress(
  * @param index 列表下标，用于兜底 key
  * @description 归一打印订单为列表展示项
  */
-export function normalizePrintOrder(
-  raw: PrintOrderRaw,
-  index = 0
-): PrintOrderListItem {
+export function normalizePrintOrder(raw: PrintOrderRaw, index = 0): PrintOrderListItem {
   const id = normalizeText(raw.id)
   const waybillNumber = normalizeText(raw.waybillNumber)
   const fallbackKey = `print-order-${index + 1}`
@@ -112,15 +99,8 @@ export function normalizePrintOrder(
     waybillNumber: waybillNumber || '--',
     recipientName: normalizeText(raw.receiveName) || '收件人信息暂缺',
     recipientPhone: maskPrintRecipientPhone(raw.receivePhone),
-    address: createPrintRecipientAddress(
-      raw.receiveProvince,
-      raw.receiveCity,
-      raw.receiveArea,
-      raw.receiveAddress
-    ),
-    ...(raw.deviceType === '1' || raw.deviceType === '2'
-      ? { deviceType: raw.deviceType }
-      : {})
+    address: createPrintRecipientAddress(raw.receiveProvince, raw.receiveCity, raw.receiveArea, raw.receiveAddress),
+    ...(raw.deviceType === '1' || raw.deviceType === '2' ? { deviceType: raw.deviceType } : {})
   }
 }
 
@@ -130,16 +110,11 @@ export function normalizePrintOrder(
  * @param fallback 分页兜底值
  * @description 归一打印列表分页与列表数据
  */
-export function normalizePrintListResult(
-  raw: PrintListResponse,
-  fallback: PrintListPaginationFallback
-): PrintListResult {
+export function normalizePrintListResult(raw: PrintListResponse, fallback: PrintListPaginationFallback): PrintListResult {
   const pageSize = toPositiveInteger(raw.pageSize, fallback.pageSize)
   const pageIndex = toPositiveInteger(raw.pageNum, fallback.pageIndex)
   const pageOffset = (pageIndex - 1) * pageSize
-  const list = (raw.list ?? []).map((item, index) =>
-    normalizePrintOrder(item, pageOffset + index)
-  )
+  const list = (raw.list ?? []).map((item, index) => normalizePrintOrder(item, pageOffset + index))
   const totalRows = toNonNegativeInteger(raw.totalRows, list.length)
   const fallbackTotalPage = Math.max(1, Math.ceil(totalRows / pageSize))
   const totalPage = toPositiveInteger(raw.totalPage, fallbackTotalPage)

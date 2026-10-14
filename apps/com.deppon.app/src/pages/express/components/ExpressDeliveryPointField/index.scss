@@ -31,5 +31,14 @@
   line-height: $dp-line-height-caption;
 }
 
-.express-delivery-point-field__action { margin-right: $dp-space-4; color: $dp-color-brand; font-size: $dp-font-size-caption; font-weight: $dp-font-weight-bold; }
-.express-delivery-point-field__arrow { flex-shrink: 0; width: $dp-space-24; height: $dp-space-24; }
+.express-delivery-point-field__action {
+  margin-right: $dp-space-4;
+  color: $dp-color-brand;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-bold;
+}
+.express-delivery-point-field__arrow {
+  flex-shrink: 0;
+  width: $dp-space-24;
+  height: $dp-space-24;
+}

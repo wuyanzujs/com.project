@@ -27,15 +27,9 @@ export function OrderPickupSchedulePanel(props: {
         <View className='order-pickup-card__head'>
           <View className='order-pickup-card__heading'>
             <Text className='order-pickup-card__title'>期望上门时间</Text>
-            <Text className='order-pickup-card__summary'>
-              {props.schedule.message}
-            </Text>
+            <Text className='order-pickup-card__summary'>{props.schedule.message}</Text>
           </View>
-          <AppPressable
-            accessibilityLabel='关闭预约上门时间'
-            className='order-pickup-card__close'
-            onPress={props.onClose}
-          >
+          <AppPressable accessibilityLabel='关闭预约上门时间' className='order-pickup-card__close' onPress={props.onClose}>
             <Text className='order-pickup-card__close-text'>×</Text>
           </AppPressable>
         </View>
@@ -43,9 +37,7 @@ export function OrderPickupSchedulePanel(props: {
         {!!props.schedule.currentTime && (
           <View className='order-pickup-card__current'>
             <Text className='order-pickup-card__current-label'>当前预约</Text>
-            <Text className='order-pickup-card__current-value'>
-              {props.schedule.currentTime}
-            </Text>
+            <Text className='order-pickup-card__current-value'>{props.schedule.currentTime}</Text>
           </View>
         )}
 
@@ -62,16 +54,10 @@ export function OrderPickupSchedulePanel(props: {
         <AppPressable
           accessibilityLabel={props.submitting ? '正在提交预约' : '确认预约'}
           block
-          className={
-            props.selectedTime
-              ? 'order-pickup-card__confirm'
-              : 'order-pickup-card__confirm order-pickup-card__confirm--disabled'
-          }
+          className={props.selectedTime ? 'order-pickup-card__confirm' : 'order-pickup-card__confirm order-pickup-card__confirm--disabled'}
           onPress={props.onConfirm}
         >
-          <Text className='order-pickup-card__confirm-text'>
-            {props.submitting ? '提交中' : '确认预约'}
-          </Text>
+          <Text className='order-pickup-card__confirm-text'>{props.submitting ? '提交中' : '确认预约'}</Text>
         </AppPressable>
       </View>
     </View>

@@ -22,24 +22,12 @@ export function CouponCard({ coupon, onOpenDetail, onUse }: CouponCardProps) {
       )}
 
       <View className='coupon-card__main'>
-        <View
-          className={
-            coupon.canUse
-              ? 'coupon-card__amount'
-              : 'coupon-card__amount coupon-card__amount--disabled'
-          }
-        >
+        <View className={coupon.canUse ? 'coupon-card__amount' : 'coupon-card__amount coupon-card__amount--disabled'}>
           <View className='coupon-card__amount-row'>
-            <Text className='coupon-card__amount-value'>
-              {coupon.amountValue}
-            </Text>
-            <Text className='coupon-card__amount-unit'>
-              {coupon.amountUnit}
-            </Text>
+            <Text className='coupon-card__amount-value'>{coupon.amountValue}</Text>
+            <Text className='coupon-card__amount-unit'>{coupon.amountUnit}</Text>
           </View>
-          <Text className='coupon-card__amount-desc'>
-            {coupon.thresholdText}
-          </Text>
+          <Text className='coupon-card__amount-desc'>{coupon.thresholdText}</Text>
         </View>
 
         <View className='coupon-card__info'>
@@ -62,11 +50,7 @@ export function CouponCard({ coupon, onOpenDetail, onUse }: CouponCardProps) {
         </View>
       </View>
 
-      <CouponCardActions
-        coupon={coupon}
-        onOpenDetail={onOpenDetail}
-        onUse={onUse}
-      />
+      <CouponCardActions coupon={coupon} onOpenDetail={onOpenDetail} onUse={onUse} />
     </View>
   )
 }

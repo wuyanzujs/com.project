@@ -47,21 +47,11 @@ const cases = [
     name: 'template save rules validate metadata and build the backend payload',
     run() {
       const draft = createValidExpressDraft()
-      const request = buildTemplateSaveRequest(
-        draft,
-        { name: ' 常用件 ', defaultFlag: 1 },
-        'APP'
-      )
+      const request = buildTemplateSaveRequest(draft, { name: ' 常用件 ', defaultFlag: 1 }, 'APP')
 
       assert.equal(validateTemplateDraft(draft), '')
-      assert.equal(
-        validateTemplateMeta({ name: '', defaultFlag: 2 }),
-        '请输入模板名称'
-      )
-      assert.equal(
-        validateTemplateMeta({ name: '超过五个字模板', defaultFlag: 2 }),
-        '模板名称不能超过5个字'
-      )
+      assert.equal(validateTemplateMeta({ name: '', defaultFlag: 2 }), '请输入模板名称')
+      assert.equal(validateTemplateMeta({ name: '超过五个字模板', defaultFlag: 2 }), '模板名称不能超过5个字')
       assert.equal(request.templateName, '常用件')
       assert.equal(request.defaultFlag, 1)
       assert.equal(request.sysCode, 'APP')
@@ -112,11 +102,7 @@ const cases = [
       assert.equal(request.sysCode, 'APP')
       assert.deepEqual(request.template, second.raw.template)
 
-      const updated = applyTemplateMetadataUpdate(
-        [first, second],
-        second.id,
-        meta
-      )
+      const updated = applyTemplateMetadataUpdate([first, second], second.id, meta)
 
       assert.equal(updated[0].isDefault, false)
       assert.equal(updated[0].raw.defaultFlag, 2)
@@ -203,10 +189,7 @@ const cases = [
       assert.deepEqual(carried.quotes, [])
       assert.equal(carried.draft.selectedProduct, null)
       assert.equal(carried.draft.agreementAccepted, false)
-      assert.equal(
-        carried.draft.quoteStaleReason,
-        '模板信息已带入，请重新获取价格'
-      )
+      assert.equal(carried.draft.quoteStaleReason, '模板信息已带入，请重新获取价格')
     }
   }
 ]

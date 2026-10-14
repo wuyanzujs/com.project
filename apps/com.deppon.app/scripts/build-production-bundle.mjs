@@ -37,8 +37,4 @@ if (!packageManagerCli) {
 }
 
 run(process.execPath, [packageManagerCli, 'run', `bundle:${platform}`])
-run(process.execPath, [
-  'scripts/check-runtime-bundle.mjs',
-  platform,
-  '--require-production'
-])
+run(process.execPath, ['scripts/check-runtime-bundle.mjs', platform, '--require-production'])

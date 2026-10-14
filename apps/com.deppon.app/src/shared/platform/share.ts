@@ -14,9 +14,7 @@ export interface AppShareResult {
   channel?: string
 }
 
-export async function shareWithApp(
-  payload: AppSharePayload
-): Promise<AppShareResult> {
+export async function shareWithApp(payload: AppSharePayload): Promise<AppShareResult> {
   if (!payload.source.trim()) {
     throw new Error('缺少分享来源')
   }

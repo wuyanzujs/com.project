@@ -13,10 +13,7 @@ export function getFullAddress(parts: Array<string | null | undefined>) {
  * @description 判断值是否可展示
  */
 export function hasDisplayText(value: unknown) {
-  return (
-    (typeof value === 'string' && value.trim() !== '') ||
-    typeof value === 'number'
-  )
+  return (typeof value === 'string' && value.trim() !== '') || typeof value === 'number'
 }
 
 /**

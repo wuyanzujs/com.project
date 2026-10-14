@@ -99,8 +99,7 @@ export interface OrderNpsSubmitInput {
   draft: OrderNpsDraft
 }
 
-export type OrderSceneSurveySubmitInput =
-  OrderSceneLabelSubmitInput | OrderSceneScoreSubmitInput | OrderNpsSubmitInput
+export type OrderSceneSurveySubmitInput = OrderSceneLabelSubmitInput | OrderSceneScoreSubmitInput | OrderNpsSubmitInput
 
 export interface OrderNpsCatalogOption {
   text: string

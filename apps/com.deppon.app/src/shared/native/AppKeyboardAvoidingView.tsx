@@ -14,10 +14,7 @@ const styles = StyleSheet.create({
   }
 })
 
-export function AppKeyboardAvoidingView({
-  children,
-  enabled = true
-}: AppKeyboardAvoidingViewProps) {
+export function AppKeyboardAvoidingView({ children, enabled = true }: AppKeyboardAvoidingViewProps) {
   if (Platform.OS !== 'ios') {
     return <View style={styles.fill}>{children}</View>
   }

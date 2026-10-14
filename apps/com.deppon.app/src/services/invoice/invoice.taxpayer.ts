@@ -1,20 +1,13 @@
 import { getFieldLength, normalizeText } from './invoice.shared'
 
-import type {
-  InvoiceTaxpayerForm,
-  InvoiceTaxpayerRaw,
-  InvoiceTaxpayerSaveRequest,
-  InvoiceTaxpayerView
-} from './types'
+import type { InvoiceTaxpayerForm, InvoiceTaxpayerRaw, InvoiceTaxpayerSaveRequest, InvoiceTaxpayerView } from './types'
 
 /**
  *
  * @param item 发票抬头原始数据
  * @description 把发票抬头原始数据转成视图
  */
-export function normalizeTaxpayer(
-  item: InvoiceTaxpayerRaw
-): InvoiceTaxpayerView {
+export function normalizeTaxpayer(item: InvoiceTaxpayerRaw): InvoiceTaxpayerView {
   return {
     id: item.id,
     name: normalizeText(item.acceptTinName),
@@ -35,9 +28,7 @@ export function normalizeTaxpayer(
  * @param form 发票抬头表单
  * @description 组装发票抬头保存的 payload
  */
-export function createTaxpayerPayload(
-  form: InvoiceTaxpayerForm
-): InvoiceTaxpayerSaveRequest {
+export function createTaxpayerPayload(form: InvoiceTaxpayerForm): InvoiceTaxpayerSaveRequest {
   return {
     id: form.id || undefined,
     customerType: form.customerType,
@@ -57,9 +48,7 @@ export function createTaxpayerPayload(
  * @param taxpayer 发票抬头视图，可为空
  * @description 用发票抬头生成表单数据
  */
-export function createFormFromTaxpayer(
-  taxpayer?: InvoiceTaxpayerView | null
-): InvoiceTaxpayerForm {
+export function createFormFromTaxpayer(taxpayer?: InvoiceTaxpayerView | null): InvoiceTaxpayerForm {
   return {
     id: taxpayer?.id,
     customerType: taxpayer?.customerType ?? '0',
@@ -104,13 +93,7 @@ export function validateTaxpayer(form: InvoiceTaxpayerForm) {
     return '请输入企业税号'
   }
 
-  if (
-    taxNumber &&
-    form.customerType === '1' &&
-    !/^([0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}|[1-9]\d{14})$/.test(
-      taxNumber
-    )
-  ) {
+  if (taxNumber && form.customerType === '1' && !/^([0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}|[1-9]\d{14})$/.test(taxNumber)) {
     return '税号格式错误，请输入正确的企业纳税人识别号'
   }
 

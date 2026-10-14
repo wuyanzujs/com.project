@@ -1,24 +1,8 @@
 import { createExpressDraft } from '../express/express.draft'
-import {
-  getExpressReturnBillRequirementText,
-  normalizeExpressReturnBillDraft,
-  normalizeExpressReturnBillForTemplate
-} from '../express/valueAdded'
+import { getExpressReturnBillRequirementText, normalizeExpressReturnBillDraft, normalizeExpressReturnBillForTemplate } from '../express/valueAdded'
 
-import type {
-  ExpressContact,
-  ExpressDraft,
-  ExpressPaymentType,
-  ExpressProductCode,
-  ExpressReturnBillType
-} from '../express'
-import type {
-  ExpressTemplateContactRaw,
-  ExpressTemplateDraftMeta,
-  ExpressTemplateRaw,
-  ExpressTemplateSaveRequest,
-  ExpressTemplateView
-} from './types'
+import type { ExpressContact, ExpressDraft, ExpressPaymentType, ExpressProductCode, ExpressReturnBillType } from '../express'
+import type { ExpressTemplateContactRaw, ExpressTemplateDraftMeta, ExpressTemplateRaw, ExpressTemplateSaveRequest, ExpressTemplateView } from './types'
 
 const PAYMENT_LABELS: Record<ExpressPaymentType, string> = {
   MP: '现付',
@@ -94,12 +78,7 @@ function normalizePaymentType(value?: string): ExpressPaymentType {
  * @description 归一返单类型，非法值按无需返单
  */
 function normalizeReturnType(value?: string): ExpressReturnBillType {
-  if (
-    value === 'CUSTOMER_SIGNED_FAX' ||
-    value === 'CUSTOMER_SIGNED_ORIGINAL' ||
-    value === 'RETURNBILL_TYPE_ONLINE' ||
-    value === 'ORIGINAL_ONLINE'
-  ) {
+  if (value === 'CUSTOMER_SIGNED_FAX' || value === 'CUSTOMER_SIGNED_ORIGINAL' || value === 'RETURNBILL_TYPE_ONLINE' || value === 'ORIGINAL_ONLINE') {
     return value
   }
 
@@ -112,9 +91,7 @@ function normalizeReturnType(value?: string): ExpressReturnBillType {
  * @description 归一产品 code，非法值返回空字符串
  */
 function normalizeProductCode(value?: string): ExpressProductCode {
-  return EXPRESS_PRODUCT_CODES.has(value as ExpressProductCode)
-    ? (value as ExpressProductCode)
-    : ''
+  return EXPRESS_PRODUCT_CODES.has(value as ExpressProductCode) ? (value as ExpressProductCode) : ''
 }
 
 /**
@@ -122,9 +99,7 @@ function normalizeProductCode(value?: string): ExpressProductCode {
  * @param raw 模板联系人原始数据，可为空
  * @description 转模板联系人，全空时返回 null
  */
-function mapTemplateContact(
-  raw?: ExpressTemplateContactRaw | null
-): ExpressContact | null {
+function mapTemplateContact(raw?: ExpressTemplateContactRaw | null): ExpressContact | null {
   if (!raw) {
     return null
   }
@@ -165,9 +140,7 @@ function getContactText(contact: ExpressContact | null) {
     return '--'
   }
 
-  return [contact.name, contact.city || contact.province]
-    .filter(Boolean)
-    .join(' · ')
+  return [contact.name, contact.city || contact.province].filter(Boolean).join(' · ')
 }
 
 /**
@@ -203,15 +176,12 @@ function mapExpressContact(contact: ExpressContact | null) {
 export function mapTemplateToExpressDraft(raw: ExpressTemplateRaw) {
   const draft = createExpressDraft()
   const paymentType = normalizePaymentType(raw.template.payment?.paymentType)
-  const transportMode = normalizeProductCode(
-    raw.template.product?.omsProductCode
-  )
+  const transportMode = normalizeProductCode(raw.template.product?.omsProductCode)
   const returnBill = normalizeExpressReturnBillForTemplate(
     normalizeExpressReturnBillDraft({
       type: normalizeReturnType(raw.template.addedService?.returnBillType),
       returnRequirement: raw.template.addedService?.returnRequirement,
-      customReturnRequirement:
-        raw.template.addedService?.customReturnRequirement
+      customReturnRequirement: raw.template.addedService?.customReturnRequirement
     }),
     transportMode
   )
@@ -225,10 +195,7 @@ export function mapTemplateToExpressDraft(raw: ExpressTemplateRaw) {
       ...draft.goods,
       name: normalizeText(raw.template.goodInfo?.goodsName),
       weight: Math.max(0, toFiniteNumber(raw.template.goodInfo?.weight, 1)),
-      insuredAmount: Math.max(
-        0,
-        toFiniteNumber(raw.template.insurance?.insuranceAmount)
-      )
+      insuredAmount: Math.max(0, toFiniteNumber(raw.template.insurance?.insuranceAmount))
     },
     service: {
       ...draft.service,
@@ -253,17 +220,13 @@ export function mapTemplateToExpressDraft(raw: ExpressTemplateRaw) {
  * @param raw 模板原始数据
  * @description 模板转列表展示数据
  */
-export function normalizeExpressTemplate(
-  raw: ExpressTemplateRaw
-): ExpressTemplateView {
+export function normalizeExpressTemplate(raw: ExpressTemplateRaw): ExpressTemplateView {
   const draft = mapTemplateToExpressDraft(raw)
   const tags = [
     PAYMENT_LABELS[draft.service.paymentType],
     draft.service.transportMode || '',
     draft.goods.insuredAmount > 0 ? `保价${draft.goods.insuredAmount}元` : '',
-    draft.service.returnBill.type !== 'NO_RETURN_SIGNED'
-      ? RETURN_LABELS[draft.service.returnBill.type]
-      : '',
+    draft.service.returnBill.type !== 'NO_RETURN_SIGNED' ? RETURN_LABELS[draft.service.returnBill.type] : '',
     draft.service.needContact === 'Y' ? '电话联系' : ''
   ].filter(Boolean)
 
@@ -330,14 +293,8 @@ export function validateTemplateMeta(meta: ExpressTemplateDraftMeta) {
  * @param meta 模板元信息
  * @description 判断模板名称或默认状态是否变化
  */
-export function isTemplateMetadataChanged(
-  template: ExpressTemplateView,
-  meta: ExpressTemplateDraftMeta
-) {
-  return (
-    template.name !== meta.name.trim() ||
-    template.isDefault !== (meta.defaultFlag === 1)
-  )
+export function isTemplateMetadataChanged(template: ExpressTemplateView, meta: ExpressTemplateDraftMeta) {
+  return template.name !== meta.name.trim() || template.isDefault !== (meta.defaultFlag === 1)
 }
 
 /**
@@ -347,11 +304,7 @@ export function isTemplateMetadataChanged(
  * @param sysCode 系统 code
  * @description 构造模板元信息保存请求
  */
-export function buildTemplateMetadataSaveRequest(
-  template: ExpressTemplateView,
-  meta: ExpressTemplateDraftMeta,
-  sysCode: string
-): ExpressTemplateSaveRequest {
+export function buildTemplateMetadataSaveRequest(template: ExpressTemplateView, meta: ExpressTemplateDraftMeta, sysCode: string): ExpressTemplateSaveRequest {
   return {
     ...template.raw,
     id: template.id,
@@ -368,11 +321,7 @@ export function buildTemplateMetadataSaveRequest(
  * @param meta 模板元信息
  * @description 更新列表中的模板名称与默认状态
  */
-export function applyTemplateMetadataUpdate(
-  templates: ExpressTemplateView[],
-  id: string,
-  meta: ExpressTemplateDraftMeta
-): ExpressTemplateView[] {
+export function applyTemplateMetadataUpdate(templates: ExpressTemplateView[], id: string, meta: ExpressTemplateDraftMeta): ExpressTemplateView[] {
   const targetId = id.trim()
 
   if (!targetId || !templates.some(template => template.id === targetId)) {
@@ -384,11 +333,7 @@ export function applyTemplateMetadataUpdate(
 
   return templates.map(template => {
     const target = template.id === targetId
-    const isDefault = target
-      ? targetDefault
-      : targetDefault
-        ? false
-        : template.isDefault
+    const isDefault = target ? targetDefault : targetDefault ? false : template.isDefault
     const name = target ? targetName : template.name
     const defaultFlag: ExpressTemplateRaw['defaultFlag'] = isDefault ? 1 : 2
 
@@ -417,17 +362,9 @@ export function applyTemplateMetadataUpdate(
  * @param id 模板 id，新建时为空
  * @description 构造模板保存请求
  */
-export function buildTemplateSaveRequest(
-  draft: ExpressDraft,
-  meta: ExpressTemplateDraftMeta,
-  sysCode: string,
-  id = ''
-): ExpressTemplateSaveRequest {
+export function buildTemplateSaveRequest(draft: ExpressDraft, meta: ExpressTemplateDraftMeta, sysCode: string, id = ''): ExpressTemplateSaveRequest {
   const paymentType = draft.service.paymentType
-  const returnBill = normalizeExpressReturnBillForTemplate(
-    draft.service.returnBill,
-    draft.selectedProduct?.omsProductCode || draft.service.transportMode
-  )
+  const returnBill = normalizeExpressReturnBillForTemplate(draft.service.returnBill, draft.selectedProduct?.omsProductCode || draft.service.transportMode)
   const returnBillType = returnBill.type
   const productCode = draft.service.transportMode
   const pickupTime = draft.pickup.time || '现在发货'
@@ -449,8 +386,7 @@ export function buildTemplateSaveRequest(
       pickupTime: {
         dispatchFlag: draft.pickup.dispatch,
         beginAcceptTime: pickupTime,
-        beginAcceptTimeText:
-          pickupTime === '现在发货' ? '现在发货' : `每天 ${pickupTime}`,
+        beginAcceptTimeText: pickupTime === '现在发货' ? '现在发货' : `每天 ${pickupTime}`,
         serviceTime: draft.pickup.timeSlot || ''
       },
       payment: {
@@ -462,9 +398,7 @@ export function buildTemplateSaveRequest(
         productCode
       },
       insurance: {
-        insuranceAmount: draft.goods.insuredAmount
-          ? String(draft.goods.insuredAmount)
-          : ''
+        insuranceAmount: draft.goods.insuredAmount ? String(draft.goods.insuredAmount) : ''
       },
       addedService: {
         returnBillType,

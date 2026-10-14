@@ -3,12 +3,7 @@ import { ScrollView, Text, View } from '@tarojs/components'
 import type { PropsWithChildren, ReactNode } from 'react'
 
 import { AppIcon } from '@/shared/components/AppIcon'
-import {
-  AppNativeModal,
-  AppNativePressable,
-  AppSafeAreaView,
-  useAppSafeAreaBottomInset
-} from '@/shared/native'
+import { AppNativeModal, AppNativePressable, AppSafeAreaView, useAppSafeAreaBottomInset } from '@/shared/native'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './index.scss'
@@ -49,15 +44,8 @@ export function ExpressSheet({
   const body = <View className='express-sheet__content'>{children}</View>
 
   return (
-    <AppNativeModal
-      animationType='slide'
-      visible={visible}
-      onRequestClose={onClose}
-    >
-      <AppSafeAreaView
-        backgroundColor={APP_STYLE_COLORS.transparent}
-        edges={['top', 'left', 'right']}
-      >
+    <AppNativeModal animationType='slide' visible={visible} onRequestClose={onClose}>
+      <AppSafeAreaView backgroundColor={APP_STYLE_COLORS.transparent} edges={['top', 'left', 'right']}>
         <View className='express-sheet'>
           <AppNativePressable fill onPress={onClose}>
             <View className='express-sheet__aligner'>
@@ -66,54 +54,30 @@ export function ExpressSheet({
                   className='express-sheet__panel'
                   style={{
                     paddingBottom: bottomInset,
-                    ...(panelBackgroundColor
-                      ? { backgroundColor: panelBackgroundColor }
-                      : null)
+                    ...(panelBackgroundColor ? { backgroundColor: panelBackgroundColor } : null)
                   }}
                 >
-                <View className='express-sheet__header'>
-                  <View className='express-sheet__heading'>
-                    <Text
-                      className={`express-sheet__title express-sheet__title--${titleSize}`}
-                    >
-                      {title}
-                    </Text>
-                    {subtitle ? (
-                      <Text className='express-sheet__subtitle'>{subtitle}</Text>
-                    ) : null}
-                  </View>
-                  <AppNativePressable
-                    accessibilityLabel={`关闭${title}`}
-                    onPress={onClose}
-                  >
-                    <View className='express-sheet__close'>
-                      <AppIcon
-                        color={APP_STYLE_COLORS.text.placeholder}
-                        name='close'
-                        size={40}
-                      />
+                  <View className='express-sheet__header'>
+                    <View className='express-sheet__heading'>
+                      <Text className={`express-sheet__title express-sheet__title--${titleSize}`}>{title}</Text>
+                      {subtitle ? <Text className='express-sheet__subtitle'>{subtitle}</Text> : null}
                     </View>
-                  </AppNativePressable>
-                </View>
+                    <AppNativePressable accessibilityLabel={`关闭${title}`} onPress={onClose}>
+                      <View className='express-sheet__close'>
+                        <AppIcon color={APP_STYLE_COLORS.text.placeholder} name='close' size={40} />
+                      </View>
+                    </AppNativePressable>
+                  </View>
 
-                {bodyScroll ? (
-                  <ScrollView
-                    className={
-                      bodyClassName
-                        ? `express-sheet__scroll ${bodyClassName}`
-                        : 'express-sheet__scroll'
-                    }
-                    scrollY
-                  >
-                    {body}
-                  </ScrollView>
-                ) : (
-                  body
-                )}
+                  {bodyScroll ? (
+                    <ScrollView className={bodyClassName ? `express-sheet__scroll ${bodyClassName}` : 'express-sheet__scroll'} scrollY>
+                      {body}
+                    </ScrollView>
+                  ) : (
+                    body
+                  )}
 
-                {footer ? (
-                  <View className='express-sheet__footer'>{footer}</View>
-                ) : null}
+                  {footer ? <View className='express-sheet__footer'>{footer}</View> : null}
                 </View>
               </AppNativePressable>
             </View>

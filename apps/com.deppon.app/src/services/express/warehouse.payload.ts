@@ -1,40 +1,21 @@
 import { normalizeExpressWarehouseDraft } from './warehouse.rules'
 
-import type {
-  ExpressDeliveryToWarehouse,
-  ExpressOrderExtendField,
-  ExpressWarehouseDraft,
-  ExpressWarehouseStagingPayload
-} from './types'
+import type { ExpressDeliveryToWarehouse, ExpressOrderExtendField, ExpressWarehouseDraft, ExpressWarehouseStagingPayload } from './types'
 
 /**
  *
  * @param value 送货进仓草稿
  * @description 生成报价用的送货进仓字段
  */
-export function createExpressWarehouseQuoteFields(
-  value: ExpressWarehouseDraft
-) {
+export function createExpressWarehouseQuoteFields(value: ExpressWarehouseDraft) {
   const warehouse = normalizeExpressWarehouseDraft(value)
 
   return {
     isWarehousingService: warehouse.enabled ? ('Y' as const) : ('N' as const),
-    deliverWarehouseWay:
-      warehouse.enabled && warehouse.deliverWarehouseWay
-        ? warehouse.deliverWarehouseWay
-        : undefined,
-    warehouseCode:
-      warehouse.enabled && warehouse.warehouseCode
-        ? warehouse.warehouseCode
-        : undefined,
-    warehouseProcess:
-      warehouse.enabled && warehouse.warehouseProcess
-        ? warehouse.warehouseProcess
-        : undefined,
-    jcType:
-      warehouse.enabled && warehouse.warehouseType
-        ? warehouse.warehouseType
-        : undefined
+    deliverWarehouseWay: warehouse.enabled && warehouse.deliverWarehouseWay ? warehouse.deliverWarehouseWay : undefined,
+    warehouseCode: warehouse.enabled && warehouse.warehouseCode ? warehouse.warehouseCode : undefined,
+    warehouseProcess: warehouse.enabled && warehouse.warehouseProcess ? warehouse.warehouseProcess : undefined,
+    jcType: warehouse.enabled && warehouse.warehouseType ? warehouse.warehouseType : undefined
   }
 }
 
@@ -43,9 +24,7 @@ export function createExpressWarehouseQuoteFields(
  * @param value 送货进仓草稿
  * @description 生成下单用的送货进仓字段
  */
-export function createExpressWarehouseOrderFields(
-  value: ExpressWarehouseDraft
-): {
+export function createExpressWarehouseOrderFields(value: ExpressWarehouseDraft): {
   deliveryToWarehouse?: ExpressDeliveryToWarehouse
   orderExtendFields: ExpressOrderExtendField[]
 } {
@@ -94,9 +73,7 @@ export function createExpressWarehouseOrderFields(
  * @param value 送货进仓草稿
  * @description 生成送货进仓暂存 payload
  */
-export function createExpressWarehouseStagingPayload(
-  value: ExpressWarehouseDraft
-): ExpressWarehouseStagingPayload {
+export function createExpressWarehouseStagingPayload(value: ExpressWarehouseDraft): ExpressWarehouseStagingPayload {
   const warehouse = normalizeExpressWarehouseDraft(value)
 
   return {

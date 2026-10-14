@@ -19,8 +19,7 @@ import type {
 import type { CreateExpressOrderResponse } from '../express/types'
 
 export const BATCH_MAX_CONSIGNEE_COUNT = 10
-export const BATCH_EXCEL_URL =
-  'https://www.deppon.com/batchorder?source=APP_BATCHORDER'
+export const BATCH_EXCEL_URL = 'https://www.deppon.com/batchorder?source=APP_BATCHORDER'
 
 /**
  *
@@ -38,11 +37,7 @@ function normalizeText(value?: string | null) {
  * @param consigneeIndex 收货人下标
  * @description 创建校验失败结果
  */
-function createFailure(
-  step: BatchValidationResult['step'],
-  message: string,
-  consigneeIndex = -1
-): BatchValidationResult {
+function createFailure(step: BatchValidationResult['step'], message: string, consigneeIndex = -1): BatchValidationResult {
   return {
     valid: false,
     step,
@@ -81,13 +76,7 @@ function isValidContactPhone(value: string) {
  * @description 判断联系人姓名与地址是否完整
  */
 function isCompleteContact(contact: BatchContact) {
-  return [
-    contact.name,
-    contact.province,
-    contact.city,
-    contact.county,
-    contact.address
-  ].every(value => !!normalizeText(value))
+  return [contact.name, contact.province, contact.city, contact.county, contact.address].every(value => !!normalizeText(value))
 }
 
 /**
@@ -96,9 +85,7 @@ function isCompleteContact(contact: BatchContact) {
  * @description 生成地址 key，用于发货人与收货人比对
  */
 function createAddressKey(contact: BatchContact) {
-  return [contact.province, contact.city, contact.county, contact.address]
-    .map(normalizeText)
-    .join('|')
+  return [contact.province, contact.city, contact.county, contact.address].map(normalizeText).join('|')
 }
 
 /**
@@ -126,11 +113,7 @@ function splitBatchAddressLine(line: string) {
  * @param message 失败原因
  * @description 创建地址识别失败项
  */
-function createRecognizeFailure(
-  lineNumber: number,
-  rawText: string,
-  message: string
-): BatchRecognizedConsignee {
+function createRecognizeFailure(lineNumber: number, rawText: string, message: string): BatchRecognizedConsignee {
   return {
     lineNumber,
     rawText,
@@ -148,17 +131,9 @@ function createRecognizeFailure(
  * @param parts 已拆分的字段
  * @description 校验字段并生成识别成功的收货人
  */
-function createRecognizedConsignee(
-  lineNumber: number,
-  rawText: string,
-  parts: string[]
-): BatchRecognizedConsignee {
+function createRecognizedConsignee(lineNumber: number, rawText: string, parts: string[]): BatchRecognizedConsignee {
   if (parts.length < 7) {
-    return createRecognizeFailure(
-      lineNumber,
-      rawText,
-      '请按“姓名 手机 省 市 区 详细地址 货物”填写'
-    )
+    return createRecognizeFailure(lineNumber, rawText, '请按“姓名 手机 省 市 区 详细地址 货物”填写')
   }
 
   const [name, mobile, province, city, county, ...restParts] = parts
@@ -203,15 +178,9 @@ function createRecognizedConsignee(
  * @param value 多行地址文本
  * @description 逐行识别批量收货人地址
  */
-export function recognizeBatchAddressText(
-  value: string
-): BatchAddressRecognitionResult {
+export function recognizeBatchAddressText(value: string): BatchAddressRecognitionResult {
   const lines = value.split(/\r?\n/).map(normalizeText).filter(Boolean)
-  const items = lines
-    .slice(0, BATCH_MAX_CONSIGNEE_COUNT)
-    .map((line, index) =>
-      createRecognizedConsignee(index + 1, line, splitBatchAddressLine(line))
-    )
+  const items = lines.slice(0, BATCH_MAX_CONSIGNEE_COUNT).map((line, index) => createRecognizedConsignee(index + 1, line, splitBatchAddressLine(line)))
 
   return {
     totalLines: lines.length,
@@ -230,9 +199,7 @@ export function recognizeBatchAddressText(
 function isSpecialRegion(province?: string | null) {
   const value = normalizeText(province)
 
-  return (
-    value.includes('香港') || value.includes('澳门') || value.includes('台湾')
-  )
+  return value.includes('香港') || value.includes('澳门') || value.includes('台湾')
 }
 
 /**
@@ -241,10 +208,7 @@ function isSpecialRegion(province?: string | null) {
  * @param consigneeProvince 收货人省份
  * @description 判断港澳台互寄是否需要拦截
  */
-export function shouldBlockSpecialRegionBatchOrder(
-  senderProvince?: string | null,
-  consigneeProvince?: string | null
-) {
+export function shouldBlockSpecialRegionBatchOrder(senderProvince?: string | null, consigneeProvince?: string | null) {
   const sender = normalizeText(senderProvince)
   const consignee = normalizeText(consigneeProvince)
   const senderSpecial = isSpecialRegion(sender)
@@ -263,10 +227,7 @@ export function shouldBlockSpecialRegionBatchOrder(
  * @param options 校验选项
  * @description 校验批量草稿的必填项与格式
  */
-export function validateBatchDraft(
-  draft: BatchDraft,
-  options: { requireProduct?: boolean } = {}
-): BatchValidationResult {
+export function validateBatchDraft(draft: BatchDraft, options: { requireProduct?: boolean } = {}): BatchValidationResult {
   if (!draft.sender?.name) {
     return createFailure('sender', '请选择发货人')
   }
@@ -280,10 +241,7 @@ export function validateBatchDraft(
   }
 
   if (draft.consignees.length > BATCH_MAX_CONSIGNEE_COUNT) {
-    return createFailure(
-      'consignee',
-      `最多只能添加 ${BATCH_MAX_CONSIGNEE_COUNT} 个收货人`
-    )
+    return createFailure('consignee', `最多只能添加 ${BATCH_MAX_CONSIGNEE_COUNT} 个收货人`)
   }
 
   if (!isValidContactPhone(draft.sender.mobile)) {
@@ -296,80 +254,39 @@ export function validateBatchDraft(
     const item = draft.consignees[index]
 
     if (!item.contact || !isCompleteContact(item.contact)) {
-      return createFailure(
-        'consignee',
-        `第 ${index + 1} 个收货人信息不完整`,
-        index
-      )
+      return createFailure('consignee', `第 ${index + 1} 个收货人信息不完整`, index)
     }
 
     if (!isValidContactPhone(item.contact.mobile)) {
-      return createFailure(
-        'consigneePhone',
-        `第 ${index + 1} 个收货人手机号格式不正确`,
-        index
-      )
+      return createFailure('consigneePhone', `第 ${index + 1} 个收货人手机号格式不正确`, index)
     }
 
     if (senderAddress === createAddressKey(item.contact)) {
-      return createFailure(
-        'address',
-        `第 ${index + 1} 个收货人地址与发货人地址一致`,
-        index
-      )
+      return createFailure('address', `第 ${index + 1} 个收货人地址与发货人地址一致`, index)
     }
 
     if (!normalizeText(item.goods.name)) {
-      return createFailure(
-        'goods',
-        `第 ${index + 1} 个收货人缺少货物名称`,
-        index
-      )
+      return createFailure('goods', `第 ${index + 1} 个收货人缺少货物名称`, index)
     }
 
     if (!Number.isFinite(item.goods.count) || item.goods.count < 1) {
-      return createFailure(
-        'goodsCount',
-        `第 ${index + 1} 个收货人的货物件数不正确`,
-        index
-      )
+      return createFailure('goodsCount', `第 ${index + 1} 个收货人的货物件数不正确`, index)
     }
 
     if (!Number.isFinite(item.goods.weight) || item.goods.weight <= 0) {
-      return createFailure(
-        'goodsWeight',
-        `第 ${index + 1} 个收货人的货物重量不正确`,
-        index
-      )
+      return createFailure('goodsWeight', `第 ${index + 1} 个收货人的货物重量不正确`, index)
     }
 
     if (options.requireProduct && !item.productCode) {
-      return createFailure(
-        'product',
-        `第 ${index + 1} 个收货人尚未获取产品价格`,
-        index
-      )
+      return createFailure('product', `第 ${index + 1} 个收货人尚未获取产品价格`, index)
     }
 
     if (draft.requireWaybillNumber && !normalizeText(item.waybillNumber)) {
-      return createFailure(
-        'waybill',
-        `第 ${index + 1} 个收货人缺少运单号`,
-        index
-      )
+      return createFailure('waybill', `第 ${index + 1} 个收货人缺少运单号`, index)
     }
 
-    if (
-      shouldBlockSpecialRegionBatchOrder(
-        draft.sender.province,
-        item.contact.province
-      )
-    ) {
-      return createFailure(
-        'specialRegion',
-        '港澳台互寄服务请联系营业部 0755-36360474/82',
-        index
-      )
+    if (shouldBlockSpecialRegionBatchOrder(draft.sender.province, item.contact.province)) {
+      return createFailure('specialRegion', '港澳台互寄服务请联系营业部 0755-36360474/82', index)
     }
   }
 
@@ -390,20 +307,12 @@ export function validateBatchSubmitDraft(draft: BatchDraft) {
  * @param result 创建订单响应
  * @description 汇总批量提交的成功与失败票数
  */
-export function createBatchSubmitSummary(
-  result: CreateExpressOrderResponse
-): BatchSubmitSummary {
-  const successCount = Math.max(
-    result.orderNumbers?.length ?? 0,
-    result.waybillNumbers?.length ?? 0,
-    result.waybillNumber ? 1 : 0
-  )
+export function createBatchSubmitSummary(result: CreateExpressOrderResponse): BatchSubmitSummary {
+  const successCount = Math.max(result.orderNumbers?.length ?? 0, result.waybillNumbers?.length ?? 0, result.waybillNumber ? 1 : 0)
   const failedItems = result.orderErrorInfo ?? []
   const failedCount = failedItems.length
   const firstFailure = failedItems[0]
-  const failureMessage = firstFailure
-    ? `第 ${firstFailure.index + 1} 票：${firstFailure.errorMessage}`
-    : ''
+  const failureMessage = firstFailure ? `第 ${firstFailure.index + 1} 票：${firstFailure.errorMessage}` : ''
 
   if (failedCount && successCount) {
     return {
@@ -499,9 +408,7 @@ export const batchService = {
    * @param draft 批量草稿
    * @description 校验后获取所有收货人的产品价格
    */
-  async quoteDraft(
-    draft: BatchDraft
-  ): Promise<DepponResponse<BatchQuoteItem[]>> {
+  async quoteDraft(draft: BatchDraft): Promise<DepponResponse<BatchQuoteItem[]>> {
     const validation = validateBatchDraft(draft)
 
     if (!validation.valid) {
@@ -516,9 +423,7 @@ export const batchService = {
    * @param draft 批量草稿
    * @description 校验后提交批量订单
    */
-  async submitDraft(
-    draft: BatchDraft
-  ): Promise<DepponResponse<CreateExpressOrderResponse>> {
+  async submitDraft(draft: BatchDraft): Promise<DepponResponse<CreateExpressOrderResponse>> {
     const validation = validateBatchSubmitDraft(draft)
 
     if (!validation.valid) {

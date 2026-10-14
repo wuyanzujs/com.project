@@ -3,14 +3,7 @@ import type { DepponResponse } from '@/request/deppon'
 import { couponApi } from './coupon.api'
 import { createServiceFailure } from '../serviceResponse'
 
-import type {
-  CouponCardView,
-  CouponDetailView,
-  CouponExchangeResponse,
-  CouponItem,
-  CouponListResult,
-  CouponStatus
-} from './types'
+import type { CouponCardView, CouponDetailView, CouponExchangeResponse, CouponItem, CouponListResult, CouponStatus } from './types'
 
 const WEEKDAY_TEXT: Record<string, string> = {
   Sunday: '日',
@@ -40,9 +33,7 @@ function toFiniteNumber(value: unknown, fallback = 0) {
  * @description 数字转文本并去掉末尾的零
  */
 function trimNumberText(value: number) {
-  return Number.isInteger(value)
-    ? String(value)
-    : value.toFixed(2).replace(/\.?0+$/, '')
+  return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/\.?0+$/, '')
 }
 
 /**
@@ -76,10 +67,7 @@ function formatDate(value?: string | null) {
   const matched = value.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/)
 
   if (matched) {
-    return `${matched[1]}.${matched[2].padStart(2, '0')}.${matched[3].padStart(
-      2,
-      '0'
-    )}`
+    return `${matched[1]}.${matched[2].padStart(2, '0')}.${matched[3].padStart(2, '0')}`
   }
 
   const date = new Date(value.replace(/-/g, '/').replace('T', ' '))
@@ -88,10 +76,7 @@ function formatDate(value?: string | null) {
     return value
   }
 
-  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(
-    2,
-    '0'
-  )}.${String(date.getDate()).padStart(2, '0')}`
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`
 }
 
 /**
@@ -162,15 +147,11 @@ function getThresholdText(coupon: CouponItem) {
   }
 
   if (coupon.discountType === '3') {
-    return `每满${formatCentAmount(coupon.useFee)}元减${formatCentAmount(
-      coupon.subFee
-    )}元`
+    return `每满${formatCentAmount(coupon.useFee)}元减${formatCentAmount(coupon.subFee)}元`
   }
 
   if (coupon.discountType === '4') {
-    return coupon.limitDiscountFee
-      ? `最高减免${formatCentAmount(coupon.limitDiscountFee)}元`
-      : '折扣优惠'
+    return coupon.limitDiscountFee ? `最高减免${formatCentAmount(coupon.limitDiscountFee)}元` : '折扣优惠'
   }
 
   if (coupon.discountFee) {
@@ -262,14 +243,8 @@ function getLabelText(coupon: CouponItem) {
  * @param labelText 角标文案
  * @description 组装优惠券标签，最多 4 个
  */
-function createTags(
-  coupon: CouponItem,
-  usageTimeText: string,
-  labelText: string
-) {
-  return [labelText, usageTimeText, ...(coupon.fitCouponTagList ?? [])]
-    .filter(Boolean)
-    .slice(0, 4)
+function createTags(coupon: CouponItem, usageTimeText: string, labelText: string) {
+  return [labelText, usageTimeText, ...(coupon.fitCouponTagList ?? [])].filter(Boolean).slice(0, 4)
 }
 
 /**
@@ -348,13 +323,7 @@ export function createCouponDetailView(raw: {
     descriptions,
     senderAddresses,
     consigneeAddresses,
-    hasDetail: Boolean(
-      fitProduct ||
-      limits.length ||
-      descriptions.length ||
-      senderAddresses.length ||
-      consigneeAddresses.length
-    )
+    hasDetail: Boolean(fitProduct || limits.length || descriptions.length || senderAddresses.length || consigneeAddresses.length)
   }
 }
 
@@ -382,9 +351,7 @@ export const couponService = {
       statusText: getStatusText(coupon, status),
       labelText,
       tags: createTags(coupon, usageTimeText, labelText),
-      canUse:
-        (status === 'USABLE' || status === 'AVAILABLE') &&
-        coupon.businessStatus !== '1',
+      canUse: (status === 'USABLE' || status === 'AVAILABLE') && coupon.businessStatus !== '1',
       raw: coupon
     }
   },
@@ -395,10 +362,7 @@ export const couponService = {
    * @param loading 是否展示加载态
    * @description 查询用户优惠券列表
    */
-  async queryUserCoupons(
-    status: CouponStatus,
-    loading = false
-  ): Promise<DepponResponse<CouponListResult>> {
+  async queryUserCoupons(status: CouponStatus, loading = false): Promise<DepponResponse<CouponListResult>> {
     const response = await couponApi.queryUserCouponList(
       {
         type: status
@@ -427,9 +391,7 @@ export const couponService = {
    * @param code 兑换码
    * @description 校验后兑换优惠券
    */
-  async exchangeCoupon(
-    code: string
-  ): Promise<DepponResponse<CouponExchangeResponse>> {
+  async exchangeCoupon(code: string): Promise<DepponResponse<CouponExchangeResponse>> {
     const exchangeCouponCode = code.trim()
     const validationMessage = validateCouponExchangeCode(exchangeCouponCode)
 
@@ -440,9 +402,7 @@ export const couponService = {
     const response = await couponApi.exchangeCoupon(exchangeCouponCode)
 
     if (!response.status || !response.result?.data) {
-      return createServiceFailure(
-        response.result?.msg || response.message || '兑换失败，请稍后再试'
-      )
+      return createServiceFailure(response.result?.msg || response.message || '兑换失败，请稍后再试')
     }
 
     return response
@@ -453,9 +413,7 @@ export const couponService = {
    * @param couponCode 券码
    * @description 查询优惠券详情
    */
-  async queryCouponDetail(
-    couponCode: string
-  ): Promise<DepponResponse<CouponDetailView>> {
+  async queryCouponDetail(couponCode: string): Promise<DepponResponse<CouponDetailView>> {
     const code = couponCode.trim()
 
     if (!code) {

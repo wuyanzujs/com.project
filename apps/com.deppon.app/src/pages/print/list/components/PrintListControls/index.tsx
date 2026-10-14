@@ -1,11 +1,6 @@
 import { ScrollView, Text, View } from '@tarojs/components'
 
-import type {
-  PrintDateRangeKey,
-  PrintDateRangeOption,
-  PrintListCounts,
-  PrintSearchType
-} from '@/services/print'
+import type { PrintDateRangeKey, PrintDateRangeOption, PrintListCounts, PrintSearchType } from '@/services/print'
 import { AppPressable } from '@/shared/components'
 
 import './index.scss'
@@ -36,9 +31,7 @@ function getCount(counts: PrintListCounts, status: PrintSearchType) {
 }
 
 export function PrintListControls(props: PrintListControlsProps) {
-  const selectedRange =
-    props.dateOptions.find(option => option.key === props.rangeKey) ??
-    props.dateOptions[0]
+  const selectedRange = props.dateOptions.find(option => option.key === props.rangeKey) ?? props.dateOptions[0]
 
   return (
     <View className='print-list-controls'>
@@ -49,34 +42,13 @@ export function PrintListControls(props: PrintListControlsProps) {
           return (
             <AppPressable
               flex
-              accessibilityLabel={`${tab.label} ${getCount(
-                props.counts,
-                tab.value
-              )}`}
-              className={
-                active
-                  ? 'print-list-status-tab print-list-status-tab--active'
-                  : 'print-list-status-tab'
-              }
+              accessibilityLabel={`${tab.label} ${getCount(props.counts, tab.value)}`}
+              className={active ? 'print-list-status-tab print-list-status-tab--active' : 'print-list-status-tab'}
               key={tab.value}
               onPress={() => props.onStatusChange(tab.value)}
             >
-              <Text
-                className={
-                  active
-                    ? 'print-list-status-tab__label print-list-status-tab__label--active'
-                    : 'print-list-status-tab__label'
-                }
-              >
-                {tab.label}
-              </Text>
-              <Text
-                className={
-                  active
-                    ? 'print-list-status-tab__count print-list-status-tab__count--active'
-                    : 'print-list-status-tab__count'
-                }
-              >
+              <Text className={active ? 'print-list-status-tab__label print-list-status-tab__label--active' : 'print-list-status-tab__label'}>{tab.label}</Text>
+              <Text className={active ? 'print-list-status-tab__count print-list-status-tab__count--active' : 'print-list-status-tab__count'}>
                 {getCount(props.counts, tab.value)}
               </Text>
             </AppPressable>
@@ -86,9 +58,7 @@ export function PrintListControls(props: PrintListControlsProps) {
 
       <View className='print-list-range-head'>
         <Text className='print-list-range-title'>查询范围</Text>
-        <Text className='print-list-range-summary'>
-          {selectedRange?.summary || '--'}
-        </Text>
+        <Text className='print-list-range-summary'>{selectedRange?.summary || '--'}</Text>
       </View>
 
       <ScrollView className='print-list-range-scroll' scrollX>
@@ -99,21 +69,11 @@ export function PrintListControls(props: PrintListControlsProps) {
             return (
               <AppPressable
                 accessibilityLabel={option.label}
-                className={
-                  active
-                    ? 'print-list-range-option print-list-range-option--active'
-                    : 'print-list-range-option'
-                }
+                className={active ? 'print-list-range-option print-list-range-option--active' : 'print-list-range-option'}
                 key={option.key}
                 onPress={() => props.onRangeChange(option.key)}
               >
-                <Text
-                  className={
-                    active
-                      ? 'print-list-range-option__label print-list-range-option__label--active'
-                      : 'print-list-range-option__label'
-                  }
-                >
+                <Text className={active ? 'print-list-range-option__label print-list-range-option__label--active' : 'print-list-range-option__label'}>
                   {option.label}
                 </Text>
               </AppPressable>
@@ -123,17 +83,11 @@ export function PrintListControls(props: PrintListControlsProps) {
       </ScrollView>
 
       <View className='print-list-summary'>
-        <Text className='print-list-summary__label'>
-          {props.status === '1' ? '待打印订单' : '已打印订单'}
-        </Text>
-        <Text className='print-list-summary__count'>
-          共 {props.totalRows} 单
-        </Text>
+        <Text className='print-list-summary__label'>{props.status === '1' ? '待打印订单' : '已打印订单'}</Text>
+        <Text className='print-list-summary__count'>共 {props.totalRows} 单</Text>
       </View>
 
-      {!!props.countMessage && (
-        <Text className='print-list-count-warning'>{props.countMessage}</Text>
-      )}
+      {!!props.countMessage && <Text className='print-list-count-warning'>{props.countMessage}</Text>}
     </View>
   )
 }

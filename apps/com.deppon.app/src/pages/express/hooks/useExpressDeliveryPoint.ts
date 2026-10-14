@@ -14,14 +14,9 @@ interface UseExpressDeliveryPointOptions {
   setDraft: Dispatch<SetStateAction<ExpressDraft>>
 }
 
-export function useExpressDeliveryPoint({
-  draft,
-  setDraft
-}: UseExpressDeliveryPointOptions) {
+export function useExpressDeliveryPoint({ draft, setDraft }: UseExpressDeliveryPointOptions) {
   useDidShow(() => {
-    const selection = stationSelection.consumeSelection(
-      'EXPRESS_DELIVERY_POINT'
-    )
+    const selection = stationSelection.consumeSelection('EXPRESS_DELIVERY_POINT')
 
     if (!selection) {
       return
@@ -29,9 +24,7 @@ export function useExpressDeliveryPoint({
 
     setDraft(current => updateExpressDeliveryPoint(current, selection.station))
     Taro.showToast({
-      title: selection.station
-        ? '已选择收件自提服务点'
-        : '将由系统匹配最近服务点',
+      title: selection.station ? '已选择收件自提服务点' : '将由系统匹配最近服务点',
       icon: 'none'
     })
   })
@@ -45,11 +38,7 @@ export function useExpressDeliveryPoint({
       return
     }
 
-    const params = stationSelection.createParams(
-      'EXPRESS_DELIVERY_POINT',
-      draft.consignee,
-      draft.deliveryPoint.code
-    )
+    const params = stationSelection.createParams('EXPRESS_DELIVERY_POINT', draft.consignee, draft.deliveryPoint.code)
 
     navigateToAppRoute(createAppRouteUrl(APP_ROUTES.stationQuery, params))
   }, [draft.consignee, draft.deliveryPoint.code])
@@ -59,6 +48,4 @@ export function useExpressDeliveryPoint({
   }
 }
 
-export type ExpressDeliveryPointController = ReturnType<
-  typeof useExpressDeliveryPoint
->
+export type ExpressDeliveryPointController = ReturnType<typeof useExpressDeliveryPoint>

@@ -24,13 +24,7 @@ import { canScheduleOrderPickup } from './order.dispatch'
 import { getOrderEditUnavailableMessage } from './order.edit'
 import { createOrderEvaluationRoute } from './order.evaluation.rules'
 
-import type {
-  OrderDetail,
-  OrderDetailActionOptions,
-  OrderDetailActionView,
-  OrderDetailUrgeActionView,
-  OrderRole
-} from './types'
+import type { OrderDetail, OrderDetailActionOptions, OrderDetailActionView, OrderDetailUrgeActionView, OrderRole } from './types'
 
 const COMPLAINT_ORDER_CLASSES = new Set([1, 2, 6])
 const COMPLAINT_WINDOW_DAYS = 90
@@ -48,11 +42,7 @@ function isComplaintStatus(order: OrderDetail) {
   const statusText = getOrderStatusText(order)
 
   if (orderClass === null) {
-    return (
-      statusText.includes('运输') ||
-      statusText.includes('派送') ||
-      statusText.includes('签收')
-    )
+    return statusText.includes('运输') || statusText.includes('派送') || statusText.includes('签收')
   }
 
   return COMPLAINT_ORDER_CLASSES.has(orderClass)
@@ -84,13 +74,8 @@ function isWithinDays(value: string | null | undefined, days: number) {
  * @param options 操作选项
  * @description 判断是否展示需要登录的详情操作
  */
-function canShowSecureDetailActions(
-  order: OrderDetail,
-  options: OrderDetailActionOptions
-) {
-  return (
-    !options.publicTrackMode && (!!order.orderNumber || !!order.waybillNumber)
-  )
+function canShowSecureDetailActions(order: OrderDetail, options: OrderDetailActionOptions) {
+  return !options.publicTrackMode && (!!order.orderNumber || !!order.waybillNumber)
 }
 
 /**
@@ -99,11 +84,7 @@ function canShowSecureDetailActions(
  * @description 判断订单是否可发起投诉
  */
 function canCreateComplaint(order: OrderDetail) {
-  return (
-    !!getDetailWaybillNumber(order) &&
-    isComplaintStatus(order) &&
-    isWithinDays(order.orderTime, COMPLAINT_WINDOW_DAYS)
-  )
+  return !!getDetailWaybillNumber(order) && isComplaintStatus(order) && isWithinDays(order.orderTime, COMPLAINT_WINDOW_DAYS)
 }
 
 /**
@@ -113,12 +94,7 @@ function canCreateComplaint(order: OrderDetail) {
  * @description 判断运单是否可修改
  */
 function canModifyWaybill(order: OrderDetail, role?: OrderRole) {
-  return (
-    role !== 'receive' &&
-    isTransitOrder(order) &&
-    !!getDetailWaybillNumber(order) &&
-    order.modifyFlag !== false
-  )
+  return role !== 'receive' && isTransitOrder(order) && !!getDetailWaybillNumber(order) && order.modifyFlag !== false
 }
 
 /**
@@ -128,12 +104,7 @@ function canModifyWaybill(order: OrderDetail, role?: OrderRole) {
  * @description 判断订单是否可修改
  */
 function canModifyOrder(order: OrderDetail, role?: OrderRole) {
-  return (
-    role !== 'receive' &&
-    isWaitAllotOrder(order) &&
-    !!order.orderNumber &&
-    !getOrderEditUnavailableMessage(order)
-  )
+  return role !== 'receive' && isWaitAllotOrder(order) && !!order.orderNumber && !getOrderEditUnavailableMessage(order)
 }
 
 /**
@@ -143,12 +114,7 @@ function canModifyOrder(order: OrderDetail, role?: OrderRole) {
  * @description 判断是否可通知派送
  */
 function canNotifyDeliver(order: OrderDetail, role?: OrderRole) {
-  return (
-    isSenderDetail(order, role) &&
-    isTransitOrder(order) &&
-    !!getDetailWaybillNumber(order) &&
-    order.isDlyNotified === 'N'
-  )
+  return isSenderDetail(order, role) && isTransitOrder(order) && !!getDetailWaybillNumber(order) && order.isDlyNotified === 'N'
 }
 
 /**
@@ -158,12 +124,7 @@ function canNotifyDeliver(order: OrderDetail, role?: OrderRole) {
  * @description 判断运单是否可拦截作废
  */
 function canInvalidWaybill(order: OrderDetail, role?: OrderRole) {
-  return (
-    isSenderDetail(order, role) &&
-    isTransitOrder(order) &&
-    !!getDetailWaybillNumber(order) &&
-    order.canBeVoided === 'Y'
-  )
+  return isSenderDetail(order, role) && isTransitOrder(order) && !!getDetailWaybillNumber(order) && order.canBeVoided === 'Y'
 }
 
 /**
@@ -173,11 +134,7 @@ function canInvalidWaybill(order: OrderDetail, role?: OrderRole) {
  * @description 判断是否可调整收件方式
  */
 function canEditDeliveryPreference(order: OrderDetail, role?: OrderRole) {
-  return (
-    isReceiverDetail(order, role) &&
-    isTransitOrder(order) &&
-    !!getDetailWaybillNumber(order)
-  )
+  return isReceiverDetail(order, role) && isTransitOrder(order) && !!getDetailWaybillNumber(order)
 }
 
 /**
@@ -195,21 +152,12 @@ function canContactDepartment(order: OrderDetail) {
  * @param options 操作选项
  * @description 按订单状态组装催单上下文
  */
-export function createOrderUrgeContext(
-  order: OrderDetail,
-  options: OrderDetailActionOptions
-): OrderDetailUrgeActionView | null {
+export function createOrderUrgeContext(order: OrderDetail, options: OrderDetailActionOptions): OrderDetailUrgeActionView | null {
   if (!canShowSecureDetailActions(order, options)) {
     return null
   }
 
-  if (
-    isSenderDetail(order, options.role) &&
-    isWaitAllotOrder(order) &&
-    order.orderNumber &&
-    !isServicePointOrder(order) &&
-    isExpressOrder(order)
-  ) {
+  if (isSenderDetail(order, options.role) && isWaitAllotOrder(order) && order.orderNumber && !isServicePointOrder(order) && isExpressOrder(order)) {
     return {
       voucherNumber: order.orderNumber,
       voucherType: '0',
@@ -250,10 +198,7 @@ export function createUrgeProgressWebUri(urge: OrderDetailUrgeActionView) {
  * @param options 操作选项
  * @description 按订单状态生成详情页操作列表
  */
-export function createOrderDetailActions(
-  order: OrderDetail,
-  options: OrderDetailActionOptions = {}
-): OrderDetailActionView[] {
+export function createOrderDetailActions(order: OrderDetail, options: OrderDetailActionOptions = {}): OrderDetailActionView[] {
   if (!canShowSecureDetailActions(order, options)) {
     return []
   }
@@ -398,12 +343,9 @@ export function createOrderDetailActions(
       tone: 'neutral',
       badgeText: 'H5',
       webSource: 'ORDER_DETAIL_CLAIM',
-      webUri: createOrderDetailWebUri(
-        '/depponmobile/h5/index#/claimPackagePages/index',
-        {
-          waybillNumber
-        }
-      ),
+      webUri: createOrderDetailWebUri('/depponmobile/h5/index#/claimPackagePages/index', {
+        waybillNumber
+      }),
       loginRequired: true
     })
   }

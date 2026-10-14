@@ -1,10 +1,4 @@
-import type {
-  ExpressCartonCode,
-  ExpressPackageInfo,
-  ExpressUnpackageLtlInfo,
-  ExpressUnpackingCode,
-  ExpressWoodenPackagingCode
-} from './types'
+import type { ExpressCartonCode, ExpressPackageInfo, ExpressUnpackageLtlInfo, ExpressUnpackingCode, ExpressWoodenPackagingCode } from './types'
 
 export interface ExpressCartonOption {
   code: Exclude<ExpressCartonCode, ''>
@@ -127,53 +121,52 @@ export const EXPRESS_CARTON_OPTIONS: ExpressCartonOption[] = [
   }
 ]
 
-export const EXPRESS_WOODEN_PACKAGING_OPTIONS: ExpressWoodenPackagingOption[] =
-  [
-    {
-      code: 'WOOD_03',
-      name: '木架',
-      suitableFor: '汽车配件等',
-      priceLabel: '¥200/方',
-      minimumPriceLabel: '最低40元/票',
-      imageUrl: 'https://ca.deppon.com.cn/ows/assets/goods/27.png',
-      orderType: 'VOLUME',
-      orderPackageCode: 'SJ',
-      packingName: '木架'
-    },
-    {
-      code: 'WOOD_04',
-      name: '木箱',
-      suitableFor: '显示器等',
-      priceLabel: '¥300/方',
-      minimumPriceLabel: '最低60元/票',
-      imageUrl: 'https://ca.deppon.com.cn/ows/assets/goods/28.png',
-      orderType: 'VOLUME',
-      orderPackageCode: 'BG',
-      packingName: '木箱'
-    },
-    {
-      code: 'WOOD_01',
-      name: '木托1号',
-      suitableFor: '不超过120cm x 100cm',
-      priceLabel: '¥60/个',
-      minimumPriceLabel: '',
-      imageUrl: 'https://ca.deppon.com.cn/ows/assets/package/pallet1.png',
-      orderType: 'COUNT',
-      orderPackageCode: 'SP',
-      packingName: '木托'
-    },
-    {
-      code: 'WOOD_02',
-      name: '木托2号',
-      suitableFor: '超过120cm x 100cm',
-      priceLabel: '¥120/个',
-      minimumPriceLabel: '',
-      imageUrl: 'https://ca.deppon.com.cn/ows/assets/package/pallet2.png',
-      orderType: 'COUNT',
-      orderPackageCode: 'NSP',
-      packingName: '木托'
-    }
-  ]
+export const EXPRESS_WOODEN_PACKAGING_OPTIONS: ExpressWoodenPackagingOption[] = [
+  {
+    code: 'WOOD_03',
+    name: '木架',
+    suitableFor: '汽车配件等',
+    priceLabel: '¥200/方',
+    minimumPriceLabel: '最低40元/票',
+    imageUrl: 'https://ca.deppon.com.cn/ows/assets/goods/27.png',
+    orderType: 'VOLUME',
+    orderPackageCode: 'SJ',
+    packingName: '木架'
+  },
+  {
+    code: 'WOOD_04',
+    name: '木箱',
+    suitableFor: '显示器等',
+    priceLabel: '¥300/方',
+    minimumPriceLabel: '最低60元/票',
+    imageUrl: 'https://ca.deppon.com.cn/ows/assets/goods/28.png',
+    orderType: 'VOLUME',
+    orderPackageCode: 'BG',
+    packingName: '木箱'
+  },
+  {
+    code: 'WOOD_01',
+    name: '木托1号',
+    suitableFor: '不超过120cm x 100cm',
+    priceLabel: '¥60/个',
+    minimumPriceLabel: '',
+    imageUrl: 'https://ca.deppon.com.cn/ows/assets/package/pallet1.png',
+    orderType: 'COUNT',
+    orderPackageCode: 'SP',
+    packingName: '木托'
+  },
+  {
+    code: 'WOOD_02',
+    name: '木托2号',
+    suitableFor: '超过120cm x 100cm',
+    priceLabel: '¥120/个',
+    minimumPriceLabel: '',
+    imageUrl: 'https://ca.deppon.com.cn/ows/assets/package/pallet2.png',
+    orderType: 'COUNT',
+    orderPackageCode: 'NSP',
+    packingName: '木托'
+  }
+]
 
 export const EXPRESS_UNPACKING_OPTIONS: ExpressUnpackingOption[] = [
   {
@@ -206,13 +199,8 @@ export function getExpressCartonOption(value: ExpressCartonCode) {
  * @param value 木包装 code
  * @description 取木包装选项，不存在返回 null
  */
-export function getExpressWoodenPackagingOption(
-  value: ExpressWoodenPackagingCode
-) {
-  return (
-    EXPRESS_WOODEN_PACKAGING_OPTIONS.find(option => option.code === value) ??
-    null
-  )
+export function getExpressWoodenPackagingOption(value: ExpressWoodenPackagingCode) {
+  return EXPRESS_WOODEN_PACKAGING_OPTIONS.find(option => option.code === value) ?? null
 }
 
 /**

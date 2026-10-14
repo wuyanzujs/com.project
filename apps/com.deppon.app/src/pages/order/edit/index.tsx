@@ -41,10 +41,7 @@ function getOrderNumber(params: Record<string, string | undefined>) {
 
 const OrderEditPage = () => {
   const router = useRouter()
-  const orderNumber = useMemo(
-    () => getOrderNumber(router.params as Record<string, string | undefined>),
-    [router.params]
-  )
+  const orderNumber = useMemo(() => getOrderNumber(router.params as Record<string, string | undefined>), [router.params])
   const [draft, setDraft] = useState<OrderEditDraft | null>(null)
   const [origin, setOrigin] = useState<OrderEditDraft | null>(null)
   const [loading, setLoading] = useState(false)
@@ -57,18 +54,9 @@ const OrderEditPage = () => {
     setDraft
   })
   const scheduleController = useOrderEditSchedule({ draft, setDraft })
-  const editUrl = useMemo(
-    () => createAppRouteUrl(APP_ROUTES.orderEdit, { orderNumber }),
-    [orderNumber]
-  )
-  const validation = useMemo(
-    () => (draft ? validateOrderEditDraft(draft) : null),
-    [draft]
-  )
-  const preview = useMemo(
-    () => (draft && origin ? buildOrderModifyRequest(draft, origin) : null),
-    [draft, origin]
-  )
+  const editUrl = useMemo(() => createAppRouteUrl(APP_ROUTES.orderEdit, { orderNumber }), [orderNumber])
+  const validation = useMemo(() => (draft ? validateOrderEditDraft(draft) : null), [draft])
+  const preview = useMemo(() => (draft && origin ? buildOrderModifyRequest(draft, origin) : null), [draft, origin])
 
   const loadOrder = async (force = false) => {
     if (loadingRef.current) {
@@ -135,10 +123,7 @@ const OrderEditPage = () => {
     setErrorMessage('')
   }
 
-  const updateContact = (
-    role: 'sender' | 'receiver',
-    patch: Partial<OrderEditContact>
-  ) => {
+  const updateContact = (role: 'sender' | 'receiver', patch: Partial<OrderEditContact>) => {
     setDraft(current =>
       current
         ? {
@@ -234,57 +219,26 @@ const OrderEditPage = () => {
 
   return (
     <ScrollView className='order-edit-page' scrollY>
-      <OrderEditLoadState
-        errorMessage={errorMessage}
-        hasDraft={!!draft}
-        loading={loading}
-        onReload={() => void loadOrder(true)}
-      />
+      <OrderEditLoadState errorMessage={errorMessage} hasDraft={!!draft} loading={loading} onReload={() => void loadOrder(true)} />
 
       {draft && (
         <>
           <OrderEditIdentity orderNumber={orderNumber} />
-          <OrderEditContactSection
-            contact={draft.sender}
-            title='寄件人'
-            onChange={patch => updateContact('sender', patch)}
-          />
-          <OrderEditContactSection
-            contact={draft.receiver}
-            title='收件人'
-            onChange={patch => updateContact('receiver', patch)}
-          />
+          <OrderEditContactSection contact={draft.sender} title='寄件人' onChange={patch => updateContact('sender', patch)} />
+          <OrderEditContactSection contact={draft.receiver} title='收件人' onChange={patch => updateContact('receiver', patch)} />
           <OrderEditGoodsSection draft={draft} onChange={updateDraft} />
-          <OrderEditPackagingSection
-            packaging={draft.packaging}
-            onCountChange={updatePackagingCount}
-          />
-          <OrderEditScheduleSection
-            controller={scheduleController}
-            draft={draft}
-          />
+          <OrderEditPackagingSection packaging={draft.packaging} onCountChange={updatePackagingCount} />
+          <OrderEditScheduleSection controller={scheduleController} draft={draft} />
           <OrderEditInsuranceSection
             insurance={draft.insurance}
             onAmountChange={updateInsuranceAmount}
-            onOpenRules={() =>
-              navigateToAppRoute(
-                expressInsuranceRules.createRuleRoute('NORMAL')
-              )
-            }
+            onOpenRules={() => navigateToAppRoute(expressInsuranceRules.createRuleRoute('NORMAL'))}
           />
-          <OrderEditCollectionSection
-            collection={draft.collection}
-            controller={collectionController}
-          />
+          <OrderEditCollectionSection collection={draft.collection} controller={collectionController} />
 
           {!!errorMessage && <OrderEditMessage message={errorMessage} />}
 
-          <OrderEditActions
-            disabled={submitting || !preview?.changed}
-            submitting={submitting}
-            onCancel={() => Taro.navigateBack()}
-            onSubmit={handleSubmit}
-          />
+          <OrderEditActions disabled={submitting || !preview?.changed} submitting={submitting} onCancel={() => Taro.navigateBack()} onSubmit={handleSubmit} />
         </>
       )}
     </ScrollView>

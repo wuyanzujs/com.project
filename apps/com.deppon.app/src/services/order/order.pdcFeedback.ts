@@ -51,13 +51,7 @@ export function createOrderPdcFeedbackContext(
   const waybillNumber = detail?.waybillNumber?.trim() ?? ''
   const sendFrequency = getPdcSendFrequency(normalizedSource)
 
-  if (
-    publicTrackMode ||
-    !detail ||
-    Number(detail.orderClassification) !== PDC_SIGNED_ORDER_CLASS ||
-    !waybillNumber ||
-    !sendFrequency
-  ) {
+  if (publicTrackMode || !detail || Number(detail.orderClassification) !== PDC_SIGNED_ORDER_CLASS || !waybillNumber || !sendFrequency) {
     return null
   }
 
@@ -74,10 +68,7 @@ export function createOrderPdcFeedbackContext(
  * @param feedbackResult 反馈结果
  * @description 创建签收反馈提交请求
  */
-export function createOrderPdcFeedbackRequest(
-  context: OrderPdcFeedbackContext,
-  feedbackResult: OrderPdcFeedbackResult
-): OrderPdcFeedbackRequest {
+export function createOrderPdcFeedbackRequest(context: OrderPdcFeedbackContext, feedbackResult: OrderPdcFeedbackResult): OrderPdcFeedbackRequest {
   return {
     waybillNo: context.waybillNumber,
     sendFrequency: context.sendFrequency,
@@ -97,9 +88,7 @@ export const orderPdcFeedbackService = {
     })
 
     if (!response.status) {
-      return createServiceFailure<boolean>(
-        response.message || '暂未获取到签收反馈状态'
-      )
+      return createServiceFailure<boolean>(response.message || '暂未获取到签收反馈状态')
     }
 
     return {
@@ -114,12 +103,7 @@ export const orderPdcFeedbackService = {
    * @param feedbackResult 反馈结果
    * @description 提交签收反馈
    */
-  submit(
-    context: OrderPdcFeedbackContext,
-    feedbackResult: OrderPdcFeedbackResult
-  ) {
-    return orderPdcFeedbackApi.submit(
-      createOrderPdcFeedbackRequest(context, feedbackResult)
-    )
+  submit(context: OrderPdcFeedbackContext, feedbackResult: OrderPdcFeedbackResult) {
+    return orderPdcFeedbackApi.submit(createOrderPdcFeedbackRequest(context, feedbackResult))
   }
 }

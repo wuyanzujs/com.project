@@ -1,27 +1,14 @@
 import { useCallback, useRef } from 'react'
 
-import {
-  LatestRequestCoordinator,
-  type LatestRequestOptions
-} from './latestRequest'
+import { LatestRequestCoordinator, type LatestRequestOptions } from './latestRequest'
 
-type LatestRequestHandler<TResult> = (
-  result: TResult
-) => unknown | Promise<unknown>
+type LatestRequestHandler<TResult> = (result: TResult) => unknown | Promise<unknown>
 
-export function useLatestRequestRunner(
-  onStart: () => void,
-  onFinish: () => void
-) {
+export function useLatestRequestRunner(onStart: () => void, onFinish: () => void) {
   const coordinator = useRef(new LatestRequestCoordinator()).current
 
   const runLatestRequest = useCallback(
-    async <TResult>(
-      key: string,
-      request: () => Promise<TResult>,
-      handleLatest: LatestRequestHandler<TResult>,
-      options?: LatestRequestOptions
-    ) => {
+    async <TResult>(key: string, request: () => Promise<TResult>, handleLatest: LatestRequestHandler<TResult>, options?: LatestRequestOptions) => {
       const token = coordinator.begin(key, options)
 
       if (!token) {

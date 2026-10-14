@@ -23,12 +23,9 @@ interface GisWeatherResponse {
 
 // 腾讯天气按区县 adcode 查询未来预报；外网接口，静默失败由调用方兜底。
 export function queryCountyWeather(adcode: string) {
-  return depponHttp.get<GisWeatherResponse>(
-    `https://apis.map.qq.com/ws/weather/v1/?key=${TENCENT_LBS_KEY}&adcode=${adcode}&type=future&get_md=1`,
-    {
-      loading: false,
-      login: false,
-      timeout: 3000
-    }
-  )
+  return depponHttp.get<GisWeatherResponse>(`https://apis.map.qq.com/ws/weather/v1/?key=${TENCENT_LBS_KEY}&adcode=${adcode}&type=future&get_md=1`, {
+    loading: false,
+    login: false,
+    timeout: 3000
+  })
 }

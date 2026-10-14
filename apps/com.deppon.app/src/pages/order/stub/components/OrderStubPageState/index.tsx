@@ -3,20 +3,10 @@ import { AppButton, AppEmptyState, AppLoadingState } from '@/shared/components'
 import './index.scss'
 
 export function OrderStubLoadingState() {
-  return (
-    <AppLoadingState
-      className='order-stub-loading'
-      label='正在加载电子存根...'
-      layout='inline'
-      showIndicator={false}
-    />
-  )
+  return <AppLoadingState className='order-stub-loading' label='正在加载电子存根...' layout='inline' showIndicator={false} />
 }
 
-export function OrderStubEmptyState(props: {
-  message: string
-  onBack: () => void
-}) {
+export function OrderStubEmptyState(props: { message: string; onBack: () => void }) {
   return (
     <AppEmptyState
       action={

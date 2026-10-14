@@ -38,8 +38,7 @@ export interface OrderEditPackagingDraft {
   count: number
 }
 
-export type OrderEditDeliveryMode =
-  '' | 'PICKNOTUPSTAIRS' | 'PICKUPSTAIRS' | 'PICKSELF'
+export type OrderEditDeliveryMode = '' | 'PICKNOTUPSTAIRS' | 'PICKUPSTAIRS' | 'PICKSELF'
 
 export type OrderEditPickupTimeType = 'NORMAL' | 'NIGHT'
 export type OrderEditPickupOpeningType = OrderEditPickupTimeType | 'DISABLE'

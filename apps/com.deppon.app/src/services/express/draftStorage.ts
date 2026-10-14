@@ -12,11 +12,7 @@ import { normalizeExpressPickup } from './pickupTime.rules'
 import { normalizeExpressReturnBillDraft } from './valueAdded'
 import { normalizeExpressWarehouseDraft } from './warehouse.rules'
 
-import type {
-  ExpressDraft,
-  ExpressWarehouseDraft,
-  ExpressWarehouseScreening
-} from './types'
+import type { ExpressDraft, ExpressWarehouseDraft, ExpressWarehouseScreening } from './types'
 
 const EXPRESS_DRAFT_EXPIRE_HOURS = 2
 
@@ -31,10 +27,7 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
     sender: draft.sender ? { ...draft.sender } : null,
     consignee: draft.consignee ? { ...draft.consignee } : null,
     goods: { ...draft.goods },
-    insurance: normalizeExpressInsuranceDraft(
-      draft.insurance,
-      draft.selectedProduct?.omsProductCode || draft.service.transportMode
-    ),
+    insurance: normalizeExpressInsuranceDraft(draft.insurance, draft.selectedProduct?.omsProductCode || draft.service.transportMode),
     packaging: normalizeExpressPackagingDraft(draft.packaging),
     service: {
       ...draft.service,
@@ -45,20 +38,13 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
       ...draft.deliveryPreference,
       unavailableDates: [...draft.deliveryPreference.unavailableDates]
     },
-    deliveryPoint: normalizeExpressDeliveryPointDraft(
-      draft.deliveryPoint,
-      draft.service.deliveryMode
-    ),
+    deliveryPoint: normalizeExpressDeliveryPointDraft(draft.deliveryPoint, draft.service.deliveryMode),
     warehouse: normalizeExpressWarehouseDraft(draft.warehouse),
     pickup: {
       ...draft.pickup,
-      nightCapability: draft.pickup.nightCapability
-        ? { ...draft.pickup.nightCapability }
-        : undefined
+      nightCapability: draft.pickup.nightCapability ? { ...draft.pickup.nightCapability } : undefined
     },
-    selectedProduct: draft.selectedProduct
-      ? { ...draft.selectedProduct }
-      : null,
+    selectedProduct: draft.selectedProduct ? { ...draft.selectedProduct } : null,
     scanContext: draft.scanContext ? { ...draft.scanContext } : undefined
   }
 }
@@ -110,10 +96,7 @@ function normalizeDraft(draft: ExpressDraft): ExpressDraft {
       ...defaultDraft.goods,
       ...draft.goods
     },
-    insurance: normalizeExpressInsuranceDraft(
-      legacyDraft.insurance,
-      draft.selectedProduct?.omsProductCode || draft.service?.transportMode
-    ),
+    insurance: normalizeExpressInsuranceDraft(legacyDraft.insurance, draft.selectedProduct?.omsProductCode || draft.service?.transportMode),
     packaging: normalizeExpressPackagingDraft(legacyDraft.packaging),
     service: {
       ...defaultDraft.service,
@@ -121,21 +104,14 @@ function normalizeDraft(draft: ExpressDraft): ExpressDraft {
       returnBill: normalizeExpressReturnBillDraft(legacyReturnBill)
     },
     collection,
-    deliveryPreference: normalizeExpressDeliveryPreferenceDraft(
-      legacyDraft.deliveryPreference
-    ),
-    deliveryPoint: normalizeExpressDeliveryPointDraft(
-      legacyDraft.deliveryPoint,
-      legacyDraft.service?.deliveryMode
-    ),
+    deliveryPreference: normalizeExpressDeliveryPreferenceDraft(legacyDraft.deliveryPreference),
+    deliveryPoint: normalizeExpressDeliveryPointDraft(legacyDraft.deliveryPoint, legacyDraft.service?.deliveryMode),
     warehouse: normalizeExpressWarehouseDraft(legacyDraft.warehouse),
     pickup: normalizeExpressPickup({
       ...defaultDraft.pickup,
       ...draft.pickup
     }),
-    selectedProduct: draft.selectedProduct
-      ? { ...draft.selectedProduct }
-      : null,
+    selectedProduct: draft.selectedProduct ? { ...draft.selectedProduct } : null,
     scanContext: draft.scanContext ? { ...draft.scanContext } : undefined
   }
 }
@@ -185,8 +161,7 @@ function hasMeaningfulDraft(draft: ExpressDraft) {
     !!draft.warehouse.screening.inputKey ||
     draft.service.passwordSigning !== defaultDraft.service.passwordSigning ||
     draft.service.needContact !== defaultDraft.service.needContact ||
-    draft.service.privacyProtection !==
-      defaultDraft.service.privacyProtection ||
+    draft.service.privacyProtection !== defaultDraft.service.privacyProtection ||
     !!draft.pickup.time ||
     !!draft.couponNumber ||
     !!draft.remark ||

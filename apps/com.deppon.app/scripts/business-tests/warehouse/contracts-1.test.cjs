@@ -2,20 +2,9 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  selectExpressProduct,
-  setExpressContact,
-  updateExpressGoods,
-  updateExpressService
-} = require('@/services/express/express.draft')
-const {
-  buildCreateOrderRequest,
-  buildFreightRequest
-} = require('@/services/express/express.payload')
-const {
-  acknowledgeExpressWarehouseScreening,
-  rejectExpressWarehouse
-} = require('@/services/express/warehouse.decisions')
+const { selectExpressProduct, setExpressContact, updateExpressGoods, updateExpressService } = require('@/services/express/express.draft')
+const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
+const { acknowledgeExpressWarehouseScreening, rejectExpressWarehouse } = require('@/services/express/warehouse.decisions')
 const {
   applyExpressWarehouseScreening,
   clearExpressWarehouse,
@@ -27,10 +16,7 @@ const {
   validateExpressWarehouse
 } = require('@/services/express/warehouse.rules')
 
-const {
-  createValidExpressDraft,
-  expressProduct
-} = require('../fixtures/express.cjs')
+const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 
 const cases = [
   {
@@ -47,9 +33,7 @@ const cases = [
       const input = JSON.parse(inputKey)
 
       assert.deepEqual(
-        [0, 1, 2, 3, 4, 5, -1, 1.5, '3', 'invalid'].map(value =>
-          normalizeExpressWarehouseScreeningType(value)
-        ),
+        [0, 1, 2, 3, 4, 5, -1, 1.5, '3', 'invalid'].map(value => normalizeExpressWarehouseScreeningType(value)),
         [0, 1, 2, 3, 4, 0, 0, 0, 3, 0]
       )
       assert.equal(input.goodsName, '文件')
@@ -147,21 +131,14 @@ const cases = [
       })
 
       assert.equal(warningScreening.acknowledged, false)
-      const screenedWarningDraft = applyExpressWarehouseScreening(
-        warningDraft,
-        warningScreening
-      )
+      const screenedWarningDraft = applyExpressWarehouseScreening(warningDraft, warningScreening)
       assert.ok(
         validateExpressWarehouse(screenedWarningDraft, {
           requireScreening: true
         }).includes('请确认进仓提示')
       )
-      const acknowledgedDraft =
-        acknowledgeExpressWarehouseScreening(screenedWarningDraft)
-      assert.deepEqual(
-        validateExpressWarehouse(acknowledgedDraft, { requireScreening: true }),
-        []
-      )
+      const acknowledgedDraft = acknowledgeExpressWarehouseScreening(screenedWarningDraft)
+      assert.deepEqual(validateExpressWarehouse(acknowledgedDraft, { requireScreening: true }), [])
       assert.equal(
         createExpressWarehouseScreening(acknowledgedDraft, {
           type: 2,
@@ -178,10 +155,7 @@ const cases = [
         type: 4,
         reason: '高风险进仓提示'
       })
-      const screenedRiskDraft = applyExpressWarehouseScreening(
-        warningDraft,
-        riskScreening
-      )
+      const screenedRiskDraft = applyExpressWarehouseScreening(warningDraft, riskScreening)
 
       assert.equal(riskScreening.acknowledged, false)
       assert.ok(
@@ -213,10 +187,7 @@ const cases = [
         }
       }
 
-      assert.equal(
-        createExpressWarehouseScreening(belowThreshold, response).autoSelected,
-        false
-      )
+      assert.equal(createExpressWarehouseScreening(belowThreshold, response).autoSelected, false)
     }
   },
   {
@@ -358,10 +329,7 @@ const cases = [
         enabled: true,
         warehouseNo: 'ENTRY-001',
         warehouseTime: '2026-07-20 10:00:00',
-        fileList: [
-          { previewPath: 'https://owstest.deppon.com/files/warehouse-a.jpg' },
-          { previewPath: 'https://owstest.deppon.com/files/warehouse-b.jpg' }
-        ],
+        fileList: [{ previewPath: 'https://owstest.deppon.com/files/warehouse-a.jpg' }, { previewPath: 'https://owstest.deppon.com/files/warehouse-b.jpg' }],
         warehouseType: '3',
         deliverWarehouseWay: 'AGXSF',
         warehouseProcess: '排队,卸货',
@@ -375,20 +343,14 @@ const cases = [
       }
       const request = buildCreateOrderRequest(draft)
       const warehouseExtendFields = request.receive[0].orderExtendFields.filter(
-        field =>
-          field.key === 'deliverWarehouseWay' ||
-          field.key === 'warehouseProcess' ||
-          field.key === 'warehouseRemark'
+        field => field.key === 'deliverWarehouseWay' || field.key === 'warehouseProcess' || field.key === 'warehouseRemark'
       )
 
       assert.deepEqual(request.deliveryToWarehouse, {
         isWarehousingService: 'Y',
         appointmentEntryCode: 'ENTRY-001',
         appointmentTime: '2026-07-20 10:00:00',
-        appointmentUrl: [
-          'https://owstest.deppon.com/files/warehouse-a.jpg',
-          'https://owstest.deppon.com/files/warehouse-b.jpg'
-        ],
+        appointmentUrl: ['https://owstest.deppon.com/files/warehouse-a.jpg', 'https://owstest.deppon.com/files/warehouse-b.jpg'],
         warehouseType: '3',
         deliverWarehouseWay: 'AGXSF',
         warehouseProcess: '排队,卸货'
@@ -403,8 +365,7 @@ const cases = [
         ...draft,
         warehouse: { ...warehouse, enabled: false }
       })
-      const disabledExtendFields =
-        disabledRequest.receive[0].orderExtendFields ?? []
+      const disabledExtendFields = disabledRequest.receive[0].orderExtendFields ?? []
 
       assert.equal(disabledRequest.deliveryToWarehouse, undefined)
       assert.equal(

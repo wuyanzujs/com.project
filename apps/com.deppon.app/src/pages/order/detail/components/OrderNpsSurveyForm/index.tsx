@@ -18,15 +18,10 @@ import { AppButton, AppPressable } from '@/shared/components'
 
 import '../OrderSceneSurveyForm.scss'
 
-export function OrderNpsSurveyForm(props: {
-  submitting: boolean
-  onSubmit: (draft: OrderNpsDraft) => void
-}) {
+export function OrderNpsSurveyForm(props: { submitting: boolean; onSubmit: (draft: OrderNpsDraft) => void }) {
   const [draft, setDraft] = useState(() => createOrderNpsDraft())
   const catalog = useMemo(() => getOrderNpsCatalog(draft.score), [draft.score])
-  const category = catalog?.options.find(
-    option => option.text === draft.category
-  )
+  const category = catalog?.options.find(option => option.text === draft.category)
 
   const toggleReason = (reason: string) => {
     setDraft(current => {
@@ -56,24 +51,14 @@ export function OrderNpsSurveyForm(props: {
           return (
             <AppPressable
               accessibilityLabel={`推荐评分 ${score}`}
-              className={
-                selected
-                  ? 'order-scene-survey__nps-score order-scene-survey__nps-score--selected'
-                  : 'order-scene-survey__nps-score'
-              }
+              className={selected ? 'order-scene-survey__nps-score order-scene-survey__nps-score--selected' : 'order-scene-survey__nps-score'}
               disabled={props.submitting}
               key={score}
               selected={selected}
-              onPress={() =>
-                setDraft(current => updateOrderNpsScore(current, score))
-              }
+              onPress={() => setDraft(current => updateOrderNpsScore(current, score))}
             >
               <Text
-                className={
-                  selected
-                    ? 'order-scene-survey__nps-score-text order-scene-survey__nps-score-text--selected'
-                    : 'order-scene-survey__nps-score-text'
-                }
+                className={selected ? 'order-scene-survey__nps-score-text order-scene-survey__nps-score-text--selected' : 'order-scene-survey__nps-score-text'}
               >
                 {score}
               </Text>
@@ -84,9 +69,7 @@ export function OrderNpsSurveyForm(props: {
 
       {catalog ? (
         <>
-          <Text className='order-scene-survey__subquestion'>
-            {catalog.title}
-          </Text>
+          <Text className='order-scene-survey__subquestion'>{catalog.title}</Text>
           <View className='order-scene-survey__chips'>
             {catalog.options.map(option => {
               const selected = draft.category === option.text
@@ -94,27 +77,13 @@ export function OrderNpsSurveyForm(props: {
               return (
                 <AppPressable
                   accessibilityLabel={option.text}
-                  className={
-                    selected
-                      ? 'order-scene-survey__chip order-scene-survey__chip--selected'
-                      : 'order-scene-survey__chip'
-                  }
+                  className={selected ? 'order-scene-survey__chip order-scene-survey__chip--selected' : 'order-scene-survey__chip'}
                   disabled={props.submitting}
                   key={option.text}
                   selected={selected}
-                  onPress={() =>
-                    setDraft(current =>
-                      updateOrderNpsCategory(current, option.text)
-                    )
-                  }
+                  onPress={() => setDraft(current => updateOrderNpsCategory(current, option.text))}
                 >
-                  <Text
-                    className={
-                      selected
-                        ? 'order-scene-survey__chip-text order-scene-survey__chip-text--selected'
-                        : 'order-scene-survey__chip-text'
-                    }
-                  >
+                  <Text className={selected ? 'order-scene-survey__chip-text order-scene-survey__chip-text--selected' : 'order-scene-survey__chip-text'}>
                     {option.text}
                   </Text>
                 </AppPressable>
@@ -126,9 +95,7 @@ export function OrderNpsSurveyForm(props: {
 
       {category ? (
         <>
-          <Text className='order-scene-survey__subquestion'>
-            {category.title}
-          </Text>
+          <Text className='order-scene-survey__subquestion'>{category.title}</Text>
           <View className='order-scene-survey__chips'>
             {category.options.map(reason => {
               const selected = draft.reasons.includes(reason)
@@ -136,23 +103,13 @@ export function OrderNpsSurveyForm(props: {
               return (
                 <AppPressable
                   accessibilityLabel={reason}
-                  className={
-                    selected
-                      ? 'order-scene-survey__chip order-scene-survey__chip--selected'
-                      : 'order-scene-survey__chip'
-                  }
+                  className={selected ? 'order-scene-survey__chip order-scene-survey__chip--selected' : 'order-scene-survey__chip'}
                   disabled={props.submitting}
                   key={reason}
                   selected={selected}
                   onPress={() => toggleReason(reason)}
                 >
-                  <Text
-                    className={
-                      selected
-                        ? 'order-scene-survey__chip-text order-scene-survey__chip-text--selected'
-                        : 'order-scene-survey__chip-text'
-                    }
-                  >
+                  <Text className={selected ? 'order-scene-survey__chip-text order-scene-survey__chip-text--selected' : 'order-scene-survey__chip-text'}>
                     {reason}
                   </Text>
                 </AppPressable>
@@ -174,19 +131,9 @@ export function OrderNpsSurveyForm(props: {
         maxlength={ORDER_NPS_CONTENT_MAX_LENGTH}
         placeholder='输入补充说明'
         value={draft.content}
-        onInput={event =>
-          setDraft(current =>
-            updateOrderNpsContent(current, event.detail.value)
-          )
-        }
+        onInput={event => setDraft(current => updateOrderNpsContent(current, event.detail.value))}
       />
-      <AppButton
-        disabled={draft.score === null}
-        label='匿名提交'
-        loading={props.submitting}
-        loadingLabel='正在提交'
-        onPress={() => props.onSubmit(draft)}
-      />
+      <AppButton disabled={draft.score === null} label='匿名提交' loading={props.submitting} loadingLabel='正在提交' onPress={() => props.onSubmit(draft)} />
     </View>
   )
 }

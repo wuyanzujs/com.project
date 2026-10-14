@@ -1,20 +1,9 @@
 import type { DepponResponse } from '@/request/deppon'
 
 import { orderApi } from './order.api'
-import {
-  getDetailWaybillNumber,
-  isExpressOrder,
-  isSignedOrder,
-  isTransitOrder
-} from './order.detailRules'
+import { getDetailWaybillNumber, isExpressOrder, isSignedOrder, isTransitOrder } from './order.detailRules'
 
-import type {
-  OrderDetail,
-  OrderServiceImageScene,
-  OrderStubImageGroupView,
-  OrderStubImagesView,
-  OrderStubImageView
-} from './types'
+import type { OrderDetail, OrderServiceImageScene, OrderStubImageGroupView, OrderStubImagesView, OrderStubImageView } from './types'
 
 const EXPRESS_SERVICE_IMAGE_SCENES: Record<OrderServiceImageScene, string> = {
   1: 'RETURNBILLTYPE_FAX',
@@ -58,9 +47,7 @@ function normalizeImageUrls(value: unknown): string[] {
         return ''
       }
 
-      return url.startsWith('http://')
-        ? url.replace('http://', 'https://')
-        : url
+      return url.startsWith('http://') ? url.replace('http://', 'https://') : url
     })
     .filter(Boolean)
 
@@ -75,12 +62,7 @@ function normalizeImageUrls(value: unknown): string[] {
  * @param urls 图片地址列表
  * @description 创建照片分组，无图片返回 null
  */
-function createOrderStubImageGroup(
-  kind: OrderStubImageGroupView['kind'],
-  title: string,
-  summary: string,
-  urls: string[]
-): OrderStubImageGroupView | null {
+function createOrderStubImageGroup(kind: OrderStubImageGroupView['kind'], title: string, summary: string, urls: string[]): OrderStubImageGroupView | null {
   if (!urls.length) {
     return null
   }
@@ -114,13 +96,8 @@ function createEmptyImageResponse(): DepponResponse<string[]> {
  * @param isLogistics 是否物流单
  * @description 按单据类型取服务照片场景 code
  */
-function getOrderServiceImageScene(
-  scene: OrderServiceImageScene,
-  isLogistics: boolean
-) {
-  return isLogistics
-    ? LOGISTICS_SERVICE_IMAGE_SCENES[scene]
-    : EXPRESS_SERVICE_IMAGE_SCENES[scene]
+function getOrderServiceImageScene(scene: OrderServiceImageScene, isLogistics: boolean) {
+  return isLogistics ? LOGISTICS_SERVICE_IMAGE_SCENES[scene] : EXPRESS_SERVICE_IMAGE_SCENES[scene]
 }
 
 /**
@@ -130,11 +107,7 @@ function getOrderServiceImageScene(
  * @param isLogistics 是否物流单
  * @description 按场景查询服务照片
  */
-function queryServiceImagesByScene(
-  wayBill: string,
-  scene: OrderServiceImageScene,
-  isLogistics: boolean
-) {
+function queryServiceImagesByScene(wayBill: string, scene: OrderServiceImageScene, isLogistics: boolean) {
   const imageScene = getOrderServiceImageScene(scene, isLogistics)
 
   return orderApi.queryServiceImages(
@@ -156,12 +129,9 @@ function normalizePackageImageUrls(value: unknown) {
     return []
   }
 
-  const list = (value as { list?: Array<{ savePath?: string | null }> | null })
-    .list
+  const list = (value as { list?: Array<{ savePath?: string | null }> | null }).list
 
-  return normalizeImageUrls(
-    Array.isArray(list) ? list.map(item => item.savePath || '') : []
-  )
+  return normalizeImageUrls(Array.isArray(list) ? list.map(item => item.savePath || '') : [])
 }
 
 /**
@@ -169,9 +139,7 @@ function normalizePackageImageUrls(value: unknown) {
  * @param result Promise 结算结果
  * @description 取 fulfilled 的响应，否则返回 null
  */
-function getSettledResponse<TResult>(
-  result: PromiseSettledResult<DepponResponse<TResult>>
-) {
+function getSettledResponse<TResult>(result: PromiseSettledResult<DepponResponse<TResult>>) {
   return result.status === 'fulfilled' ? result.value : null
 }
 
@@ -180,9 +148,7 @@ function getSettledResponse<TResult>(
  * @param order 订单详情
  * @description 汇总查询订单各类揽收与签收照片
  */
-export async function queryOrderStubImages(
-  order: OrderDetail
-): Promise<DepponResponse<OrderStubImagesView>> {
+export async function queryOrderStubImages(order: OrderDetail): Promise<DepponResponse<OrderStubImagesView>> {
   const wayBill = getDetailWaybillNumber(order)
 
   if (!wayBill) {
@@ -230,13 +196,9 @@ export async function queryOrderStubImages(
     orderApi.queryOpenBoxImages({ wayBill }),
     orderApi.queryOpenBoxImages({ wayBill, operationType: '10' }),
     orderApi.queryReceiptImages({ wayBill }),
-    isLogistics
-      ? queryServiceImagesByScene(wayBill, 2, isLogistics)
-      : orderApi.querySignImages({ wayBill }),
+    isLogistics ? queryServiceImagesByScene(wayBill, 2, isLogistics) : orderApi.querySignImages({ wayBill }),
     orderApi.queryReturnBillImages({ waybillNo: wayBill }),
-    isLogistics
-      ? Promise.resolve(createEmptyImageResponse())
-      : queryServiceImagesByScene(wayBill, 2, isLogistics),
+    isLogistics ? Promise.resolve(createEmptyImageResponse()) : queryServiceImagesByScene(wayBill, 2, isLogistics),
     queryServiceImagesByScene(wayBill, 3, isLogistics),
     queryServiceImagesByScene(wayBill, 4, isLogistics),
     queryServiceImagesByScene(wayBill, 5, isLogistics),
@@ -282,100 +244,23 @@ export async function queryOrderStubImages(
       pickupServiceResponse
     ].find(item => !!item?.message)?.message || ''
   const groups = [
-    createOrderStubImageGroup(
-      'pickup',
-      '取货照片',
-      '揽收、取货或开箱环节留存',
-      normalizeImageUrls(pickupResponse?.result)
-    ),
-    createOrderStubImageGroup(
-      'reweigh',
-      '复磅照片',
-      '复核重量或体积时留存',
-      normalizeImageUrls(reweighResponse?.result)
-    ),
-    createOrderStubImageGroup(
-      'delivered',
-      '送达照片',
-      '签收底单或送达凭证',
-      normalizeImageUrls(receiptResponse?.result?.signList)
-    ),
-    createOrderStubImageGroup(
-      'signed',
-      '签收照片',
-      '拍照签收环节留存',
-      normalizeImageUrls(signResponse?.result)
-    ),
-    createOrderStubImageGroup(
-      'returnBill',
-      '签回单',
-      '回单或返单照片凭证',
-      normalizeImageUrls(returnBillResponse?.result)
-    ),
-    createOrderStubImageGroup(
-      'subsidy',
-      '国补信息采集',
-      '国补信息采集环节留存',
-      normalizeImageUrls(subsidyResponse?.result)
-    ),
-    createOrderStubImageGroup(
-      'openPacking',
-      '拆包装',
-      '拆包装服务环节留存',
-      normalizeImageUrls(openPackingResponse?.result)
-    ),
-    createOrderStubImageGroup(
-      'checkCodeGoods',
-      '清点码货',
-      '清点码货服务环节留存',
-      normalizeImageUrls(checkCodeGoodsResponse?.result)
-    ),
-    createOrderStubImageGroup(
-      'pastingService',
-      '贴码服务',
-      '贴码服务环节留存',
-      normalizeImageUrls(pastingResponse?.result)
-    ),
-    createOrderStubImageGroup(
-      'homeDecoration',
-      '家装完工',
-      '家装完工或安装完成后留存',
-      normalizeImageUrls(homeDecorationResponse?.result)
-    ),
-    createOrderStubImageGroup(
-      'powerOn',
-      '简易安装/通电验机',
-      '简易安装或通电验机环节留存',
-      normalizeImageUrls(powerOnResponse?.result)
-    ),
-    createOrderStubImageGroup(
-      'doubleDelivery',
-      '双人派送',
-      '双人派送服务环节留存',
-      normalizeImageUrls(doubleDeliveryResponse?.result)
-    ),
-    createOrderStubImageGroup(
-      'woodenPackage',
-      '代打木包装',
-      '木包装或代打包装服务留存',
-      normalizePackageImageUrls(woodenPackageResponse?.result)
-    ),
-    createOrderStubImageGroup(
-      'homeExchange',
-      '送新取旧',
-      '送新取旧服务环节留存',
-      normalizeImageUrls(homeExchangeResponse?.result)
-    ),
-    createOrderStubImageGroup(
-      'pickupService',
-      '揽收拍照',
-      '揽收拍照服务环节留存',
-      normalizeImageUrls(pickupServiceResponse?.result)
-    )
+    createOrderStubImageGroup('pickup', '取货照片', '揽收、取货或开箱环节留存', normalizeImageUrls(pickupResponse?.result)),
+    createOrderStubImageGroup('reweigh', '复磅照片', '复核重量或体积时留存', normalizeImageUrls(reweighResponse?.result)),
+    createOrderStubImageGroup('delivered', '送达照片', '签收底单或送达凭证', normalizeImageUrls(receiptResponse?.result?.signList)),
+    createOrderStubImageGroup('signed', '签收照片', '拍照签收环节留存', normalizeImageUrls(signResponse?.result)),
+    createOrderStubImageGroup('returnBill', '签回单', '回单或返单照片凭证', normalizeImageUrls(returnBillResponse?.result)),
+    createOrderStubImageGroup('subsidy', '国补信息采集', '国补信息采集环节留存', normalizeImageUrls(subsidyResponse?.result)),
+    createOrderStubImageGroup('openPacking', '拆包装', '拆包装服务环节留存', normalizeImageUrls(openPackingResponse?.result)),
+    createOrderStubImageGroup('checkCodeGoods', '清点码货', '清点码货服务环节留存', normalizeImageUrls(checkCodeGoodsResponse?.result)),
+    createOrderStubImageGroup('pastingService', '贴码服务', '贴码服务环节留存', normalizeImageUrls(pastingResponse?.result)),
+    createOrderStubImageGroup('homeDecoration', '家装完工', '家装完工或安装完成后留存', normalizeImageUrls(homeDecorationResponse?.result)),
+    createOrderStubImageGroup('powerOn', '简易安装/通电验机', '简易安装或通电验机环节留存', normalizeImageUrls(powerOnResponse?.result)),
+    createOrderStubImageGroup('doubleDelivery', '双人派送', '双人派送服务环节留存', normalizeImageUrls(doubleDeliveryResponse?.result)),
+    createOrderStubImageGroup('woodenPackage', '代打木包装', '木包装或代打包装服务留存', normalizePackageImageUrls(woodenPackageResponse?.result)),
+    createOrderStubImageGroup('homeExchange', '送新取旧', '送新取旧服务环节留存', normalizeImageUrls(homeExchangeResponse?.result)),
+    createOrderStubImageGroup('pickupService', '揽收拍照', '揽收拍照服务环节留存', normalizeImageUrls(pickupServiceResponse?.result))
   ].filter((item): item is OrderStubImageGroupView => !!item)
-  const message = groups.length
-    ? ''
-    : failedMessage || '暂未查询到揽收/签收照片'
+  const message = groups.length ? '' : failedMessage || '暂未查询到揽收/签收照片'
 
   return {
     status: true,

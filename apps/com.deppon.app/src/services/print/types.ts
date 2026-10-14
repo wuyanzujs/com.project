@@ -2,8 +2,7 @@ import type { AppRoutePath } from '@/shared/navigation/routes'
 
 export type PrintSearchType = '1' | '2'
 
-export type PrintDateRangeKey =
-  'today' | 'threeDays' | 'oneWeek' | 'oneMonth' | 'threeMonths'
+export type PrintDateRangeKey = 'today' | 'threeDays' | 'oneWeek' | 'oneMonth' | 'threeMonths'
 
 export interface PrintDateRangeOption {
   key: PrintDateRangeKey
@@ -80,12 +79,7 @@ export interface PrintListCounts {
   failedSearchTypes: PrintSearchType[]
 }
 
-export type PrintCenterActionKind =
-  | 'printOrders'
-  | 'printerDevice'
-  | 'printConfig'
-  | 'cloudPrintCode'
-  | 'orderList'
+export type PrintCenterActionKind = 'printOrders' | 'printerDevice' | 'printConfig' | 'cloudPrintCode' | 'orderList'
 
 export type PrintCenterActionStatus = 'ready' | 'pending'
 

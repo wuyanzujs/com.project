@@ -1,10 +1,6 @@
 import { Input, Text, View } from '@tarojs/components'
 
-import type {
-  OrderPaymentFilter,
-  OrderRole,
-  OrderStatusFilter
-} from '@/services/order'
+import type { OrderPaymentFilter, OrderRole, OrderStatusFilter } from '@/services/order'
 import { AppPressable } from '@/shared/components'
 import { AppIcon } from '@/shared/components/AppIcon'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
@@ -104,15 +100,11 @@ function getDateRangeTitle(days: OrderDateRangeDays) {
 }
 
 function getFilterChipClassName(active: boolean) {
-  return active
-    ? 'order-filter__chip order-filter__chip--active'
-    : 'order-filter__chip'
+  return active ? 'order-filter__chip order-filter__chip--active' : 'order-filter__chip'
 }
 
 function getFilterChipTextClassName(active: boolean) {
-  return active
-    ? 'order-filter__chip-text order-filter__chip-text--active'
-    : 'order-filter__chip-text'
+  return active ? 'order-filter__chip-text order-filter__chip-text--active' : 'order-filter__chip-text'
 }
 
 function OrderFilterGroup<TValue extends string | number>(props: {
@@ -130,14 +122,10 @@ function OrderFilterGroup<TValue extends string | number>(props: {
           <AppPressable
             accessibilityLabel={option.label}
             className={getFilterChipClassName(active)}
-            key={
-              props.getKey ? props.getKey(option.value) : String(option.value)
-            }
+            key={props.getKey ? props.getKey(option.value) : String(option.value)}
             onPress={() => props.onChange(option.value)}
           >
-            <Text className={getFilterChipTextClassName(active)}>
-              {option.label}
-            </Text>
+            <Text className={getFilterChipTextClassName(active)}>{option.label}</Text>
           </AppPressable>
         )
       })}
@@ -145,51 +133,24 @@ function OrderFilterGroup<TValue extends string | number>(props: {
   )
 }
 
-export function OrderRoleTabs(props: {
-  role: OrderRole
-  onChange: (role: OrderRole) => void
-  onOpenPayment: () => void
-  onOpenSubscriptions: () => void
-}) {
+export function OrderRoleTabs(props: { role: OrderRole; onChange: (role: OrderRole) => void; onOpenPayment: () => void; onOpenSubscriptions: () => void }) {
   return (
     <View className='order-tabs'>
       {ORDER_TABS.map(tab => (
         <AppPressable
           flex
           accessibilityLabel={tab.label}
-          className={
-            tab.value === props.role
-              ? 'order-tab order-tab--active'
-              : 'order-tab'
-          }
+          className={tab.value === props.role ? 'order-tab order-tab--active' : 'order-tab'}
           key={tab.value}
           onPress={() => props.onChange(tab.value)}
         >
-          <Text
-            className={
-              tab.value === props.role
-                ? 'order-tab__text order-tab__text--active'
-                : 'order-tab__text'
-            }
-          >
-            {tab.label}
-          </Text>
+          <Text className={tab.value === props.role ? 'order-tab__text order-tab__text--active' : 'order-tab__text'}>{tab.label}</Text>
         </AppPressable>
       ))}
-      <AppPressable
-        flex
-        accessibilityLabel='待支付'
-        className='order-tab'
-        onPress={props.onOpenPayment}
-      >
+      <AppPressable flex accessibilityLabel='待支付' className='order-tab' onPress={props.onOpenPayment}>
         <Text className='order-tab__text'>待支付</Text>
       </AppPressable>
-      <AppPressable
-        flex
-        accessibilityLabel='关注运单'
-        className='order-tab'
-        onPress={props.onOpenSubscriptions}
-      >
+      <AppPressable flex accessibilityLabel='关注运单' className='order-tab' onPress={props.onOpenSubscriptions}>
         <Text className='order-tab__text'>关注</Text>
       </AppPressable>
     </View>
@@ -206,11 +167,7 @@ export function OrderSearchBar(props: {
   return (
     <View className='order-search'>
       <View className='order-search__field'>
-        <AppIcon
-          color={APP_STYLE_COLORS.text.placeholder}
-          name='search'
-          size={25}
-        />
+        <AppIcon color={APP_STYLE_COLORS.text.placeholder} name='search' size={25} />
         <Input
           className='order-search__input'
           placeholder='运单号/姓名/手机/城市查询'
@@ -218,33 +175,13 @@ export function OrderSearchBar(props: {
           onConfirm={props.onSearch}
           onInput={event => props.onKeywordChange(event.detail.value)}
         />
-        <AppPressable
-          accessibilityLabel='搜索订单'
-          className='order-search__submit'
-          onPress={props.onSearch}
-        >
-          <AppIcon
-            color={APP_STYLE_COLORS.text.supporting}
-            name='scan'
-            size={24}
-          />
+        <AppPressable accessibilityLabel='搜索订单' className='order-search__submit' onPress={props.onSearch}>
+          <AppIcon color={APP_STYLE_COLORS.text.supporting} name='scan' size={24} />
         </AppPressable>
       </View>
-      <AppPressable
-        accessibilityLabel='筛选订单'
-        className='order-search__filter'
-        onPress={props.onToggleFilter}
-      >
+      <AppPressable accessibilityLabel='筛选订单' className='order-search__filter' onPress={props.onToggleFilter}>
         <Text className='order-search__filter-text'>筛选</Text>
-        <AppIcon
-          color={
-            props.filterVisible
-              ? APP_STYLE_COLORS.brand.default
-              : APP_STYLE_COLORS.text.body
-          }
-          name='filter'
-          size={25}
-        />
+        <AppIcon color={props.filterVisible ? APP_STYLE_COLORS.brand.default : APP_STYLE_COLORS.text.body} name='filter' size={25} />
       </AppPressable>
     </View>
   )
@@ -261,58 +198,27 @@ export function OrderFilterPanel(props: {
   return (
     <View className='order-filter-panel'>
       <Text className='order-filter-panel__label'>时间</Text>
-      <OrderFilterGroup
-        options={ORDER_DATE_RANGE_OPTIONS}
-        value={props.rangeDays}
-        onChange={props.onRangeChange}
-      />
+      <OrderFilterGroup options={ORDER_DATE_RANGE_OPTIONS} value={props.rangeDays} onChange={props.onRangeChange} />
 
       <Text className='order-filter-panel__label'>状态</Text>
-      <OrderFilterGroup
-        options={ORDER_STATUS_OPTIONS}
-        value={props.orderStatus}
-        getKey={value => value || 'all'}
-        onChange={props.onStatusChange}
-      />
+      <OrderFilterGroup options={ORDER_STATUS_OPTIONS} value={props.orderStatus} getKey={value => value || 'all'} onChange={props.onStatusChange} />
 
       <Text className='order-filter-panel__label'>付款</Text>
-      <OrderFilterGroup
-        options={ORDER_PAYMENT_OPTIONS}
-        value={props.paymentType}
-        getKey={value => value || 'all'}
-        onChange={props.onPaymentChange}
-      />
+      <OrderFilterGroup options={ORDER_PAYMENT_OPTIONS} value={props.paymentType} getKey={value => value || 'all'} onChange={props.onPaymentChange} />
     </View>
   )
 }
 
-export function OrderListSummary(props: {
-  rangeDays: OrderDateRangeDays
-  totalRows: number
-  onOpenPaymentList: () => void
-  onOpenSubscriptions: () => void
-}) {
+export function OrderListSummary(props: { rangeDays: OrderDateRangeDays; totalRows: number; onOpenPaymentList: () => void; onOpenSubscriptions: () => void }) {
   return (
     <View className='order-list-summary'>
-      <Text className='order-list-summary__title'>
-        {getDateRangeTitle(props.rangeDays)}
-      </Text>
+      <Text className='order-list-summary__title'>{getDateRangeTitle(props.rangeDays)}</Text>
       <View className='order-list-summary__side'>
-        <Text className='order-list-summary__count'>
-          共 {props.totalRows} 单
-        </Text>
-        <AppPressable
-          accessibilityLabel='关注运单'
-          className='order-list-summary__subscribe'
-          onPress={props.onOpenSubscriptions}
-        >
+        <Text className='order-list-summary__count'>共 {props.totalRows} 单</Text>
+        <AppPressable accessibilityLabel='关注运单' className='order-list-summary__subscribe' onPress={props.onOpenSubscriptions}>
           <Text className='order-list-summary__subscribe-text'>关注运单</Text>
         </AppPressable>
-        <AppPressable
-          accessibilityLabel='待支付'
-          className='order-list-summary__pay'
-          onPress={props.onOpenPaymentList}
-        >
+        <AppPressable accessibilityLabel='待支付' className='order-list-summary__pay' onPress={props.onOpenPaymentList}>
           <Text className='order-list-summary__pay-text'>待支付</Text>
         </AppPressable>
       </View>

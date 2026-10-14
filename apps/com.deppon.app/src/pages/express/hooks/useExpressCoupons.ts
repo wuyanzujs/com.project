@@ -1,14 +1,6 @@
 import Taro from '@tarojs/taro'
 
-import {
-  type Dispatch,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { type Dispatch, type SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { expressCouponService } from '@/services/coupon'
 import type { CouponCardView } from '@/services/coupon'
@@ -21,10 +13,7 @@ import {
 } from '@/services/express'
 import type { ExpressDraft } from '@/services/express'
 import { useLatestRequestRunner } from '@/shared/async/useLatestRequest'
-import {
-  ensureAuthenticated,
-  hasValidSession
-} from '@/shared/navigation/authGuard'
+import { ensureAuthenticated, hasValidSession } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 
 interface UseExpressCouponsOptions {
@@ -33,17 +22,11 @@ interface UseExpressCouponsOptions {
   onInvalidateQuote: () => void
 }
 
-export function useExpressCoupons({
-  draft,
-  setDraft,
-  onInvalidateQuote
-}: UseExpressCouponsOptions) {
+export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExpressCouponsOptions) {
   const [available, setAvailable] = useState<CouponCardView[]>([])
   const [unavailable, setUnavailable] = useState<CouponCardView[]>([])
   const [message, setMessage] = useState('')
-  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>(
-    'idle'
-  )
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const request = useMemo(() => createExpressCouponQueryRequest(draft), [draft])
   const requestKey = createExpressCouponRequestKey(draft)
   const mountedRef = useRef(true)
@@ -66,10 +49,7 @@ export function useExpressCoupons({
 
     setStatus(current => (current === 'loading' ? 'idle' : current))
   }, [])
-  const { invalidateLatestRequest, runLatestRequest } = useLatestRequestRunner(
-    startRequest,
-    finishRequest
-  )
+  const { invalidateLatestRequest, runLatestRequest } = useLatestRequestRunner(startRequest, finishRequest)
 
   latestDraft.current = draft
   latestRequest.current = request
@@ -96,11 +76,7 @@ export function useExpressCoupons({
 
     if (!currentRequest || !currentKey) {
       setStatus('idle')
-      setMessage(
-        latestDraft.current.couponNumber
-          ? '优惠券已选择，请重新获取价格校验'
-          : '获取产品价格后可匹配优惠券'
-      )
+      setMessage(latestDraft.current.couponNumber ? '优惠券已选择，请重新获取价格校验' : '获取产品价格后可匹配优惠券')
       return
     }
 
@@ -124,9 +100,7 @@ export function useExpressCoupons({
           setAvailable(response.result.available)
           setUnavailable(response.result.unavailable)
           setStatus('done')
-          setMessage(
-            response.result.available.length ? '' : '当前订单暂无可用优惠券'
-          )
+          setMessage(response.result.available.length ? '' : '当前订单暂无可用优惠券')
         }
       )
     } catch {
@@ -192,9 +166,7 @@ export function useExpressCoupons({
       onInvalidateQuote()
       setDraft(current => updateExpressCouponNumber(current, normalizedCode))
       Taro.showToast({
-        title: normalizedCode
-          ? '优惠券已选择，请重新获取价格'
-          : '已取消优惠券，请重新获取价格',
+        title: normalizedCode ? '优惠券已选择，请重新获取价格' : '已取消优惠券，请重新获取价格',
         icon: 'none'
       })
     },

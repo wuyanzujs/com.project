@@ -1,7 +1,6 @@
 import { NativeCapabilityError, ensureNativeCapability } from './capabilities'
 
-export type ExternalAppTarget =
-  'wechatMiniProgram' | 'alipayMiniProgram' | 'url'
+export type ExternalAppTarget = 'wechatMiniProgram' | 'alipayMiniProgram' | 'url'
 
 export interface OpenExternalAppOptions {
   source: string

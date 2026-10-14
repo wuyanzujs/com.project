@@ -11,17 +11,12 @@ interface ExpressDeliveryPointFieldProps {
   onOpen: () => void
 }
 
-export function ExpressDeliveryPointField({
-  deliveryPoint,
-  onOpen
-}: ExpressDeliveryPointFieldProps) {
+export function ExpressDeliveryPointField({ deliveryPoint, onOpen }: ExpressDeliveryPointFieldProps) {
   const selected = Boolean(deliveryPoint.code && deliveryPoint.name)
 
   return (
     <AppPressable
-      accessibilityLabel={
-        selected ? '更换收件自提服务点' : '选择收件自提服务点'
-      }
+      accessibilityLabel={selected ? '更换收件自提服务点' : '选择收件自提服务点'}
       block
       className='express-delivery-point-field'
       layout='row-start'
@@ -29,18 +24,10 @@ export function ExpressDeliveryPointField({
     >
       <View className='express-delivery-point-field__content'>
         <Text className='express-delivery-point-field__title'>自提服务点</Text>
-        <Text className='express-delivery-point-field__summary'>
-          {selected ? deliveryPoint.name : '由系统匹配收件地址附近服务点'}
-        </Text>
+        <Text className='express-delivery-point-field__summary'>{selected ? deliveryPoint.name : '由系统匹配收件地址附近服务点'}</Text>
       </View>
-      <Text className='express-delivery-point-field__action'>
-        {selected ? '更换' : '选择'}
-      </Text>
-      <Image
-        className='express-delivery-point-field__arrow'
-        mode='aspectFit'
-        src={APP_IMAGE_ICONS.arrowRightGrey}
-      />
+      <Text className='express-delivery-point-field__action'>{selected ? '更换' : '选择'}</Text>
+      <Image className='express-delivery-point-field__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
     </AppPressable>
   )
 }

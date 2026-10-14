@@ -4,18 +4,8 @@ import Taro, { useDidShow } from '@tarojs/taro'
 import { useCallback, useState } from 'react'
 
 import { expressDraftBridge } from '@/services/express'
-import {
-  canDeleteOrder,
-  createExpressDraftFromOrderDetail,
-  orderService
-} from '@/services/order'
-import type {
-  OrderListItem,
-  OrderPaymentFilter,
-  OrderResendMode,
-  OrderRole,
-  OrderStatusFilter
-} from '@/services/order'
+import { canDeleteOrder, createExpressDraftFromOrderDetail, orderService } from '@/services/order'
+import type { OrderListItem, OrderPaymentFilter, OrderResendMode, OrderRole, OrderStatusFilter } from '@/services/order'
 import { AppPage } from '@/shared/components'
 import AppTabBar from '@/shared/components/AppTabBar'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
@@ -24,12 +14,7 @@ import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
 import { OrderListContent } from './components/OrderListCards'
-import {
-  OrderFilterPanel,
-  OrderListSummary,
-  OrderRoleTabs,
-  OrderSearchBar
-} from './components/OrderListSections'
+import { OrderFilterPanel, OrderListSummary, OrderRoleTabs, OrderSearchBar } from './components/OrderListSections'
 import { OrderSupportFloat } from './components/OrderSupportFloat'
 import { useOrderListData } from './hooks/useOrderListData'
 
@@ -46,21 +31,11 @@ function getRouteToDetail(order: OrderListItem) {
 }
 
 function canCancelOrder(order: OrderListItem) {
-  return (
-    order.role === 'sender' &&
-    order.orderClass === 0 &&
-    order.isAllowCancel &&
-    !!order.orderNumber
-  )
+  return order.role === 'sender' && order.orderClass === 0 && order.isAllowCancel && !!order.orderNumber
 }
 
 function canModifyOrder(order: OrderListItem) {
-  return (
-    order.role === 'sender' &&
-    order.orderClass === 0 &&
-    order.isAllowCancel &&
-    !!order.orderNumber
-  )
+  return order.role === 'sender' && order.orderClass === 0 && order.isAllowCancel && !!order.orderNumber
 }
 
 function getOrderActionKey(order: OrderListItem) {
@@ -118,14 +93,7 @@ const OrderListPage = () => {
 
     setRole(nextRole)
     listData.resetOrders()
-    listData.loadOrders(
-      1,
-      nextRole,
-      keyword,
-      orderStatus,
-      paymentType,
-      rangeDays
-    )
+    listData.loadOrders(1, nextRole, keyword, orderStatus, paymentType, rangeDays)
   }
 
   const handleChangeRange = (nextRangeDays: OrderDateRangeDays) => {
@@ -135,14 +103,7 @@ const OrderListPage = () => {
 
     setRangeDays(nextRangeDays)
     listData.resetOrders()
-    listData.loadOrders(
-      1,
-      role,
-      keyword,
-      orderStatus,
-      paymentType,
-      nextRangeDays
-    )
+    listData.loadOrders(1, role, keyword, orderStatus, paymentType, nextRangeDays)
   }
 
   const handleChangeStatus = (nextStatus: OrderStatusFilter) => {
@@ -162,14 +123,7 @@ const OrderListPage = () => {
 
     setPaymentType(nextPaymentType)
     listData.resetOrders()
-    listData.loadOrders(
-      1,
-      role,
-      keyword,
-      orderStatus,
-      nextPaymentType,
-      rangeDays
-    )
+    listData.loadOrders(1, role, keyword, orderStatus, nextPaymentType, rangeDays)
   }
 
   const handleSearch = () => {
@@ -267,9 +221,7 @@ const OrderListPage = () => {
       })
 
       Taro.showToast({
-        title: response.status
-          ? '删除成功'
-          : response.message || '删除失败，请稍后重试',
+        title: response.status ? '删除成功' : response.message || '删除失败，请稍后重试',
         icon: 'none'
       })
 
@@ -304,9 +256,7 @@ const OrderListPage = () => {
         return
       }
 
-      expressDraftBridge.carryFromOrderResend(
-        createExpressDraftFromOrderDetail(response.result, getResendMode(order))
-      )
+      expressDraftBridge.carryFromOrderResend(createExpressDraftFromOrderDetail(response.result, getResendMode(order)))
       navigateToAppRoute(APP_ROUTES.express, {
         replace: true
       })
@@ -316,19 +266,9 @@ const OrderListPage = () => {
   }
 
   return (
-    <AppPage
-      className='order-list-shell'
-      footer={<AppTabBar active='orderList' />}
-      safeArea='top'
-      statusBar='dark'
-    >
+    <AppPage className='order-list-shell' footer={<AppTabBar active='orderList' />} safeArea='top' statusBar='dark'>
       <>
-        <OrderRoleTabs
-          role={role}
-          onChange={handleChangeRole}
-          onOpenPayment={handleOpenPaymentList}
-          onOpenSubscriptions={handleOpenSubscriptions}
-        />
+        <OrderRoleTabs role={role} onChange={handleChangeRole} onOpenPayment={handleOpenPaymentList} onOpenSubscriptions={handleOpenSubscriptions} />
         <OrderSearchBar
           filterVisible={filterVisible}
           keyword={keyword}
@@ -347,11 +287,7 @@ const OrderListPage = () => {
           onStatusChange={handleChangeStatus}
         />
       )}
-      <ScrollView
-        className='order-list-page'
-        onScrollToLower={handleLoadMore}
-        scrollY
-      >
+      <ScrollView className='order-list-page' onScrollToLower={handleLoadMore} scrollY>
         {(listData.orders.length > 0 || listData.loading) && (
           <OrderListSummary
             rangeDays={rangeDays}
@@ -366,11 +302,7 @@ const OrderListPage = () => {
           canModifyOrder={canModifyOrder}
           canResendOrder={canResendOrder}
           deletingOrderKey={deletingOrderKey}
-          emptyTitle={
-            role === 'sender'
-              ? '近三个月没有我寄的快递'
-              : '近三个月没有我收的快递'
-          }
+          emptyTitle={role === 'sender' ? '近三个月没有我寄的快递' : '近三个月没有我收的快递'}
           errorMessage={listData.errorMessage}
           getOrderActionKey={getOrderActionKey}
           getResendActionText={getResendActionText}
@@ -384,9 +316,7 @@ const OrderListPage = () => {
           onResendOrder={handleResendOrder}
         />
       </ScrollView>
-      <OrderSupportFloat
-        onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
-      />
+      <OrderSupportFloat onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)} />
     </AppPage>
   )
 }

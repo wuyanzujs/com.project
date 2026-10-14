@@ -1,10 +1,6 @@
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
-import type {
-  ExpressCouponFee,
-  ExpressCouponFeeType,
-  ExpressCouponQueryRequest
-} from '../coupon'
+import type { ExpressCouponFee, ExpressCouponFeeType, ExpressCouponQueryRequest } from '../coupon'
 import type { ExpressDraft, ExpressProductQuote } from './types'
 
 const COUPON_DETAIL_CODES: Record<ExpressCouponFeeType, string> = {
@@ -45,14 +41,9 @@ function toAmount(value: unknown) {
  * @param feeType 费用类型
  * @description 按费用类型从报价明细中取费用
  */
-function getDetailFee(
-  product: ExpressProductQuote,
-  feeType: ExpressCouponFeeType
-) {
+function getDetailFee(product: ExpressProductQuote, feeType: ExpressCouponFeeType) {
   const detailCode = COUPON_DETAIL_CODES[feeType]
-  const detail = product.detail?.find(
-    item => normalizeText(item.priceEntryCode).toUpperCase() === detailCode
-  )
+  const detail = product.detail?.find(item => normalizeText(item.priceEntryCode).toUpperCase() === detailCode)
 
   return toAmount(detail?.caculateFee)
 }
@@ -63,13 +54,8 @@ function getDetailFee(
  * @param predicate 市场 code 匹配函数
  * @description 按条件取市场折扣金额
  */
-function getDiscountFee(
-  product: ExpressProductQuote,
-  predicate: (marketCode: string) => boolean
-) {
-  const discount = product.discount?.find(item =>
-    predicate(normalizeText(item.marketCode).toUpperCase())
-  )
+function getDiscountFee(product: ExpressProductQuote, predicate: (marketCode: string) => boolean) {
+  const discount = product.discount?.find(item => predicate(normalizeText(item.marketCode).toUpperCase()))
 
   return toAmount(discount?.reduceFee)
 }
@@ -91,29 +77,13 @@ function normalizeCouponRankType(value?: string) {
  * @param feeType 费用类型
  * @description 还原券前原始费用，含线路折扣
  */
-export function getExpressCouponOriginalFee(
-  product: ExpressProductQuote,
-  feeType: ExpressCouponFeeType
-) {
-  const couponDiscount = getDiscountFee(product, marketCode =>
-    COUPON_MARKET_CODES.has(marketCode)
-  )
+export function getExpressCouponOriginalFee(product: ExpressProductQuote, feeType: ExpressCouponFeeType) {
+  const couponDiscount = getDiscountFee(product, marketCode => COUPON_MARKET_CODES.has(marketCode))
   const couponRankType = normalizeCouponRankType(product.couponRankType)
-  const routeDiscount =
-    feeType === 'FRT'
-      ? getDiscountFee(
-          product,
-          marketCode => marketCode === ROUTE_DISCOUNT_MARKET_CODE
-        )
-      : 0
-  const shouldRestoreCouponDiscount =
-    couponDiscount > 0 && (!couponRankType || couponRankType === feeType)
+  const routeDiscount = feeType === 'FRT' ? getDiscountFee(product, marketCode => marketCode === ROUTE_DISCOUNT_MARKET_CODE) : 0
+  const shouldRestoreCouponDiscount = couponDiscount > 0 && (!couponRankType || couponRankType === feeType)
 
-  return (
-    getDetailFee(product, feeType) +
-    routeDiscount +
-    (shouldRestoreCouponDiscount ? couponDiscount : 0)
-  )
+  return getDetailFee(product, feeType) + routeDiscount + (shouldRestoreCouponDiscount ? couponDiscount : 0)
 }
 
 /**
@@ -146,9 +116,7 @@ function createAddress(parts: string[]) {
  * @param draft 寄件草稿
  * @description 构建优惠券查询请求，缺关键信息返回 null
  */
-export function createExpressCouponQueryRequest(
-  draft: ExpressDraft
-): ExpressCouponQueryRequest | null {
+export function createExpressCouponQueryRequest(draft: ExpressDraft): ExpressCouponQueryRequest | null {
   const sender = draft.sender
   const consignee = draft.consignee
   const product = draft.selectedProduct
@@ -160,24 +128,15 @@ export function createExpressCouponQueryRequest(
 
   const mobile = normalizeText(sender.mobile)
   const arriveProvinceName = normalizeText(consignee.province)
-  const sendAnAddress = createAddress([
-    sender.province,
-    sender.city,
-    sender.county
-  ])
-  const receivesAnAddress = createAddress([
-    consignee.province,
-    consignee.city,
-    consignee.county
-  ])
+  const sendAnAddress = createAddress([sender.province, sender.city, sender.county])
+  const receivesAnAddress = createAddress([consignee.province, consignee.city, consignee.county])
 
   if (!mobile || !arriveProvinceName || !sendAnAddress || !receivesAnAddress) {
     return null
   }
 
   const couponFeeList = createCouponFeeList(product)
-  const freight =
-    couponFeeList.find(item => item.feeType === 'FRT')?.freight ?? 0
+  const freight = couponFeeList.find(item => item.feeType === 'FRT')?.freight ?? 0
 
   return {
     freight,

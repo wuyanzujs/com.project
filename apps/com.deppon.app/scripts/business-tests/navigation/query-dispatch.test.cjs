@@ -3,9 +3,7 @@ const Taro = require('@tarojs/taro')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  dispatchAppRouteAsync
-} = require('@/shared/navigation/navigationRuntime')
+const { dispatchAppRouteAsync } = require('@/shared/navigation/navigationRuntime')
 
 test('same page path with different query parameters still navigates', async t => {
   const originalGetCurrentPages = Taro.getCurrentPages
@@ -34,9 +32,6 @@ test('same page path with different query parameters still navigates', async t =
   }
   Taro.showToast = async () => undefined
 
-  assert.equal(
-    await dispatchAppRouteAsync('/pages/order/detail/index?waybillNumber=NEW'),
-    true
-  )
+  assert.equal(await dispatchAppRouteAsync('/pages/order/detail/index?waybillNumber=NEW'), true)
   assert.equal(navigateCount, 1)
 })

@@ -1,9 +1,4 @@
-import {
-  formatDateTime,
-  normalizeText,
-  toFiniteNumber,
-  truncateText
-} from './invoice.shared'
+import { formatDateTime, normalizeText, toFiniteNumber, truncateText } from './invoice.shared'
 
 import type {
   InvoiceBillCategory,
@@ -147,8 +142,7 @@ function normalizeAddressPiece(value?: string | null) {
  * @description 解析出省市区与详细地址
  */
 export function parseInvoiceAcceptAddress(value?: string | null) {
-  const [province = '', city = '', county = '', ...addressParts] =
-    normalizeText(value).split('|')
+  const [province = '', city = '', county = '', ...addressParts] = normalizeText(value).split('|')
 
   return {
     province: normalizeAddressPiece(province),
@@ -173,10 +167,7 @@ export function canSendInvoiceEmail(status: number) {
  * @param category 发票类别 code
  * @description 判断是否可撤销开票申请
  */
-export function canCancelInvoiceApply(
-  status: number,
-  category?: InvoiceBillCategory | ''
-) {
+export function canCancelInvoiceApply(status: number, category?: InvoiceBillCategory | '') {
   return category === '01' && (status === 1 || status === 3 || status === 28)
 }
 
@@ -186,10 +177,7 @@ export function canCancelInvoiceApply(
  * @param category 发票类别 code
  * @description 判断是否可作废发票
  */
-export function canReverseInvoice(
-  status: number,
-  category?: InvoiceBillCategory | ''
-) {
+export function canReverseInvoice(status: number, category?: InvoiceBillCategory | '') {
   return category !== '01' && (status === 4 || status === 47)
 }
 
@@ -199,10 +187,7 @@ export function canReverseInvoice(
  * @param category 发票类别 code
  * @description 判断是否可修改收票地址
  */
-export function canModifyInvoiceAddress(
-  status: number,
-  category?: InvoiceBillCategory | ''
-) {
+export function canModifyInvoiceAddress(status: number, category?: InvoiceBillCategory | '') {
   return category === '01' && (status === 3 || status === 4)
 }
 
@@ -251,9 +236,7 @@ export function normalizeHistory(item: InvoiceHistoryRaw): InvoiceHistoryView {
  * @param raw 运单号与金额的映射
  * @description 转成开票运单明细列表
  */
-export function normalizeHistoryWaybills(
-  raw: InvoiceHistoryWaybillRaw
-): InvoiceHistoryWaybillView[] {
+export function normalizeHistoryWaybills(raw: InvoiceHistoryWaybillRaw): InvoiceHistoryWaybillView[] {
   return Object.entries(raw)
     .map(([waybillNumber, amount]) => ({
       waybillNumber: normalizeText(waybillNumber),
@@ -290,21 +273,9 @@ function createPreviewFile(title: string, pdfUrl?: string, imageUrl?: string) {
  * @param title 发票标题
  * @description 把发票预览原始数据转成视图
  */
-export function normalizePreview(
-  raw: InvoicePreviewRaw,
-  applyNo: string,
-  title: string
-): InvoicePreviewView {
-  const invoice = createPreviewFile(
-    '发票文件',
-    raw.elecLinkAdress,
-    raw.elecLinkAdressPicture
-  )
-  const reversal = createPreviewFile(
-    '已作废发票',
-    raw.redElecLinkAdress,
-    raw.redElecLinkAdressPicture
-  )
+export function normalizePreview(raw: InvoicePreviewRaw, applyNo: string, title: string): InvoicePreviewView {
+  const invoice = createPreviewFile('发票文件', raw.elecLinkAdress, raw.elecLinkAdressPicture)
+  const reversal = createPreviewFile('已作废发票', raw.redElecLinkAdress, raw.redElecLinkAdressPicture)
   const hasPreview = !!(invoice.displayUrl || reversal.displayUrl)
 
   return {

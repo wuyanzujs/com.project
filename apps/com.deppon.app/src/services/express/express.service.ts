@@ -1,27 +1,11 @@
 import type { DepponResponse } from '@/request/deppon'
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
-import {
-  buildExpressDeliveryAppointmentRequest,
-  isExpressScheduledDeliveryProductSupported
-} from './deliveryPreference.rules'
+import { buildExpressDeliveryAppointmentRequest, isExpressScheduledDeliveryProductSupported } from './deliveryPreference.rules'
 import { expressApi } from './express.api'
-import {
-  createExpressDraft,
-  trimText,
-  validateExpressDraft,
-  validateExpressPriceTimeDraft,
-  toFiniteNumber
-} from './express.draft'
-import {
-  buildCreateOrderRequest,
-  buildFreightRequest,
-  buildInsurancePriceRequest
-} from './express.payload'
-import {
-  getBlockingExpressGoodsLabel,
-  normalizeExpressGoodsCheckResult
-} from './goodsCheck.rules'
+import { createExpressDraft, trimText, validateExpressDraft, validateExpressPriceTimeDraft, toFiniteNumber } from './express.draft'
+import { buildCreateOrderRequest, buildFreightRequest, buildInsurancePriceRequest } from './express.payload'
+import { getBlockingExpressGoodsLabel, normalizeExpressGoodsCheckResult } from './goodsCheck.rules'
 import {
   applyExpressInsuranceCapability,
   createExpressInsuranceCapability,
@@ -32,10 +16,7 @@ import { queryExpressPickupTime } from './pickupTime.service'
 import { createExpressGoodsLabelRequest } from './productAvailability.rules'
 import { queryExpressProductAvailability } from './productAvailability.service'
 import { validateExpressWarehouseScreeningForSubmit } from './warehouse.rules'
-import {
-  queryExpressWarehouseScreening,
-  stageExpressWarehouse
-} from './warehouse.service'
+import { queryExpressWarehouseScreening, stageExpressWarehouse } from './warehouse.service'
 import { createServiceFailure as createFailure } from '../serviceResponse'
 
 import type {
@@ -68,10 +49,7 @@ function getResponseFailureMessage(response: DepponResponse<unknown>) {
  * @param amount 保价金额
  * @description 归一保价费用响应
  */
-function normalizeInsuranceQuote(
-  response: ExpressInsurancePriceResponse | null,
-  amount: number
-): ExpressInsuranceQuote {
+function normalizeInsuranceQuote(response: ExpressInsurancePriceResponse | null, amount: number): ExpressInsuranceQuote {
   const dataPrice = response?.data?.[String(amount)] ?? response?.data?.[amount]
   const price = dataPrice ?? response?.price ?? 0
 
@@ -87,13 +65,8 @@ function normalizeInsuranceQuote(
  * @param draft 寄件草稿
  * @description 提交前校验货物与保价规则
  */
-async function checkGoodsBeforeSubmit(
-  draft: ExpressDraft
-): Promise<DepponResponse<ExpressInsuranceCapability>> {
-  const response = await expressApi.queryGoodsLabels(
-    createExpressGoodsLabelRequest(draft),
-    false
-  )
+async function checkGoodsBeforeSubmit(draft: ExpressDraft): Promise<DepponResponse<ExpressInsuranceCapability>> {
+  const response = await expressApi.queryGoodsLabels(createExpressGoodsLabelRequest(draft), false)
 
   if (!response.status) {
     return createFailure(response.message || '暂未完成货物校验，请稍后再试')
@@ -126,9 +99,7 @@ async function checkGoodsBeforeSubmit(
  * @param data 货物标签请求参数
  * @description 按货物名称校验并归一结果
  */
-async function checkGoodsByName(
-  data: ExpressGoodsLabelRequest
-): Promise<DepponResponse<ExpressGoodsCheckResult>> {
+async function checkGoodsByName(data: ExpressGoodsLabelRequest): Promise<DepponResponse<ExpressGoodsCheckResult>> {
   const goodsName = trimText(data.goodsName)
 
   if (!goodsName) {
@@ -158,19 +129,14 @@ async function checkGoodsByName(
  * @param draft 寄件草稿
  * @description 提交前校验仓库筛单结果
  */
-async function checkOrderFilterBeforeSubmit(
-  draft: ExpressDraft
-): Promise<DepponResponse<boolean>> {
+async function checkOrderFilterBeforeSubmit(draft: ExpressDraft): Promise<DepponResponse<boolean>> {
   const response = await queryExpressWarehouseScreening(draft)
 
   if (!response.status || !response.result) {
     return createFailure(getResponseFailureMessage(response))
   }
 
-  const messages = validateExpressWarehouseScreeningForSubmit(
-    draft,
-    response.result
-  )
+  const messages = validateExpressWarehouseScreeningForSubmit(draft, response.result)
 
   if (messages.length) {
     return createFailure(messages[0])
@@ -187,9 +153,7 @@ async function checkOrderFilterBeforeSubmit(
  * @param draft 寄件草稿
  * @description 提交前执行货物与筛单校验
  */
-async function checkBeforeSubmit(
-  draft: ExpressDraft
-): Promise<DepponResponse<ExpressInsuranceCapability>> {
+async function checkBeforeSubmit(draft: ExpressDraft): Promise<DepponResponse<ExpressInsuranceCapability>> {
   const goodsCheck = await checkGoodsBeforeSubmit(draft)
 
   if (!goodsCheck.status) {
@@ -239,9 +203,7 @@ export const expressService = {
    * @param draft 寄件草稿
    * @description 询价并返回可售产品列表
    */
-  async quote(
-    draft: ExpressDraft
-  ): Promise<DepponResponse<ExpressQuoteResult>> {
+  async quote(draft: ExpressDraft): Promise<DepponResponse<ExpressQuoteResult>> {
     const validation = validateExpressDraft(draft)
 
     if (!validation.valid) {
@@ -249,15 +211,8 @@ export const expressService = {
     }
 
     const availability = await queryExpressProductAvailability(draft)
-    const availableDraft = applyExpressInsuranceCapability(
-      draft,
-      availability.insuranceCapability,
-      availability.customer.insuranceLimit
-    )
-    const insuranceMessages = validateExpressInsurance(
-      availableDraft,
-      availability.insuranceCapability
-    )
+    const availableDraft = applyExpressInsuranceCapability(draft, availability.insuranceCapability, availability.customer.insuranceLimit)
+    const insuranceMessages = validateExpressInsurance(availableDraft, availability.insuranceCapability)
 
     if (insuranceMessages.length) {
       return {
@@ -267,10 +222,7 @@ export const expressService = {
       }
     }
 
-    const response = await expressApi.queryFreight(
-      buildFreightRequest(availableDraft, availability),
-      false
-    )
+    const response = await expressApi.queryFreight(buildFreightRequest(availableDraft, availability), false)
 
     if (!response.status) {
       return {
@@ -297,9 +249,7 @@ export const expressService = {
     const validation = validateExpressPriceTimeDraft(draft)
 
     if (!validation.valid) {
-      return Promise.resolve(
-        createFailure<ExpressProductQuote[]>(validation.messages[0])
-      )
+      return Promise.resolve(createFailure<ExpressProductQuote[]>(validation.messages[0]))
     }
 
     return expressApi.queryFreight(buildFreightRequest(draft), false)
@@ -310,9 +260,7 @@ export const expressService = {
    * @param draft 寄件草稿
    * @description 查询保价费用
    */
-  async queryInsurancePrice(
-    draft: ExpressDraft
-  ): Promise<DepponResponse<ExpressInsuranceQuote>> {
+  async queryInsurancePrice(draft: ExpressDraft): Promise<DepponResponse<ExpressInsuranceQuote>> {
     try {
       const request = buildInsurancePriceRequest(draft)
       const response = await expressApi.queryInsurancePrice(request)
@@ -323,15 +271,10 @@ export const expressService = {
 
       return {
         ...response,
-        result: normalizeInsuranceQuote(
-          response.result ?? null,
-          toFiniteNumber(Number(request.statements[0] ?? 0))
-        )
+        result: normalizeInsuranceQuote(response.result ?? null, toFiniteNumber(Number(request.statements[0] ?? 0)))
       }
     } catch (error) {
-      return createFailure(
-        error instanceof Error ? error.message : '暂未获取到保价费用'
-      )
+      return createFailure(error instanceof Error ? error.message : '暂未获取到保价费用')
     }
   },
 
@@ -347,42 +290,19 @@ export const expressService = {
    * @description 查询定时派送可选时间
    */
   queryDeliveryAppointment(draft: ExpressDraft) {
-    if (
-      !draft.consignee?.province ||
-      !draft.consignee.city ||
-      !draft.consignee.county ||
-      !trimText(draft.consignee.address)
-    ) {
-      return Promise.resolve(
-        createFailure<ExpressDeliveryAppointmentResponse>(
-          '请先填写完整收件地址'
-        )
-      )
+    if (!draft.consignee?.province || !draft.consignee.city || !draft.consignee.county || !trimText(draft.consignee.address)) {
+      return Promise.resolve(createFailure<ExpressDeliveryAppointmentResponse>('请先填写完整收件地址'))
     }
 
     if (!draft.selectedProduct?.arriveDate) {
-      return Promise.resolve(
-        createFailure<ExpressDeliveryAppointmentResponse>(
-          '请先获取并选择包含预计到达时间的产品'
-        )
-      )
+      return Promise.resolve(createFailure<ExpressDeliveryAppointmentResponse>('请先获取并选择包含预计到达时间的产品'))
     }
 
-    if (
-      !isExpressScheduledDeliveryProductSupported(
-        draft.selectedProduct.omsProductCode
-      )
-    ) {
-      return Promise.resolve(
-        createFailure<ExpressDeliveryAppointmentResponse>(
-          '当前产品暂不支持定时派送'
-        )
-      )
+    if (!isExpressScheduledDeliveryProductSupported(draft.selectedProduct.omsProductCode)) {
+      return Promise.resolve(createFailure<ExpressDeliveryAppointmentResponse>('当前产品暂不支持定时派送'))
     }
 
-    return expressApi.queryDeliveryAppointment(
-      buildExpressDeliveryAppointmentRequest(draft)
-    )
+    return expressApi.queryDeliveryAppointment(buildExpressDeliveryAppointmentRequest(draft))
   },
 
   /**
@@ -390,9 +310,7 @@ export const expressService = {
    * @param draft 寄件草稿
    * @description 校验并提交寄件草稿下单
    */
-  async submitDraft(
-    draft: ExpressDraft
-  ): Promise<DepponResponse<CreateExpressOrderResponse>> {
+  async submitDraft(draft: ExpressDraft): Promise<DepponResponse<CreateExpressOrderResponse>> {
     const validation = validateExpressDraft(draft, {
       requireAgreement: true,
       requireProduct: true
@@ -418,9 +336,7 @@ export const expressService = {
       return createFailure('当前账号存在未完成拦截，请稍后再试')
     }
 
-    return expressApi.createOrder(
-      buildCreateOrderRequest(draft, submitCheck.result)
-    )
+    return expressApi.createOrder(buildCreateOrderRequest(draft, submitCheck.result))
   },
 
   /**

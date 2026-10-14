@@ -28,13 +28,7 @@ const PaymentFeeRows = (props: PaymentFeeRowsProps) => {
       {summary.rows.map(row => (
         <View className='payment-fee-row' key={row.key}>
           <Text className='payment-fee-row__label'>{row.label}</Text>
-          <Text
-            className={
-              row.tone === 'discount'
-                ? 'payment-fee-row__amount payment-fee-row__amount--discount'
-                : 'payment-fee-row__amount'
-            }
-          >
+          <Text className={row.tone === 'discount' ? 'payment-fee-row__amount payment-fee-row__amount--discount' : 'payment-fee-row__amount'}>
             {formatFeeAmount(row.amount, row.tone)}
           </Text>
         </View>

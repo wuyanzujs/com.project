@@ -19,19 +19,12 @@ import {
   updateExpressPickup,
   updateExpressService
 } from '@/services/express'
-import type {
-  ExpressDraft,
-  ExpressMonthlyPayView,
-  ExpressProductQuote
-} from '@/services/express'
+import type { ExpressDraft, ExpressMonthlyPayView, ExpressProductQuote } from '@/services/express'
 import { AppPage } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
-import {
-  getNativeCapabilityErrorMessage,
-  shareWithApp
-} from '@/shared/platform'
+import { getNativeCapabilityErrorMessage, shareWithApp } from '@/shared/platform'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 
 import { ExpressBaseInfoCard } from './components/ExpressBaseInfoCard'
@@ -94,10 +87,7 @@ const ExpressPage = () => {
     setDraft,
     onProductChange: insuranceController.onInvalidate
   })
-  const invalidateCouponQuote = useCallback(
-    () => restoreQuotes([]),
-    [restoreQuotes]
-  )
+  const invalidateCouponQuote = useCallback(() => restoreQuotes([]), [restoreQuotes])
   const couponController = useExpressCoupons({
     draft,
     setDraft,
@@ -118,12 +108,9 @@ const ExpressPage = () => {
   const warehouseController = useExpressWarehouse({ draft, setDraft })
   const privacyController = useExpressPrivacy(setDraft)
 
-  const updateService = useCallback(
-    (patch: Partial<ExpressDraft['service']>) => {
-      setDraft(current => updateExpressService(current, patch))
-    },
-    []
-  )
+  const updateService = useCallback((patch: Partial<ExpressDraft['service']>) => {
+    setDraft(current => updateExpressService(current, patch))
+  }, [])
 
   const updatePickup = useCallback((patch: Partial<ExpressDraft['pickup']>) => {
     setDraft(current => updateExpressPickup(current, patch))
@@ -198,13 +185,7 @@ const ExpressPage = () => {
       return
     }
 
-    setDraft(current =>
-      setExpressContact(
-        current,
-        selection.target,
-        mapContactToExpressContact(selection.contact)
-      )
-    )
+    setDraft(current => setExpressContact(current, selection.target, mapContactToExpressContact(selection.contact)))
   })
 
   const handleShare = () => {
@@ -245,9 +226,7 @@ const ExpressPage = () => {
     })
   }
 
-  const selectedProductDetailView = draft.selectedProduct
-    ? createExpressProductQuoteView(draft.selectedProduct)
-    : null
+  const selectedProductDetailView = draft.selectedProduct ? createExpressProductQuoteView(draft.selectedProduct) : null
 
   return (
     <AppPage
@@ -270,12 +249,7 @@ const ExpressPage = () => {
       <ScrollView className='express-page' scrollY style={{ flex: 1 }}>
         <ExpressHeader onOpenRealName={entryNav.handleOpenRealName} />
 
-        <ExpressContactPanel
-          draft={draft}
-          onCreateContact={handleContactCreate}
-          onSelectContact={handleContactSelect}
-          onSwapContacts={handleSwapContacts}
-        />
+        <ExpressContactPanel draft={draft} onCreateContact={handleContactCreate} onSelectContact={handleContactSelect} onSwapContacts={handleSwapContacts} />
 
         <ExpressPickupSection
           hasSenderAddress={Boolean(draft.sender)}
@@ -298,9 +272,7 @@ const ExpressPage = () => {
           />
 
           {/* 生产端把价格时效块嵌在基础信息卡内：付款方式与防水提示之间。 */}
-          {quotes.length > 0 ||
-          quoteStatus === 'loading' ||
-          draft.quoteStaleReason ? (
+          {quotes.length > 0 || quoteStatus === 'loading' || draft.quoteStaleReason ? (
             <ExpressQuoteSection
               plain
               quoteStaleReason={draft.quoteStaleReason}
@@ -314,10 +286,7 @@ const ExpressPage = () => {
 
           <ExpressWeatherBanner text={weatherText} onPress={handleOpenGoods} />
 
-          <ExpressCouponCard
-            controller={couponController}
-            couponNumber={draft.couponNumber}
-          />
+          <ExpressCouponCard controller={couponController} couponNumber={draft.couponNumber} />
         </ExpressBaseInfoCard>
 
         <ExpressServiceSection
@@ -349,22 +318,14 @@ const ExpressPage = () => {
           onServiceChange={updateService}
         />
 
-        <ExpressPrivacyCard
-          value={draft.service.privacyProtection}
-          onChange={privacyController.onChange}
-          onOpenTerms={privacyController.onOpenTerms}
-        />
+        <ExpressPrivacyCard value={draft.service.privacyProtection} onChange={privacyController.onChange} onOpenTerms={privacyController.onOpenTerms} />
 
         {/* 生产端在货物名称与收寄双方地址齐全后才展示协议行。 */}
-        {draft.goods.name &&
-        draft.sender?.address &&
-        draft.consignee?.address ? (
+        {draft.goods.name && draft.sender?.address && draft.consignee?.address ? (
           <ExpressOrderOptionsSection
             agreementAccepted={draft.agreementAccepted}
             submitMessage={submit.submitMessage}
-            validationMessages={
-              submit.validation.valid ? [] : submit.validation.messages
-            }
+            validationMessages={submit.validation.valid ? [] : submit.validation.messages}
             onToggleAgreement={() =>
               setDraft(current => ({
                 ...current,

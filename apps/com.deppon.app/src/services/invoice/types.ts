@@ -23,8 +23,7 @@ export type InvoicePath =
 
 export type InvoiceTab = 'orders' | 'ecards' | 'history' | 'taxpayers'
 export type InvoiceStatusClass = 'Process' | 'Cancel' | 'Error' | 'Success'
-export type InvoiceBillCategory =
-  '01' | '02' | '06' | '07' | '13' | '14' | string
+export type InvoiceBillCategory = '01' | '02' | '06' | '07' | '13' | '14' | string
 export type InvoiceApplyBillCategory = '06' | '13'
 export type InvoiceTaxpayerType = '0' | '1'
 
@@ -341,14 +340,7 @@ export interface InvoiceECardApplyTaskDetail {
   payFlag: boolean
 }
 
-export interface InvoiceECardApplyTaskInfo extends Omit<
-  InvoiceApplyTaskInfo,
-  | 'applyType'
-  | 'sourceType'
-  | 'SourceSystem'
-  | 'billCategory'
-  | 'invoiceContent'
-> {
+export interface InvoiceECardApplyTaskInfo extends Omit<InvoiceApplyTaskInfo, 'applyType' | 'sourceType' | 'SourceSystem' | 'billCategory' | 'invoiceContent'> {
   applyType: '171'
   sourceType: '17'
   SourceSystem: 'WX'

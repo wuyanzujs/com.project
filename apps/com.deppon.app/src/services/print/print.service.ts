@@ -5,12 +5,7 @@ import { APP_NATIVE_CAPABILITIES } from '@/shared/platform/capabilities'
 import { createServiceFailure } from '../serviceResponse'
 import { PRINT_LIST_ENDPOINT, printApi } from './print.api'
 import { normalizePrintListResult } from './print.mapper'
-import {
-  createPrintDateRangeOptions,
-  DEFAULT_PRINT_DATE_RANGE_KEY,
-  getPrintDateRange,
-  resolvePrintListCounts
-} from './print.rules'
+import { createPrintDateRangeOptions, DEFAULT_PRINT_DATE_RANGE_KEY, getPrintDateRange, resolvePrintListCounts } from './print.rules'
 
 import type {
   PrintCenterOptions,
@@ -40,10 +35,7 @@ export const PRINT_API_ENDPOINTS = [
  * @param message 提示文案
  * @description 构造打印选择校验结果
  */
-function createResult(
-  step: PrintSelectionResult['step'],
-  message: string
-): PrintSelectionResult {
+function createResult(step: PrintSelectionResult['step'], message: string): PrintSelectionResult {
   return {
     canPrint: step === 'ready',
     step,
@@ -56,9 +48,7 @@ function createResult(
  * @param state 打印选择状态
  * @description 依次校验打印前置条件
  */
-export function validatePrintSelection(
-  state: PrintSelectionState
-): PrintSelectionResult {
+export function validatePrintSelection(state: PrintSelectionState): PrintSelectionResult {
   if (!state.deviceConnected) {
     return createResult('device', '请先连接打印机')
   }
@@ -101,9 +91,7 @@ function createCloudCodeView(options: PrintCenterOptions) {
  * @param result Promise 结果
  * @description 取已兑现的响应，失败返回 null
  */
-function getFulfilledResponse(
-  result: PromiseSettledResult<DepponResponse<PrintListResponse>>
-) {
+function getFulfilledResponse(result: PromiseSettledResult<DepponResponse<PrintListResponse>>) {
   return result.status === 'fulfilled' ? result.value : null
 }
 
@@ -115,15 +103,10 @@ export const printService = {
    * @param options 列表查询参数
    * @description 查询待打印或已打印面单列表
    */
-  async queryList(
-    options: QueryPrintListOptions
-  ): Promise<DepponResponse<PrintListResult>> {
+  async queryList(options: QueryPrintListOptions): Promise<DepponResponse<PrintListResult>> {
     const pageIndex = options.pageIndex ?? 1
     const pageSize = options.pageSize ?? DEFAULT_PRINT_PAGE_SIZE
-    const dateRange = getPrintDateRange(
-      options.rangeKey ?? DEFAULT_PRINT_DATE_RANGE_KEY,
-      options.now
-    )
+    const dateRange = getPrintDateRange(options.rangeKey ?? DEFAULT_PRINT_DATE_RANGE_KEY, options.now)
     const response = await printApi.queryList(
       {
         pageNum: pageIndex,
@@ -136,12 +119,7 @@ export const printService = {
     )
 
     if (!response.status || !response.result) {
-      return createServiceFailure(
-        response.message ||
-          (options.searchType === '1'
-            ? '暂未获取到待打印订单'
-            : '暂未获取到已打印订单')
-      )
+      return createServiceFailure(response.message || (options.searchType === '1' ? '暂未获取到待打印订单' : '暂未获取到已打印订单'))
     }
 
     return {
@@ -158,13 +136,8 @@ export const printService = {
    * @param options 数量查询参数
    * @description 并发查询待打印与已打印数量
    */
-  async queryCounts(
-    options: QueryPrintCountsOptions = {}
-  ): Promise<DepponResponse<PrintListCounts>> {
-    const dateRange = getPrintDateRange(
-      options.rangeKey ?? DEFAULT_PRINT_DATE_RANGE_KEY,
-      options.now
-    )
+  async queryCounts(options: QueryPrintCountsOptions = {}): Promise<DepponResponse<PrintListCounts>> {
+    const dateRange = getPrintDateRange(options.rangeKey ?? DEFAULT_PRINT_DATE_RANGE_KEY, options.now)
     const createRequest = (searchType: '1' | '2') => ({
       pageNum: 1,
       pageSize: 1,
@@ -176,20 +149,12 @@ export const printService = {
       printApi.queryList(createRequest('1'), options.loading ?? false),
       printApi.queryList(createRequest('2'), options.loading ?? false)
     ])
-    const counts = resolvePrintListCounts(
-      getFulfilledResponse(waitingResult),
-      getFulfilledResponse(printedResult)
-    )
+    const counts = resolvePrintListCounts(getFulfilledResponse(waitingResult), getFulfilledResponse(printedResult))
     const failedCount = counts.failedSearchTypes.length
 
     return {
       status: failedCount < 2,
-      message:
-        failedCount === 0
-          ? ''
-          : failedCount === 1
-            ? '部分打印数量暂未更新'
-            : '打印数量暂未获取',
+      message: failedCount === 0 ? '' : failedCount === 1 ? '部分打印数量暂未更新' : '打印数量暂未获取',
       result: counts
     }
   },
@@ -250,12 +215,7 @@ export const printService = {
         }
       ],
       apiEndpoints: PRINT_API_ENDPOINTS,
-      rules: [
-        '打印前必须先连接打印机',
-        '没有待打印订单时不能发起打印',
-        '必须选择至少一个运单后才能打印',
-        '打印成功后才更新面单状态'
-      ]
+      rules: ['打印前必须先连接打印机', '没有待打印订单时不能发起打印', '必须选择至少一个运单后才能打印', '打印成功后才更新面单状态']
     }
   },
 

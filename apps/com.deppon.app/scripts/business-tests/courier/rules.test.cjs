@@ -2,13 +2,8 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  isAlreadyBoundCourierMessage,
-  normalizeCourier
-} = require('@/services/courier/courier.mapper')
-const {
-  createCourierExpressDraft
-} = require('@/services/courier/courier.rules')
+const { isAlreadyBoundCourierMessage, normalizeCourier } = require('@/services/courier/courier.mapper')
+const { createCourierExpressDraft } = require('@/services/courier/courier.rules')
 
 const cases = [
   {

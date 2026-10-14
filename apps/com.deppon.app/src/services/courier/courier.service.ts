@@ -1,19 +1,12 @@
 import type { DepponResponse } from '@/request/deppon'
 
 import { courierApi } from './courier.api'
-import {
-  isAlreadyBoundCourierMessage,
-  normalizeCourier
-} from './courier.mapper'
+import { isAlreadyBoundCourierMessage, normalizeCourier } from './courier.mapper'
 import { createCourierExpressDraft } from './courier.rules'
 import { expressDraftBridge } from '../express/draftBridge'
 import { createServiceFailure } from '../serviceResponse'
 
-import type {
-  CourierBindingState,
-  CourierDetailView,
-  CourierView
-} from './types'
+import type { CourierBindingState, CourierDetailView, CourierView } from './types'
 
 /**
  *
@@ -38,9 +31,7 @@ export const courierService = {
 
     return {
       ...response,
-      result: (response.result.couriers ?? [])
-        .map(normalizeCourier)
-        .filter(item => item.id)
+      result: (response.result.couriers ?? []).map(normalizeCourier).filter(item => item.id)
     }
   },
 
@@ -49,34 +40,23 @@ export const courierService = {
    * @param courierNo 快递员工号
    * @description 查询快递员详情与绑定状态
    */
-  async queryDetail(
-    courierNo: string
-  ): Promise<DepponResponse<CourierDetailView>> {
+  async queryDetail(courierNo: string): Promise<DepponResponse<CourierDetailView>> {
     const normalizedCourierNo = normalizeCourierNo(courierNo)
 
     if (!normalizedCourierNo) {
       return createServiceFailure('缺少快递员工号')
     }
 
-    const [detailResponse, listResponse] = await Promise.all([
-      courierApi.queryDetail(normalizedCourierNo),
-      courierApi.queryList()
-    ])
+    const [detailResponse, listResponse] = await Promise.all([courierApi.queryDetail(normalizedCourierNo), courierApi.queryList()])
 
     if (!detailResponse.status || !detailResponse.result) {
-      return createServiceFailure(
-        detailResponse.message || '未查询到快递员信息'
-      )
+      return createServiceFailure(detailResponse.message || '未查询到快递员信息')
     }
 
     let bindingState: CourierBindingState = 'unknown'
 
     if (listResponse.status && listResponse.result) {
-      bindingState = (listResponse.result.couriers ?? []).some(
-        item => normalizeCourierNo(item.courierNo) === normalizedCourierNo
-      )
-        ? 'bound'
-        : 'unbound'
+      bindingState = (listResponse.result.couriers ?? []).some(item => normalizeCourierNo(item.courierNo) === normalizedCourierNo) ? 'bound' : 'unbound'
     }
 
     return {

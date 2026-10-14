@@ -3,16 +3,8 @@ import { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useRef, useState } from 'react'
 
-import {
-  createPaymentCheckoutUrl,
-  createPaymentEvaluateWebUri,
-  paymentService
-} from '@/services/payment'
-import type {
-  PaymentItem,
-  PaymentListStatus,
-  PaymentRole
-} from '@/services/payment'
+import { createPaymentCheckoutUrl, createPaymentEvaluateWebUri, paymentService } from '@/services/payment'
+import type { PaymentItem, PaymentListStatus, PaymentRole } from '@/services/payment'
 import { LatestRequestCoordinator } from '@/shared/async/latestRequest'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
@@ -55,17 +47,8 @@ const PaymentListPage = () => {
   )
 
   const loadPayments = useCallback(
-    async (
-      nextPage = 1,
-      nextRole = role,
-      nextKeyword = keyword,
-      nextStatus = status,
-      force = false
-    ) => {
-      const requestToken = requestCoordinator.begin(
-        JSON.stringify([nextPage, nextRole, nextKeyword, nextStatus]),
-        { force }
-      )
+    async (nextPage = 1, nextRole = role, nextKeyword = keyword, nextStatus = status, force = false) => {
+      const requestToken = requestCoordinator.begin(JSON.stringify([nextPage, nextRole, nextKeyword, nextStatus]), { force })
 
       if (!requestToken) {
         return
@@ -88,12 +71,7 @@ const PaymentListPage = () => {
         }
 
         if (!response.status || !response.result) {
-          setErrorMessage(
-            response.message ||
-              (nextStatus === 'PAID'
-                ? '暂未获取到支付记录'
-                : '暂未获取到待支付运单')
-          )
+          setErrorMessage(response.message || (nextStatus === 'PAID' ? '暂未获取到支付记录' : '暂未获取到待支付运单'))
           if (nextPage === 1) {
             setPayments([])
             setTotalRows(0)
@@ -102,19 +80,11 @@ const PaymentListPage = () => {
           return
         }
 
-        setPayments(current =>
-          nextPage === 1
-            ? (response.result?.list ?? [])
-            : [...current, ...(response.result?.list ?? [])]
-        )
+        setPayments(current => (nextPage === 1 ? (response.result?.list ?? []) : [...current, ...(response.result?.list ?? [])]))
         setPageIndex(response.result.pageIndex)
         setTotalPage(response.result.totalPage)
         setTotalRows(response.result.totalRows)
-        setLoadedAmount(current =>
-          nextPage === 1
-            ? (response.result?.pageAmount ?? 0)
-            : current + (response.result?.pageAmount ?? 0)
-        )
+        setLoadedAmount(current => (nextPage === 1 ? (response.result?.pageAmount ?? 0) : current + (response.result?.pageAmount ?? 0)))
       } finally {
         if (requestCoordinator.finish(requestToken)) {
           setLoading(false)
@@ -223,11 +193,7 @@ const PaymentListPage = () => {
   }
 
   return (
-    <ScrollView
-      className='payment-list-page'
-      onScrollToLower={handleLoadMore}
-      scrollY
-    >
+    <ScrollView className='payment-list-page' onScrollToLower={handleLoadMore} scrollY>
       <PaymentListControls
         keyword={keyword}
         loadedAmount={loadedAmount}
@@ -244,24 +210,10 @@ const PaymentListPage = () => {
         {payments.map(item => {
           const itemKey = getPaymentItemKey(item)
 
-          return (
-            <PaymentCard
-              item={item}
-              key={itemKey}
-              status={status}
-              onEvaluate={handleEvaluate}
-              onOpenOrder={handleOpenOrder}
-              onPay={handlePay}
-            />
-          )
+          return <PaymentCard item={item} key={itemKey} status={status} onEvaluate={handleEvaluate} onOpenOrder={handleOpenOrder} onPay={handlePay} />
         })}
 
-        <PaymentListStates
-          errorMessage={errorMessage}
-          hasPayments={!!payments.length}
-          loading={loading}
-          status={status}
-        />
+        <PaymentListStates errorMessage={errorMessage} hasPayments={!!payments.length} loading={loading} status={status} />
       </View>
     </ScrollView>
   )

@@ -2,23 +2,11 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  clearAccountScopedCache,
-  preserveAccountScopedCacheForLogin
-} = require('@/cache/accountScope')
-const {
-  ACCOUNT_SCOPED_CACHE_KEYS,
-  ACCOUNT_SCOPED_STORAGE_KEYS,
-  CACHE_KEYS,
-  createCacheStorageKey
-} = require('@/cache/keys')
+const { clearAccountScopedCache, preserveAccountScopedCacheForLogin } = require('@/cache/accountScope')
+const { ACCOUNT_SCOPED_CACHE_KEYS, ACCOUNT_SCOPED_STORAGE_KEYS, CACHE_KEYS, createCacheStorageKey } = require('@/cache/keys')
 const { getStorageValue, setStorageValue } = require('@/cache/storage')
 const { clearAppSession, saveCurrentUser } = require('@/services/auth')
-const {
-  createAppUserIdentity,
-  isSameAppUser,
-  shouldClearAccountScopedCache
-} = require('@/services/auth/sessionIdentity')
+const { createAppUserIdentity, isSameAppUser, shouldClearAccountScopedCache } = require('@/services/auth/sessionIdentity')
 const { appWebMessageBridge } = require('@/shared/webview/appWebMessage')
 
 const cases = [
@@ -36,16 +24,10 @@ const cases = [
 
       for (const key of ACCOUNT_SCOPED_CACHE_KEYS) {
         assert.equal(ACCOUNT_SCOPED_STORAGE_KEYS.includes(key), true)
-        assert.equal(
-          ACCOUNT_SCOPED_STORAGE_KEYS.includes(createCacheStorageKey(key)),
-          true
-        )
+        assert.equal(ACCOUNT_SCOPED_STORAGE_KEYS.includes(createCacheStorageKey(key)), true)
       }
 
-      assert.equal(
-        ACCOUNT_SCOPED_STORAGE_KEYS.includes(CACHE_KEYS.expressPrivacyConfirm),
-        false
-      )
+      assert.equal(ACCOUNT_SCOPED_STORAGE_KEYS.includes(CACHE_KEYS.expressPrivacyConfirm), false)
     }
   },
   {
@@ -76,10 +58,7 @@ const cases = [
 
       await setStorageValue(CACHE_KEYS.cookie, 'ECO_TOKEN=old-token;')
       await setStorageValue(CACHE_KEYS.userInfo, '{"mobile":"13800138000"}')
-      await setStorageValue(
-        CACHE_KEYS.accountCacheOwner,
-        '{"mobile":"13800138000"}'
-      )
+      await setStorageValue(CACHE_KEYS.accountCacheOwner, '{"mobile":"13800138000"}')
       await setStorageValue(CACHE_KEYS.userSession, 'legacy-session')
       await setStorageValue(CACHE_KEYS.expressPrivacyConfirm, 'device-consent')
 
@@ -99,18 +78,11 @@ const cases = [
 
       await clearAppSession()
 
-      assert.equal(
-        appWebMessageBridge.stage('EXPRESS_WAREHOUSE', warehouseMessage)
-          .handled,
-        false
-      )
+      assert.equal(appWebMessageBridge.stage('EXPRESS_WAREHOUSE', warehouseMessage).handled, false)
       assert.equal(appWebMessageBridge.consumeWarehouse(), null)
 
       await setStorageValue(CACHE_KEYS.userInfo, '{"mobile":"13800138000"}')
-      await setStorageValue(
-        CACHE_KEYS.accountCacheOwner,
-        '{"mobile":"13800138000"}'
-      )
+      await setStorageValue(CACHE_KEYS.accountCacheOwner, '{"mobile":"13800138000"}')
       assert.equal(
         appWebMessageBridge.expectWarehouse({
           inputKey: 'session-pending-input',
@@ -154,53 +126,17 @@ const cases = [
       assert.equal(getStorageValue(CACHE_KEYS.userInfo), '')
       assert.equal(getStorageValue(CACHE_KEYS.accountCacheOwner), '')
       assert.equal(getStorageValue(CACHE_KEYS.userSession), '')
-      assert.equal(
-        getStorageValue(CACHE_KEYS.expressPrivacyConfirm),
-        'device-consent'
-      )
+      assert.equal(getStorageValue(CACHE_KEYS.expressPrivacyConfirm), 'device-consent')
     }
   },
   {
     name: 'account identity rules detect user switches conservatively',
     run() {
-      assert.equal(
-        isSameAppUser(
-          { id: 'USER_1', mobile: '13800138000' },
-          { id: 'USER_1', mobile: '13900139000' }
-        ),
-        true
-      )
-      assert.equal(
-        isSameAppUser(
-          { mobile: '13800138000' },
-          { mobile: '13800138000', nickName: 'new profile' }
-        ),
-        true
-      )
-      assert.equal(
-        shouldClearAccountScopedCache(
-          { id: 'USER_1', mobile: '13800138000' },
-          { id: 'USER_2', mobile: '13800138000' },
-          { id: 'USER_1' }
-        ),
-        true
-      )
-      assert.equal(
-        shouldClearAccountScopedCache(
-          null,
-          { id: 'USER_2', mobile: '13900139000' },
-          null
-        ),
-        true
-      )
-      assert.equal(
-        shouldClearAccountScopedCache(
-          null,
-          { id: 'USER_2', mobile: '13900139000' },
-          { id: 'USER_2' }
-        ),
-        false
-      )
+      assert.equal(isSameAppUser({ id: 'USER_1', mobile: '13800138000' }, { id: 'USER_1', mobile: '13900139000' }), true)
+      assert.equal(isSameAppUser({ mobile: '13800138000' }, { mobile: '13800138000', nickName: 'new profile' }), true)
+      assert.equal(shouldClearAccountScopedCache({ id: 'USER_1', mobile: '13800138000' }, { id: 'USER_2', mobile: '13800138000' }, { id: 'USER_1' }), true)
+      assert.equal(shouldClearAccountScopedCache(null, { id: 'USER_2', mobile: '13900139000' }, null), true)
+      assert.equal(shouldClearAccountScopedCache(null, { id: 'USER_2', mobile: '13900139000' }, { id: 'USER_2' }), false)
       assert.deepEqual(
         createAppUserIdentity({
           id: ' USER_2 ',

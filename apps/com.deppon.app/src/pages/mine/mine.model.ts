@@ -4,8 +4,7 @@ import { APP_ROUTES } from '@/shared/navigation/routes'
 import type { AppRoutePath } from '@/shared/navigation/routes'
 import type { AppWebSource } from '@/shared/webview/appWeb'
 
-export type MineOrderCountKey =
-  'all' | 'pickup' | 'payment' | 'transit' | 'signed'
+export type MineOrderCountKey = 'all' | 'pickup' | 'payment' | 'transit' | 'signed'
 
 export type MineOrderCounts = Record<MineOrderCountKey, number | null>
 
@@ -164,9 +163,7 @@ export const SERVICE_ENTRIES: MineEntry[] = [
   }
 ]
 
-function getTotalRows(
-  response: { status: boolean; result?: { totalRows: number } | null } | null
-) {
+function getTotalRows(response: { status: boolean; result?: { totalRows: number } | null } | null) {
   return response?.status && response.result ? response.result.totalRows : null
 }
 
@@ -181,18 +178,10 @@ export async function queryMineOrderCounts(): Promise<MineOrderCounts> {
   }
   const [all, pickup, payment, transit, signed] = await Promise.all([
     orderService.queryList(commonOptions).catch(() => null),
-    orderService
-      .queryList({ ...commonOptions, orderStatus: 'RECEIPTING' })
-      .catch(() => null),
-    paymentService
-      .queryPaymentList({ pageIndex: 1, pageSize: 1, status: 'UNPAID' })
-      .catch(() => null),
-    orderService
-      .queryList({ ...commonOptions, orderStatus: 'IN_TRANSIT' })
-      .catch(() => null),
-    orderService
-      .queryList({ ...commonOptions, orderStatus: 'SIGN' })
-      .catch(() => null)
+    orderService.queryList({ ...commonOptions, orderStatus: 'RECEIPTING' }).catch(() => null),
+    paymentService.queryPaymentList({ pageIndex: 1, pageSize: 1, status: 'UNPAID' }).catch(() => null),
+    orderService.queryList({ ...commonOptions, orderStatus: 'IN_TRANSIT' }).catch(() => null),
+    orderService.queryList({ ...commonOptions, orderStatus: 'SIGN' }).catch(() => null)
   ])
 
   return {

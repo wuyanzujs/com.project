@@ -16,10 +16,7 @@ function cutGoodsName(name: string) {
 
 // 生产端点击「货物信息」整行跳转独立物品信息页（/pages/sendService/goods），
 // 行内只展示摘要：名称、重量，有体积时追加 /体积m³。
-export function ExpressGoodsSection({
-  goods,
-  onPress
-}: ExpressGoodsSectionProps) {
+export function ExpressGoodsSection({ goods, onPress }: ExpressGoodsSectionProps) {
   const trimmedName = goods.name.trim()
   const goodsFilled = Boolean(trimmedName && goods.weight > 0)
   const summary = goodsFilled
@@ -29,15 +26,7 @@ export function ExpressGoodsSection({
     : '请完善货物名称、重量'
 
   return (
-    <ExpressSection
-      expanded={false}
-      hint='必填'
-      plain
-      summary={summary}
-      summaryMuted={!goodsFilled}
-      title='货物信息'
-      onHeaderPress={onPress}
-    >
+    <ExpressSection expanded={false} hint='必填' plain summary={summary} summaryMuted={!goodsFilled} title='货物信息' onHeaderPress={onPress}>
       {null}
     </ExpressSection>
   )

@@ -3,24 +3,11 @@ import Taro from '@tarojs/taro'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { getCurrentUser } from '@/services/auth'
-import {
-  createOrderSceneSurveyContext,
-  orderSceneSurveyOrchestrator
-} from '@/services/order'
-import type {
-  OrderDetail,
-  OrderRole,
-  OrderSceneSurveyItem,
-  OrderSceneSurveySubmitInput
-} from '@/services/order'
+import { createOrderSceneSurveyContext, orderSceneSurveyOrchestrator } from '@/services/order'
+import type { OrderDetail, OrderRole, OrderSceneSurveyItem, OrderSceneSurveySubmitInput } from '@/services/order'
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
-export function useOrderSceneSurvey(options: {
-  detail: OrderDetail | null
-  role: OrderRole
-  source: string
-  publicTrackMode: boolean
-}) {
+export function useOrderSceneSurvey(options: { detail: OrderDetail | null; role: OrderRole; source: string; publicTrackMode: boolean }) {
   const [items, setItems] = useState<OrderSceneSurveyItem[]>([])
   const [visible, setVisible] = useState(false)
   const [completed, setCompleted] = useState(false)
@@ -40,13 +27,7 @@ export function useOrderSceneSurvey(options: {
         mobile: currentMobile,
         childChannel: APP_RUNTIME_CONFIG.systemCode
       }),
-    [
-      currentMobile,
-      options.detail,
-      options.publicTrackMode,
-      options.role,
-      options.source
-    ]
+    [currentMobile, options.detail, options.publicTrackMode, options.role, options.source]
   )
 
   useEffect(() => {
@@ -71,11 +52,7 @@ export function useOrderSceneSurvey(options: {
     void orderSceneSurveyOrchestrator
       .query(context)
       .then(result => {
-        if (
-          active &&
-          generationRef.current === generation &&
-          result.items.length
-        ) {
+        if (active && generationRef.current === generation && result.items.length) {
           setItems(result.items)
           setTotal(result.items.length)
           setFailedCount(result.failedCount)
@@ -118,11 +95,7 @@ export function useOrderSceneSurvey(options: {
     setSubmitting(true)
 
     try {
-      const response = await orderSceneSurveyOrchestrator.submit(
-        context,
-        item,
-        input
-      )
+      const response = await orderSceneSurveyOrchestrator.submit(context, item, input)
 
       if (generationRef.current !== generation || context.key !== contextKey) {
         return
@@ -140,9 +113,7 @@ export function useOrderSceneSurvey(options: {
         setItems([])
         setCompleted(true)
       } else {
-        setItems(current =>
-          current[0]?.key === itemKey ? current.slice(1) : current
-        )
+        setItems(current => (current[0]?.key === itemKey ? current.slice(1) : current))
       }
 
       Taro.showToast({

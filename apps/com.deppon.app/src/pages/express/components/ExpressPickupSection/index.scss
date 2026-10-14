@@ -1,33 +1,183 @@
 @use '@/styles/_tokens.scss' as *;
 
 /* 生产端分段器：白卡上只有未选中侧铺灰块，顶部以反向圆角内凹过渡，底部圆角收进。 */
-.express-pickup-section { margin-bottom: $dp-space-16; overflow: hidden; background: $dp-color-bg-card; border-radius: $dp-radius-32; }
-.express-pickup-section__modes { position: relative; display: flex; flex-direction: row; height: 80px; }
-.express-pickup-section__notch { position: absolute; top: 0; background: $dp-color-bg-segment; }
+.express-pickup-section {
+  margin-bottom: $dp-space-16;
+  overflow: hidden;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-32;
+}
+.express-pickup-section__modes {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  height: 80px;
+}
+.express-pickup-section__notch {
+  position: absolute;
+  top: 0;
+  background: $dp-color-bg-segment;
+}
 /* 右侧选中：left:50% 起排并左移 32 露出灰垫片；左侧选中镜像。 */
-.express-pickup-section__notch--top-right { left: 50%; right: 0; height: $dp-radius-32; margin-left: -$dp-radius-32; } .express-pickup-section__notch--top-left { right: 50%; left: 0; height: $dp-radius-32; margin-right: -$dp-radius-32; }
-.express-pickup-section__notch--main-right { left: 50%; right: 0; height: 80px; border-bottom-left-radius: $dp-radius-32; } .express-pickup-section__notch--main-left { right: 50%; left: 0; height: 80px; border-bottom-right-radius: $dp-radius-32; }
-.express-pickup-section__cap { position: absolute; top: 0; width: 50%; height: 80px; background: $dp-color-bg-card; }
-.express-pickup-section__cap--left { left: 0; border-top-right-radius: $dp-radius-32; } .express-pickup-section__cap--right { right: 0; border-top-left-radius: $dp-radius-32; }
-.express-pickup-section__mode { flex: 1; min-height: 0; }
-.express-pickup-section__mode-text { color: $dp-color-text-heading; font-size: $dp-font-size-title-large; font-weight: $dp-font-weight-regular; line-height: $dp-line-height-48; }
-.express-pickup-section__mode-text--active { font-weight: $dp-font-weight-bold; }
-.express-pickup-section__body { padding: $dp-space-0 $dp-space-24; }
-.express-pickup-section__row { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; min-height: $dp-touch-target-min; }
-.express-pickup-section__row--station { min-height: $dp-control-height-large; }
-.express-pickup-section__label { margin-left: $dp-space-xs; color: $dp-color-text-neutral; font-size: $dp-font-size-label-large; font-weight: $dp-font-weight-regular; line-height: $dp-line-height-42; }
+.express-pickup-section__notch--top-right {
+  left: 50%;
+  right: 0;
+  height: $dp-radius-32;
+  margin-left: -$dp-radius-32;
+}
+.express-pickup-section__notch--top-left {
+  right: 50%;
+  left: 0;
+  height: $dp-radius-32;
+  margin-right: -$dp-radius-32;
+}
+.express-pickup-section__notch--main-right {
+  left: 50%;
+  right: 0;
+  height: 80px;
+  border-bottom-left-radius: $dp-radius-32;
+}
+.express-pickup-section__notch--main-left {
+  right: 50%;
+  left: 0;
+  height: 80px;
+  border-bottom-right-radius: $dp-radius-32;
+}
+.express-pickup-section__cap {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 80px;
+  background: $dp-color-bg-card;
+}
+.express-pickup-section__cap--left {
+  left: 0;
+  border-top-right-radius: $dp-radius-32;
+}
+.express-pickup-section__cap--right {
+  right: 0;
+  border-top-left-radius: $dp-radius-32;
+}
+.express-pickup-section__mode {
+  flex: 1;
+  min-height: 0;
+}
+.express-pickup-section__mode-text {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-48;
+}
+.express-pickup-section__mode-text--active {
+  font-weight: $dp-font-weight-bold;
+}
+.express-pickup-section__body {
+  padding: $dp-space-0 $dp-space-24;
+}
+.express-pickup-section__row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: $dp-touch-target-min;
+}
+.express-pickup-section__row--station {
+  min-height: $dp-control-height-large;
+}
+.express-pickup-section__label {
+  margin-left: $dp-space-xs;
+  color: $dp-color-text-neutral;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-42;
+}
 /* 生产端「期望上门时间」「提前电话联系」两行的行首标签与卡片边缘齐平。 */
-.express-pickup-section__label--flush { margin-left: 0; }
-.express-pickup-section__value { flex: 1; margin-left: $dp-space-md; color: $dp-color-text-heading; font-size: $dp-font-size-label-large; font-weight: $dp-font-weight-bold; line-height: $dp-line-height-42; text-align: right; }
-.express-pickup-section__chevron { flex-shrink: 0; width: $dp-space-24; height: $dp-space-24; margin-left: $dp-space-8; }
+.express-pickup-section__label--flush {
+  margin-left: 0;
+}
+.express-pickup-section__value {
+  flex: 1;
+  margin-left: $dp-space-md;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-42;
+  text-align: right;
+}
+.express-pickup-section__chevron {
+  flex-shrink: 0;
+  width: $dp-space-24;
+  height: $dp-space-24;
+  margin-left: $dp-space-8;
+}
 /* 生产端两行内容之间没有分隔线。 */
-.express-pickup-section__contact-row { display: flex; flex-direction: row; align-items: center; justify-content: space-between; min-height: 90px; }
-.express-pickup-section__contact-label { display: flex; flex: 1; flex-direction: row; align-items: center; }
-.express-pickup-section__required { height: 28px; margin-left: $dp-space-16; padding: $dp-space-0 $dp-space-14; color: $dp-color-brand; font-size: $dp-font-size-micro; font-weight: $dp-font-weight-regular; line-height: $dp-line-height-28; background: $dp-color-brand-soft; border-radius: $dp-radius-16; }
-.express-pickup-section__contact-options { display: flex; flex-shrink: 0; flex-direction: row; align-items: center; }
-.express-pickup-section__contact-option { display: flex; flex-direction: row; align-items: center; justify-content: center; min-width: $dp-control-height-medium; min-height: $dp-touch-target-min; margin-left: $dp-space-24; background: $dp-color-transparent; border-width: 0; }
+.express-pickup-section__contact-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 90px;
+}
+.express-pickup-section__contact-label {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+}
+.express-pickup-section__required {
+  height: 28px;
+  margin-left: $dp-space-16;
+  padding: $dp-space-0 $dp-space-14;
+  color: $dp-color-brand;
+  font-size: $dp-font-size-micro;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-28;
+  background: $dp-color-brand-soft;
+  border-radius: $dp-radius-16;
+}
+.express-pickup-section__contact-options {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: row;
+  align-items: center;
+}
+.express-pickup-section__contact-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  min-width: $dp-control-height-medium;
+  min-height: $dp-touch-target-min;
+  margin-left: $dp-space-24;
+  background: $dp-color-transparent;
+  border-width: 0;
+}
 /* 生产端 radio：未选中灰环，选中白底 + 品牌环 + 品牌点。 */
-.express-pickup-section__radio { display: flex; flex-shrink: 0; align-items: center; justify-content: center; width: $dp-space-28; height: $dp-space-28; background: $dp-color-bg-card; border-color: $dp-color-bg-track; border-radius: $dp-radius-circle; border-width: 3px; }
-.express-pickup-section__radio--active { border-color: $dp-color-brand; }
-.express-pickup-section__radio-dot { width: 12px; height: 12px; background: $dp-color-brand; border-radius: $dp-radius-circle; }
-.express-pickup-section__contact-text { margin-left: $dp-space-16; color: $dp-color-text-heading; font-size: $dp-font-size-label-large; font-weight: $dp-font-weight-regular; line-height: $dp-line-height-42; }
+.express-pickup-section__radio {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: $dp-space-28;
+  height: $dp-space-28;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-bg-track;
+  border-radius: $dp-radius-circle;
+  border-width: 3px;
+}
+.express-pickup-section__radio--active {
+  border-color: $dp-color-brand;
+}
+.express-pickup-section__radio-dot {
+  width: 12px;
+  height: 12px;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-circle;
+}
+.express-pickup-section__contact-text {
+  margin-left: $dp-space-16;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-42;
+}
