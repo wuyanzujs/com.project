@@ -37,6 +37,7 @@
     "check:runtime-bundle:ios": "node scripts/check-runtime-bundle.mjs ios",
     "check:business-rules": "node scripts/check-business-rules.cjs",
     "check:platform-build": "node scripts/check-platform-build.mjs",
+    "ui:diff": "node scripts/ui-diff.mjs",
     "check:native-env": "node scripts/check-native-env.mjs all",
     "check:native-env:android": "node scripts/check-native-env.mjs android",
     "check:native-env:ios": "node scripts/check-native-env.mjs ios",
