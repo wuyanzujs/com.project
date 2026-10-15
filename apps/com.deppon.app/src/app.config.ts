@@ -5,6 +5,13 @@ import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from './styles/nativeTokens'
 // tabBar 保持关闭，这里只声明哪些页面属于 tab 容器：这样主路由切换才能
 // 走导航 facade 的 switchTab——既不播放页面栈转场，也不会每次切 tab
 // 都往栈里压一层。
+//
+// 注意：Taro RN 在构建期会把 tabBar.list 归一化为仅剩 pagePath/text，
+// iconPath 无论写成什么都会被剥掉；运行时 router-rn 的 getTabIconSource
+// 拿到 undefined 后仍返回 { uri: undefined }，4 个隐藏 tab item 在每次
+// 启动各触发一次 "ReactImageView: Image source null" 软警告（纯 dev 噪音，
+// 生产构建没有 LogBox 不受影响）。该警告已在入口 index.js 用
+// LogBox.ignoreLogs 精确白名单，不要在业务代码里重复处理。
 const APP_TAB_BAR_LIST = APP_ROUTE_DEFINITIONS.filter(item => 'main' in item && item.main).map(item => ({
   pagePath: item.path,
   text: item.title
