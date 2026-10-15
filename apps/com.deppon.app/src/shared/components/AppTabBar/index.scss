@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: row;
   min-height: $dp-tab-bar-height;
-  padding: $dp-space-8 $dp-space-18 $dp-space-4;
+  padding: $dp-space-8 $dp-space-0 $dp-space-4;
 }
 
 .app-tab-bar__item {
@@ -24,10 +24,41 @@
 /* 图标盒跟图标等高：底栏高度由 $dp-tab-bar-height 兜底，触摸目标由整个 tab 项 */
 /* 承担，再撑一个最小热区反而会让图标缩小后在图标与文字之间留出空洞。 */
 .app-tab-bar__icon {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: $dp-space-1;
+}
+
+/* 生产端 3.0x 切图 144×144 → 逻辑 48，与原 icon.hero 尺寸一致，
+   保证「领券」徽章的定位偏移维持不变。 */
+.app-tab-bar__glyph {
+  width: 48px;
+  height: 48px;
+}
+
+/* 生产端「福利」tab 图标右上的常驻「领券」红标：左缘压住图标右半、
+   顶部高出图标约 8，药丸造型 */
+.app-tab-bar__badge {
+  position: absolute;
+  top: -$dp-space-8;
+  left: $dp-space-34;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding-left: $dp-space-12;
+  padding-right: $dp-space-12;
+  background: $dp-color-danger-accent;
+  border-radius: $dp-radius-pill;
+}
+
+.app-tab-bar__badge-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-fine;
+  font-weight: $dp-font-weight-medium;
+  line-height: $dp-line-height-32;
 }
 
 .app-tab-bar__text {
