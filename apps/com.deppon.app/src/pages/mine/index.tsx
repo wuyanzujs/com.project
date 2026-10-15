@@ -7,6 +7,7 @@ import { authService, maskMobile } from '@/services/auth'
 import type { AppUser } from '@/services/auth'
 import { contactSelection } from '@/services/contact'
 import { couponService } from '@/services/coupon'
+import { ecardService } from '@/services/ecard'
 import { memberService } from '@/services/member'
 import type { MemberOverviewView } from '@/services/member'
 import { AppPage } from '@/shared/components'
@@ -15,6 +16,7 @@ import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { hasValidSession, navigateToLogin } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { shareWithApp } from '@/shared/platform'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 
 import { MineEntryGrids } from './components/MineEntryGrids'
@@ -31,28 +33,33 @@ const MinePage = () => {
   const [user, setUser] = useState<AppUser | null>(() => authService.getCachedUser())
   const [member, setMember] = useState<MemberOverviewView | null>(null)
   const [orderCounts, setOrderCounts] = useState<MineOrderCounts>(EMPTY_ORDER_COUNTS)
-  const [couponExpireCount, setCouponExpireCount] = useState(0)
+  const [couponCount, setCouponCount] = useState(0)
+  // 储值卡数量：null 表示未知（未加载或查询失败），此时 UI 不显示数字
+  const [storedCardCount, setStoredCardCount] = useState<number | null>(null)
 
   const refreshUser = async () => {
     if (!hasValidSession()) {
       setUser(null)
       setMember(null)
       setOrderCounts(EMPTY_ORDER_COUNTS)
-      setCouponExpireCount(0)
+      setCouponCount(0)
+      setStoredCardCount(null)
       return
     }
 
-    const [nextUser, memberResponse, nextOrderCounts, expireCount] = await Promise.all([
+    const [nextUser, memberResponse, nextOrderCounts, couponResponse, storedCardResponse] = await Promise.all([
       authService.bootstrapUser(),
       memberService.queryOverview(),
       queryMineOrderCounts(),
-      couponService.queryExpireCount()
+      couponService.queryUserCoupons('USABLE'),
+      ecardService.queryStoredCardCount()
     ])
 
     setUser(nextUser ?? authService.getCachedUser())
     setMember(memberResponse.result ?? null)
     setOrderCounts(nextOrderCounts)
-    setCouponExpireCount(expireCount)
+    setCouponCount(couponResponse.result?.totalRows ?? 0)
+    setStoredCardCount(storedCardResponse.status ? (storedCardResponse.result ?? null) : null)
   }
 
   useDidShow(() => {
@@ -71,6 +78,14 @@ const MinePage = () => {
     navigateToAppRoute(APP_ROUTES.accountSettings, {
       login: true
     })
+  }
+
+  const handleShare = () => {
+    void shareWithApp({
+      source: 'MINE',
+      title: '德邦快递',
+      description: '德邦快递服务'
+    }).catch(() => undefined)
   }
 
   const handleManageContacts = () => {
@@ -118,15 +133,18 @@ const MinePage = () => {
           authenticated={Boolean(user)}
           profileName={profileName}
           onOpenProfile={user ? handleAccountSettings : handleLogin}
+          onOpenSettings={user ? handleAccountSettings : handleLogin}
+          onOpenShare={handleShare}
           onOpenSupport={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
         />
 
         {user && (
           <MineMemberCard
-            couponExpireCount={couponExpireCount}
+            couponCount={couponCount}
             levelCode={levelCode}
             member={member}
             onOpen={() => navigateToAppRoute(APP_ROUTES.memberCenter)}
+            storedCardCount={storedCardCount}
           />
         )}
 

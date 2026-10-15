@@ -101,6 +101,11 @@ $dp-color-border-inverse: $dp-color-bg-card;
 $dp-color-member-accent: #f8dbb2;
 $dp-color-member-background: #fde5cd;
 $dp-color-member-border: rgba(124, 72, 45, 0.12);
+/* 会员卡 SVIP「立即开通」横向渐变三端色（RN 无 CSS 渐变，由 MineMemberCard 内 SVG 铺底使用），
+   与 nativeTokens.ts 的 member.svipGradient* 同步登记。 */
+$dp-color-member-svip-gradient-start: #fdf8e8;
+$dp-color-member-svip-gradient-mid: #f8d6a8;
+$dp-color-member-svip-gradient-end: #fda9c9;
 
 $dp-color-overlay-soft: rgba(22, 24, 26, 0.42);
 $dp-color-overlay: rgba(22, 24, 26, 0.48);

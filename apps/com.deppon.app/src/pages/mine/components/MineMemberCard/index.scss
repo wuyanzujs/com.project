@@ -9,7 +9,7 @@
 
 .mine-member-card__body {
   position: relative;
-  height: 224px;
+  height: 216px;
   overflow: hidden;
 }
 
@@ -17,17 +17,26 @@
 .mine-member-card__svip-background {
   position: absolute;
   top: 0;
-  right: 0;
   bottom: 0;
   left: 0;
-  width: 100%;
   height: 100%;
+}
+
+.mine-member-card__background {
+  right: 0;
+  width: 100%;
+}
+
+/* 百分比宽度按内容盒解析，会被 svip 容器 24px 横向 padding 收窄而右侧露底；
+   这里按整卡设计宽 702px（750 - 左右各 24）铺满，和 MineHero 背景同一处理方式 */
+.mine-member-card__svip-background {
+  width: 702px;
 }
 
 .mine-member-card__top {
   position: relative;
-  min-height: 144px;
-  padding: 36px 24px 12px;
+  min-height: 136px;
+  padding: $dp-space-28 $dp-space-24 $dp-space-16;
 }
 
 .mine-member-card__level-row,
@@ -66,9 +75,38 @@
   border-top-width: 1px;
 }
 
+/* 生产端三列左排、列间距约 45（实测 46/44），整行不铺满，
+   右侧留白给 V0 勋章；原先 flex:1 均分三列会把储值卡/我的积分撑到偏右 */
 .mine-member-card__benefit {
-  flex: 1;
-  min-width: 0;
+  position: relative;
+  margin-right: $dp-space-48 - $dp-space-3;
+}
+
+/* 生产端「储值卡」上挂红色「原德邦E卡」角标（约 99x32）：横跨权益行分隔线，
+   锚定储值卡列起点右侧约 50（生产端实测徽标左缘 - 列左缘 ≈ 95 全分辨率 ≈ 50 设计px）。
+   注意测试数据数字宽度与生产不同（优惠券 0 vs 1）会让列整体右移 ~15 全分辨率，
+   徽标随列联动属正确行为；ui-diff 的绝对差异需结合数据差异判读，不要按绝对位置过拟合 */
+.mine-member-card__benefit-badge {
+  position: absolute;
+  top: -$dp-space-26;
+  left: $dp-space-48 + $dp-space-2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding-left: $dp-space-8;
+  padding-right: $dp-space-8;
+  background: $dp-color-danger-accent;
+  border-top-left-radius: $dp-radius-pill;
+  border-top-right-radius: $dp-radius-pill;
+  border-bottom-right-radius: $dp-radius-pill;
+}
+
+.mine-member-card__benefit-badge-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-micro;
+  font-weight: $dp-font-weight-medium;
+  line-height: $dp-line-height-32;
 }
 
 .mine-member-card__benefit-icon {
@@ -81,6 +119,12 @@
   color: $dp-color-text-member;
   font-size: $dp-font-size-body;
   font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-46;
+}
+
+/* 生产端权益行数字比标签加粗一档（字号不变） */
+.mine-member-card__benefit-num {
+  font-weight: $dp-font-weight-bold;
 }
 
 .mine-member-card__svip {
@@ -113,11 +157,21 @@
   min-width: 116px;
   height: 48px;
   padding: 0 16px;
-  background: $dp-color-member-background;
+  overflow: hidden;
   border-radius: $dp-radius-feature-card;
 }
 
+/* 生产端「立即开通」是左米金到右粉的横向渐变，RN 无 CSS 渐变，用 SVG 铺底还原 */
+.mine-member-card__svip-button-gradient {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
 .mine-member-card__svip-button-text {
+  position: relative;
   color: $dp-color-text-member-strong;
   font-size: $dp-font-size-caption;
   font-weight: $dp-font-weight-bold;

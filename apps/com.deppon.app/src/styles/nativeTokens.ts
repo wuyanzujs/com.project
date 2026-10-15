@@ -89,7 +89,10 @@ export const APP_STYLE_COLORS = {
     textMuted: '#968372',
     textStrong: '#262638',
     accent: '#f8dbb2',
-    background: '#fde5cd'
+    background: '#fde5cd',
+    svipGradientStart: '#fdf8e8',
+    svipGradientMid: '#f8d6a8',
+    svipGradientEnd: '#fda9c9'
   },
   overlay: {
     soft: 'rgba(22, 24, 26, 0.42)',

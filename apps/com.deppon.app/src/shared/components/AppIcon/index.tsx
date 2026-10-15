@@ -54,6 +54,8 @@ import {
 import { designPxToDp } from '@/shared/native'
 import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
+import { ForwardIcon, NutIcon } from './custom'
+
 const APP_ICONS = {
   swap: ArrowDownUp,
   badgeCheck: BadgeCheck,
@@ -86,14 +88,17 @@ const APP_ICONS = {
   plus: Plus,
   printer: Printer,
   receipt: ReceiptText,
-  // 生产端导航「分享」是一枚前转箭头（redo 造型），不是节点分享图标。
+  // 登录页、寄件页顶栏沿用 redo 造型（已单独对齐验收）；「我的」页生产端是弯尾前转箭头，用 forward。
   redo: Redo2,
+  forward: ForwardIcon,
   refresh: RefreshCw,
   save: Save,
   scan: ScanLine,
   search: Search,
   send: Send,
   settings: Settings,
+  // 生产端「我的」页「设置」是圆角六角螺母加中心圆环，lucide Settings 是齿轮，造型不符，改用自绘矢量。
+  settingNut: NutIcon,
   share: Share2,
   shieldAlert: ShieldAlert,
   shieldCheck: ShieldCheck,

@@ -6,11 +6,10 @@
   flex-direction: row;
   align-items: flex-start;
   padding: 0 28px 4px;
-  overflow: hidden;
 }
 
 /* 百分比宽高会按父级内容盒解析而被 padding 收窄，这里用设计宽度整屏铺满；
-   高度要含状态栏高度，由 index.tsx 在运行时补足 */
+   高度按设计稿整图给足并允许溢出，让渐变垫在会员卡底下淡出，由 index.tsx 在运行时设置 */
 .mine-hero__background {
   position: absolute;
   top: 0;
@@ -37,6 +36,7 @@
 .mine-profile__content {
   flex: 1;
   min-width: 0;
+  padding-top: $dp-space-6;
 }
 
 .mine-profile__name {
@@ -48,19 +48,46 @@
 
 .mine-profile__summary {
   display: flex;
-  margin-top: 4px;
   color: $dp-color-text-subdued;
   font-size: $dp-font-size-body;
   line-height: $dp-line-height-body;
 }
 
-.mine-hero__message {
-  position: relative;
+/* 右上操作列绝对定位：右缘留 12，图标盒中心 ≈ 状态栏底部下 44；
+   生产端消息↔分享间距比分享↔设置小 6，用基础 gap + 设置位 margin 补齐 */
+.mine-hero__actions {
+  position: absolute;
+  right: $dp-space-12;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: $dp-space-2;
+  height: $dp-control-height-default;
+  margin-top: $dp-space-4;
+}
+
+.mine-hero__action {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: $dp-touch-target-min;
-  min-height: $dp-touch-target-min;
+  width: $dp-control-height-default;
+  height: $dp-control-height-default;
+}
+
+.mine-hero__action--settings {
+  margin-left: $dp-space-6;
+}
+
+/* 生产端消息图标右上有常驻红点（约 30x28，无数量语义）：右缘与图标右缘对齐，
+   纵向大部分凸出图标顶部 */
+.mine-hero__message-dot {
+  position: absolute;
+  top: $dp-space-8;
+  right: $dp-space-20;
+  width: 30px;
+  height: 28px;
+  background: $dp-color-danger-accent;
+  border-radius: $dp-radius-pill;
 }
 
 .mine-hero__message-image {

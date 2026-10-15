@@ -133,6 +133,27 @@ export const ecardService = {
 
   /**
    *
+   * @description 查询储值卡数量。后端仅暴露账户级 existCustomer 标记，没有卡数量接口；
+   * 储值卡账户一人一户，已开通按 1 张计，未开通按 0 张计。查询失败返回失败响应，
+   * 由调用方把数量置为未知，避免把未知状态渲染成「储值卡0」。
+   */
+  async queryStoredCardCount(): Promise<DepponResponse<number>> {
+    const response = await ecardApi.queryBalance('2', false).catch(() => null)
+    const rawBalance = response?.status ? response.result : null
+
+    if (!rawBalance) {
+      return createServiceFailure<number>(response?.message || '暂未获取到储值卡信息')
+    }
+
+    return {
+      status: true,
+      message: '',
+      result: rawBalance.existCustomer ? 1 : 0
+    }
+  },
+
+  /**
+   *
    * @param targetPage 目标页面
    * @param options 可选跳转参数
    * @description 创建 E 卡中心页面链接
