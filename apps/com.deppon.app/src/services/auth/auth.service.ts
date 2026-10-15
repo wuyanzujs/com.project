@@ -41,7 +41,7 @@ export function isValidSmsCode(smsCode: string) {
 /**
  *
  * @param mobile 手机号
- * @description 手机号中间四位用星号打码
+ * @description 手机号中间四位用星号打码，格式与生产端一致：151 **** 5262
  */
 export function maskMobile(mobile = '') {
   const value = mobile.trim()
@@ -50,7 +50,7 @@ export function maskMobile(mobile = '') {
     return value
   }
 
-  return `${value.slice(0, 3)}****${value.slice(7)}`
+  return `${value.slice(0, 3)} **** ${value.slice(-4)}`
 }
 
 /**

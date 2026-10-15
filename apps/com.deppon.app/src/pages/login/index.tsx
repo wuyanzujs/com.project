@@ -1,17 +1,24 @@
-import { Input, Text, View } from '@tarojs/components'
+import { Image, Input, Text, View } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import loginBackground from '@/assets/login/login-bg.png'
+import loginLabel from '@/assets/login/login-label.png'
+import alipayLogo from '@/assets/login/logo-alipay.png'
+import wechatLogo from '@/assets/login/logo-wechat.png'
 import { authService, isValidMobile, isValidSmsCode } from '@/services/auth'
 import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
 import { AppFormScrollView, AppKeyboardAvoidingView } from '@/shared/native'
 import { navigateToAppRoute, navigateToAppRouteAsync } from '@/shared/navigation/appNavigation'
 import { hasValidSession } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { normalizeAppRouteUrlParam } from '@/shared/navigation/routeUrl'
+import { shareWithApp } from '@/shared/platform'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 import type { AppWebSource } from '@/shared/webview/appWeb'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './index.scss'
 import './content.scss'
@@ -196,19 +203,38 @@ const LoginPage = () => {
     })
   }
 
+  const handleBack = () => {
+    Taro.navigateBack({ delta: 1 })
+  }
+
+  const handleShare = () => {
+    void shareWithApp({
+      source: 'LOGIN',
+      title: '德邦快递',
+      description: '德邦快递登录'
+    }).catch(() => undefined)
+  }
+
   return (
     <AppKeyboardAvoidingView>
       <AppFormScrollView className='login-page' scrollY>
         <View className='login-hero'>
-          <View className='login-hero__row'>
-            <Text className='login-hero__title'>德邦快递</Text>
-            <Text className='login-hero__badge'>欢迎登录</Text>
+          <Image className='login-hero__background' mode='scaleToFill' src={loginBackground} />
+          <View className='login-nav'>
+            <AppPressable accessibilityLabel='返回上一页' className='login-nav__back' onPress={handleBack}>
+              <AppIcon color={APP_STYLE_COLORS.text.heading} name='chevronLeft' size={64} />
+            </AppPressable>
+            <AppPressable accessibilityLabel='分享登录页面' className='login-nav__share' onPress={handleShare}>
+              <AppIcon color={APP_STYLE_COLORS.text.heading} name='redo' size={48} />
+              <Text className='login-nav__share-text'>分享</Text>
+            </AppPressable>
           </View>
+          <Image className='login-hero__label' mode='scaleToFill' src={loginLabel} />
           <Text className='login-hero__summary'>登录后即可寄件、查件、领取优惠</Text>
         </View>
 
         <View className='login-card'>
-          <View className='login-field login-field--mobile'>
+          <View className='login-field'>
             <Text className='login-field__prefix'>+86</Text>
             <Input
               className='login-input'
@@ -232,7 +258,7 @@ const LoginPage = () => {
               onInput={event => setSmsCode(event.detail.value.replace(/\D/g, '').slice(0, 6))}
             />
             <AppPressable className='login-code-button' onPress={handleSendSms}>
-              <Text className={canSend ? 'login-code-button__text login-code-button__text--active' : 'login-code-button__text'}>{codeButtonLabel}</Text>
+              <Text className='login-code-button__text'>{codeButtonLabel}</Text>
             </AppPressable>
           </View>
 
@@ -256,8 +282,28 @@ const LoginPage = () => {
           </View>
 
           <AppPressable block className={canSubmit || sessionReady ? 'login-submit' : 'login-submit login-submit--inactive'} onPress={handleSubmit}>
-            <Text className='login-submit__text'>{submitting ? (sessionReady ? '返回中' : '登录中') : sessionReady ? '返回原页面' : '立即登录'}</Text>
+            <Text className={canSubmit || sessionReady ? 'login-submit__text' : 'login-submit__text login-submit__text--inactive'}>
+              {submitting ? (sessionReady ? '返回中' : '登录中') : sessionReady ? '返回原页面' : '立即登录'}
+            </Text>
           </AppPressable>
+
+          {!sessionReady && (
+            <View className='login-other'>
+              <View className='login-other__heading'>
+                <View className='login-other__rule' />
+                <Text className='login-other__title'>其他登录方式</Text>
+                <View className='login-other__rule' />
+              </View>
+              <View className='login-other__options'>
+                <AppPressable accessibilityLabel='微信登录' className='login-other__option' onPress={() => undefined}>
+                  <Image className='login-other__icon' mode='aspectFit' src={wechatLogo} />
+                </AppPressable>
+                <AppPressable accessibilityLabel='支付宝登录' className='login-other__option' onPress={() => undefined}>
+                  <Image className='login-other__icon' mode='aspectFit' src={alipayLogo} />
+                </AppPressable>
+              </View>
+            </View>
+          )}
 
           <AppPressable className='login-secondary' onPress={handleSkip}>
             <Text className='login-secondary__text'>暂不登录</Text>

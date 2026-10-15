@@ -1,6 +1,7 @@
 @use '@/styles/_tokens.scss' as *;
 
 .login-page {
+  flex: 1;
   min-height: 100%;
   background: $dp-color-bg-card;
 }

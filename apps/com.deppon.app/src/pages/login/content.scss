@@ -2,41 +2,75 @@
 @use '@/pages/login/fields.scss';
 
 .login-hero {
-  padding: $dp-space-96 $dp-space-40 $dp-space-96;
+  position: relative;
+  height: $dp-login-hero-height;
+  padding: $dp-login-hero-top $dp-login-card-padding-horizontal $dp-space-0;
   background: $dp-color-brand-faint;
 }
 
-.login-hero__row {
+.login-hero__background {
+  position: absolute;
+  top: $dp-space-0;
+  left: $dp-space-0;
+  /* 百分比宽高会按父级内容盒解析而被 padding 收窄，这里用设计宽度整屏铺满 */
+  width: 750px;
+  height: $dp-login-hero-height;
+}
+
+.login-nav {
+  position: absolute;
+  top: $dp-space-0;
+  left: $dp-space-0;
+  right: $dp-space-0;
+  z-index: $dp-layer-header;
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+  padding: $dp-login-nav-top $dp-space-8 $dp-space-0 $dp-login-nav-side;
 }
 
-.login-hero__title {
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-page-title;
-  font-weight: $dp-font-weight-bold;
+.login-nav__back,
+.login-nav__share {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: $dp-touch-target-min;
+  height: $dp-touch-target-min;
 }
 
-.login-hero__badge {
-  margin-left: $dp-space-16;
-  padding: $dp-space-2 $dp-space-16;
-  color: $dp-color-text-inverse;
-  font-size: $dp-font-size-title;
-  font-weight: $dp-font-weight-bold;
-  background: $dp-color-brand;
-  border-radius: $dp-radius-lg;
+.login-nav__share {
+  flex-direction: column;
+}
+
+.login-nav__share-text {
+  margin-top: $dp-space-4;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-fine;
+}
+
+.login-hero__label {
+  position: relative;
+  z-index: $dp-layer-raised;
+  width: $dp-login-hero-label-width;
+  height: $dp-login-hero-label-height;
 }
 
 .login-hero__summary {
+  position: relative;
+  z-index: $dp-layer-raised;
   margin-top: $dp-space-16;
-  color: $dp-color-text-supporting;
+  color: $dp-login-hero-summary-color;
   font-size: $dp-font-size-body-large;
 }
 
 .login-card {
-  margin-top: -$dp-space-48;
-  padding: $dp-space-48 $dp-space-40 $dp-space-80;
+  position: relative;
+  min-height: $dp-login-card-min-height;
+  margin-top: -$dp-login-card-overlap;
+  padding: $dp-login-card-padding-top $dp-login-card-padding-horizontal $dp-login-card-padding-bottom;
   background: $dp-color-bg-card;
   border-top-left-radius: $dp-radius-48;
   border-top-right-radius: $dp-radius-48;
@@ -46,7 +80,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-top: $dp-space-xl;
+  margin-top: $dp-login-agreement-margin-top;
 }
 
 .login-agreement__checkbox {
@@ -54,11 +88,14 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-color: $dp-color-border;
+  width: $dp-login-agreement-size;
+  height: $dp-login-agreement-size;
+  min-width: $dp-login-agreement-size;
+  min-height: $dp-login-agreement-size;
+  border-color: $dp-color-text-subdued;
   border-radius: $dp-radius-round;
   border-width: 2px;
+  background: $dp-color-bg-card;
 }
 
 .login-agreement__checkbox--checked {
@@ -78,7 +115,7 @@
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  margin-left: $dp-space-xs;
+  margin-left: $dp-space-16;
 }
 
 .login-agreement__text,
@@ -88,11 +125,14 @@
 }
 
 .login-agreement__text {
-  color: $dp-color-text-supporting;
+  color: $dp-color-text-ink;
 }
 
 .login-agreement__link {
-  color: $dp-color-text-heading;
+  /* 生产端协议链接为行内文字触控（行高约 34px），这里跟随生产覆盖默认触控下限。 */
+  min-width: $dp-space-0;
+  min-height: $dp-space-0;
+  color: $dp-color-text-ink;
   font-weight: $dp-font-weight-semibold;
 }
 
@@ -100,31 +140,81 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: $dp-button-height;
-  margin-top: $dp-space-2xl;
+  height: $dp-login-submit-height;
+  margin-top: $dp-login-submit-margin-top;
   background: $dp-color-brand;
-  border-radius: $dp-button-radius;
+  border-radius: $dp-radius-round;
 }
 
 .login-submit--inactive {
-  background: $dp-color-brand-soft;
+  background: $dp-login-submit-inactive-bg;
 }
 
 .login-submit__text {
   color: $dp-color-text-inverse;
-  font-size: $dp-font-size-title;
-  font-weight: $dp-font-weight-bold;
+  font-size: $dp-login-submit-font;
+  font-weight: $dp-font-weight-semibold;
+}
+
+.login-submit__text--inactive {
+  color: $dp-login-submit-inactive-text;
 }
 
 .login-secondary {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 72px;
+  height: $dp-login-secondary-height;
   margin-top: $dp-space-sm;
 }
 
 .login-secondary__text {
   color: $dp-color-text-supporting;
   font-size: $dp-font-size-body;
+}
+
+.login-other {
+  margin-top: $dp-login-other-margin-top;
+}
+
+.login-other__heading,
+.login-other__options {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-other__heading {
+  width: 100%;
+}
+
+.login-other__rule {
+  width: $dp-login-other-rule-width;
+  height: $dp-border-width-hairline;
+  background: $dp-color-border-default;
+}
+
+.login-other__title {
+  margin: $dp-space-0 $dp-space-16;
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body;
+}
+
+.login-other__options {
+  margin-top: $dp-login-other-options-gap;
+}
+
+.login-other__option {
+  width: $dp-login-other-option-size;
+  height: $dp-login-other-option-size;
+  min-width: $dp-login-other-option-size;
+  min-height: $dp-login-other-option-size;
+  margin: $dp-space-0 $dp-login-other-option-gap;
+}
+
+.login-other__icon {
+  width: 100%;
+  height: 100%;
 }

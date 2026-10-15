@@ -4,34 +4,33 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 102px;
-  border-bottom-color: $dp-color-border;
+  height: $dp-login-field-height;
+  /* 生产端字段文字中心比行几何中心低约 13px 设计值 */
+  padding-top: $dp-space-26;
+  border-bottom-color: $dp-login-field-underline;
   border-bottom-width: 1px;
 }
 
-.login-field--mobile {
-  margin-bottom: $dp-space-sm;
-}
-
 .login-field__prefix {
-  width: 96px;
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-title;
+  width: $dp-login-field-prefix-width;
+  padding-left: $dp-space-10;
+  color: $dp-login-field-prefix-color;
+  font-size: $dp-login-field-prefix-font;
   font-weight: $dp-font-weight-semibold;
 }
 
 .login-input {
   flex: 1;
   min-width: 0;
-  height: 80px;
+  height: $dp-login-input-height;
   color: $dp-color-text-heading;
-  font-size: $dp-font-size-title;
-  font-weight: $dp-font-weight-semibold;
+  font-size: $dp-login-field-font;
+  font-weight: $dp-font-weight-regular;
   line-height: $dp-line-height-auth-field;
 }
 
 .login-input__placeholder {
-  color: $dp-color-text-placeholder;
+  color: $dp-color-text-placeholder-soft;
   font-weight: $dp-font-weight-regular;
 }
 
@@ -43,17 +42,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 188px;
+  min-width: $dp-login-code-button-width;
   height: $dp-button-height-compact;
   padding-left: $dp-space-sm;
 }
 
 .login-code-button__text {
-  color: $dp-color-brand-soft;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-semibold;
-}
-
-.login-code-button__text--active {
   color: $dp-color-brand;
+  font-size: $dp-login-code-button-font;
+  font-weight: $dp-font-weight-semibold;
 }
