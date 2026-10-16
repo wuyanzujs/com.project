@@ -149,9 +149,9 @@ const ContactListPage = () => {
           icon: 'none'
         })
       )
-      .catch(() =>
+      .catch(error =>
         Taro.showToast({
-          title: '复制失败，请重试',
+          title: error instanceof Error ? error.message : '复制失败，请重试',
           icon: 'none'
         })
       )
