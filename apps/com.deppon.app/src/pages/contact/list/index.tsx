@@ -3,13 +3,19 @@ import Taro, { useDidShow, useLoad, useRouter } from '@tarojs/taro'
 
 import { useCallback, useMemo, useState } from 'react'
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+
 import { contactSelection, contactService, getContactFullAddress } from '@/services/contact'
 import type { Contact } from '@/services/contact'
+import { maskExpressContactMobile } from '@/services/express'
 import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { copyTextToClipboard } from '@/shared/platform'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import { useContactAddressIntegrity } from '../hooks/useContactAddressIntegrity'
 
@@ -18,9 +24,10 @@ import './content.scss'
 
 const PAGE_SIZE = 20
 
-function getRoleLabel(contact: Contact) {
-  return contact.type === 0 ? '寄件人' : '收件人'
-}
+const PAGE_TITLE_BY_TARGET = {
+  consignee: '选择收件人',
+  sender: '选择寄件人'
+} as const
 
 const ContactListPage = () => {
   const router = useRouter()
@@ -32,7 +39,12 @@ const ContactListPage = () => {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [processingContactId, setProcessingContactId] = useState('')
+  // 生产 App 的「管理」是批量删除态：卡片动作行切换为「选择删除」，底部为「取消/立即删除」。
+  const [deleting, setDeleting] = useState(false)
+  const [deletingIds, setDeletingIds] = useState<string[]>([])
   const { checkingKey, checkAddressIntegrity } = useContactAddressIntegrity()
+  const insets = useSafeAreaInsets()
+  const pageTitle = selectionParams.mode === 'select' ? PAGE_TITLE_BY_TARGET[selectionParams.target] : '地址簿'
   const contactListUrl = useMemo(() => createAppRouteUrl(APP_ROUTES.contactList, selectionParams), [selectionParams])
   const ensureContactAccess = useCallback(
     () =>
@@ -42,14 +54,6 @@ const ContactListPage = () => {
       }),
     [contactListUrl]
   )
-  const selectSummary =
-    selectionParams.source === 'INVOICE_DETAIL'
-      ? '选择后会回填为纸质发票收票地址，请在发票详情页确认后提交。'
-      : selectionParams.source === 'QUERY_PRICE'
-        ? '选择后会回填到价格时效页，并触发对应报价依赖清理。'
-        : selectionParams.source === 'BATCH'
-          ? '选择后会回填为批量寄件发货人。'
-          : '选择后会回填到寄件页，并触发对应报价和取件依赖清理。'
 
   const loadContacts = useCallback(
     async (nextPage = 1, nextKeyword = keyword) => {
@@ -88,6 +92,7 @@ const ContactListPage = () => {
   )
 
   useLoad(() => {
+    Taro.setNavigationBarTitle({ title: pageTitle })
     if (ensureContactAccess()) {
       loadContacts(1)
     }
@@ -134,6 +139,22 @@ const ContactListPage = () => {
 
     contactSelection.setEditingContact(contact)
     navigateToAppRoute(createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams), { login: true })
+  }
+
+  const handleCopy = (contact: Contact) => {
+    copyTextToClipboard([contact.name, contact.telephone, getContactFullAddress(contact)].filter(Boolean).join(' '))
+      .then(() =>
+        Taro.showToast({
+          title: '已复制联系人信息',
+          icon: 'none'
+        })
+      )
+      .catch(() =>
+        Taro.showToast({
+          title: '复制失败，请重试',
+          icon: 'none'
+        })
+      )
   }
 
   const handleSetDefault = async (contact: Contact) => {
@@ -244,84 +265,186 @@ const ContactListPage = () => {
     Taro.navigateBack()
   }
 
+  const exitDeleting = () => {
+    setDeleting(false)
+    setDeletingIds([])
+  }
+
+  const toggleDeletingId = (contact: Contact) => {
+    const key = contact.id || contact.telephone
+
+    setDeletingIds(current => (current.includes(key) ? current.filter(item => item !== key) : [...current, key]))
+  }
+
+  const handleBatchDelete = async () => {
+    if (!deletingIds.length) {
+      Taro.showToast({
+        title: '请先勾选要删除的地址',
+        icon: 'none'
+      })
+      return
+    }
+
+    if (processingContactId) {
+      return
+    }
+
+    const modal = await Taro.showModal({
+      title: '批量删除地址',
+      content: `确定删除选中的 ${deletingIds.length} 个地址吗？`,
+      confirmText: '删除',
+      cancelText: '取消'
+    })
+
+    if (!modal.confirm) {
+      return
+    }
+
+    setProcessingContactId('batch')
+
+    try {
+      const targets = contacts.filter(item => deletingIds.includes(item.id || item.telephone))
+      const results = await Promise.all(targets.map(item => contactService.remove(item.id || '')))
+      const failedCount = results.filter(item => !item.status).length
+
+      if (failedCount) {
+        Taro.showToast({
+          title: `${results.length - failedCount} 个已删除，${failedCount} 个失败`,
+          icon: 'none'
+        })
+      } else {
+        Taro.showToast({
+          title: '已删除地址',
+          icon: 'none'
+        })
+      }
+
+      exitDeleting()
+      loadContacts(1)
+    } finally {
+      setProcessingContactId('')
+    }
+  }
+
   return (
-    <ScrollView className='contact-list-page' onScrollToLower={handleLoadMore} scrollY>
-      {selectionParams.mode === 'select' && (
-        <View className='contact-list-selection'>
-          <Text className='contact-list-selection__text'>{selectSummary}</Text>
+    <View className='contact-list-page'>
+      <ScrollView className='contact-list-scroll' onScrollToLower={handleLoadMore} scrollY>
+        <View className='contact-list-search'>
+          <View className='contact-list-search__field'>
+            <View className='contact-list-search__icon'>
+              <AppIcon color={APP_STYLE_COLORS.text.subdued} name='search' size={24} strokeWidth={2.4} />
+            </View>
+            <Input
+              className='contact-list-search__input'
+              confirmType='search'
+              onConfirm={handleSearch}
+              onInput={event => setKeyword(event.detail.value)}
+              placeholder='请输入姓名/手机号/地址/公司名称'
+              placeholderTextColor={APP_STYLE_COLORS.text.subdued}
+              value={keyword}
+            />
+          </View>
         </View>
-      )}
 
-      <View className='contact-list-search'>
-        <Input className='contact-list-search__input' placeholder='姓名、手机号、地址' value={keyword} onInput={event => setKeyword(event.detail.value)} />
-        <AppPressable className='contact-list-search__button' onPress={handleSearch}>
-          <Text className='contact-list-search__button-text'>搜索</Text>
-        </AppPressable>
-      </View>
+        <View className='contact-list-body'>
+          {contacts.map(contact => {
+            const contactKey = contact.id || contact.telephone
+            const checked = contact.defaultAddress === '1'
+            const selected = deletingIds.includes(contactKey)
 
-      <View className='contact-list-toolbar'>
-        <Text className='contact-list-toolbar__title'>常用地址</Text>
-        <AppPressable className='contact-list-toolbar__button' onPress={handleCreate}>
-          <Text className='contact-list-toolbar__button-text'>新增</Text>
-        </AppPressable>
-      </View>
-
-      <View className='contact-list-content'>
-        {contacts.map(contact => (
-          <View className='contact-card' key={contact.id || contact.telephone}>
-            <AppPressable className='contact-card__body' disabled={selectionParams.mode === 'select' && !!checkingKey} onPress={() => handleSelect(contact)}>
-              <View className='contact-card__top'>
-                <Text className='contact-card__name'>{contact.name}</Text>
-                <Text className='contact-card__phone'>{contact.telephone}</Text>
-              </View>
-              <Text className='contact-card__address'>{getContactFullAddress(contact)}</Text>
-              <View className='contact-card__meta'>
-                <Text className='contact-card__tag'>{getRoleLabel(contact)}</Text>
-                {contact.defaultAddress === '1' && <Text className='contact-card__tag contact-card__tag--primary'>默认</Text>}
-              </View>
-            </AppPressable>
-            <View className='contact-card__footer'>
-              {selectionParams.mode === 'manage' && (
+            return (
+              <View className='contact-card' key={contactKey}>
                 <AppPressable
-                  contentElement='text'
-                  className={contact.defaultAddress === '1' ? 'contact-card__action contact-card__action--disabled' : 'contact-card__action'}
-                  onPress={() => handleSetDefault(contact)}
-                >
-                  {contact.defaultAddress === '1' ? '默认地址' : '设为默认'}
-                </AppPressable>
-              )}
-              <AppPressable contentElement='text' className='contact-card__action' onPress={() => handleEdit(contact)}>
-                编辑
-              </AppPressable>
-              {selectionParams.mode === 'manage' && (
-                <AppPressable contentElement='text' className='contact-card__action contact-card__action--danger' onPress={() => handleDelete(contact)}>
-                  删除
-                </AppPressable>
-              )}
-              {selectionParams.mode === 'select' && (
-                <AppPressable
-                  contentElement='text'
-                  className='contact-card__action contact-card__action--primary'
-                  disabled={!!checkingKey}
+                  block
+                  className='contact-card__body'
+                  disabled={deleting || (selectionParams.mode === 'select' && !!checkingKey)}
+                  layout='column-start'
                   onPress={() => handleSelect(contact)}
                 >
-                  {checkingKey === (contact.id || `${contact.telephone}-${contact.address}`) ? '校验中' : '选择'}
+                  <View className='contact-card__identity'>
+                    <Text className='contact-card__name' numberOfLines={1}>
+                      {contact.name}
+                    </Text>
+                    <Text className='contact-card__phone'>{maskExpressContactMobile(contact.telephone)}</Text>
+                  </View>
+                  <Text className='contact-card__address'>{getContactFullAddress(contact)}</Text>
                 </AppPressable>
-              )}
+                <View className='contact-card__divider' />
+                <View className='contact-card__footer'>
+                  {deleting ? (
+                    <AppPressable className='contact-card__default' layout='row-start' onPress={() => toggleDeletingId(contact)}>
+                      <View className={selected ? 'contact-card__radio contact-card__radio--checked' : 'contact-card__radio'}>
+                        {selected && <AppIcon color={APP_STYLE_COLORS.text.inverse} name='check' size={24} strokeWidth={3.2} />}
+                      </View>
+                      <Text className='contact-card__default-label'>选择删除</Text>
+                    </AppPressable>
+                  ) : (
+                    <>
+                      <AppPressable className='contact-card__default' layout='row-start' onPress={() => handleSetDefault(contact)}>
+                        <View className={checked ? 'contact-card__radio contact-card__radio--checked' : 'contact-card__radio'}>
+                          {checked && <AppIcon color={APP_STYLE_COLORS.text.inverse} name='check' size={24} strokeWidth={3.2} />}
+                        </View>
+                        <Text className='contact-card__default-label'>默认地址</Text>
+                      </AppPressable>
+                      <View className='contact-card__actions'>
+                        <AppPressable className='contact-card__action' layout='row-start' onPress={() => handleCopy(contact)}>
+                          <AppIcon color={APP_STYLE_COLORS.text.neutral} name='copy' size={22} />
+                          <Text className='contact-card__action-text'>复制</Text>
+                        </AppPressable>
+                        <AppPressable className='contact-card__action' layout='row-start' onPress={() => handleEdit(contact)}>
+                          <AppIcon color={APP_STYLE_COLORS.text.neutral} name='edit' size={22} />
+                          <Text className='contact-card__action-text'>编辑</Text>
+                        </AppPressable>
+                        <AppPressable className='contact-card__action' layout='row-start' onPress={() => handleDelete(contact)}>
+                          <AppIcon color={APP_STYLE_COLORS.text.neutral} name='trash' size={22} />
+                          <Text className='contact-card__action-text'>删除</Text>
+                        </AppPressable>
+                      </View>
+                    </>
+                  )}
+                </View>
+              </View>
+            )
+          })}
+
+          {!contacts.length && !loading && (
+            <View className='contact-list-empty'>
+              <Text className='contact-list-empty__title'>{errorMessage || '暂无地址'}</Text>
+              <Text className='contact-list-empty__summary'>可先新增地址，或登录后同步常用地址簿。</Text>
             </View>
-          </View>
-        ))}
+          )}
 
-        {!contacts.length && !loading && (
-          <View className='contact-list-empty'>
-            <Text className='contact-list-empty__title'>{errorMessage || '暂无地址'}</Text>
-            <Text className='contact-list-empty__summary'>可先新增地址，或登录后同步常用地址簿。</Text>
-          </View>
+          {loading && <Text className='contact-list-loading'>{contacts.length ? '加载更多地址...' : '正在加载地址...'}</Text>}
+        </View>
+      </ScrollView>
+
+      <View className='contact-list-footer' style={{ paddingBottom: insets.bottom + 16 }}>
+        {deleting ? (
+          <>
+            <AppPressable contentElement='text' className='contact-list-footer__button contact-list-footer__button--ghost' onPress={exitDeleting}>
+              取消
+            </AppPressable>
+            <AppPressable
+              contentElement='text'
+              className='contact-list-footer__button contact-list-footer__button--danger'
+              disabled={processingContactId === 'batch'}
+              onPress={handleBatchDelete}
+            >
+              立即删除
+            </AppPressable>
+          </>
+        ) : (
+          <>
+            <AppPressable contentElement='text' className='contact-list-footer__button contact-list-footer__button--ghost' onPress={() => setDeleting(true)}>
+              管理
+            </AppPressable>
+            <AppPressable contentElement='text' className='contact-list-footer__button contact-list-footer__button--primary' onPress={handleCreate}>
+              创建新地址
+            </AppPressable>
+          </>
         )}
-
-        {loading && <Text className='contact-list-loading'>{contacts.length ? '加载更多地址...' : '正在加载地址...'}</Text>}
       </View>
-    </ScrollView>
+    </View>
   )
 }
 

@@ -1,6 +1,10 @@
 @use '@/styles/_tokens.scss' as *;
 
 .contact-list-page {
-  min-height: 100%;
-  background: $dp-color-bg-page;
+  flex: 1;
+  background: $dp-color-bg-page-alt;
+}
+
+.contact-list-scroll {
+  flex: 1;
 }

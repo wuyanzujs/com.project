@@ -162,9 +162,9 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
-        "rawSpaces": 22,
+        "rawSpaces": 3,
         "usesTokens": true,
-        "lines": 222
+        "lines": 202
       },
       "src/pages/contact/list/index.scss": {
         "rawColors": 0,
@@ -174,7 +174,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 6
+        "lines": 10
       },
       "src/pages/coupon/detail/content.scss": {
         "rawColors": 0,
@@ -1094,7 +1094,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 8,
         "usesTokens": true,
-        "lines": 169
+        "lines": 178
       },
       "src/pages/mine/components/MineOrderShortcuts/index.scss": {
         "rawColors": 0,
@@ -2234,7 +2234,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 66
+        "lines": 73
       }
     }
   },
