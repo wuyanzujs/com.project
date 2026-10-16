@@ -372,9 +372,9 @@ function findComponents(mask, width, height, minArea) {
   return components
 }
 
-// 组件局部配准：在组件邻域内搜索使 A 与 B 最一致的 (mx,my)，即 B 需局部移动的量；
+// 组件局部配准：先应用全局位移，再在组件邻域内搜索 B 需要额外移动的 (mx,my)；
 // 并以残差比判定是「整体位移」还是「内容差异」。
-function alignComponent(refLuma, refW, actLuma, actW, actH, comp, overlap, radius) {
+function alignComponent(refLuma, refW, actLuma, actW, actH, comp, overlap, globalMove, radius) {
   const x0 = Math.max(overlap.xStart, comp.x0 - 8)
   const x1 = Math.min(overlap.xEnd, comp.x1 + 8)
   const y0 = Math.max(overlap.yStart, comp.y0 - 8)
@@ -385,12 +385,12 @@ function alignComponent(refLuma, refW, actLuma, actW, actH, comp, overlap, radiu
     let sum = 0
     let count = 0
     for (let y = y0; y < y1; y += step) {
-      const yb = y - my
+      const yb = y - globalMove.dy - my
       if (yb < 0 || yb >= actH) continue
       const ra = y * refW
       const rb = yb * actW
       for (let x = x0; x < x1; x += step) {
-        const xb = x - mx
+        const xb = x - globalMove.dx - mx
         if (xb < 0 || xb >= actW) continue
         const diff = refLuma[ra + x] - actLuma[rb + xb]
         sum += diff < 0 ? -diff : diff
@@ -463,7 +463,7 @@ function drawRects(width, height, rgba, components, color, thickness = 2) {
 // 把 B 按全局位移贴到 A 的画布上，未覆盖区域填中灰，便于直观看出配准后的差异组件位置。
 function buildAlignedActual(act, refW, refH, move) {
   const rgba = new Uint8Array(refW * refH * 4).fill(128)
-  rgba.fill(255, 3)
+  for (let i = 3; i < rgba.length; i += 4) rgba[i] = 255
   for (let y = 0; y < act.height; y++) {
     const ty = y + move.dy
     if (ty < 0 || ty >= refH) continue
@@ -566,7 +566,7 @@ function main() {
 
   const listed = components.slice(0, options.top)
   for (const comp of listed) {
-    const result = alignComponent(refLuma, ref.width, actLuma, act.width, act.height, comp, diff, options.localShift)
+    const result = alignComponent(refLuma, ref.width, actLuma, act.width, act.height, comp, diff, move, options.localShift)
     if (result) {
       comp.move = result.move
       comp.matchRatio = result.matchRatio
@@ -578,7 +578,7 @@ function main() {
     }
   }
 
-  console.log(`[组件] 列出差异像素前 ${listed.length} 个（move = 该组件区域 B 需移动的量）：`)
+  console.log(`[组件] 列出差异像素前 ${listed.length} 个（move = 全局对齐后该组件区域 B 需额外移动的量）：`)
   for (let i = 0; i < listed.length; i++) {
     const comp = listed[i]
     const size = `${comp.x1 - comp.x0}x${comp.y1 - comp.y0}`
