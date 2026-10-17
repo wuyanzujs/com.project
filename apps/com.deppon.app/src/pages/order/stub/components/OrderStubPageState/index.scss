@@ -10,7 +10,7 @@
 
 .order-stub-empty {
   align-items: center;
-  margin: $dp-section-gap $dp-page-horizontal-padding 0;
+  margin: $dp-section-gap $dp-page-horizontal-padding $dp-space-0;
   padding: $dp-card-padding;
   background: $dp-color-bg-card;
   border-radius: $dp-radius-card;
@@ -29,7 +29,7 @@
   justify-content: center;
   height: $dp-line-height-option;
   margin-top: $dp-space-lg;
-  padding: 0 $dp-space-28;
+  padding: $dp-space-0 $dp-space-28;
   background: $dp-color-bg-inverse;
   border-radius: $dp-radius-control;
 }

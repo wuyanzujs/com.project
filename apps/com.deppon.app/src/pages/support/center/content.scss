@@ -1,38 +1,26 @@
 @use '@/styles/_tokens.scss' as *;
+@use '@/styles/_page-patterns.scss' as patterns;
+
 .support-header {
-  padding: 32px 24px 24px;
-  background: $dp-color-bg-card;
+  @include patterns.page-header-container;
 }
 
 .support-header__label {
-  color: $dp-color-brand;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-bold;
+  @include patterns.page-header-label;
 }
 
 .support-header__title {
-  display: flex;
-  margin-top: 12px;
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-page-title;
-  font-weight: $dp-font-weight-bold;
+  @include patterns.page-header-title;
 }
 
 .support-header__summary {
-  display: flex;
-  margin-top: 14px;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-body-large;
-  line-height: $dp-line-height-body-large;
+  @include patterns.page-header-summary;
 }
 
 .support-card,
 .support-section,
 .support-footer {
-  margin: 20px 24px 0;
-  padding: 24px;
-  background: $dp-color-bg-card;
-  border-radius: $dp-radius-sm;
+  @include patterns.page-surface;
 }
 
 .support-card--hotline {
@@ -50,7 +38,7 @@
 
 .support-card__title {
   display: flex;
-  margin-top: 8px;
+  margin-top: $dp-space-8;
   color: $dp-color-text-inverse;
   font-size: $dp-font-size-page-title;
   font-weight: $dp-font-weight-bold;
@@ -59,7 +47,7 @@
 .support-card__summary {
   display: flex;
   max-width: 440px;
-  margin-top: 12px;
+  margin-top: $dp-space-xs;
   color: $dp-color-text-disabled;
   font-size: $dp-font-size-body-small;
   line-height: $dp-line-height-body-small;
@@ -71,7 +59,7 @@
   justify-content: center;
   min-width: 128px;
   height: 60px;
-  padding: 0 20px;
+  padding: $dp-space-0 $dp-space-md;
   background: $dp-color-brand;
   border-radius: $dp-radius-sm;
 }
@@ -88,7 +76,7 @@
 }
 
 .support-section__head {
-  padding-bottom: 6px;
+  padding-bottom: $dp-space-6;
 }
 
 .support-section__title,
@@ -101,7 +89,7 @@
 .support-section__summary,
 .support-footer__summary {
   display: flex;
-  margin-top: 8px;
+  margin-top: $dp-space-8;
   color: $dp-color-text-supporting;
   font-size: $dp-font-size-body-small;
   line-height: $dp-line-height-body-small;
@@ -116,7 +104,7 @@
 .support-entry {
   align-items: center;
   min-height: 112px;
-  padding: 18px 0;
+  padding: $dp-space-18 $dp-space-0;
   border-bottom-color: $dp-color-border-light;
   border-bottom-width: 1px;
 }
@@ -126,7 +114,7 @@
   justify-content: center;
   width: 56px;
   height: 56px;
-  margin-right: 18px;
+  margin-right: $dp-space-18;
   border-radius: $dp-radius-mark-large;
   font-size: $dp-font-size-label-small;
   font-weight: $dp-font-weight-bold;
@@ -168,8 +156,8 @@
 }
 
 .support-entry__badge {
-  padding: 5px 12px;
-  margin-left: 12px;
+  padding: $dp-space-5 $dp-space-xs;
+  margin-left: $dp-space-xs;
   color: $dp-color-brand;
   background: $dp-color-brand-soft;
   border-radius: $dp-radius-sm;
@@ -179,14 +167,14 @@
 
 .support-entry__summary {
   display: flex;
-  margin-top: 8px;
+  margin-top: $dp-space-8;
   color: $dp-color-text-supporting;
   font-size: $dp-font-size-body-small;
   line-height: $dp-line-height-body-small;
 }
 
 .support-entry__arrow {
-  margin-left: 14px;
+  margin-left: $dp-space-14;
   color: $dp-color-text-placeholder;
   font-size: $dp-font-size-heading-large;
 }
@@ -196,5 +184,5 @@
 }
 
 .support-footer__button {
-  margin-top: 20px;
+  margin-top: $dp-space-md;
 }

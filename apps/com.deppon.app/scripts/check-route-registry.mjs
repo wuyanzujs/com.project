@@ -38,6 +38,7 @@ function getRouteDefinitions() {
         name,
         path: pagePath,
         main: /main:\s*true/.test(block),
+        mainOrder: Number(block.match(/mainOrder:\s*(\d+)/)?.[1] ?? NaN),
         loginRequired: /loginRequired:\s*true/.test(block)
       }
     })
@@ -78,11 +79,26 @@ function checkRouteDefinitions(routes) {
     }
   }
 
-  const mainRouteNames = routes.filter(item => item.main).map(item => item.name)
-  const expectedMainRoutes = ['home', 'orderList', 'memberCenter', 'mine']
+  const mainRoutes = routes.filter(item => item.main)
+  const mainOrders = mainRoutes.map(item => item.mainOrder)
+  const expectedOrders = Array.from({ length: mainRoutes.length }, (_, index) => index)
+  const requiredMainRouteNames = ['home', 'orderList', 'memberCenter', 'mine']
 
-  if (mainRouteNames.join(',') !== expectedMainRoutes.join(',')) {
-    addViolation(`主导航必须保持 ${expectedMainRoutes.join(', ')}，当前为 ${mainRouteNames.join(', ')}。`)
+  if (mainRoutes.length < 2) {
+    addViolation('routeRegistry.ts 至少需要声明两个主导航路由。')
+  }
+
+  const mainRouteNames = new Set(mainRoutes.map(item => item.name))
+  const missingMainRoutes = requiredMainRouteNames.filter(name => !mainRouteNames.has(name))
+
+  if (missingMainRoutes.length) {
+    addViolation(`主导航缺少固定入口：${missingMainRoutes.join(', ')}。`)
+  }
+
+  if (mainRoutes.some(item => !Number.isInteger(item.mainOrder))) {
+    addViolation('每个 main 路由都必须声明整数 mainOrder。')
+  } else if (hasDuplicate(mainOrders) || [...mainOrders].sort((left, right) => left - right).join(',') !== expectedOrders.join(',')) {
+    addViolation(`主导航 mainOrder 必须从 0 开始连续递增，当前为 ${mainOrders.join(', ')}。`)
   }
 
   if (!routes.some(item => item.name === 'login')) {

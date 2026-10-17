@@ -465,6 +465,18 @@ test('analyzeStyleContent does not treat zero spacing as literals', () => {
   assert.equal(metrics.rawSpaces, 0)
 })
 
+test('analyzeStyleContent accepts spacing tokens used by shared Sass patterns', () => {
+  const metrics = analyzeStyleContent(`
+    @use '../../styles/tokens' as *;
+    @mixin page-surface($bottom: $dp-space-0) {
+      margin: $dp-space-md $dp-page-horizontal-padding $bottom;
+      padding: $dp-card-padding;
+    }
+  `)
+
+  assert.equal(metrics.rawSpaces, 0)
+})
+
 test('analyzeStyleContent does not treat semantic font-weight tokens as literals', () => {
   const metrics = analyzeStyleContent(`
     @use '../../styles/tokens' as *;
@@ -1414,6 +1426,21 @@ test('baseline evolution allows a new strict zero-debt file', () => {
   assert.equal(compareBaselineEvolution(current, previous).ok, true)
 })
 
+test('new style files cannot introduce spacing debt', () => {
+  const previous = baseline(snapshot())
+  const current = snapshot()
+  current.scss.files['src/pages/new/index.scss'] = cleanStyle({ rawSpaces: 1 })
+  const currentBaseline = baseline(current)
+
+  const evolution = compareBaselineEvolution(currentBaseline, previous)
+  const update = createNextBaseline(current, previous)
+
+  assert.equal(evolution.ok, false)
+  assert.match(evolution.failures.join('\n'), /新增基线文件.*严格零债务规则/)
+  assert.equal(update.ok, false)
+  assert.match(update.failures.join('\n'), /新增文件.*严格零债务规则/)
+})
+
 test('strict comparison requires zero debt and applies file budgets', () => {
   const current = snapshot({
     scss: {
@@ -1499,12 +1526,20 @@ test('CLI default, strict, report and invalid modes expose stable exit codes', t
       .example { color: #16181a; }
     `
   })
+  const spacingFixture = createCliFixture(t, {
+    'src/pages/example/index.scss': `
+      @use '../../styles/tokens' as *;
+      .example { padding: 24px; }
+    `
+  })
 
   assert.equal(runCli(cleanFixture).status, 0)
   assert.equal(runCli(cleanFixture, ['--strict']).status, 0)
   assert.equal(runCli(debtFixture).status, 0)
   assert.equal(runCli(debtFixture, ['--strict']).status, 1)
   assert.equal(runCli(debtFixture, ['--report']).status, 0)
+  assert.match(runCli(spacingFixture, ['--report']).stdout, /核心 CSS 治理目标已满足.*间距仍有 1 处存量债务/)
+  assert.match(runCli(cleanFixture, ['--strict']).stdout, /严格门禁通过/)
   assert.equal(runCli(cleanFixture, ['--invalid']).status, 1)
 })
 

@@ -9,7 +9,7 @@
 .print-list-status-tabs {
   display: flex;
   flex-direction: row;
-  padding: $dp-space-md $dp-page-horizontal-padding 0;
+  padding: $dp-space-md $dp-page-horizontal-padding $dp-space-0;
 }
 
 .print-list-status-tab {
@@ -51,7 +51,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: $dp-space-md $dp-page-horizontal-padding 0;
+  padding: $dp-space-md $dp-page-horizontal-padding $dp-space-0;
 }
 
 .print-list-range-title,
@@ -75,7 +75,7 @@
 .print-list-range-options {
   display: flex;
   flex-direction: row;
-  padding: 0 $dp-page-horizontal-padding;
+  padding: $dp-space-0 $dp-page-horizontal-padding;
 }
 
 .print-list-range-option {
@@ -107,7 +107,7 @@
 
 .print-list-count-warning {
   display: flex;
-  padding: $dp-space-xs $dp-page-horizontal-padding 0;
+  padding: $dp-space-xs $dp-page-horizontal-padding $dp-space-0;
   color: $dp-color-warning-text;
   font-size: $dp-font-size-caption;
 }

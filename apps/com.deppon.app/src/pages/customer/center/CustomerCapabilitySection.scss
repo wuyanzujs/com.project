@@ -1,7 +1,7 @@
 @use '@/styles/_tokens.scss' as *;
 
 .customer-capability {
-  margin: $dp-space-md $dp-space-lg 0;
+  margin: $dp-space-md $dp-space-lg $dp-space-0;
   padding: $dp-card-padding;
   background: $dp-color-bg-card;
   border-radius: $dp-radius-sm;

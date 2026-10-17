@@ -97,7 +97,7 @@
   justify-content: center;
   width: 128px;
   height: $dp-touch-target-min;
-  margin: 0 $dp-space-8;
+  margin: $dp-space-0 $dp-space-8;
   background: $dp-color-bg-muted;
   border-radius: $dp-radius-sm;
 }

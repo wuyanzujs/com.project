@@ -1,7 +1,7 @@
 @use '@/styles/_tokens.scss' as *;
 
 .order-stub-card {
-  margin: $dp-section-gap $dp-page-horizontal-padding 0;
+  margin: $dp-section-gap $dp-page-horizontal-padding $dp-space-0;
   padding: $dp-card-padding;
   background: $dp-color-bg-card;
   border-radius: $dp-radius-card;
@@ -48,7 +48,7 @@
   align-items: center;
   justify-content: center;
   margin-top: $dp-space-28;
-  padding: 26px $dp-space-18 $dp-space-22;
+  padding: $dp-space-26 $dp-space-18 $dp-space-22;
   background: $dp-color-bg-subtle;
   border-radius: $dp-radius-control;
 }
@@ -95,6 +95,6 @@
 
 .order-stub-divider {
   height: $dp-border-width-hairline;
-  margin: 26px 0 $dp-space-8;
+  margin: $dp-space-26 $dp-space-0 $dp-space-8;
   background: $dp-color-bg-disabled-strong;
 }

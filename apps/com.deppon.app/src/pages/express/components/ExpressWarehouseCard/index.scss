@@ -65,8 +65,8 @@
 
 .express-warehouse__tool {
   min-height: $dp-control-height-compact;
-  padding: 0 $dp-space-14;
-  margin: 0 $dp-space-8 $dp-space-8 0;
+  padding: $dp-space-0 $dp-space-14;
+  margin: $dp-space-0 $dp-space-8 $dp-space-8 $dp-space-0;
   background: $dp-color-bg-subtle;
   border-color: $dp-color-border-default;
   border-radius: $dp-radius-sm;
@@ -115,7 +115,7 @@
 .express-warehouse__appointment {
   min-width: $dp-control-height-medium;
   min-height: $dp-control-height-compact;
-  padding: 0 $dp-space-8;
+  padding: $dp-space-0 $dp-space-8;
   margin-left: $dp-space-12;
 }
 

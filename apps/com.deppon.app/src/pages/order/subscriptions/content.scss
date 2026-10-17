@@ -50,7 +50,7 @@
 .subscriptions-toolbar {
   align-items: center;
   justify-content: space-between;
-  margin: $dp-space-md $dp-space-lg 0;
+  margin: $dp-space-md $dp-space-lg $dp-space-0;
 }
 
 .subscriptions-toolbar__summary {
@@ -82,7 +82,7 @@
 }
 
 .subscriptions-content {
-  padding: 0 $dp-space-lg;
+  padding: $dp-space-0 $dp-space-lg;
 }
 
 .subscription-card {
@@ -108,7 +108,7 @@
 }
 
 .subscription-card__type {
-  padding: 6px $dp-space-xs;
+  padding: $dp-space-6 $dp-space-xs;
   color: $dp-color-text-secondary;
   background: $dp-color-bg-muted;
   border-radius: $dp-radius-sm;
@@ -143,7 +143,7 @@
 }
 
 .subscription-card__arrow {
-  margin: 0 $dp-space-lg;
+  margin: $dp-space-0 $dp-space-lg;
   color: $dp-color-text-muted;
   font-size: $dp-font-size-title;
 }
@@ -168,13 +168,13 @@
 
 .subscription-card__actions {
   justify-content: flex-end;
-  padding: 0 $dp-card-padding $dp-card-padding;
+  padding: $dp-space-0 $dp-card-padding $dp-card-padding;
 }
 
 .subscription-card__button {
   min-width: 150px;
   height: 62px;
-  padding: 0 $dp-space-sm;
+  padding: $dp-space-0 $dp-space-sm;
   margin-left: $dp-space-xs;
 }
 

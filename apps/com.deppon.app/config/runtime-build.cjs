@@ -44,6 +44,10 @@ const URL_ENV_VARS = ['APP_API_BASE_URL', 'APP_WEB_BASE_URL', 'APP_SERVICE_WEB_U
 
 const PRODUCTION_FORBIDDEN_HOST_MARKERS = ['owstest', 'osstest', 'mastest', 'matest']
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 function getEnvValue(env, name) {
   const value = env[name]
 
@@ -74,7 +78,11 @@ function getAllowedHosts(env) {
 function isForbiddenProductionHost(hostname) {
   const normalized = hostname.toLowerCase()
 
-  return PRODUCTION_FORBIDDEN_HOST_MARKERS.some(marker => normalized.includes(marker))
+  return PRODUCTION_FORBIDDEN_HOST_MARKERS.some(marker => new RegExp(`(?:^|[.-])${escapeRegExp(marker)}(?:[.-]|$)`, 'i').test(normalized))
+}
+
+function isValidHostname(hostname) {
+  return hostname.length <= 253 && hostname.split('.').every(label => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(label))
 }
 
 function hasTokenLikeQueryParam(parsed) {
@@ -129,7 +137,7 @@ function validateRuntimeEnvironment(env = process.env) {
   const allowedHosts = getAllowedHosts(env)
 
   for (const host of allowedHosts) {
-    if (!/^[a-z0-9.-]+$/i.test(host)) {
+    if (!isValidHostname(host)) {
       violations.push(`APP_WEB_ALLOWED_HOSTS 包含非法 host：${host}`)
     }
 

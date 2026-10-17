@@ -1,7 +1,7 @@
 @use '@/styles/_tokens.scss' as *;
 
 .print-list-state {
-  padding: $dp-space-sm 0 $dp-space-xl;
+  padding: $dp-space-sm $dp-space-0 $dp-space-xl;
 }
 
 .print-list-inline-error {

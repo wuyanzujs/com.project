@@ -2,10 +2,11 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 // 行数上限是代码里的政策常量，基线只能引用不超过它的值；
-// 已超上限的存量文件冻结在基线行数，只能收缩。
+// 已超上限的存量文件冻结在基线行数，只能收缩。页面入口比业务组件更
+// 容易积累编排和视觉细节，因此给新文件设置更低的默认上限。
 export const DEFAULT_STYLE_LIMITS = Object.freeze({
-  pageScssLines: 500,
-  componentScssLines: 500
+  pageScssLines: 300,
+  componentScssLines: 240
 })
 
 const STYLE_DEBT_FIELDS = [
@@ -1666,14 +1667,14 @@ const getLineAllowance = (file, limits, baselineLines) => Math.max(getLineLimit(
 
 const requiresTokenUsage = file => file !== 'src/app.scss'
 
-// rawSpaces 是新增的存量维度，当前 898 处间距字面量尚未清零。
-// strict 门禁暂只要求前 5 个已清零维度归零；间距走 daily 只降不增，
-// 待存量清零后再纳入 strict 判定。
+// 旧文件的间距债务先走 daily 只降不增，避免一次性改动所有业务页面。
+// 新文件必须从第一天开始使用 spacing token，不能继续制造新的间距债务。
 const STRICT_STYLE_FIELDS = STYLE_DEBT_FIELDS.filter(([field]) => field !== 'rawSpaces')
+const NEW_FILE_STRICT_STYLE_FIELDS = STYLE_DEBT_FIELDS
 
 const isStrictStyle = (file, metrics, limits) =>
   (!requiresTokenUsage(file) || metrics.usesTokens) &&
-  STRICT_STYLE_FIELDS.every(([field]) => metrics[field] === 0) &&
+  NEW_FILE_STRICT_STYLE_FIELDS.every(([field]) => metrics[field] === 0) &&
   metrics.lines <= getLineLimit(file, limits)
 
 const itemKey = item =>

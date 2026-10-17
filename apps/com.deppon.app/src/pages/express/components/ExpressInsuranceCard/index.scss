@@ -63,7 +63,7 @@
 }
 
 .express-insurance-option__badge {
-  padding: 0 $dp-space-6;
+  padding: $dp-space-0 $dp-space-6;
   margin-left: $dp-space-4;
   color: $dp-color-warning-text;
   font-size: $dp-font-size-micro;
@@ -94,7 +94,7 @@
   flex-direction: row;
   align-items: center;
   min-height: $dp-control-height-default;
-  padding: 0 $dp-space-20;
+  padding: $dp-space-0 $dp-space-20;
   margin-top: $dp-space-12;
   background: $dp-color-bg-subtle;
   border-radius: $dp-radius-control;
@@ -136,7 +136,7 @@
 .express-insurance__action {
   min-width: $dp-space-96;
   min-height: $dp-touch-target-min;
-  padding: 0 $dp-space-16;
+  padding: $dp-space-0 $dp-space-16;
   border-color: $dp-color-border;
   border-width: $dp-border-width-hairline;
   border-radius: $dp-radius-control;

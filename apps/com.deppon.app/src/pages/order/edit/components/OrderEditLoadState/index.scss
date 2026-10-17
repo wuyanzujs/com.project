@@ -3,7 +3,7 @@
 .order-edit-loading {
   display: flex;
   justify-content: center;
-  margin: $dp-space-xl $dp-space-lg 0;
+  margin: $dp-space-xl $dp-space-lg $dp-space-0;
   color: $dp-color-text-secondary;
   font-size: $dp-font-size-body-large;
   line-height: $dp-line-height-body-large;
@@ -13,7 +13,7 @@
   align-items: center;
   justify-content: center;
   min-height: 320px;
-  margin: $dp-space-md $dp-space-lg 0;
+  margin: $dp-space-md $dp-space-lg $dp-space-0;
   padding: $dp-card-padding;
   background: $dp-color-bg-card;
   border-radius: $dp-radius-sm;

@@ -37,7 +37,7 @@
 .query-dispatch-section,
 .query-dispatch-results,
 .query-dispatch-message {
-  margin: $dp-space-md $dp-page-horizontal-padding 0;
+  margin: $dp-space-md $dp-page-horizontal-padding $dp-space-0;
   padding: $dp-card-padding;
   background: $dp-color-bg-card;
   border-radius: $dp-card-radius;
@@ -101,7 +101,7 @@
   align-items: center;
   justify-content: center;
   height: 80px;
-  margin: $dp-space-md $dp-page-horizontal-padding 0;
+  margin: $dp-space-md $dp-page-horizontal-padding $dp-space-0;
   background: $dp-color-brand;
   border-radius: $dp-button-radius;
 }

@@ -1,7 +1,7 @@
 @use '@/styles/_tokens.scss' as *;
 
 .order-stub-notice {
-  margin: $dp-section-gap $dp-page-horizontal-padding 0;
+  margin: $dp-section-gap $dp-page-horizontal-padding $dp-space-0;
   padding: $dp-card-padding;
   background: $dp-color-bg-card;
   border-color: $dp-color-info-border-soft;

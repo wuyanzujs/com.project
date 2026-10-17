@@ -2,7 +2,7 @@
 .app-button {
   display: flex;
   flex-direction: row;
-  padding: 0 $dp-space-lg;
+  padding: $dp-space-0 $dp-space-lg;
   border-radius: $dp-button-radius;
 }
 .app-button--default {

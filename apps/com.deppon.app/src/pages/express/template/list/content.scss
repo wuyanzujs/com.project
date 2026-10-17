@@ -44,7 +44,7 @@
 .template-list-toolbar {
   align-items: center;
   justify-content: space-between;
-  margin: $dp-space-md $dp-space-lg 0;
+  margin: $dp-space-md $dp-space-lg $dp-space-0;
 }
 
 .template-list-toolbar__summary {
@@ -58,7 +58,7 @@
   justify-content: center;
   min-width: 148px;
   height: 64px;
-  padding: 0 $dp-space-sm;
+  padding: $dp-space-0 $dp-space-sm;
   margin-left: $dp-space-xs;
   background: $dp-color-brand;
   border-radius: $dp-radius-sm;
@@ -81,7 +81,7 @@
 }
 
 .template-list-content {
-  padding: 0 $dp-space-lg;
+  padding: $dp-space-0 $dp-space-lg;
 }
 
 .template-card,
@@ -122,7 +122,7 @@
 }
 
 .template-card__badge {
-  padding: 6px $dp-space-xs;
+  padding: $dp-space-6 $dp-space-xs;
   color: $dp-color-danger;
   background: $dp-color-danger-background;
   border-radius: $dp-radius-sm;
@@ -175,7 +175,7 @@
 }
 
 .template-card__route-arrow {
-  margin: 0 $dp-space-sm;
+  margin: $dp-space-0 $dp-space-sm;
   color: $dp-color-text-muted;
   font-size: $dp-font-size-title;
 }
@@ -186,7 +186,7 @@
 }
 
 .template-card__tag {
-  padding: 6px $dp-space-xs;
+  padding: $dp-space-6 $dp-space-xs;
   margin-right: $dp-space-xs;
   margin-bottom: $dp-space-xs;
   color: $dp-color-text-secondary;
@@ -205,7 +205,7 @@
   justify-content: center;
   min-width: 136px;
   height: 62px;
-  padding: 0 $dp-space-sm;
+  padding: $dp-space-0 $dp-space-sm;
   margin-left: $dp-space-xs;
   background: $dp-color-brand;
   border-radius: $dp-radius-sm;

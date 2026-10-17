@@ -1,39 +1,27 @@
 @use '@/styles/_tokens.scss' as *;
+@use '@/styles/_page-patterns.scss' as patterns;
+
 .print-header {
-  padding: 32px 24px 26px;
-  background: $dp-color-bg-card;
+  @include patterns.page-header-container($dp-space-26);
 }
 
 .print-header__label {
-  color: $dp-color-brand;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-bold;
+  @include patterns.page-header-label;
 }
 
 .print-header__title {
-  display: flex;
-  margin-top: 12px;
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-page-title;
-  font-weight: $dp-font-weight-bold;
+  @include patterns.page-header-title;
 }
 
 .print-header__summary {
-  display: flex;
-  margin-top: 14px;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-body-large;
-  line-height: $dp-line-height-body-large;
+  @include patterns.page-header-summary;
 }
 
 .print-status,
 .print-cloud-code,
 .print-section,
 .print-notice {
-  margin: 20px 24px 0;
-  padding: 24px;
-  background: $dp-color-bg-card;
-  border-radius: $dp-radius-sm;
+  @include patterns.page-surface;
 }
 
 .print-status,
@@ -64,7 +52,7 @@
 .print-cloud-code__title,
 .print-notice__title {
   display: flex;
-  margin-top: 8px;
+  margin-top: $dp-space-8;
   color: $dp-color-text-heading;
   font-size: $dp-font-size-title-large;
   font-weight: $dp-font-weight-bold;
@@ -77,7 +65,7 @@
 }
 
 .print-status__badge {
-  padding: 9px 16px;
+  padding: $dp-space-9 $dp-space-sm;
   color: $dp-color-text-secondary;
   background: $dp-color-bg-muted;
   border-radius: $dp-radius-sm;
@@ -91,7 +79,7 @@
 }
 
 .print-cloud-code__status {
-  padding: 8px 12px;
+  padding: $dp-space-8 $dp-space-xs;
   color: $dp-color-text-secondary;
   background: $dp-color-bg-muted;
   border-radius: $dp-radius-sm;
@@ -101,7 +89,7 @@
 
 .print-cloud-code__value {
   display: flex;
-  margin-top: 18px;
+  margin-top: $dp-space-18;
   color: $dp-color-brand;
   font-size: $dp-font-size-title;
   font-weight: $dp-font-weight-bold;
@@ -109,7 +97,7 @@
 
 .print-cloud-code__summary {
   display: flex;
-  margin-top: 10px;
+  margin-top: $dp-space-10;
   color: $dp-color-text-supporting;
   font-size: $dp-font-size-body-small;
   line-height: $dp-line-height-body-small;
@@ -117,14 +105,14 @@
 
 .print-action {
   min-height: 118px;
-  padding: 20px 0;
+  padding: $dp-space-md $dp-space-0;
   border-bottom-color: $dp-color-border-light;
   border-bottom-width: 1px;
 }
 
 .print-action__main {
   flex: 1;
-  padding-right: 18px;
+  padding-right: $dp-space-18;
 }
 
 .print-action__title {
@@ -136,7 +124,7 @@
 .print-action__summary,
 .print-notice__content {
   display: flex;
-  margin-top: 8px;
+  margin-top: $dp-space-8;
   color: $dp-color-text-supporting;
   font-size: $dp-font-size-body-small;
   line-height: $dp-line-height-body-small;
@@ -144,7 +132,7 @@
 
 .print-action__status {
   min-width: 96px;
-  padding: 8px 12px;
+  padding: $dp-space-8 $dp-space-xs;
   border-radius: $dp-radius-sm;
   font-size: $dp-font-size-caption;
   font-weight: $dp-font-weight-bold;
@@ -163,13 +151,13 @@
 
 .print-rule {
   align-items: flex-start;
-  padding-top: 18px;
+  padding-top: $dp-space-18;
 }
 
 .print-rule__index {
   width: 42px;
   height: 42px;
-  margin-right: 14px;
+  margin-right: $dp-space-14;
   color: $dp-color-brand;
   background: $dp-color-brand-soft;
   border-radius: $dp-radius-sm;

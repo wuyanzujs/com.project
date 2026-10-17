@@ -37,7 +37,7 @@
 .courier-detail-actions {
   display: flex;
   flex-direction: row;
-  margin: $dp-space-md $dp-space-lg 0;
+  margin: $dp-space-md $dp-space-lg $dp-space-0;
 }
 
 .courier-detail-action {
@@ -70,7 +70,7 @@
 
 .courier-detail-section,
 .courier-detail-empty {
-  margin: $dp-space-md $dp-space-lg 0;
+  margin: $dp-space-md $dp-space-lg $dp-space-0;
   padding: $dp-card-padding;
   background: $dp-color-bg-card;
   border-radius: $dp-radius-sm;
@@ -87,7 +87,7 @@
   display: flex;
   flex-direction: row;
   margin-top: $dp-space-md;
-  padding: $dp-space-md 0;
+  padding: $dp-space-md $dp-space-0;
   background: $dp-color-bg-muted;
   border-radius: $dp-radius-sm;
 }
@@ -119,7 +119,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: $dp-space-md 0;
+  padding: $dp-space-md $dp-space-0;
   border-bottom-color: $dp-color-border-light;
   border-bottom-width: 1px;
 }

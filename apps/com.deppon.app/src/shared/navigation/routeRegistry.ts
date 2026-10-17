@@ -3,7 +3,8 @@ export const APP_ROUTE_DEFINITIONS = [
     name: 'home',
     title: '寄件',
     path: 'pages/home/index',
-    main: true
+    main: true,
+    mainOrder: 0
   },
   {
     name: 'login',
@@ -119,6 +120,7 @@ export const APP_ROUTE_DEFINITIONS = [
     title: '查快递',
     path: 'pages/order/list/index',
     main: true,
+    mainOrder: 1,
     loginRequired: true
   },
   {
@@ -225,6 +227,7 @@ export const APP_ROUTE_DEFINITIONS = [
     title: '福利',
     path: 'pages/member/index/index',
     main: true,
+    mainOrder: 2,
     loginRequired: true
   },
   {
@@ -273,7 +276,8 @@ export const APP_ROUTE_DEFINITIONS = [
     name: 'mine',
     title: '我的',
     path: 'pages/mine/index',
-    main: true
+    main: true,
+    mainOrder: 3
   },
   {
     name: 'web',
@@ -286,6 +290,10 @@ export type AppRouteDefinition = (typeof APP_ROUTE_DEFINITIONS)[number]
 export type AppRouteName = AppRouteDefinition['name']
 export type AppRoutePath = `/${AppRouteDefinition['path']}`
 export type AppMainRouteName = Extract<AppRouteDefinition, { main: true }>['name']
+
+export const APP_MAIN_ROUTE_DEFINITIONS = APP_ROUTE_DEFINITIONS.filter(
+  (item): item is Extract<AppRouteDefinition, { main: true }> => 'main' in item && item.main
+).sort((left, right) => left.mainOrder - right.mainOrder)
 
 export const APP_PAGE_PATHS = APP_ROUTE_DEFINITIONS.map(item => item.path)
 

@@ -1,29 +1,20 @@
 @use '@/styles/_tokens.scss' as *;
+@use '@/styles/_page-patterns.scss' as patterns;
+
 .ecard-header {
-  padding: 32px 24px 24px;
-  background: $dp-color-bg-card;
+  @include patterns.page-header-container;
 }
 
 .ecard-header__label {
-  color: $dp-color-brand;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-bold;
+  @include patterns.page-header-label;
 }
 
 .ecard-header__title {
-  display: flex;
-  margin-top: 12px;
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-page-title;
-  font-weight: $dp-font-weight-bold;
+  @include patterns.page-header-title;
 }
 
 .ecard-header__summary {
-  display: flex;
-  margin-top: 14px;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-body-large;
-  line-height: $dp-line-height-body-large;
+  @include patterns.page-header-summary;
 }
 
 .ecard-balance-card,
@@ -31,10 +22,7 @@
 .ecard-actions,
 .ecard-promotions,
 .ecard-footer {
-  margin: 20px 24px 0;
-  padding: 24px;
-  background: $dp-color-bg-card;
-  border-radius: $dp-radius-sm;
+  @include patterns.page-surface;
 }
 
 .ecard-balance-card {
@@ -63,15 +51,15 @@
 
 .ecard-balance-card__amount {
   display: flex;
-  margin-top: 8px;
+  margin-top: $dp-space-8;
   color: $dp-color-text-inverse;
   font-size: $dp-font-size-display;
   font-weight: $dp-font-weight-bold;
 }
 
 .ecard-balance-card__badge {
-  padding: 8px 16px;
-  margin-left: 18px;
+  padding: $dp-space-8 $dp-space-sm;
+  margin-left: $dp-space-18;
   color: $dp-color-warning-text-dark;
   background: $dp-color-warning-background-soft;
   border-radius: $dp-radius-sm;
@@ -86,7 +74,7 @@
 
 .ecard-balance-card__summary {
   display: flex;
-  margin-top: 16px;
+  margin-top: $dp-space-sm;
   color: $dp-color-text-disabled;
   font-size: $dp-font-size-body;
   line-height: $dp-line-height-body;
@@ -103,7 +91,7 @@
 
 .ecard-status__value {
   display: flex;
-  margin-top: 8px;
+  margin-top: $dp-space-8;
   color: $dp-color-text-heading;
   font-size: $dp-font-size-subtitle;
   font-weight: $dp-font-weight-bold;
@@ -137,20 +125,20 @@
 .ecard-empty__summary,
 .ecard-footer__summary {
   display: flex;
-  margin-top: 8px;
+  margin-top: $dp-space-8;
   color: $dp-color-text-supporting;
   font-size: $dp-font-size-body-small;
   line-height: $dp-line-height-body-small;
 }
 
 .ecard-action-row__arrow {
-  margin-left: 14px;
+  margin-left: $dp-space-14;
   color: $dp-color-text-placeholder;
   font-size: $dp-font-size-heading-large;
 }
 
 .ecard-promotion {
-  padding: 20px 0;
+  padding: $dp-space-md $dp-space-0;
   border-bottom-color: $dp-color-border-light;
   border-bottom-width: 1px;
 }

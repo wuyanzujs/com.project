@@ -1,21 +1,9 @@
-import { NativeModules, Platform } from 'react-native'
+import CookieManagerModule from '@react-native-cookies/cookies'
 
-interface CookieManager {
-  get: (url: string, useWebKit?: boolean) => Promise<Record<string, { name: string; value: string }>>
-  set: (url: string, cookie: Record<string, unknown>, useWebKit?: boolean) => Promise<boolean>
-  flush: () => Promise<void>
-}
+import type { CookieManagerStatic } from '@react-native-cookies/cookies'
 
-function getCookieManager(): CookieManager | null {
-  if (Platform.OS === 'ios') {
-    return (NativeModules.RNCookieManagerIOS as CookieManager | undefined) ?? null
-  }
-
-  if (Platform.OS === 'android') {
-    return (NativeModules.RNCookieManagerAndroid as CookieManager | undefined) ?? null
-  }
-
-  return null
+function getCookieManager(): CookieManagerStatic {
+  return CookieManagerModule
 }
 
 const SESSION_COOKIE_NAME = 'ECO_TOKEN'

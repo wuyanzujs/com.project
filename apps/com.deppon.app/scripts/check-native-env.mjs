@@ -8,16 +8,17 @@ const appRoot = process.cwd()
 const androidRoot = path.join(appRoot, 'android')
 const localPropertiesPath = path.join(androidRoot, 'local.properties')
 const workspaceRoot = path.resolve(appRoot, '..', '..')
-const requestedTarget = process.argv[2] ?? 'all'
-const validTargets = new Set(['all', 'android', 'ios'])
+const requestedTarget = process.argv[2] ?? 'current'
+const validTargets = new Set(['all', 'current', 'android', 'ios'])
 
 if (!validTargets.has(requestedTarget)) {
-  console.error(`Unknown native environment target "${requestedTarget}". Use all, android, or ios.`)
+  console.error(`Unknown native environment target "${requestedTarget}". Use current, all, android, or ios.`)
   process.exit(2)
 }
 
-const checkAndroid = requestedTarget === 'all' || requestedTarget === 'android'
-const checkIos = requestedTarget === 'all' || requestedTarget === 'ios'
+const resolvedTarget = requestedTarget === 'current' ? (process.platform === 'darwin' ? 'ios' : 'android') : requestedTarget
+const checkAndroid = resolvedTarget === 'all' || resolvedTarget === 'android'
+const checkIos = resolvedTarget === 'all' || resolvedTarget === 'ios'
 let resolvedAndroidSdk = ''
 
 const checks = []

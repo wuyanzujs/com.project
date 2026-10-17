@@ -1,0 +1,37 @@
+@use '@/styles/_tokens.scss' as *;
+
+// Shared page primitives keep repeated business-page structure in one place.
+// Callers still own the class names and any page-specific visual treatment.
+@mixin page-header-container($bottom: $dp-space-lg) {
+  padding: $dp-space-xl $dp-page-horizontal-padding $bottom;
+  background: $dp-color-bg-card;
+}
+
+@mixin page-header-label {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-bold;
+}
+
+@mixin page-header-title {
+  display: flex;
+  margin-top: $dp-space-xs;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+@mixin page-header-summary {
+  display: flex;
+  margin-top: $dp-space-14;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-body-large;
+}
+
+@mixin page-surface {
+  margin: $dp-space-md $dp-page-horizontal-padding $dp-space-0;
+  padding: $dp-card-padding;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-sm;
+}

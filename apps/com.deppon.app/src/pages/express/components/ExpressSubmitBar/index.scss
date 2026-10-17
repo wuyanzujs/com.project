@@ -50,7 +50,7 @@
 .express-submit__divider {
   width: $dp-border-width-hairline;
   height: $dp-space-32;
-  margin: 0 $dp-space-12;
+  margin: $dp-space-0 $dp-space-12;
   background: $dp-color-bg-track;
 }
 .express-submit__detail-toggle {

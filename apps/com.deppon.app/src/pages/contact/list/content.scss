@@ -11,7 +11,7 @@
   flex-direction: row;
   align-items: center;
   height: $dp-control-height-medium;
-  padding: 0 $dp-space-24;
+  padding: $dp-space-0 $dp-space-24;
   background: $dp-color-bg-muted;
   border-radius: $dp-radius-round;
 }
@@ -29,7 +29,7 @@
 }
 
 .contact-list-body {
-  padding: $dp-space-12 $dp-space-24 0;
+  padding: $dp-space-12 $dp-space-24 $dp-space-0;
 }
 
 /* 联系人卡：姓名+掩码手机同行加粗，灰色地址，分隔线，动作行（默认地址单选 + 复制/编辑/删除） */
@@ -160,7 +160,7 @@
 
 .contact-list-loading {
   display: flex;
-  padding: $dp-space-20 0 $dp-space-32;
+  padding: $dp-space-20 $dp-space-0 $dp-space-32;
   color: $dp-color-text-supporting;
   font-size: $dp-font-size-body;
   text-align: center;

@@ -81,7 +81,7 @@
 - 已新增工程验证脚本：根目录 `typecheck:app`、`lint:app`、`check:app-boundaries`、`check:app-routes`、`check:app-module-size`、`check:app-business-rules`、`verify:app`，App 包内 `typecheck`、`lint`、`check:rn-boundaries`、`check:routes`、`check:module-size`、`check:business-rules`、`verify:static`、`verify`；默认 verify 只执行静态门禁，不生成 RN bundle，bundle 由 `verify:bundle:android/ios` 显式触发。
 - 已新增 `scripts/check-module-size.mjs` 和 `check:module-size` 门禁，新页面默认不超过 420 行，新 service 默认不超过 450 行；已存在或自然复杂的页面/service 使用带原因的冻结预算，目标是阻止无意识膨胀，而不是为了行数机械拆分。
 - 已新增 `scripts/check-business-rules.cjs` 和 `check:business-rules`，首批覆盖 service 失败响应形态、OWS 状态归一、`ECO_TOKEN` cookie 提取、路由 query、扫码分类、寄件模板映射/保存 payload/草稿桥、寄件草稿校验、关注运单映射和详情动作、订单修改草稿/差异请求/校验、网点反馈 H5 参数、优惠券卡片/详情归一、优惠券价格时效 payload、批量寄入口/校验规则、打印中心入口/打印前置规则、发票申请校验/抬头校验/提交 payload、订单金额/重量/手机号展示和订单详情动作 VM 等纯函数规则，后续拆 mapper/rules/useCases 时继续补用例。
-- 已新增原生环境检查脚本：根目录 `check:app-native-env`，App 包内 `check:native-env`，用于检查 JDK、Android SDK、Gradle wrapper、iOS 构建宿主等 Android/iOS 编译前置条件。
+- 已新增原生环境检查脚本：根目录 `check:app-native-env` 默认检查当前操作系统对应的平台，另有 `check:app-native-env:all`、`:android`、`:ios` 用于发布机和跨平台 CI，App 包内提供相同命令；脚本检查 JDK、Android SDK、Gradle wrapper、iOS 构建宿主等编译前置条件。
 - 已新增 `.github/workflows/app-quality.yml`，push 和 pull request 统一执行 `pnpm install --frozen-lockfile`、静态 `pnpm verify:app` 和 `pnpm check:app-native-env`，把 RN-only 边界、路由、体量和运行时配置固化到协作入口；Android/iOS bundle 与原生包保留给显式发布流程。
 
 ## 高风险平台能力

@@ -101,7 +101,12 @@ if (referenceBaseline && mode !== 'report') {
 if (mode === 'report') {
   const strictResult = compareSnapshot(snapshot, baseline, { strict: true })
   if (strictResult.ok) {
-    console.log('[style-governance] 全量 CSS 治理目标已满足')
+    const summary = getSnapshotSummary(snapshot)
+    if (summary.rawSpaces === 0) {
+      console.log('[style-governance] 全量 CSS 治理目标已满足')
+    } else {
+      console.log(`[style-governance] 核心 CSS 治理目标已满足，间距仍有 ${summary.rawSpaces} 处存量债务，按日常门禁只降不增`)
+    }
   } else {
     console.log(`[style-governance] 严格门禁尚有 ${strictResult.failures.length} 项待治理`)
     const debtFiles = Object.entries(snapshot.scss.files)
@@ -149,4 +154,6 @@ if (!result.ok) {
   process.exit(1)
 }
 
-console.log(mode === 'strict' ? '[style-governance] 严格门禁通过（全量 CSS 治理完成）' : '[style-governance] 日常门禁通过（逐文件债务只降不增）')
+console.log(
+  mode === 'strict' ? '[style-governance] 严格门禁通过（新文件零间距债务，存量间距按日常门禁收敛）' : '[style-governance] 日常门禁通过（逐文件债务只降不增）'
+)

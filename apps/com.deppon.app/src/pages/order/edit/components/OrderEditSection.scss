@@ -1,7 +1,7 @@
 @use '@/styles/_tokens.scss' as *;
 
 .order-edit-section {
-  margin: $dp-space-md $dp-space-lg 0;
+  margin: $dp-space-md $dp-space-lg $dp-space-0;
   padding: $dp-card-padding;
   background: $dp-color-bg-card;
   border-radius: $dp-radius-sm;
@@ -48,7 +48,7 @@
 
 .order-edit-region__input {
   height: 68px;
-  padding: 0 $dp-space-xs;
+  padding: $dp-space-0 $dp-space-xs;
   margin-top: $dp-space-xs;
   color: $dp-color-text-primary;
   background: $dp-color-bg-muted;

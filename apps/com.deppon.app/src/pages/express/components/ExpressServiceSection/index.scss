@@ -51,7 +51,7 @@
 }
 /* 增值服务折叠行：生产端上下内边距 16、无分隔线（收起态卡底不带横线）。 */
 .express-service-entry--fold {
-  padding: $dp-space-16 0;
+  padding: $dp-space-16 $dp-space-0;
   border-bottom-width: 0;
 }
 .express-service-entry__title {
@@ -62,7 +62,7 @@
 }
 .express-service-entry__summary {
   flex: 1;
-  margin: $dp-space-0 $dp-space-8 0 $dp-space-16;
+  margin: $dp-space-0 $dp-space-8 $dp-space-0 $dp-space-16;
   color: $dp-color-text-heading;
   font-size: $dp-font-size-label-large;
   font-weight: $dp-font-weight-bold;
@@ -79,7 +79,7 @@
   height: $dp-space-24;
 }
 .express-service-panel {
-  padding: $dp-space-8 0;
+  padding: $dp-space-8 $dp-space-0;
   border-bottom-color: $dp-color-border-light;
   border-bottom-width: $dp-border-width-hairline;
 }
@@ -88,7 +88,7 @@
   flex-direction: row;
   align-items: center;
   min-height: $dp-touch-target-min;
-  padding: $dp-space-8 0;
+  padding: $dp-space-8 $dp-space-0;
 }
 .express-service-row--stack {
   align-items: flex-start;

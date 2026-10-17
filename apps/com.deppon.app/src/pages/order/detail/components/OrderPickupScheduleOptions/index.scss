@@ -2,7 +2,7 @@
 
 .order-pickup-card__section-title {
   display: flex;
-  margin: $dp-space-xs 0;
+  margin: $dp-space-xs $dp-space-0;
   color: $dp-color-text-body;
   font-size: $dp-font-size-body;
   font-weight: $dp-font-weight-bold;
@@ -18,14 +18,14 @@
 
 .order-pickup-date-slot {
   min-width: 188px;
-  margin: 0 $dp-space-xs $dp-space-xs 0;
+  margin: $dp-space-0 $dp-space-xs $dp-space-xs $dp-space-0;
 }
 
 .order-pickup-date {
   align-items: center;
   justify-content: center;
   height: $dp-control-height-compact;
-  padding: 0 $dp-space-sm;
+  padding: $dp-space-0 $dp-space-sm;
   background: $dp-color-bg-subtle;
   border-color: $dp-color-border-default;
   border-width: $dp-border-width-hairline;
@@ -49,7 +49,7 @@
 
 .order-pickup-slot-slot {
   width: 48%;
-  margin: 0 2% $dp-space-xs 0;
+  margin: $dp-space-0 $dp-size-2-percent $dp-space-xs $dp-space-0;
 }
 
 .order-pickup-slot {

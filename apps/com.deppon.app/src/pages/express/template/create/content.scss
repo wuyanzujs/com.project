@@ -21,7 +21,7 @@
 }
 
 .template-create-section {
-  margin: $dp-space-md $dp-space-lg 0;
+  margin: $dp-space-md $dp-space-lg $dp-space-0;
   padding: $dp-card-padding;
   background: $dp-color-bg-card;
   border-radius: $dp-radius-sm;
@@ -35,7 +35,7 @@
 
 .template-create-input {
   height: 76px;
-  padding: 0 $dp-space-md;
+  padding: $dp-space-0 $dp-space-md;
   margin-top: $dp-space-md;
   color: $dp-color-text-primary;
   background: $dp-color-bg-muted;
@@ -60,7 +60,7 @@
 
 .template-create-row {
   justify-content: space-between;
-  padding: $dp-space-md 0;
+  padding: $dp-space-md $dp-space-0;
   border-bottom-color: $dp-color-border-light;
   border-bottom-width: 1px;
 }
@@ -117,7 +117,7 @@
 }
 
 .template-create-submit {
-  margin: $dp-space-xl $dp-space-lg 0;
+  margin: $dp-space-xl $dp-space-lg $dp-space-0;
 }
 
 .template-create-submit--disabled {

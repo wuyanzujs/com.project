@@ -26,7 +26,7 @@
 .app-loading-state__dot {
   width: $dp-space-8;
   height: $dp-space-8;
-  margin: 0 $dp-space-3;
+  margin: $dp-space-0 $dp-space-3;
   background: $dp-color-brand;
   border-radius: $dp-radius-circle;
 }

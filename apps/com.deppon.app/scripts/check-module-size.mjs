@@ -30,6 +30,26 @@ const defaultBudgets = {
   types: 700
 }
 
+// 行数之外增加低成本的职责复杂度信号。它们先作为预警，只有明显超出时才阻断，
+// 避免把自然复杂的业务文件机械拆分成更难理解的小文件。
+const complexityBudgets = {
+  page: {
+    functions: { base: 18, hard: 32 },
+    decisions: { base: 45, hard: 90 }
+  },
+  service: {
+    functions: { base: 20, hard: 36 },
+    decisions: { base: 55, hard: 120 }
+  },
+  api: {
+    functions: { base: 16, hard: 28 },
+    decisions: { base: 45, hard: 90 }
+  },
+  types: {
+    exports: { base: 100, hard: 160 }
+  }
+}
+
 const legacyBudgets = new Map([
   [
     'src/pages/invoice/apply/index.tsx',
@@ -78,6 +98,21 @@ function countLines(content) {
   return content.replace(/\r\n/g, '\n').split('\n').length
 }
 
+function countMatches(content, pattern) {
+  return content.match(pattern)?.length ?? 0
+}
+
+function measureComplexity(content, kind) {
+  return {
+    functions: countMatches(
+      content,
+      /\b(?:function|class)\s+[A-Za-z_$][\w$]*|\b(?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/g
+    ),
+    decisions: countMatches(content, /\b(?:if|for|while|catch|case)\b|&&|\|\|/g),
+    exports: kind === 'types' ? countMatches(content, /\bexport\s+(?:default\s+)?(?:const|function|class|interface|type)\b/g) : 0
+  }
+}
+
 function getDefaultBudget(relativePath) {
   if (relativePath.startsWith('src/pages/')) {
     return createBudget(defaultBudgets.page, 'page')
@@ -97,6 +132,8 @@ function getDefaultBudget(relativePath) {
 const checkedRoots = [path.join(srcRoot, 'pages'), path.join(srcRoot, 'services')]
 const violations = []
 const approaching = []
+const complexityViolations = []
+const complexityApproaching = []
 
 for (const filePath of checkedRoots.flatMap(walkFiles)) {
   const relativePath = toPosixPath(path.relative(appRoot, filePath))
@@ -108,12 +145,24 @@ for (const filePath of checkedRoots.flatMap(walkFiles)) {
   const lineCount = countLines(readFileSync(filePath, 'utf8'))
   const legacyBudget = legacyBudgets.get(relativePath)
   const budget = legacyBudget ? createBudget(legacyBudget.max, 'documented', legacyBudget.reason) : getDefaultBudget(relativePath)
-  const item = { relativePath, lineCount, ...budget }
+  const content = readFileSync(filePath, 'utf8')
+  const complexity = measureComplexity(content, budget.kind)
+  const item = { relativePath, lineCount, complexity, ...budget }
 
   if (lineCount > budget.hard) {
     violations.push(item)
   } else if (lineCount > budget.base) {
     approaching.push(item)
+  }
+
+  for (const [metric, limits] of Object.entries(complexityBudgets[budget.kind] ?? {})) {
+    const value = complexity[metric]
+
+    if (value > limits.hard) {
+      complexityViolations.push({ ...item, metric, value, limits })
+    } else if (value > limits.base) {
+      complexityApproaching.push({ ...item, metric, value, limits })
+    }
   }
 }
 
@@ -127,7 +176,17 @@ if (approaching.length) {
   console.warn('')
 }
 
-if (violations.length) {
+if (complexityApproaching.length) {
+  console.warn('Module complexity warning：以下文件的职责复杂度已接近治理上限，请优先拆分 rules、mapper、hooks 或 useCases。\n')
+
+  for (const item of complexityApproaching.sort((a, b) => b.value - a.value)) {
+    console.warn(`- ${item.relativePath}: ${item.metric}=${item.value} > 预警 ${item.limits.base}，硬上限 ${item.limits.hard}`)
+  }
+
+  console.warn('')
+}
+
+if (violations.length || complexityViolations.length) {
   console.error('Module size check failed.\n')
 
   for (const item of violations.sort((a, b) => b.lineCount - a.lineCount)) {
@@ -140,6 +199,13 @@ if (violations.length) {
     if (item.reason) {
       console.error(`  当前冻结原因：${item.reason}`)
     }
+  }
+
+  for (const item of complexityViolations.sort((a, b) => b.value - a.value)) {
+    console.error(
+      `- ${item.relativePath}: ${item.metric}=${item.value} > 硬上限 ${item.limits.hard}（预警 ${item.limits.base}）。` +
+        '请按职责拆分文件，避免继续增加状态、分支或导出。'
+    )
   }
 
   process.exit(1)

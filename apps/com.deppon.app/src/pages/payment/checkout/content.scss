@@ -19,7 +19,7 @@
 }
 
 .payment-checkout-section {
-  margin: 0 $dp-page-horizontal-padding $dp-space-20;
+  margin: $dp-space-0 $dp-page-horizontal-padding $dp-space-20;
   padding: $dp-card-padding;
   background: $dp-color-bg-card;
   border-radius: $dp-card-radius;
@@ -55,7 +55,7 @@
 
 .payment-checkout-item {
   min-height: $dp-control-height-default;
-  padding: $dp-space-16 0;
+  padding: $dp-space-16 $dp-space-0;
   border-top-color: $dp-color-border-light;
   border-top-width: $dp-border-width-hairline;
 }
@@ -104,7 +104,7 @@
 }
 
 .payment-checkout-message {
-  margin: 0 $dp-page-horizontal-padding $dp-space-20;
+  margin: $dp-space-0 $dp-page-horizontal-padding $dp-space-20;
   padding: $dp-space-16 $dp-space-20;
   background: $dp-color-danger-background;
   border-radius: $dp-radius-sm;

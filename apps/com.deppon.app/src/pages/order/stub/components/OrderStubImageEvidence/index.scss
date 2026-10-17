@@ -1,7 +1,7 @@
 @use '@/styles/_tokens.scss' as *;
 
 .order-stub-image-group {
-  padding: $dp-space-md 0;
+  padding: $dp-space-md $dp-space-0;
   border-top-color: $dp-color-border-light;
   border-top-width: $dp-border-width-hairline;
 }
@@ -52,7 +52,7 @@
 .order-stub-image-thumb-slot {
   width: 190px;
   height: 144px;
-  margin: 0 $dp-space-14 $dp-space-14 0;
+  margin: $dp-space-0 $dp-space-14 $dp-space-14 $dp-space-0;
 }
 
 .order-stub-image-thumb {

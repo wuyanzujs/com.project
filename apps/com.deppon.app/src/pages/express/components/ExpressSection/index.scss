@@ -25,7 +25,7 @@
 .express-section__hint {
   height: 28px;
   margin-left: $dp-space-16;
-  padding: 0 $dp-space-14;
+  padding: $dp-space-0 $dp-space-14;
   color: $dp-color-brand;
   font-size: $dp-font-size-micro;
   line-height: $dp-line-height-28;
@@ -34,7 +34,7 @@
 }
 .express-section__summary {
   flex: 1;
-  margin: 0 $dp-space-8 0 $dp-space-16;
+  margin: $dp-space-0 $dp-space-8 $dp-space-0 $dp-space-16;
   color: $dp-color-text-heading;
   font-size: $dp-font-size-label-large;
   font-weight: $dp-font-weight-bold;

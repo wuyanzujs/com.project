@@ -1,4 +1,4 @@
-import { APP_PAGE_PATHS, APP_ROUTE_DEFINITIONS } from './shared/navigation/routeRegistry'
+import { APP_MAIN_ROUTE_DEFINITIONS, APP_PAGE_PATHS } from './shared/navigation/routeRegistry'
 import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from './styles/nativeTokens'
 
 // tab 页与路由注册表保持同源。底部栏始终由 AppTabBar 组件渲染，内置
@@ -12,7 +12,7 @@ import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from './styles/nativeTokens'
 // 启动各触发一次 "ReactImageView: Image source null" 软警告（纯 dev 噪音，
 // 生产构建没有 LogBox 不受影响）。该警告已在入口 index.js 用
 // LogBox.ignoreLogs 精确白名单，不要在业务代码里重复处理。
-const APP_TAB_BAR_LIST = APP_ROUTE_DEFINITIONS.filter(item => 'main' in item && item.main).map(item => ({
+const APP_TAB_BAR_LIST = APP_MAIN_ROUTE_DEFINITIONS.map(item => ({
   pagePath: item.path,
   text: item.title
 }))

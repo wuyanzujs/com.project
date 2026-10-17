@@ -30,6 +30,7 @@
     "check:app-business-rules": "pnpm --filter com.deppon.app check:business-rules",
     "check:app-platform-build": "pnpm --filter com.deppon.app check:platform-build",
     "check:app-native-env": "pnpm --filter com.deppon.app check:native-env",
+    "check:app-native-env:all": "pnpm --filter com.deppon.app check:native-env:all",
     "check:app-native-env:android": "pnpm --filter com.deppon.app check:native-env:android",
     "check:app-native-env:ios": "pnpm --filter com.deppon.app check:native-env:ios",
     "format:config": "prettier --write package.json pnpm-workspace.yaml .prettierrc.cjs \".github/**/*.{yml,yaml}\" \"scripts/**/*.{js,cjs,mjs}\" apps/com.deppon.app/package.json \"apps/com.deppon.app/config/**/*.{ts,js,cjs,mjs}\" \"apps/com.deppon.app/scripts/**/*.{js,cjs,mjs}\" apps/com.deppon.app/babel.config.js apps/com.deppon.app/metro.config.js apps/com.deppon.app/.stylelintrc.cjs apps/com.deppon.app/tsconfig.json && prettier --write --parser json apps/com.deppon.app/.eslintrc apps/com.deppon.app/.watchmanconfig",
