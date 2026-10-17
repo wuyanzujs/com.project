@@ -21,6 +21,7 @@ interface UseBatchSubmitResult {
   handleSubmit: () => Promise<void>
 }
 
+/** 批量寄件页的提交流程：处理登录、批量下单结果提示和提交成功后的订单列表跳转。 */
 export function useBatchSubmit({ draft, submitValidation, showToast }: UseBatchSubmitParams): UseBatchSubmitResult {
   const [submiting, setSubmiting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')

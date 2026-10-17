@@ -19,6 +19,7 @@ interface UseOrderEditScheduleOptions {
   setDraft: Dispatch<SetStateAction<OrderEditDraft | null>>
 }
 
+/** 订单编辑页的上门时间设置：根据当前订单草稿查询时段，并处理日期、时间和派送模式选择。 */
 export function useOrderEditSchedule({ draft, setDraft }: UseOrderEditScheduleOptions) {
   const [response, setResponse] = useState<OrderEditPickupTimeResponse | null>(null)
   const [loading, setLoading] = useState(false)

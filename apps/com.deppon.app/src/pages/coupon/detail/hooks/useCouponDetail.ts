@@ -24,6 +24,7 @@ interface UseCouponDetailResult {
   handleUseCoupon: () => void
 }
 
+/** 优惠券详情页的数据和使用动作：进入页面加载详情，使用时把优惠券带回寄件草稿并重新报价。 */
 export function useCouponDetail({ couponCode, routeStatus, canUse, routeUrl }: UseCouponDetailParams): UseCouponDetailResult {
   const [detail, setDetail] = useState<CouponDetailView | null>(null)
   const [loadedCode, setLoadedCode] = useState('')

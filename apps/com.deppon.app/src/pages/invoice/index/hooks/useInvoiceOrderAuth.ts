@@ -27,6 +27,7 @@ interface UseInvoiceOrderAuthResult {
   handleConfirmOrderAuth: () => Promise<void>
 }
 
+/** 发票中心的订单实名校验弹窗：发送短信验证码、倒计时并提交验证码后继续查询可开票运单。 */
 export function useInvoiceOrderAuth({
   runLatestRequest,
   invalidateLatestRequest,

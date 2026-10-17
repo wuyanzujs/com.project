@@ -23,6 +23,7 @@ function createInsurancePriceKey(draft: ExpressDraft) {
   ])
 }
 
+/** 保价服务管理：维护保价类型和金额，并按当前产品与货物信息查询保价费用。 */
 export function useExpressInsurance({ draft, setDraft }: UseExpressInsuranceOptions) {
   const [quote, setQuote] = useState<ExpressInsuranceQuote | null>(null)
   const [loading, setLoading] = useState(false)

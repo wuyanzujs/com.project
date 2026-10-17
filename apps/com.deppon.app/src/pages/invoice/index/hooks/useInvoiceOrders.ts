@@ -34,6 +34,7 @@ interface UseInvoiceOrdersResult {
   handleClearOrder: () => void
 }
 
+/** 发票中心的可开票订单区域：处理分页、运单号搜索/扫码，并在需要时触发实名校验流程。 */
 export function useInvoiceOrders({
   runLatestRequest,
   setErrorMessage,

@@ -38,6 +38,7 @@ interface QueryScreeningOptions {
   apply?: boolean
 }
 
+/** 送货进仓服务：查询并确认进仓规则，处理预约 WebView 回传，并在提交前完成最终筛单。 */
 export function useExpressWarehouse({ draft, setDraft }: UseExpressWarehouseOptions) {
   const [screeningLoading, setScreeningLoading] = useState(false)
   const [screeningMessage, setScreeningMessage] = useState('')

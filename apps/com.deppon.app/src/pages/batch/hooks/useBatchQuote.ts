@@ -18,6 +18,7 @@ interface UseBatchQuoteResult {
   handleQuote: () => Promise<void>
 }
 
+/** 批量寄件页的价格试算：校验批量草稿后请求每票产品价格，并把结果回填到草稿。 */
 export function useBatchQuote({ draft, setDraft, validation, showToast }: UseBatchQuoteParams): UseBatchQuoteResult {
   const [quoteLoading, setQuoteLoading] = useState(false)
   const [quoteMessage, setQuoteMessage] = useState('')

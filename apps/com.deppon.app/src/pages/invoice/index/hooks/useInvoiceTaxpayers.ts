@@ -16,6 +16,7 @@ interface UseInvoiceTaxpayersResult {
   setTaxpayers: (next: InvoiceTaxpayerView[] | ((current: InvoiceTaxpayerView[]) => InvoiceTaxpayerView[])) => void
 }
 
+/** 发票中心的发票抬头区域：加载已保存抬头，并向编辑页提供可更新的抬头列表状态。 */
 export function useInvoiceTaxpayers({ runLatestRequest, setErrorMessage }: UseInvoiceTaxpayersParams): UseInvoiceTaxpayersResult {
   const [taxpayers, setTaxpayers] = useState<InvoiceTaxpayerView[]>([])
 

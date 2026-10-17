@@ -8,8 +8,9 @@ interface UseExpressGoodsParams {
   restoreQuotes: (quotes: []) => void
 }
 
-// 货物编辑已迁到独立物品信息页（生产端 /pages/sendService/goods 模式），
-// 寄件页上只保留包装服务的改动入口。
+/**
+ * 寄件页的货物相关入口：货物编辑在独立物品信息页完成，这里只处理包装服务变更并清空旧报价。
+ */
 export function useExpressGoods({ restoreQuotes, setDraft }: UseExpressGoodsParams) {
   const handlePackagingChange = useCallback(
     (patch: Partial<ExpressPackagingDraft>) => {

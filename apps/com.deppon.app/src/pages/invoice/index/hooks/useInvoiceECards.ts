@@ -28,6 +28,7 @@ interface UseInvoiceECardsParams {
   navigateToApply: (items: InvoiceECardView[]) => void
 }
 
+/** 发票中心的储值卡开票区域：分页加载储值卡记录、维护多选状态并进入开票申请页。 */
 export function useInvoiceECards({ runLatestRequest, setErrorMessage, showPendingToast, navigateToApply }: UseInvoiceECardsParams): UseInvoiceECardsResult {
   const [ecards, setECards] = useState<InvoiceECardView[]>([])
   const [selectedECardIds, setSelectedECardIds] = useState<string[]>([])

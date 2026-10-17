@@ -22,6 +22,7 @@ function getTodayText() {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
 }
 
+/** 寄件页降水提示：根据寄收件地区和取派件日期查询雨水天气文案，草稿变化时自动刷新。 */
 export function useExpressWeather({ draft }: { draft: ExpressDraft }) {
   const [weatherText, setWeatherText] = useState('')
   const requestVersion = useRef(0)

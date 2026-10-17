@@ -26,6 +26,7 @@ interface UseExpressSubmitResult {
   handleSubmit: () => Promise<void>
 }
 
+/** 寄件首页提交流程：完成草稿校验、送货进仓提交前准备、登录处理和下单成功跳转。 */
 export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmitParams): UseExpressSubmitResult {
   const [submiting, setSubmiting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')

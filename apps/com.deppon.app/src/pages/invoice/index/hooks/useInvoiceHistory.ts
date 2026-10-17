@@ -28,6 +28,7 @@ interface UseInvoiceHistoryResult {
   handleClearHistory: () => void
 }
 
+/** 发票中心的开票历史区域：支持分页、运单号搜索、扫码查询和清空当前查询结果。 */
 export function useInvoiceHistory({ runLatestRequest, setErrorMessage, showPendingToast }: UseInvoiceHistoryParams): UseInvoiceHistoryResult {
   const [history, setHistory] = useState<InvoiceHistoryView[]>([])
   const [historyPageIndex, setHistoryPageIndex] = useState(1)

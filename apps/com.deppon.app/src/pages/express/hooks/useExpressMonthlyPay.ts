@@ -21,6 +21,7 @@ interface UseExpressMonthlyPayResult {
   handlePaymentTypeSelect: (paymentType: ExpressPaymentType) => void
 }
 
+/** 月结支付管理：选择月结时查询客户编码状态，并生成支付方式区域需要的展示模型。 */
 export function useExpressMonthlyPay({ draft, updateService }: UseExpressMonthlyPayParams): UseExpressMonthlyPayResult {
   const [monthlyCustomer, setMonthlyCustomer] = useState<CustomerCenterView | null>(null)
   const [monthlyCustomerLoading, setMonthlyCustomerLoading] = useState(false)

@@ -36,6 +36,7 @@ function confirmWarehouseReplacement() {
   })
 }
 
+/** 派送偏好管理：校验定时派送范围，维护预约/通知派送选项，并处理与送货进仓的互斥关系。 */
 export function useExpressDeliveryPreference({ draft, setDraft }: UseExpressDeliveryPreferenceOptions) {
   const [availabilityLoading, setAvailabilityLoading] = useState(false)
   const [availabilityMessage, setAvailabilityMessage] = useState('')

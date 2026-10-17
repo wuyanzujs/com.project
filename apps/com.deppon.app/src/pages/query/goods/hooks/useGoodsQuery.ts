@@ -25,6 +25,7 @@ interface UseGoodsQueryResult {
   handleCarryToExpress: () => void
 }
 
+/** 货物查询页的搜索、合规校验和历史记录管理，并支持把可寄递货物带回寄件页。 */
 export function useGoodsQuery(showToast: (title: string) => void): UseGoodsQueryResult {
   const [keyword, setKeyword] = useState('')
   const [suggestions, setSuggestions] = useState<GoodsSuggestionView[]>([])

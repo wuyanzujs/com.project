@@ -7,6 +7,7 @@ import type { ExpressGoodsItem } from '@/services/express'
 // 500ms 防抖复刻同样的交互，避免每个按键都打一次接口。
 const GOODS_NAME_SUGGEST_DEBOUNCE_MS = 500
 
+/** 物品信息页的品名联想：输入停止 500ms 后查询推荐，避免每次按键都请求接口。 */
 export function useGoodsNameSuggestions() {
   const [suggestions, setSuggestions] = useState<ExpressGoodsItem[]>([])
   const [loading, setLoading] = useState(false)

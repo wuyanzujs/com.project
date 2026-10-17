@@ -14,6 +14,7 @@ import { createOrderDetailViewModel, getOrderDetailRole, getOrderDetailRouteUrl,
 
 import type { OrderDetailUrgePanelState } from '../components/OrderUrgePanel'
 
+/** 订单详情页的数据编排：按公开物流或登录订单模式加载详情、轨迹、待支付和催单状态。 */
 export function useOrderDetailData(routeParams: OrderDetailRouteParams) {
   const [detail, setDetail] = useState<OrderDetail | null>(null)
   const [tracks, setTracks] = useState<WaybillTrackItem[]>([])

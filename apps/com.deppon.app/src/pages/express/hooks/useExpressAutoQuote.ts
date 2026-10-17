@@ -12,9 +12,10 @@ interface UseExpressAutoQuoteOptions {
   onQuote: () => void
 }
 
-// 生产端没有「获取价格」按钮：收寄地址与货物齐全即自动试算；物品信息页
-// 保存返回、优惠券/保价等变更导致的报价失效也由这里兜底重算。requestKey
-// 去重防止同一份草稿反复请求，quotes 非空且无失效原因时不再打扰。
+/**
+ * 寄件页自动报价触发器：收寄地址和货物完整后自动试算，也兜底处理物品、优惠券或保价变化
+ * 导致的报价失效，并用 requestKey 避免同一份草稿重复请求。
+ */
 export function useExpressAutoQuote({ draft, quotes, quoteStatus, onQuote }: UseExpressAutoQuoteOptions) {
   const lastQuoteKeyRef = useRef('')
 

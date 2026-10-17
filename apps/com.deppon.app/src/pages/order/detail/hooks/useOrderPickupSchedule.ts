@@ -12,6 +12,7 @@ function getFirstSelection(schedule: OrderPickupScheduleView) {
   }
 }
 
+/** 订单详情页的上门取件预约：加载可预约时段、维护日期/时间选择，并提交派送预约。 */
 export function useOrderPickupSchedule() {
   const [schedule, setSchedule] = useState<OrderPickupScheduleView | null>(null)
   const [selectedDate, setSelectedDate] = useState('')

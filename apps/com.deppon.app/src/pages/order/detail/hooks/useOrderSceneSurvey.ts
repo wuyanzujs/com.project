@@ -7,6 +7,7 @@ import { createOrderSceneSurveyContext, orderSceneSurveyOrchestrator } from '@/s
 import type { OrderDetail, OrderRole, OrderSceneSurveyItem, OrderSceneSurveySubmitInput } from '@/services/order'
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
+/** 订单详情页的场景问卷：按订单上下文加载待答题目，逐题提交并处理问卷完成状态。 */
 export function useOrderSceneSurvey(options: { detail: OrderDetail | null; role: OrderRole; source: string; publicTrackMode: boolean }) {
   const [items, setItems] = useState<OrderSceneSurveyItem[]>([])
   const [visible, setVisible] = useState(false)

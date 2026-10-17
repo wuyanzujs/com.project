@@ -14,6 +14,7 @@ interface UseExpressDeliveryPointOptions {
   setDraft: Dispatch<SetStateAction<ExpressDraft>>
 }
 
+/** 自提服务点选择：从服务点查询页接收选择结果，并把收件地址对应的网点写回寄件草稿。 */
 export function useExpressDeliveryPoint({ draft, setDraft }: UseExpressDeliveryPointOptions) {
   useDidShow(() => {
     const selection = stationSelection.consumeSelection('EXPRESS_DELIVERY_POINT')

@@ -13,6 +13,7 @@ export interface UseOrderDetailServiceActionsOptions extends DetailOptions {
   handleDial: OrderDetailDialHandler
 }
 
+/** 订单详情页的服务动作：处理催单、通知派送、拦截作废和营业部电话等后续操作。 */
 export function useOrderDetailServiceActions(options: UseOrderDetailServiceActionsOptions) {
   const [notifyingDeliver, setNotifyingDeliver] = useState(false)
   const [invalidingWaybill, setInvalidingWaybill] = useState(false)

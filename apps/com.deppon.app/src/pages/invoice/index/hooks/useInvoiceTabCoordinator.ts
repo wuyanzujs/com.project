@@ -29,6 +29,7 @@ interface UseInvoiceTabCoordinatorResult {
   handleLoadMore: () => void
 }
 
+/** 发票中心标签协调器：切换订单、历史、储值卡和抬头标签，并把分页加载交给当前标签的数据 hook。 */
 export function useInvoiceTabCoordinator({
   setErrorMessage,
   initialTab,

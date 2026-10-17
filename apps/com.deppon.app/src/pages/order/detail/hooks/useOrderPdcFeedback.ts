@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { createOrderPdcFeedbackContext, orderPdcFeedbackService } from '@/services/order'
 import type { OrderDetail, OrderPdcFeedbackResult } from '@/services/order'
 
+/** 订单详情页的 PDC 反馈弹窗：查询当前订单是否有待处理反馈，并提交用户评价结果。 */
 export function useOrderPdcFeedback(options: { detail: OrderDetail | null; source: string; publicTrackMode: boolean }) {
   const [visible, setVisible] = useState(false)
   const [submitting, setSubmitting] = useState(false)

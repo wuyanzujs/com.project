@@ -33,6 +33,7 @@ interface UseOrderListDataResult {
   resetOrders: () => void
 }
 
+/** 订单列表页的数据管理：按角色、关键词、状态、支付方式和日期范围分页加载订单并处理并发刷新。 */
 export function useOrderListData({ role, keyword, orderStatus, paymentType, rangeDays }: UseOrderListDataParams): UseOrderListDataResult {
   const [orders, setOrders] = useState<OrderListItem[]>([])
   const [pageIndex, setPageIndex] = useState(1)

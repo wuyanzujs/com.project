@@ -48,6 +48,7 @@ function getSelection(response: ExpressPickupTimeResponse | null, date: string, 
   return item ? { date, ...item } : null
 }
 
+/** 上门取件时间管理：按寄件地址、货物和产品查询可预约时段，并回填日期、时间和夜间揽收状态。 */
 export function useExpressPickupTime({ draft, setDraft }: UseExpressPickupTimeOptions) {
   const [response, setResponse] = useState<ExpressPickupTimeResponse | null>(null)
   const [loading, setLoading] = useState(false)

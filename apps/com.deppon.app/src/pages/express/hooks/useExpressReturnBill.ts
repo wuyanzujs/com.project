@@ -20,6 +20,7 @@ function getReturnBillProductCode(draft: ExpressDraft) {
   return draft.selectedProduct?.omsProductCode || draft.service.transportMode
 }
 
+/** 签收单返单设置：维护纸质/电子返单信息，并通过 WebView 云签回填文件后让报价失效。 */
 export function useExpressReturnBill({ draft, restoreQuotes, setDraft }: UseExpressReturnBillOptions) {
   const messageContextRef = useRef('')
   const latestDraft = useRef(draft)

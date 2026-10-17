@@ -43,6 +43,7 @@ export interface UseOrderDetailActionsOptions {
   loadDetail: () => Promise<void>
 }
 
+/** 订单详情页的通用动作：刷新、复制单号、取消/删除/重寄、支付和跳转到订单相关入口。 */
 export function useOrderDetailActions(options: UseOrderDetailActionsOptions) {
   const [deleting, setDeleting] = useState(false)
 

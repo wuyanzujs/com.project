@@ -21,6 +21,7 @@ interface UseExpressEntryNavigationResult {
   handleSaveTemplate: () => void
 }
 
+/** 寄件首页的入口导航：集中处理模板、实名、批量寄件、帮助和服务点等页面跳转。 */
 export function useExpressEntryNavigation({ draft }: UseExpressEntryNavigationParams): UseExpressEntryNavigationResult {
   const handleOpenTemplates = useCallback(() => {
     navigateToAppRoute(APP_ROUTES.expressTemplateList, {

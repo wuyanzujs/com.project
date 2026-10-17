@@ -20,6 +20,7 @@ interface UseContactAddressActionsResult {
   handleRefineAddress: () => Promise<void>
 }
 
+/** 联系人编辑页的地址处理：支持粘贴地址识别，以及基于已有地区信息补全详细地址。 */
 export function useContactAddressActions({ contact, setContact, ensureAccess }: UseContactAddressActionsParams): UseContactAddressActionsResult {
   const [analysisText, setAnalysisText] = useState('')
   const [analyzing, setAnalyzing] = useState(false)

@@ -22,6 +22,7 @@ interface UseTaxpayerActionsResult {
   handleSave: () => Promise<void>
 }
 
+/** 发票抬头编辑页的操作：联想单位抬头、回填匹配结果，并校验后保存抬头信息。 */
 export function useTaxpayerActions({ form, updateForm }: UseTaxpayerActionsParams): UseTaxpayerActionsResult {
   const [matches, setMatches] = useState<InvoiceTaxpayerMatch[]>([])
   const [matching, setMatching] = useState(false)
@@ -135,6 +136,7 @@ export function useTaxpayerActions({ form, updateForm }: UseTaxpayerActionsParam
   }
 }
 
+/** 发票抬头类型切换：同步个人/单位字段差异，并清理不再适用的联想结果。 */
 export function useTaxpayerType(
   form: InvoiceTaxpayerForm,
   updateForm: (patch: Partial<InvoiceTaxpayerForm>) => void,

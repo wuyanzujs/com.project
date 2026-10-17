@@ -20,6 +20,7 @@ function createCollectionMessageContext(orderNumber: string) {
   return normalized ? 'ORDER_EDIT:' + normalized : ''
 }
 
+/** 订单编辑页的代收货款设置：查询客户额度、选择收款账户并同步代收类型、金额和协议状态。 */
 export function useOrderEditCollection({ orderNumber, setDraft }: UseOrderEditCollectionOptions) {
   const [capabilityLoading, setCapabilityLoading] = useState(false)
   const [capabilityMessage, setCapabilityMessage] = useState('')

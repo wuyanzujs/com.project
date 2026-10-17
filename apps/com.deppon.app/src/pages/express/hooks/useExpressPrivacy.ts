@@ -6,6 +6,7 @@ import type { Dispatch, SetStateAction } from 'react'
 import { expressPrivacyStorage, setExpressPrivacyProtection } from '@/services/express'
 import type { ExpressDraft } from '@/services/express'
 
+/** 隐私面单设置：首次开启时展示信息加密确认，并把用户选择同步到寄件草稿。 */
 export function useExpressPrivacy(setDraft: Dispatch<SetStateAction<ExpressDraft>>) {
   const onChange = useCallback(
     (value: ExpressDraft['service']['privacyProtection']) => {

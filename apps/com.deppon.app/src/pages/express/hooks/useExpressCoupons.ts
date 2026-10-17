@@ -22,6 +22,7 @@ interface UseExpressCouponsOptions {
   onInvalidateQuote: () => void
 }
 
+/** 寄件页的优惠券匹配：草稿变化后自动查询可用券，并在选券后让报价重新计算。 */
 export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExpressCouponsOptions) {
   const [available, setAvailable] = useState<CouponCardView[]>([])
   const [unavailable, setUnavailable] = useState<CouponCardView[]>([])

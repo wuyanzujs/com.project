@@ -20,6 +20,7 @@ const EXPRESS_COLLECTION_WEB_CONTEXT = {
   messageContext: EXPRESS_COLLECTION_MESSAGE_CONTEXT
 } as const
 
+/** 寄件页的代收货款服务：查询客户额度、维护收款账户，并处理代收类型和金额变化。 */
 export function useExpressCollection({ setDraft }: UseExpressCollectionOptions) {
   const [capabilityLoading, setCapabilityLoading] = useState(false)
   const [capabilityMessage, setCapabilityMessage] = useState('')

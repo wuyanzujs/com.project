@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react'
 
 import { createOrderSubscriptionAction, orderSubscriptionService } from '@/services/order'
 
+/** 订单详情页的运单关注：加载关注状态，并在用户确认后切换关注/取消关注。 */
 export function useOrderSubscription() {
   const [subscribed, setSubscribed] = useState<boolean | null>(null)
   const [loading, setLoading] = useState(false)

@@ -18,6 +18,7 @@ interface UseExpressQuoteOptions {
   onProductChange: () => void
 }
 
+/** 寄件产品报价：根据当前草稿获取产品价格，自动选择推荐产品，并在草稿变化时丢弃旧报价。 */
 export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpressQuoteOptions) {
   const [quotes, setQuotes] = useState<ExpressProductQuote[]>([])
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')

@@ -16,6 +16,7 @@ function getContactCheckKey(contact: Contact) {
   return contact.id || `${contact.telephone}-${contact.address}`
 }
 
+/** 联系人保存或下单前的地址完整性检查：必要时展示候选提示，让页面决定继续还是返回修改。 */
 export function useContactAddressIntegrity() {
   const inFlightRef = useRef(false)
   const [checkingKey, setCheckingKey] = useState('')
