@@ -1,3 +1,5 @@
 export default definePageConfig({
-  navigationBarTitleText: '地址簿'
+  disableScroll: true,
+  navigationBarTitleText: '地址簿',
+  navigationStyle: 'custom'
 })

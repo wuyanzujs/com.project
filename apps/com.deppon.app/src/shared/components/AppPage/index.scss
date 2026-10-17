@@ -20,6 +20,7 @@
 .app-page__content {
   display: flex;
   flex: 1;
+  min-height: 0;
 }
 .app-page__footer {
   flex-shrink: 0;

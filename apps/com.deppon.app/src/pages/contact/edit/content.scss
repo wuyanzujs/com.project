@@ -1,234 +1,320 @@
 @use '@/styles/_tokens.scss' as *;
-.contact-edit-header {
-  padding: 32px 24px 24px;
-  background: $dp-color-bg-card;
+
+.contact-edit-scroll {
+  flex: 1;
+  height: 0;
+  background: $dp-color-bg-page;
 }
 
-.contact-edit-header__label {
-  color: $dp-color-brand;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-bold;
-}
-
-.contact-edit-header__title {
+/* 法律提示条：普通态通栏贴导航栏；生产量测高 64、文字 22/32 垂直居中、左右 24。
+   必须显式 row：RN View 默认 column，Text 的 flex:1 会变成纵向撑满导致文字顶置。 */
+.contact-edit-warning {
   display: flex;
-  margin-top: 12px;
+  flex-direction: row;
+  align-items: center;
+  min-height: $dp-space-64;
+  padding: $dp-space-0 $dp-space-24;
+  color: $dp-color-text-member;
+  background: $dp-color-warning-background-soft;
+}
+
+.contact-edit-warning__text {
+  flex: 1;
+  color: $dp-color-text-member;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-32;
+}
+
+/* 识别框聚焦态：法律提示换成圆角示例带，左右收进 24、顶部与导航留 24
+   （生产实测带顶 356-导航底 311=45 物理≈23 设计）；带完整可见 64 高，
+   识别卡紧贴其下不叠合（生产带底 479/卡顶 481）。 */
+.contact-edit-warning--example {
+  margin: $dp-space-24 $dp-space-24 $dp-space-0;
+  background: $dp-color-warning-background-soft;
+  border-radius: $dp-radius-32;
+}
+
+/* 识别卡：生产量测内边距 32/24/24、圆角 32；聚焦时整体上移 10 与示例带叠合。 */
+.contact-edit-recognition {
+  margin: $dp-space-24 $dp-space-24 $dp-space-0;
+  padding: $dp-space-32 $dp-space-24 $dp-space-24;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-32;
+}
+
+/* 聚焦时识别卡不上移（生产卡顶紧贴示例带底，间隙约 1 设计px）。 */
+.contact-edit-recognition--focused {
+  margin-top: $dp-space-0;
+}
+
+.contact-edit-recognition__input {
+  width: 100%;
+  min-height: $dp-space-64;
+  padding: $dp-space-0;
   color: $dp-color-text-heading;
-  font-size: $dp-font-size-page-title;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-32;
+}
+
+/* 聚焦态输入区扩高：生产卡高 291.7 反推输入区 141.8≈142，其余内边距不变。 */
+.contact-edit-recognition__input--focused {
+  min-height: $dp-space-142;
+}
+
+.contact-edit-placeholder {
+  color: $dp-color-text-placeholder-soft;
+}
+
+.contact-edit-recognition__actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: $dp-space-32;
+}
+
+.contact-edit-recognition__action {
+  flex-direction: row;
+  align-items: center;
+  /* 内容自然高（图标 32/文字行高 40）居中于 62 的操作行；
+     不覆盖会被 app-pressable 基类钳到 88，把整行撑到生产之外。 */
+  min-height: $dp-space-0;
+  margin-right: $dp-space-36;
+}
+
+.contact-edit-recognition__action-text {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  line-height: $dp-line-height-40;
+}
+
+.contact-edit-recognition__icon {
+  width: $dp-space-32;
+  height: $dp-space-32;
+  margin-right: $dp-space-12;
+}
+
+/* 粘贴并识别：生产量测 168×62 胶囊，横向渐变由 SVG 铺底；
+   min-height 需压过 app-pressable 基类的 88 触控钳制，否则按钮被撑高。 */
+.contact-edit-recognition__paste {
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  min-width: calc(2 * $dp-space-80 + $dp-space-8);
+  min-height: $dp-space-62;
+  height: $dp-space-62;
+  margin-left: auto;
+  padding: $dp-space-0 $dp-space-24;
+  overflow: hidden;
+  border-radius: $dp-radius-round;
+}
+
+.contact-edit-gradient-fill {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.contact-edit-recognition__paste-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-body-large;
   font-weight: $dp-font-weight-bold;
 }
 
-.contact-edit-header__summary {
+/* 联系人卡：生产行高 88 上下直接堆叠、无纵向内边距，左右 24。 */
+.contact-edit-card {
+  margin: $dp-space-24 $dp-space-24 $dp-space-0;
+  padding: $dp-space-0 $dp-space-24;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-32;
+}
+
+.contact-edit-inline-row {
   display: flex;
-  margin-top: 14px;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-body-large;
-  line-height: $dp-line-height-body-large;
+  flex-direction: row;
+  align-items: center;
+  min-height: $dp-control-height-default;
 }
 
-.contact-edit-form {
-  margin: 24px;
-  background: $dp-color-bg-card;
-  border-radius: $dp-radius-sm;
+/* 省市区/详细地址/公司行：生产量测行距 173 物理≈90 设计（高于标准行高 88）；
+   必须显式 row+center，否则 View 默认 column 使 Input 文字顶置（生产文字垂直居中）。 */
+.contact-edit-region-row,
+.contact-edit-detail-row,
+.contact-edit-company-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: $dp-space-90;
+  border-bottom-color: $dp-color-border-default;
+  border-bottom-width: $dp-border-width-hairline;
 }
 
-.contact-edit-analysis {
-  margin: 24px 24px 0;
-  padding: 24px;
-  background: $dp-color-bg-card;
-  border-radius: $dp-radius-sm;
+/* 第一行：姓名栏定宽 220 带（下划线右端 = 生产 220），与电话栏隔 24；
+   电话栏弹性占满并整段带下划线，通讯录块叠在其上（生产右段连到内容右缘）。 */
+.contact-edit-inline-field {
+  height: $dp-control-height-default;
+  justify-content: center;
+  border-bottom-color: $dp-color-border-default;
+  border-bottom-width: $dp-border-width-hairline;
 }
 
-.contact-edit-analysis__head {
+.contact-edit-inline-field--name {
+  width: $dp-contact-edit-name-width;
+  margin-right: $dp-space-24;
+}
+
+.contact-edit-inline-field--phone {
+  flex: 1;
+  min-width: 0;
+  flex-direction: row;
+  align-items: center;
+}
+
+.contact-edit-value-input,
+.contact-edit-region-input {
+  height: $dp-line-height-option;
+  padding: $dp-space-0;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  line-height: $dp-line-height-40;
+}
+
+.contact-edit-value-input--strong {
+  font-weight: $dp-font-weight-bold;
+}
+
+.contact-edit-phone-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.contact-edit-side-action {
+  align-items: center;
+  justify-content: center;
+  min-height: $dp-space-80;
+  margin-left: $dp-space-12;
+}
+
+.contact-edit-side-action__text {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-micro;
+  line-height: $dp-line-height-28;
+}
+
+.contact-edit-side-action__icon {
+  width: $dp-space-32;
+  height: $dp-space-32;
+  margin-bottom: $dp-space-8;
+}
+
+/* 省市区：生产值紧凑排布（字段随内容收缩），字段间距约 12。 */
+.contact-edit-region-fields {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  min-width: 0;
+}
+
+.contact-edit-region-input {
+  flex-grow: 0;
+  min-width: $dp-space-64;
+  margin-right: $dp-space-12;
+}
+
+.contact-edit-region-input--last {
+  margin-right: 0;
+}
+
+/* 定位：生产为图标 30 + 文字 22 横排靠右。 */
+.contact-edit-locate {
+  flex-direction: row;
+  align-items: center;
+  min-height: $dp-space-80;
+  margin-left: $dp-space-12;
+}
+
+.contact-edit-locate__text {
+  margin-left: $dp-space-14;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-32;
+}
+
+.contact-edit-default-row {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  min-height: $dp-control-height-default;
 }
 
-.contact-edit-analysis__title {
+.contact-edit-default-toggle {
+  flex-direction: row;
+  align-items: center;
+}
+
+.contact-edit-default-toggle__text {
   color: $dp-color-text-heading;
-  font-size: $dp-font-size-label-large;
+  font-size: $dp-font-size-caption;
   font-weight: $dp-font-weight-bold;
 }
 
-.contact-edit-analysis__button {
+/* 默认勾选点：生产量测直径约 26。 */
+.contact-edit-default-dot {
   align-items: center;
   justify-content: center;
-  min-width: 104px;
-  height: 56px;
-  padding: 0 18px;
+  width: $dp-space-26;
+  height: $dp-space-26;
+  margin-right: $dp-space-12;
+  border-color: $dp-color-border;
+  border-width: $dp-space-2;
+  border-radius: $dp-radius-circle;
+}
+
+.contact-edit-default-dot--checked {
   background: $dp-color-brand;
-  border-radius: $dp-radius-sm;
-}
-
-.contact-edit-analysis__button-text {
-  color: $dp-color-text-inverse;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-bold;
-}
-
-.contact-edit-analysis__input {
-  min-height: 132px;
-  margin-top: 18px;
-  padding: 18px;
-  color: $dp-color-text-heading;
-  background: $dp-color-bg-subtle;
-  border-radius: $dp-radius-sm;
-  font-size: $dp-font-size-label-small;
-  line-height: $dp-line-height-body-large;
-}
-
-.contact-edit-row {
-  display: flex;
-  min-height: 104px;
-  padding: 18px 24px;
-  border-bottom-color: $dp-color-border-light;
-  border-bottom-width: 1px;
-}
-
-.contact-edit-row__label {
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-label-large;
-  font-weight: $dp-font-weight-bold;
-}
-
-.contact-edit-row__value {
-  flex: 1;
-  color: $dp-color-text-placeholder;
-  font-size: $dp-font-size-label-small;
-  text-align: right;
-}
-
-.contact-edit-input {
-  height: 48px;
-  margin-top: 10px;
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-label-large;
-  line-height: $dp-line-height-heading;
-}
-
-.contact-edit-address-tools {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 18px 24px;
-  border-bottom-color: $dp-color-border-light;
-  border-bottom-width: 1px;
-}
-
-.contact-edit-address-tools__hint {
-  flex: 1;
-  padding-right: 18px;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-body;
-  line-height: $dp-line-height-body-small;
-}
-
-.contact-edit-address-tools__button {
-  align-items: center;
-  justify-content: center;
-  min-width: 128px;
-  height: 56px;
-  background: $dp-color-brand-soft;
-  border-color: $dp-color-brand-border-soft;
-  border-radius: $dp-radius-sm;
-  border-width: 1px;
-}
-
-.contact-edit-address-tools__button-text {
-  color: $dp-color-brand;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-bold;
-}
-
-.contact-edit-grid {
-  display: flex;
-  flex-direction: row;
-  padding: 0 24px;
-}
-
-.contact-edit-grid__item {
-  flex: 1;
-  min-height: 104px;
-  padding: 18px 0;
-  border-bottom-color: $dp-color-border-light;
-  border-bottom-width: 1px;
-}
-
-.contact-edit-grid__item--right {
-  margin-left: 24px;
-}
-
-.contact-edit-switch-row {
-  padding: 18px 24px 24px;
-}
-
-.contact-edit-switch {
-  display: flex;
-  flex-direction: row;
-  margin-top: 14px;
-}
-
-.contact-edit-chip {
-  align-items: center;
-  justify-content: center;
-  min-width: 128px;
-  height: 56px;
-  margin-right: 14px;
-  background: $dp-color-bg-subtle;
-  border-color: $dp-color-border-default;
-  border-radius: $dp-radius-sm;
-  border-width: 1px;
-}
-
-.contact-edit-chip--active {
-  background: $dp-color-brand-soft;
   border-color: $dp-color-brand;
 }
 
-.contact-edit-chip__text {
-  color: $dp-color-text-secondary;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-bold;
+.contact-edit-clear {
+  color: $dp-color-text-placeholder-soft;
+  font-size: $dp-font-size-caption;
 }
 
-.contact-edit-chip__text--active {
-  color: $dp-color-brand;
+.contact-edit-validation {
+  margin: $dp-space-16 $dp-space-24 $dp-space-0;
+  padding: $dp-space-16 $dp-space-20;
+  color: $dp-color-danger-text;
+  background: $dp-color-danger-background;
+  border-radius: $dp-radius-12;
 }
 
-.contact-edit-check {
-  margin: 0 24px;
-  padding: 24px;
-  background: $dp-color-warning-background;
-  border-radius: $dp-radius-sm;
-}
-
-.contact-edit-check__title {
-  color: $dp-color-warning-text;
-  font-size: $dp-font-size-label-small;
-  font-weight: $dp-font-weight-bold;
-}
-
-.contact-edit-check__message {
+.contact-edit-validation__message {
   display: flex;
-  margin-top: 10px;
-  color: $dp-color-warning-text-deep;
+  color: $dp-color-danger-text;
   font-size: $dp-font-size-body;
-  line-height: $dp-line-height-body-small;
+  line-height: $dp-line-height-body;
 }
 
-.contact-edit-submit {
+/* 底栏：生产量测上下留白 32、按钮 96 高横向渐变。 */
+.contact-edit-footer {
+  padding: $dp-space-32 $dp-space-32;
+  background: $dp-color-bg-card;
+}
+
+.contact-edit-footer__button {
+  position: relative;
   align-items: center;
   justify-content: center;
-  height: 88px;
-  margin: 24px;
-  background: $dp-color-bg-inverse;
-  border-radius: $dp-radius-sm;
+  height: $dp-control-height-large;
+  overflow: hidden;
+  border-radius: $dp-radius-round;
 }
 
-.contact-edit-submit__text {
+.contact-edit-footer__button-text {
+  position: relative;
   color: $dp-color-text-inverse;
-  font-size: $dp-font-size-label-large;
+  font-size: $dp-font-size-heading-small;
   font-weight: $dp-font-weight-bold;
 }

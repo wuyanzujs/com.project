@@ -2,9 +2,11 @@
 
 .contact-list-page {
   flex: 1;
+  min-height: 0;
   background: $dp-color-bg-page-alt;
 }
 
 .contact-list-scroll {
   flex: 1;
+  height: 0;
 }

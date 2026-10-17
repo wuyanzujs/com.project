@@ -136,15 +136,25 @@
         "usesTokens": true,
         "lines": 31
       },
+      "src/pages/contact/components/ContactNavBar/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 40
+      },
       "src/pages/contact/edit/content.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
-        "rawSpaces": 23,
+        "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 234
+        "lines": 310
       },
       "src/pages/contact/edit/index.scss": {
         "rawColors": 0,
@@ -154,7 +164,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 5
+        "lines": 8
       },
       "src/pages/contact/list/content.scss": {
         "rawColors": 0,
@@ -164,7 +174,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 3,
         "usesTokens": true,
-        "lines": 202
+        "lines": 274
       },
       "src/pages/contact/list/index.scss": {
         "rawColors": 0,
@@ -174,7 +184,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 10
+        "lines": 12
       },
       "src/pages/coupon/detail/content.scss": {
         "rawColors": 0,
@@ -2184,7 +2194,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 27
+        "lines": 28
       },
       "src/shared/components/AppPageHeader/index.scss": {
         "rawColors": 0,

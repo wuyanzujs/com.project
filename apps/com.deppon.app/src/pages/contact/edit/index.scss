@@ -1,5 +1,8 @@
 @use '@/styles/_tokens.scss' as *;
 .contact-edit-page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   min-height: 100%;
   background: $dp-color-bg-page;
 }

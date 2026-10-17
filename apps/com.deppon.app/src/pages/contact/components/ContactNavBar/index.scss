@@ -1,0 +1,40 @@
+@use '@/styles/_tokens.scss' as *;
+
+.contact-nav-bar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  min-height: $dp-control-height-large;
+  padding: $dp-space-0 $dp-space-4;
+  background: $dp-color-bg-card;
+}
+
+.contact-nav-bar__back {
+  align-items: center;
+  justify-content: center;
+  min-width: $dp-touch-target-min;
+  min-height: $dp-touch-target-min;
+}
+.contact-nav-bar__title {
+  flex: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-heading-small;
+  font-weight: $dp-font-weight-semibold;
+  text-align: center;
+}
+
+.contact-nav-bar__share {
+  align-items: center;
+  justify-content: center;
+  min-width: $dp-touch-target-min;
+  min-height: $dp-touch-target-min;
+}
+
+.contact-nav-bar__share-text {
+  margin-top: $dp-space-6;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-fine;
+}

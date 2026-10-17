@@ -25,6 +25,7 @@ export interface AppPressableProps extends PropsWithChildren {
    * 必须接收并渲染，否则调用方的样式会被整体丢弃。
    */
   style?: CSSProperties
+  textClassName?: string
   onLongPress?: () => void
   onPress?: () => void
 }
@@ -45,6 +46,7 @@ export function AppPressable({
   onPress,
   selected = false,
   style,
+  textClassName: textClassNameProp,
   variant = 'plain'
 }: AppPressableProps) {
   const [pressed, setPressed] = useState(false)
@@ -60,7 +62,7 @@ export function AppPressable({
     className
   )
 
-  const textClassName = classNames('app-pressable__text', className)
+  const textClassName = classNames('app-pressable__text', textClassNameProp ?? className)
 
   return (
     <View className={contentClassName} style={style}>

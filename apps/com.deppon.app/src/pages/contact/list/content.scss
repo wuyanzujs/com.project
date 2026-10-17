@@ -166,22 +166,35 @@
   text-align: center;
 }
 
-/* 底部固定操作条：管理/取消 + 创建新地址/立即删除（与生产一致的胶囊双按钮） */
 .contact-list-footer {
   flex-direction: row;
   align-items: center;
   padding-top: $dp-space-16;
-  background: $dp-color-bg-page-alt;
+  padding-right: $dp-space-32;
+  padding-left: $dp-space-32;
+  background: $dp-color-bg-card;
 }
 
 .contact-list-footer__button {
   align-items: center;
   justify-content: center;
   height: $dp-control-height-default;
-  color: $dp-color-text-body;
+  border-radius: $dp-radius-round;
+}
+
+.contact-list-footer__button-text {
   font-size: $dp-font-size-title;
   font-weight: $dp-font-weight-medium;
-  border-radius: $dp-radius-round;
+}
+
+.contact-list-footer__button-text--ghost {
+  color: $dp-color-text-body;
+}
+
+.contact-list-footer__button-text--primary,
+.contact-list-footer__button-text--danger {
+  color: $dp-color-text-inverse;
+  font-weight: $dp-font-weight-bold;
 }
 
 .contact-list-footer__button--ghost {
@@ -192,15 +205,70 @@
 .contact-list-footer__button--primary {
   flex: 2;
   margin-left: $dp-space-24;
-  color: $dp-color-text-inverse;
   background: $dp-color-brand;
-  font-weight: $dp-font-weight-bold;
 }
 
 .contact-list-footer__button--danger {
   flex: 2;
   margin-left: $dp-space-24;
-  color: $dp-color-text-inverse;
   background: $dp-color-danger-accent;
+}
+
+.contact-delete-dialog {
+  padding: $dp-space-32;
+  border-radius: $dp-radius-32;
+}
+
+.contact-delete-dialog__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  line-height: $dp-line-height-page-title;
+  text-align: center;
+}
+
+.contact-delete-dialog__description {
+  display: flex;
+  margin-top: $dp-space-24;
+  color: $dp-color-text-neutral;
+  font-size: $dp-font-size-title;
+  line-height: $dp-line-height-title;
+  text-align: center;
+}
+
+.contact-delete-dialog__footer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.contact-delete-dialog__cancel,
+.contact-delete-dialog__confirm {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  height: $dp-control-height-default;
+  border-radius: $dp-radius-round;
+}
+
+.contact-delete-dialog__cancel {
+  background: $dp-color-bg-muted;
+}
+
+.contact-delete-dialog__confirm {
+  margin-left: $dp-space-24;
+  background: $dp-color-brand;
+}
+
+.contact-delete-dialog__cancel-text,
+.contact-delete-dialog__confirm-text {
+  font-size: $dp-font-size-title;
   font-weight: $dp-font-weight-bold;
+}
+
+.contact-delete-dialog__cancel-text {
+  color: $dp-color-text-body;
+}
+
+.contact-delete-dialog__confirm-text {
+  color: $dp-color-text-inverse;
 }

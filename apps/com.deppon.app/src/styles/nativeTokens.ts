@@ -11,6 +11,7 @@ export const APP_STYLE_COLORS = {
     secondary: '#475467',
     supporting: '#667085',
     placeholder: '#98a2b3',
+    placeholderSoft: '#bfbfbf',
     subdued: '#9b9b9b',
     faint: '#a3a3a3',
     inverse: '#ffffff',
@@ -20,6 +21,9 @@ export const APP_STYLE_COLORS = {
   brand: {
     default: '#1a5eff',
     pressed: '#0f4fe6',
+    /* 地址簿编辑页主按钮横向渐变端色，与 _tokens.scss 的 brand-gradient-* 同步登记。 */
+    gradientStart: '#1b58ff',
+    gradientEnd: '#4b7cff',
     borderSoft: '#b2c7ff',
     borderSubtle: '#c7d7fe',
     soft: '#e8efff',

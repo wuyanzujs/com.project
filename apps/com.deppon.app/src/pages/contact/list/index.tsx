@@ -3,12 +3,10 @@ import Taro, { useDidShow, useLoad, useRouter } from '@tarojs/taro'
 
 import { useCallback, useMemo, useState } from 'react'
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-
 import { contactSelection, contactService, getContactFullAddress } from '@/services/contact'
 import type { Contact } from '@/services/contact'
 import { maskExpressContactMobile } from '@/services/express'
-import { AppPressable } from '@/shared/components'
+import { AppDialog, AppPage, AppPressable } from '@/shared/components'
 import { AppIcon } from '@/shared/components/AppIcon'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
@@ -17,6 +15,7 @@ import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 import { copyTextToClipboard } from '@/shared/platform'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
+import { ContactNavBar } from '../components/ContactNavBar'
 import { useContactAddressIntegrity } from '../hooks/useContactAddressIntegrity'
 
 import './index.scss'
@@ -39,11 +38,10 @@ const ContactListPage = () => {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [processingContactId, setProcessingContactId] = useState('')
-  // 生产 App 的「管理」是批量删除态：卡片动作行切换为「选择删除」，底部为「取消/立即删除」。
+  const [deleteTarget, setDeleteTarget] = useState<Contact | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [deletingIds, setDeletingIds] = useState<string[]>([])
   const { checkingKey, checkAddressIntegrity } = useContactAddressIntegrity()
-  const insets = useSafeAreaInsets()
   const pageTitle = selectionParams.mode === 'select' ? PAGE_TITLE_BY_TARGET[selectionParams.target] : '地址簿'
   const contactListUrl = useMemo(() => createAppRouteUrl(APP_ROUTES.contactList, selectionParams), [selectionParams])
   const ensureContactAccess = useCallback(
@@ -110,6 +108,13 @@ const ContactListPage = () => {
     }
 
     loadContacts(1, keyword)
+  }
+
+  const handleShare = () => {
+    Taro.showToast({
+      title: '分享能力暂未开放',
+      icon: 'none'
+    })
   }
 
   const handleLoadMore = () => {
@@ -198,21 +203,22 @@ const ContactListPage = () => {
     }
   }
 
-  const handleDelete = async (contact: Contact) => {
+  const handleDelete = (contact: Contact) => {
     if (!ensureContactAccess() || processingContactId) {
       return
     }
 
-    const modal = await Taro.showModal({
-      title: '删除地址',
-      content: `确定删除 ${contact.name || '该联系人'} 的地址吗？`,
-      confirmText: '删除',
-      cancelText: '取消'
-    })
+    setDeleteTarget(contact)
+  }
 
-    if (!modal.confirm) {
+  const confirmDelete = async () => {
+    const contact = deleteTarget
+
+    if (!contact) {
       return
     }
+
+    setDeleteTarget(null)
 
     setProcessingContactId(contact.id || contact.telephone)
 
@@ -326,8 +332,44 @@ const ContactListPage = () => {
     }
   }
 
+  const footer = (
+    <View className='contact-list-footer' style={{ paddingBottom: 16 }}>
+      {deleting ? (
+        <>
+          <AppPressable contentElement='view' className='contact-list-footer__button contact-list-footer__button--ghost' onPress={exitDeleting}>
+            <Text className='contact-list-footer__button-text contact-list-footer__button-text--ghost'>取消</Text>
+          </AppPressable>
+          <AppPressable
+            contentElement='view'
+            className='contact-list-footer__button contact-list-footer__button--danger'
+            disabled={processingContactId === 'batch'}
+            onPress={handleBatchDelete}
+          >
+            <Text className='contact-list-footer__button-text contact-list-footer__button-text--danger'>立即删除</Text>
+          </AppPressable>
+        </>
+      ) : (
+        <>
+          <AppPressable contentElement='view' className='contact-list-footer__button contact-list-footer__button--ghost' onPress={() => setDeleting(true)}>
+            <Text className='contact-list-footer__button-text contact-list-footer__button-text--ghost'>管理</Text>
+          </AppPressable>
+          <AppPressable contentElement='view' className='contact-list-footer__button contact-list-footer__button--primary' onPress={handleCreate}>
+            <Text className='contact-list-footer__button-text contact-list-footer__button-text--primary'>创建新地址</Text>
+          </AppPressable>
+        </>
+      )}
+    </View>
+  )
+
   return (
-    <View className='contact-list-page'>
+    <AppPage
+      className='contact-list-page'
+      footer={footer}
+      header={<ContactNavBar onShare={handleShare} title={pageTitle} />}
+      safeArea='both'
+      statusBar='dark'
+      surface='card'
+    >
       <ScrollView className='contact-list-scroll' onScrollToLower={handleLoadMore} scrollY>
         <View className='contact-list-search'>
           <View className='contact-list-search__field'>
@@ -418,33 +460,27 @@ const ContactListPage = () => {
         </View>
       </ScrollView>
 
-      <View className='contact-list-footer' style={{ paddingBottom: insets.bottom + 16 }}>
-        {deleting ? (
-          <>
-            <AppPressable contentElement='text' className='contact-list-footer__button contact-list-footer__button--ghost' onPress={exitDeleting}>
-              取消
+      <AppDialog
+        contentSpacing={false}
+        footer={
+          <View className='contact-delete-dialog__footer'>
+            <AppPressable className='contact-delete-dialog__cancel' onPress={() => setDeleteTarget(null)}>
+              <Text className='contact-delete-dialog__cancel-text'>取消</Text>
             </AppPressable>
-            <AppPressable
-              contentElement='text'
-              className='contact-list-footer__button contact-list-footer__button--danger'
-              disabled={processingContactId === 'batch'}
-              onPress={handleBatchDelete}
-            >
-              立即删除
+            <AppPressable className='contact-delete-dialog__confirm' onPress={() => void confirmDelete()}>
+              <Text className='contact-delete-dialog__confirm-text'>确定</Text>
             </AppPressable>
-          </>
-        ) : (
-          <>
-            <AppPressable contentElement='text' className='contact-list-footer__button contact-list-footer__button--ghost' onPress={() => setDeleting(true)}>
-              管理
-            </AppPressable>
-            <AppPressable contentElement='text' className='contact-list-footer__button contact-list-footer__button--primary' onPress={handleCreate}>
-              创建新地址
-            </AppPressable>
-          </>
-        )}
-      </View>
-    </View>
+          </View>
+        }
+        panelClassName='contact-delete-dialog'
+        title='温馨提示'
+        titleClassName='contact-delete-dialog__title'
+        visible={Boolean(deleteTarget)}
+        onClose={() => setDeleteTarget(null)}
+      >
+        <Text className='contact-delete-dialog__description'>您确定要删除这条联系人记录吗？</Text>
+      </AppDialog>
+    </AppPage>
   )
 }
 
