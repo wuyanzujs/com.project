@@ -1,4 +1,22 @@
-import CookieManager from '@react-native-cookies/cookies'
+import { NativeModules, Platform } from 'react-native'
+
+interface CookieManager {
+  get: (url: string, useWebKit?: boolean) => Promise<Record<string, { name: string; value: string }>>
+  set: (url: string, cookie: Record<string, unknown>, useWebKit?: boolean) => Promise<boolean>
+  flush: () => Promise<void>
+}
+
+function getCookieManager(): CookieManager | null {
+  if (Platform.OS === 'ios') {
+    return (NativeModules.RNCookieManagerIOS as CookieManager | undefined) ?? null
+  }
+
+  if (Platform.OS === 'android') {
+    return (NativeModules.RNCookieManagerAndroid as CookieManager | undefined) ?? null
+  }
+
+  return null
+}
 
 const SESSION_COOKIE_NAME = 'ECO_TOKEN'
 const SESSION_COOKIE_EXPIRES = '1970-01-01T00:00:00.000Z'
@@ -16,8 +34,14 @@ function extractSessionToken(cookie: string) {
 }
 
 async function readCookieStore(url: string, useWebKit: boolean) {
+  const manager = getCookieManager()
+
+  if (!manager) {
+    return ''
+  }
+
   try {
-    const cookies = await CookieManager.get(url, useWebKit)
+    const cookies = await manager.get(url, useWebKit)
     const sessionCookie = cookies[SESSION_COOKIE_NAME] ?? Object.values(cookies).find(cookie => cookie.name === SESSION_COOKIE_NAME)
 
     return sessionCookie?.value ? `${SESSION_COOKIE_NAME}=${sessionCookie.value};` : ''
@@ -42,15 +66,16 @@ export function createAppSessionCookieRuntime(urls: string[]) {
 
     async write(cookie: string) {
       const value = extractSessionToken(cookie)
+      const manager = getCookieManager()
 
-      if (!value || !cookieUrls.length) {
+      if (!value || !cookieUrls.length || !manager) {
         return false
       }
 
       const results = await Promise.allSettled(
         cookieUrls.flatMap(url =>
           [false, true].map(useWebKit =>
-            CookieManager.set(
+            manager.set(
               url,
               {
                 name: SESSION_COOKIE_NAME,
@@ -65,15 +90,21 @@ export function createAppSessionCookieRuntime(urls: string[]) {
         )
       )
 
-      await CookieManager.flush().catch(() => undefined)
+      await manager.flush().catch(() => undefined)
 
       return results.some(result => result.status === 'fulfilled' && result.value)
     },
 
     async clear() {
+      const manager = getCookieManager()
+
+      if (!manager) {
+        return true
+      }
+
       const expiredCookieWrites = cookieUrls.flatMap(url =>
         [false, true].map(useWebKit =>
-          CookieManager.set(
+          manager.set(
             url,
             {
               name: SESSION_COOKIE_NAME,
@@ -88,7 +119,7 @@ export function createAppSessionCookieRuntime(urls: string[]) {
       )
       const results = await Promise.allSettled([...expiredCookieWrites])
 
-      await CookieManager.flush().catch(() => undefined)
+      await manager.flush().catch(() => undefined)
 
       return results.every(result => result.status === 'fulfilled')
     }

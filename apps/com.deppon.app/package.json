@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "description": "deppon.app",
+  "expo": {
+    "autolinking": {
+      "exclude": [
+        "expo-camera"
+      ]
+    }
+  },
   "templateInfo": {
     "name": "react-native",
     "typescript": true,
