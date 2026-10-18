@@ -32,3 +32,5 @@
 **决策记录:2026-10-18 项目 owner 决定先跳过 HAR。** 接口契约改用 **mp-taro3 小程序源码**(`D:\10531845\Desktop\CZH-DEV\mp-taro3`,真实调用,204 端点已抽取至 [mp-api-inventory.txt](./mp-api-inventory.txt))+ **生产端 libapp.so 端点实证**(160 个)交叉参照:生产∩小程序 127 端点,同接口体系实锤。三方对比明细见各模块 api.md;HAR 仅剩"字段语义最终核对"一个用途,降级为可选。
 
 **数据基线补充**(2026-10-18 修正):小程序 201 端点、生产端 160、RN 已接 **128**(含 `*_API_ROOT` 常量拼接端点补扫 +7)、**缺 109**;服务域缺口 Top:onlineService 29、user/waybill/order/query/pricetime 9-12、messageService 7;commentService 全覆盖。小程序 wechatService 5 端点(支付分/先用后付)为平台专属,RN 豁免。**已决策(2026-10-18):运单改单保持原生**——wayBill/modify 5 端点已接入 `services/order/order.api.ts`,UI 入口待真机场景确认。
+
+**M2 澄清(2026-10-18)**:`pricetimeService/secure/queryCouponRecommend` 为 **MP-ONLY 误标**——生产端 libapp.so 无此端点,小程序内仅 PDA 线下开单场景定义且无页面调用;生产端下单页券 tile 走 `couponService/queryCouponOrder`,RN 已接全链路,**该缺口关闭**。真实 captcha 缺口(`messageService/eco/message/captcha/getCaptchaAction|checkCaptchaAction`)为 **PROD-ONLY**,契约需从生产端二进制挖,详见 [send/api.md](./send/api.md)。

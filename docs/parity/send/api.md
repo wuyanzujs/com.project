@@ -9,8 +9,8 @@ RN `services/express/express.api.ts` 等已接 pricetime 主链路:queryPriceTim
 
 ## RN 缺失端点(按下单链路影响排序)
 
-**pricetimeService(缺 11)**
-- `secure/queryCouponRecommend` — 下单页券推荐(tiles/coupon 依赖)【P0,影响转化】
+**pricetimeService(缺 11,其中券推荐已澄清无需接入)**
+- ~~`secure/queryCouponRecommend`~~ — **2026-10-18 M2 澄清:MP-ONLY 误标**。生产端 libapp.so 无此端点;小程序源码中仅 `FetchPdaOrderCoupon`(PDA 线下开单券,入参仅 waybillNumber)定义且无页面调用。生产端下单页券能力走 `couponService/queryCouponOrder`(prod∩mp BOTH,对应生产 `pages/coupon/coupon_express` + `models/request/send/coupon_express.dart`),RN 已接并挂入下单页(useExpressCoupons + ExpressCouponCard/Sheet)。**无需接入,缺口关闭。**
 - `secure/queryMaterialSupply` — 物料供应(包装材料库存)【P1】
 - `secure/queryFileUploadInfoBatch` — 批量文件上传信息(批量寄 Excel 导入配套)【P1】
 - `queryAlonePrice` / `other/queryFreightPrice` — 单独计价/散单运费【P1,场景待核】
@@ -20,7 +20,7 @@ RN `services/express/express.api.ts` 等已接 pricetime 主链路:queryPriceTim
 - `orderPriceLog/save` + `orderPriceLog/query` — 价格日志【P3】
 
 **messageService(缺 7,下单相关 2)**
-- `captcha/getCaptchaAction` + `captcha/checkCaptchaAction` — 图形验证码(生产端 send/common 有 captcha 加密组件 encrypt_util)【P0,登录/风控链路】
+- `captcha/getCaptchaAction` + `captcha/checkCaptchaAction` — 图形验证码【P0,登录/风控链路】。**PROD-ONLY:小程序源码无 captcha 概念,契约只能从生产端挖**;生产端实现为点选文字验证码(`pages/login/widgets/click_captcha.dart` + `common/components/captcha/request/encrypt_util.dart`,依赖 `package:encrypt`)
 - `intMsg/secure/*`(4 个)与 `rmq/gislocation` — 消息/推送域,归 message 模块【P2】
 
 **orderService(缺 12,寄件相关 4)**
