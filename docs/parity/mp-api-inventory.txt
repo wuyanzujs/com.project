@@ -1,0 +1,246 @@
+# mp-taro3 小程序接口全量清单(函数名 / 方法 / 端点),来源 src/api/*.ts
+# 用途:生产端对齐的接口契约参照(同公司同接口体系);生成于 2026-10-18
+
+
+## ai.ts
+
+FetchTencentASR	HTTP_GET	/gwapi/aiService/eco/ai/tencent/getTencentCloudTmpToken
+FetchTencentModel	HTTP_POST	/gwapi/aiService/eco/ai/tencent/chatCompletions
+FetchVolcengineModel	HTTP_POST	/gwapi/aiService/eco/ai/volcengine/chatCompletions
+
+## contact.ts
+
+FetchContactList	HTTP_POST	/gwapi/userService/eco/user/contact/secure/queryContact
+DeleteContactItem	HTTP_POST	/gwapi/userService/eco/user/contact/secure/deleteContact
+DeleteContactList	HTTP_POST	/gwapi/userService/eco/user/contact/secure/batchDeleteContact
+FetchContactAnalysis	HTTP_POST	/gwapi/onlineService/eco/online/addressAiResolutionApi/addressAiResolution
+FetchContactAnalysis4	HTTP_POST	/gwapi/onlineService/eco/online/addressAiResolutionApi/addressCodingDirections
+FetchDefaultContact	HTTP_POST	/gwapi/userService/eco/user/contact/secure/queryDefaultContact
+FetchContactQueryList	HTTP_POST	/gwapi/queryService/eco/query/addressImagine
+FetchContactRecommend	HTTP_POST	/gwapi/userService/eco/user/contact/addressMinDistanceAnalysis
+FetchContactTownList	HTTP_POST	/gwapi/queryService/eco/query/city/queryTownByCounty
+FetchContactCount	HTTP_GET	/gwapi/userService/eco/user/contact/secure/queryContactTotal
+FetchContactAddressCheck	HTTP_POST	/gwapi/userService/eco/user/contact/secure/checkAddressIsDetail
+
+## coupon.ts
+
+FetchCenterCoupon	HTTP_POST	/gwapi/couponService/eco/coupon/new/secure/queryCouponList
+FetchUserCouponList	HTTP_POST	/gwapi/couponService/eco/coupon/new/secure/queryNewCouponList
+FetchExpressCoupon	HTTP_POST	/gwapi/couponService/eco/coupon/new/secure/queryCouponOrder
+FetchPdaOrderCoupon	HTTP_POST	/gwapi/pricetimeService/eco/pricetime/secure/queryCouponRecommend
+FetchCouponDetail	HTTP_POST	/gwapi/couponService/eco/coupon/new/secure/queryCouponDetail
+FetchCouponExpire	HTTP_POST	/gwapi/couponService/eco/coupon/new/secure/queryExpireCoupon
+ApplyCouponByExchangeId	HTTP_POST	/gwapi/couponService/eco/coupon/coupon/secure/exchangeCoupon
+
+## customer.ts
+
+FetchCustomerInfo	HTTP_POST	/gwapi/userService/eco/user/secure/selectCustName
+
+## gis.ts
+
+GisGeoCoding	HTTP_POST	/gwapi/onlineService/eco/online/addressAiResolutionApi/obtainDirections
+GisBatchGeoCoding	HTTP_POST	/gwapi/onlineService/eco/online/addressAiResolutionApi/obtainDirectionsList
+GisCarRoutePlan	HTTP_POST	/gwapi/onlineService/eco/online/routePlan/queryRoutePlan
+FetchStationDetail	HTTP_POST	/gwapi/queryService/eco/query/branch/queryDeptInfoByCode
+FetchAddressStation	HTTP_POST	/gwapi/queryService/eco/query/branch/stationSearch
+FetchAddressCode	HTTP_POST	/gwapi/queryService/eco/query/imagine/queryTownCode
+FetchAddressDept	HTTP_POST	/gwapi/queryService/eco/query/branch/queryNearDept
+FetchAddressDistance	HTTP_POST	/gwapi/queryService/eco/query/branch/queryFirstDept
+FetchCityStation	HTTP_POST	/gwapi/queryService/eco/query/branch/queryDeptNet
+FetchDispatchStreet	HTTP_POST	/gwapi/queryService/eco/query/addressImagineTown
+FetchLogisticsDispatch	HTTP_GET	/gwapi/queryService/eco/query/logisticsRange/queryAreaRange
+FetchExpressDispatch	HTTP_POST	/gwapi/queryService/eco/query/range/queryAddressImagine
+SubmitChooseLocation	HTTP_POST	/gwapi/messageService/eco/message/secure/rmq/gislocation
+
+## invoice.ts
+
+FetchInvoiceApi	HTTP_POST	/gwapi/onlineService/eco/online/invoice/secure/invoiceCommonService
+
+## member.ts
+
+FetchSvipInfo	HTTP_GET	/gwapi/memberService/eco/member/grade/secure/getSvipNewestInfo
+FetchSvipLevel	HTTP_GET	/gwapi/memberService/eco/member/grade/secure/weChatMiniMemberGrade
+FetchMemberApi	HTTP_POST	/gwapi/memberService/eco/member/grade/secure/scrmCommonInterface
+FetchMemberApiTourists	HTTP_POST	/gwapi/memberService/eco/member/grade/commonInterface
+FetchMemberSubscribe	HTTP_POST	/gwapi/memberService/eco/member/grade/secure/scrmCommonInterface
+
+## order.ts
+
+FetchSenderList	HTTP_POST	/gwapi/orderService/eco/order/secure/orderList
+FetchConsigneeList	HTTP_POST	/gwapi/waybillService/eco/wayBill/secure/receiveOrderList
+FetchResourceList	HTTP_POST	/gwapi/orderService/eco/order/secure/isHaveOrderByResource
+FetchPrintList	HTTP_POST	/gwapi/onlineService/eco/online/print/order/secure/queryNewOrderPrintList
+FetchPrintTemplate	HTTP_POST	/gwapi/onlineService/eco/online/print/order/secure/blueToothPrintCode
+FetchPrintConfig	HTTP_POST	/gwapi/onlineService/eco/online/print/secure/queryPrintConfig
+SubmitPrintConfig	HTTP_POST	/gwapi/onlineService/eco/online/print/secure/userPrintConfig
+SubmitPrintStatus	HTTP_POST	/gwapi/onlineService/eco/online/print/order/secure/updatePrintStatus
+FetchWaybillSubscribe	HTTP_GET	/gwapi/waybillService/eco/wayBill/subscribe/list/records
+ExistsWaybillSubscribe	HTTP_GET	/gwapi/waybillService/eco/wayBill/subscribe/exist
+SubmitWaybillSubscribe	HTTP_POST	/gwapi/waybillService/eco/wayBill/subscribe/submit
+CancelWaybillSubscribe	HTTP_POST	/gwapi/waybillService/eco/wayBill/subscribe/cancel
+CancelOrder	HTTP_POST	/gwapi/orderService/eco/order/secure/revokeOrder
+DeleteOrder	HTTP_POST	/gwapi/orderService/eco/order/secure/removeOrder
+FetchWaybillStatus	HTTP_POST	/gwapi/waybillService/eco/wayBill/scanStatus/secure/wayBillScanStatus
+FetchOrderDetail	HTTP_POST	/gwapi/orderService/eco/order/secure/orderDetail
+FetchWaybillDetail	HTTP_POST	/gwapi/waybillService/eco/wayBill/secure/queryNewWaybillDetail
+FetchWaybillPassword	HTTP_POST	/gwapi/waybillService/eco/wayBill/reject/secure/queryWaybillAccessSign
+FetchWaybillLocation	HTTP_POST	/gwapi/trackService/eco/track/secure/trackLocationToOWSEntity
+UpdateWaybillPayment	HTTP_POST	/gwapi/waybillService/eco/waybill/modify/secure/waybillChangePriceSubmit
+SubmitWaybillNotifiDeliver	HTTP_POST	/gwapi/waybillService/eco/waybill/modify/secure/modifyNotifyDeliver
+SubmitWaybillInvalid	HTTP_POST	/gwapi/waybillService/eco/wayBill/secure/invalidWaybill
+SubmitWaybillQuickExpress	HTTP_POST	/gwapi/waybillService/eco/wayBill/secure/waybillSendItCasually
+FetchWaybillContractDetail	HTTP_POST	/gwapi/onlineService/eco/online/secure/queryContractDetail
+FetchWaybillMessage	HTTP_POST	/gwapi/waybillService/eco/wayBill/secure/queryOnlyRemind
+FetchWaybillPackagePrice	HTTP_POST	/gwapi/waybillService/eco/wayBill/secure/packagingFee
+FetchReceiptImages	HTTP_POST	/gwapi/waybillService/eco/wayBill/secure/signCounterfoil
+FetchPackageImages	HTTP_POST	/gwapi/waybillService/eco/wayBill/secure/getWoodPackagInfo
+FetchSignImages	HTTP_POST	/gwapi/waybillService/eco/wayBill/secure/querySignImages
+FetchReturnBillImages	HTTP_POST	/gwapi/waybillService/eco/wayBill/secure/queryNewSignImages
+FetchHomeImages	HTTP_POST	/gwapi/waybillService/eco/wayBill/secure/queryHomeImages
+FetchDecorationImages	HTTP_POST	/gwapi/waybillService/eco/wayBill/secure/powerOnTesting/signedImgs
+FetchUnpackImages	HTTP_POST	/gwapi/waybillService/eco/wayBill/secure/queryOpenBoxImages
+FetchWaybillEvaluate	HTTP_POST	/gwapi/onlineService/eco/online/evaluate/secure/queryEvaluateDetail
+SubmitOrderEdit	HTTP_POST	/gwapi/orderService/eco/order/secure/modifyOrder
+SubmitOrderDispatch	HTTP_POST	/gwapi/orderService/eco/order/secure/orderDispatchFlag
+FetchUrgeStatus	HTTP_POST	/gwapi/onlineService/eco/online/complaint/secure/getUrgeButtons
+FetchUrgeMenus	HTTP_POST	/gwapi/onlineService/eco/online/complaint/secure/urgeOrder
+SubmitOrderUrge	HTTP_POST	/gwapi/orderService/eco/order/urgent/secure/v2/orderUrgent
+FetchCharitableAddress	HTTP_POST	/gwapi/queryService/eco/query/PostOrder/queryPostOrderAddress
+FetchOrderDispatch	HTTP_POST	/gwapi/orderService/eco/order/secure/preAllocationCourier
+FetchOrderTime	HTTP_POST	/gwapi/orderService/eco/order/secure/queryOrderTime
+ExistsWaybillPDCEvaluate	HTTP_POST	/gwapi/commentService/eco/comment/secure/queryFeedback
+SubmitWaybillPDCEvaluate	HTTP_POST	/gwapi/commentService/eco/comment/secure/submitFeedback
+FetchExpressModify	HTTP_POST	/gwapi/waybillService/eco/waybill/modify/secure/queryExpWaybillChangeRecord
+SubmitExpressModify	HTTP_POST	/gwapi/waybillService/eco/waybill/modify/secure/changeAcceptExpWaybill
+FetchLogisticsModify	HTTP_POST	/gwapi/waybillService/eco/waybill/modify/secure/queryLtlWaybillChangeRecord
+SubmitLogisticsModify	HTTP_POST	/gwapi/waybillService/eco/waybill/modify/secure/changeAcceptLtlWaybill
+
+## payment.ts
+
+FetchPaymentList	HTTP_POST	/gwapi/onlineService/eco/online/pay/pmc/secure/queryUnWriteOffList
+ExistsECardPayment	HTTP_POST	/gwapi/onlineService/eco/online/pay/secure/queryIsPreCardPay
+CreateInvoicePaymentOrder	HTTP_POST	/gwapi/onlineService/eco/online/pay/pmc/secure/payCreate
+CreatePaymentOrder	HTTP_POST	/gwapi/onlineService/eco/online/pay/pmc/secure/payCreate
+ConfirmPaymentOrder	HTTP_POST	/gwapi/onlineService/eco/online/pay/pmc/secure/payConfirm
+ConfirmECardOrder	HTTP_POST	/gwapi/onlineService/eco/online/pay/secure/preCardConfirm
+CancelPaymentOrder	HTTP_POST	/gwapi/onlineService/eco/online/pay/pmc/secure/payCancel
+FetchPayScoreAuthCode	HTTP_GET	/gwapi/wechatService/eco/wechat/payScore/secure/getWxPayScoreToken
+FetchPayScoreAuthStatus	HTTP_POST	/gwapi/wechatService/eco/wechat/payScore/secure/getUserPayScoreAuth
+FetchPayAfterAuthCode	HTTP_GET	/gwapi/wechatService/eco/wechat/alipay/payafteruse/secure/getSign
+FetchPayAfterAuthStatus	HTTP_GET	/gwapi/wechatService/eco/wechat/alipay/payafteruse/secure/queryUserIsAuth
+FetchPdaPaymentList	HTTP_POST	/gwapi/onlineService/eco/online/pay/pmc/secure/queryPayOrderList
+FetchPdaOrderInfo	HTTP_POST	/gwapi/pricetimeService/eco/pricetime/queryExpTltPrice
+
+## postman.ts
+
+FetchPostmanList	HTTP_GET	/gwapi/onlineService/eco/online/courier/secure/courierList
+FetchExpressPostmanList	HTTP_POST	/gwapi/onlineService/eco/online/courier/secure/queryCouriers
+CheckExpressPostman	HTTP_POST	/gwapi/onlineService/eco/online/courier/secure/checkOrderCityOfCourier
+BindPostman	HTTP_GET	/gwapi/onlineService/eco/online/courier/secure/binding
+UnbindPostman	HTTP_GET	/gwapi/onlineService/eco/online/courier/secure/unBinding
+FetchPostmanDetail	HTTP_GET	/gwapi/onlineService/eco/online/courier/secure/queryDetail
+FetchPostmanCompany	HTTP_POST	/gwapi/queryService/eco/query/erp/erpAccount/queryCompanyCode
+FetchPostmanEvaluate	HTTP_POST	/gwapi/onlineService/eco/online/courier/evaluation/secure/isCommited
+SubmitPostmanEvalaute	HTTP_POST	/gwapi/onlineService/eco/online/courier/evaluation/secure/commit
+FetchPostmanTask	HTTP_POST	/gwapi/onlineService/eco/online/courier/task/queryTaskStatusByScan
+FetchPostmanLocation	HTTP_POST	/gwapi/trackService/eco/track/secure/getCourierLocation
+FetchPostmanChat	HTTP_POST	/gwapi/onlineService/eco/online/chat/secure/ecoIsHaveNoReadMessage
+FetchPostmanQrcode	HTTP_POST	/gwapi/onlineService/eco/online/courier/secure/contactMe
+
+## send.ts
+
+FetchFreight	HTTP_POST	/gwapi/pricetimeService/eco/pricetime/queryPriceTime
+SaveFreight	HTTP_POST	/gwapi/pricetimeService/eco/pricetime/orderPriceLog/save
+QueryFreight	HTTP_POST	/gwapi/pricetimeService/eco/pricetime/orderPriceLog/query
+FetchProductPoint	HTTP_POST	/gwapi/pricetimeService/eco/pricetime/queryPointCityByProduct
+FetchProductHotPot	HTTP_POST	/gwapi/pricetimeService/eco/pricetime/secure/queryProductInfo
+FetchProductHotPotFile	HTTP_POST	/gwapi/pricetimeService/eco/pricetime/secure/queryFileUploadInfoBatch
+FetchProductHotPotPackage	HTTP_POST	/gwapi/pricetimeService/eco/pricetime/secure/queryMaterialSupply
+FetchProductSwitch	HTTP_POST	/gwapi/pricetimeService/eco/pricetime/queryPilotCityBatch
+FetchProductUpgrade	HTTP_POST	/gwapi/pricetimeService/eco/pricetime/queryPointCityByAddress
+FetchPickupTimeList	HTTP_POST	/gwapi/orderService/eco/order/dispatchTime/dispatchTimeNew
+FetchPickupNight	HTTP_POST	/gwapi/queryService/eco/query/range/matchFeatureAoi
+FetchPickupRegionTime	HTTP_POST	/gwapi/queryService/eco/query/range/queryRegionTime
+FetchPickupTimeSlice	HTTP_POST	/gwapi/orderService/eco/order/dispatchTime/dispatchTimeByDeptCode
+FetchPickupTemplate	HTTP_POST	/gwapi/orderService/eco/order/dispatchTime/pilotCityDispatchTime
+FetchPickupConfig	HTTP_POST	/gwapi/orderService/eco/order/distribute/collectModel
+CreateOrderMySql	HTTP_POST	/gwapi/orderService/eco/order/mysql/createOrder
+FetchAppointment	HTTP_POST	/gwapi/onlineService/eco/online/print/order/secure/canOrderCityDelivery
+FetchInsurancePrice	HTTP_POST	/gwapi/pricetimeService/eco/fixedProtection/queryFixedProtection
+FetchGoodsName	HTTP_POST	/gwapi/onlineService/eco/online/cargo/queryCargoInfo
+FetchGoodsNameLabels	HTTP_POST	/gwapi/orderService/eco/order/queryGoodsRemark
+FetchGoodsDetails	HTTP_POST	/gwapi/orderService/eco/order/queryGoodsRemark
+FetchGoodsCategoryList	HTTP_POST	/gwapi/orderService/eco/order/secure/queryGoodsNameList
+FetchCodeTicket	HTTP_POST	/gwapi/wechatService/eco/wechat/ticketToCode
+FetchCodeUrlAnalysis	HTTP_POST	/gwapi/queryService/eco/query/qrcode/queryQrCodeWaybillNumber
+FetchExpressFilter	HTTP_POST	/gwapi/orderService/eco/order/sieveOrder/tips
+FetchExpressStock	HTTP_POST	/gwapi/queryService/eco/query/intowarehouse/queryNewExpLtlWareHouseList
+FetchExpressIntercept	HTTP_POST	/gwapi/orderService/eco/order/secure/queryIsCanCreateOrder
+FetchExpressFrequent	HTTP_POST	/gwapi/orderService/eco/orderTemplate/secure/recommendTemplate
+FetchExpressTemplate	HTTP_POST	/gwapi/orderService/eco/orderTemplate/secure/queryOrderTemplate
+DeleteExpressTemplate	HTTP_POST	/gwapi/orderService/eco/orderTemplate/secure/deleteOrderTemplate
+SaveExpressTemplate	HTTP_POST	/gwapi/orderService/eco/orderTemplate/secure/addModifyOrderTemplate
+FetchExpressAgreement	HTTP_POST	/gwapi/onlineService/eco/online/agreement/secure/queryIsAgreement
+FetchExpressExhibition	HTTP_POST	/gwapi/queryService/eco/query/range/sceneMap
+FetchSF	HTTP_POST	/gwapi/pricetimeService/eco/pricetime/other/queryFreightPrice
+FetchCarIsHLL	HTTP_POST	/gwapi/orderService/eco/order/secure/queryOrderUseHll
+
+## support.ts
+
+FetchSwitchConfig	HTTP_POST	/gwapi/queryService/eco/query/switch/graySwitch
+FetchDeliverSettings	HTTP_POST	/gwapi/onlineService/eco/online/receipt/secure/queryPreferences
+FetchPoliceSignature	HTTP_POST	/gwapi/couponService/eco/coupon/activityCoupon/applyActivityCoupon
+FetchJdDetectText	HTTP_POST	/gwapi/onlineService/eco/online/searchJdDetectText
+FetchJdBusiness	HTTP_POST	/gwapi/userService/eco/user/jdvop/secure/component/url
+FetchCustomerSurvey	HTTP_POST	/gwapi/commentService/eco/comment/queryCustomerQuestionnaire
+FetchServiceDateTime	HTTP_GET	/gwapi/queryService/eco/query/system/querySystemDate
+SubmitCustomerSurvey	HTTP_POST	/gwapi/commentService/eco/comment/addCustomerQuestionnaire
+SubmitPdaSign	HTTP_POST	/gwapi/onlineService/eco/online/secure/addPdaSignToRedis
+SubmitStagingInfo	HTTP_POST	/gwapi/queryService/eco/query/staging/secure/setStaging
+ExistsTapToPay	HTTP_POST	/gwapi/onlineService/eco/online/courier/tap/secure/incentiveCode/isBound
+TriggerTapToPay	HTTP_POST	/gwapi/onlineService/eco/online/courier/tap/secure/incentiveCode/scan
+HistoryTapToPay	HTTP_POST	/gwapi/onlineService/eco/online/courier/tap/secure/incentiveCode/getNearest
+ApplyTapToPay	HTTP_POST	/gwapi/onlineService/eco/online/courier/tap/secure/applyCode
+SubmitTapToPay	HTTP_POST	/gwapi/onlineService/eco/online/courier/tap/secure/incentiveCode/bind
+SubmitPartnerError	HTTP_POST	/gwapi/waybillService/eco/wayBill/abnormal/secure/escalation
+TriggerPartnerError	HTTP_POST	/gwapi/waybillService/eco/wayBill/abnormal/secure/click
+FetchSceneEvaluate	HTTP_POST	/gwapi/commentService/eco/comment/queryComment
+SubmitSceneEvaluate	HTTP_POST	/gwapi/commentService/eco/comment/insertComment
+FetchSceneEvaluateDetail	HTTP_POST	/gwapi/commentService/eco/comment/queryCommentScene
+
+## user.ts
+
+CodeToSession	HTTP_POST	/gwapi/userService/eco/user/wechatCode2Session
+Login	HTTP_POST	/gwapi/userService/eco/user/login
+PCScanLogin	HTTP_POST	/gwapi/userService/eco/user/scanLogin
+LgoinUserInfo	HTTP_GET	/gwapi/userService/eco/user/secure/queryUserInfo
+LoginExists	HTTP_GET	/gwapi/userService/eco/user/secure/checkEcoToken
+Logout	HTTP_POST	/gwapi/userService/eco/user/secure/logout
+SendVerifyCode	HTTP_POST	/gwapi/messageService/eco/message/sendSmsMessage
+FetchMonthlyInfo	HTTP_POST	/gwapi/userService/eco/user/secure/customerLabel
+FetchMonthlySetting	HTTP_POST	/gwapi/pricetimeService/eco/pricetime/secure/routeDeliModel
+FetchLoginMonthlyInfo	HTTP_GET	/gwapi/userService/eco/user/secure/queryCustByMobile
+FetchEmployeeInfo	HTTP_GET	/gwapi/onlineService/eco/online/goldenFinger/secure/isEmployee
+FetchCustomerInfo	HTTP_POST	/gwapi/userService/eco/user/secure/currentMobileCusCode
+FetchCustomerDetail	HTTP_POST	/gwapi/userService/eco/user/secure/queryMonthlyCustomer
+ExistsFollowWechat	HTTP_GET	/gwapi/userService/eco/user/isSubscribeWeChat?unionId=
+ExistsUserRealName	HTTP_GET	/gwapi/userService/eco/user/info/secure/hasRealName
+SaveUserRealName	HTTP_POST	/gwapi/userService/eco/user/info/secure/updateRealName
+FetchUserSignCode	HTTP_POST	/gwapi/onlineService/eco/online/courier/secure/queryCustomerSignCodeInfo
+FetchUserLoginToken	HTTP_GET	/gwapi/userService/eco/user/token/secure/generateTmpToken
+FetchECardLink	HTTP_POST	/gwapi/onlineService/eco/online/prestore/secure/getPmcPrestorePage
+FetchECardPreview	HTTP_POST	/gwapi/onlineService/eco/online/prestore/getPmcPreStoreVisitorPage
+FetchECardBalance	HTTP_GET	/gwapi/memberService/eco/member/secure/getEcardBalance
+FetchECardMenus	HTTP_POST	/gwapi/onlineService/eco/online/prestore/secure/queryRechargePromotions
+FetchECardRegisterStatus	HTTP_POST	/gwapi/memberService/eco/member/secure/openCard
+FetchUserPrivacyVersion	HTTP_POST	/gwapi/userService/eco/user/secure/queryUserPrivacyBehavior
+FetchUserPretect	HTTP_POST	/gwapi/userService/eco/user/protect/secure/queryMobileSame
+SaveUserPrivacyVersion	HTTP_POST	/gwapi/userService/eco/user/secure/userPrivacyBehavior
+CancelUserPrivacyVersion	HTTP_POST	/gwapi/userService/eco/user/secure/cancelPrivacyBehavior
+SubmitUserClose	HTTP_POST	/gwapi/userService/eco/user/secure/cancel
+FetchAlipayUserId	HTTP_POST	/gwapi/userService/eco/user/authorizationCode
+FetchUserRealName	HTTP_POST	/gwapi/userService/eco/user/secure/queryRealNameAuth
+SubmitUserRealName	HTTP_POST	/gwapi/userService/eco/user/secure/realNameAuth
+SubmitPoliceRealName	HTTP_POST	/gwapi/userService/eco/user/idVerification/authByRealName
+SubmitPoliceAuth	HTTP_POST	/gwapi/userService/eco/user/idVerification/authByNetworkId
+FetchBizSeq	HTTP_POST	/gwapi/userService/eco/user/idVerification/bizSeq
