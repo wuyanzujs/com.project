@@ -5,7 +5,7 @@
 
 ## 一句话现状
 
-生产 App(dpapp 4.0.7.0,Flutter/GetX)的结构、接口、UI 三线深挖已完成 M0/M1 并落盘 `docs/parity/`;M2(逐项对齐实现)刚起步:原生改单 5 端点已接入代码并通过 typecheck,**变更未提交**。
+生产 App(dpapp 4.0.7.0,Flutter/GetX)的结构、接口、UI 三线深挖已完成 M0/M1 并落盘 `docs/parity/`;M2(逐项对齐实现)已推进:**改单 5 端点、点选验证码全链路已接入并通过 verify:app 全绿 + 单测(均已提交)**;券推荐 P0 经核实为 MP-ONLY 误标已关闭。
 
 ## 已定决策(不要重新讨论)
 
@@ -32,21 +32,14 @@
 - 已核实"其实已接":催件(urgeOrder/orderUrgent v2)、评价(commentService 全套 + courier/evaluation)、订单模板 3/4、取件时间窗(dispatchTimeByDeptCode/New)。
 - 真实大缺口:wayBill/modify 改单域(已接)、wayBill/abnormal 异常上报×2、trackService 快递员实时位置×2、pricetime 券推荐/物料/批量上传、messageService 消息域 7 个。
 
-## 未提交变更(重启前建议先 commit)
+## 未提交变更
 
-```
-M  apps/com.deppon.app/src/services/order/order.api.ts   # +运单改单域 5 方法
-M  apps/com.deppon.app/src/services/order/types.ts       # +改单请求/响应 6 类型
-?? docs/parity/                                          # 全部档案 + 端点清单
-?? docs/plans/2026-10-18-production-parity-deep-dive.md   # 总计划
-```
-
-代码改动已过 `pnpm typecheck:app`;文档与代码建议分开提交(深挖只读产物 vs 实现改动)。
+无。2026-10-18 下午已全部分笔提交:`a0b4c36` 深挖文档、`388ea04` 改单端点、`506c510` 券推荐澄清、`fa187a7` crypto-js 依赖、`d1fdd0e` 点选验证码链路、`14fb160` login 契约档案。
 
 ## M2 剩余任务(按优先级)
 
-1. **send P0**:下单页券推荐 `pricetimeService/eco/pricetime/secure/queryCouponRecommend` 接入(先 dpshots 量测 tiles/coupon 视觉)。
-2. **send P0**:图形验证码链路(captcha getCaptchaAction/checkCaptchaAction + 生产端 encrypt_util 加密逻辑移植)。
+1. ~~send P0:下单页券推荐 queryCouponRecommend~~ **已关闭(2026-10-18)**:MP-ONLY 误标——生产端无此端点、小程序内无页面调用;生产端券 tile 走 queryCouponOrder,RN 已接全链路。详见 docs/parity/send/api.md。
+2. ~~send P0:图形验证码链路~~ **已实现(2026-10-18)**:契约钉死(docs/parity/login/api.md,anji-plus 开源同源 + 测试网关探针);`services/captcha` + 登录页 ClickWordCaptcha 组件 + 频控触发接线 + 黄金向量单测 6/6,verify:app 全绿。剩余:精确触发 code 待抓包/真机收敛;点选图显示尺寸(暂按 620×310 设计px)待 dpshots 量测修正。
 3. **send P0**:下单表单 tiles 行折叠粒度对照(生产端 10 种 tile + tips 全家桶,逐个真机截图对照)。
 4. **order P0**:详情页操作集对照(allot/sign/transit + cannot 不可操作态;invalidWaybill 已接)。
 5. **order**:改单 UI 入口接线(5 端点已就绪,差详情页触发场景;需真机确认哪些状态出现受理改单/改价)。
@@ -55,10 +48,12 @@ M  apps/com.deppon.app/src/services/order/types.ts       # +改单请求/响应 
 
 **UI 类任务前置动作**:真机停在生产端对应页面 → `MSYS_NO_PATHCONV=1 adb exec-out screencap -p > <Windows路径>.png`(Git Bash 下目标必须 Windows 形式路径)→ 存 `.dpshots/` 按 1440=design750×1.92 口径量像素 → 对照后改码 → Metro 热更新 force-stop 验证。
 
+**真机注意(2026-10-18)**:设备 `dcf44968` 有安全锁屏,息屏后需手动解锁;原"每9分钟防息屏"自动化已暂停且其坐标/分辨率(1080×2340)对应旧设备 `2NSDU20B03012023`,对当前 1440 宽设备无效,勿直接复用。Metro 冒烟可绕开锁屏:`curl "http://127.0.0.1:8081/index.bundle?platform=android&dev=true&minify=false"` 验证 bundle 编译。
+
 ## 已知坑(全部踩过,勿重蹈)
 
 - Git Bash 的 grep 实为 ugrep:模式以 `/` 开头会被当 flag,加 `--` 或去掉前导斜杠。
 - adb 拉文件:命令加 `MSYS_NO_PATHCONV=1`,本地目标写 Windows 路径(如 `C:/Users/.../x.png`)。
 - Windows 版 python 读不到 Git Bash 的 `/tmp`,路径用 `cygpath -w` 换算后传环境变量。
-- libapp.so 里中文是 `\uXXXX` 转义,搜文案要搜转义序列;URL/路径类 ASCII 字符串直接 `grep -aoE`。
+- libapp.so 里中文是 **UTF-16LE**(Dart TwoByteString,2026-10-18 实测修正,非 \uXXXX 转义);URL/路径类 ASCII 字符串直接 `grep -aoE`。
 - AGENTS.md 全部约束有效(平台能力走 shared/platform、样式走 tokens、体积门禁);打包类命令仍由用户执行,agent 只跑 `pnpm verify:app` 与 Metro 验证。
