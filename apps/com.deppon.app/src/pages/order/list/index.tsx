@@ -6,7 +6,7 @@ import { useCallback, useState } from 'react'
 import { expressDraftBridge } from '@/services/express'
 import { canDeleteOrder, createExpressDraftFromOrderDetail, orderService } from '@/services/order'
 import type { OrderListItem, OrderPaymentFilter, OrderResendMode, OrderRole, OrderStatusFilter } from '@/services/order'
-import { AppPage } from '@/shared/components'
+import { AppPage, AppSupportFloat } from '@/shared/components'
 import AppTabBar from '@/shared/components/AppTabBar'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
@@ -15,7 +15,6 @@ import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
 import { OrderListContent } from './components/OrderListCards'
 import { OrderFilterPanel, OrderListSummary, OrderRoleTabs, OrderSearchBar } from './components/OrderListSections'
-import { OrderSupportFloat } from './components/OrderSupportFloat'
 import { useOrderListData } from './hooks/useOrderListData'
 
 import type { OrderDateRangeDays } from './components/OrderListSections'
@@ -316,7 +315,7 @@ const OrderListPage = () => {
           onResendOrder={handleResendOrder}
         />
       </ScrollView>
-      <OrderSupportFloat onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)} />
+      <AppSupportFloat onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)} />
     </AppPage>
   )
 }

@@ -20,7 +20,7 @@ import {
   updateExpressService
 } from '@/services/express'
 import type { ExpressDraft, ExpressMonthlyPayView, ExpressProductQuote } from '@/services/express'
-import { AppPage } from '@/shared/components'
+import { AppPage, AppSupportFloat } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
@@ -335,6 +335,8 @@ const ExpressPage = () => {
           />
         ) : null}
       </ScrollView>
+      {/* 生产端寄件页右下角挂「客服」停靠浮窗。 */}
+      <AppSupportFloat label='客服' onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)} />
     </AppPage>
   )
 }

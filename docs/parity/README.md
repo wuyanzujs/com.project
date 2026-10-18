@@ -7,8 +7,8 @@
 
 | 模块 | 生产端文件 | 档案 | 深挖 | 对齐 |
 |---|---|---|---|---|
-| 寄件 send | 102 | [structure](./send/structure.md) · [api](./send/api.md) · [gaps](./send/gaps.md) | ✅ M0 结构 / ✅ M1 接口+gaps | 🔶 券推荐缺口已澄清关闭(2026-10-18) |
-| 订单 order | 61 | [structure](./order/structure.md) · [api](./order/api.md) · [gaps](./order/gaps.md) | ✅ M0 结构 / ✅ M1 接口+gaps | 🔶 改单 5 端点已接,UI 入口待真机确认 |
+| 寄件 send | 102 | [structure](./send/structure.md) · [api](./send/api.md) · [gaps](./send/gaps.md) · [ui-measure](./send/ui-measure.md) | ✅ M0 结构 / ✅ M1 接口+gaps / ✅ M2 初始态 UI 量测 | 🔶 下单页 tiles 全对齐+客服浮窗已补(2026-10-18);展开态量测待生产测试数据 |
+| 订单 order | 61 | [structure](./order/structure.md) · [api](./order/api.md) · [gaps](./order/gaps.md) | ✅ M0 结构 / ✅ M1 接口+gaps | 🔶 改单 5 端点澄清为 MP-ONLY(入口归推送立项);已取消态详情对照完成,客服按钮待补 |
 | 登录 login | 14 | [login/api.md](./login/api.md) | ✅ M2 captcha 契约(探针+开源同源实证) | 🔶 captcha 域+点选组件+登录频控接线已实现(2026-10-18),触发 code 待抓包收敛 |
 | 消息 message | 4 | [message/structure.md](./message/structure.md) | ✅ M0(随立项) | ❌(需新增) |
 | 扫一扫 scan | 3 | [scan/structure.md](./scan/structure.md) | ✅ M0(随立项) | ❌(需新增) |

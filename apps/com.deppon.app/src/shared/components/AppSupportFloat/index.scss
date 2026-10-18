@@ -1,5 +1,6 @@
 @use '@/styles/_tokens.scss' as *;
-.order-support-float {
+
+.app-support-float {
   position: absolute;
   right: 0;
   bottom: 148px;
@@ -10,13 +11,14 @@
   border-bottom-left-radius: $dp-radius-side-dock;
   border-top-left-radius: $dp-radius-side-dock;
 }
-.order-support-float__button {
+
+.app-support-float__button {
   width: 100%;
   height: 100%;
 }
 
-.order-support-float__text {
-  margin-top: 3px;
+.app-support-float__text {
+  margin-top: $dp-space-3;
   color: $dp-color-text-heading;
   font-size: $dp-font-size-body;
   line-height: $dp-line-height-caption;

@@ -10,7 +10,7 @@
 | 1 | 取件时间窗接口(dispatchTime 系/queryOrderTime) | 接口 | ✅ 已核对(2026-10-18):dispatchTimeByDeptCode 与 dispatchTimeNew 均已接(express.api.ts + order.api.ts + order.edit.schedule.api.ts);仍缺 pilotCityDispatchTime / queryOrderTime(试点城市场景,待产品确认是否需要) | 缺口降级 P2;P0 关闭 |
 | 2 | ~~下单页券推荐(queryCouponRecommend)~~ | 接口 | ✅ 已核对(2026-10-18 M2):**MP-ONLY 误标**——生产端 libapp.so 无此端点,小程序内仅 PDA 线下开单场景定义且无页面调用;生产端下单页券 tile 实际走 `couponService/queryCouponOrder`,RN 已接全链路(useExpressCoupons + ExpressCouponCard/Sheet 已挂 express/index.tsx) | **缺口关闭**;剩余仅券 tile 视觉对齐,归并到 #3 tiles 对照 |
 | 3 | 图形验证码链路(captcha 2 端点 + encrypt_util 加密) | 接口+结构 | ✅ 已实现(2026-10-18 M2):契约钉死于 [login/api.md](../login/api.md)(anji-plus 开源同源实证 + 测试网关探针);`services/captcha` 域 + 登录页点选组件 + 频控触发接线 + 黄金向量单测已落,verify:app 全绿 | 剩余:精确触发 code 待抓包/真机收敛;点选图显示尺寸待 dpshots 量测修正 |
-| 4 | 下单表单"行折叠 tiles"粒度(cargo/delivery/payment/pickup_time/postman/product 等独立行) | 结构 | express/index.tsx 单页 342 行,分区方式待对照 | 逐 tile 与生产端真机截图对照,组件化拆分(遵守体积门禁) |
+| 4 | 下单表单"行折叠 tiles"粒度(cargo/delivery/payment/pickup_time/postman/product 等独立行) | 结构+UI | ✅ 已对照(2026-10-18,[ui-measure.md](./ui-measure.md)):初始态 13 个区块全部同构,唯一缺口客服浮窗已补(AppSupportFloat 上收 shared,列表页同步复用) | **P0 关闭**;自送态/货物展开/增值服务 sheet 待生产端有测试数据后补量测 |
 | 5 | tips 体系:extra_charge 超区加价、sieve_stock 网点库存提醒、upscale 升级引导 | 结构 | 未见 | 真机确认触发场景后实现;库存提醒接 sieveOrder/tips 类端点 |
 
 ## P1(高频增强)
