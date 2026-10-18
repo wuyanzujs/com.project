@@ -8,6 +8,7 @@ import loginLabel from '@/assets/login/login-label.png'
 import alipayLogo from '@/assets/login/logo-alipay.png'
 import wechatLogo from '@/assets/login/logo-wechat.png'
 import { authService, isValidMobile, isValidSmsCode } from '@/services/auth'
+import { shouldOfferCaptcha } from '@/services/captcha'
 import { AppPressable } from '@/shared/components'
 import { AppIcon } from '@/shared/components/AppIcon'
 import { AppFormScrollView, AppKeyboardAvoidingView } from '@/shared/native'
@@ -19,6 +20,8 @@ import { shareWithApp } from '@/shared/platform'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 import type { AppWebSource } from '@/shared/webview/appWeb'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
+
+import { ClickWordCaptcha } from './components/ClickWordCaptcha'
 
 import './index.scss'
 import './content.scss'
@@ -34,6 +37,9 @@ const LoginPage = () => {
   const [submitting, setSubmitting] = useState(false)
   const [countdown, setCountdown] = useState(0)
   const [agreementAccepted, setAgreementAccepted] = useState(false)
+  const [captchaVisible, setCaptchaVisible] = useState(false)
+  const [captchaVerification, setCaptchaVerification] = useState('')
+  const captchaRetryRef = useRef(false)
   const [sessionReady, setSessionReady] = useState(() => hasValidSession() && Boolean(authService.getCachedUser()))
   const mountedRef = useRef(true)
   const targetUrl = redirectUrl || APP_ROUTES.mine
@@ -61,19 +67,11 @@ const LoginPage = () => {
     return () => clearInterval(timer)
   }, [countdown])
 
-  const handleSendSms = async () => {
-    if (!canSend) {
-      Taro.showToast({
-        title: countdown > 0 ? '请稍后再试' : '请先填写正确的手机号',
-        icon: 'none'
-      })
-      return
-    }
-
+  const requestSendSms = async (verification?: string) => {
     setSending(true)
 
     try {
-      const response = await authService.sendLoginSms(mobile)
+      const response = await authService.sendLoginSms(mobile, verification)
 
       if (!mountedRef.current) {
         return
@@ -86,6 +84,13 @@ const LoginPage = () => {
 
       if (response.status) {
         setCountdown(SMS_COUNTDOWN_SECONDS)
+        return
+      }
+
+      // 频控失败转点选验证码,通过后携带凭证自动重试(精确触发 code 待抓包确认)
+      if (shouldOfferCaptcha(response.message)) {
+        captchaRetryRef.current = true
+        setCaptchaVisible(true)
       }
     } catch {
       if (mountedRef.current) {
@@ -98,6 +103,28 @@ const LoginPage = () => {
       if (mountedRef.current) {
         setSending(false)
       }
+    }
+  }
+
+  const handleSendSms = async () => {
+    if (!canSend) {
+      Taro.showToast({
+        title: countdown > 0 ? '请稍后再试' : '请先填写正确的手机号',
+        icon: 'none'
+      })
+      return
+    }
+
+    await requestSendSms(captchaVerification || undefined)
+  }
+
+  const handleCaptchaVerified = (verification: string) => {
+    setCaptchaVerification(verification)
+    setCaptchaVisible(false)
+
+    if (captchaRetryRef.current) {
+      captchaRetryRef.current = false
+      void requestSendSms(verification)
     }
   }
 
@@ -163,7 +190,7 @@ const LoginPage = () => {
     setSubmitting(true)
 
     try {
-      const result = await authService.loginWithSms(mobile, smsCode, targetUrl)
+      const result = await authService.loginWithSms(mobile, smsCode, targetUrl, captchaVerification || undefined)
 
       if (!mountedRef.current) {
         return
@@ -174,6 +201,12 @@ const LoginPage = () => {
           title: result.message,
           icon: 'none'
         })
+
+        // 登录失败若为频控信号,弹验证码;凭证留待下次登录提交携带
+        if (shouldOfferCaptcha(result.message)) {
+          setCaptchaVisible(true)
+        }
+
         return
       }
 
@@ -310,6 +343,7 @@ const LoginPage = () => {
           </AppPressable>
         </View>
       </AppFormScrollView>
+      <ClickWordCaptcha visible={captchaVisible} onClose={() => setCaptchaVisible(false)} onVerified={handleCaptchaVerified} />
     </AppKeyboardAvoidingView>
   )
 }

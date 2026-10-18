@@ -44,12 +44,16 @@ export interface LoginRequest {
   loginType: string
   sysCode: string
   registerRecord: LoginRegisterRecord
+  /** 点选验证码校验通过后的凭证,频控场景网关要求携带 */
+  captchaVerification?: string
 }
 
 export interface SendSmsRequest {
   mobile: string
   sysCode: string
   messageType: 'login' | 'bindcuscode' | 'canceluser'
+  /** 点选验证码校验通过后的凭证,频控场景网关要求携带 */
+  captchaVerification?: string
 }
 
 export interface GenerateTmpTokenRequest {

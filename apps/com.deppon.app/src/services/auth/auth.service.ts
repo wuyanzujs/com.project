@@ -96,9 +96,10 @@ export const authService = {
   /**
    *
    * @param mobile 手机号
+   * @param captchaVerification 点选验证码凭证,频控场景可选
    * @description 校验手机号后发送登录验证码
    */
-  async sendLoginSms(mobile: string) {
+  async sendLoginSms(mobile: string, captchaVerification?: string) {
     if (!isValidMobile(mobile)) {
       return Promise.resolve({
         status: false,
@@ -110,7 +111,8 @@ export const authService = {
     return authApi.sendSmsMessage({
       mobile,
       sysCode: getSystemCode(),
-      messageType: 'login'
+      messageType: 'login',
+      ...(captchaVerification ? { captchaVerification } : {})
     })
   },
 
@@ -119,9 +121,10 @@ export const authService = {
    * @param mobile 手机号
    * @param smsCode 短信验证码
    * @param redirectUrl 登录后返回页面，可选
+   * @param captchaVerification 点选验证码凭证,频控场景可选
    * @description 短信验证码登录并保存登录态
    */
-  async loginWithSms(mobile: string, smsCode: string, redirectUrl?: string): Promise<AuthResult> {
+  async loginWithSms(mobile: string, smsCode: string, redirectUrl?: string, captchaVerification?: string): Promise<AuthResult> {
     if (!isValidMobile(mobile)) {
       return {
         status: false,
@@ -138,7 +141,7 @@ export const authService = {
       }
     }
 
-    const response = await authApi.login(createAppSmsLoginRequest(mobile, smsCode, redirectUrl))
+    const response = await authApi.login(createAppSmsLoginRequest(mobile, smsCode, redirectUrl, captchaVerification))
 
     if (response.status && response.result) {
       const sessionReady = (response.sessionCookieSaved && getCurrentEcoToken()) || (!getCurrentEcoToken() && (await recoverCurrentEcoToken()))

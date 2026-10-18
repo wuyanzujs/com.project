@@ -1,0 +1,79 @@
+@use '@/styles/_tokens.scss' as *;
+
+.click-captcha {
+  display: flex;
+  flex-direction: column;
+  width: 620px;
+}
+
+.click-captcha__stage {
+  position: relative;
+}
+
+.click-captcha__image-wrap {
+  display: flex;
+  width: 620px;
+  height: 310px;
+  overflow: hidden;
+  border-radius: $dp-radius-card;
+}
+
+.click-captcha__image-wrap--empty {
+  height: 310px;
+  background: $dp-color-bg-page;
+}
+
+.click-captcha__image {
+  width: 620px;
+  height: 310px;
+}
+
+.click-captcha__dot {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: $dp-radius-21;
+  background: $dp-color-success;
+}
+
+.click-captcha__dot-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-label-large;
+}
+
+.click-captcha__refresh {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: $dp-space-sm;
+}
+
+.click-captcha__refresh-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-label-large;
+}
+
+.click-captcha__hint {
+  margin-top: $dp-space-md;
+  padding: $dp-space-sm $dp-space-md;
+  border: 1px solid $dp-color-border;
+  border-radius: $dp-radius-card;
+}
+
+.click-captcha__hint--success {
+  border-color: $dp-color-success;
+}
+
+.click-captcha__hint--fail {
+  border-color: $dp-color-danger-accent;
+}
+
+.click-captcha__hint-text {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-36;
+  text-align: center;
+}

@@ -51,14 +51,16 @@ export function createAppLoginRegisterRecord(redirectUrl?: string): LoginRegiste
  * @param mobile 手机号
  * @param smsCode 短信验证码
  * @param redirectUrl 返回页面地址，可选
+ * @param captchaVerification 点选验证码凭证,频控场景可选
  * @description 组装 App 短信登录请求参数
  */
-export function createAppSmsLoginRequest(mobile: string, smsCode: string, redirectUrl?: string): LoginRequest {
+export function createAppSmsLoginRequest(mobile: string, smsCode: string, redirectUrl?: string, captchaVerification?: string): LoginRequest {
   return {
     account: mobile.trim(),
     verifyCode: smsCode.trim(),
     loginType: APP_RUNTIME_CONFIG.mobileLoginType,
     sysCode: APP_RUNTIME_CONFIG.systemCode,
-    registerRecord: createAppLoginRegisterRecord(redirectUrl)
+    registerRecord: createAppLoginRegisterRecord(redirectUrl),
+    ...(captchaVerification ? { captchaVerification } : {})
   }
 }
