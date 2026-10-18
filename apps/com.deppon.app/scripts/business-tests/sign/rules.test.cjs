@@ -3,12 +3,14 @@ const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
 const { createSignCodePayload, signService } = require('@/services/sign')
+const { getOwsOrigin } = require('@/shared/config/runtime')
 
 const cases = [
   {
     name: 'sign code rules create qr payload and validate real names',
     run() {
-      assert.equal(createSignCodePayload(' CODE 123 '), 'https://www.deppon.com/user/sign?code=CODE%20123')
+      // 链接跟随运行环境(测试构建 = owstest.deppon.com,生产 = www.deppon.com)。
+      assert.equal(createSignCodePayload(' CODE 123 '), `${getOwsOrigin()}/user/sign?code=CODE%20123`)
       assert.equal(createSignCodePayload(''), '')
       assert.deepEqual(signService.validateRealName(' 张三 '), {
         status: true,

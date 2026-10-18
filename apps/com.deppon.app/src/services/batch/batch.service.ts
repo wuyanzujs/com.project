@@ -1,4 +1,5 @@
 import type { DepponResponse } from '@/request/deppon'
+import { getOwsOrigin } from '@/shared/config/runtime'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 
 import { buildBatchCreateOrderRequest } from './batch.payload'
@@ -19,7 +20,8 @@ import type {
 import type { CreateExpressOrderResponse } from '../express/types'
 
 export const BATCH_MAX_CONSIGNEE_COUNT = 10
-export const BATCH_EXCEL_URL = 'https://www.deppon.com/batchorder?source=APP_BATCHORDER'
+// 跟随运行环境:生产 www.deppon.com / 测试 owstest.deppon.com。
+export const BATCH_EXCEL_URL = `${getOwsOrigin()}/batchorder?source=APP_BATCHORDER`
 
 /**
  *

@@ -1,4 +1,5 @@
 import type { DepponResponse } from '@/request/deppon'
+import { getOwsOrigin } from '@/shared/config/runtime'
 
 import { signApi } from './sign.api'
 import { createServiceFailure as createFailure } from '../serviceResponse'
@@ -53,7 +54,7 @@ function validateRealName(realName: string) {
 export function createSignCodePayload(signCode: string) {
   const normalizedCode = normalizeText(signCode)
 
-  return normalizedCode ? `https://www.deppon.com/user/sign?code=${encodeURIComponent(normalizedCode)}` : ''
+  return normalizedCode ? `${getOwsOrigin()}/user/sign?code=${encodeURIComponent(normalizedCode)}` : ''
 }
 
 /**
