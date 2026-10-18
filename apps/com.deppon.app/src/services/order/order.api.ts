@@ -36,6 +36,12 @@ import type {
   WaybillDetailResponse,
   WaybillSubscriptionRaw,
   WaybillSubscriptionRequest,
+  WaybillChangeAcceptRequest,
+  WaybillChangePriceRequest,
+  WaybillExpChangeRecord,
+  WaybillExpChangeRecordRequest,
+  WaybillLtlChangeRecord,
+  WaybillLtlChangeRecordRequest,
   WaybillTrackListResponse
 } from './types'
 
@@ -229,6 +235,50 @@ export const orderApi = {
   queryContractDetail(data: OrderContractDetailRequest, loading = false) {
     return depponHttp.post<OrderContractDetailResponse, OrderContractDetailRequest>('/gwapi/onlineService/eco/online/secure/queryContractDetail', data, {
       loading
+    })
+  },
+
+  // 运单改单域:受理改单/改价走生产端原生通道(wayBill/modify),入口接线见 docs/parity/order/gaps.md
+  queryWaybillExpChangeRecord(data: WaybillExpChangeRecordRequest) {
+    return depponHttp.post<WaybillExpChangeRecord, WaybillExpChangeRecordRequest>(
+      '/gwapi/waybillService/eco/waybill/modify/secure/queryExpWaybillChangeRecord',
+      data,
+      {
+        loading: false,
+        login: false
+      }
+    )
+  },
+
+  queryWaybillLtlChangeRecord(data: WaybillLtlChangeRecordRequest) {
+    return depponHttp.post<WaybillLtlChangeRecord, WaybillLtlChangeRecordRequest>(
+      '/gwapi/waybillService/eco/waybill/modify/secure/queryLtlWaybillChangeRecord',
+      data,
+      {
+        loading: false,
+        login: false
+      }
+    )
+  },
+
+  submitWaybillExpChangeAccept(data: WaybillChangeAcceptRequest) {
+    return depponHttp.post<boolean, WaybillChangeAcceptRequest>('/gwapi/waybillService/eco/waybill/modify/secure/changeAcceptExpWaybill', data, {
+      loading: true,
+      login: true
+    })
+  },
+
+  submitWaybillLtlChangeAccept(data: WaybillChangeAcceptRequest) {
+    return depponHttp.post<boolean, WaybillChangeAcceptRequest>('/gwapi/waybillService/eco/waybill/modify/secure/changeAcceptLtlWaybill', data, {
+      loading: true,
+      login: true
+    })
+  },
+
+  submitWaybillChangePrice(data: WaybillChangePriceRequest) {
+    return depponHttp.post<boolean, WaybillChangePriceRequest>('/gwapi/waybillService/eco/waybill/modify/secure/waybillChangePriceSubmit', data, {
+      loading: true,
+      login: true
     })
   }
 }

@@ -616,3 +616,32 @@ export interface WaybillTrackListResponse {
   weatherWarning: string | null
   tracks: WaybillTrackItem[] | null
 }
+
+export interface WaybillChangePriceRequest {
+  waybillNo: string
+  paidMethod: 'PC'
+}
+
+export interface WaybillExpChangeRecordRequest {
+  eventNo: string
+  waybillNo: string
+}
+
+export interface WaybillExpChangeRecord {
+  handleStatus: string
+}
+
+export interface WaybillChangeAcceptRequest {
+  eventNo: string
+  waybillNo: string
+  handleStatus: '2' | '3'
+}
+
+export interface WaybillLtlChangeRecordRequest {
+  waybillNo: string
+  status: 'PRE_AUDIT' | 'PRE_ACCECPT' | 'PRE_UP_AUDIT'
+}
+
+export interface WaybillLtlChangeRecord {
+  status: string
+}
