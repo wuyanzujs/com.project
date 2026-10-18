@@ -31,8 +31,8 @@ pages/pay/
 | onlineService/.../pay/pmc/secure/payConfirm | ConfirmPaymentOrder | ✅ 已接 |
 | onlineService/.../pay/pmc/secure/payCancel | CancelPaymentOrder | ✅ 已接 |
 | onlineService/.../pay/pmc/secure/queryPayOrderList | FetchPdaPaymentList | ❌ RN 缺(支付单列表) |
-| onlineService/.../pay/secure/queryIsPreCardPay | ExistsECardPayment | ❌ RN 缺(E 卡支付判断) |
-| onlineService/.../pay/secure/preCardConfirm | ConfirmECardOrder | ❌ RN 缺(E 卡支付确认) |
+| onlineService/.../pay/secure/queryIsPreCardPay | ExistsECardPayment | ✅ 2026-10-18 M2 已接(paymentApi.queryECardPayable) |
+| onlineService/.../pay/secure/preCardConfirm | ConfirmECardOrder | ✅ 2026-10-18 M2 已接(paymentApi.confirmECardOrder,appId 取 App 渠道码) |
 | onlineService/.../pricetime/queryExpTltPrice | FetchPdaOrderInfo | ❌ RN 缺(特惠价格) |
 | wechatService/.../payScore/*(2 个)、alipay payafteruse/*(2 个) | 支付分/先用后付 | 🚫 平台专属(微信/支付宝小程序容器能力),RN 豁免 |
 
@@ -46,5 +46,5 @@ pages/pay/
 ## Gap 方向(进 gaps 评审)
 
 1. 待支付/已支付运单列表页(生产端双列表 + 查询空态)是否对齐 RN payment/list 形态。
-2. E 卡支付通道(2 端点)+ 月结支付交互(month_sheet)。
+2. ~~E 卡支付通道(2 端点)+ 月结支付交互(month_sheet)~~ E 卡通道 **2026-10-18 M2 已实现**:checkout 页双通道选择(App 在线支付/E卡),E 卡为纯 HTTP 闭环(queryIsPreCardPay → getEcardBalance → payCreate → 密码弹窗 → preCardConfirm,关闭弹窗自动取消支付单),参照小程序 `pages/pay/cashier`;剩余月结交互(month_sheet)待对照。
 3. 支付方式清单与 method_item 的枚举对齐(P0,影响下单闭环)。
