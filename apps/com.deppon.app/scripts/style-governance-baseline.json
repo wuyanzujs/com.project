@@ -1506,16 +1506,6 @@
         "usesTokens": true,
         "lines": 91
       },
-      "src/pages/order/list/components/OrderSupportFloat/index.scss": {
-        "rawColors": 0,
-        "rawFontSizes": 0,
-        "rawLineHeights": 0,
-        "rawRadii": 0,
-        "rawFontWeights": 0,
-        "rawSpaces": 1,
-        "usesTokens": true,
-        "lines": 23
-      },
       "src/pages/order/list/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
@@ -1675,6 +1665,16 @@
         "rawSpaces": 0,
         "usesTokens": true,
         "lines": 7
+      },
+      "src/pages/payment/checkout/components/ECardPasswordDialog/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 35
       },
       "src/pages/payment/checkout/content.scss": {
         "rawColors": 0,
@@ -2235,6 +2235,16 @@
         "rawSpaces": 0,
         "usesTokens": true,
         "lines": 67
+      },
+      "src/shared/components/AppSupportFloat/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 25
       },
       "src/shared/components/AppSwitch/index.scss": {
         "rawColors": 0,

@@ -1,6 +1,15 @@
 import { depponHttp } from '@/request/deppon'
 
-import type { PaymentCancelRequest, PaymentConfirmResponse, PaymentCreateRequest, PaymentListRequest, PaymentListResponse, PaymentOrder } from './types'
+import type {
+  ECardCheckRequest,
+  ECardConfirmRequest,
+  PaymentCancelRequest,
+  PaymentConfirmResponse,
+  PaymentCreateRequest,
+  PaymentListRequest,
+  PaymentListResponse,
+  PaymentOrder
+} from './types'
 
 export const paymentApi = {
   queryUnpaidList(data: PaymentListRequest, loading = false) {
@@ -19,5 +28,17 @@ export const paymentApi = {
 
   cancelOrder(data: PaymentCancelRequest, loading = false) {
     return depponHttp.post<null, PaymentCancelRequest>('/gwapi/onlineService/eco/online/pay/pmc/secure/payCancel', data, { loading })
+  },
+
+  // E 卡支付通道:纯 HTTP 闭环,不依赖原生支付 SDK(参照小程序收银台 ExistsECardPayment/ConfirmECardOrder)。
+  queryECardPayable(data: ECardCheckRequest) {
+    return depponHttp.post<boolean, ECardCheckRequest>('/gwapi/onlineService/eco/online/pay/secure/queryIsPreCardPay', data, {
+      loading: false,
+      login: false
+    })
+  },
+
+  confirmECardOrder(data: ECardConfirmRequest) {
+    return depponHttp.post<boolean, ECardConfirmRequest>('/gwapi/onlineService/eco/online/pay/secure/preCardConfirm', data, { loading: true, login: true })
   }
 }

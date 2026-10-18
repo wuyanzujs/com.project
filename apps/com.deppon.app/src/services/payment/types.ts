@@ -236,3 +236,22 @@ export interface PaymentCheckoutResult {
   transactionId?: string
   waybillNumber: string
 }
+
+export interface ECardCheckRequest {
+  waybillNum: string
+  orderSubType: string
+}
+
+export interface ECardConfirmRequest {
+  appId: string
+  password: string
+  payNo: string
+}
+
+export interface ECardChannelView {
+  balance: number
+  enabled: boolean
+  passwordSet: boolean
+  registered: boolean
+  tips: string
+}

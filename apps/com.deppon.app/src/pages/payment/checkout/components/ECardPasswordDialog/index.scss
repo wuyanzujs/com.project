@@ -1,0 +1,35 @@
+@use '@/styles/_tokens.scss' as *;
+
+.ecard-password {
+  display: flex;
+  flex-direction: column;
+}
+
+.ecard-password__hint {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.ecard-password__input {
+  margin-top: $dp-space-md;
+  padding: $dp-space-sm $dp-space-md;
+  border: 1px solid $dp-color-border;
+  border-radius: $dp-radius-card;
+  background: $dp-color-bg-page;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  letter-spacing: 8px;
+  text-align: center;
+}
+
+.ecard-password__placeholder {
+  color: $dp-color-text-placeholder;
+}
+
+.ecard-password__error {
+  margin-top: $dp-space-sm;
+  color: $dp-color-danger-accent;
+  font-size: $dp-font-size-body-small;
+  line-height: $dp-line-height-36;
+}
