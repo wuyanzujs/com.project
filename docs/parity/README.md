@@ -7,14 +7,15 @@
 
 | 模块 | 生产端文件 | 档案 | 深挖 | 对齐 |
 |---|---|---|---|---|
-| 寄件 send | 102 | [structure](./send/structure.md) · [api](./send/api.md) · [gaps](./send/gaps.md) | ✅ M0 结构 / ✅ M1 接口+gaps | ❌ |
-| 订单 order | 61 | [structure](./order/structure.md) · [api](./order/api.md) · [gaps](./order/gaps.md) | ✅ M0 结构 / ✅ M1 接口+gaps | ❌ |
+| 寄件 send | 102 | [structure](./send/structure.md) · [api](./send/api.md) · [gaps](./send/gaps.md) | ✅ M0 结构 / ✅ M1 接口+gaps | 🔶 券推荐缺口已澄清关闭(2026-10-18) |
+| 订单 order | 61 | [structure](./order/structure.md) · [api](./order/api.md) · [gaps](./order/gaps.md) | ✅ M0 结构 / ✅ M1 接口+gaps | 🔶 改单 5 端点已接,UI 入口待真机确认 |
+| 登录 login | 14 | [login/api.md](./login/api.md) | ✅ M2 captcha 契约(探针+开源同源实证) | 🔶 captcha 域+点选组件+登录频控接线已实现(2026-10-18),触发 code 待抓包收敛 |
 | 消息 message | 4 | [message/structure.md](./message/structure.md) | ✅ M0(随立项) | ❌(需新增) |
 | 扫一扫 scan | 3 | [scan/structure.md](./scan/structure.md) | ✅ M0(随立项) | ❌(需新增) |
 | 支付 pay | 19 | [pay/structure.md](./pay/structure.md) | ✅ M1 | ❌ |
 | 地址簿 contact | 32 | [contact/structure.md](./contact/structure.md) | ✅ M1(接口零缺口) | 🔶 视觉首轮完成 |
 | 首页 home/main、查询 query、快递员 courier、我的 mine、账号 account、工具 system | 89 | — | ⬜ M1 | 🔶 骨架已有 |
-| 优惠券 coupon、登录 login、寄件服务 service、打印 printer | 58 | — | ⬜ M2 | 🔶 骨架已有 |
+| 优惠券 coupon、寄件服务 service、打印 printer | 45 | — | ⬜ M2 | 🔶 骨架已有 |
 | 会员 member/E卡、客服、发票 | 少量/生产端无独立发票页 | — | ⬜ M3 | 🔶 |
 
 每个模块深挖后在本表登记档案链接与日期;对齐完成标准 = verify:app 全绿 + dpshots 量测比对通过。
