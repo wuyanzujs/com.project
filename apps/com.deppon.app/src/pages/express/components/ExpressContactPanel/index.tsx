@@ -10,7 +10,6 @@ const CONTACT_IMAGES = {
   sender: 'https://ca.deppon.com.cn/ows/assets/common/contact.png',
   consignee: 'https://ca.deppon.com.cn/ows/assets/common/receive.png',
   addressBook: 'https://ca.deppon.com.cn/ows/assets/contact/15.png',
-  // 圆形底与双向箭头一体的互换按钮图，与生产 App 同源。
   reverse: 'https://ca.deppon.com.cn/ows/assets/common/reverse.png'
 }
 
@@ -85,7 +84,7 @@ function ExpressContactCard({ background, contact, emptyText, mark, markType, ta
 }
 
 export function ExpressContactPanel({ draft, onCreateContact, onSelectContact, onSwapContacts }: ExpressContactPanelProps) {
-  // 生产 App 只有寄收件都填好时才提供互换，空表单不展示这个入口。
+  // 收寄件地址齐全后才提供地址互换入口。
   const canSwap = Boolean(draft.sender && draft.consignee)
 
   return (

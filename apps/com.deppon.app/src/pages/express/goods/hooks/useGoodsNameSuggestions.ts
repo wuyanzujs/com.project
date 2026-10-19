@@ -3,8 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { expressService } from '@/services/express'
 import type { ExpressGoodsItem } from '@/services/express'
 
-// 生产端物品信息页在输入品名时即时搜索推荐（queryCargoInfo），这里用
-// 500ms 防抖复刻同样的交互，避免每个按键都打一次接口。
+// 品名推荐使用 500ms 防抖，避免每次按键都发起请求。
 const GOODS_NAME_SUGGEST_DEBOUNCE_MS = 500
 
 /** 物品信息页的品名联想：输入停止 500ms 后查询推荐，避免每次按键都请求接口。 */

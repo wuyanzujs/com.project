@@ -168,7 +168,7 @@ const ContactEditPage = () => {
       defaultAddress: '0'
     })
   }
-  // 生产键盘弹出时底部确定栏不出现，识别框失焦后恢复。
+  // 输入框聚焦时隐藏底部确定栏，失焦后恢复。
   const editFooter = analysisFocused ? undefined : (
     <View className='contact-edit-footer'>
       <AppPressable className='contact-edit-footer__button' disabled={saving} onPress={handleSave}>

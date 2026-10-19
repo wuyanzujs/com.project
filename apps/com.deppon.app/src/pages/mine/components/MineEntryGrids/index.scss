@@ -65,8 +65,6 @@
   text-align: center;
 }
 
-/* 生产端角标（实测福利 92x54、HOT 99x54 全辨率）无白边、内边距更紧，
-   相对图标中心比 ours 原实现右移约 8；压在图标右上角、下缘贴图标墨顶 */
 .mine-service-grid__badge {
   position: absolute;
   top: 0;

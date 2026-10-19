@@ -1,6 +1,6 @@
 import { depponHttp } from '@/request/deppon'
 
-// 腾讯位置服务 key 沿用旧小程序工程配置，天气 WebService 接口对该 key 开放。
+// 已开通天气 WebService 的腾讯位置服务 key。
 const TENCENT_LBS_KEY = 'N3JBZ-GVFKJ-RRFF7-XFQ7X-2FFQT-HGB7F'
 
 export interface GisWeatherDayInfo {

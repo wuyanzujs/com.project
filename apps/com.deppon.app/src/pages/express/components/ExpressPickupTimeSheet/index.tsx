@@ -18,7 +18,6 @@ interface ExpressPickupTimeSheetProps {
   onClose: () => void
 }
 
-// 生产端日期列展示完整日期加相对日括注，如「2026-09-30(今天)」。
 function getRelativeDayLabel(value: string) {
   const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/)
 
@@ -38,7 +37,7 @@ function getRelativeDayLabel(value: string) {
   return ''
 }
 
-// 与生产一致：切日期后默认选当日第一个可选的普通时段，没有普通时段再取首个可选时段。
+// 切换日期后优先选中首个可用普通时段，没有普通时段时取首个可用时段。
 function getDefaultTimeOption(controller: ExpressPickupTimeController, date: string) {
   const dateOption = controller.dateOptions.find(option => option.value === date)
 

@@ -25,7 +25,7 @@ export function normalizeCaptchaPoints(points: CaptchaPoint[], displaySize: Capt
  *
  * @param content 待加密明文
  * @param secretKey 验证码会话密钥
- * @description AES-ECB-PKCS7,key 为 secretKey 原文字节,输出标准 base64(与生产端 EncryptUtil.aesEncode 等价)
+ * @description 使用 AES-ECB-PKCS7 加密，密钥取 secretKey 原文字节，输出标准 base64。
  */
 export function aesEncryptEcbBase64(content: string, secretKey: string): string {
   const key = Utf8.parse(secretKey)

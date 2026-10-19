@@ -138,7 +138,7 @@ const ExpressPage = () => {
   }, [draft])
 
   useDidShow(() => {
-    // 物品信息页确认后回传货物（对齐生产端 redux 存货 + onShow 重算价格）。
+    // 读取物品信息页回传的货物并重算价格。
     const goodsPayload = expressGoodsBridge.consume()
 
     if (goodsPayload) {
@@ -275,7 +275,6 @@ const ExpressPage = () => {
             onSelect={monthlyPay.handlePaymentTypeSelect}
           />
 
-          {/* 生产端把价格时效块嵌在基础信息卡内：付款方式与防水提示之间。 */}
           {quotes.length > 0 || quoteStatus === 'loading' || draft.quoteStaleReason ? (
             <ExpressQuoteSection
               plain
@@ -324,7 +323,6 @@ const ExpressPage = () => {
 
         <ExpressPrivacyCard value={draft.service.privacyProtection} onChange={privacyController.onChange} onOpenTerms={privacyController.onOpenTerms} />
 
-        {/* 生产端在货物名称与收寄双方地址齐全后才展示协议行。 */}
         {draft.goods.name && draft.sender?.address && draft.consignee?.address ? (
           <ExpressOrderOptionsSection
             agreementAccepted={draft.agreementAccepted}
@@ -339,7 +337,6 @@ const ExpressPage = () => {
           />
         ) : null}
       </ScrollView>
-      {/* 生产端寄件页右下角挂「客服」停靠浮窗。 */}
       <AppSupportFloat label='客服' onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)} />
     </AppPage>
   )

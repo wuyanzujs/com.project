@@ -34,7 +34,6 @@ function getCouponSummary(controller: ExpressCouponController, couponNumber: str
   return controller.loginRequired ? '登录后可选' : '暂无可用'
 }
 
-// 生产端选中券后展示红色优惠金额「-¥3」（prod_scroll_coupon.png 量测），非胶囊徽标。
 function isCouponHighlighted(controller: ExpressCouponController, couponNumber: string) {
   return Boolean(couponNumber) || controller.available.length > 0
 }
@@ -55,9 +54,9 @@ export function ExpressCouponCard({ controller, couponNumber }: ExpressCouponCar
 
   const summary = getCouponSummary(controller, couponNumber)
   const highlighted = isCouponHighlighted(controller, couponNumber)
-  // 已选券时优先展示生产端同款优惠金额，匹配不到券时回退券摘要。
+  // 已选券时优先展示优惠金额，匹配不到券时回退券摘要。
   const selectedCouponText = getSelectedCouponText(controller, couponNumber)
-  // 生产 App 只在有券可用时提示补全信息，出错提示错误；暂无可用不留提示行。
+  // 有可用券时提示补全信息；请求失败显示错误，无可用券时隐藏提示行。
   const hintText = couponNumber
     ? ''
     : controller.status === 'error' && controller.message

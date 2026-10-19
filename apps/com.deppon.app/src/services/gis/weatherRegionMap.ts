@@ -1,5 +1,4 @@
-// 由旧小程序工程城市数据集（CITY_SENDER 与 CITY_CONSIGNEE 合集）一次性转换生成，
-// 用于区县名到腾讯天气 adcode 的离线映射；区县名与地址簿/智能识别的标准名一致。
+// 区县名称到腾讯天气 adcode 的离线映射，名称与地址簿及智能识别结果保持一致。
 export const GIS_COUNTY_ADCODE_MAP: Record<string, Record<string, Record<string, string>>> = {
   广东省: {
     潮州市: { 潮安区: '445121', 饶平县: '445122', 湘桥区: '445102' },

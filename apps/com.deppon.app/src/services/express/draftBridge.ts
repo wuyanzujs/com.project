@@ -122,7 +122,7 @@ export const expressDraftBridge = {
 
   /**
    *
-   * @description 以全新草稿进入寄件页(对齐生产端详情底栏「重新寄件」)
+   * @description 以全新草稿进入寄件页，用于「重新寄件」。
    */
   carryFreshSend() {
     pendingDraft = {

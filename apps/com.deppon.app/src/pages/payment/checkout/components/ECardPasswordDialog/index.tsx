@@ -15,7 +15,7 @@ interface ECardPasswordDialogProps {
 }
 
 /**
- * @description E 卡支付密码弹窗,对齐小程序收银台密码输入形态(6 位数字)
+ * @description E 卡支付密码弹窗，输入 6 位数字密码。
  */
 export function ECardPasswordDialog({ error, submitting, visible, onClose, onConfirm }: ECardPasswordDialogProps) {
   const [password, setPassword] = useState('')

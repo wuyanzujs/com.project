@@ -238,7 +238,7 @@ export const orderApi = {
     })
   },
 
-  // 运单改单域:受理改单/改价走生产端原生通道(wayBill/modify),入口接线见 docs/parity/order/gaps.md
+  // 运单改单及改价相关接口。
   queryWaybillExpChangeRecord(data: WaybillExpChangeRecordRequest) {
     return depponHttp.post<WaybillExpChangeRecord, WaybillExpChangeRecordRequest>(
       '/gwapi/waybillService/eco/waybill/modify/secure/queryExpWaybillChangeRecord',

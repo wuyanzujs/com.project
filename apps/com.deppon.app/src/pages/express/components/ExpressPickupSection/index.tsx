@@ -17,7 +17,7 @@ export interface ExpressPickupSectionProps {
   pickup: ExpressDraft['pickup']
   pickupTimeController: ExpressPickupTimeController
   needContact: ExpressFlag
-  // 取件时段依赖寄件地址，生产 App 在未选寄件地址前不展示时间入口。
+  // 取件时段依赖寄件地址，选定地址后才展示时间入口。
   hasSenderAddress: boolean
   onModeChange: (dispatch: ExpressFlag) => void
   onNeedContactChange: (needContact: ExpressFlag) => void
@@ -39,7 +39,6 @@ export function ExpressPickupSection({
   onOpenStations
 }: ExpressPickupSectionProps) {
   const isDoorPickup = pickup.dispatch === 'Y'
-  // 生产端「期望上门时间」行点击打开底部弹窗，不在页内展开时段面板。
   const [timeSheetVisible, setTimeSheetVisible] = useState(false)
   const pickupTime = pickup.timeSlot || pickup.time || '今天 一小时内'
   const stationName = pickup.stationName || '查看附近服务点'
@@ -52,7 +51,6 @@ export function ExpressPickupSection({
   return (
     <View className='express-pickup-section'>
       <View className='express-pickup-section__modes'>
-        {/* 生产端分段器三件套：顶部灰垫片衬出白盖片凸角露出的灰、主灰块带 32 底圆角、白盖片 32 凸角压顶。 */}
         <View
           className={
             isDoorPickup

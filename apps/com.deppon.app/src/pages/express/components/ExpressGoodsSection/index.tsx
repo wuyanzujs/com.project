@@ -9,13 +9,11 @@ interface ExpressGoodsSectionProps {
   onPress: () => void
 }
 
-// 生产端把名称截断到 5 个字后再拼进摘要。
+// 摘要中的货物名称最多展示 5 个字。
 function cutGoodsName(name: string) {
   return Array.from(name).slice(0, 5).join('')
 }
 
-// 生产端点击「货物信息」整行跳转独立物品信息页（/pages/sendService/goods），
-// 行内只展示摘要：名称、重量，有体积时追加 /体积m³。
 export function ExpressGoodsSection({ goods, onPress }: ExpressGoodsSectionProps) {
   const trimmedName = goods.name.trim()
   const goodsFilled = Boolean(trimmedName && goods.weight > 0)

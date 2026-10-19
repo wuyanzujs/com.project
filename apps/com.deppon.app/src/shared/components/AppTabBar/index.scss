@@ -31,15 +31,11 @@
   margin-bottom: $dp-space-1;
 }
 
-/* 生产端 3.0x 切图 144×144 → 逻辑 48，与原 icon.hero 尺寸一致，
-   保证「领券」徽章的定位偏移维持不变。 */
 .app-tab-bar__glyph {
   width: 48px;
   height: 48px;
 }
 
-/* 生产端「福利」tab 图标右上的常驻「领券」红标：左缘压住图标右半、
-   顶部高出图标约 8，药丸造型 */
 .app-tab-bar__badge {
   position: absolute;
   top: -$dp-space-8;

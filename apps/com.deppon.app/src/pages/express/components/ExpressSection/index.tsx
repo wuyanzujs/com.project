@@ -19,7 +19,6 @@ interface ExpressSectionProps extends PropsWithChildren {
 }
 
 export function ExpressSection({ children, expanded = false, hint, plain = false, summary, summaryMuted = false, title, onHeaderPress }: ExpressSectionProps) {
-  // 基础信息卡里的行按生产端 82px 行高，卡片内的折叠段沿用原来的紧凑行高。
   const headClassName = plain ? 'express-section__head express-section__head--row' : 'express-section__head'
 
   const header = (

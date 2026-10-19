@@ -4,7 +4,6 @@ import { AppPressable } from '@/shared/components'
 
 import './index.scss'
 
-// 与生产端一致：雨云动图 + 蓝字提示 + 右箭头，点击进入货物信息。
 const WEATHER_RAIN_ICON = 'https://ca.deppon.com.cn/ows/assets/express/27.gif'
 const WEATHER_ARROW = 'https://ca.deppon.com.cn/ows/assets/express/26.png'
 

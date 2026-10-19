@@ -129,7 +129,7 @@
 }
 
 .login-agreement__link {
-  /* 生产端协议链接为行内文字触控（行高约 34px），这里跟随生产覆盖默认触控下限。 */
+  /* 协议链接使用行内文字触控，覆盖默认触控高度以保持行内排版。 */
   min-width: $dp-space-0;
   min-height: $dp-space-0;
   color: $dp-color-text-ink;

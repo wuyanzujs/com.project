@@ -1,6 +1,5 @@
 @use '@/styles/_tokens.scss' as *;
 
-/* 生产端协议勾选是空心圆 radio：未选中灰环，选中白底 + 品牌环 + 品牌点。 */
 .express-order-options {
   margin-bottom: $dp-space-16;
 }

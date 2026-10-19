@@ -53,8 +53,6 @@
   line-height: $dp-line-height-body;
 }
 
-/* 右上操作列绝对定位：右缘留 12，图标盒中心 ≈ 状态栏底部下 44；
-   生产端消息↔分享间距比分享↔设置小 6，用基础 gap + 设置位 margin 补齐 */
 .mine-hero__actions {
   position: absolute;
   right: $dp-space-12;
@@ -78,8 +76,6 @@
   margin-left: $dp-space-6;
 }
 
-/* 生产端消息图标右上有常驻红点（约 30x28，无数量语义）：右缘与图标右缘对齐，
-   纵向大部分凸出图标顶部 */
 .mine-hero__message-dot {
   position: absolute;
   top: $dp-space-8;

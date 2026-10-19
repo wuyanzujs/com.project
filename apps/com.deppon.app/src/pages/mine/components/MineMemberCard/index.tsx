@@ -38,7 +38,6 @@ export function MineMemberCard({ levelCode, member, couponCount = 0, storedCardC
         <View className='mine-member-card__benefits'>
           <View className='mine-member-card__benefit'>
             <Image className='mine-member-card__benefit-icon' mode='aspectFit' src='https://ca.deppon.com.cn/ows/assets/center2412/40.png' />
-            {/* 生产端数字加粗、标签常规字重，数字随文案连排 */}
             <Text className='mine-member-card__benefit-text'>
               优惠券
               <Text className='mine-member-card__benefit-num'>{couponCount}</Text>

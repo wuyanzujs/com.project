@@ -63,8 +63,6 @@ interface ExpressServiceSectionProps {
   onServiceChange: (patch: Partial<ExpressDraft['service']>) => void
 }
 
-// 生产 App 把送货方式、回单、代收货款等收敛成「增值服务」一行入口，
-// 展开后仍是明细面板，避免这些能力在寄件页各处散落。
 export function ExpressServiceSection({
   collection,
   collectionController,
@@ -104,7 +102,7 @@ export function ExpressServiceSection({
     warehouse.enabled && '送货进仓',
     remark && '备注'
   ].filter(Boolean)
-  // 生产端摘要最多展示 3 项；含代收货款时只留 2 项，超出用「…」截断。
+  // 摘要最多展示 3 项；含代收货款时最多展示 2 项，超出部分用「…」截断。
   const summaryLimit = summaryParts.includes('代收货款') ? 2 : 3
   const summary = summaryParts.length > summaryLimit ? `${summaryParts.slice(0, summaryLimit).join('、')}…` : summaryParts.join('、')
   const hasSummary = summaryParts.length > 0

@@ -1,6 +1,5 @@
 @use '@/styles/_tokens.scss' as *;
 
-/* 生产端分段器：白卡上只有未选中侧铺灰块，顶部以反向圆角内凹过渡，底部圆角收进。 */
 .express-pickup-section {
   margin-bottom: $dp-space-16;
   overflow: hidden;
@@ -91,7 +90,6 @@
   font-weight: $dp-font-weight-regular;
   line-height: $dp-line-height-42;
 }
-/* 生产端「期望上门时间」「提前电话联系」两行的行首标签与卡片边缘齐平。 */
 .express-pickup-section__label--flush {
   margin-left: 0;
 }
@@ -110,7 +108,6 @@
   height: $dp-space-24;
   margin-left: $dp-space-8;
 }
-/* 生产端两行内容之间没有分隔线。 */
 .express-pickup-section__contact-row {
   display: flex;
   flex-direction: row;
@@ -152,7 +149,6 @@
   background: $dp-color-transparent;
   border-width: 0;
 }
-/* 生产端 radio：未选中灰环，选中白底 + 品牌环 + 品牌点。 */
 .express-pickup-section__radio {
   display: flex;
   flex-shrink: 0;

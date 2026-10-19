@@ -30,7 +30,7 @@ export const paymentApi = {
     return depponHttp.post<null, PaymentCancelRequest>('/gwapi/onlineService/eco/online/pay/pmc/secure/payCancel', data, { loading })
   },
 
-  // E 卡支付通道:纯 HTTP 闭环,不依赖原生支付 SDK(参照小程序收银台 ExistsECardPayment/ConfirmECardOrder)。
+  // E 卡支付通过 HTTP 接口完成，不依赖原生支付 SDK。
   queryECardPayable(data: ECardCheckRequest) {
     return depponHttp.post<boolean, ECardCheckRequest>('/gwapi/onlineService/eco/online/pay/secure/queryIsPreCardPay', data, {
       loading: false,

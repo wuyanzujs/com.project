@@ -147,7 +147,7 @@ export function getExpressContactFullAddress(contact: ExpressContact) {
   return [contact.province, contact.city, contact.county, contact.town, contact.address].filter(Boolean).join('')
 }
 
-// 生产 App 在寄件页地址卡展示脱敏手机号，格式为「151 **** 5262」（前 3 后 4，中间空格分隔）。
+// 地址卡中的手机号保留前 3 位和后 4 位，中间四位替换为星号并用空格分隔。
 export function maskExpressContactMobile(mobile: string | null | undefined) {
   if (!mobile) {
     return ''
@@ -171,7 +171,7 @@ export function getExpressContactRegion(contact: ExpressContact) {
   return [contact.province, contact.city, contact.county, contact.town].filter(Boolean).join('')
 }
 
-// 报价接口的省市区格式为「省-市-区,详细地址」（生产端约定），与无分隔拼接的 region 区分。
+// 报价接口要求「省-市-区,详细地址」，不同于直接拼接的 region 字段。
 export function getExpressContactRegionAddress(contact: ExpressContact) {
   return [[contact.province, contact.city, contact.county].filter(Boolean).join('-'), contact.address].filter(Boolean).join(',')
 }

@@ -1,6 +1,5 @@
 @use '@/styles/_tokens.scss' as *;
 
-/* 双列结构：左列日期灰底、右列时段白底，行高 104，生产弹窗量测规格。 */
 .express-pickup-time-sheet__columns {
   display: flex;
   flex-direction: row;

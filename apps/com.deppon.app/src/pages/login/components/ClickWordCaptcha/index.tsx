@@ -23,7 +23,7 @@ interface ClickWordCaptchaProps {
 type CaptchaPhase = 'loading' | 'ready' | 'checking' | 'success' | 'fail' | 'error'
 
 /**
- * @description 点选文字验证码弹层,对齐生产端 click_captcha:get → 点选 → check → 产出 captchaVerification
+ * @description 点选文字验证码弹层：获取挑战、点选校验并返回 captchaVerification。
  */
 export function ClickWordCaptcha({ visible, onClose, onVerified }: ClickWordCaptchaProps) {
   const [phase, setPhase] = useState<CaptchaPhase>('loading')

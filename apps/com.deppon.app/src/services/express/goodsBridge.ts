@@ -5,9 +5,7 @@ export interface ExpressGoodsBridgePayload {
   savedAt: number
 }
 
-// 生产端物品信息页确认后走 redux 存货 + navigateBack，寄件页在页面
-// onShow 里拿到新货物并重算价格；RN 版没有全局 redux，用一次性桥
-// 在两个页面间传递，语义与生产端保持一致。
+// 使用一次性桥传递物品信息；寄件页在 onShow 时消费回传货物并重算价格。
 let pendingPayload: ExpressGoodsBridgePayload | null = null
 
 export const expressGoodsBridge = {

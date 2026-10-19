@@ -8,12 +8,11 @@ import { ExpressSection } from '../ExpressSection'
 
 import './index.scss'
 
-// 高端产品（特快当日/航空类）标题带右端的金冠勋章，与生产端同一素材。
 const EXPRESS_MEDAL_ICON = 'https://ca.deppon.com.cn/ows/assets/express/28.png'
 const EXPRESS_MEDAL_CODES = ['TKDR', 'TKCR', 'XJTK', 'DJTK']
 
 interface ExpressQuoteSectionProps {
-  /** 嵌在基础信息卡内时用行样式（生产端与货物/付款行同卡）。 */
+  /** 嵌入基础信息卡时使用行样式。 */
   plain?: boolean
   quoteStaleReason: string
   quoteStatus: 'idle' | 'loading' | 'done' | 'error'
@@ -23,8 +22,6 @@ interface ExpressQuoteSectionProps {
   onSelectProduct: (product: ExpressProductQuote) => void
 }
 
-// 生产端产品卡：标题坐在卡片顶部的标题带上（未选中浅紫、选中深藏青并带
-// 缎带折尾），时效行整行蓝色「运输时效：X」，底部黑色「¥ 运费 起」。
 export function ExpressQuoteSection({
   plain = false,
   quoteStaleReason,

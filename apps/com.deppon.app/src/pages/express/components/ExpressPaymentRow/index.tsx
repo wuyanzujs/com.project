@@ -32,7 +32,6 @@ export function ExpressPaymentRow({ monthlyPayView, value, onMonthlyPayAction, o
         onPress={() => setSheetVisible(true)}
       >
         <Text className='express-payment-row__label'>付款方式</Text>
-        {/* 生产端角标贴在右侧值文字前面，不跟在标签后。 */}
         {value === 'MP' ? (
           <View className='express-payment-row__badge'>
             <Text className='express-payment-row__badge-text'>推荐使用储值卡</Text>

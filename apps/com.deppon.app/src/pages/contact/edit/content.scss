@@ -6,8 +6,7 @@
   background: $dp-color-bg-page;
 }
 
-/* 法律提示条：普通态通栏贴导航栏；生产量测高 64、文字 22/32 垂直居中、左右 24。
-   必须显式 row：RN View 默认 column，Text 的 flex:1 会变成纵向撑满导致文字顶置。 */
+/* 显式设置横向布局，避免 RN View 默认纵向排列使 Text 的 flex:1 撑满高度。 */
 .contact-edit-warning {
   display: flex;
   flex-direction: row;
@@ -25,16 +24,13 @@
   line-height: $dp-line-height-32;
 }
 
-/* 识别框聚焦态：法律提示换成圆角示例带，左右收进 24、顶部与导航留 24
-   （生产实测带顶 356-导航底 311=45 物理≈23 设计）；带完整可见 64 高，
-   识别卡紧贴其下不叠合（生产带底 479/卡顶 481）。 */
+/* 识别框聚焦时，示例带替换法律提示；识别卡紧贴示例带下方，不与其重叠。 */
 .contact-edit-warning--example {
   margin: $dp-space-24 $dp-space-24 $dp-space-0;
   background: $dp-color-warning-background-soft;
   border-radius: $dp-radius-32;
 }
 
-/* 识别卡：生产量测内边距 32/24/24、圆角 32；聚焦时整体上移 10 与示例带叠合。 */
 .contact-edit-recognition {
   margin: $dp-space-24 $dp-space-24 $dp-space-0;
   padding: $dp-space-32 $dp-space-24 $dp-space-24;
@@ -42,7 +38,6 @@
   border-radius: $dp-radius-32;
 }
 
-/* 聚焦时识别卡不上移（生产卡顶紧贴示例带底，间隙约 1 设计px）。 */
 .contact-edit-recognition--focused {
   margin-top: $dp-space-0;
 }
@@ -56,7 +51,6 @@
   line-height: $dp-line-height-32;
 }
 
-/* 聚焦态输入区扩高：生产卡高 291.7 反推输入区 141.8≈142，其余内边距不变。 */
 .contact-edit-recognition__input--focused {
   min-height: $dp-space-142;
 }
@@ -75,8 +69,7 @@
 .contact-edit-recognition__action {
   flex-direction: row;
   align-items: center;
-  /* 内容自然高（图标 32/文字行高 40）居中于 62 的操作行；
-     不覆盖会被 app-pressable 基类钳到 88，把整行撑到生产之外。 */
+  /* 覆盖 AppPressable 的最小触控高度，避免操作行被撑高。 */
   min-height: $dp-space-0;
   margin-right: $dp-space-36;
 }
@@ -93,8 +86,7 @@
   margin-right: $dp-space-12;
 }
 
-/* 粘贴并识别：生产量测 168×62 胶囊，横向渐变由 SVG 铺底；
-   min-height 需压过 app-pressable 基类的 88 触控钳制，否则按钮被撑高。 */
+/* 横向渐变由 SVG 铺底；覆盖 AppPressable 的最小高度，避免胶囊被撑高。 */
 .contact-edit-recognition__paste {
   position: relative;
   align-items: center;
@@ -122,7 +114,6 @@
   font-weight: $dp-font-weight-bold;
 }
 
-/* 联系人卡：生产行高 88 上下直接堆叠、无纵向内边距，左右 24。 */
 .contact-edit-card {
   margin: $dp-space-24 $dp-space-24 $dp-space-0;
   padding: $dp-space-0 $dp-space-24;
@@ -137,8 +128,7 @@
   min-height: $dp-control-height-default;
 }
 
-/* 省市区/详细地址/公司行：生产量测行距 173 物理≈90 设计（高于标准行高 88）；
-   必须显式 row+center，否则 View 默认 column 使 Input 文字顶置（生产文字垂直居中）。 */
+/* 显式设置 row 和 center，避免 RN 默认纵向布局使输入文字顶置。 */
 .contact-edit-region-row,
 .contact-edit-detail-row,
 .contact-edit-company-row {
@@ -150,8 +140,6 @@
   border-bottom-width: $dp-border-width-hairline;
 }
 
-/* 第一行：姓名栏定宽 220 带（下划线右端 = 生产 220），与电话栏隔 24；
-   电话栏弹性占满并整段带下划线，通讯录块叠在其上（生产右段连到内容右缘）。 */
 .contact-edit-inline-field {
   height: $dp-control-height-default;
   justify-content: center;
@@ -208,7 +196,6 @@
   margin-bottom: $dp-space-8;
 }
 
-/* 省市区：生产值紧凑排布（字段随内容收缩），字段间距约 12。 */
 .contact-edit-region-fields {
   display: flex;
   flex: 1;
@@ -226,7 +213,6 @@
   margin-right: 0;
 }
 
-/* 定位：生产为图标 30 + 文字 22 横排靠右。 */
 .contact-edit-locate {
   flex-direction: row;
   align-items: center;
@@ -260,7 +246,6 @@
   font-weight: $dp-font-weight-bold;
 }
 
-/* 默认勾选点：生产量测直径约 26。 */
 .contact-edit-default-dot {
   align-items: center;
   justify-content: center;
@@ -297,7 +282,6 @@
   line-height: $dp-line-height-body;
 }
 
-/* 底栏：生产量测上下留白 32、按钮 96 高横向渐变。 */
 .contact-edit-footer {
   padding: $dp-space-32 $dp-space-32;
   background: $dp-color-bg-card;

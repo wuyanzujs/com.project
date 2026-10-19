@@ -1,6 +1,5 @@
 @use '@/styles/_tokens.scss' as *;
 
-/* 选项卡：白底 24 圆角，选中 2px 蓝描边（生产量测 #00a0f2），未选无边框。 */
 .express-payment-sheet__options {
   display: flex;
   flex-direction: column;

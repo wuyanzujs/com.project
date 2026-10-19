@@ -101,7 +101,7 @@ const PaymentCheckoutPage = () => {
       setItems(selectedItems)
       setErrorMessage(selectedItems.length ? '' : response.result.disabledReason || '该笔费用已支付或暂不可付')
 
-      // E 卡通道探测:纯 HTTP 闭环,与原生支付能力无关(参照小程序收银台)。
+      // E 卡通道通过 HTTP 接口完成支付，不依赖原生支付能力。
       const channelView = await loadECardChannel(selectedItems[0] ?? null)
       setEcardChannel(channelView)
       setChannel(selectPaymentCheckoutChannel(selectedItems, channelView))

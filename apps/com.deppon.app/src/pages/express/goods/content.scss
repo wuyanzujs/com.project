@@ -1,6 +1,5 @@
 @use '@/styles/_tokens.scss' as *;
 
-/* 物品信息页元素样式：尺寸按生产截图量测；声明压缩成单行控制行数只降不增。 */
 .express-goods-card {
   padding: $dp-space-24 $dp-card-padding;
   margin-bottom: $dp-space-24;
@@ -26,7 +25,6 @@
   font-weight: $dp-font-weight-bold;
   line-height: $dp-line-height-48;
 }
-/* 必填徽标：生产端是浅蓝底胶囊+品牌蓝小字（量测高 32、左右 padding 14、字 20）。 */
 .express-goods-card__hint {
   margin-left: $dp-space-18;
   padding: $dp-space-0 $dp-space-14;
@@ -36,7 +34,6 @@
   background: $dp-color-brand-soft;
   border-radius: $dp-radius-pill;
 }
-/* 违禁品查询：生产端与标题同号灰字（量测字高 25.7 与标题一致，右缘贴内容区 695/698）。 */
 .express-goods-check {
   margin-left: auto;
 }
@@ -45,7 +42,6 @@
   font-size: $dp-font-size-label-large;
   line-height: $dp-line-height-48;
 }
-/* 体积行：生产端标签→开关、开关→提示间距均≈20（量测 19.4/22.2，标签止于 128.5、轨道 148-227、提示起于 249）；提示为深色 24 号字（量测字高 23.6）。 */
 .express-goods-card__switch {
   margin-left: $dp-space-20;
 }
@@ -69,8 +65,6 @@
   background: $dp-color-bg-subtle;
   border-radius: $dp-radius-sm;
 }
-/* 红气泡在计费卡内右上角，贴总重量行上方，生产端同款红底白字。 */
-/* 红气泡：生产端高 50、左右 padding 18、字 24；三角圆角 12、左下角 4（贴步进器侧）。 */
 .express-goods-notice {
   align-self: flex-end;
   align-items: center;
@@ -87,7 +81,6 @@
   font-size: $dp-font-size-body;
   line-height: $dp-line-height-42;
 }
-/* 已选品名：蓝描边胶囊 + 右上角蓝色圆形删除钮（量测胶囊 104×67、描边 3、内字 30、×钮 32 圆心贴右上角内 16/下 6）。 */
 .express-goods-name-pill {
   position: relative;
   align-self: flex-start;
@@ -175,7 +168,6 @@
   font-size: $dp-font-size-caption;
   line-height: $dp-line-height-caption;
 }
-/* 胶囊步进器：灰轨道两端 − +，中间白色输入 pill，单位在 pill 内右侧；与标签同行、右对齐（量测 401×80，pill 高量测 64）。 */
 .express-goods-stepper {
   display: flex;
   flex-direction: row;
@@ -227,7 +219,6 @@
   font-size: $dp-font-size-body;
   line-height: $dp-line-height-body;
 }
-/* 计费说明块：生产端字 24、行高 40（量测块高 154≈3 行×40+上下 16），了解计费规则为品牌蓝。 */
 .express-goods-info {
   margin-top: $dp-space-24;
   padding: $dp-space-16 $dp-space-20;
@@ -242,7 +233,7 @@
 .express-goods-info__link {
   color: $dp-color-brand;
 }
-/* 底部「语音 + 确定」双按钮：语音白底浅描边左、确定蓝底右（量测高 96、间隙 24、左右边距 32、宽度比 319:343；生产确定钮为 #1957ff→#4c7bfe 渐变，RN 0.73 无 CSS 渐变能力，暂用纯色，待引入 expo-linear-gradient 后对齐）。 */
+/* RN 未接入渐变组件，确定按钮暂用纯色背景。 */
 .express-goods-footer {
   display: flex;
   flex-direction: row;

@@ -1,6 +1,5 @@
 @use '@/styles/_tokens.scss' as *;
 
-/* 对齐生产「选择收件人/选择寄件人」页：白色搜索区 + 圆角搜索胶囊 */
 .contact-list-search {
   padding: $dp-space-16 $dp-space-24 $dp-space-12;
   background: $dp-color-bg-card;
@@ -82,7 +81,6 @@
   background: $dp-color-border-default;
 }
 
-/* 页脚 AppPressable 自带 44dp 最小触控高度，radio 在行内居中后与生产节奏一致 */
 .contact-card__footer {
   display: flex;
   flex-direction: row;

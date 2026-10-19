@@ -30,12 +30,11 @@ interface CouponOptionProps {
   onSelect?: (coupon: CouponCardView) => void
 }
 
-// 券卡片按生产弹窗规格：左区大字面额、竖虚线分隔、右区类型名/规则/有效期。
 function CouponOption({ coupon, onDetail, onSelect, selected, status }: CouponOptionProps) {
   const available = status === 'AVAILABLE' && Boolean(onSelect)
   const ribbon = coupon.raw.label === 'recommended' ? '最优惠' : coupon.raw.label === 'will_expire' ? '即将到期' : ''
   const discountText = available && coupon.raw.optimalFee ? `本单可减${coupon.raw.optimalFee / 100}元` : ''
-  // 描述行 = 使用门槛 + 券副标题（与生产「最高减免88元，寄件福利」结构一致）。
+  // 描述行由使用门槛和券副标题组成。
   const description = [coupon.thresholdText, coupon.title && coupon.title !== coupon.typeName ? coupon.title : ''].filter(Boolean).join('，')
   const unavailableNote = !available && coupon.raw.useLimit?.length ? `禁用说明：${coupon.raw.useLimit.join('，')}。` : ''
 
@@ -145,7 +144,7 @@ export function ExpressCouponSheet({ controller, couponNumber, onClose, visible 
     onClose()
   }
 
-  // 选中的券置顶展示（与生产一致）。
+  // 已选优惠券置顶展示。
   const orderedAvailable = [...controller.available.filter(item => item.code === draftCode), ...controller.available.filter(item => item.code !== draftCode)]
 
   return (

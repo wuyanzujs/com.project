@@ -11,7 +11,7 @@ interface AppSwitchProps {
   onChange: (checked: boolean) => void
 }
 
-// React Native 的 Switch 尺寸和配色不可控，生产端是自绘开关，这里用 View 复刻。
+// 使用 View 绘制开关，统一不同平台的尺寸和配色。
 export function AppSwitch({ accessibilityLabel, checked, disabled = false, onChange }: AppSwitchProps) {
   return (
     <AppPressable accessibilityLabel={accessibilityLabel} className='app-switch' disabled={disabled} layout='row-center' onPress={() => onChange(!checked)}>

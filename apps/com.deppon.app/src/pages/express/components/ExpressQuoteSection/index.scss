@@ -1,7 +1,5 @@
 @use '@/styles/_tokens.scss' as *;
 
-/* 产品卡按整页生产截图 prod_scroll_coupon.png 量测（÷1.44）：卡 184×152、带 124×47、
-   勋章 30×29@(142,14)、时效行中心 74、价格中心 113；折尾为带上折卷曲单 View 近似，带实为渐变取底色。 */
 .express-quote-scroll {
   height: 168px;
   margin-top: $dp-space-8;

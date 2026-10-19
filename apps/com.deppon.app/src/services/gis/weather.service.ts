@@ -21,7 +21,7 @@ interface WaterproofQuery {
 }
 
 const WEATHER_CACHE_KEY_PREFIX = 'DEPPON_GIS_WEATHER_'
-// 旧小程序天气缓存 300 分钟过期，保持一致。
+// 天气缓存有效期为 5 小时。
 const WEATHER_CACHE_EXPIRE = { type: DPCacheExpireType.HOURS, value: 5 }
 
 /**

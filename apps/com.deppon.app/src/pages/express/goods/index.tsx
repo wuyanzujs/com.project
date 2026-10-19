@@ -41,8 +41,6 @@ interface GoodsStepperProps {
   onChange: (next: string) => void
 }
 
-// 生产端总重量/货物件数是胶囊步进器：灰轨道两端 − +，中间白色输入 pill，
-// 单位（kg/件）显示在白色 pill 内右侧。
 function GoodsStepper({ max, min, onChange, step, unit, value }: GoodsStepperProps) {
   const amount = parseAmount(value)
   const disabledMinus = amount <= min
@@ -105,7 +103,7 @@ const ExpressGoodsPage = () => {
     nameSuggestion.clearSuggestions()
   }
 
-  // 语音录入的原生能力尚未接入 shared/platform，先给出统一降级提示。
+  // 语音录入尚未接入 shared/platform，使用统一降级提示。
   const handleVoiceInput = () => {
     Taro.showToast({ title: '语音录入待接入，请先手动填写', icon: 'none' })
   }
@@ -125,8 +123,7 @@ const ExpressGoodsPage = () => {
       return
     }
 
-    // 与生产端 handleSaveGoods 相同：确认后回传货物并返回寄件页，由寄件页
-    // 重算价格时效。
+    // 确认后回传货物并返回寄件页，由寄件页重算价格时效。
     expressGoodsBridge.save({
       ...initialGoods,
       count: Math.floor(clamp(parseAmount(countText), COUNT_MIN, COUNT_MAX)),
@@ -141,7 +138,6 @@ const ExpressGoodsPage = () => {
     <AppPage
       footer={
         <View className='express-goods-footer'>
-          {/* 生产端底部为「语音 + 确定」双按钮，语音在左白底浅描边，确定蓝底右（量测宽度比 319:343） */}
           <AppPressable
             accessibilityLabel='语音录入货物信息'
             className='express-goods-footer__button express-goods-footer__button--voice'
@@ -227,11 +223,9 @@ const ExpressGoodsPage = () => {
         </View>
 
         <View className='express-goods-card'>
-          {/* 生产端红气泡位于计费卡内右上角、贴总重量行上方 */}
           <View className='express-goods-notice'>
             <Text className='express-goods-notice__text'>填写重量/体积计费更准确</Text>
           </View>
-          {/* 生产端标签与步进器同一行，步进器右对齐（量测宽 401、高 80 设计px） */}
           <View className='express-goods-card__head express-goods-card__head--stepper'>
             <Text className='express-goods-card__title'>总重量</Text>
             <GoodsStepper max={WEIGHT_MAX} min={WEIGHT_MIN} step={WEIGHT_STEP} unit='kg' value={weightText} onChange={setWeightText} />
@@ -239,7 +233,7 @@ const ExpressGoodsPage = () => {
 
           <View className='express-goods-card__head express-goods-card__head--field'>
             <Text className='express-goods-card__title'>总体积</Text>
-            {/* RN 样式不支持后代选择器，开关左间距用包一层实现（生产端量测标签→开关、开关→提示均≈20） */}
+            {/* RN 样式不支持后代选择器，使用包裹层设置开关左间距。 */}
             <View className='express-goods-card__switch'>
               <AppSwitch accessibilityLabel='是否填写体积' checked={volumeOn} onChange={setVolumeOn} />
             </View>

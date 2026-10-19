@@ -27,7 +27,6 @@
   font-weight: $dp-font-weight-regular;
   line-height: $dp-line-height-42;
 }
-/* 生产端选中券为红色纯文字「-¥3」（量测 bbox 36×20 设计px，无胶囊底）。 */
 .express-coupon-row__badge--active {
   color: $dp-color-danger-accent;
   font-weight: $dp-font-weight-medium;

@@ -1,6 +1,6 @@
 @use '@/styles/_tokens.scss' as *;
 
-/* 生产端横幅紧贴基础卡自带的 24 内边距，高度 68；min 清零避免被触控最小值撑高。 */
+/* 清零最小高度，避免触控样式撑高横幅。 */
 .express-weather-banner {
   padding: $dp-space-0;
 }

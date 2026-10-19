@@ -67,7 +67,7 @@ function canDeleteOrderDetail(detail: OrderDetail | null, publicTrackMode: boole
 /**
  * @param detail 订单详情
  * @param publicTrackMode 公开物流态
- * @description 是否已取消订单(生产端底栏为 客服+再来一单+重新寄件 的形态)
+ * @description 判断订单是否已取消。
  */
 function isCancelledOrderDetail(detail: OrderDetail | null, publicTrackMode: boolean) {
   return !publicTrackMode && !!detail && Number(detail.orderClassification) === 4

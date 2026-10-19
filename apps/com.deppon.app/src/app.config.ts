@@ -17,7 +17,7 @@ const APP_TAB_BAR_LIST = APP_MAIN_ROUTE_DEFINITIONS.map(item => ({
   text: item.title
 }))
 
-// Taro 的 AppConfig 类型是小程序口径，没有 RN 专用的 rn 字段，这里补上本仓库用到的一部分。
+// 扩展 Taro.AppConfig 未声明的 RN 配置字段。
 interface AppConfigWithRn extends Taro.AppConfig {
   rn?: {
     tabBarOptions?: {

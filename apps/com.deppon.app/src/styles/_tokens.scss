@@ -21,8 +21,7 @@ $dp-color-text-muted: $dp-color-text-placeholder;
 
 $dp-color-brand: #1a5eff;
 $dp-color-brand-pressed: #0f4fe6;
-/* 地址簿编辑页「粘贴并识别」与底部「确定」按钮的横向渐变端色（生产截图量测值），
-   由 nativeTokens.ts 的 brand.gradientStart/End 同步登记，RN 侧经 SVG 铺底使用。 */
+/* 地址识别和确定按钮的渐变端色，与 nativeTokens.ts 中的 brand.gradientStart/End 同步维护。 */
 $dp-color-brand-gradient-start: #1b58ff;
 $dp-color-brand-gradient-end: #4b7cff;
 $dp-color-brand-border-soft: #b2c7ff;
@@ -115,26 +114,26 @@ $dp-color-overlay-soft: rgba(22, 24, 26, 0.42);
 $dp-color-overlay: rgba(22, 24, 26, 0.48);
 $dp-color-overlay-strong: rgba(16, 24, 40, 0.48);
 $dp-color-overlay-heavy: rgba(22, 24, 26, 0.72);
-/* 寄快递页底部弹窗遮罩，生产截图量测值（白底压暗至 #bdbdbd）。 */
+/* 寄件页底部弹窗遮罩。 */
 $dp-color-overlay-sheet: rgba(0, 0, 0, 0.26);
 
-/* 付款方式弹窗：选中卡片描边与单选圆钮，生产截图量测值。 */
+/* 付款方式弹窗的选中描边与单选圆钮颜色。 */
 $dp-color-picker-active: #00a0f2;
 $dp-color-picker-radio: #147dff;
 $dp-color-picker-tag-bg: #eaf5ff;
 
-/* 期望上门时间弹窗：左列日期底、夜间横幅渐变端与文字色，生产截图量测值。 */
+/* 上门时间弹窗的日期列背景、夜间横幅渐变端色及文字颜色。 */
 $dp-color-pickup-column: #f5f7fa;
 $dp-color-night-banner-text: #003c8d;
 $dp-color-night-banner-edge: #d6e1ff;
 
-/* 优惠券弹窗：列表区底色，生产截图量测值。 */
+/* 优惠券弹窗的列表背景。 */
 $dp-color-coupon-list: #f7f7f7;
 
-/* 付款方式弹窗：生产为 #f2fbff→#f5f7fa 渐变，RN 取选项卡所在上部的主色作纯色近似。 */
+/* 付款方式弹窗的选项区域使用纯色背景。 */
 $dp-color-sheet-payment: #f2fbff;
 
-/* 产品价格时效卡：未选中浅紫描边/标题带、选中深藏青描边/标题带，生产截图量测值。 */
+/* 价格时效卡的未选中与选中边框、标题带颜色。 */
 $dp-color-quote-idle: #edefff;
 $dp-color-quote-active: #363b4d;
 
@@ -160,7 +159,7 @@ $dp-font-size-page-title: 42px;
 $dp-font-size-display: 44px;
 $dp-font-size-hero: 54px;
 $dp-font-size-hero-large: 56px;
-/* 优惠券弹窗左区大字面额（生产弹窗量测值）。 */
+/* 优惠券面额字号。 */
 $dp-font-size-coupon-amount: 68px;
 
 $dp-line-height-28: 28px;
@@ -204,7 +203,7 @@ $dp-line-height-option: $dp-line-height-72;
 $dp-line-height-auth-field: $dp-line-height-80;
 $dp-line-height-avatar: $dp-line-height-88;
 $dp-line-height-hero-mark: $dp-line-height-92;
-/* 优惠券弹窗左区面额行高（生产弹窗量测值）。 */
+/* 优惠券面额行高。 */
 $dp-line-height-coupon-amount: 78px;
 
 $dp-font-weight-400: 400;
@@ -241,7 +240,7 @@ $dp-space-36: 36px;
 $dp-space-40: 40px;
 $dp-space-48: 48px;
 $dp-space-56: 56px;
-/* 地址簿编辑页：识别胶囊 62、聚焦输入区 142、表单行距 90（生产截图量测值）。 */
+/* 地址编辑页的识别按钮、聚焦输入区及表单行尺寸。 */
 $dp-space-62: 62px;
 $dp-space-90: 90px;
 $dp-space-142: 142px;
@@ -252,7 +251,7 @@ $dp-space-88: 88px;
 $dp-space-96: 96px;
 $dp-size-2-percent: 2%;
 
-/* 登录页布局量测自生产 Android 页面（生产设计稿 375pt，对应本项目 750px 设计宽）。 */
+/* 登录页布局尺寸，基于 750px 设计宽度。 */
 $dp-login-nav-top: 68px;
 $dp-login-nav-side: 14px;
 $dp-login-hero-height: 432px;
@@ -288,7 +287,7 @@ $dp-login-other-options-gap: $dp-space-22;
 $dp-login-other-option-size: 68px;
 $dp-login-other-option-gap: 38px;
 
-/* 地址簿编辑页姓名栏定宽（生产第一行左段下划线量测值 220）。 */
+/* 地址编辑页姓名栏宽度。 */
 $dp-contact-edit-name-width: 220px;
 
 $dp-space-xxs: $dp-space-8;

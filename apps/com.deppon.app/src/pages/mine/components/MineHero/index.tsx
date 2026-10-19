@@ -9,10 +9,8 @@ import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './index.scss'
 
-// 设计稿里背景图 750x520、内容顶部留白 92。容器只按内容撑高，
-// 背景图从屏幕最顶端铺满整宽并向下溢出，垫在会员卡底下自然淡出；
-// 状态栏高度要运行时才知道，所以留白在行内按设备补足；
-// 右上操作列随状态栏顶部绝对定位，生产端图标中心 ≈ 状态栏底部下 44。
+// 背景图从屏幕顶部铺满宽度并向下溢出，容器按内容撑高。
+// 状态栏高度在运行时获取，顶部留白随设备补足。
 const HERO_BACKGROUND_HEIGHT = 520
 const HERO_TOP_SPACE = 92
 
@@ -52,7 +50,7 @@ export function MineHero({ authenticated, onOpenProfile, onOpenSettings, onOpenS
       <View className='mine-hero__actions' style={{ top: insets.top }}>
         <AppPressable accessibilityLabel='在线客服' className='mine-hero__action' onPress={onOpenSupport}>
           <Image className='mine-hero__message-image' mode='aspectFit' src='https://ca.deppon.com.cn/ows/assets/center/23.png' />
-          {/* 生产端此处是带未读数的红色圆点（如「2」）；暂无消息未读数接口，先保持常驻红点占位 */}
+          {/* 尚无未读数接口，暂以常驻红点提示消息入口。 */}
           <View className='mine-hero__message-dot' />
         </AppPressable>
         <AppPressable accessibilityLabel='分享我的页面' className='mine-hero__action' onPress={onOpenShare}>

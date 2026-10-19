@@ -153,8 +153,7 @@ export function useExpressPickupTime({ draft, setDraft }: UseExpressPickupTimeOp
     setDraft(current => acceptExpressNightPickupNotice(current))
   }
 
-  // pickup.time 与槽位 time 同为「日期 时间戳」全格式，直接精确匹配；
-  // 旧逻辑剥掉日期前缀后只剩时刻，永远匹配不上导致 selectedTime 恒为空。
+  // 保留日期前缀，按完整取件时间匹配槽位，避免只用时刻导致匹配失败。
   const selectedTimeOption = getSelection(response, selectedDate, draft.pickup.time)
 
   return {

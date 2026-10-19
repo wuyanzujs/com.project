@@ -35,8 +35,8 @@ function normalizeRegisterPage(redirectUrl?: string) {
 }
 
 /**
- * OWS 登录接口仍要求旧版 registerRecord 结构。App 端无法采集小程序的营销/设备
- * 字段，因此这些字段保持为空，只填安全的返回页面和系统编码。
+ * OWS 登录接口要求 registerRecord 结构；未采集的营销和设备字段留空，
+ * 仅填写安全的返回页面和系统编码。
  */
 export function createAppLoginRegisterRecord(redirectUrl?: string): LoginRegisterRecord {
   return {

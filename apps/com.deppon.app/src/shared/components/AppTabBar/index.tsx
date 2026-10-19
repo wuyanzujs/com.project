@@ -22,9 +22,7 @@ interface AppTabBarProps {
   active: AppMainRouteName
 }
 
-// 图标取自生产安装包（3.0x，144×144，逻辑 48），与生产端底栏完全一致：
-// 未选中为深灰实底图，选中为品牌蓝实底图，不再依赖 AppIcon 线性近似。
-// png 模块声明在 types/global.d.ts（与登录页资源同模式），运行时为 Metro 资源 id。
+// PNG 模块由 types/global.d.ts 声明，运行时值为 Metro 资源 id。
 const TAB_ICONS = {
   home: { normal: tabbarSend, active: tabbarSendSelected },
   orderList: { normal: tabbarQuery, active: tabbarQuerySelected },
@@ -32,7 +30,7 @@ const TAB_ICONS = {
   mine: { normal: tabbarMine, active: tabbarMineSelected }
 }
 
-// 生产端「福利」tab 图标右上有常驻「领券」红标（无数量语义），这里静态还原
+// 「福利」入口的常驻「领券」标识，不表示未读数量。
 const TAB_BADGES: Partial<Record<AppMainRouteName, string>> = {
   memberCenter: '领券'
 }

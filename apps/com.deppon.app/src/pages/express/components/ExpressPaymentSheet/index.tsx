@@ -25,7 +25,7 @@ interface ExpressPaymentSheetOption {
   tag?: string
 }
 
-// 选项文案与生产弹窗逐字一致；储值卡依赖储值账户体系，暂未接入。
+// 储值卡选项依赖储值账户能力，当前尚未接入。
 const PAYMENT_OPTIONS: ExpressPaymentSheetOption[] = [
   {
     label: '寄付现结',
@@ -65,7 +65,6 @@ export function ExpressPaymentSheet({ onClose, onSelect, value, visible }: Expre
 
   return (
     <ExpressSheet
-      // 生产付款弹窗选项固定高、面板随内容撑开，不做滚动。
       bodyScroll={false}
       panelBackgroundColor={APP_STYLE_COLORS.surface.sheetPayment}
       subtitle='请避免私下转账，以保障您的资金安全'

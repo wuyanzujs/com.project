@@ -5,7 +5,6 @@
   flex-direction: row;
   align-items: center;
   height: $dp-login-field-height;
-  /* 生产端字段文字中心比行几何中心低约 13px 设计值 */
   padding-top: $dp-space-26;
   border-bottom-color: $dp-login-field-underline;
   border-bottom-width: 1px;

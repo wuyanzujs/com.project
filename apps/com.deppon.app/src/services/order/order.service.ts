@@ -187,8 +187,8 @@ export const orderService = {
    * @description 按运单号或订单号查询详情
    */
   async queryDetail(data: { orderNumber?: string; waybillNumber?: string }): Promise<DepponResponse<OrderDetail>> {
-    // 生产端详情主数据源是 orderService 订单详情(orderNumber);运单详情仅在无订单号(公开物流态)时使用,
-    // 避免测试环境 waybillService 缺运单记录时整页报「运单不存在」。
+    // 有订单号时优先查询订单详情，仅在无订单号的公开物流态查询运单详情。
+    // 避免缺少运单记录时影响订单详情展示。
     if (data.orderNumber) {
       const response = await orderApi.queryOrderDetail({
         orderNumber: data.orderNumber,

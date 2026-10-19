@@ -80,7 +80,7 @@ export function getExpressQuotePriceText(product: ExpressProductQuote | null | u
   return `¥${amount}${suffix}`
 }
 
-// 生产端 GetTimeProduct：时间产品别名（如「小件标快隔日」）优先于产品名。
+// 时间产品别名优先于产品名。
 export function getExpressQuoteTimeProduct(product: ExpressProductQuote) {
   const first = product.timeProducts?.[0]
 
@@ -101,8 +101,7 @@ export function getExpressQuoteFreight(product: ExpressProductQuote) {
   return toFiniteAmount(freight?.caculateFee)
 }
 
-// 生产端 ExistsProductPrice：totalfee 有值直接可见；总价为 0 时若运费
-// 恰好被优惠券全额抵扣，也视为有价格可展示（0 元起）。
+// totalfee 有值时展示价格；运费被优惠券全额抵扣时，也允许展示 0 元起。
 export function existsExpressQuotePrice(product: ExpressProductQuote) {
   const totalfee = getQuoteAmount(product)
 
@@ -189,7 +188,7 @@ export function createExpressProductQuoteView(product: ExpressProductQuote): Exp
     priceWithSuffixText: getExpressQuotePriceText(product, '起'),
     freightAmount: existsExpressQuotePrice(product).visible ? freight : null,
     timeText: getExpressQuoteTimeText(product),
-    // 生产端产品卡时效行口径：无天数时整行显示「运输时效：暂无」。
+    // 未返回时效天数时显示「暂无」。
     timeValue: (product.days ?? '').trim() || '暂无',
     billWeightText: getExpressQuoteBillWeightText(product),
     feeRows: createExpressQuoteFeeRows(product)

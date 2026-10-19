@@ -7,13 +7,13 @@ import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 import './index.scss'
 
 export interface AppSupportFloatProps {
-  /** 浮窗文案,生产端列表/详情页为「客服中心」,寄件页为「客服」 */
+  /** 浮窗文案，列表和详情页为「客服中心」，寄件页为「客服」。 */
   label?: string
   onPress: () => void
 }
 
 /**
- * @description 右侧停靠的客服浮窗,对齐生产端 common/components/customer_service/draggable
+ * @description 右侧停靠的客服浮窗。
  */
 export function AppSupportFloat({ label = '客服中心', onPress }: AppSupportFloatProps) {
   return (
