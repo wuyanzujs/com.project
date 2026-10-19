@@ -26,6 +26,7 @@ const MessageListPage = () => {
   const [emptyText, setEmptyText] = useState('暂时没有最新消息哦')
   const [processingId, setProcessingId] = useState('')
   const loadingRef = useRef(false)
+  const readingIdsRef = useRef(new Set<string>())
 
   const loadMessages = useCallback(async () => {
     if (loadingRef.current) {
@@ -60,16 +61,32 @@ const MessageListPage = () => {
   })
 
   const handleOpenMessage = async (item: MessageItemView) => {
+    if (readingIdsRef.current.has(item.id)) {
+      return
+    }
+
     if (!item.isRead) {
-      void messageService.markMessageRead(item.id)
-      setItems(current => current.map(currentItem => (currentItem.id === item.id ? { ...currentItem, isRead: true } : currentItem)))
+      readingIdsRef.current.add(item.id)
+
+      try {
+        const response = await messageService.markMessageRead(item.id)
+
+        if (response.status) {
+          setItems(current => current.map(currentItem => (currentItem.id === item.id ? { ...currentItem, isRead: true } : currentItem)))
+        } else {
+          Taro.showToast({ title: response.message || '标记已读失败，请稍后再试', icon: 'none' })
+        }
+      } catch {
+        Taro.showToast({ title: '标记已读失败，请稍后再试', icon: 'none' })
+      } finally {
+        readingIdsRef.current.delete(item.id)
+      }
     }
 
     if (item.waybillNumber) {
       navigateToAppRoute(
         createAppRouteUrl(APP_ROUTES.orderDetail, {
           waybillNumber: item.waybillNumber,
-          role: 'sender',
           source: 'MESSAGE',
           view: 'secure'
         }),

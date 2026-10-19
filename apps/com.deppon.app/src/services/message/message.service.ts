@@ -1,5 +1,6 @@
 import type { DepponResponse } from '@/request/deppon'
 
+import { getCurrentEcoToken } from '../auth/session'
 import { createServiceFailure } from '../serviceResponse'
 import { messageApi } from './message.api'
 import { MESSAGE_GROUP_DEFINITIONS, MESSAGE_GROUP_EMPTY_FALLBACK, mapMessageGroups, mapMessageItem } from './message.mapper'
@@ -9,7 +10,7 @@ import type { MessageGroupKey, MessageGroupView, MessageItemView } from './types
 /** 消息列表缓存:我的页角标与消息页共用一次拉取,动作后失效 */
 const CACHE_TTL = 60_000
 
-let messageCache: { items: MessageItemView[]; fetchedAt: number } | null = null
+let messageCache: { sessionToken: string; items: MessageItemView[]; fetchedAt: number } | null = null
 
 function invalidateCache() {
   messageCache = null
@@ -24,11 +25,26 @@ function toSuccess<TResult>(result: TResult): DepponResponse<TResult> {
 }
 
 async function loadMessageItems(): Promise<DepponResponse<MessageItemView[]>> {
+  const sessionToken = getCurrentEcoToken()
+
+  if (!sessionToken || messageCache?.sessionToken !== sessionToken) {
+    invalidateCache()
+  }
+
+  if (!sessionToken) {
+    return createServiceFailure<MessageItemView[]>('请先登录')
+  }
+
   if (messageCache && Date.now() - messageCache.fetchedAt < CACHE_TTL) {
     return toSuccess(messageCache.items)
   }
 
   const response = await messageApi.fetchMessages()
+
+  // 退出或换号后，旧请求不能返回私有消息，也不能覆盖新会话缓存。
+  if (getCurrentEcoToken() !== sessionToken) {
+    return createServiceFailure<MessageItemView[]>('登录状态已变更，请重新加载消息')
+  }
 
   if (!response.status) {
     return createServiceFailure<MessageItemView[]>(response.message || '暂未获取到消息')
@@ -37,7 +53,7 @@ async function loadMessageItems(): Promise<DepponResponse<MessageItemView[]>> {
   // 时间已归一为补零字符串,字典序即时间序
   const items = (response.result ?? []).map(mapMessageItem).sort((left, right) => (left.time < right.time ? 1 : -1))
 
-  messageCache = { items, fetchedAt: Date.now() }
+  messageCache = { sessionToken, items, fetchedAt: Date.now() }
 
   return toSuccess(items)
 }

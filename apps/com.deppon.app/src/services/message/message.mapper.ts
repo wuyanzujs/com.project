@@ -4,7 +4,8 @@ import type { IntMessageRaw, MessageGroupDefinition, MessageGroupKey, MessageGro
 export const MESSAGE_GROUP_DEFINITIONS: MessageGroupDefinition[] = [
   { key: 'EXPRESS', name: '快递消息', icon: 'package', emptyText: '暂无最新快递消息' },
   { key: 'SYSTEM', name: '系统消息', icon: 'info', emptyText: '暂无最新系统消息' },
-  { key: 'BROADCAST', name: '广播消息', icon: 'mailbox', emptyText: '暂时没有最新消息哦' }
+  { key: 'BROADCAST', name: '广播消息', icon: 'mailbox', emptyText: '暂时没有最新消息哦' },
+  { key: 'OTHER', name: '其他消息', icon: 'info', emptyText: '暂时没有最新消息哦' }
 ]
 
 export const MESSAGE_GROUP_EMPTY_FALLBACK = '暂时没有最新消息哦'
@@ -96,7 +97,7 @@ export function mapMessageItem(raw: IntMessageRaw): MessageItemView {
  * @description 按配置顺序聚合消息中心分组视图
  */
 export function mapMessageGroups(items: MessageItemView[]): MessageGroupView[] {
-  return MESSAGE_GROUP_DEFINITIONS.map(definition => {
+  return MESSAGE_GROUP_DEFINITIONS.filter(definition => definition.key !== 'OTHER' || items.some(item => item.groupKey === 'OTHER')).map(definition => {
     const groupItems = items.filter(item => item.groupKey === definition.key)
     const latest = groupItems[0]
 
