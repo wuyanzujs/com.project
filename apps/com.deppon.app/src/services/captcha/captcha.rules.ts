@@ -3,9 +3,23 @@ import Utf8 from 'crypto-js/enc-utf8'
 import ECB from 'crypto-js/mode-ecb'
 import Pkcs7 from 'crypto-js/pad-pkcs7'
 
-import type { CaptchaPoint } from './types'
+import type { CaptchaImageSize, CaptchaPoint } from './types'
 
 const VERIFICATION_SEPARATOR = '---'
+
+/**
+ * @description 将触摸区域内的 dp 坐标按实际布局宽高换算为服务端原图坐标
+ */
+export function normalizeCaptchaPoints(points: CaptchaPoint[], displaySize: CaptchaImageSize, imageSize: CaptchaImageSize): CaptchaPoint[] {
+  if (![displaySize.width, displaySize.height, imageSize.width, imageSize.height].every(value => Number.isFinite(value) && value > 0)) {
+    return []
+  }
+
+  return points.map(point => ({
+    x: (point.x * imageSize.width) / displaySize.width,
+    y: (point.y * imageSize.height) / displaySize.height
+  }))
+}
 
 /**
  *

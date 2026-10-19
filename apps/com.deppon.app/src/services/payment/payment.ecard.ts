@@ -37,6 +37,22 @@ export function isECardBalanceSufficient(balance: number, amount: number) {
 }
 
 /**
+ * @description E 卡通道可支付时必须同时满足开通、密码和余额要求
+ */
+export function canPayWithECard(channel: ECardChannelView | null, amount: number): boolean {
+  return Boolean(channel?.enabled && channel.registered && channel.passwordSet && isECardBalanceSufficient(channel.balance, amount))
+}
+
+/**
+ * @description 使用本次费用明细选择默认支付方式，避免读取页面上一轮金额
+ */
+export function selectPaymentCheckoutChannel(items: PaymentItem[], channel: ECardChannelView): 'APP' | 'ECARD' {
+  const view = createPaymentCheckoutView(items)
+
+  return view.items.length > 0 && canPayWithECard(channel, view.amount) ? 'ECARD' : 'APP'
+}
+
+/**
  *
  * @param item 待支付费用项,空表示无可探测对象
  * @description 探测 E 卡支付通道:后端可用性 + 余额/注册/密码态;不可用返回 enabled=false 的视图

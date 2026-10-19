@@ -3,7 +3,14 @@ const assert = require('node:assert/strict')
 const crypto = require('node:crypto')
 const { test } = require('node:test')
 
-const { aesEncryptEcbBase64, buildCaptchaPointJson, buildCaptchaVerification, parsePngSize, serializeCaptchaPoints } = require('@/services/captcha')
+const {
+  aesEncryptEcbBase64,
+  buildCaptchaPointJson,
+  buildCaptchaVerification,
+  normalizeCaptchaPoints,
+  parsePngSize,
+  serializeCaptchaPoints
+} = require('@/services/captcha')
 const { shouldOfferCaptcha } = require('@/services/captcha/captcha.service')
 
 // 黄金向量来自 2026-10-18 测试网关探针:secretKey 为 getCaptchaAction 真实返回,AES 输出由 OpenSSL 生成,
@@ -41,6 +48,22 @@ test('buildCaptchaVerification wraps token and plain points with --- separator',
 
 test('serializeCaptchaPoints keeps numeric coordinates for the gateway contract', () => {
   assert.equal(serializeCaptchaPoints([{ x: 12.4, y: 88 }]), '[{"x":12.4,"y":88}]')
+})
+
+test('captcha touch coordinates use measured dp dimensions instead of design pixels', () => {
+  const imageSize = { width: 310, height: 155 }
+
+  assert.deepEqual(normalizeCaptchaPoints([{ x: 100, y: 30 }], { width: 310, height: 155 }, imageSize), [{ x: 100, y: 30 }])
+  assert.deepEqual(normalizeCaptchaPoints([{ x: 150, y: 60 }], { width: 465, height: 232.5 }, imageSize), [{ x: 100, y: 40 }])
+  assert.deepEqual(normalizeCaptchaPoints([{ x: 200, y: 60 }], { width: 620, height: 155 }, imageSize), [{ x: 100, y: 60 }])
+})
+
+test('captcha cannot normalize points before both image and layout dimensions are known', () => {
+  const points = [{ x: 100, y: 30 }]
+
+  assert.deepEqual(normalizeCaptchaPoints(points, { width: 0, height: 155 }, { width: 310, height: 155 }), [])
+  assert.deepEqual(normalizeCaptchaPoints(points, { width: 310, height: 0 }, { width: 310, height: 155 }), [])
+  assert.deepEqual(normalizeCaptchaPoints(points, { width: 310, height: 155 }, { width: 0, height: 0 }), [])
 })
 
 test('parsePngSize reads IHDR dimensions from raw and data-url base64', () => {

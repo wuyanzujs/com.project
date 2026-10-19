@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from 'react'
 
 import {
   APP_PAYMENT_UNAVAILABLE_MESSAGE,
+  canPayWithECard,
   createPaymentCheckoutUrl,
   createPaymentCheckoutView,
   createECardCheckoutResult,
@@ -18,6 +19,7 @@ import {
   paymentCheckoutService,
   paymentService,
   selectPaymentCheckoutItems,
+  selectPaymentCheckoutChannel,
   validatePaymentCheckout
 } from '@/services/payment'
 import type { ECardChannelView, PaymentCheckoutSource, PaymentItem, PaymentOrder, PaymentRole } from '@/services/payment'
@@ -67,7 +69,8 @@ const PaymentCheckoutPage = () => {
   const validation = useMemo(() => validatePaymentCheckout(checkout.items), [checkout.items])
   const paymentAvailable = paymentCheckoutService.isPaymentAvailable()
   const ecardSufficient = Boolean(ecardChannel && isECardBalanceSufficient(ecardChannel.balance, checkout.amount))
-  const ecardSelectable = Boolean(ecardChannel?.enabled && ecardChannel.registered && ecardSufficient)
+  const ecardSelectable = canPayWithECard(ecardChannel, checkout.amount)
+  const ecardPasswordRequired = Boolean(ecardChannel?.registered && !ecardChannel.passwordSet)
 
   const loadCheckout = useCallback(async () => {
     if (!routeParams.waybillNumber) {
@@ -101,11 +104,11 @@ const PaymentCheckoutPage = () => {
       // E 卡通道探测:纯 HTTP 闭环,与原生支付能力无关(参照小程序收银台)。
       const channelView = await loadECardChannel(selectedItems[0] ?? null)
       setEcardChannel(channelView)
-      setChannel(channelView.enabled && channelView.registered && isECardBalanceSufficient(channelView.balance, checkout.amount) ? 'ECARD' : 'APP')
+      setChannel(selectPaymentCheckoutChannel(selectedItems, channelView))
     } finally {
       setLoading(false)
     }
-  }, [routeParams, checkout.amount])
+  }, [routeParams])
 
   useDidShow(() => {
     const redirectUrl = createPaymentCheckoutUrl(routeParams)
@@ -311,6 +314,7 @@ const PaymentCheckoutPage = () => {
                   accessibilityLabel='E卡支付'
                   block
                   className={channel === 'ECARD' ? 'payment-checkout-channel payment-checkout-channel--active' : 'payment-checkout-channel'}
+                  disabled={!ecardSelectable}
                   onPress={() => setChannel('ECARD')}
                 >
                   <View className='payment-checkout-channel__main'>
@@ -321,10 +325,17 @@ const PaymentCheckoutPage = () => {
                     </Text>
                   </View>
                   <AppStatusTag
-                    label={ecardChannel.registered ? (ecardSufficient ? '可用' : '余额不足') : '未开通'}
+                    label={!ecardChannel.registered ? '未开通' : !ecardChannel.passwordSet ? '未设置密码' : ecardSufficient ? '可用' : '余额不足'}
                     tone={ecardSelectable ? 'success' : 'neutral'}
                   />
                 </AppPressable>
+              ) : null}
+
+              {ecardChannel?.enabled && ecardPasswordRequired ? (
+                <View>
+                  <Text className='payment-checkout-channel__notice'>请先前往 E 卡中心设置支付密码，再使用 E 卡支付。</Text>
+                  <AppButton block={false} density='compact' label='前往 E 卡中心' onPress={() => navigateToAppRoute(APP_ROUTES.ecardCenter)} />
+                </View>
               ) : null}
 
               {channel === 'APP' && !paymentAvailable && <Text className='payment-checkout-channel__notice'>{APP_PAYMENT_UNAVAILABLE_MESSAGE}</Text>}

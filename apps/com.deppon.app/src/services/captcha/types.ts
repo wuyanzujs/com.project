@@ -3,6 +3,11 @@ export interface CaptchaPoint {
   y: number
 }
 
+export interface CaptchaImageSize {
+  width: number
+  height: number
+}
+
 /**
  * @description getCaptchaAction 回显完整 CaptchaVO,这里只声明客户端实际消费的字段
  */

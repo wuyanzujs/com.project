@@ -13,6 +13,7 @@ interface AppNativePressableProps extends PropsWithChildren {
   flex?: boolean
   overlay?: boolean
   selected?: boolean
+  onLayout?: PressableProps['onLayout']
   onLongPress?: PressableProps['onLongPress']
   onPress?: PressableProps['onPress']
   onPressIn?: PressableProps['onPressIn']
@@ -54,6 +55,7 @@ export function AppNativePressable({
   fill = false,
   flex = false,
   overlay = false,
+  onLayout,
   onLongPress,
   onPress,
   selected = false,
@@ -77,6 +79,7 @@ export function AppNativePressable({
         disabled && styles.disabled,
         pressed && !disabled && styles.pressed
       ]}
+      onLayout={onLayout}
       onLongPress={onLongPress}
       onPress={onPress}
       onPressIn={onPressIn}

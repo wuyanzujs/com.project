@@ -2,15 +2,13 @@ import { Image, Text, View } from '@tarojs/components'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { captchaService } from '@/services/captcha'
+import { captchaService, normalizeCaptchaPoints } from '@/services/captcha'
 import type { CaptchaPoint, ClickWordCaptchaSession } from '@/services/captcha'
 import { AppDialog } from '@/shared/components'
 import { AppNativePressable, designPxToDp } from '@/shared/native'
 
 import './index.scss'
 
-// 服务端原图 310×155(design375 口径),design750 下按两倍显示;点选坐标按显示/原图比例归一回原图坐标系
-const DISPLAY_WIDTH = 620
 const DOT_CENTER_OFFSET = 21
 const SUCCESS_DELAY_MS = 600
 const FAIL_RELOAD_DELAY_MS = 1000
@@ -31,6 +29,7 @@ export function ClickWordCaptcha({ visible, onClose, onVerified }: ClickWordCapt
   const [phase, setPhase] = useState<CaptchaPhase>('loading')
   const [session, setSession] = useState<ClickWordCaptchaSession | null>(null)
   const [points, setPoints] = useState<CaptchaPoint[]>([])
+  const [displaySize, setDisplaySize] = useState({ width: 0, height: 0 })
   const [message, setMessage] = useState('')
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -73,8 +72,7 @@ export function ClickWordCaptcha({ visible, onClose, onVerified }: ClickWordCapt
     async (tapped: CaptchaPoint[], currentSession: ClickWordCaptchaSession) => {
       setPhase('checking')
 
-      const scale = currentSession.imageWidth / DISPLAY_WIDTH
-      const serverPoints = tapped.map(point => ({ x: point.x * scale, y: point.y * scale }))
+      const serverPoints = normalizeCaptchaPoints(tapped, displaySize, { width: currentSession.imageWidth, height: currentSession.imageHeight })
       const result = await captchaService.verifyClickWordCaptcha({ points: serverPoints, session: currentSession })
 
       if (result.status) {
@@ -94,12 +92,12 @@ export function ClickWordCaptcha({ visible, onClose, onVerified }: ClickWordCapt
         void loadSession()
       }, FAIL_RELOAD_DELAY_MS)
     },
-    [loadSession, onVerified]
+    [displaySize, loadSession, onVerified]
   )
 
   const handleTap = useCallback(
     (event: { nativeEvent?: { locationX?: number; locationY?: number } }) => {
-      if (!session || phase !== 'ready') {
+      if (!session || phase !== 'ready' || displaySize.width <= 0 || displaySize.height <= 0) {
         return
       }
 
@@ -116,7 +114,7 @@ export function ClickWordCaptcha({ visible, onClose, onVerified }: ClickWordCapt
         void handleCheck(tapped, session)
       }
     },
-    [handleCheck, phase, points, session]
+    [displaySize, handleCheck, phase, points, session]
   )
 
   const phaseClassName = phase === 'success' ? ' click-captcha__hint--success' : phase === 'fail' ? ' click-captcha__hint--fail' : ''
@@ -129,25 +127,32 @@ export function ClickWordCaptcha({ visible, onClose, onVerified }: ClickWordCapt
       <View className='click-captcha'>
         <View className='click-captcha__stage'>
           {session ? (
-            <AppNativePressable onPressIn={handleTap} accessibilityLabel='点选验证码区域'>
-              <View className='click-captcha__image-wrap'>
-                <Image className='click-captcha__image' mode='scaleToFill' src={`data:image/png;base64,${session.imageBase64}`} />
-                {points.map((point, index) => (
-                  <View
-                    key={`${point.x}-${point.y}-${index}`}
-                    className='click-captcha__dot'
-                    style={{
-                      left: `${(point.x / DISPLAY_WIDTH) * 100}%`,
-                      top: `${(point.y / DISPLAY_WIDTH) * 100}%`,
-                      marginLeft: designPxToDp(-DOT_CENTER_OFFSET),
-                      marginTop: designPxToDp(-DOT_CENTER_OFFSET)
-                    }}
-                  >
-                    <Text className='click-captcha__dot-text'>{index + 1}</Text>
-                  </View>
-                ))}
-              </View>
-            </AppNativePressable>
+            <View className='click-captcha__image-wrap'>
+              <Image className='click-captcha__image' mode='scaleToFill' src={`data:image/png;base64,${session.imageBase64}`} />
+              {points.map((point, index) => (
+                <View
+                  key={`${point.x}-${point.y}-${index}`}
+                  className='click-captcha__dot'
+                  style={{
+                    left: point.x,
+                    top: point.y,
+                    marginLeft: designPxToDp(-DOT_CENTER_OFFSET),
+                    marginTop: designPxToDp(-DOT_CENTER_OFFSET)
+                  }}
+                >
+                  <Text className='click-captcha__dot-text'>{index + 1}</Text>
+                </View>
+              ))}
+              <AppNativePressable
+                accessibilityLabel='点选验证码区域'
+                overlay
+                onLayout={event => {
+                  const { width, height } = event.nativeEvent.layout
+                  setDisplaySize({ width, height })
+                }}
+                onPressIn={handleTap}
+              />
+            </View>
           ) : (
             <View className='click-captcha__image-wrap click-captcha__image-wrap--empty' />
           )}
