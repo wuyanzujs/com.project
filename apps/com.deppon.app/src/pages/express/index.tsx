@@ -151,27 +151,31 @@ const ExpressPage = () => {
     if (carriedDraft) {
       setDraft(carriedDraft.draft)
       restoreQuotes(carriedDraft.quotes)
-      Taro.showToast({
-        title:
-          carriedDraft.source === 'ORDER_RESEND'
-            ? '已带入原订单信息'
-            : carriedDraft.source === 'COUPON_LIST'
-              ? '已带入优惠券'
-              : carriedDraft.source === 'GOODS_QUERY'
-                ? '已带入货物名称'
-                : carriedDraft.source === 'BATCH_RECOGNITION'
-                  ? '已带入批量识别结果'
-                  : carriedDraft.source === 'SCAN_QR_CODE'
-                    ? '已带入扫码寄件信息'
-                    : carriedDraft.source === 'DISPATCH_QUERY'
-                      ? '已带入收派范围地址'
-                      : carriedDraft.source === 'COURIER'
-                        ? '已带入专属快递员'
-                        : carriedDraft.source === 'TEMPLATE'
-                          ? '已带入寄件模板'
-                          : '已带入查价结果',
-        icon: 'none'
-      })
+
+      // 全新寄件是静默重置,其余带入来源都提示用户已带入内容。
+      if (carriedDraft.source !== 'FRESH_SEND') {
+        Taro.showToast({
+          title:
+            carriedDraft.source === 'ORDER_RESEND'
+              ? '已带入原订单信息'
+              : carriedDraft.source === 'COUPON_LIST'
+                ? '已带入优惠券'
+                : carriedDraft.source === 'GOODS_QUERY'
+                  ? '已带入货物名称'
+                  : carriedDraft.source === 'BATCH_RECOGNITION'
+                    ? '已带入批量识别结果'
+                    : carriedDraft.source === 'SCAN_QR_CODE'
+                      ? '已带入扫码寄件信息'
+                      : carriedDraft.source === 'DISPATCH_QUERY'
+                        ? '已带入收派范围地址'
+                        : carriedDraft.source === 'COURIER'
+                          ? '已带入专属快递员'
+                          : carriedDraft.source === 'TEMPLATE'
+                            ? '已带入寄件模板'
+                            : '已带入查价结果',
+          icon: 'none'
+        })
+      }
       return
     }
 
