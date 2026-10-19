@@ -1,0 +1,91 @@
+@use '@/styles/_tokens.scss' as *;
+
+.message-list-nav {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: $dp-space-24 $dp-space-24 $dp-space-8;
+}
+
+.message-list-nav__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.message-list-nav__summary {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+
+.message-list-content {
+  padding: $dp-space-8 $dp-space-24 $dp-space-40;
+}
+
+.message-item-card {
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: $dp-space-20;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-md;
+}
+
+.message-item-card__body {
+  flex: 1;
+  padding-top: $dp-space-28;
+  padding-bottom: $dp-space-28;
+  padding-left: $dp-space-24;
+}
+
+.message-item-card__top {
+  flex-direction: row;
+  align-items: center;
+}
+
+.message-item-card__dot {
+  width: 16px;
+  height: 16px;
+  margin-right: $dp-space-12;
+  background: $dp-color-danger;
+  border-radius: $dp-radius-8;
+}
+
+.message-item-card__title {
+  flex: 1;
+  margin-right: $dp-space-16;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.message-item-card__time {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+
+.message-item-card__content {
+  margin-top: $dp-space-12;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.message-item-card__delete {
+  padding: $dp-space-28 $dp-space-24;
+}
+
+.message-item-card__delete-text {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+}
+
+.message-list-reload {
+  padding: $dp-space-16 $dp-space-48;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.message-list-reload__text {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body;
+}

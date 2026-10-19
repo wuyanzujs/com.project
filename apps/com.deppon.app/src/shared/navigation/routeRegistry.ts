@@ -267,6 +267,18 @@ export const APP_ROUTE_DEFINITIONS = [
     loginRequired: true
   },
   {
+    name: 'messageCenter',
+    title: '消息中心',
+    path: 'pages/message/center/index',
+    loginRequired: true
+  },
+  {
+    name: 'messageList',
+    title: '消息列表',
+    path: 'pages/message/list/index',
+    loginRequired: true
+  },
+  {
     name: 'privacySettings',
     title: '隐私设置',
     path: 'pages/privacy/settings/index',

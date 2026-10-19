@@ -86,6 +86,25 @@
   border-radius: $dp-radius-pill;
 }
 
+.mine-hero__message-badge {
+  position: absolute;
+  top: -$dp-space-14;
+  right: -$dp-space-6;
+  min-width: 40px;
+  padding-left: $dp-space-10;
+  padding-right: $dp-space-10;
+  height: 40px;
+  background: $dp-color-danger-accent;
+  border-radius: $dp-radius-pill;
+}
+
+.mine-hero__message-badge-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-40;
+  text-align: center;
+}
+
 .mine-hero__message-image {
   width: 48px;
   height: 48px;

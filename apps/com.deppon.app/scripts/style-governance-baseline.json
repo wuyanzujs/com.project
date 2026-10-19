@@ -154,7 +154,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 320
+        "lines": 304
       },
       "src/pages/contact/edit/index.scss": {
         "rawColors": 0,
@@ -174,7 +174,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 274
+        "lines": 272
       },
       "src/pages/contact/list/index.scss": {
         "rawColors": 0,
@@ -404,7 +404,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 125
+        "lines": 120
       },
       "src/pages/express/components/ExpressCouponCard/index.scss": {
         "rawColors": 0,
@@ -414,7 +414,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 47
+        "lines": 46
       },
       "src/pages/express/components/ExpressCouponSheet/index.scss": {
         "rawColors": 0,
@@ -504,7 +504,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 56
+        "lines": 55
       },
       "src/pages/express/components/ExpressPackagingCard/index.scss": {
         "rawColors": 0,
@@ -544,7 +544,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 99
+        "lines": 98
       },
       "src/pages/express/components/ExpressPickupSection/index.scss": {
         "rawColors": 0,
@@ -554,7 +554,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 183
+        "lines": 179
       },
       "src/pages/express/components/ExpressPickupTimeSheet/index.scss": {
         "rawColors": 0,
@@ -564,7 +564,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 100
+        "lines": 99
       },
       "src/pages/express/components/ExpressPriceDetailPanel/index.scss": {
         "rawColors": 0,
@@ -594,7 +594,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 121
+        "lines": 119
       },
       "src/pages/express/components/ExpressReturnBillCard/index.scss": {
         "rawColors": 0,
@@ -624,7 +624,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 55
+        "lines": 54
       },
       "src/pages/express/components/ExpressServiceSection/index.scss": {
         "rawColors": 0,
@@ -634,7 +634,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 155
+        "lines": 154
       },
       "src/pages/express/components/ExpressSheet/index.scss": {
         "rawColors": 0,
@@ -684,7 +684,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 277
+        "lines": 268
       },
       "src/pages/express/goods/index.scss": {
         "rawColors": 0,
@@ -1054,7 +1054,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 54
+        "lines": 53
       },
       "src/pages/login/index.scss": {
         "rawColors": 0,
@@ -1086,6 +1086,46 @@
         "usesTokens": true,
         "lines": 5
       },
+      "src/pages/message/center/content.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 105
+      },
+      "src/pages/message/center/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 6
+      },
+      "src/pages/message/list/content.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 91
+      },
+      "src/pages/message/list/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 6
+      },
       "src/pages/mine/components/MineEntryGrids/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
@@ -1094,7 +1134,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 5,
         "usesTokens": true,
-        "lines": 82
+        "lines": 80
       },
       "src/pages/mine/components/MineHero/index.scss": {
         "rawColors": 0,
@@ -1104,7 +1144,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 2,
         "usesTokens": true,
-        "lines": 96
+        "lines": 111
       },
       "src/pages/mine/components/MineMemberCard/index.scss": {
         "rawColors": 0,
@@ -1114,7 +1154,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 8,
         "usesTokens": true,
-        "lines": 178
+        "lines": 171
       },
       "src/pages/mine/components/MineOrderShortcuts/index.scss": {
         "rawColors": 0,
@@ -1174,7 +1214,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 3,
         "usesTokens": true,
-        "lines": 60
+        "lines": 75
       },
       "src/pages/order/detail/components/OrderDetailHeader/index.scss": {
         "rawColors": 0,
@@ -2264,7 +2304,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 73
+        "lines": 69
       }
     }
   },

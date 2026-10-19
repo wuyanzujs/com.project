@@ -10,6 +10,7 @@ import { couponService } from '@/services/coupon'
 import { ecardService } from '@/services/ecard'
 import { memberService } from '@/services/member'
 import type { MemberOverviewView } from '@/services/member'
+import { messageService } from '@/services/message'
 import { AppPage } from '@/shared/components'
 import AppTabBar from '@/shared/components/AppTabBar'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
@@ -36,6 +37,8 @@ const MinePage = () => {
   const [couponCount, setCouponCount] = useState(0)
   // 储值卡数量：null 表示未知（未加载或查询失败），此时 UI 不显示数字
   const [storedCardCount, setStoredCardCount] = useState<number | null>(null)
+  // 消息未读数：null 表示未知（未登录或查询失败），此时保持常驻红点占位
+  const [unreadCount, setUnreadCount] = useState<number | null>(null)
 
   const refreshUser = async () => {
     if (!hasValidSession()) {
@@ -44,15 +47,17 @@ const MinePage = () => {
       setOrderCounts(EMPTY_ORDER_COUNTS)
       setCouponCount(0)
       setStoredCardCount(null)
+      setUnreadCount(null)
       return
     }
 
-    const [nextUser, memberResponse, nextOrderCounts, couponResponse, storedCardResponse] = await Promise.all([
+    const [nextUser, memberResponse, nextOrderCounts, couponResponse, storedCardResponse, unreadResponse] = await Promise.all([
       authService.bootstrapUser(),
       memberService.queryOverview(),
       queryMineOrderCounts(),
       couponService.queryUserCoupons('USABLE'),
-      ecardService.queryStoredCardCount()
+      ecardService.queryStoredCardCount(),
+      messageService.queryUnreadCount()
     ])
 
     setUser(nextUser ?? authService.getCachedUser())
@@ -60,6 +65,7 @@ const MinePage = () => {
     setOrderCounts(nextOrderCounts)
     setCouponCount(couponResponse.result?.totalRows ?? 0)
     setStoredCardCount(storedCardResponse.status ? (storedCardResponse.result ?? null) : null)
+    setUnreadCount(unreadResponse.status && typeof unreadResponse.result === 'number' ? unreadResponse.result : null)
   }
 
   useDidShow(() => {
@@ -132,10 +138,11 @@ const MinePage = () => {
         <MineHero
           authenticated={Boolean(user)}
           profileName={profileName}
+          unreadCount={unreadCount}
           onOpenProfile={user ? handleAccountSettings : handleLogin}
           onOpenSettings={user ? handleAccountSettings : handleLogin}
           onOpenShare={handleShare}
-          onOpenSupport={() => navigateToAppRoute(APP_ROUTES.supportCenter)}
+          onOpenMessage={() => navigateToAppRoute(APP_ROUTES.messageCenter, { login: true })}
         />
 
         {user && (

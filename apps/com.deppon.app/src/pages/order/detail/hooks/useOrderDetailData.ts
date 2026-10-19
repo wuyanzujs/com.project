@@ -170,6 +170,7 @@ export function useOrderDetailData(routeParams: OrderDetailRouteParams) {
     publicTrackMode: viewModel.publicTrackMode,
     cancelable: viewModel.cancelable,
     deletable: viewModel.deletable,
+    cancelled: viewModel.cancelled,
     detailRole: viewModel.detailRole,
     resendActionText: viewModel.resendActionText,
     stubEntry,

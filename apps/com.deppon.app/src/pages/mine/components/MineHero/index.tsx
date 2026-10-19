@@ -17,13 +17,15 @@ const HERO_TOP_SPACE = 92
 interface MineHeroProps {
   authenticated: boolean
   profileName: string
+  /** 未读消息数:null 表示未知(接口未返回),0 表示无未读 */
+  unreadCount: number | null
   onOpenProfile: () => void
   onOpenSettings: () => void
   onOpenShare: () => void
-  onOpenSupport: () => void
+  onOpenMessage: () => void
 }
 
-export function MineHero({ authenticated, onOpenProfile, onOpenSettings, onOpenShare, onOpenSupport, profileName }: MineHeroProps) {
+export function MineHero({ authenticated, onOpenProfile, onOpenSettings, onOpenShare, onOpenMessage, profileName, unreadCount }: MineHeroProps) {
   const insets = useSafeAreaInsets()
   const heroBackgroundHeight = designPxToDp(HERO_BACKGROUND_HEIGHT)
   const heroTopSpace = designPxToDp(HERO_TOP_SPACE) + insets.top
@@ -48,10 +50,14 @@ export function MineHero({ authenticated, onOpenProfile, onOpenSettings, onOpenS
         </View>
       </AppPressable>
       <View className='mine-hero__actions' style={{ top: insets.top }}>
-        <AppPressable accessibilityLabel='在线客服' className='mine-hero__action' onPress={onOpenSupport}>
+        <AppPressable accessibilityLabel='消息中心' className='mine-hero__action' onPress={onOpenMessage}>
           <Image className='mine-hero__message-image' mode='aspectFit' src='https://ca.deppon.com.cn/ows/assets/center/23.png' />
-          {/* 尚无未读数接口，暂以常驻红点提示消息入口。 */}
-          <View className='mine-hero__message-dot' />
+          {unreadCount === null && <View className='mine-hero__message-dot' />}
+          {unreadCount !== null && unreadCount > 0 && (
+            <View className='mine-hero__message-badge'>
+              <Text className='mine-hero__message-badge-text'>{unreadCount > 99 ? '99+' : unreadCount}</Text>
+            </View>
+          )}
         </AppPressable>
         <AppPressable accessibilityLabel='分享我的页面' className='mine-hero__action' onPress={onOpenShare}>
           <AppIcon color={APP_STYLE_COLORS.text.heading} name='forward' size={48} strokeWidth={2.1} />

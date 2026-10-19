@@ -1,0 +1,105 @@
+@use '@/styles/_tokens.scss' as *;
+
+.message-center-nav {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: $dp-space-24 $dp-space-24 $dp-space-8;
+}
+
+.message-center-nav__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.message-center-nav__action {
+  padding-top: $dp-space-8;
+  padding-bottom: $dp-space-8;
+  padding-left: $dp-space-24;
+}
+
+.message-center-nav__action-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+}
+
+.message-center-content {
+  padding: $dp-space-8 $dp-space-24 $dp-space-40;
+}
+
+.message-group-card {
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: $dp-space-20;
+  padding: $dp-space-28 $dp-space-24;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-md;
+}
+
+.message-group-card__icon-wrap {
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  margin-right: $dp-space-24;
+  background: $dp-color-brand-soft;
+  border-radius: $dp-radius-sm;
+}
+
+.message-group-card__badge {
+  position: absolute;
+  top: -$dp-space-8;
+  right: -$dp-space-12;
+  min-width: 32px;
+  padding-left: $dp-space-8;
+  padding-right: $dp-space-8;
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-32;
+  text-align: center;
+  background: $dp-color-danger;
+  border-radius: $dp-radius-pill;
+  overflow: hidden;
+}
+
+.message-group-card__body {
+  flex: 1;
+  margin-right: $dp-space-16;
+}
+
+.message-group-card__top {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.message-group-card__name {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-bold;
+}
+
+.message-group-card__time {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-caption;
+}
+
+.message-group-card__summary {
+  margin-top: $dp-space-8;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.message-center-reload {
+  padding: $dp-space-16 $dp-space-48;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-sm;
+}
+
+.message-center-reload__text {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body;
+}

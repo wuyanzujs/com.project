@@ -1,0 +1,6 @@
+@use '@/styles/_tokens.scss' as *;
+
+.message-center-page {
+  flex: 1;
+  background: $dp-color-bg-page;
+}
