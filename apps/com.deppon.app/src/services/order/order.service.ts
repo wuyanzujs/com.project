@@ -187,6 +187,29 @@ export const orderService = {
    * @description 按运单号或订单号查询详情
    */
   async queryDetail(data: { orderNumber?: string; waybillNumber?: string }): Promise<DepponResponse<OrderDetail>> {
+    // 生产端详情主数据源是 orderService 订单详情(orderNumber);运单详情仅在无订单号(公开物流态)时使用,
+    // 避免测试环境 waybillService 缺运单记录时整页报「运单不存在」。
+    if (data.orderNumber) {
+      const response = await orderApi.queryOrderDetail({
+        orderNumber: data.orderNumber,
+        sysCode: APP_RUNTIME_CONFIG.systemCode
+      })
+
+      if (!response.status || !response.result) {
+        return createFailure(response.message || '暂未获取到订单详情')
+      }
+
+      const orderClass = Number(response.result.orderClassification)
+
+      return {
+        ...response,
+        result: {
+          ...response.result,
+          orderClassName: getOrderClassLabel(orderClass)
+        }
+      }
+    }
+
     if (data.waybillNumber) {
       const response = await orderApi.queryWaybillDetail({
         waybillNumber: data.waybillNumber,
@@ -205,27 +228,6 @@ export const orderService = {
         ...response,
         result: {
           ...normalizedDetail,
-          orderClassName: getOrderClassLabel(orderClass)
-        }
-      }
-    }
-
-    if (data.orderNumber) {
-      const response = await orderApi.queryOrderDetail({
-        orderNumber: data.orderNumber,
-        sysCode: APP_RUNTIME_CONFIG.systemCode
-      })
-
-      if (!response.status || !response.result) {
-        return createFailure(response.message || '暂未获取到订单详情')
-      }
-
-      const orderClass = Number(response.result.orderClassification)
-
-      return {
-        ...response,
-        result: {
-          ...response.result,
           orderClassName: getOrderClassLabel(orderClass)
         }
       }
