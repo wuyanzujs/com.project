@@ -5,7 +5,7 @@
 
 ## 一句话现状
 
-生产 App(dpapp 4.0.7.0,Flutter/GetX)的结构、接口、UI 三线深挖已完成 M0/M1 并落盘 `docs/parity/`;M2 已推进:**改单 5 端点、点选验证码全链路、寄件页 tiles 对照(补客服浮窗)、E 卡支付通道、详情页已取消态底栏对齐、消息模块立项(message/center+list 两页+intMsg×4 接口+我的页角标入口)均已实现提交;详情查询已切订单详情主数据源,解除「运单不存在」阻塞;verify:app 全绿**;券推荐与改单受理均澄清为 MP-ONLY(后者归推送立项)。
+生产 App(dpapp 4.0.7.0,Flutter/GetX)的结构、接口、UI 三线深挖已完成 M0/M1 并落盘 `docs/parity/`;M2 已推进:**改单 5 端点、点选验证码全链路、寄件页 tiles 对照(补客服浮窗)、E 卡支付通道、详情页已取消态底栏对齐、消息模块立项(message/center+list 两页+intMsg×4 接口+我的页角标入口)均已实现提交;详情查询已切订单详情主数据源,解除「运单不存在」阻塞;verify:app 全绿**;券推荐与改单受理均澄清为 MP-ONLY(后者归推送立项);生产 App 域名切换调研完毕已搁置(见文末结论)。**当前第一优先:消息 intMsg 契约校准(测试渠道包抓包或 RN 直连 owstest 探针)**。
 
 ## 已定决策(不要重新讨论)
 
@@ -34,7 +34,7 @@
 
 ## 未提交变更
 
-无。2026-10-18 下午已全部分笔提交:`a0b4c36` 深挖文档、`388ea04` 改单端点、`506c510` 券推荐澄清、`fa187a7` crypto-js 依赖、`d1fdd0e` 点选验证码链路、`14fb160` login 契约档案。
+无。2026-10-19 会话已分笔提交:`fdff342` 详情查询主数据源切换、`3134245`+`adb2394` 详情底栏已取消态对齐、`156e938` 消息模块立项、`266c0ad` 消息服务加固(会话级缓存+已读反馈+business-tests/message 10 例)、`5471bff`+`399b966` 文档与样式 token、`e1def70` 交接文档;另有非本会话提交 `ced7322`(注释精简)。2026-10-18 批次:`a0b4c36` 深挖文档、`388ea04` 改单端点、`506c510` 券推荐澄清、`fa187a7` crypto-js 依赖、`d1fdd0e` 点选验证码链路、`14fb160` login 契约档案。
 
 ## M2 剩余任务(按优先级)
 
@@ -43,8 +43,10 @@
 3. ~~send P0:下单表单 tiles 对照~~ **已完成**(docs/parity/send/ui-measure.md:初始态 13 区块全对齐,客服浮窗已补 AppSupportFloat;自送态/货物展开/增值服务 sheet 待生产测试数据)。
 4. ~~order P0:详情页操作集对照~~ **已取消态已对齐(2026-10-19)**:RN 补「客服」入口、主按钮 = 重新寄件(draftBridge FRESH_SEND 全新草稿进寄件页)、已取消态隐藏生产没有的刷新/删除;详情查询切订单详情(orderNumber 优先)解除「运单不存在」。剩余:正常态 allot/sign/transit 底栏对照仍被测试环境数据阻塞(waybillService 缺运单记录,契约无误),数据可用后真机复测。
 5. ~~order:改单 UI 入口~~ **已澄清转推送立项**:5 端点 MP-ONLY,生产 App 无改单 UI;小程序入口=订阅消息深链(eventId+source 前缀 WMC/GWMC_GGDQR),弹窗规格已写进 order/gaps.md。
-6. **pay**:~~E 卡支付通道~~ **已实现**(checkout 双通道+密码弹窗);剩余月结交互(month_sheet)对照。
+6. **pay**:~~E 卡支付通道~~ **已实现**(checkout 双通道+密码弹窗);剩余月结交互(month_sheet)对照,需月结测试账号+真机。
 7. ~~新增页:消息~~ **已立项实现(2026-10-19)**:message/center+list 两页、intMsg×4 接口、我的页气泡入口+未读角标;契约字段按 libapp.so 探针建模**待抓包校准**(详见 docs/parity/message/api.md,校准只需调 services/message 的 types+mapper);生产端真机像素对照待人工导航后截图。剩余:扫一扫(scan,走 shared/platform facade)。
+
+**当前第一优先 = 消息契约校准**:需要 intMsg 真实请求响应样本。路径 a)公司内部测试渠道 dpapp(原生指向 owstest)抓包/探针;b)RN app 登录后直接调 messageApi.fetchMessages 看响应结构(测试环境 owstest 联调,改 mapper 即可);c)若两边都没有数据,挂起等后端造数。
 
 **UI 类任务前置动作**:真机停在生产端对应页面 → `MSYS_NO_PATHCONV=1 adb exec-out screencap -p > <Windows路径>.png`(Git Bash 下目标必须 Windows 形式路径)→ 存 `.dpshots/` 按 1440=design750×1.92 口径量像素 → 对照后改码 → Metro 热更新 force-stop 验证。
 
@@ -52,8 +54,22 @@
 
 ## 已知坑(全部踩过,勿重蹈)
 
-- Git Bash 的 grep 实为 ugrep:模式以 `/` 开头会被当 flag,加 `--` 或去掉前导斜杠。
+- Git Bash 的 grep 实为 ugrep:模式以 `/` 开头会被当 flag,加 `--` 或去掉前导斜杠;模式里的裸 `$` 是行尾锚,搜字面 `$token:` 要用 `grep -F`。
 - adb 拉文件:命令加 `MSYS_NO_PATHCONV=1`,本地目标写 Windows 路径(如 `C:/Users/.../x.png`)。
 - Windows 版 python 读不到 Git Bash 的 `/tmp`,路径用 `cygpath -w` 换算后传环境变量。
 - libapp.so 里中文是 **UTF-16LE**(Dart TwoByteString,2026-10-18 实测修正,非 \uXXXX 转义);URL/路径类 ASCII 字符串直接 `grep -aoE`。
 - AGENTS.md 全部约束有效(平台能力走 shared/platform、样式走 tokens、体积门禁);打包类命令仍由用户执行,agent 只跑 `pnpm verify:app` 与 Metro 验证。
+- **Windows 偶发单行文件损坏(2026-10-19)**:标识符中间被插入大段空格(ecard.service.ts 实测),babel 报 SyntaxError 但 tsc 竟通过;先 `git diff` 核对再 `git checkout -- <file>` 恢复,勿手改。
+- **样式治理门禁**(2026-10-19 实测):页面 `index.scss` 顶级选择器 ≤4 个且禁 BEM(BEM 迁同目录 `content.scss`,两文件都要 import);多值 padding 里的裸 `0` 也算间距字面量(用 longhand 省略);新 scss 文件要 `pnpm update:app-styles-baseline` 登记,存量文件字面量**只降不增**。
+
+## 已搁置:生产 App 域名切换调研(2026-10-19,勿重查)
+
+用户要求把生产 dpapp 请求接口从 www.deppon.com 指到 owstest.deppon.com,**已验证不可行(无 root 前提下)并搁置**。结论如下,再遇到直接引用:
+
+- 生产 dpapp 4.0.7.0 的 API 域名 `https://www.deppon.com` 写死在 **libapp.so(Dart AOT)裸串**;4 个 dex 对 deppon 域名零引用,smali 无从下手;libapp.so 仅有的 2 处 owstest 是 WebView 深链校验正则(`(?:www|owstest)`),**不是环境开关**;全库无「环境/切换环境」类 UI 串。
+- Dart snapshot 改串受**等长约束**(`https://www.deppon.com` 22 字符 → owstest 26 字符),原位替换不可行。
+- **owstest LB 按 Host 头分流**(决定性实验):`curl --resolve www.deppon.com:443:123.60.127.7 https://www.deppon.com/depponmobile/h5/index` 返回**生产页面**(md5 与生产一致),Host=www 打到 owstest IP 也拿生产数据 → DNS/hosts 劫持无效。
+- owstest 证书是 **`*.deppon.com` 通配**(SAN: *.deppon.com, deppon.com),TLS 层无障碍——但 Host 路由挡死。
+- 设备 dcf44968 无 root(`su` 不存在)、dpapp 非 debuggable(`run-as` 拒绝)、targetSdk 36 且 manifest 无明文豁免;dart:io 不读系统 http_proxy、不信任用户 CA、不读 networkSecurityConfig → MITM 需系统证书(要 root)。
+- 仅剩两条路:①公司内部**测试渠道安装包**(原生指向 owstest,零风险);②重打包 APK 注入 Frida Gadget(进程内关 BoringSSL 校验 + TCP 重定向到 PC mitmproxy 改写 Host),工程量大且可能被安全 SDK 检测。用户已决定先搁置。
+- 我方 RN App 的 API **本来就指向 owstest**(runtime-build.cjs 默认),无需任何改动;设备上 10-14 的旧 bundle 里 www.deppon.com 仅剩批量寄/签收码 H5 硬编码(源码已在 0c5645d 修复,重建 bundle 即消)。
