@@ -1,4 +1,5 @@
 import { normalizeExpressDeliveryPointDraft } from './deliveryPoint.rules'
+import { createExpressDraft } from './express.draft'
 import { normalizeExpressInsuranceDraft } from './insurance.rules'
 import { createExpressPackagingDraft, normalizeExpressPackagingDraft } from './packaging.rules'
 import { normalizeExpressReturnBillDraft } from './valueAdded'
@@ -7,7 +8,16 @@ import { normalizeExpressWarehouseDraft, resetExpressWarehouseInput } from './wa
 import type { ExpressDraft, ExpressProductQuote } from './types'
 
 export type ExpressDraftBridgeSource =
-  'QUERY_PRICE' | 'ORDER_RESEND' | 'COUPON_LIST' | 'GOODS_QUERY' | 'BATCH_RECOGNITION' | 'SCAN_QR_CODE' | 'DISPATCH_QUERY' | 'COURIER' | 'TEMPLATE'
+  | 'QUERY_PRICE'
+  | 'ORDER_RESEND'
+  | 'FRESH_SEND'
+  | 'COUPON_LIST'
+  | 'GOODS_QUERY'
+  | 'BATCH_RECOGNITION'
+  | 'SCAN_QR_CODE'
+  | 'DISPATCH_QUERY'
+  | 'COURIER'
+  | 'TEMPLATE'
 
 export interface ExpressDraftBridgePayload {
   source: ExpressDraftBridgeSource
@@ -105,6 +115,19 @@ export const expressDraftBridge = {
     pendingDraft = {
       source: 'ORDER_RESEND',
       draft: nextDraft,
+      quotes: [],
+      carriedAt: Date.now()
+    }
+  },
+
+  /**
+   *
+   * @description 以全新草稿进入寄件页(对齐生产端详情底栏「重新寄件」)
+   */
+  carryFreshSend() {
+    pendingDraft = {
+      source: 'FRESH_SEND',
+      draft: createExpressDraft(),
       quotes: [],
       carriedAt: Date.now()
     }

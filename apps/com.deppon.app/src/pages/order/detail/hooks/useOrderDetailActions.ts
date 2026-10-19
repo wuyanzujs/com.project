@@ -166,6 +166,21 @@ export function useOrderDetailActions(options: UseOrderDetailActionsOptions) {
     })
   }
 
+  const handleResendFresh = () => {
+    if (options.publicTrackMode) {
+      return
+    }
+
+    expressDraftBridge.carryFreshSend()
+    navigateToAppRoute(APP_ROUTES.express, {
+      replace: true
+    })
+  }
+
+  const handleOpenSupport = () => {
+    navigateToAppRoute(APP_ROUTES.supportCenter)
+  }
+
   const handlePayOrder = () => {
     if (!options.detail || !options.paymentSummary || !options.paymentSummary.canPay) {
       return
@@ -257,6 +272,8 @@ export function useOrderDetailActions(options: UseOrderDetailActionsOptions) {
     handleCancelOrder,
     handleDeleteOrder,
     handleResendOrder,
+    handleResendFresh,
+    handleOpenSupport,
     handlePayOrder,
     handleDetailAction,
     ...serviceActions

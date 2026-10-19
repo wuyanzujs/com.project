@@ -12,6 +12,21 @@
   min-width: 220px;
 }
 
+.order-detail-support {
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 80px;
+  margin-right: 14px;
+}
+
+.order-detail-support__text {
+  margin-top: $dp-space-3;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-caption;
+}
+
 .order-detail-primary,
 .order-detail-danger,
 .order-detail-secondary {

@@ -95,9 +95,12 @@ const OrderDetailPage = () => {
             resendActionText={data.resendActionText}
             cancelable={data.cancelable}
             deletable={data.deletable}
+            cancelled={data.cancelled}
             deleting={actions.deleting}
             onRefresh={actions.handleRefresh}
             onResend={actions.handleResendOrder}
+            onResendFresh={actions.handleResendFresh}
+            onSupport={actions.handleOpenSupport}
             onCancel={actions.handleCancelOrder}
             onDelete={actions.handleDeleteOrder}
             onBackToList={actions.handleBackToList}
