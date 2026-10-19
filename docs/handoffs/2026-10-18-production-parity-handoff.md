@@ -5,7 +5,7 @@
 
 ## 一句话现状
 
-生产 App(dpapp 4.0.7.0,Flutter/GetX)的结构、接口、UI 三线深挖已完成 M0/M1 并落盘 `docs/parity/`;M2 已推进:**改单 5 端点、点选验证码全链路、寄件页 tiles 对照(补客服浮窗)、E 卡支付通道均已实现提交,verify:app 全绿**;券推荐与改单受理均澄清为 MP-ONLY(后者归推送立项)。
+生产 App(dpapp 4.0.7.0,Flutter/GetX)的结构、接口、UI 三线深挖已完成 M0/M1 并落盘 `docs/parity/`;M2 已推进:**改单 5 端点、点选验证码全链路、寄件页 tiles 对照(补客服浮窗)、E 卡支付通道、详情页已取消态底栏对齐均已实现提交;详情查询已切订单详情主数据源,解除「运单不存在」阻塞;verify:app 全绿**;券推荐与改单受理均澄清为 MP-ONLY(后者归推送立项)。
 
 ## 已定决策(不要重新讨论)
 
@@ -41,14 +41,14 @@
 1. ~~send P0:下单页券推荐~~ **已关闭**:MP-ONLY 误标(详见 docs/parity/send/api.md)。
 2. ~~send P0:图形验证码链路~~ **已实现**(契约 docs/parity/login/api.md;剩余触发 code 与点选图尺寸待抓包/dpshots 收敛)。
 3. ~~send P0:下单表单 tiles 对照~~ **已完成**(docs/parity/send/ui-measure.md:初始态 13 区块全对齐,客服浮窗已补 AppSupportFloat;自送态/货物展开/增值服务 sheet 待生产测试数据)。
-4. **order P0**:详情页操作集对照 —— 已取消态已完成(生产底栏 客服+再来一单+重新寄件;RN 缺「客服」按钮、主按钮为「查看订单列表」);正常态 allot/sign/transit 被测试环境数据阻塞(waybillService 缺运单记录报「运单不存在」,契约无误)。
+4. ~~order P0:详情页操作集对照~~ **已取消态已对齐(2026-10-19)**:RN 补「客服」入口、主按钮 = 重新寄件(draftBridge FRESH_SEND 全新草稿进寄件页)、已取消态隐藏生产没有的刷新/删除;详情查询切订单详情(orderNumber 优先)解除「运单不存在」。剩余:正常态 allot/sign/transit 底栏对照仍被测试环境数据阻塞(waybillService 缺运单记录,契约无误),数据可用后真机复测。
 5. ~~order:改单 UI 入口~~ **已澄清转推送立项**:5 端点 MP-ONLY,生产 App 无改单 UI;小程序入口=订阅消息深链(eventId+source 前缀 WMC/GWMC_GGDQR),弹窗规格已写进 order/gaps.md。
 6. **pay**:~~E 卡支付通道~~ **已实现**(checkout 双通道+密码弹窗);剩余月结交互(month_sheet)对照。
 7. 新增页:消息(message/center+list,接口 intMsg×4)、扫一扫(scan,走 shared/platform facade)。
 
 **UI 类任务前置动作**:真机停在生产端对应页面 → `MSYS_NO_PATHCONV=1 adb exec-out screencap -p > <Windows路径>.png`(Git Bash 下目标必须 Windows 形式路径)→ 存 `.dpshots/` 按 1440=design750×1.92 口径量像素 → 对照后改码 → Metro 热更新 force-stop 验证。
 
-**真机注意(2026-10-18)**:设备 `dcf44968` 有安全锁屏,息屏后需手动解锁;原"每9分钟防息屏"自动化已暂停且其坐标/分辨率(1080×2340)对应旧设备 `2NSDU20B03012023`,对当前 1440 宽设备无效,勿直接复用。Metro 冒烟可绕开锁屏:`curl "http://127.0.0.1:8081/index.bundle?platform=android&dev=true&minify=false"` 验证 bundle 编译。
+**真机注意(2026-10-18)**:设备 `dcf44968` 有安全锁屏,息屏后需手动解锁;原"每9分钟防息屏"自动化已暂停且其坐标/分辨率(1080×2340)对应旧设备 `2NSDU20B03012023`,对当前 1440 宽设备无效,勿直接复用。Metro 冒烟可绕开锁屏:`curl "http://127.0.0.1:8081/index.bundle?platform=android&dev=true&minify=false"` 验证 bundle 编译。**Metro 无 TTY 启动法(2026-10-19)**:后台/无终端环境直接 watch 会崩(`process.stdin.setRawMode is not a function`,Taro 经 shell 子进程拉 RN CLI,父进程 `--require` 不传播);先写垫片文件(`process.stdin.setRawMode = () => process.stdin`),再 `NODE_OPTIONS="--require <垫片绝对路径>" node node_modules/@tarojs/cli/bin/taro build --type rn --watch`,启动约 2 分钟后 curl 200 即编译通过。
 
 ## 已知坑(全部踩过,勿重蹈)
 

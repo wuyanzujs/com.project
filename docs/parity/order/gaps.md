@@ -10,7 +10,7 @@
 | 1 | 运单修改原生通道(wayBill/modify 5 端点:受理改单×2、改价、变更记录×2) | 接口 | order/edit 走 orderService/modifyOrder 已对齐;wayBill/modify 5 端点已接入 orderApi | ✅ **M2 澄清(2026-10-18):5 端点实为 MP-ONLY**(endpoint-compare 172-176 行;生产端 libapp.so「改单/改价」0 命中,生产 App 无改单 UI)。小程序参照:`pages/order/detail/modify/index.tsx` 底部弹窗「运单更改确认」(该更改由站点发变更,付款方式 {paymentName}→到付,拒绝'3'/同意'2'),触发 = 微信订阅消息深链(详情页 URL 带 eventId,source 前缀 WMC_GGDQR→LOGISTICS / GWMC_GGDQR→EXPRESS),EXPRESS 查询 handleStatus==='4' 时弹。**RN 入口依赖推送深链方案,归并入消息/推送立项**;弹窗规格已备,推送通道决策后即可实现 |
 | 2 | 订单模板四端点(orderTemplate 系) | 接口 | ✅ 已核对:queryOrderTemplate / addModifyOrderTemplate / deleteOrderTemplate 已接(template.api.ts 经 TEMPLATE_API_ROOT 常量拼接,首轮扫描盲区);仅缺 recommendTemplate(暂无 UI 场景,挂起) | 无需动作 |
 | 3 | ~~改单/取消的 H5 形态~~ | 结构(明文 URL) | — | ✅ 已决策:保持原生,不跟随 H5 形态 |
-| 4 | 详情页操作集 actions(allot/invalid/sign/transit)+ cannot 不可操作态 | 结构+UI | detail 组件化完整(OrderDetailFooterActions:刷新/再来一单/取消/删除/查看订单列表 + OrderServiceActions 售后区) | ✅ 已取消态真机对照完成(2026-10-18):生产底栏 = 客服 + 再来一单 + 重新寄件;**RN 底栏缺「客服」按钮,主按钮语义为「查看订单列表」**(生产为「重新寄件」)。测试环境 waybillService 缺运单记录致详情页报「运单不存在」(契约与小程序一致,环境数据问题),正常态 allot/sign/transit 操作集待数据可用后对照 |
+| 4 | 详情页操作集 actions(allot/invalid/sign/transit)+ cannot 不可操作态 | 结构+UI | detail 组件化完整(OrderDetailFooterActions:客服/再来一单/取消/删除/查看订单列表 + OrderServiceActions 售后区) | ✅ 已取消态已对齐(2026-10-19):生产底栏 = 客服 + 再来一单 + 重新寄件;RN 补「客服」入口(跳客服中心)、主按钮按态切换(已取消 = 重新寄件,经 draftBridge FRESH_SEND 全新草稿进寄件页;其余态保持查看订单列表),已取消态隐藏生产没有的刷新/删除。详情查询主数据源已切订单详情(orderNumber 优先,运单详情仅公开物流态兜底),解除测试环境「运单不存在」阻塞;正常态 allot/sign/transit 底栏待真机数据可用后对照 |
 
 ## P1(高频能力)
 
