@@ -39,7 +39,7 @@ function reportNavigationFailure(options: DispatchAppRouteOptions) {
       icon: 'none'
     })
 
-    void Promise.resolve(toast).catch(() => undefined)
+    Promise.resolve(toast).catch(() => undefined)
   } catch {
     // 临时反馈不可用时，导航恢复流程也不能再抛错。
   }
@@ -202,7 +202,7 @@ export function dispatchAppRoute(url: string, options: DispatchAppRouteOptions =
   try {
     const navigation = runAppNavigation(url, options.replace)
 
-    void Promise.resolve(navigation).catch(() => {
+    Promise.resolve(navigation).catch(() => {
       reportNavigationFailure(options)
     })
 

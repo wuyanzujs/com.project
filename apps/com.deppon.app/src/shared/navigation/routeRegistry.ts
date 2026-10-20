@@ -77,8 +77,20 @@ export const APP_ROUTE_DEFINITIONS = [
   },
   {
     name: 'accountSettings',
-    title: '账号设置',
+    title: '设置',
     path: 'pages/account/settings/index',
+    loginRequired: true
+  },
+  {
+    name: 'accountProfile',
+    title: '设置',
+    path: 'pages/account/profile/index',
+    loginRequired: true
+  },
+  {
+    name: 'accountCancelConfirm',
+    title: '注销账号',
+    path: 'pages/account/cancel/confirm/index',
     loginRequired: true
   },
   {

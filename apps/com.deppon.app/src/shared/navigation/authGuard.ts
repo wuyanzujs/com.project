@@ -120,7 +120,7 @@ export function navigateToLogin(options: LoginRedirectOptions = {}) {
         icon: 'none'
       })
 
-      void Promise.resolve(toast).catch(() => undefined)
+      Promise.resolve(toast).catch(() => undefined)
     } catch {
       // 临时反馈不可用时，登录跳转流程仍需继续。
     }
@@ -133,7 +133,7 @@ export function navigateToLogin(options: LoginRedirectOptions = {}) {
   })
 
   loginRedirectInFlight = navigation
-  void navigation.then(
+  navigation.then(
     () => {
       if (loginRedirectInFlight === navigation) {
         loginRedirectInFlight = null

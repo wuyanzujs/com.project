@@ -24,6 +24,7 @@ declare const __APP_RUNTIME_CONFIG__: {
   ecardPmcSystemCode: string
   mobileLoginType: string
   supportSurveyConfigKey: string
+  appVersion: string
 }
 
 declare namespace NodeJS {
@@ -44,5 +45,6 @@ declare namespace NodeJS {
     APP_ECARD_PMC_SYSTEM_CODE?: string
     APP_MOBILE_LOGIN_TYPE?: string
     APP_SURVEY_CONFIG_KEY?: string
+    APP_VERSION?: string
   }
 }

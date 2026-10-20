@@ -17,7 +17,7 @@ class App extends Component<PropsWithChildren, AppState> {
   }
 
   componentDidMount() {
-    void bootstrapAppRuntime().finally(() => {
+    bootstrapAppRuntime().finally(() => {
       this.setState({ ready: true }, () => {
         ensureCurrentRouteAuthenticated()
       })

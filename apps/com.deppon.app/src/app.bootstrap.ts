@@ -35,7 +35,7 @@ export function bootstrapAppRuntime() {
     }
 
     onRequestEvent('authExpired', () => {
-      void clearAppSession()
+      clearAppSession()
       navigateToLogin({
         replace: true,
         message: '登录状态已过期，请重新登录'

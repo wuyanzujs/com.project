@@ -1,3 +1,5 @@
+const APP_PACKAGE_VERSION = require('../package.json').version
+
 const DEFAULT_RUNTIME_CONFIG = {
   env: 'test',
   apiBaseURL: 'https://owstest.deppon.com',
@@ -204,7 +206,8 @@ function createRuntimeBuildConfig(env = process.env) {
     omsChannel: getEnvValue(env, 'APP_OMS_CHANNEL') || DEFAULT_RUNTIME_CONFIG.omsChannel,
     ecardPmcSystemCode: getEnvValue(env, 'APP_ECARD_PMC_SYSTEM_CODE') || DEFAULT_RUNTIME_CONFIG.ecardPmcSystemCode,
     mobileLoginType: getEnvValue(env, 'APP_MOBILE_LOGIN_TYPE') || DEFAULT_RUNTIME_CONFIG.mobileLoginType,
-    supportSurveyConfigKey: getEnvValue(env, 'APP_SURVEY_CONFIG_KEY') || DEFAULT_RUNTIME_CONFIG.supportSurveyConfigKey
+    supportSurveyConfigKey: getEnvValue(env, 'APP_SURVEY_CONFIG_KEY') || DEFAULT_RUNTIME_CONFIG.supportSurveyConfigKey,
+    appVersion: getEnvValue(env, 'APP_VERSION') || APP_PACKAGE_VERSION
   }
 }
 
