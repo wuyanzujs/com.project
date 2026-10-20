@@ -76,3 +76,7 @@ pages/send/
 
 - 接口契约:等 HAR(见 [README](../README.md) 决策简报);明文 URL 未发现本模块专属接口路径。
 - UI 细节:dpshots 量测后补 ui-measure.md。
+
+## 2026-10-19 下单成功页结构对照
+
+生产端 `express/success` 目录拆成 `controller/view` + `top/content/bottom/postman` 四块；RN 目前一个页面 + `CourierCard` 对应 postman，其余按 top（成功标识与标题）/content（寄件信息）/bottom（继续寄件 · 查看订单）落位。文案依据见 [gaps.md](./gaps.md) 的字符串实证表（`libapp.so` UTF-16LE 检索）。
