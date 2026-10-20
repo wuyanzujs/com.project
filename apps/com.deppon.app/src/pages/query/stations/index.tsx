@@ -26,7 +26,8 @@ const QueryStationsPage = () => {
   const routeParams = router.params
   const selectionParams = useMemo(() => stationSelection.parseParams(routeParams), [routeParams])
   const selectionMode = Boolean(selectionParams)
-  const [stationType, setStationType] = useState<StationQueryType>(selectionParams ? 'PICKUP' : 'ALL')
+  const senderSelection = selectionParams?.source === 'EXPRESS_SERVICE_POINT'
+  const [stationType, setStationType] = useState<StationQueryType>(selectionParams ? (stationSelection.createQuery(selectionParams).type ?? 'PICKUP') : 'ALL')
   const [subType, setSubType] = useState<StationSubType>('EXPRESS')
   const [rawText, setRawText] = useState('')
   const [province, setProvince] = useState(selectionParams?.province ?? '')
@@ -37,6 +38,19 @@ const QueryStationsPage = () => {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const initialSelectionQueryKey = useRef('')
+
+  // 「更多网点」进入时标题为「德邦快递服务点」，网点查询主入口仍用页面配置标题。
+  useEffect(() => {
+    if (!senderSelection) {
+      return
+    }
+
+    const pending = Taro.setNavigationBarTitle({ title: '德邦快递服务点' })
+
+    if (pending && typeof pending.catch === 'function') {
+      pending.catch(() => undefined)
+    }
+  }, [senderSelection])
 
   const createQuery = () => ({
     rawText,
@@ -101,7 +115,7 @@ const QueryStationsPage = () => {
 
   const handleQuery = () => {
     if (!loading) {
-      void runQuery(createQuery())
+      runQuery(senderSelection && selectionParams ? stationSelection.createQuery(selectionParams) : createQuery())
     }
   }
 
@@ -117,7 +131,7 @@ const QueryStationsPage = () => {
     }
 
     initialSelectionQueryKey.current = queryKey
-    void runQuery(stationSelection.createQuery(selectionParams))
+    runQuery(stationSelection.createQuery(selectionParams))
   }, [runQuery, selectionParams])
 
   const handleDial = async (item: StationItem) => {
@@ -150,7 +164,9 @@ const QueryStationsPage = () => {
       return
     }
 
-    stationSelection.select(selectionParams.source, item)
+    const station = senderSelection && !item ? (result?.list[0] ?? null) : item
+
+    stationSelection.select(selectionParams.source, station, selectionParams)
     Taro.navigateBack()
   }
 
@@ -197,61 +213,80 @@ const QueryStationsPage = () => {
     <ScrollView className='query-stations-page' scrollY>
       {!selectionMode && <StationQueryFilters stationType={stationType} subType={subType} onStationTypeChange={setStationType} onSubTypeChange={setSubType} />}
 
-      <View className='query-stations-section'>
-        {selectionParams && (
-          <View className='query-stations-selection'>
-            <View className='query-stations-selection__content'>
-              <Text className='query-stations-selection__title'>收件自提服务点</Text>
-              <Text className='query-stations-selection__summary'>20 公里内支持自提的快递网点</Text>
+      {!senderSelection && (
+        <View className='query-stations-section'>
+          {selectionParams && (
+            <View className='query-stations-selection'>
+              <View className='query-stations-selection__content'>
+                <Text className='query-stations-selection__title'>{senderSelection ? '自送服务点' : '收件自提服务点'}</Text>
+                <Text className='query-stations-selection__summary'>
+                  {senderSelection ? '寄件地址 20 公里内支持自送的服务点' : '20 公里内支持自提的快递网点'}
+                </Text>
+              </View>
+              <AppPressable className='query-stations-selection__nearest' onPress={() => handleSelectStation(null)}>
+                <Text className='query-stations-selection__nearest-text'>使用最近服务点</Text>
+              </AppPressable>
             </View>
-            <AppPressable className='query-stations-selection__nearest' onPress={() => handleSelectStation(null)}>
-              <Text className='query-stations-selection__nearest-text'>使用最近服务点</Text>
-            </AppPressable>
+          )}
+          <View className='query-stations-section__head'>
+            <Text className='query-stations-section__title'>{senderSelection ? '寄件地址' : selectionMode ? '收件地址' : '查询地址'}</Text>
+            {!senderSelection && (
+              <AppPressable className='query-stations-link' onPress={handleAnalyze}>
+                <Text className='query-stations-link__text'>智能识别</Text>
+              </AppPressable>
+            )}
           </View>
-        )}
-        <View className='query-stations-section__head'>
-          <Text className='query-stations-section__title'>{selectionMode ? '收件地址' : '查询地址'}</Text>
-          <AppPressable className='query-stations-link' onPress={handleAnalyze}>
-            <Text className='query-stations-link__text'>智能识别</Text>
-          </AppPressable>
+
+          {!senderSelection && (
+            <Input
+              className='query-stations-input'
+              placeholder='粘贴完整地址，或下方手动填写'
+              value={rawText}
+              onInput={event => setRawText(event.detail.value)}
+            />
+          )}
+
+          <View className='query-stations-grid'>
+            <Input
+              className='query-stations-input query-stations-input--grid'
+              placeholder='省'
+              value={province}
+              disabled={senderSelection}
+              onInput={event => setProvince(event.detail.value)}
+            />
+            <Input
+              className='query-stations-input query-stations-input--grid query-stations-input--right'
+              placeholder='市'
+              value={city}
+              disabled={senderSelection}
+              onInput={event => setCity(event.detail.value)}
+            />
+          </View>
+
+          <View className='query-stations-grid'>
+            <Input
+              className='query-stations-input query-stations-input--grid'
+              placeholder='区/县'
+              value={county}
+              disabled={senderSelection}
+              onInput={event => setCounty(event.detail.value)}
+            />
+            <Input
+              className='query-stations-input query-stations-input--grid query-stations-input--right'
+              placeholder='详细地址，可选'
+              value={address}
+              disabled={senderSelection}
+              onInput={event => setAddress(event.detail.value)}
+            />
+          </View>
         </View>
+      )}
 
-        <Input className='query-stations-input' placeholder='粘贴完整地址，或下方手动填写' value={rawText} onInput={event => setRawText(event.detail.value)} />
-
-        <View className='query-stations-grid'>
-          <Input
-            className='query-stations-input query-stations-input--grid'
-            placeholder='省'
-            value={province}
-            onInput={event => setProvince(event.detail.value)}
-          />
-          <Input
-            className='query-stations-input query-stations-input--grid query-stations-input--right'
-            placeholder='市'
-            value={city}
-            onInput={event => setCity(event.detail.value)}
-          />
-        </View>
-
-        <View className='query-stations-grid'>
-          <Input
-            className='query-stations-input query-stations-input--grid'
-            placeholder='区/县'
-            value={county}
-            onInput={event => setCounty(event.detail.value)}
-          />
-          <Input
-            className='query-stations-input query-stations-input--grid query-stations-input--right'
-            placeholder='详细地址，可选'
-            value={address}
-            onInput={event => setAddress(event.detail.value)}
-          />
-        </View>
-      </View>
-
-      <AppPressable className='query-stations-submit' onPress={handleQuery}>
-        <Text className='query-stations-submit__text'>{loading ? '查询中...' : selectionMode ? '查询自提网点' : '查询网点'}</Text>
-      </AppPressable>
+      {!senderSelection && (
+        <AppPressable className='query-stations-submit' onPress={handleQuery}>
+          <Text className='query-stations-submit__text'>{loading ? '查询中...' : selectionMode ? '查询自提网点' : '查询网点'}</Text>
+        </AppPressable>
+      )}
 
       {errorMessage && (
         <View className='query-stations-message'>

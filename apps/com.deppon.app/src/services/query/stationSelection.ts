@@ -1,6 +1,6 @@
 import type { StationItem, StationQueryOptions, StationQueryResult } from './types'
 
-export type StationSelectionSource = 'EXPRESS_DELIVERY_POINT'
+export type StationSelectionSource = 'EXPRESS_DELIVERY_POINT' | 'EXPRESS_SERVICE_POINT'
 
 export interface StationSelectionAddress {
   province: string
@@ -24,9 +24,11 @@ export interface StationSelectionResult {
   source: StationSelectionSource
   station: StationItem | null
   selectedAt: number
+  addressKey?: string
 }
 
 export const EXPRESS_DELIVERY_POINT_MAX_DISTANCE_KM = 20
+export const EXPRESS_SERVICE_POINT_MAX_DISTANCE_KM = 20
 
 let pendingSelection: StationSelectionResult | null = null
 
@@ -45,10 +47,24 @@ function normalizeText(value?: string | null) {
  * @description 判断是否为网点选择来源
  */
 function isStationSelectionSource(value: unknown): value is StationSelectionSource {
-  return value === 'EXPRESS_DELIVERY_POINT'
+  return value === 'EXPRESS_DELIVERY_POINT' || value === 'EXPRESS_SERVICE_POINT'
 }
 
 export const stationSelection = {
+  /** 地址是选择结果的上下文，避免返回时把旧地址的网点填入新地址。 */
+  createAddressKey(address: StationSelectionAddress | null) {
+    if (!address || ![address.province, address.city, address.county, address.address].every(value => normalizeText(value))) {
+      return ''
+    }
+
+    return JSON.stringify([
+      normalizeText(address.province),
+      normalizeText(address.city),
+      normalizeText(address.county),
+      [address.town, address.address].map(normalizeText).filter(Boolean).join('')
+    ])
+  },
+
   /**
    *
    * @param source 网点选择来源
@@ -98,7 +114,7 @@ export const stationSelection = {
       city: params.city,
       county: params.county,
       address: params.address,
-      type: 'PICKUP',
+      type: params.source === 'EXPRESS_SERVICE_POINT' ? 'LEAVE' : 'PICKUP',
       subType: 'EXPRESS'
     }
   },
@@ -123,6 +139,16 @@ export const stationSelection = {
               item.distanceKm <= EXPRESS_DELIVERY_POINT_MAX_DISTANCE_KM
           )
         : result.list
+            .filter(
+              item =>
+                item.source === 'Address' &&
+                Boolean(normalizeText(item.code)) &&
+                Boolean(normalizeText(item.name)) &&
+                item.distanceKm !== null &&
+                item.distanceKm >= 0 &&
+                item.distanceKm <= EXPRESS_SERVICE_POINT_MAX_DISTANCE_KM
+            )
+            .sort((left, right) => (left.distanceKm ?? Infinity) - (right.distanceKm ?? Infinity))
 
     return {
       ...result,
@@ -137,11 +163,12 @@ export const stationSelection = {
    * @param station 选中的网点
    * @description 暂存选中的网点
    */
-  select(source: StationSelectionSource, station: StationItem | null) {
+  select(source: StationSelectionSource, station: StationItem | null, address?: StationSelectionAddress) {
     pendingSelection = {
       source,
       station,
-      selectedAt: Date.now()
+      selectedAt: Date.now(),
+      addressKey: address ? stationSelection.createAddressKey(address) : undefined
     }
   },
 

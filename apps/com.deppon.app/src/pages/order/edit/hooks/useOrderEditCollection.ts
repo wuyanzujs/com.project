@@ -106,7 +106,7 @@ export function useOrderEditCollection({ orderNumber, setDraft }: UseOrderEditCo
       type: 'NORMAL',
       agreementAccepted: false
     })
-    void loadCapability()
+    loadCapability()
   }
 
   const handleClear = () => {

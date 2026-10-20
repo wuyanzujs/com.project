@@ -48,7 +48,7 @@ export function useOrderDetailActions(options: UseOrderDetailActionsOptions) {
   const [deleting, setDeleting] = useState(false)
 
   const handleRefresh = () => {
-    void options.loadDetail()
+    options.loadDetail()
   }
 
   const handleBackToList = () => {
@@ -203,32 +203,32 @@ export function useOrderDetailActions(options: UseOrderDetailActionsOptions) {
 
   const handleDetailAction = (action: OrderDetailActionView) => {
     if (action.target === 'subscription') {
-      void options.toggleSubscription(options.detail?.waybillNumber)
+      options.toggleSubscription(options.detail?.waybillNumber)
       return
     }
 
     if (action.target === 'urge') {
-      void serviceActions.handleUrgeAction(action)
+      serviceActions.handleUrgeAction(action)
       return
     }
 
     if (action.target === 'pickupSchedule') {
-      void serviceActions.handlePickupSchedule()
+      serviceActions.handlePickupSchedule()
       return
     }
 
     if (action.target === 'notifyDeliver') {
-      void serviceActions.handleNotifyDeliver()
+      serviceActions.handleNotifyDeliver()
       return
     }
 
     if (action.target === 'invalidWaybill') {
-      void serviceActions.handleInvalidWaybill()
+      serviceActions.handleInvalidWaybill()
       return
     }
 
     if (action.target === 'departmentPhone') {
-      void serviceActions.handleDepartmentPhone(action)
+      serviceActions.handleDepartmentPhone(action)
       return
     }
 

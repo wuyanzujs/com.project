@@ -39,7 +39,7 @@ export function useOrderPdcFeedback(options: { detail: OrderDetail | null; sourc
       }
     }
 
-    void orderPdcFeedbackService
+    orderPdcFeedbackService
       .queryPending(context)
       .then(response => {
         if (active && response.status && response.result) {

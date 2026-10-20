@@ -105,7 +105,7 @@ const OrderEvaluationPage = () => {
     })
 
     if (ensureAuthenticated({ redirectUrl, replace: true })) {
-      void loadEvaluation()
+      loadEvaluation()
     }
   })
 

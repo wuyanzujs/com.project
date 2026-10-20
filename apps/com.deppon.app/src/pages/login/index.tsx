@@ -87,7 +87,7 @@ const LoginPage = () => {
         return
       }
 
-      // 频控失败转点选验证码,通过后携带凭证自动重试(精确触发 code 待抓包确认)
+      // 频控失败转点选验证码,通过后携带凭证自动重试(精确触发 code 待接口确认)
       if (shouldOfferCaptcha(response.message)) {
         captchaRetryRef.current = true
         setCaptchaVisible(true)
@@ -124,7 +124,7 @@ const LoginPage = () => {
 
     if (captchaRetryRef.current) {
       captchaRetryRef.current = false
-      void requestSendSms(verification)
+      requestSendSms(verification)
     }
   }
 
@@ -241,7 +241,7 @@ const LoginPage = () => {
   }
 
   const handleShare = () => {
-    void shareWithApp({
+    shareWithApp({
       source: 'LOGIN',
       title: '德邦快递',
       description: '德邦快递登录'

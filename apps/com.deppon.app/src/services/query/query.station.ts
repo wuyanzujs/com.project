@@ -26,6 +26,13 @@ const STATION_FEEDBACK_WEB_PATH = '/depponmobile/survey/noStarEvaluate'
 
 /**
  *
+ * @param value 联系电话文本
+ * @description 提取网点主电话号码，寄件自送网点卡片复用同一套解析
+ */
+export { getStationPrimaryPhone } from './stationPhone'
+
+/**
+ *
  * @param value 文本，可为空
  * @description 去除首尾空白
  */
@@ -119,20 +126,6 @@ function normalizeStationTime(startTime?: string, endTime?: string) {
  */
 function getStationPrimaryCode(item: Pick<StationItem, 'code' | 'id'>) {
   return normalizeText(item.code || item.id)
-}
-
-/**
- *
- * @param value 联系电话文本
- * @description 提取网点主电话号码
- */
-export function getStationPrimaryPhone(value?: string | null) {
-  const candidates = normalizeText(value)
-    .split(/[,，;；、\s/]+/)
-    .map(item => item.trim())
-    .filter(Boolean)
-
-  return candidates.find(item => /^(\+?\d{5,20}|\d{3,4}-?\d{7,14})$/.test(item)) || candidates.find(item => /\d{5,}/.test(item)) || normalizeText(value)
 }
 
 /**

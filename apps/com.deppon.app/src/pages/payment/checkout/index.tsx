@@ -119,7 +119,7 @@ const PaymentCheckoutPage = () => {
         replace: true
       })
     ) {
-      void loadCheckout()
+      loadCheckout()
     }
   })
 
@@ -353,8 +353,8 @@ const PaymentCheckoutPage = () => {
         error={passwordError}
         submitting={passwordSubmitting}
         visible={passwordVisible}
-        onClose={() => void handlePasswordClose()}
-        onConfirm={password => void handlePasswordConfirm(password)}
+        onClose={() => handlePasswordClose()}
+        onConfirm={password => handlePasswordConfirm(password)}
       />
     </AppPage>
   )

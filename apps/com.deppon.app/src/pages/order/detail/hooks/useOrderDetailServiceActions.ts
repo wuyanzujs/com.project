@@ -131,13 +131,13 @@ export function useOrderDetailServiceActions(options: UseOrderDetailServiceActio
     }
 
     if (menuAction.kind === 'submit') {
-      void handleSubmitUrge(action)
+      handleSubmitUrge(action)
       return
     }
 
     if (menuAction.kind === 'dial') {
       options.setUrgePanel(null)
-      void options.handleDial(menuAction.phoneNumber)
+      options.handleDial(menuAction.phoneNumber)
       return
     }
 
@@ -191,7 +191,7 @@ export function useOrderDetailServiceActions(options: UseOrderDetailServiceActio
       })
 
       if (response.status) {
-        void options.loadDetail()
+        options.loadDetail()
       }
     } finally {
       setNotifyingDeliver(false)
@@ -225,7 +225,7 @@ export function useOrderDetailServiceActions(options: UseOrderDetailServiceActio
           title: result?.message || '拦截作废成功',
           icon: 'none'
         })
-        void options.loadDetail()
+        options.loadDetail()
         return
       }
 

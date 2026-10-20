@@ -50,7 +50,7 @@ const MessageCenterPage = () => {
 
   useDidShow(() => {
     if (ensureAuthenticated({ redirectUrl: APP_ROUTES.messageCenter, replace: true })) {
-      void loadGroups()
+      loadGroups()
     }
   })
 
@@ -70,7 +70,7 @@ const MessageCenterPage = () => {
       })
 
       if (response.status) {
-        void loadGroups()
+        loadGroups()
       }
     } finally {
       setClearing(false)

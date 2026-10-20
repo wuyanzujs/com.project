@@ -43,10 +43,9 @@ function mapSurveyConfigToEntry(item: SupportSurveyConfig, index: number): Suppo
   return {
     id: `survey-${index}`,
     title: index === 0 ? '体验调研' : `体验调研 ${index + 1}`,
-    summary: item.image ? '参与服务体验问卷，帮助我们优化 App 服务。' : '参与服务体验问卷。',
+    summary: '参与服务体验问卷，帮助我们优化寄件体验。',
     kind: 'web',
     tone: 'primary',
-    badgeText: index === 0 ? 'HOT' : '问卷',
     webSource: 'SUPPORT_SURVEY',
     webUri: item.url,
     loginRequired: false
@@ -90,38 +89,108 @@ export const supportService = {
   getSections(surveyEntries: SupportEntryView[] = []): SupportSectionView[] {
     return [
       {
-        title: '即时服务',
-        summary: '客服和热线优先承接高频咨询。',
+        title: '常用服务',
+        summary: '',
         entries: [
           {
-            id: 'online-service',
-            title: '在线客服',
-            summary: '进入 App WebView 客服会话',
-            kind: 'web',
+            id: 'express',
+            icon: 'packagePlus',
+            title: '我要寄件',
+            summary: '',
+            kind: 'route',
             tone: 'primary',
-            badgeText: 'WebView',
-            webSource: 'SUPPORT_ONLINE_SERVICE'
+            route: APP_ROUTES.express
           },
           {
-            id: 'chat-list',
-            title: '服务消息',
-            summary: '查看历史客服会话和服务消息',
+            id: 'price',
+            icon: 'clock',
+            title: '运费时效',
+            summary: '',
+            kind: 'route',
+            tone: 'primary',
+            route: APP_ROUTES.priceQuery
+          },
+          {
+            id: 'invoice',
+            icon: 'receipt',
+            title: '开具发票',
+            summary: '',
+            kind: 'route',
+            tone: 'primary',
+            route: APP_ROUTES.invoiceCenter,
+            loginRequired: true
+          },
+          {
+            id: 'station',
+            icon: 'building',
+            title: '网点查询',
+            summary: '',
+            kind: 'route',
+            tone: 'primary',
+            route: APP_ROUTES.stationQuery
+          },
+          {
+            id: 'goods',
+            icon: 'shieldCheck',
+            title: '收寄标准',
+            summary: '',
+            kind: 'route',
+            tone: 'primary',
+            route: APP_ROUTES.goodsQuery
+          }
+        ]
+      },
+      {
+        title: '售后服务',
+        summary: '',
+        entries: [
+          {
+            id: 'complaint',
+            icon: 'shieldAlert',
+            title: '我要投诉',
+            summary: '快件时效/服务/费用相关问题',
             kind: 'web',
-            tone: 'neutral',
-            badgeText: '需登录',
-            webSource: 'SUPPORT_CHAT_LIST',
-            webPath: APP_WEB_TARGETS.SUPPORT_CHAT_LIST.url,
+            tone: 'warning',
+            webSource: 'SUPPORT_COMPLAINT',
+            webPath: APP_WEB_TARGETS.SUPPORT_COMPLAINT.url,
             webParamSource: 'APP_SUPPORT_CENTER',
             loginRequired: true
           },
           {
-            id: 'service-hotline',
-            title: '95353 热线',
-            summary: '通过系统电话发起呼叫',
-            kind: 'phone',
-            tone: 'success',
-            badgeText: '电话',
-            phoneNumber: '95353'
+            id: 'claim',
+            icon: 'fileCheck',
+            title: '我要理赔',
+            summary: '快件丢了、坏了怎么办',
+            kind: 'web',
+            tone: 'warning',
+            webSource: 'SUPPORT_CLAIM',
+            webPath: APP_WEB_TARGETS.SUPPORT_CLAIM.url,
+            webParamSource: 'APP_SUPPORT_CENTER',
+            loginRequired: true
+          },
+          {
+            id: 'complaint-record',
+            icon: 'clock',
+            title: '投诉进展',
+            summary: '',
+            kind: 'web',
+            tone: 'neutral',
+            webSource: 'SUPPORT_COMPLAINT_RECORD',
+            webPath: APP_WEB_TARGETS.SUPPORT_COMPLAINT_RECORD.url,
+            webParamSource: 'APP_SUPPORT_CENTER',
+            loginRequired: true
+          },
+          {
+            id: 'claim-processing',
+            icon: 'wallet',
+            title: '理赔进展',
+            summary: '',
+            kind: 'web',
+            tone: 'neutral',
+            webSource: 'SUPPORT_CLAIM_PROCESSING',
+            webPath: APP_WEB_TARGETS.SUPPORT_CLAIM_PROCESSING.url,
+            webParamSource: 'APP_SUPPORT_CENTER',
+            loginRequired: true
           }
         ]
       },
@@ -129,120 +198,86 @@ export const supportService = {
         ? [
             {
               title: '体验反馈',
-              summary: '问卷由配置中心控制，App 只负责受控 WebView 承接。',
+              summary: '',
               entries: surveyEntries
             }
           ]
         : []),
       {
-        title: '售后处理',
-        summary: '投诉、理赔先以 H5 承接，状态机后续再拆原生页。',
+        title: '帮助中心',
+        summary: '',
         entries: [
           {
-            id: 'complaint',
-            title: '投诉',
-            summary: '提交或查看服务投诉',
-            kind: 'web',
-            tone: 'warning',
-            badgeText: '需登录',
-            webSource: 'SUPPORT_COMPLAINT',
-            webPath: APP_WEB_TARGETS.SUPPORT_COMPLAINT.url,
-            webParamSource: 'APP_SUPPORT_CENTER',
-            loginRequired: true
-          },
-          {
-            id: 'complaint-record',
-            title: '投诉记录',
-            summary: '查看历史投诉和处理记录',
-            kind: 'web',
-            tone: 'neutral',
-            badgeText: '需登录',
-            webSource: 'SUPPORT_COMPLAINT_RECORD',
-            webPath: APP_WEB_TARGETS.SUPPORT_COMPLAINT_RECORD.url,
-            webParamSource: 'APP_SUPPORT_CENTER',
-            loginRequired: true
-          },
-          {
-            id: 'claim',
-            title: '在线理赔',
-            summary: '申请货损货差理赔',
-            kind: 'web',
-            tone: 'neutral',
-            badgeText: '需登录',
-            webSource: 'SUPPORT_CLAIM',
-            webPath: APP_WEB_TARGETS.SUPPORT_CLAIM.url,
-            webParamSource: 'APP_SUPPORT_CENTER',
-            loginRequired: true
-          },
-          {
-            id: 'claim-processing',
-            title: '理赔处理中',
-            summary: '查看正在处理的理赔申请',
-            kind: 'web',
-            tone: 'warning',
-            badgeText: '需登录',
-            webSource: 'SUPPORT_CLAIM_PROCESSING',
-            webPath: APP_WEB_TARGETS.SUPPORT_CLAIM_PROCESSING.url,
-            webParamSource: 'APP_SUPPORT_CENTER',
-            loginRequired: true
-          },
-          {
-            id: 'claim-completed',
-            title: '理赔已完成',
-            summary: '查看已经完成的理赔记录',
-            kind: 'web',
-            tone: 'success',
-            badgeText: '需登录',
-            webSource: 'SUPPORT_CLAIM_COMPLETED',
-            webPath: APP_WEB_TARGETS.SUPPORT_CLAIM_COMPLETED.url,
-            webParamSource: 'APP_SUPPORT_CENTER',
-            loginRequired: true
-          }
-        ]
-      },
-      {
-        title: '自助查询',
-        summary: '把旧服务查询入口拆成 App 内可用工具。',
-        entries: [
-          {
-            id: 'dispatch',
-            title: '收派范围',
-            summary: '查询快递与零担覆盖',
+            id: 'urge',
+            title: '我要催促快件',
+            summary: '在订单详情一键催单',
             kind: 'route',
             tone: 'primary',
-            route: APP_ROUTES.dispatchQuery
+            badgeText: 'HOT',
+            route: APP_ROUTES.orderList,
+            loginRequired: true
           },
           {
-            id: 'station',
-            title: '网点查询',
-            summary: '查询营业部地址和电话',
+            id: 'courier-phone',
+            title: '收派员电话多少',
+            summary: '查看派送员联系方式',
             kind: 'route',
-            tone: 'success',
-            route: APP_ROUTES.stationQuery
+            tone: 'primary',
+            badgeText: 'HOT',
+            route: APP_ROUTES.courierList,
+            loginRequired: true
           },
           {
-            id: 'price',
-            title: '价格时效',
-            summary: '预估价格、时效和产品',
+            id: 'cancel-order',
+            title: '怎么取消订单？',
+            summary: '在订单列表取消未取件订单',
             kind: 'route',
-            tone: 'warning',
+            tone: 'primary',
+            badgeText: 'HOT',
+            route: APP_ROUTES.orderList,
+            loginRequired: true
+          },
+          {
+            id: 'billing-rule',
+            title: '寄件计费规则？',
+            summary: '体积重量与实际重量的换算',
+            kind: 'route',
+            tone: 'primary',
             route: APP_ROUTES.priceQuery
           },
           {
-            id: 'goods',
-            title: '货物查询',
-            summary: '查询禁寄限制和寄递提示',
+            id: 'payment-ways',
+            title: '支付运费的方式有哪些？',
+            summary: '寄付现结、到付、月结可选',
             kind: 'route',
-            tone: 'neutral',
-            route: APP_ROUTES.goodsQuery
+            tone: 'primary',
+            route: APP_ROUTES.priceQuery
           },
           {
-            id: 'orders',
-            title: '订单列表',
-            summary: '查询寄件、收件和轨迹',
+            id: 'pickup',
+            title: '需要快递员上门取件',
+            summary: '下单时选择上门取件时间',
             kind: 'route',
-            tone: 'neutral',
-            badgeText: '需登录',
+            tone: 'primary',
+            route: APP_ROUTES.express
+          },
+          {
+            id: 'modify-address',
+            title: '如何更改快件的地址(转寄)',
+            summary: '下单后可申请改址转寄',
+            kind: 'web',
+            tone: 'primary',
+            webSource: 'ORDER_DETAIL_WAYBILL_MODIFY',
+            webPath: APP_WEB_TARGETS.ORDER_DETAIL_WAYBILL_MODIFY.url,
+            webParamSource: 'APP_SUPPORT_CENTER',
+            loginRequired: true
+          },
+          {
+            id: 'missing-waybill',
+            title: '为什么找不到运单',
+            summary: '按运单号在订单列表查询',
+            kind: 'route',
+            tone: 'primary',
             route: APP_ROUTES.orderList,
             loginRequired: true
           }

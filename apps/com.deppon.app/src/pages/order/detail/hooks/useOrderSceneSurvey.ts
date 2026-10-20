@@ -50,7 +50,7 @@ export function useOrderSceneSurvey(options: { detail: OrderDetail | null; role:
       }
     }
 
-    void orderSceneSurveyOrchestrator
+    orderSceneSurveyOrchestrator
       .query(context)
       .then(result => {
         if (active && generationRef.current === generation && result.items.length) {

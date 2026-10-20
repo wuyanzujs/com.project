@@ -106,7 +106,7 @@ const OrderEditPage = () => {
       setOrigin(nextDraft)
 
       if (nextDraft.collection.enabled) {
-        void collectionController.onRefreshCapability()
+        collectionController.onRefreshCapability()
       }
     } finally {
       loadingRef.current = false
@@ -115,7 +115,7 @@ const OrderEditPage = () => {
   }
 
   useDidShow(() => {
-    void loadOrder()
+    loadOrder()
   })
 
   const updateDraft = (patch: Partial<OrderEditDraft>) => {
@@ -219,7 +219,7 @@ const OrderEditPage = () => {
 
   return (
     <ScrollView className='order-edit-page' scrollY>
-      <OrderEditLoadState errorMessage={errorMessage} hasDraft={!!draft} loading={loading} onReload={() => void loadOrder(true)} />
+      <OrderEditLoadState errorMessage={errorMessage} hasDraft={!!draft} loading={loading} onReload={() => loadOrder(true)} />
 
       {draft && (
         <>

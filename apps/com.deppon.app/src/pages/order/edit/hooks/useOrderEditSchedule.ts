@@ -103,7 +103,7 @@ export function useOrderEditSchedule({ draft, setDraft }: UseOrderEditScheduleOp
     }
 
     const timer = setTimeout(() => {
-      void handleQuery()
+      handleQuery()
     }, 350)
 
     return () => clearTimeout(timer)

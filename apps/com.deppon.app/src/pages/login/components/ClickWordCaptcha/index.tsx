@@ -60,7 +60,7 @@ export function ClickWordCaptcha({ visible, onClose, onVerified }: ClickWordCapt
 
   useEffect(() => {
     if (visible) {
-      void loadSession()
+      loadSession()
     } else {
       clearTimer()
     }
@@ -89,7 +89,7 @@ export function ClickWordCaptcha({ visible, onClose, onVerified }: ClickWordCapt
       setMessage('验证失败')
       timerRef.current = setTimeout(() => {
         timerRef.current = null
-        void loadSession()
+        loadSession()
       }, FAIL_RELOAD_DELAY_MS)
     },
     [displaySize, loadSession, onVerified]
@@ -111,7 +111,7 @@ export function ClickWordCaptcha({ visible, onClose, onVerified }: ClickWordCapt
       setPoints(tapped)
 
       if (tapped.length >= session.wordList.length) {
-        void handleCheck(tapped, session)
+        handleCheck(tapped, session)
       }
     },
     [displaySize, handleCheck, phase, points, session]
@@ -156,7 +156,7 @@ export function ClickWordCaptcha({ visible, onClose, onVerified }: ClickWordCapt
           ) : (
             <View className='click-captcha__image-wrap click-captcha__image-wrap--empty' />
           )}
-          <AppNativePressable accessibilityLabel='刷新验证码' onPress={() => void loadSession()}>
+          <AppNativePressable accessibilityLabel='刷新验证码' onPress={() => loadSession()}>
             <View className='click-captcha__refresh'>
               <Text className='click-captcha__refresh-text'>刷新</Text>
             </View>

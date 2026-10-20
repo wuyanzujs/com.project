@@ -14,7 +14,7 @@ const {
 const { shouldOfferCaptcha } = require('@/services/captcha/captcha.service')
 
 // 黄金向量来自 2026-10-18 测试网关探针:secretKey 为 getCaptchaAction 真实返回,AES 输出由 OpenSSL 生成,
-// 用于锁定生产端 EncryptUtil.aesEncode(steel_crypt AES-ECB-PKCS7)的 TS 移植口径。
+// 用于锁定 AES-ECB-PKCS7 加密的 TS 实现口径。
 const GOLDEN_SECRET_KEY = '6w8MdFfabw8Xpfzc'
 const GOLDEN_POINTS = [
   { x: 50, y: 30 },

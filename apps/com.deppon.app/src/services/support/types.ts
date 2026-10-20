@@ -1,3 +1,4 @@
+import type { AppIconName } from '@/shared/components/AppIcon'
 import type { AppRoutePath } from '@/shared/navigation/routes'
 import type { AppWebSource } from '@/shared/webview/appWeb'
 
@@ -12,6 +13,8 @@ export interface SupportEntryView {
   kind: SupportEntryKind
   tone: SupportEntryTone
   badgeText?: string
+  /** 客服中心入口为彩色图标,未配置时回退为标题首字。 */
+  icon?: AppIconName
   route?: AppRoutePath
   webSource?: AppWebSource
   webUri?: string

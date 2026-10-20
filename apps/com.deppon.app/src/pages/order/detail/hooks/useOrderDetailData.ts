@@ -155,7 +155,7 @@ export function useOrderDetailData(routeParams: OrderDetailRouteParams) {
   }
 
   useDidShow(() => {
-    void loadDetail()
+    loadDetail()
   })
 
   return {

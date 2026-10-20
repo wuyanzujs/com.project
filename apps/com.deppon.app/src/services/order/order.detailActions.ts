@@ -224,7 +224,6 @@ export function createOrderDetailActions(order: OrderDetail, options: OrderDetai
       summary: '修改收寄件、货物和备注信息',
       target: 'route',
       tone: 'neutral',
-      badgeText: 'App',
       route: createRouteUrl(APP_ROUTES.orderEdit, {
         orderNumber: order.orderNumber,
         source: 'ORDER_DETAIL'
@@ -278,7 +277,6 @@ export function createOrderDetailActions(order: OrderDetail, options: OrderDetai
       summary: '调整当前运单的派送偏好',
       target: 'web',
       tone: 'neutral',
-      badgeText: 'H5',
       webSource: 'ORDER_DETAIL_DELIVERY',
       webUri: createOrderDetailWebUri(DELIVERY_PREFERENCE_WEB_PATH, {
         waybillNumber
@@ -312,7 +310,6 @@ export function createOrderDetailActions(order: OrderDetail, options: OrderDetai
       summary: '对当前订单服务体验进行评价',
       target: 'route',
       tone: 'neutral',
-      badgeText: 'App',
       route: evaluationRoute,
       loginRequired: true
     })
@@ -325,7 +322,6 @@ export function createOrderDetailActions(order: OrderDetail, options: OrderDetai
       summary: '对当前运单提交服务投诉',
       target: 'web',
       tone: 'warning',
-      badgeText: 'H5',
       webSource: 'ORDER_DETAIL_COMPLAINT',
       webUri: createOrderDetailWebUri('/depponmobile/complaint/apply/index', {
         waybillNumber
@@ -341,7 +337,6 @@ export function createOrderDetailActions(order: OrderDetail, options: OrderDetai
       summary: '货损货差等理赔申请由 H5 承接',
       target: 'web',
       tone: 'neutral',
-      badgeText: 'H5',
       webSource: 'ORDER_DETAIL_CLAIM',
       webUri: createOrderDetailWebUri('/depponmobile/h5/index#/claimPackagePages/index', {
         waybillNumber
@@ -357,7 +352,6 @@ export function createOrderDetailActions(order: OrderDetail, options: OrderDetai
       summary: '进入 App 发票中心查询可开票运单',
       target: 'route',
       tone: 'primary',
-      badgeText: 'App',
       route: createRouteUrl(APP_ROUTES.invoiceCenter, {
         source: 'ORDER_DETAIL',
         waybillNumber
@@ -373,7 +367,6 @@ export function createOrderDetailActions(order: OrderDetail, options: OrderDetai
       summary: '运输中运单修改由 H5 承接',
       target: 'web',
       tone: 'neutral',
-      badgeText: 'H5',
       webSource: 'ORDER_DETAIL_WAYBILL_MODIFY',
       webUri: createOrderDetailWebUri(WAYBILL_MODIFY_WEB_PATH, {
         waybillNumber

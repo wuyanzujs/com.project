@@ -4,7 +4,7 @@ import { buildCaptchaPointJson, buildCaptchaVerification, parsePngSize } from '.
 import type { ClickWordCaptchaSession, ClickWordCaptchaVerifyInput } from './types'
 
 /**
- * 频控/风控失败信号:网关实测文案「您的操作过于频繁，请稍后重试」;精确触发 code 待抓包确认后收敛。
+ * 频控/风控失败信号:网关文案「您的操作过于频繁，请稍后重试」;精确触发 code 待接口确认后收敛。
  */
 const CAPTCHA_REQUIRED_MESSAGE_PATTERN = /频繁|稍后重试/
 

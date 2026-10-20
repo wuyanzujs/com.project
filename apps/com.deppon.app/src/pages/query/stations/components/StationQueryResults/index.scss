@@ -148,3 +148,81 @@
   font-size: $dp-font-size-body;
   font-weight: $dp-font-weight-bold;
 }
+
+/* 「德邦快递服务点」卡片：白底圆角、选中态蓝边、右侧电话/距离方按钮 */
+.query-stations-point {
+  padding: $dp-space-32;
+  margin-top: $dp-space-24;
+  background: $dp-color-bg-card;
+  border-width: $dp-space-2;
+  border-color: $dp-color-bg-card;
+  border-radius: $dp-radius-24;
+  align-items: flex-start;
+}
+
+.query-stations-point--selected {
+  border-color: $dp-color-brand;
+}
+
+.query-stations-point__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.query-stations-point__address {
+  display: flex;
+  margin-top: $dp-space-16;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+}
+
+.query-stations-point__body {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: $dp-space-24;
+}
+
+.query-stations-point__metas {
+  flex: 1;
+  min-width: 0;
+}
+
+.query-stations-point__meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: $dp-space-10;
+}
+
+.query-stations-point__meta-text {
+  flex: 1;
+  margin-left: $dp-space-12;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-label-large;
+}
+
+.query-stations-point__actions {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  margin-left: $dp-space-16;
+}
+
+.query-stations-point__action {
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  margin-left: $dp-space-16;
+  background: $dp-color-bg-subtle;
+  border-radius: $dp-radius-16;
+}
+
+.query-stations-point__action-text {
+  margin-top: $dp-space-6;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-caption;
+}

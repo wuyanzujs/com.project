@@ -54,7 +54,7 @@ const BatchPage = () => {
   })
 
   useEffect(() => {
-    void batchDraftStorage.save(draft)
+    batchDraftStorage.save(draft)
   }, [draft])
 
   useDidShow(() => {

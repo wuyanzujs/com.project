@@ -56,7 +56,7 @@ const MessageListPage = () => {
 
   useDidShow(() => {
     if (ensureAuthenticated({ redirectUrl: APP_ROUTES.messageList, replace: true })) {
-      void loadMessages()
+      loadMessages()
     }
   })
 
@@ -139,7 +139,7 @@ const MessageListPage = () => {
       <View className='message-list-content'>
         {items.map(item => (
           <View className='message-item-card' key={item.id}>
-            <AppPressable className='message-item-card__body' onPress={() => void handleOpenMessage(item)}>
+            <AppPressable className='message-item-card__body' onPress={() => handleOpenMessage(item)}>
               <View className='message-item-card__top'>
                 {!item.isRead && <View className='message-item-card__dot' />}
                 <Text className='message-item-card__title'>{item.title}</Text>
@@ -147,7 +147,7 @@ const MessageListPage = () => {
               </View>
               {item.content ? <Text className='message-item-card__content'>{item.content}</Text> : null}
             </AppPressable>
-            <AppPressable accessibilityLabel='删除消息' className='message-item-card__delete' onPress={() => void handleRemoveMessage(item)}>
+            <AppPressable accessibilityLabel='删除消息' className='message-item-card__delete' onPress={() => handleRemoveMessage(item)}>
               <Text className='message-item-card__delete-text'>{processingId === item.id ? '删除中' : '删除'}</Text>
             </AppPressable>
           </View>

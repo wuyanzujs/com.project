@@ -383,8 +383,8 @@ export const batchService = {
           title: '批量打印',
           summary: '从订单列表选择已提交的运单打印面单。',
           status: 'pending',
-          statusText: '待接入',
-          disabledReason: '打印机连接能力暂不可用'
+          statusText: '暂不支持',
+          disabledReason: '当前版本暂不支持手机直连打印机，可到网点打印'
         }
       ],
       rules: [

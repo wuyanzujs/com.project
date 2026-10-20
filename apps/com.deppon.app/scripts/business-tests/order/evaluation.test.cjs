@@ -221,7 +221,7 @@ const cases = [
 
       assert.ok(route.startsWith('/pages/order/evaluation/index?'))
       assert.equal(action.target, 'route')
-      assert.equal(action.badgeText, 'App')
+      assert.equal(action.badgeText, undefined, '不再向用户展示 App/H5 渠道角标')
       assert.equal(action.route, route)
       assert.equal(senderFallback.pathname, '/depponmobile/survey/land')
       assert.equal(senderFallback.searchParams.get('scene'), 'S0505')

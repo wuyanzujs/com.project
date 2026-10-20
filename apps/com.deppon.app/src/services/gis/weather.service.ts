@@ -44,7 +44,7 @@ async function loadCountyWeatherInfos(adcode: string) {
     return null
   }
 
-  void dpCache.set(cacheKey, { data: infos, expire: WEATHER_CACHE_EXPIRE })
+  dpCache.set(cacheKey, { data: infos, expire: WEATHER_CACHE_EXPIRE })
 
   return infos
 }
