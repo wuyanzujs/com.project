@@ -1,6 +1,10 @@
 import { Image, ScrollView, Text, View } from '@tarojs/components'
 
-import { createExpressProductQuoteView, getExpressQuoteTimeProduct } from '@/services/express'
+import productLongActive from '@/assets/express/express_product_bg_l_h.png'
+import productLongIdle from '@/assets/express/express_product_bg_l_n.png'
+import productShortActive from '@/assets/express/express_product_bg_s_h.png'
+import productShortIdle from '@/assets/express/express_product_bg_s_n.png'
+import { createExpressProductQuoteView, getExpressQuoteTimeProduct, isSameExpressQuote } from '@/services/express'
 import type { ExpressProductQuote } from '@/services/express'
 import { AppPressable } from '@/shared/components'
 
@@ -57,12 +61,11 @@ export function ExpressQuoteSection({
       <ScrollView className='express-quote-scroll' scrollX>
         {quotes.map(product => {
           const view = createExpressProductQuoteView(product)
-          const selected = selectedProduct?.omsProductCode === product.omsProductCode
+          const selected = isSameExpressQuote(selectedProduct, product)
           const highEnd = EXPRESS_MEDAL_CODES.includes(String(getExpressQuoteTimeProduct(product).code))
           const cardClassName = selected ? 'express-quote-card express-quote-card--active' : 'express-quote-card'
-          const ribbonClassName = selected
-            ? 'express-quote-card__ribbon express-quote-card__ribbon--active'
-            : 'express-quote-card__ribbon express-quote-card__ribbon--idle'
+          const background = view.longName ? (selected ? productLongActive : productLongIdle) : selected ? productShortActive : productShortIdle
+          const ribbonClassName = view.longName ? 'express-quote-card__ribbon express-quote-card__ribbon--long' : 'express-quote-card__ribbon'
           const ribbonTitleClassName = selected
             ? 'express-quote-card__ribbon-title express-quote-card__ribbon-title--active'
             : 'express-quote-card__ribbon-title'
@@ -77,13 +80,13 @@ export function ExpressQuoteSection({
                 selected={selected}
                 onPress={() => onSelectProduct(product)}
               >
-                {/* 生产端时效卡是深色书签带：右侧折角压出白色缺口，选中态才用深色。 */}
+                {/* APK 原图内已包含渐变书签、折角和描边，保留长/短标题与选中变体。 */}
+                <Image className='express-quote-card__background' mode='scaleToFill' src={background} />
                 <View className={ribbonClassName}>
                   <Text className={ribbonTitleClassName} numberOfLines={1}>
                     {view.name}
                   </Text>
                 </View>
-                {selected ? <View className='express-quote-card__fold' /> : null}
                 {!selected && highEnd ? <Image className='express-quote-card__medal' mode='aspectFit' src={EXPRESS_MEDAL_ICON} /> : null}
                 {view.timeLimit > 0 ? (
                   <View className='express-quote-card__limit'>

@@ -332,6 +332,7 @@ const ExpressPage = () => {
           view={selectedProductDetailView}
           visible={detailVisible}
           onClose={() => setDetailVisible(false)}
+          onOpenBillingRules={() => navigateToAppRoute(createAppWebUrl({ source: 'EXPRESS_BILLING_RULES' }))}
         />
       ) : null}
 

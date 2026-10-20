@@ -82,6 +82,18 @@
   font-size: $dp-font-size-body;
   line-height: $dp-line-height-40;
 }
+.express-price-sheet__rule-link {
+  margin-left: $dp-space-16;
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-40;
+}
+.express-price-sheet__rule-arrow {
+  width: $dp-space-24;
+  height: $dp-space-24;
+  margin-left: $dp-space-2;
+  flex-shrink: 0;
+}
 .express-price-sheet__value {
   color: $dp-color-text-heading;
   font-size: $dp-font-size-body;

@@ -29,6 +29,7 @@ import {
   isExpressPaperReturnBillType,
   normalizeExpressReturnBillDraft
 } from './valueAdded'
+import { createExpressValueAddedOrderFields, createExpressValueAddedQuoteFields } from './valueAdded.rules'
 import { createExpressWarehouseOrderFields, createExpressWarehouseQuoteFields } from './warehouse.payload'
 
 import type {
@@ -152,7 +153,8 @@ export function buildFreightRequest(draft: ExpressDraft, availability?: ExpressP
     ...(packageInfoList ? { packageInfoList } : {}),
     ...pickupQuoteFields,
     ...deliveryQuoteFields,
-    ...warehouseQuoteFields
+    ...warehouseQuoteFields,
+    ...createExpressValueAddedQuoteFields(draft.valueAdded)
   }
 }
 
@@ -336,7 +338,8 @@ export function buildCreateOrderRequest(draft: ExpressDraft, insuranceCapability
     ...warehouseOrderFields.orderExtendFields,
     ...insuranceOrderFields.orderExtendFields,
     ...returnBillOrderFields,
-    ...returnBillQuantityFields
+    ...returnBillQuantityFields,
+    ...createExpressValueAddedOrderFields(draft.valueAdded)
   ]
 
   return {

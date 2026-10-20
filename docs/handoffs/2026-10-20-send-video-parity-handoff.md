@@ -7,7 +7,7 @@
 
 ## 一句话现状
 
-用户视频反馈的 7 项差异已全部按生产端（`com.deppon.dpapp` 4.0.7.0）真机量测 + 包内 AOT 字符串取证落到代码：弹层基件拆成「静态蒙层 + 面板上滑」、时效卡改成深色书签带、空地址改成卡内缩进灰块、增值服务独立成页、客服浮窗改 104×100 半圆胶囊且可拖动、协议勾选图标 + 首勾弹层、明细改分区弹层。**静态门禁全绿（含 338 条业务测试）**；**尚未重打包安装到真机做逐条截图复核**（按 AGENTS.md 需用户明确授权）。
+用户视频反馈的 7 项差异已全部按生产端（`com.deppon.dpapp` 4.0.7.0）真机量测 + 包内 AOT 字符串取证落到代码：弹层基件拆成「静态蒙层 + 面板上滑」、时效卡改成深色书签带、空地址改成卡内缩进灰块、增值服务独立成页、客服浮窗改 104×100 半圆胶囊且可拖动、协议勾选图标 + 首勾弹层、明细改分区弹层。**最新静态门禁全绿（业务规则 362 pass / 0 fail，寄件相关测试 118 pass / 0 fail）**；**尚未重打包安装到真机做逐条截图复核**（按 AGENTS.md 需用户明确授权）。
 
 ## 本轮改动清单（按缺陷）
 
@@ -34,7 +34,7 @@
 | `check:rn-boundaries` | 通过 |
 | `check:routes` | 通过（新增 `expressServices` 已登记） |
 | `check:module-size` | 通过（既有文件预警，未新增越限） |
-| `check:business-rules` | 通过（338 pass / 0 fail） |
+| `check:business-rules` | 通过（362 pass / 0 fail） |
 | `check:runtime-config`、`check:platform-build` | 通过 |
 
 ## 尚未执行的验证（下一轮第一件事）
@@ -50,6 +50,8 @@
    debug APK 内嵌 bundle，可独立运行；Metro 快循环见 [android-fast-loop.md](../../dev/android-fast-loop.md)。
 2. **7 条逐项截图复核**（RN vs 生产端同位置）：空地址态需要在 RN 侧造「全新草稿」（当前清空收件人会触发姓名校验，无法人为造空），建议用清除缓存后首次进入的方式截。
 3. 弹层开场 300ms 动画：本机 `screenrecord` 不可用，需要可录屏机型复核「蒙层是否零动画」。
+
+本轮已补齐 `mp-taro3` 可交叉确认的费用契约：基础费用恢复 `FRT + discount.reduceFee`，优惠信息逐条显示，计费重量根据 `expBillCalculateResponse.billType` 显示重量/体积计费，并接入受控 WebView `/depponmobile/billingRules`。对应代码与测试已通过静态门禁。
 
 ## 证据资产（本地，未入库）
 
@@ -75,17 +77,34 @@
 
 ## 未决项（需要产品或后端输入）
 
-1. **增值服务 3 项缺契约**：`双人派送`、`通电验机`、`拍照服务（拍照签收/取货照片）` 在 `src/services/express/express.payload.ts` 无字段；包内可见 `验机件数`、`5元/票`、`拍照签收`、`取货照片` 等文案但拿不到字段名。需要生产端下单请求样本或接口文档，**不要凭 UI 猜字段**。
-2. **明细「优惠信息 -¥1」**：当前仅在能匹配到已选券（`CouponCardView.raw.optimalFee`）时渲染；生产端无券时是否显示 0 元行未确认。
-3. **协议「历史记录」版本列表**：生产端是内嵌 11 条日期链接，RN 只有 `PROTOCOL_RECORD` H5，本轮以「历史版本记录 >」跳 H5 承接。
-4. **增值服务页视觉收口**：结构已独立成页，但生产端的「图标 + ⓘ + 单选圆 + 服务费行」尚未逐项还原（当前复用 RN 既有服务组件：标题 + 开关 + 字段）。
+1. **增值服务 3 项仍需生产请求确认**：代码已依据生产 AOT 标识与同体系 MP 契约接入 `doubleDelivery`、`powerMachineTypes`、`installationCategory`、`testMacHineQty`、`isPhotoSigning/photoSigning`、`pickupPhoto`；仍需要生产端下单请求样本或接口文档确认最终序列化层级，**不要再从 UI 猜字段**。
+2. **明细优惠展示**：已按 `mp-taro3` 返参接入 `discount` 汇总与逐条明细；仍需真机确认不同优惠组合的最终排版。
+3. **协议「历史记录」远程更新规则**：RN 已接入包内提取的 11 组历史版本并保留 `PROTOCOL_RECORD` H5 路由；生产端远程配置覆盖与版本失效规则仍需运行时确认。
+4. **增值服务页视觉收口**：接口、字段和费用闭环已完成；生产端的「图标 + ⓘ + 单选圆 + 服务费行」仍需真机逐项截图确认。
 5. **客服拖动上下限**：生产端只验证「可上移且贴边」，上下限未量测；当前实现钳制在向上 520 / 向下 40 设计稿 px。
 
 ## 工作区与提交
 
 - 已提交两步：
   - `bdea092` fix: 寄快递页 7 项生产端一致性修复（弹层蒙层/时效卡/空地址/增值服务页/客服浮窗/协议勾选/费用明细）
-  - `c894d88` docs: 寄快递 7 项视频反馈需求单、生产端对照报告与本轮交接
-- 提交后复跑门禁：`typecheck`、`lint`、`check:business-rules`（338 pass）、`check:styles`、`check:rn-boundaries` 均通过（pre-commit 的 prettier/eslint/stylelint 只做格式化，未改语义）。
+  - `7bce648` docs: 寄快递 7 项视频反馈需求单、生产端对照报告与本轮交接
+- 提交后复跑门禁：`typecheck`、`lint`、`check:business-rules`（362 pass）、`check:styles`、`check:rn-boundaries` 均通过（pre-commit 的 prettier/eslint/stylelint 只做格式化，未改语义）。随后补齐账户设置页业务测试 harness 的共享图片资源映射，完整 `verify:static` 再次通过。
 - `tools/compress-images.ps1`、`tools/probe-ai-gateway.ps1` 是工作区里既有的未跟踪脚本（与寄件无关），本轮未纳入提交。
 - 默认禁止代理主动打包/发布；本轮未执行 bundle/Gradle，等用户授权。
+
+## 后续取证补充（2026-10-20）
+
+用户要求使用 reverse-engineer-anything 解包生产 App 后，新增 [生产实现取证报告](../parity/send/2026-10-20-production-implementation-analysis.md)，附原图联系图及带摘要/文件偏移的小型证据 JSON。完整包、提取文件与 REA Evidence 存在 `D:\codeSpace\deppon-analysis\2026-10-20-send-reverse`。
+
+- 三项服务已不再是“完全无字段线索”：生产 AOT 找到 `doubleDelivery`、`powerMachineTypes`、`installationCategory`、`testMacHineQty`、`isPhotoSigning/photoSigning`、`pickupPhoto` 及对应候选费项码；同体系 MP 源码给出了真实报价/下单映射。生产 App 函数体、取值和请求层级尚未恢复，不能把 MP 参照当作 App 实证，详情见报告。
+- 时效卡背景、8 类服务图标、客服耳机原图已提取。协议 `assets/jsons/protocol.json` 包含正文与历史版本数组（12 行，去重 11 组），内嵌版本列表的静态数据已找到。
+- RN 源码对照发现：增值页费用合计读取整票 `totalfee`；客服白底胶囊在拖动组件外。均只记录，尚未修复/真机验证。
+- 蒙层开场动画、客服边界、无券费用行等仍未解决；本次未打包、安装、下单或修改业务代码。
+
+后续用户已授权代理自主判断并落地可确认改动，三项服务、费用闭环、原图、浮窗与协议历史的最新实现以 [代码落地记录](../parity/send/2026-10-20-production-implementation-followup.md) 为准；以上“未修复/仅 5 类/未改代码”保留为此前交接时点，不代表后续工作区状态。
+
+### 2026-10-20 REA 与门禁复核
+
+- REA 复核确认生产包仍为 Flutter AOT；AOT 证据见 `ev_8abc50d3c5292cf2dd194843e2a2699c30aa79797669094f32269e5353a8ed8a`、`ev_0f0e011c0028e22e38ad3829e5aff8b197204cf0adafa5862ecd34e3901de81c`。
+- 本轮目标回归 118 pass / 0 fail，业务规则 362 pass / 0 fail，`verify:static` 全部通过。
+- 仍需真机安装截图复核；按项目 AGENTS.md，未获明确授权前不执行 bundle、Gradle、Xcode 或 APK 安装。

@@ -2,6 +2,7 @@ import { normalizeExpressDeliveryPointDraft } from '../express/deliveryPoint.rul
 import { normalizeExpressInsuranceDraft } from '../express/insurance.rules'
 import { normalizeExpressPackagingDraft } from '../express/packaging.rules'
 import { normalizeExpressReturnBillDraft } from '../express/valueAdded'
+import { normalizeExpressValueAddedDraft } from '../express/valueAdded.rules'
 import { normalizeExpressWarehouseDraft } from '../express/warehouse.rules'
 
 import type { ExpressDraft } from '../express'
@@ -26,6 +27,7 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
       returnBill: normalizeExpressReturnBillDraft(draft.service.returnBill)
     },
     collection: { ...draft.collection },
+    valueAdded: normalizeExpressValueAddedDraft(draft.valueAdded),
     deliveryPreference: {
       ...draft.deliveryPreference,
       unavailableDates: [...draft.deliveryPreference.unavailableDates]

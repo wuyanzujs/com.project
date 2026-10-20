@@ -28,7 +28,7 @@ interface ExpressServiceSectionProps {
  * @description 寄件页的增值服务入口行：与生产端一致，只做入口，点击跳增值服务专属页。
  */
 export function ExpressServiceSection({ draft, onClearScanContext, onOpenServices, scanContextView }: ExpressServiceSectionProps) {
-  const { collection, deliveryPreference, packaging, service, warehouse } = draft
+  const { collection, deliveryPreference, packaging, service, valueAdded, warehouse } = draft
   const packagingSelected = Boolean(packaging.cartonCode || packaging.woodenCodes.length || packaging.unpackingCodes.length)
   const summaryParts = [
     service.deliveryMode !== 'PICKNOTUPSTAIRS' && DELIVERY_LABELS[service.deliveryMode],
@@ -37,7 +37,10 @@ export function ExpressServiceSection({ draft, onClearScanContext, onOpenService
     service.returnBill.type !== 'NO_RETURN_SIGNED' && getExpressReturnBillOption(service.returnBill.type).label,
     Boolean(collection.type) && '代收货款',
     Boolean(deliveryPreference.type) && getExpressDeliveryPreferenceOption(deliveryPreference.type).label,
-    warehouse.enabled && '送货进仓'
+    warehouse.enabled && '送货进仓',
+    valueAdded?.doubleDelivery && '双人派送',
+    valueAdded?.powerMachine.enabled && '通电验机',
+    (valueAdded?.photo.sign || valueAdded?.photo.pickup) && '拍照服务'
   ].filter(Boolean) as string[]
   // 摘要最多展示 3 项；含代收货款时最多展示 2 项，超出部分用「…」截断。
   const summaryLimit = summaryParts.includes('代收货款') ? 2 : 3

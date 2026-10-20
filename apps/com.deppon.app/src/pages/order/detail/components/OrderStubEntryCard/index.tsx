@@ -1,7 +1,8 @@
-import { Text, View } from '@tarojs/components'
+import { Image, Text, View } from '@tarojs/components'
 
 import type { OrderStubEntryView } from '@/services/order'
 import { AppPressable } from '@/shared/components'
+import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon/images'
 
 import './index.scss'
 
@@ -24,7 +25,7 @@ export function OrderStubEntryCard({ entry, onOpen }: OrderStubEntryCardProps) {
         <Text className='order-detail-stub-entry__title'>{entry.title}</Text>
         <Text className='order-detail-stub-entry__summary'>{entry.summary}</Text>
       </View>
-      <Text className='order-detail-stub-entry__arrow'>›</Text>
+      <Image className='order-detail-stub-entry__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
     </AppPressable>
   )
 }

@@ -5,6 +5,7 @@ import { createExpressInsuranceDraft, validateExpressInsurance } from './insuran
 import { createExpressPackagingDraft } from './packaging.rules'
 import { validateExpressPickupTime } from './pickupTime.rules'
 import { createExpressReturnBillDraft, validateExpressReturnBill } from './valueAdded'
+import { createExpressValueAddedDraft, validateExpressValueAdded } from './valueAdded.rules'
 import { createExpressWarehouseDraft, validateExpressWarehouse } from './warehouse.rules'
 
 import type { Contact } from '../contact'
@@ -75,6 +76,7 @@ export function createExpressDraft(): ExpressDraft {
       privacyProtection: 'N'
     },
     collection: createExpressCollectionDraft(),
+    valueAdded: createExpressValueAddedDraft(),
     deliveryPreference: createExpressDeliveryPreferenceDraft(),
     deliveryPoint: createExpressDeliveryPointDraft(),
     warehouse: createExpressWarehouseDraft(),
@@ -234,6 +236,7 @@ export function validateExpressDraft(
     ...validateExpressContact(draft.consignee, '收件人'),
     ...validateExpressInsurance(draft),
     ...validateExpressCollection(draft.collection),
+    ...validateExpressValueAdded(draft.valueAdded),
     ...validateExpressReturnBill(draft.service.returnBill, draft.selectedProduct?.omsProductCode || draft.service.transportMode),
     ...validateExpressPickupTime(draft),
     ...validateExpressDeliveryPreference(draft, {

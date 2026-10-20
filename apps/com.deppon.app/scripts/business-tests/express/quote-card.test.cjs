@@ -2,7 +2,13 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { createExpressProductQuoteView, getExpressQuoteTimeLimit, splitExpressQuoteTimeText } = require('@/services/express/express.quoteView')
+const {
+  createExpressProductQuoteView,
+  getExpressQuoteKey,
+  getExpressQuoteTimeLimit,
+  isSameExpressQuote,
+  splitExpressQuoteTimeText
+} = require('@/services/express/express.quoteView')
 
 const { createReactHarness, findElement, loadReactModule } = require('../support/react-harness.cjs')
 
@@ -58,6 +64,17 @@ test('quote card exposes the limited offer discount used by the 惊喜优惠 bad
   assert.equal(getExpressQuoteTimeLimit({ ...baseProduct, discount: [{ marketCode: 'XLYHF', reduceFee: 3 }] }), 3)
 })
 
+test('quote identity distinguishes same-code routes and time products while tolerating price changes', () => {
+  const first = { ...baseProduct, totalfee: 10, mainRoutePref: 'A', timeProducts: [{ timeProductsCode: 'FAST', timeProductsName: '标快' }] }
+  const sameIdentity = { ...first, totalfee: 12 }
+  const otherRoute = { ...first, mainRoutePref: 'B' }
+  const otherTime = { ...first, timeProducts: [{ timeProductsCode: 'SLOW', timeProductsName: '慢车' }] }
+  assert.equal(isSameExpressQuote(first, sameIdentity), true)
+  assert.equal(isSameExpressQuote(first, otherRoute), false)
+  assert.equal(isSameExpressQuote(first, otherTime), false)
+  assert.notEqual(getExpressQuoteKey(first), getExpressQuoteKey(otherRoute))
+})
+
 test('quote card renders one-line product name, split time text and limited offer badge', () => {
   const product = {
     ...baseProduct,
@@ -66,6 +83,10 @@ test('quote card renders one-line product name, split time text and limited offe
   const { ExpressQuoteSection } = loadReactModule('pages/express/components/ExpressQuoteSection/index.tsx', {
     'react/jsx-runtime': require('react/jsx-runtime'),
     '@tarojs/components': { Image: 'Image', ScrollView: 'ScrollView', Text: 'Text', View: 'View' },
+    '@/assets/express/express_product_bg_l_h.png': 'long-active.png',
+    '@/assets/express/express_product_bg_l_n.png': 'long-idle.png',
+    '@/assets/express/express_product_bg_s_h.png': 'short-active.png',
+    '@/assets/express/express_product_bg_s_n.png': 'short-idle.png',
     '@/services/express': require('@/services/express/express.quoteView'),
     '@/shared/components': { AppPressable: 'AppPressable' },
     '../ExpressSection': { ExpressSection: 'ExpressSection' },
@@ -86,11 +107,12 @@ test('quote card renders one-line product name, split time text and limited offe
 
   const title = findElement(view, element => element.type === 'Text' && element.props?.children === '小件标快次日')
   assert.equal(title.props.numberOfLines, 1, 'product name stays on one line')
-  // 生产端时效卡是深色书签带 + 右侧折角，选中态才用深色，产品名不再切换窄/宽带样式。
+  // 渐变书签、折角和描边都在生产原图内，长标题选中态使用对应背景。
   assert.match(String(title.props?.className), /express-quote-card__ribbon-title--active/, 'selected card paints the ribbon title white')
-  assert.ok(
-    findElement(view, element => String(element.props?.className).includes('express-quote-card__fold')),
-    'selected card renders the folded ribbon corner'
+  assert.equal(
+    findElement(view, element => element.props?.className === 'express-quote-card__background')?.props.src,
+    'long-active.png',
+    'selected long-title card uses the production ribbon and corner asset'
   )
 
   assert.ok(

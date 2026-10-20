@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from '@tarojs/components'
+import { Image, ScrollView, Text, View } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 
 import { useEffect, useState } from 'react'
@@ -7,6 +7,7 @@ import { supportService } from '@/services/support'
 import type { SupportEntryView } from '@/services/support'
 import { AppPressable } from '@/shared/components'
 import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon/images'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
@@ -120,7 +121,7 @@ const SupportCenterPage = () => {
                 </View>
                 {entry.summary ? <Text className='support-entry__summary'>{entry.summary}</Text> : null}
               </View>
-              <Text className='support-entry__arrow'>›</Text>
+              <Image className='support-entry__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
             </AppPressable>
           ))}
         </View>

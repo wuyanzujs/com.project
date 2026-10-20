@@ -108,6 +108,25 @@ export interface ExpressCollectionDraft {
   agreementAccepted: boolean
 }
 
+export interface ExpressPowerMachineDraft {
+  enabled: boolean
+  category: string
+  count: number
+  collect: boolean
+  delivery: boolean
+}
+
+export interface ExpressPhotoServiceDraft {
+  sign: boolean
+  pickup: boolean
+}
+
+export interface ExpressValueAddedDraft {
+  doubleDelivery: boolean
+  powerMachine: ExpressPowerMachineDraft
+  photo: ExpressPhotoServiceDraft
+}
+
 export interface ExpressDeliveryPreferenceDraft {
   type: ExpressDeliveryPreferenceType
   scheduledWindow: string
@@ -200,7 +219,8 @@ export interface ExpressProductQuote {
   label: string
   totalfee: number | null
   detail: ExpressPriceDetail[] | null
-  discount?: Array<{ marketCode: string; reduceFee: number }> | null
+  discount?: Array<{ marketCode: string; marketName?: string; reduceFee: number }> | null
+  expBillCalculateResponse?: { billType?: string | null; weightBubbleRate?: number | null } | null
   couponRankType?: string
   billWeight: number | null
   // 报价接口返回的时间产品别名与时效路由。
@@ -232,6 +252,7 @@ export interface ExpressDraft {
   packaging: ExpressPackagingDraft
   service: ExpressServiceOptions
   collection: ExpressCollectionDraft
+  valueAdded: ExpressValueAddedDraft
   deliveryPreference: ExpressDeliveryPreferenceDraft
   deliveryPoint: ExpressDeliveryPointDraft
   warehouse: ExpressWarehouseDraft
@@ -361,6 +382,12 @@ export interface ExpressGoodsCheckResult {
 }
 
 export interface ExpressFreightRequest {
+  doubleDelivery?: 'Y'
+  powerMachineTypes?: string
+  installationCategory?: string
+  testMacHineQty?: number
+  isPhotoSigning?: 'Y'
+  pickupPhoto?: 'LSPZ'
   channel?: string
   insuredAmount: number
   originalsStreet: string

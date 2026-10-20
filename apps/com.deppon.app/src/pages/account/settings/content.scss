@@ -35,9 +35,10 @@
 }
 
 .account-settings-row__arrow {
-  color: $dp-color-text-subdued;
-  font-size: $dp-account-settings-arrow-size;
-  line-height: $dp-line-height-label;
+  width: $dp-space-24;
+  height: $dp-space-24;
+  margin-left: $dp-space-8;
+  flex-shrink: 0;
 }
 
 .account-settings-logout {

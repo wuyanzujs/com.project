@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from '@tarojs/components'
+import { Image, ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useMemo, useState } from 'react'
@@ -6,6 +6,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { customerService } from '@/services/customer'
 import type { CustomerCapabilitySummaryView, CustomerCenterView } from '@/services/customer'
 import { AppPressable } from '@/shared/components'
+import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon/images'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -192,7 +193,7 @@ const CustomerCenterPage = () => {
               <Text className='customer-link__title'>{item.title}</Text>
               <Text className='customer-link__summary'>{item.summary}</Text>
             </View>
-            <Text className='customer-link__arrow'>›</Text>
+            <Image className='customer-link__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
           </AppPressable>
         ))}
       </View>

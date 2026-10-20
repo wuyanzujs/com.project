@@ -1,0 +1,1981 @@
+{
+  "date": "2026-10-20",
+  "kind": "offline artifact observations and independent source cross-reference",
+  "rea": {
+    "bundle_path": "D:\\codeSpace\\deppon-analysis\\2026-10-20-send-reverse\\rea-evidence.json",
+    "artifact_inventory": "ev_eb8e8a9467e4e0dd8101a516e7beb0da3f02e6f2abe18f2f809ea116a6fa9b36",
+    "android_package": "ev_03236d11c5e489cce06ffa6e1c63c0fedde26cdaf56ef878e724e79256220595",
+    "dart_aot": "ev_0f0e011c0028e22e38ad3829e5aff8b197204cf0adafa5862ecd34e3901de81c"
+  },
+  "raw_byte_probes": {
+    "apk_sha256": "6c263175e4b6e985ca400f3c429e57f1196eff0698cdad2403edd436389cc12e",
+    "library_sha256": "df41c829bcfbf14398a11e72bf519aa611b9f937599a74f8c89885e3b070a3ad",
+    "scope": {
+      "file_offset_start": 19264,
+      "file_offset_end_exclusive": 8038560
+    },
+    "limitations": [
+      "Exact byte-pattern observations only; no typed class/function recovery.",
+      "File offsets are not code addresses or incoming-reference observations.",
+      "A matching identifier does not establish model ownership, field meaning, or serialization.",
+      "A negative search applies only to this encoding and bounded file region.",
+      "No execution, traffic capture, or backend acceptance is observed."
+    ],
+    "probes": [
+      {
+        "probe": "双人派送",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 729554,
+            "hex": "0xb21d2",
+            "bytes_hex": "cc53ba4e3e6d0190"
+          },
+          {
+            "file_offset": 1790771,
+            "hex": "0x1b5333",
+            "bytes_hex": "cc53ba4e3e6d0190"
+          },
+          {
+            "file_offset": 1880945,
+            "hex": "0x1cb371",
+            "bytes_hex": "cc53ba4e3e6d0190"
+          },
+          {
+            "file_offset": 2054451,
+            "hex": "0x1f5933",
+            "bytes_hex": "cc53ba4e3e6d0190"
+          }
+        ]
+      },
+      {
+        "probe": "通电验机",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 1089065,
+            "hex": "0x109e29",
+            "bytes_hex": "1a9035758c9a3a67"
+          },
+          {
+            "file_offset": 1143278,
+            "hex": "0x1171ee",
+            "bytes_hex": "1a9035758c9a3a67"
+          },
+          {
+            "file_offset": 1149614,
+            "hex": "0x118aae",
+            "bytes_hex": "1a9035758c9a3a67"
+          },
+          {
+            "file_offset": 1234611,
+            "hex": "0x12d6b3",
+            "bytes_hex": "1a9035758c9a3a67"
+          },
+          {
+            "file_offset": 1432768,
+            "hex": "0x15dcc0",
+            "bytes_hex": "1a9035758c9a3a67"
+          },
+          {
+            "file_offset": 1596469,
+            "hex": "0x185c35",
+            "bytes_hex": "1a9035758c9a3a67"
+          },
+          {
+            "file_offset": 1616897,
+            "hex": "0x18ac01",
+            "bytes_hex": "1a9035758c9a3a67"
+          }
+        ]
+      },
+      {
+        "probe": "收件通电验机",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 1234607,
+            "hex": "0x12d6af",
+            "bytes_hex": "3665f64e1a9035758c9a3a67"
+          }
+        ]
+      },
+      {
+        "probe": "派送通电验机",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 1149610,
+            "hex": "0x118aaa",
+            "bytes_hex": "3e6d01901a9035758c9a3a67"
+          }
+        ]
+      },
+      {
+        "probe": "验机件数",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 711348,
+            "hex": "0xadab4",
+            "bytes_hex": "8c9a3a67f64e7065"
+          }
+        ]
+      },
+      {
+        "probe": "拍照服务",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 1300427,
+            "hex": "0x13d7cb",
+            "bytes_hex": "cd6267710d67a152"
+          },
+          {
+            "file_offset": 1989915,
+            "hex": "0x1e5d1b",
+            "bytes_hex": "cd6267710d67a152"
+          }
+        ]
+      },
+      {
+        "probe": "拍照签收",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 612820,
+            "hex": "0x959d4",
+            "bytes_hex": "cd6267717e7b3665"
+          },
+          {
+            "file_offset": 1922089,
+            "hex": "0x1d5429",
+            "bytes_hex": "cd6267717e7b3665"
+          }
+        ]
+      },
+      {
+        "probe": "取货照片",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 581747,
+            "hex": "0x8e073",
+            "bytes_hex": "d653278d67714772"
+          },
+          {
+            "file_offset": 1191048,
+            "hex": "0x122c88",
+            "bytes_hex": "d653278d67714772"
+          }
+        ]
+      },
+      {
+        "probe": "5元/票",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 729460,
+            "hex": "0xb2174",
+            "bytes_hex": "350043512f006879"
+          }
+        ]
+      },
+      {
+        "probe": "服务费",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 773817,
+            "hex": "0xbceb9",
+            "bytes_hex": "0d67a152398d"
+          },
+          {
+            "file_offset": 817860,
+            "hex": "0xc7ac4",
+            "bytes_hex": "0d67a152398d"
+          },
+          {
+            "file_offset": 835468,
+            "hex": "0xcbf8c",
+            "bytes_hex": "0d67a152398d"
+          },
+          {
+            "file_offset": 847742,
+            "hex": "0xcef7e",
+            "bytes_hex": "0d67a152398d"
+          },
+          {
+            "file_offset": 862509,
+            "hex": "0xd292d",
+            "bytes_hex": "0d67a152398d"
+          },
+          {
+            "file_offset": 892457,
+            "hex": "0xd9e29",
+            "bytes_hex": "0d67a152398d"
+          },
+          {
+            "file_offset": 1127712,
+            "hex": "0x113520",
+            "bytes_hex": "0d67a152398d"
+          },
+          {
+            "file_offset": 1585699,
+            "hex": "0x183223",
+            "bytes_hex": "0d67a152398d"
+          },
+          {
+            "file_offset": 1991398,
+            "hex": "0x1e62e6",
+            "bytes_hex": "0d67a152398d"
+          },
+          {
+            "file_offset": 2116998,
+            "hex": "0x204d86",
+            "bytes_hex": "0d67a152398d"
+          },
+          {
+            "file_offset": 2124242,
+            "hex": "0x2069d2",
+            "bytes_hex": "0d67a152398d"
+          },
+          {
+            "file_offset": 2124536,
+            "hex": "0x206af8",
+            "bytes_hex": "0d67a152398d"
+          }
+        ]
+      },
+      {
+        "probe": "费用合计",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 1147601,
+            "hex": "0x1182d1",
+            "bytes_hex": "398d28750854a18b"
+          },
+          {
+            "file_offset": 1518005,
+            "hex": "0x1729b5",
+            "bytes_hex": "398d28750854a18b"
+          },
+          {
+            "file_offset": 1532127,
+            "hex": "0x1760df",
+            "bytes_hex": "398d28750854a18b"
+          },
+          {
+            "file_offset": 2040567,
+            "hex": "0x1f22f7",
+            "bytes_hex": "398d28750854a18b"
+          }
+        ]
+      },
+      {
+        "probe": "增值费用合计：",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 1518001,
+            "hex": "0x1729b1",
+            "bytes_hex": "9e583c50398d28750854a18b1aff"
+          }
+        ]
+      },
+      {
+        "probe": "电子运单服务协议",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 635393,
+            "hex": "0x9b201",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 802553,
+            "hex": "0xc3ef9",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 861063,
+            "hex": "0xd2387",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 952653,
+            "hex": "0xe894d",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 980993,
+            "hex": "0xef801",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 1152304,
+            "hex": "0x119530",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 1154451,
+            "hex": "0x119d93",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 1166260,
+            "hex": "0x11cbb4",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 1241297,
+            "hex": "0x12f0d1",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 1298546,
+            "hex": "0x13d072",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 1397947,
+            "hex": "0x1554bb",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 1436400,
+            "hex": "0x15eaf0",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 1461684,
+            "hex": "0x164db4",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 1488029,
+            "hex": "0x16b49d",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 1745352,
+            "hex": "0x1aa1c8",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 1848991,
+            "hex": "0x1c369f",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          },
+          {
+            "file_offset": 2085600,
+            "hex": "0x1fd2e0",
+            "bytes_hex": "3575505bd08f55530d67a1524f53ae8b"
+          }
+        ]
+      },
+      {
+        "probe": "同意本协议,下次不用提醒我",
+        "encoding": "utf-16le",
+        "hits": [
+          {
+            "file_offset": 1027203,
+            "hex": "0xfac83",
+            "bytes_hex": "0c540f612c674f53ae8b2c000b4e216b0d4e2875d06392911162"
+          }
+        ]
+      },
+      {
+        "probe": "doubleDelivery",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 601133,
+            "hex": "0x92c2d",
+            "bytes_hex": "646f75626c6544656c6976657279"
+          },
+          {
+            "file_offset": 915665,
+            "hex": "0xdf8d1",
+            "bytes_hex": "646f75626c6544656c6976657279"
+          },
+          {
+            "file_offset": 1210971,
+            "hex": "0x127a5b",
+            "bytes_hex": "646f75626c6544656c6976657279"
+          },
+          {
+            "file_offset": 1877962,
+            "hex": "0x1ca7ca",
+            "bytes_hex": "646f75626c6544656c6976657279"
+          },
+          {
+            "file_offset": 2112197,
+            "hex": "0x203ac5",
+            "bytes_hex": "646f75626c6544656c6976657279"
+          }
+        ]
+      },
+      {
+        "probe": "isDoubleDelivery",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 943132,
+            "hex": "0xe641c",
+            "bytes_hex": "6973446f75626c6544656c6976657279"
+          },
+          {
+            "file_offset": 1338206,
+            "hex": "0x146b5e",
+            "bytes_hex": "6973446f75626c6544656c6976657279"
+          }
+        ]
+      },
+      {
+        "probe": "powerMachine",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 625619,
+            "hex": "0x98bd3",
+            "bytes_hex": "706f7765724d616368696e65"
+          },
+          {
+            "file_offset": 763666,
+            "hex": "0xba712",
+            "bytes_hex": "706f7765724d616368696e65"
+          },
+          {
+            "file_offset": 923431,
+            "hex": "0xe1727",
+            "bytes_hex": "706f7765724d616368696e65"
+          },
+          {
+            "file_offset": 1283971,
+            "hex": "0x139783",
+            "bytes_hex": "706f7765724d616368696e65"
+          },
+          {
+            "file_offset": 1526935,
+            "hex": "0x174c97",
+            "bytes_hex": "706f7765724d616368696e65"
+          },
+          {
+            "file_offset": 1783392,
+            "hex": "0x1b3660",
+            "bytes_hex": "706f7765724d616368696e65"
+          },
+          {
+            "file_offset": 1877234,
+            "hex": "0x1ca4f2",
+            "bytes_hex": "706f7765724d616368696e65"
+          }
+        ]
+      },
+      {
+        "probe": "powerMachineTypes",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1877234,
+            "hex": "0x1ca4f2",
+            "bytes_hex": "706f7765724d616368696e655479706573"
+          }
+        ]
+      },
+      {
+        "probe": "testMacHineQty",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1812876,
+            "hex": "0x1ba98c",
+            "bytes_hex": "746573744d616348696e65517479"
+          }
+        ]
+      },
+      {
+        "probe": "installationCategory",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1320240,
+            "hex": "0x142530",
+            "bytes_hex": "696e7374616c6c6174696f6e43617465676f7279"
+          }
+        ]
+      },
+      {
+        "probe": "takePhotoServices",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 619171,
+            "hex": "0x972a3",
+            "bytes_hex": "74616b6550686f746f5365727669636573"
+          }
+        ]
+      },
+      {
+        "probe": "isPhotoSigning",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1418055,
+            "hex": "0x15a347",
+            "bytes_hex": "697350686f746f5369676e696e67"
+          }
+        ]
+      },
+      {
+        "probe": "photoSigning",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1941475,
+            "hex": "0x1d9fe3",
+            "bytes_hex": "70686f746f5369676e696e67"
+          }
+        ]
+      },
+      {
+        "probe": "pickupPhoto",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 911475,
+            "hex": "0xde873",
+            "bytes_hex": "7069636b757050686f746f"
+          },
+          {
+            "file_offset": 1418853,
+            "hex": "0x15a665",
+            "bytes_hex": "7069636b757050686f746f"
+          }
+        ]
+      },
+      {
+        "probe": "SRPS",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1135871,
+            "hex": "0x1154ff",
+            "bytes_hex": "53525053"
+          }
+        ]
+      },
+      {
+        "probe": "TDYJF",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1380552,
+            "hex": "0x1510c8",
+            "bytes_hex": "5444594a46"
+          }
+        ]
+      },
+      {
+        "probe": "PZQS",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1974260,
+            "hex": "0x1e1ff4",
+            "bytes_hex": "505a5153"
+          }
+        ]
+      },
+      {
+        "probe": "LSPZ",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1386373,
+            "hex": "0x152785",
+            "bytes_hex": "4c53505a"
+          }
+        ]
+      },
+      {
+        "probe": "ServiceExpressController",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 601102,
+            "hex": "0x92c0e",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 748745,
+            "hex": "0xb6cc9",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 763635,
+            "hex": "0xba6f3",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 796740,
+            "hex": "0xc2844",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 843649,
+            "hex": "0xcdf81",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 915187,
+            "hex": "0xdf6f3",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 915634,
+            "hex": "0xdf8b2",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 926462,
+            "hex": "0xe22fe",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 947413,
+            "hex": "0xe74d5",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1084948,
+            "hex": "0x108e14",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1182894,
+            "hex": "0x120cae",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1233474,
+            "hex": "0x12d242",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1312073,
+            "hex": "0x140549",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1320429,
+            "hex": "0x1425ed",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1327856,
+            "hex": "0x1442f0",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1335081,
+            "hex": "0x145f29",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1350094,
+            "hex": "0x1499ce",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1459539,
+            "hex": "0x164553",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1461110,
+            "hex": "0x164b76",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1466871,
+            "hex": "0x1661f7",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1488250,
+            "hex": "0x16b57a",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1526904,
+            "hex": "0x174c78",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1541307,
+            "hex": "0x1784bb",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1589711,
+            "hex": "0x1841cf",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1593206,
+            "hex": "0x184f76",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1632758,
+            "hex": "0x18e9f6",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1661300,
+            "hex": "0x195974",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1724509,
+            "hex": "0x1a505d",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1725631,
+            "hex": "0x1a54bf",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1748262,
+            "hex": "0x1aad26",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1783361,
+            "hex": "0x1b3641",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1856369,
+            "hex": "0x1c5371",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1862119,
+            "hex": "0x1c69e7",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1878702,
+            "hex": "0x1caaae",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1954615,
+            "hex": "0x1dd337",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1975108,
+            "hex": "0x1e2344",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1976992,
+            "hex": "0x1e2aa0",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 1981498,
+            "hex": "0x1e3c3a",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          },
+          {
+            "file_offset": 2114453,
+            "hex": "0x204395",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c6572"
+          }
+        ]
+      },
+      {
+        "probe": "ServiceExpressControllerEx|get#totalCost",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1335081,
+            "hex": "0x145f29",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c657245787c67657423746f74616c436f7374"
+          }
+        ]
+      },
+      {
+        "probe": "ServiceExpressControllerEx|get#addedFeeList",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1350094,
+            "hex": "0x1499ce",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c657245787c6765742361646465644665654c697374"
+          }
+        ]
+      },
+      {
+        "probe": "ServiceExpressControllerEx|get#doubleDeliveryVisible",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 915634,
+            "hex": "0xdf8b2",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c657245787c67657423646f75626c6544656c697665727956697369626c65"
+          }
+        ]
+      },
+      {
+        "probe": "ServiceExpressControllerEx|get#doubleDeliveryFee",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 601102,
+            "hex": "0x92c0e",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c657245787c67657423646f75626c6544656c6976657279466565"
+          }
+        ]
+      },
+      {
+        "probe": "ServiceExpressControllerEx|get#powerMachineEnable",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 763635,
+            "hex": "0xba6f3",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c657245787c67657423706f7765724d616368696e65456e61626c65"
+          }
+        ]
+      },
+      {
+        "probe": "ServiceExpressControllerEx|get#powerMachineFee",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1526904,
+            "hex": "0x174c78",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c657245787c67657423706f7765724d616368696e65466565"
+          }
+        ]
+      },
+      {
+        "probe": "ServiceExpressControllerEx|get#takePhotoEnable",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1233474,
+            "hex": "0x12d242",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c657245787c6765742374616b6550686f746f456e61626c65"
+          }
+        ]
+      },
+      {
+        "probe": "ServiceExpressControllerEx|get#takePhotoFee",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1084948,
+            "hex": "0x108e14",
+            "bytes_hex": "5365727669636545787072657373436f6e74726f6c6c657245787c6765742374616b6550686f746f466565"
+          }
+        ]
+      },
+      {
+        "probe": "ProductEntityEx|get#signPhotoFee",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 710641,
+            "hex": "0xad7f1",
+            "bytes_hex": "50726f64756374456e7469747945787c676574237369676e50686f746f466565"
+          }
+        ]
+      },
+      {
+        "probe": "ProductEntityEx|get#pickupPhotoFee",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1418833,
+            "hex": "0x15a651",
+            "bytes_hex": "50726f64756374456e7469747945787c676574237069636b757050686f746f466565"
+          }
+        ]
+      },
+      {
+        "probe": "PowerMachineSheet",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 743376,
+            "hex": "0xb57d0",
+            "bytes_hex": "506f7765724d616368696e655368656574"
+          },
+          {
+            "file_offset": 932531,
+            "hex": "0xe3ab3",
+            "bytes_hex": "506f7765724d616368696e655368656574"
+          }
+        ]
+      },
+      {
+        "probe": "PowerCategoryWidget",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1848721,
+            "hex": "0x1c3591",
+            "bytes_hex": "506f77657243617465676f7279576964676574"
+          }
+        ]
+      },
+      {
+        "probe": "TakePhotoSheet",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1532372,
+            "hex": "0x1761d4",
+            "bytes_hex": "54616b6550686f746f5368656574"
+          },
+          {
+            "file_offset": 2012540,
+            "hex": "0x1eb57c",
+            "bytes_hex": "54616b6550686f746f5368656574"
+          }
+        ]
+      },
+      {
+        "probe": "DraggableFloatWidget",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 983620,
+            "hex": "0xf0244",
+            "bytes_hex": "447261676761626c65466c6f6174576964676574"
+          },
+          {
+            "file_offset": 1047291,
+            "hex": "0xffafb",
+            "bytes_hex": "447261676761626c65466c6f6174576964676574"
+          },
+          {
+            "file_offset": 1490570,
+            "hex": "0x16be8a",
+            "bytes_hex": "447261676761626c65466c6f6174576964676574"
+          }
+        ]
+      },
+      {
+        "probe": "showModalBottomSheet",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1163743,
+            "hex": "0x11c1df",
+            "bytes_hex": "73686f774d6f64616c426f74746f6d5368656574"
+          }
+        ]
+      },
+      {
+        "probe": "package:dpapp/pages/service/express/view.dart",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1283738,
+            "hex": "0x13969a",
+            "bytes_hex": "7061636b6167653a64706170702f70616765732f736572766963652f657870726573732f766965772e64617274"
+          }
+        ]
+      },
+      {
+        "probe": "package:dpapp/pages/service/express/controller.dart",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1931939,
+            "hex": "0x1d7aa3",
+            "bytes_hex": "7061636b6167653a64706170702f70616765732f736572766963652f657870726573732f636f6e74726f6c6c65722e64617274"
+          }
+        ]
+      },
+      {
+        "probe": "package:dpapp/common/components/customer_service/draggable.dart",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1109438,
+            "hex": "0x10edbe",
+            "bytes_hex": "7061636b6167653a64706170702f636f6d6d6f6e2f636f6d706f6e656e74732f637573746f6d65725f736572766963652f647261676761626c652e64617274"
+          }
+        ]
+      },
+      {
+        "probe": "package:dpapp/pages/send/common/widgets/protocol.dart",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1537556,
+            "hex": "0x177614",
+            "bytes_hex": "7061636b6167653a64706170702f70616765732f73656e642f636f6d6d6f6e2f776964676574732f70726f746f636f6c2e64617274"
+          }
+        ]
+      },
+      {
+        "probe": "https://ca.deppon.com/ows/app/config/protocol.json",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1517937,
+            "hex": "0x172971",
+            "bytes_hex": "68747470733a2f2f63612e646570706f6e2e636f6d2f6f77732f6170702f636f6e6669672f70726f746f636f6c2e6a736f6e"
+          }
+        ]
+      },
+      {
+        "probe": "hotPotMenuPilot",
+        "encoding": "ascii",
+        "hits": []
+      },
+      {
+        "probe": "waybillAvpList",
+        "encoding": "ascii",
+        "hits": []
+      },
+      {
+        "probe": "valueProductList",
+        "encoding": "ascii",
+        "hits": []
+      },
+      {
+        "probe": "valProdCode",
+        "encoding": "ascii",
+        "hits": []
+      },
+      {
+        "probe": "valProdName",
+        "encoding": "ascii",
+        "hits": []
+      },
+      {
+        "probe": "optionContentMap",
+        "encoding": "ascii",
+        "hits": []
+      },
+      {
+        "probe": "hotPotSwitch",
+        "encoding": "ascii",
+        "hits": []
+      },
+      {
+        "probe": "/gwapi/pricetimeService/eco/pricetime/queryPriceTime",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1024027,
+            "hex": "0xfa01b",
+            "bytes_hex": "2f67776170692f707269636574696d65536572766963652f65636f2f707269636574696d652f7175657279507269636554696d65"
+          }
+        ]
+      },
+      {
+        "probe": "/gwapi/orderService/eco/order/mysql/createOrder",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1931726,
+            "hex": "0x1d79ce",
+            "bytes_hex": "2f67776170692f6f72646572536572766963652f65636f2f6f726465722f6d7973716c2f6372656174654f72646572"
+          }
+        ]
+      },
+      {
+        "probe": "queryGoodsNameList",
+        "encoding": "ascii",
+        "hits": [
+          {
+            "file_offset": 1643101,
+            "hex": "0x19125d",
+            "bytes_hex": "7175657279476f6f64734e616d654c697374"
+          },
+          {
+            "file_offset": 1703284,
+            "hex": "0x19fd74",
+            "bytes_hex": "7175657279476f6f64734e616d654c697374"
+          }
+        ]
+      }
+    ]
+  },
+  "protocol_json": {
+    "source_member": "assets/flutter_assets/assets/jsons/protocol.json",
+    "sha256": "5fe786b0b6dedc000ad956e60559ea5c42b9f5706ad2063b6340f0b6ee350869",
+    "first_protocol_row": [
+      {
+        "type": "h4",
+        "text": "最近更新时间：2026年03月17日"
+      }
+    ],
+    "history_rows": 12,
+    "unique_title_url_pairs": 11,
+    "history": [
+      {
+        "title": "2025年9月30日 《电子运单服务协议》",
+        "url": "/depponmobile/protocol/service/v1.10"
+      },
+      {
+        "title": "2025年7月15日 《电子运单服务协议》",
+        "url": "/depponmobile/protocol/service/v1.9"
+      },
+      {
+        "title": "2024年12月17日 《电子运单服务协议》",
+        "url": "/depponmobile/protocol/service/v1.8"
+      },
+      {
+        "title": "2024年12月17日 《电子运单服务协议》",
+        "url": "/depponmobile/protocol/service/v1.8"
+      },
+      {
+        "title": "2024年10月14日 《电子运单服务协议》",
+        "url": "/depponmobile/protocol/service/v1.7"
+      },
+      {
+        "title": "2024年7月30日 《电子运单服务协议》",
+        "url": "/depponmobile/protocol/service/v1.6"
+      },
+      {
+        "title": "2024年5月31日 《电子运单服务协议》",
+        "url": "/depponmobile/protocol/service/v1.5"
+      },
+      {
+        "title": "2024年3月5日 《电子运单服务协议》",
+        "url": "/depponmobile/protocol/service/v1.4"
+      },
+      {
+        "title": "2023年10月24日 《电子运单服务协议》",
+        "url": "/depponmobile/protocol/service/v1.3"
+      },
+      {
+        "title": "2023年9月2日 《电子运单服务协议》",
+        "url": "/depponmobile/protocol/service/v1.2"
+      },
+      {
+        "title": "2022年12月20日 《电子运单服务协议》",
+        "url": "/depponmobile/protocol/service/v1.1"
+      },
+      {
+        "title": "2022年7月5日 《电子运单服务协议》",
+        "url": "/depponmobile/protocol/service/v1.0"
+      }
+    ],
+    "limitations": [
+      "Packaged fallback/configuration only; runtime selection and remote overrides are unverified."
+    ]
+  },
+  "images": [
+    {
+      "name": "service_icon_collection.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/service_icon_collection.png",
+          "pixel_size": [
+            32,
+            32
+          ],
+          "sha256": "ebef86de41e4a1383fe69df98b3f578fd9361834767d2738597eeef97e62b4ca"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/service_icon_collection.png",
+          "pixel_size": [
+            64,
+            64
+          ],
+          "sha256": "15557e6043926fdf714a065559dc38264111514e009b43acf893baebcb84a120"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/service_icon_collection.png",
+          "pixel_size": [
+            96,
+            96
+          ],
+          "sha256": "256e312404870ba40e9051616bcbba654863a6e1c9f3830d86b072a3723bedca"
+        }
+      ]
+    },
+    {
+      "name": "service_icon_signform.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/service_icon_signform.png",
+          "pixel_size": [
+            32,
+            32
+          ],
+          "sha256": "e197b52d8f2f20351ac3e301f0c916f0a610099a31736878ac11e6039f2cc498"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/service_icon_signform.png",
+          "pixel_size": [
+            64,
+            64
+          ],
+          "sha256": "8a96868554f7f6e306724707df4d5dc4899d0fb7ea337c33012a010e943a781d"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/service_icon_signform.png",
+          "pixel_size": [
+            96,
+            96
+          ],
+          "sha256": "a6398e3b4244266386701a6f8c6e9ac65def36f88f176b440b016cce33709d22"
+        }
+      ]
+    },
+    {
+      "name": "service_icon_delivery.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/service_icon_delivery.png",
+          "pixel_size": [
+            32,
+            32
+          ],
+          "sha256": "51699ae40b282a1d64571cd80c70a3fba5782c5a8e91bd09c5bcd9b514906ee9"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/service_icon_delivery.png",
+          "pixel_size": [
+            64,
+            64
+          ],
+          "sha256": "942f8b0bce50533ed8d5001d552708ecc7faa2caa7124975b4121fc96c52ab7d"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/service_icon_delivery.png",
+          "pixel_size": [
+            96,
+            96
+          ],
+          "sha256": "50163debd69eafd86a0d5e966e5728450db8a836d18f643fe4d45c7d1c64f72b"
+        }
+      ]
+    },
+    {
+      "name": "service_icon_warehouse.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/service_icon_warehouse.png",
+          "pixel_size": [
+            32,
+            32
+          ],
+          "sha256": "41c59a14eec7b5d35c38302ad2006563c2989638d3bf2299d2b1e5c61dfa3c2d"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/service_icon_warehouse.png",
+          "pixel_size": [
+            64,
+            64
+          ],
+          "sha256": "a8590a7c153a044ab35cebeb18f65b82ece80b3554438085994e0952cd0ffa0a"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/service_icon_warehouse.png",
+          "pixel_size": [
+            96,
+            96
+          ],
+          "sha256": "4a81a59f9bbc0ee0069d132526d464a870dc0f960234091526c3f4705d5785fc"
+        }
+      ]
+    },
+    {
+      "name": "service_icon_double_delivery.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/service_icon_double_delivery.png",
+          "pixel_size": [
+            24,
+            24
+          ],
+          "sha256": "b23dab2cf58fa816c6ed7eaa09aa3ffda67ad9124d54ad56890e175151e64575"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/service_icon_double_delivery.png",
+          "pixel_size": [
+            48,
+            48
+          ],
+          "sha256": "fc6340c4656beabee3ac6e16534fb4f1f093579bf873f5ed47436e5a8c28d251"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/service_icon_double_delivery.png",
+          "pixel_size": [
+            72,
+            72
+          ],
+          "sha256": "689df964d502ef4970791b33fa29130efbd30fb9ac883bb34c2712989a398e16"
+        }
+      ]
+    },
+    {
+      "name": "service_icon_packing.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/service_icon_packing.png",
+          "pixel_size": [
+            24,
+            24
+          ],
+          "sha256": "ba03581092f4b1adfcc52868935b7f9b9f916de307c0f2fcbf37f9406e8a073a"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/service_icon_packing.png",
+          "pixel_size": [
+            48,
+            48
+          ],
+          "sha256": "f9592dd5742714d9e5b75b0f2197fe87a56a344cb51d02895026065d2f04b41e"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/service_icon_packing.png",
+          "pixel_size": [
+            72,
+            72
+          ],
+          "sha256": "0bf6935e75e99b633fdec9b80d00351810ca25a2320f99968945d0a54d075951"
+        }
+      ]
+    },
+    {
+      "name": "service_icon_powercheck.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/service_icon_powercheck.png",
+          "pixel_size": [
+            24,
+            24
+          ],
+          "sha256": "3065d64f73a3b0e84a49a4fee73439fbf2ba59cc54ac0762d6774014218829e9"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/service_icon_powercheck.png",
+          "pixel_size": [
+            48,
+            48
+          ],
+          "sha256": "3a9bed1342108af529f609f786a803a9b496f5dd645b5f1da8f984c42c370ed7"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/service_icon_powercheck.png",
+          "pixel_size": [
+            72,
+            72
+          ],
+          "sha256": "4e65cb560ebab03f0b8536c70a4b05e37a717462b9b1e8686c9554df48bd3105"
+        }
+      ]
+    },
+    {
+      "name": "service_icon_take_photo.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/service_icon_take_photo.png",
+          "pixel_size": [
+            24,
+            24
+          ],
+          "sha256": "e4f46661e48953298ed31e4edb8c113101fbff11c3149d2a11000c1d5a358815"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/service_icon_take_photo.png",
+          "pixel_size": [
+            48,
+            48
+          ],
+          "sha256": "7d6fdf22b7834439649ef46046a2333d8fe6fd839d8168ce06f118295ded8961"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/service_icon_take_photo.png",
+          "pixel_size": [
+            72,
+            72
+          ],
+          "sha256": "b40cc0fa8a75756052437867c9805bc8606a93eacc890c1ec64e3a68be07f97e"
+        }
+      ]
+    },
+    {
+      "name": "customer_icon_service.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/customer_icon_service.png",
+          "pixel_size": [
+            24,
+            24
+          ],
+          "sha256": "6704d3dc664f571b7cfd59f72f57618c1a691951d4dd76f053aca69218a9da3f"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/customer_icon_service.png",
+          "pixel_size": [
+            48,
+            48
+          ],
+          "sha256": "c3a3840ee4a120d359fd00dec5195cb41a00b1a643d8330b14549e3c1545e338"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/customer_icon_service.png",
+          "pixel_size": [
+            72,
+            72
+          ],
+          "sha256": "e216f989babe75b21ee302e6161cdf92f133fe4e240b1382f71c3e85a42f38fb"
+        }
+      ]
+    },
+    {
+      "name": "order_icon_customer_service.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/order_icon_customer_service.png",
+          "pixel_size": [
+            24,
+            24
+          ],
+          "sha256": "6a97c61a68370a080e2c9954e02899f88e7f36f86a2329d96cb54e7158960e29"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/order_icon_customer_service.png",
+          "pixel_size": [
+            48,
+            48
+          ],
+          "sha256": "6d0f05eb60342cb727a3201f1472749096a69d37da0449336699ebe458a7c72e"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/order_icon_customer_service.png",
+          "pixel_size": [
+            72,
+            72
+          ],
+          "sha256": "bf5f4113c8c47716a4627088f3185f873b3dfc17682c5363d494c2782a5e3bcf"
+        }
+      ]
+    },
+    {
+      "name": "express_product_bg_l_h.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/express_product_bg_l_h.png",
+          "pixel_size": [
+            92,
+            76
+          ],
+          "sha256": "7c01cb01bdf99cd105bc4a1556f1c64279a7346155fd2448bb49a23e4e8cd7d3"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/express_product_bg_l_h.png",
+          "pixel_size": [
+            184,
+            152
+          ],
+          "sha256": "3d54ab2090a119e0442cfc4a7da41a9c16a4bbefc80322284f371f3397544c98"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/express_product_bg_l_h.png",
+          "pixel_size": [
+            276,
+            228
+          ],
+          "sha256": "4b75a60c424c790a57e24729b48080ab0867563f827482a9708dc963e7279769"
+        }
+      ]
+    },
+    {
+      "name": "express_product_bg_s_h.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/express_product_bg_s_h.png",
+          "pixel_size": [
+            92,
+            76
+          ],
+          "sha256": "0fd8e89a4f63955c8a5aab9b31c2028bfc20f385a8bac3a8e4c62705aa986fb8"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/express_product_bg_s_h.png",
+          "pixel_size": [
+            184,
+            152
+          ],
+          "sha256": "a95a8ef357dac2c4cfe26f0bf8bd991c8aa1c28aa37ac9ebe89d04b9cc914b37"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/express_product_bg_s_h.png",
+          "pixel_size": [
+            276,
+            228
+          ],
+          "sha256": "ffe88e0aaa2f4b763fb6ed8f23a0e97a88858ea13cb56f0b5ab872a7d28b1eb0"
+        }
+      ]
+    },
+    {
+      "name": "express_product_bg_l_n.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/express_product_bg_l_n.png",
+          "pixel_size": [
+            92,
+            76
+          ],
+          "sha256": "c936221be9817c313ba08c69e1ca0d8ec7555d4c5b78e3a023b4be112e9f959e"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/express_product_bg_l_n.png",
+          "pixel_size": [
+            184,
+            152
+          ],
+          "sha256": "19e6bb35a561b38ee1f05843d7d4ea9b66c2313741ad6ad6a21c7d6460148ac4"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/express_product_bg_l_n.png",
+          "pixel_size": [
+            276,
+            228
+          ],
+          "sha256": "2241ca123b8eb5290f1eded1422241084e03cac28a2e64200e374694db5572ae"
+        }
+      ]
+    },
+    {
+      "name": "express_product_bg_s_n.png",
+      "variants": [
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/express_product_bg_s_n.png",
+          "pixel_size": [
+            92,
+            76
+          ],
+          "sha256": "b8c95fa90bb9bb3da2e4e3bc9698450ffb3b297e389036fc83831cdf6a535d47"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/2.0x/express_product_bg_s_n.png",
+          "pixel_size": [
+            184,
+            152
+          ],
+          "sha256": "c1485c9660e5d8bc0455f3420099ec18aaf2807e26e5302db8f6f2dcee2b2656"
+        },
+        {
+          "relative_path": "extracted/assets/flutter_assets/assets/images/3.0x/express_product_bg_s_n.png",
+          "pixel_size": [
+            276,
+            228
+          ],
+          "sha256": "86f66e77afcac0ebeb8181d46d1907db444c80a8b68252f0b30b8a808ec4d34e"
+        }
+      ]
+    }
+  ],
+  "engine": {
+    "libflutter_sha256": "0c56c4a468224beb2336c7bacaee6d5885047a0075d613fe421871b4dceafdce",
+    "observations": [
+      {
+        "file_offset": 2014207,
+        "literal": "3.11.5 (stable) (Wed Apr 15 00:36:32 2026 -0700) on \"android_arm64\""
+      }
+    ],
+    "limitations": [
+      "Embedded version literals are observed; exact SDK source/build provenance is not independently verified."
+    ]
+  },
+  "source_uris": [
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tips/pickup_tips.dart",
+      "file_offset": 620763,
+      "hex": "0x978db"
+    },
+    {
+      "uri": "package:dpapp/common/models/request/send/pickup_time_request.dart",
+      "file_offset": 644178,
+      "hex": "0x9d452"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/bottom_sheet/product_introl.dart",
+      "file_offset": 653438,
+      "hex": "0x9f87e"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/interface.dart",
+      "file_offset": 663045,
+      "hex": "0xa1e05"
+    },
+    {
+      "uri": "package:dpapp/common/components/bottom_sheet/login_protocol.dart",
+      "file_offset": 668215,
+      "hex": "0xa3237"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/bottom_sheet/ecard_protocol.dart",
+      "file_offset": 720200,
+      "hex": "0xafd48"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/encrypt.dart",
+      "file_offset": 736441,
+      "hex": "0xb3cb9"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tiles/pickup_time.dart",
+      "file_offset": 769867,
+      "hex": "0xbbf4b"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tiles/delivery.dart",
+      "file_offset": 828539,
+      "hex": "0xca47b"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tiles/postman.dart",
+      "file_offset": 829356,
+      "hex": "0xca7ac"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tips/sieve_stock_tips.dart",
+      "file_offset": 837900,
+      "hex": "0xcc90c"
+    },
+    {
+      "uri": "package:dpapp/common/components/bottom_sheet/bottom_sheet_title_new.dart",
+      "file_offset": 851899,
+      "hex": "0xcffbb"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/bottom_sheet/postman.dart",
+      "file_offset": 908695,
+      "hex": "0xddd97"
+    },
+    {
+      "uri": "package:dpapp/common/components/customer_service/online_service.dart",
+      "file_offset": 910581,
+      "hex": "0xde4f5"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/success/widgets/bottom.dart",
+      "file_offset": 918135,
+      "hex": "0xe0277"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/bottom_sheet/payment.dart",
+      "file_offset": 931355,
+      "hex": "0xe361b"
+    },
+    {
+      "uri": "package:dpapp/pages/service/express/widgets/delivery.dart",
+      "file_offset": 954362,
+      "hex": "0xe8ffa"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/schedule.dart",
+      "file_offset": 971721,
+      "hex": "0xed3c9"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/success/widgets/top.dart",
+      "file_offset": 990859,
+      "hex": "0xf1e8b"
+    },
+    {
+      "uri": "package:dpapp/common/models/request/send/coupon_express.dart",
+      "file_offset": 997840,
+      "hex": "0xf39d0"
+    },
+    {
+      "uri": "package:dpapp/common/models/request/send/appointment_delivery.dart",
+      "file_offset": 1014977,
+      "hex": "0xf7cc1"
+    },
+    {
+      "uri": "package:dpapp/common/models/request/send/goods_remark.dart",
+      "file_offset": 1057199,
+      "hex": "0x1021af"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tiles/product.dart",
+      "file_offset": 1071043,
+      "hex": "0x1057c3"
+    },
+    {
+      "uri": "package:dpapp/common/components/bottom_sheet/bottom_operation.dart",
+      "file_offset": 1101716,
+      "hex": "0x10cf94"
+    },
+    {
+      "uri": "package:dpapp/common/components/customer_service/draggable.dart",
+      "file_offset": 1109438,
+      "hex": "0x10edbe"
+    },
+    {
+      "uri": "package:dpapp/pages/service/express/widgets/take_photo.dart",
+      "file_offset": 1109831,
+      "hex": "0x10ef47"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tiles/cargo.dart",
+      "file_offset": 1145771,
+      "hex": "0x117bab"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/bottom_sheet/coupon.dart",
+      "file_offset": 1155494,
+      "hex": "0x11a1a6"
+    },
+    {
+      "uri": "package:dpapp/common/components/bottom_sheet/postman_wxwork.dart",
+      "file_offset": 1170975,
+      "hex": "0x11de1f"
+    },
+    {
+      "uri": "package:dpapp/common/components/bottom_sheet/photo_asset.dart",
+      "file_offset": 1203226,
+      "hex": "0x125c1a"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/service.dart",
+      "file_offset": 1249851,
+      "hex": "0x13123b"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tiles/link.dart",
+      "file_offset": 1254045,
+      "hex": "0x13229d"
+    },
+    {
+      "uri": "package:dpapp/pages/service/express/view.dart",
+      "file_offset": 1283738,
+      "hex": "0x13969a"
+    },
+    {
+      "uri": "package:dpapp/common/models/response/product/product_entity.dart",
+      "file_offset": 1304736,
+      "hex": "0x13e8a0"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/success/widgets/postman.dart",
+      "file_offset": 1324100,
+      "hex": "0x143444"
+    },
+    {
+      "uri": "package:dpapp/common/models/request/send/express_agreement_request.dart",
+      "file_offset": 1352690,
+      "hex": "0x14a3f2"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/utils.dart",
+      "file_offset": 1457383,
+      "hex": "0x163ce7"
+    },
+    {
+      "uri": "package:dpapp/pages/service/express/widgets/item.dart",
+      "file_offset": 1474694,
+      "hex": "0x168086"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/bottom_sheet/ecard_introl.dart",
+      "file_offset": 1475439,
+      "hex": "0x16836f"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/success/view.dart",
+      "file_offset": 1476505,
+      "hex": "0x168799"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tips/upscale.dart",
+      "file_offset": 1488702,
+      "hex": "0x16b73e"
+    },
+    {
+      "uri": "package:dpapp/common/components/bottom_sheet/signform.dart",
+      "file_offset": 1518038,
+      "hex": "0x1729d6"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tips/sieve_tips.dart",
+      "file_offset": 1535571,
+      "hex": "0x176e53"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/marquee.dart",
+      "file_offset": 1584412,
+      "hex": "0x182d1c"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/basic.dart",
+      "file_offset": 1592757,
+      "hex": "0x184db5"
+    },
+    {
+      "uri": "package:dpapp/common/components/bottom_sheet/bottom_sheet_title.dart",
+      "file_offset": 1611565,
+      "hex": "0x18972d"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/bottom_sheet/encrypt.dart",
+      "file_offset": 1615310,
+      "hex": "0x18a5ce"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tips/extra_charge.dart",
+      "file_offset": 1620121,
+      "hex": "0x18b899"
+    },
+    {
+      "uri": "package:dpapp/common/components/bottom_sheet/share.dart",
+      "file_offset": 1646408,
+      "hex": "0x191f48"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tiles/furniture.dart",
+      "file_offset": 1678506,
+      "hex": "0x199caa"
+    },
+    {
+      "uri": "package:dpapp/pages/service/express/widgets/packing.dart",
+      "file_offset": 1690492,
+      "hex": "0x19cb7c"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/controller.dart",
+      "file_offset": 1700661,
+      "hex": "0x19f335"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tiles/express.dart",
+      "file_offset": 1716351,
+      "hex": "0x1a307f"
+    },
+    {
+      "uri": "package:dpapp/pages/service/express/widgets/cost.dart",
+      "file_offset": 1729172,
+      "hex": "0x1a6294"
+    },
+    {
+      "uri": "package:dpapp/pages/service/express/widgets/bottom.dart",
+      "file_offset": 1739865,
+      "hex": "0x1a8c59"
+    },
+    {
+      "uri": "package:dpapp/common/components/bottom_sheet/voice_sheet.dart",
+      "file_offset": 1749482,
+      "hex": "0x1ab1ea"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/contact.dart",
+      "file_offset": 1768441,
+      "hex": "0x1afbf9"
+    },
+    {
+      "uri": "package:dpapp/common/components/bottom_sheet/customer_service.dart",
+      "file_offset": 1771080,
+      "hex": "0x1b0648"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/success/controller.dart",
+      "file_offset": 1799804,
+      "hex": "0x1b767c"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tiles/coupon.dart",
+      "file_offset": 1806296,
+      "hex": "0x1b8fd8"
+    },
+    {
+      "uri": "package:dpapp/pages/service/express/widgets/power_check.dart",
+      "file_offset": 1806412,
+      "hex": "0x1b904c"
+    },
+    {
+      "uri": "package:dpapp/pages/service/express/widgets/delivery_time.dart",
+      "file_offset": 1812669,
+      "hex": "0x1ba8bd"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/identify.dart",
+      "file_offset": 1814032,
+      "hex": "0x1bae10"
+    },
+    {
+      "uri": "package:dpapp/common/components/bottom_sheet/map_nav.dart",
+      "file_offset": 1909786,
+      "hex": "0x1d241a"
+    },
+    {
+      "uri": "package:dpapp/pages/service/express/widgets/dsiable_date.dart",
+      "file_offset": 1920929,
+      "hex": "0x1d4fa1"
+    },
+    {
+      "uri": "package:dpapp/pages/service/express/controller.dart",
+      "file_offset": 1931939,
+      "hex": "0x1d7aa3"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tiles/payment.dart",
+      "file_offset": 1942160,
+      "hex": "0x1da290"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/view.dart",
+      "file_offset": 1954725,
+      "hex": "0x1dd3a5"
+    },
+    {
+      "uri": "package:dpapp/common/components/bottom_sheet/phone.dart",
+      "file_offset": 1973245,
+      "hex": "0x1e1bfd"
+    },
+    {
+      "uri": "package:dpapp/common/models/request/send/pickup_time.dart",
+      "file_offset": 1973977,
+      "hex": "0x1e1ed9"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tips/recommend.dart",
+      "file_offset": 2001421,
+      "hex": "0x1e8a0d"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/success/widgets/content.dart",
+      "file_offset": 2013095,
+      "hex": "0x1eb7a7"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tips/sieve_stock_alert.dart",
+      "file_offset": 2099569,
+      "hex": "0x200971"
+    },
+    {
+      "uri": "package:dpapp/pages/send/express/index/widgets/tips/coupon.dart",
+      "file_offset": 2143857,
+      "hex": "0x20b671"
+    }
+  ],
+  "limitations": [
+    "No production Dart function bodies recovered.",
+    "Mini-program source is independent corroboration, not production APK execution or serialization evidence.",
+    "No build, install, runtime UI, traffic capture, or backend acceptance tested."
+  ]
+}

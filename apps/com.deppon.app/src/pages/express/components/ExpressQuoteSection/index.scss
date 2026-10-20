@@ -9,58 +9,42 @@
   height: 152px;
   margin-right: $dp-space-16;
 }
-/* 生产端时效卡：200×152，深色描边 + 白色卡体，标题做成从左上折到右上的书签带。 */
+/* 书签渐变、折角和描边使用生产 APK 原图，布局维持真机量测的 200×152。 */
 .express-quote-card {
   position: relative;
   width: 200px;
   height: 152px;
-  background: $dp-color-bg-card;
-  border-color: $dp-color-border-default;
   border-radius: $dp-radius-16;
-  border-width: $dp-border-width-hairline;
   overflow: hidden;
 }
-.express-quote-card--active {
-  border-color: $dp-color-quote-active;
-  border-width: 3px;
+.express-quote-card__background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 152px;
 }
 .express-quote-card__ribbon {
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: 166px;
+  width: 126px;
   height: 47px;
-  padding-left: $dp-space-16;
+  padding-left: $dp-space-12;
   padding-right: $dp-space-8;
-  border-top-left-radius: $dp-radius-12;
-  border-bottom-right-radius: $dp-radius-28;
 }
-.express-quote-card__ribbon--active {
-  background: $dp-color-quote-band;
-}
-.express-quote-card__ribbon--idle {
-  background: $dp-color-quote-idle;
+.express-quote-card__ribbon--long {
+  width: 180px;
 }
 .express-quote-card__ribbon-title {
   flex-shrink: 1;
   color: $dp-color-text-heading;
-  font-size: $dp-font-size-title;
+  font-size: $dp-font-size-body;
   font-weight: $dp-font-weight-semibold;
   line-height: $dp-line-height-48;
 }
 .express-quote-card__ribbon-title--active {
   color: $dp-color-text-inverse;
-}
-/* 深色书签带右侧的折角：上不封口、左下大圆角，压出生产端的白色缺口。 */
-.express-quote-card__fold {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 44px;
-  height: 47px;
-  background: $dp-color-quote-active;
-  border-top-right-radius: $dp-radius-12;
-  border-bottom-left-radius: $dp-radius-26;
 }
 .express-quote-card__medal {
   position: absolute;

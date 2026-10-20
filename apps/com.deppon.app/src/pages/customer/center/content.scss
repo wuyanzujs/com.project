@@ -160,8 +160,9 @@
 
 .customer-link__arrow {
   margin-left: $dp-space-14;
-  color: $dp-color-text-placeholder;
-  font-size: $dp-font-size-heading-large;
+  width: $dp-space-24;
+  height: $dp-space-24;
+  flex-shrink: 0;
 }
 
 .customer-support {

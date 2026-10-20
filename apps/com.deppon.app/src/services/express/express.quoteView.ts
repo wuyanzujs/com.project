@@ -15,6 +15,12 @@ export interface ExpressQuoteTimeSegments {
   end: string
 }
 
+export interface ExpressQuoteDiscountRow {
+  key: string
+  name: string
+  amount: number
+}
+
 export interface ExpressProductQuoteView {
   key: string
   name: string
@@ -22,6 +28,9 @@ export interface ExpressProductQuoteView {
   longName: boolean
   priceText: string
   priceWithSuffixText: string
+  /** 基础费用只取 FRT，不能用包含增值费用的整票 totalfee。 */
+  baseFeeText: string
+  addedFeeText: string
   /** 产品卡「¥X起」的运费口径金额；不可见时为 null（卡片显示 --）。 */
   freightAmount: number | null
   timeText: string
@@ -30,7 +39,13 @@ export interface ExpressProductQuoteView {
   /** 线路限时优惠金额（discount.marketCode = XLYHF），无优惠时为 0。 */
   timeLimit: number
   billWeightText: string
+  /** 完整费用明细，保留给查价页等已有消费者。 */
   feeRows: ExpressQuoteFeeRow[]
+  /** 寄件明细的增值分区，排除已经单列展示的基础运费 FRT。 */
+  addedFeeRows: ExpressQuoteFeeRow[]
+  discountTotal: number
+  discountRows: ExpressQuoteDiscountRow[]
+  billType: string
 }
 
 const EXPRESS_FEE_NAMES: Record<string, string> = {
@@ -77,7 +92,26 @@ function getQuoteAmount(product: ExpressProductQuote | null | undefined) {
  * @description 生成报价产品唯一 key
  */
 export function getExpressQuoteKey(product: ExpressProductQuote) {
-  return `${product.omsProductCode || product.productName}-${product.totalfee ?? ''}`
+  return JSON.stringify({
+    identity: getExpressQuoteIdentity(product),
+    totalfee: product.totalfee ?? null
+  })
+}
+
+/** 产品码相同的线路/时效产品仍是不同卡片；价格变化不应改变当前选中身份。 */
+export function getExpressQuoteIdentity(product: ExpressProductQuote) {
+  return {
+    productCode: product.omsProductCode || product.productName,
+    mainRoutePref: product.mainRoutePref ?? '',
+    shortDistance: product.shortDistance ?? '',
+    deliveryNature: product.deliveryNature ?? '',
+    timeProducts: (product.timeProducts ?? []).map(item => item.timeProductsCode).sort()
+  }
+}
+
+export function isSameExpressQuote(left: ExpressProductQuote | null | undefined, right: ExpressProductQuote | null | undefined) {
+  if (!left || !right) return false
+  return JSON.stringify(getExpressQuoteIdentity(left)) === JSON.stringify(getExpressQuoteIdentity(right))
 }
 
 /**
@@ -227,6 +261,16 @@ export function createExpressQuoteFeeRows(product: ExpressProductQuote): Express
   return (product.detail ?? []).map(createFeeRow).filter((row): row is ExpressQuoteFeeRow => Boolean(row))
 }
 
+export function createExpressQuoteDiscountRows(product: ExpressProductQuote): ExpressQuoteDiscountRow[] {
+  return (product.discount ?? [])
+    .map((item, index) => {
+      const amount = toFiniteAmount(item.reduceFee)
+      if (amount === null || amount <= 0) return null
+      return { key: item.marketCode || `discount-${index}`, name: item.marketName || item.marketCode || '运费优惠', amount }
+    })
+    .filter((row): row is ExpressQuoteDiscountRow => Boolean(row))
+}
+
 /**
  *
  * @param product 报价产品
@@ -236,6 +280,12 @@ export function createExpressProductQuoteView(product: ExpressProductQuote): Exp
   const freight = getExpressQuoteFreight(product)
   const name = getExpressQuoteTimeProduct(product).name
   const timeText = getExpressQuoteTimeText(product)
+  const feeRows = createExpressQuoteFeeRows(product)
+  const addedFeeRows = feeRows.filter(row => row.key !== EXPRESS_FREIGHT_ENTRY_CODE)
+  const addedFee = addedFeeRows.reduce((sum, row) => sum + Math.round(row.amount * 100), 0) / 100
+  const discountRows = createExpressQuoteDiscountRows(product)
+  const discountTotal = discountRows.reduce((sum, row) => sum + Math.round(row.amount * 100), 0) / 100
+  const baseFee = freight === null ? null : Math.round((freight + discountTotal) * 100) / 100
 
   return {
     key: getExpressQuoteKey(product),
@@ -243,11 +293,17 @@ export function createExpressProductQuoteView(product: ExpressProductQuote): Exp
     longName: name.length > EXPRESS_QUOTE_LONG_NAME_LENGTH,
     priceText: getExpressQuotePriceText(product),
     priceWithSuffixText: getExpressQuotePriceText(product, '起'),
+    baseFeeText: baseFee === null ? '¥--' : `¥${baseFee}`,
+    addedFeeText: addedFeeRows.length ? `¥${addedFee}` : '¥--',
     freightAmount: existsExpressQuotePrice(product).visible ? freight : null,
     timeText,
     timeSegments: splitExpressQuoteTimeText(timeText),
     timeLimit: getExpressQuoteTimeLimit(product),
     billWeightText: getExpressQuoteBillWeightText(product),
-    feeRows: createExpressQuoteFeeRows(product)
+    feeRows,
+    addedFeeRows,
+    discountTotal,
+    discountRows,
+    billType: product.expBillCalculateResponse?.billType || ''
   }
 }

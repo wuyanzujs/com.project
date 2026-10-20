@@ -81,7 +81,7 @@
 
 .order-service-action__arrow {
   margin-left: 12px;
-  color: $dp-color-text-placeholder;
-  font-size: $dp-font-size-heading-large;
-  line-height: $dp-line-height-title-large;
+  width: $dp-space-24;
+  height: $dp-space-24;
+  flex-shrink: 0;
 }

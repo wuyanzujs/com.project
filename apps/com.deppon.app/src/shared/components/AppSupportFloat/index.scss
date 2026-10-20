@@ -2,10 +2,6 @@
 
 /* 右侧停靠的客服浮窗：贴右边缘、只在左侧收圆角；拖动位移由 AppNativeDraggable 提供。 */
 .app-support-float {
-  position: absolute;
-  right: 0;
-  bottom: 148px;
-  z-index: 10;
   width: 132px;
   height: 88px;
   background: $dp-color-bg-card;
@@ -28,30 +24,8 @@
   height: 100%;
 }
 .app-support-float__icon {
-  position: relative;
   width: 44px;
   height: 44px;
-}
-.app-support-float__waves {
-  position: absolute;
-  top: 19px;
-  left: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 16px;
-}
-.app-support-float__wave {
-  width: 7px;
-  height: 15px;
-  margin: $dp-space-0 $dp-space-2;
-  background: $dp-color-brand;
-  border-radius: $dp-radius-pill;
-}
-.app-support-float__wave--short {
-  height: 11px;
 }
 .app-support-float__text {
   margin-top: $dp-space-3;

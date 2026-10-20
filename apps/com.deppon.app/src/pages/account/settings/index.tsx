@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from '@tarojs/components'
+import { Image, ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useState } from 'react'
@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { accountSettingsService } from '@/services/account'
 import { authService } from '@/services/auth'
 import { AppPressable, AppSwitch } from '@/shared/components'
+import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon/images'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { hasValidSession, navigateToLogin } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -110,13 +111,13 @@ const AccountSettingsPage = () => {
           <Text className='account-settings-row__label'>清除缓存</Text>
           <View className='account-settings-row__value-group'>
             <Text className='account-settings-row__value'>{clearing ? '清理中' : cacheSizeText}</Text>
-            <Text className='account-settings-row__arrow'>›</Text>
+            <Image className='account-settings-row__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
           </View>
         </AppPressable>
 
         <AppPressable accessibilityLabel='协议说明' className='account-settings-row' onPress={handleAgreement}>
           <Text className='account-settings-row__label'>协议说明</Text>
-          <Text className='account-settings-row__arrow'>›</Text>
+          <Image className='account-settings-row__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
         </AppPressable>
 
         <View className='account-settings-row'>

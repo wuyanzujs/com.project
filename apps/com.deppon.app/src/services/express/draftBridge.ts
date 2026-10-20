@@ -3,6 +3,7 @@ import { createExpressDraft } from './express.draft'
 import { normalizeExpressInsuranceDraft } from './insurance.rules'
 import { createExpressPackagingDraft, normalizeExpressPackagingDraft } from './packaging.rules'
 import { normalizeExpressReturnBillDraft } from './valueAdded'
+import { normalizeExpressValueAddedDraft } from './valueAdded.rules'
 import { normalizeExpressWarehouseDraft, resetExpressWarehouseInput } from './warehouse.rules'
 
 import type { ExpressDraft, ExpressProductQuote } from './types'
@@ -29,6 +30,26 @@ export interface ExpressDraftBridgePayload {
 
 let pendingDraft: ExpressDraftBridgePayload | null = null
 
+function cloneProductQuote(product: ExpressProductQuote): ExpressProductQuote {
+  return {
+    ...product,
+    detail: product.detail?.map(item => ({ ...item })) ?? null,
+    discount: product.discount?.map(item => ({ ...item })),
+    timeProducts: product.timeProducts?.map(item => ({ ...item }))
+  }
+}
+
+function getValueAddedQuoteIdentity(product: ExpressProductQuote) {
+  return JSON.stringify([
+    product.omsProductCode,
+    product.mainRoutePref ?? '',
+    product.shortDistance ?? '',
+    product.deliveryNature ?? '',
+    (product.timeProducts ?? []).map(item => item.timeProductsCode).sort(),
+    product.totalfee
+  ])
+}
+
 /**
  *
  * @param draft 寄件草稿
@@ -47,6 +68,7 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
       returnBill: normalizeExpressReturnBillDraft(draft.service.returnBill)
     },
     collection: { ...draft.collection },
+    valueAdded: normalizeExpressValueAddedDraft(draft.valueAdded),
     deliveryPreference: {
       ...draft.deliveryPreference,
       unavailableDates: [...draft.deliveryPreference.unavailableDates]
@@ -57,7 +79,7 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
       ...draft.pickup,
       nightCapability: draft.pickup.nightCapability ? { ...draft.pickup.nightCapability } : undefined
     },
-    selectedProduct: draft.selectedProduct ? { ...draft.selectedProduct } : null,
+    selectedProduct: draft.selectedProduct ? cloneProductQuote(draft.selectedProduct) : null,
     scanContext: draft.scanContext ? { ...draft.scanContext } : undefined
   }
 }
@@ -295,18 +317,25 @@ export const expressDraftBridge = {
   /**
    *
    * @param draft 寄件草稿
-   * @description 从增值服务页带回草稿：服务项变化后原报价失效，需要重新询价
+   * @param quotes 本页显式重新询价的结果；省略时原报价失效
+   * @description 只有未失效且属于本页显式报价列表的产品才能随服务草稿回传
    */
-  carryFromValueAdded(draft: ExpressDraft) {
+  carryFromValueAdded(draft: ExpressDraft, quotes: ExpressProductQuote[] = []) {
+    const selectedProduct = draft.selectedProduct
+    const matchedProduct =
+      !draft.quoteStaleReason && selectedProduct
+        ? quotes.find(product => getValueAddedQuoteIdentity(product) === getValueAddedQuoteIdentity(selectedProduct))
+        : undefined
+
     pendingDraft = {
       source: 'VALUE_ADDED',
       draft: cloneDraft({
         ...draft,
-        selectedProduct: null,
+        selectedProduct: matchedProduct ?? null,
         agreementAccepted: draft.agreementAccepted,
-        quoteStaleReason: draft.quoteStaleReason || '增值服务已变更，请重新获取价格'
+        quoteStaleReason: matchedProduct ? '' : draft.quoteStaleReason || '增值服务已变更，请重新获取价格'
       }),
-      quotes: [],
+      quotes: matchedProduct ? quotes.map(cloneProductQuote) : [],
       carriedAt: Date.now()
     }
   },

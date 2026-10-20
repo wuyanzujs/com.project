@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from '@tarojs/components'
+import { Image, ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
@@ -7,6 +7,7 @@ import { authService } from '@/services/auth'
 import { privacyService } from '@/services/privacy'
 import type { PrivacyStatusView } from '@/services/privacy'
 import { AppPressable } from '@/shared/components'
+import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon/images'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -204,7 +205,7 @@ const PrivacySettingsPage = () => {
               <Text className='privacy-link__title'>{item.title}</Text>
               <Text className='privacy-link__summary'>{item.summary}</Text>
             </View>
-            <Text className='privacy-link__arrow'>›</Text>
+            <Image className='privacy-link__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
           </AppPressable>
         ))}
       </View>

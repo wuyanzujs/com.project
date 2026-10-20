@@ -1,7 +1,8 @@
-import { Text, View } from '@tarojs/components'
+import { Image, Text, View } from '@tarojs/components'
 
 import type { OrderDetailActionView } from '@/services/order'
 import { AppPressable } from '@/shared/components'
+import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon/images'
 
 import { OrderDetailSection } from '../OrderDetailSection'
 
@@ -43,7 +44,7 @@ export function OrderServiceActions({ actions, onAction }: OrderServiceActionsPr
             </View>
             <Text className='order-service-action__summary'>{action.summary}</Text>
           </View>
-          <Text className='order-service-action__arrow'>›</Text>
+          <Image className='order-service-action__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
         </AppPressable>
       ))}
     </OrderDetailSection>

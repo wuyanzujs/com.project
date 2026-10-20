@@ -1,9 +1,8 @@
-import { Text, View } from '@tarojs/components'
+import { Image, Text, View } from '@tarojs/components'
 
+import supportIcon from '@/assets/express/customer_icon_service.png'
 import { AppPressable } from '@/shared/components'
-import { AppIcon } from '@/shared/components/AppIcon'
-import { AppNativeDraggable } from '@/shared/native'
-import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
+import { AppNativeDraggable, designPxToDp } from '@/shared/native'
 
 import './index.scss'
 
@@ -21,19 +20,13 @@ export function AppSupportFloat({ label = '客服中心', onPress }: AppSupportF
   const compact = label.length <= 2
 
   return (
-    <View className={compact ? 'app-support-float app-support-float--compact' : 'app-support-float'}>
-      <AppNativeDraggable>
+    <AppNativeDraggable style={{ position: 'absolute', right: 0, bottom: designPxToDp(148), zIndex: 10 }}>
+      <View className={compact ? 'app-support-float app-support-float--compact' : 'app-support-float'}>
         <AppPressable accessibilityLabel={label} block className='app-support-float__button' onPress={onPress}>
-          <View className='app-support-float__icon'>
-            <AppIcon color={APP_STYLE_COLORS.text.heading} name='headphones' size={44} strokeWidth={2.4} />
-            <View className='app-support-float__waves'>
-              <View className='app-support-float__wave app-support-float__wave--short' />
-              <View className='app-support-float__wave' />
-            </View>
-          </View>
+          <Image className='app-support-float__icon' mode='aspectFit' src={supportIcon} />
           <Text className={compact ? 'app-support-float__text app-support-float__text--compact' : 'app-support-float__text'}>{label}</Text>
         </AppPressable>
-      </AppNativeDraggable>
-    </View>
+      </View>
+    </AppNativeDraggable>
   )
 }

@@ -414,7 +414,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 46
+        "lines": 59
       },
       "src/pages/express/components/ExpressBaseInfoCard/index.scss": {
         "rawColors": 0,
@@ -644,7 +644,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 158
+        "lines": 142
       },
       "src/pages/express/components/ExpressReturnBillCard/index.scss": {
         "rawColors": 0,
@@ -805,6 +805,16 @@
         "rawSpaces": 1,
         "usesTokens": true,
         "lines": 6
+      },
+      "src/pages/express/services/cards.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 171
       },
       "src/pages/express/services/content.scss": {
         "rawColors": 0,
@@ -2384,7 +2394,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 67
+        "lines": 41
       },
       "src/shared/components/AppSwitch/index.scss": {
         "rawColors": 0,

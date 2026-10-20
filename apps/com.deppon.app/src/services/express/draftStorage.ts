@@ -10,6 +10,7 @@ import { normalizeExpressInsuranceDraft } from './insurance.rules'
 import { normalizeExpressPackagingDraft } from './packaging.rules'
 import { normalizeExpressPickup } from './pickupTime.rules'
 import { normalizeExpressReturnBillDraft } from './valueAdded'
+import { normalizeExpressValueAddedDraft } from './valueAdded.rules'
 import { normalizeExpressWarehouseDraft } from './warehouse.rules'
 
 import type { ExpressDraft, ExpressWarehouseDraft, ExpressWarehouseScreening } from './types'
@@ -34,6 +35,7 @@ function cloneDraft(draft: ExpressDraft): ExpressDraft {
       returnBill: normalizeExpressReturnBillDraft(draft.service.returnBill)
     },
     collection: { ...draft.collection },
+    valueAdded: normalizeExpressValueAddedDraft(draft.valueAdded),
     deliveryPreference: {
       ...draft.deliveryPreference,
       unavailableDates: [...draft.deliveryPreference.unavailableDates]
@@ -104,6 +106,7 @@ function normalizeDraft(draft: ExpressDraft): ExpressDraft {
       returnBill: normalizeExpressReturnBillDraft(legacyReturnBill)
     },
     collection,
+    valueAdded: normalizeExpressValueAddedDraft(draft.valueAdded),
     deliveryPreference: normalizeExpressDeliveryPreferenceDraft(legacyDraft.deliveryPreference),
     deliveryPoint: normalizeExpressDeliveryPointDraft(legacyDraft.deliveryPoint, legacyDraft.service?.deliveryMode),
     warehouse: normalizeExpressWarehouseDraft(legacyDraft.warehouse),
@@ -138,6 +141,10 @@ function hasMeaningfulDraft(draft: ExpressDraft) {
     draft.packaging.woodenCodes.length > 0 ||
     draft.packaging.unpackingCodes.length > 0 ||
     draft.collection.amount > 0 ||
+    draft.valueAdded.doubleDelivery ||
+    draft.valueAdded.powerMachine.enabled ||
+    draft.valueAdded.photo.sign ||
+    draft.valueAdded.photo.pickup ||
     draft.service.deliveryMode !== defaultDraft.service.deliveryMode ||
     draft.service.paymentType !== defaultDraft.service.paymentType ||
     draft.service.returnBill.type !== defaultDraft.service.returnBill.type ||

@@ -1,6 +1,8 @@
-import { Text, View } from '@tarojs/components'
+import { Image, Text, View } from '@tarojs/components'
 
+import { EXPRESS_AGREEMENT_HISTORY } from '@/services/express/agreementHistory'
 import { AppPressable } from '@/shared/components'
+import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon/images'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 
@@ -44,18 +46,21 @@ export function ExpressAgreementSheet({ onAgree, onClose, visible }: ExpressAgre
           onPress={() => navigateToAppRoute(createAppWebUrl({ source: 'EXPRESS_SERVICE_PROTOCOL' }))}
         >
           <Text className='express-agreement-sheet__link-text'>《电子运单服务协议》全文</Text>
-          <Text className='express-agreement-sheet__link-arrow'>›</Text>
+          <Image className='express-agreement-sheet__link-arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
         </AppPressable>
-        <AppPressable
-          accessibilityLabel='查看电子运单服务协议历史版本'
-          block
-          className='express-agreement-sheet__link'
-          layout='row-start'
-          onPress={() => navigateToAppRoute(createAppWebUrl({ source: 'PROTOCOL_RECORD' }))}
-        >
-          <Text className='express-agreement-sheet__link-text'>历史版本记录</Text>
-          <Text className='express-agreement-sheet__link-arrow'>›</Text>
-        </AppPressable>
+        <Text className='express-agreement-sheet__history-title'>历史记录</Text>
+        {EXPRESS_AGREEMENT_HISTORY.map(entry => (
+          <AppPressable
+            key={entry.url}
+            accessibilityLabel={`查看${entry.title}`}
+            block
+            className='express-agreement-sheet__link'
+            layout='row-start'
+            onPress={() => navigateToAppRoute(createAppWebUrl({ source: 'EXPRESS_SERVICE_PROTOCOL', uri: entry.url, title: entry.title, auth: false }))}
+          >
+            <Text className='express-agreement-sheet__history-link'>{entry.title}</Text>
+          </AppPressable>
+        ))}
       </View>
     </ExpressSheet>
   )

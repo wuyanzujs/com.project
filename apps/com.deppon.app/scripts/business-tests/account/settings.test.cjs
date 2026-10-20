@@ -83,6 +83,9 @@ function loadSettingsPage(t, overrides = {}) {
     },
     '@/services/auth': { authService: { logout } },
     '@/shared/components': { AppPressable: 'AppPressable', AppSwitch: 'AppSwitch' },
+    '@/shared/components/AppIcon/images': {
+      APP_IMAGE_ICONS: { arrowRightGrey: 'arrow-right-grey.png' }
+    },
     '@/shared/navigation/appNavigation': { navigateToAppRoute: navigate },
     '@/shared/navigation/authGuard': { hasValidSession: () => true, navigateToLogin: () => undefined },
     '@/shared/webview/appWeb': { createAppWebUrl: options => `/pages/web/index?source=${options.source}` },

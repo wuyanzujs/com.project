@@ -64,6 +64,11 @@ export const APP_WEB_TARGETS = {
     url: '/depponmobile/protocol/service',
     auth: false
   },
+  EXPRESS_BILLING_RULES: {
+    title: '计费规则',
+    url: '/depponmobile/billingRules',
+    auth: false
+  },
   AUTH_LOGIN_SERVICE_PROTOCOL: {
     title: '服务协议',
     url: '/depponmobile/protocol/service',
