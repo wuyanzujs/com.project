@@ -85,6 +85,11 @@ def hasReleaseSigning = [
 ].every { value -> value != null && !value.toString().trim().isEmpty() }
 def expectedReleaseAppId = "com.deppon.app"
 
+// 本地真机调试：gradlew assembleDebug -PtargetAbis=arm64-v8a 只打单个 ABI。
+// 不传该参数时保持 gradle.properties 里的四 ABI 行为，发布流程不受影响。
+def targetAbis = (project.findProperty('targetAbis') ?: '').toString().trim()
+def selectedAbis = targetAbis ? targetAbis.split(',').collect { it.trim() }.findAll { !it.isEmpty() } : []
+
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -97,6 +102,11 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        if (!selectedAbis.isEmpty()) {
+            ndk {
+                abiFilters.addAll(selectedAbis)
+            }
+        }
     }
     signingConfigs {
         debug {
