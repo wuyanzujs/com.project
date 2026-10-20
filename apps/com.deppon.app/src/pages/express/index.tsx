@@ -19,7 +19,7 @@ import {
   updateExpressPickup,
   updateExpressService
 } from '@/services/express'
-import type { ExpressDraft, ExpressGoods, ExpressMonthlyPayView, ExpressProductQuote } from '@/services/express'
+import type { ExpressDraft, ExpressDraftBridgeSource, ExpressGoods, ExpressMonthlyPayView, ExpressProductQuote } from '@/services/express'
 import { AppPage, AppSupportFloat } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -27,39 +27,55 @@ import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 import { getNativeCapabilityErrorMessage, shareWithApp } from '@/shared/platform'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
 
+import { ExpressAgreementSheet } from './components/ExpressAgreementSheet'
 import { ExpressBaseInfoCard } from './components/ExpressBaseInfoCard'
 import { ExpressContactPanel } from './components/ExpressContactPanel'
 import { ExpressCouponCard } from './components/ExpressCouponCard'
 import { ExpressGoodsSection } from './components/ExpressGoodsSection'
 import { ExpressHeader } from './components/ExpressHeader'
+import { ExpressInsuranceCard } from './components/ExpressInsuranceCard'
 import { ExpressNavBar } from './components/ExpressNavBar'
 import { ExpressOrderOptionsSection } from './components/ExpressOrderOptionsSection'
 import { ExpressPaymentRow } from './components/ExpressPaymentRow'
 import { ExpressPickupSection } from './components/ExpressPickupSection'
+import { ExpressPriceDetailSheet } from './components/ExpressPriceDetailSheet'
 import { ExpressPrivacyCard } from './components/ExpressPrivacyCard'
 import { ExpressQuoteSection } from './components/ExpressQuoteSection'
 import { ExpressServiceSection } from './components/ExpressServiceSection'
 import { ExpressSubmitBar } from './components/ExpressSubmitBar'
 import { ExpressWeatherBanner } from './components/ExpressWeatherBanner'
+import { useExpressAgreement } from './hooks/useExpressAgreement'
 import { useExpressAutoQuote } from './hooks/useExpressAutoQuote'
-import { useExpressCollection } from './hooks/useExpressCollection'
 import { useExpressCoupons } from './hooks/useExpressCoupons'
-import { useExpressDeliveryPoint } from './hooks/useExpressDeliveryPoint'
-import { useExpressDeliveryPreference } from './hooks/useExpressDeliveryPreference'
 import { useExpressEntryNavigation } from './hooks/useExpressEntryNavigation'
-import { useExpressGoods } from './hooks/useExpressGoods'
 import { useExpressInsurance } from './hooks/useExpressInsurance'
 import { useExpressMonthlyPay } from './hooks/useExpressMonthlyPay'
 import { useExpressPickupTime } from './hooks/useExpressPickupTime'
 import { useExpressPrivacy } from './hooks/useExpressPrivacy'
 import { useExpressQuote } from './hooks/useExpressQuote'
-import { useExpressReturnBill } from './hooks/useExpressReturnBill'
 import { useExpressServicePoint } from './hooks/useExpressServicePoint'
 import { useExpressSubmit } from './hooks/useExpressSubmit'
 import { useExpressWarehouse } from './hooks/useExpressWarehouse'
 import { useExpressWeather } from './hooks/useExpressWeather'
 
 import './index.scss'
+
+const EXPRESS_DRAFT_CARRIED_MESSAGES: Partial<Record<ExpressDraftBridgeSource, string>> = {
+  ORDER_RESEND: '已带入原订单信息',
+  COUPON_LIST: '已带入优惠券',
+  GOODS_QUERY: '已带入货物名称',
+  BATCH_RECOGNITION: '已带入批量识别结果',
+  SCAN_QR_CODE: '已带入扫码寄件信息',
+  DISPATCH_QUERY: '已带入收派范围地址',
+  COURIER: '已带入专属快递员',
+  TEMPLATE: '已带入寄件模板',
+  QUERY_PRICE: '已带入查价结果'
+}
+
+// 全新寄件与增值服务回填不打扰用户，其余带入来源提示一句。
+function getExpressDraftCarriedMessage(source: ExpressDraftBridgeSource) {
+  return EXPRESS_DRAFT_CARRIED_MESSAGES[source] ?? ''
+}
 
 function getProductPriceText(product: ExpressProductQuote | null) {
   if (!product || product.totalfee === null || product.totalfee === undefined) {
@@ -75,6 +91,7 @@ function createInitialDraft() {
 
 const ExpressPage = () => {
   const [draft, setDraft] = useState<ExpressDraft>(() => createInitialDraft())
+  const [detailVisible, setDetailVisible] = useState(false)
 
   useExpressServicePoint({ draft, setDraft })
 
@@ -96,20 +113,10 @@ const ExpressPage = () => {
     setDraft,
     onInvalidateQuote: invalidateCouponQuote
   })
-  const returnBillController = useExpressReturnBill({
-    draft,
-    restoreQuotes,
-    setDraft
-  })
-  const collectionController = useExpressCollection({ setDraft })
-  const deliveryPointController = useExpressDeliveryPoint({ draft, setDraft })
   const pickupTimeController = useExpressPickupTime({ draft, setDraft })
-  const deliveryPreferenceController = useExpressDeliveryPreference({
-    draft,
-    setDraft
-  })
   const warehouseController = useExpressWarehouse({ draft, setDraft })
   const privacyController = useExpressPrivacy(setDraft)
+  const agreement = useExpressAgreement({ accepted: draft.agreementAccepted, setDraft })
 
   const updateService = useCallback((patch: Partial<ExpressDraft['service']>) => {
     setDraft(current => updateExpressService(current, patch))
@@ -119,7 +126,6 @@ const ExpressPage = () => {
     setDraft(current => updateExpressPickup(current, patch))
   }, [])
 
-  const goods = useExpressGoods({ setDraft, restoreQuotes })
   const monthlyPay = useExpressMonthlyPay({ draft, updateService })
   const submit = useExpressSubmit({ draft, warehouseController })
   const entryNav = useExpressEntryNavigation({ draft })
@@ -134,6 +140,10 @@ const ExpressPage = () => {
 
   const handleOpenGoods = useCallback(() => {
     navigateToAppRoute(APP_ROUTES.expressGoods)
+  }, [])
+
+  const handleOpenServices = useCallback(() => {
+    navigateToAppRoute(APP_ROUTES.expressServices, { login: true })
   }, [])
 
   useEffect(() => {
@@ -164,27 +174,11 @@ const ExpressPage = () => {
       setDraft(carriedDraft.draft)
       restoreQuotes(carriedDraft.quotes)
 
-      // 全新寄件是静默重置,其余带入来源都提示用户已带入内容。
-      if (carriedDraft.source !== 'FRESH_SEND') {
+      const carriedMessage = getExpressDraftCarriedMessage(carriedDraft.source)
+
+      if (carriedMessage) {
         Taro.showToast({
-          title:
-            carriedDraft.source === 'ORDER_RESEND'
-              ? '已带入原订单信息'
-              : carriedDraft.source === 'COUPON_LIST'
-                ? '已带入优惠券'
-                : carriedDraft.source === 'GOODS_QUERY'
-                  ? '已带入货物名称'
-                  : carriedDraft.source === 'BATCH_RECOGNITION'
-                    ? '已带入批量识别结果'
-                    : carriedDraft.source === 'SCAN_QR_CODE'
-                      ? '已带入扫码寄件信息'
-                      : carriedDraft.source === 'DISPATCH_QUERY'
-                        ? '已带入收派范围地址'
-                        : carriedDraft.source === 'COURIER'
-                          ? '已带入专属快递员'
-                          : carriedDraft.source === 'TEMPLATE'
-                            ? '已带入寄件模板'
-                            : '已带入查价结果',
+          title: carriedMessage,
           icon: 'none'
         })
       }
@@ -242,18 +236,26 @@ const ExpressPage = () => {
     })
   }
 
+  const handleOpenAgreement = useCallback(() => {
+    navigateToAppRoute(createAppWebUrl({ source: 'EXPRESS_SERVICE_PROTOCOL' }))
+  }, [])
+
   const selectedProductDetailView = draft.selectedProduct ? createExpressProductQuoteView(draft.selectedProduct) : null
+  const selectedCoupon = draft.couponNumber ? couponController.available.find(coupon => coupon.code === draft.couponNumber) : undefined
+  const couponDiscountText = selectedCoupon?.raw.optimalFee ? `-¥${selectedCoupon.raw.optimalFee / 100}` : ''
 
   return (
     <AppPage
       footer={
         <ExpressSubmitBar
-          detailView={selectedProductDetailView}
+          detailAvailable={Boolean(selectedProductDetailView)}
+          detailVisible={detailVisible && Boolean(selectedProductDetailView)}
           priceText={getProductPriceText(draft.selectedProduct)}
           quoteLoading={quoteStatus === 'loading'}
           submitting={submit.submiting}
           onQuote={handleQuote}
           onSubmit={submit.handleSubmit}
+          onToggleDetail={() => setDetailVisible(current => !current)}
         />
       }
       header={<ExpressNavBar title='寄快递' onShare={handleShare} />}
@@ -304,26 +306,13 @@ const ExpressPage = () => {
           <ExpressCouponCard controller={couponController} couponNumber={draft.couponNumber} />
         </ExpressBaseInfoCard>
 
+        <ExpressInsuranceCard controller={insuranceController} draft={draft} />
+
         <ExpressServiceSection
-          collection={draft.collection}
-          collectionController={collectionController}
-          deliveryPoint={draft.deliveryPoint}
-          deliveryPreference={draft.deliveryPreference}
-          deliveryPreferenceController={deliveryPreferenceController}
           draft={draft}
-          insuranceController={insuranceController}
-          packaging={draft.packaging}
           scanContextView={createExpressScanContextView(draft.scanContext)}
-          selectedProduct={draft.selectedProduct}
-          service={draft.service}
-          warehouse={draft.warehouse}
-          warehouseController={warehouseController}
           onClearScanContext={() => setDraft(clearExpressScanContext)}
-          onOpenDeliveryPoints={deliveryPointController.onOpen}
-          onOpenReturnBillCloudSign={returnBillController.onOpenCloudSign}
-          onPackagingChange={goods.handlePackagingChange}
-          onReturnBillChange={returnBillController.onChange}
-          onServiceChange={updateService}
+          onOpenServices={handleOpenServices}
         />
 
         <ExpressPrivacyCard value={draft.service.privacyProtection} onChange={privacyController.onChange} onOpenTerms={privacyController.onOpenTerms} />
@@ -332,14 +321,22 @@ const ExpressPage = () => {
           agreementAccepted={draft.agreementAccepted}
           submitMessage={submit.submitMessage}
           validationMessages={submit.attempted && !submit.validation.valid ? submit.validation.messages : []}
-          onToggleAgreement={() =>
-            setDraft(current => ({
-              ...current,
-              agreementAccepted: !current.agreementAccepted
-            }))
-          }
+          onOpenAgreement={handleOpenAgreement}
+          onToggleAgreement={agreement.onToggleAgreement}
         />
       </ScrollView>
+
+      {selectedProductDetailView ? (
+        <ExpressPriceDetailSheet
+          couponDiscountText={couponDiscountText}
+          view={selectedProductDetailView}
+          visible={detailVisible}
+          onClose={() => setDetailVisible(false)}
+        />
+      ) : null}
+
+      <ExpressAgreementSheet visible={agreement.sheetVisible} onAgree={agreement.onAgree} onClose={agreement.onCloseSheet} />
+
       <AppSupportFloat label='客服' onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)} />
     </AppPage>
   )

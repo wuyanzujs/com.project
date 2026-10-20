@@ -1,8 +1,6 @@
 import { Text, View } from '@tarojs/components'
 
 import { AppPressable } from '@/shared/components'
-import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
-import { createAppWebUrl } from '@/shared/webview/appWeb'
 
 import './index.scss'
 
@@ -11,19 +9,27 @@ interface ExpressOrderOptionsSectionProps {
   submitMessage: string
   validationMessages: string[]
   onToggleAgreement: () => void
+  onOpenAgreement: () => void
 }
 
-export function ExpressOrderOptionsSection({ agreementAccepted, submitMessage, validationMessages, onToggleAgreement }: ExpressOrderOptionsSectionProps) {
+export function ExpressOrderOptionsSection({
+  agreementAccepted,
+  submitMessage,
+  validationMessages,
+  onOpenAgreement,
+  onToggleAgreement
+}: ExpressOrderOptionsSectionProps) {
   return (
     <View className='express-order-options'>
       <View className='express-order-options__agreement'>
         <AppPressable accessibilityLabel={agreementAccepted ? '取消同意电子运单协议' : '同意电子运单协议'} layout='row-start' onPress={onToggleAgreement}>
-          <View className={agreementAccepted ? 'express-order-options__radio express-order-options__radio--checked' : 'express-order-options__radio'}>
-            {agreementAccepted ? <View className='express-order-options__radio-dot' /> : null}
+          {/* 生产端为蓝色实心圆点勾选图标：未勾选是灰色描边圆，勾选后填充并压白色对勾。 */}
+          <View className={agreementAccepted ? 'express-order-options__check express-order-options__check--checked' : 'express-order-options__check'}>
+            {agreementAccepted ? <Text className='express-order-options__check-mark'>✓</Text> : null}
           </View>
           <Text className='express-order-options__agreement-text'>已读并同意</Text>
         </AppPressable>
-        <AppPressable accessibilityLabel='阅读电子运单服务协议' onPress={() => navigateToAppRoute(createAppWebUrl({ source: 'EXPRESS_SERVICE_PROTOCOL' }))}>
+        <AppPressable accessibilityLabel='阅读电子运单服务协议' onPress={onOpenAgreement}>
           <Text className='express-order-options__agreement-link'>《电子运单服务协议》</Text>
         </AppPressable>
       </View>

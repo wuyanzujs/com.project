@@ -1,12 +1,7 @@
 import { Image, Text, View } from '@tarojs/components'
 
-import { useState } from 'react'
-
-import type { ExpressProductQuoteView } from '@/services/express'
 import { AppPressable } from '@/shared/components'
 import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon'
-
-import { ExpressPriceDetailPanel } from '../ExpressPriceDetailPanel'
 
 import './index.scss'
 
@@ -14,19 +9,26 @@ interface ExpressSubmitBarProps {
   priceText: string
   quoteLoading: boolean
   submitting: boolean
-  /** 已选产品的计费明细；没询到价时为 null，此时不展示展开面板。 */
-  detailView: ExpressProductQuoteView | null
+  /** 已选产品的计费明细是否可用；不可用时点「明细」重新询价。 */
+  detailAvailable: boolean
+  detailVisible: boolean
   onQuote: () => void
   onSubmit: () => void
+  onToggleDetail: () => void
 }
 
-export function ExpressSubmitBar({ detailView, priceText, quoteLoading, submitting, onQuote, onSubmit }: ExpressSubmitBarProps) {
-  const [detailVisible, setDetailVisible] = useState(false)
-  const canExpand = Boolean(detailView)
-
+export function ExpressSubmitBar({
+  detailAvailable,
+  detailVisible,
+  priceText,
+  quoteLoading,
+  submitting,
+  onQuote,
+  onSubmit,
+  onToggleDetail
+}: ExpressSubmitBarProps) {
   return (
     <View className='express-submit'>
-      {detailVisible && detailView ? <ExpressPriceDetailPanel view={detailView} onClose={() => setDetailVisible(false)} /> : null}
       <View className='express-submit__main'>
         <View className='express-submit__summary'>
           <View className='express-submit__price-row'>
@@ -42,16 +44,16 @@ export function ExpressSubmitBar({ detailView, priceText, quoteLoading, submitti
             </AppPressable>
             <View className='express-submit__divider' />
             <AppPressable
-              accessibilityLabel={canExpand ? '展开费用明细' : '获取产品价格'}
+              accessibilityLabel={detailVisible ? '收起费用明细' : detailAvailable ? '展开费用明细' : '获取产品价格'}
               className='express-submit__detail-toggle'
               layout='row-center'
               onPress={() => {
-                if (!canExpand) {
+                if (!detailAvailable) {
                   onQuote()
                   return
                 }
 
-                setDetailVisible(current => !current)
+                onToggleDetail()
               }}
             >
               <Text className='express-submit__detail'>明细</Text>

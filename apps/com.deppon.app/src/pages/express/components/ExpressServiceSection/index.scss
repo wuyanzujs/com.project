@@ -46,12 +46,7 @@
   flex-direction: row;
   align-items: center;
   min-height: $dp-touch-target-min;
-  border-bottom-color: $dp-color-border-light;
-  border-bottom-width: $dp-border-width-hairline;
-}
-.express-service-entry--fold {
   padding: $dp-space-16 $dp-space-0;
-  border-bottom-width: 0;
 }
 .express-service-entry__title {
   color: $dp-color-text-neutral;
@@ -76,11 +71,6 @@
   flex-shrink: 0;
   width: $dp-space-24;
   height: $dp-space-24;
-}
-.express-service-panel {
-  padding: $dp-space-8 $dp-space-0;
-  border-bottom-color: $dp-color-border-light;
-  border-bottom-width: $dp-border-width-hairline;
 }
 .express-service-row {
   display: flex;

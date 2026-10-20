@@ -103,6 +103,7 @@ export const APP_STYLE_COLORS = {
     default: 'rgba(22, 24, 26, 0.48)',
     strong: 'rgba(16, 24, 40, 0.48)',
     heavy: 'rgba(22, 24, 26, 0.72)',
+    sheet: 'rgba(0, 0, 0, 0.26)',
     member: 'rgba(124, 72, 45, 0.12)'
   }
 } as const

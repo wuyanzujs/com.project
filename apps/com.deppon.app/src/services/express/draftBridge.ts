@@ -18,6 +18,7 @@ export type ExpressDraftBridgeSource =
   | 'DISPATCH_QUERY'
   | 'COURIER'
   | 'TEMPLATE'
+  | 'VALUE_ADDED'
 
 export interface ExpressDraftBridgePayload {
   source: ExpressDraftBridgeSource
@@ -286,6 +287,25 @@ export const expressDraftBridge = {
     pendingDraft = {
       source: 'TEMPLATE',
       draft: nextDraft,
+      quotes: [],
+      carriedAt: Date.now()
+    }
+  },
+
+  /**
+   *
+   * @param draft 寄件草稿
+   * @description 从增值服务页带回草稿：服务项变化后原报价失效，需要重新询价
+   */
+  carryFromValueAdded(draft: ExpressDraft) {
+    pendingDraft = {
+      source: 'VALUE_ADDED',
+      draft: cloneDraft({
+        ...draft,
+        selectedProduct: null,
+        agreementAccepted: draft.agreementAccepted,
+        quoteStaleReason: draft.quoteStaleReason || '增值服务已变更，请重新获取价格'
+      }),
       quotes: [],
       carriedAt: Date.now()
     }

@@ -60,8 +60,12 @@ export function ExpressQuoteSection({
           const selected = selectedProduct?.omsProductCode === product.omsProductCode
           const highEnd = EXPRESS_MEDAL_CODES.includes(String(getExpressQuoteTimeProduct(product).code))
           const cardClassName = selected ? 'express-quote-card express-quote-card--active' : 'express-quote-card'
-          const bandClassName = selected ? 'express-quote-card__band express-quote-card__band--active' : 'express-quote-card__band'
-          const titleClassName = selected ? 'express-quote-card__band-title express-quote-card__band-title--active' : 'express-quote-card__band-title'
+          const ribbonClassName = selected
+            ? 'express-quote-card__ribbon express-quote-card__ribbon--active'
+            : 'express-quote-card__ribbon express-quote-card__ribbon--idle'
+          const ribbonTitleClassName = selected
+            ? 'express-quote-card__ribbon-title express-quote-card__ribbon-title--active'
+            : 'express-quote-card__ribbon-title'
           const { start, time, end } = view.timeSegments
 
           return (
@@ -73,12 +77,13 @@ export function ExpressQuoteSection({
                 selected={selected}
                 onPress={() => onSelectProduct(product)}
               >
-                {selected ? <View className='express-quote-card__tail' /> : null}
-                <View className={view.longName ? `${bandClassName} express-quote-card__band--wide` : bandClassName}>
-                  <Text className={titleClassName} numberOfLines={1}>
+                {/* 生产端时效卡是深色书签带：右侧折角压出白色缺口，选中态才用深色。 */}
+                <View className={ribbonClassName}>
+                  <Text className={ribbonTitleClassName} numberOfLines={1}>
                     {view.name}
                   </Text>
                 </View>
+                {selected ? <View className='express-quote-card__fold' /> : null}
                 {!selected && highEnd ? <Image className='express-quote-card__medal' mode='aspectFit' src={EXPRESS_MEDAL_ICON} /> : null}
                 {view.timeLimit > 0 ? (
                   <View className='express-quote-card__limit'>

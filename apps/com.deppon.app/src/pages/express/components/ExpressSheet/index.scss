@@ -1,18 +1,6 @@
 @use '@/styles/_tokens.scss' as *;
 
-/* 寄快递页底部弹层基件：遮罩压暗全屏，白面板贴底、顶部 32 圆角。 */
-.express-sheet {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  background: $dp-color-overlay-sheet;
-}
-.express-sheet__aligner {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  justify-content: flex-end;
-}
+/* 寄快递页底部弹层基件：遮罩由 AppNativeSheet 首帧铺满，面板贴底、顶部 32 圆角。 */
 .express-sheet__panel {
   display: flex;
   flex-direction: column;

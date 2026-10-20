@@ -23,6 +23,11 @@ export const APP_ROUTE_DEFINITIONS = [
     path: 'pages/express/goods/index'
   },
   {
+    name: 'expressServices',
+    title: '增值服务',
+    path: 'pages/express/services/index'
+  },
+  {
     name: 'expressSuccess',
     title: '下单成功',
     path: 'pages/express/success/index'

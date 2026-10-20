@@ -17,7 +17,7 @@ interface ExpressContactCardProps {
   contact: ExpressContact | null
   mark: '寄' | '收'
   markType: 'sender' | 'consignee'
-  /** 空态灰底：寄件人未填，或收件人未填且寄件人已填，双卡齐全时为白底。 */
+  /** 空态灰底：寄件人未填，或收件人未填且寄件人已填；灰底是卡片内缩的圆角块。 */
   background: boolean
   emptyText: string
   target: ExpressContactTarget
@@ -92,7 +92,7 @@ export function ExpressContactPanel({ draft, onCreateContact, onSelectContact, o
       <ExpressContactCard
         background={!draft.sender}
         contact={draft.sender}
-        emptyText='请选择寄件地址'
+        emptyText='从哪里发件'
         mark='寄'
         markType='sender'
         target='sender'

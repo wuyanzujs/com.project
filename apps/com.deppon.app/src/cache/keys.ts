@@ -3,6 +3,7 @@ export const CACHE_KEYS = {
   batchDraft: 'DEPPON_BATCH_DRAFT',
   cookie: 'DEPPON_COOKIE',
   expressDraft: 'DEPPON_EXPRESS_DRAFT',
+  expressAgreementConfirm: 'DEPPON_EXPRESS_AGREEMENT_CONFIRM',
   expressGoodsHistory: 'DEPPON_EXPRESS_GOODS_HISTORY',
   expressPrivacyConfirm: 'DEPPON_EXPRESS_PRIVACY_CONFIRM',
   goodsQueryHistory: 'DEPPON_GOODS_QUERY_HISTORY',

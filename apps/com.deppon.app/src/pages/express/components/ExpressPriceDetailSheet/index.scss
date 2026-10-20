@@ -1,0 +1,100 @@
+@use '@/styles/_tokens.scss' as *;
+
+/* 预估费用明细弹层：白面板贴底、顶部 24 圆角，标题区与内容区都按生产端量测排版。 */
+.express-price-sheet {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: $dp-space-32 $dp-space-32 $dp-space-24;
+  background: $dp-color-bg-card;
+  border-top-left-radius: $dp-radius-24;
+  border-top-right-radius: $dp-radius-24;
+}
+.express-price-sheet__head {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.express-price-sheet__heading {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+.express-price-sheet__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-heading;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-48;
+}
+.express-price-sheet__subtitle {
+  margin-top: $dp-space-4;
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-36;
+}
+.express-price-sheet__close {
+  align-items: center;
+  justify-content: center;
+  width: $dp-space-56;
+  height: $dp-space-56;
+  background: $dp-color-bg-muted;
+  border-radius: $dp-radius-circle;
+}
+.express-price-sheet__section {
+  display: flex;
+  flex-direction: column;
+  margin-top: $dp-space-28;
+}
+.express-price-sheet__row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: $dp-line-height-50;
+}
+.express-price-sheet__section-title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-48;
+}
+.express-price-sheet__amount {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-48;
+}
+.express-price-sheet__label-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.express-price-sheet__label {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-40;
+}
+.express-price-sheet__label-accent {
+  margin-left: $dp-space-2;
+  color: $dp-color-danger-accent;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-40;
+}
+.express-price-sheet__value {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-40;
+}
+.express-price-sheet__note {
+  margin-top: $dp-space-8;
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-32;
+}
+.express-price-sheet__discount {
+  color: $dp-color-danger-accent;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-40;
+}

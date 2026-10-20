@@ -12,14 +12,15 @@
   flex-direction: row;
   align-items: center;
   min-height: 124px;
-  padding-top: $dp-space-16;
   border-radius: $dp-radius-24;
 }
-/* 灰底用于待填写地址；收寄件地址齐全时使用白底。 */
+/* 灰底用于待填写地址：生产端是卡内左右各缩进 16 的圆角灰块，而不是通栏色带。 */
 .express-contact-card--bg {
+  margin: $dp-space-0 $dp-space-16;
   background: $dp-color-bg-page;
 }
 .express-contact-card--filled {
+  padding-top: $dp-space-16;
   padding-bottom: $dp-space-16;
 }
 .express-contact-card__main--filled {

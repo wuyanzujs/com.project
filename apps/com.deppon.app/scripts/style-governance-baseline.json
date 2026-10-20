@@ -406,6 +406,16 @@
         "usesTokens": true,
         "lines": 6
       },
+      "src/pages/express/components/ExpressAgreementSheet/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 46
+      },
       "src/pages/express/components/ExpressBaseInfoCard/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
@@ -444,7 +454,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 120
+        "lines": 121
       },
       "src/pages/express/components/ExpressCouponCard/index.scss": {
         "rawColors": 0,
@@ -544,7 +554,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 55
+        "lines": 57
       },
       "src/pages/express/components/ExpressPackagingCard/index.scss": {
         "rawColors": 0,
@@ -606,7 +616,7 @@
         "usesTokens": true,
         "lines": 99
       },
-      "src/pages/express/components/ExpressPriceDetailPanel/index.scss": {
+      "src/pages/express/components/ExpressPriceDetailSheet/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
         "rawLineHeights": 0,
@@ -614,7 +624,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 49
+        "lines": 100
       },
       "src/pages/express/components/ExpressPrivacyCard/index.scss": {
         "rawColors": 0,
@@ -634,7 +644,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 155
+        "lines": 158
       },
       "src/pages/express/components/ExpressReturnBillCard/index.scss": {
         "rawColors": 0,
@@ -684,7 +694,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 146
+        "lines": 136
       },
       "src/pages/express/components/ExpressSheet/index.scss": {
         "rawColors": 0,
@@ -694,7 +704,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 79
+        "lines": 67
       },
       "src/pages/express/components/ExpressSubmitBar/index.scss": {
         "rawColors": 0,
@@ -796,6 +806,26 @@
         "usesTokens": true,
         "lines": 6
       },
+      "src/pages/express/services/content.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 89
+      },
+      "src/pages/express/services/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 7
+      },
       "src/pages/express/success/content.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
@@ -804,7 +834,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 9,
         "usesTokens": true,
-        "lines": 119
+        "lines": 127
       },
       "src/pages/express/success/index.scss": {
         "rawColors": 0,
@@ -1204,7 +1234,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 5,
         "usesTokens": true,
-        "lines": 80
+        "lines": 83
       },
       "src/pages/mine/components/MineHero/index.scss": {
         "rawColors": 0,
@@ -1224,7 +1254,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 8,
         "usesTokens": true,
-        "lines": 171
+        "lines": 177
       },
       "src/pages/mine/components/MineOrderShortcuts/index.scss": {
         "rawColors": 0,
@@ -2354,7 +2384,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 25
+        "lines": 67
       },
       "src/shared/components/AppSwitch/index.scss": {
         "rawColors": 0,

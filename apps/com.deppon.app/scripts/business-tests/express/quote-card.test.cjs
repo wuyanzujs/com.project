@@ -86,9 +86,11 @@ test('quote card renders one-line product name, split time text and limited offe
 
   const title = findElement(view, element => element.type === 'Text' && element.props?.children === '小件标快次日')
   assert.equal(title.props.numberOfLines, 1, 'product name stays on one line')
+  // 生产端时效卡是深色书签带 + 右侧折角，选中态才用深色，产品名不再切换窄/宽带样式。
+  assert.match(String(title.props?.className), /express-quote-card__ribbon-title--active/, 'selected card paints the ribbon title white')
   assert.ok(
-    findElement(view, element => String(element.props?.className).includes('express-quote-card__band--wide')),
-    'long product names use the wide band'
+    findElement(view, element => String(element.props?.className).includes('express-quote-card__fold')),
+    'selected card renders the folded ribbon corner'
   )
 
   assert.ok(

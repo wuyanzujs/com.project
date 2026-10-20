@@ -1,0 +1,46 @@
+@use '@/styles/_tokens.scss' as *;
+
+.express-agreement-sheet__body {
+  padding: $dp-space-0 $dp-space-32 $dp-space-16;
+}
+.express-agreement-sheet__intro {
+  color: $dp-color-text-neutral;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-40;
+}
+.express-agreement-sheet__links {
+  margin-top: $dp-space-24;
+}
+.express-agreement-sheet__link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: $dp-touch-target-min;
+}
+.express-agreement-sheet__link-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-36;
+}
+.express-agreement-sheet__link-arrow {
+  color: $dp-color-text-placeholder;
+  font-size: $dp-font-size-title-large;
+  line-height: $dp-line-height-36;
+}
+.express-agreement-sheet__confirm {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: $dp-space-96;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-48;
+}
+.express-agreement-sheet__confirm-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-48;
+}

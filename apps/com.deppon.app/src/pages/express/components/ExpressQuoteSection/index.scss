@@ -9,59 +9,62 @@
   height: 152px;
   margin-right: $dp-space-16;
 }
+/* 生产端时效卡：200×152，深色描边 + 白色卡体，标题做成从左上折到右上的书签带。 */
 .express-quote-card {
   position: relative;
-  width: 184px;
+  width: 200px;
   height: 152px;
   background: $dp-color-bg-card;
-  border-color: $dp-color-quote-idle;
+  border-color: $dp-color-border-default;
   border-radius: $dp-radius-16;
   border-width: $dp-border-width-hairline;
+  overflow: hidden;
 }
 .express-quote-card--active {
   border-color: $dp-color-quote-active;
   border-width: 3px;
 }
-.express-quote-card__tail {
-  position: absolute;
-  left: 124px;
-  top: 0;
-  width: 60px;
-  height: 18px;
-  background: $dp-color-quote-active;
-  border-bottom-left-radius: $dp-radius-16;
-  border-top-right-radius: $dp-radius-16;
-}
-.express-quote-card__band {
-  align-self: flex-start;
+.express-quote-card__ribbon {
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  width: 124px;
+  width: 166px;
   height: 47px;
   padding-left: $dp-space-16;
+  padding-right: $dp-space-8;
+  border-top-left-radius: $dp-radius-12;
+  border-bottom-right-radius: $dp-radius-28;
+}
+.express-quote-card__ribbon--active {
+  background: $dp-color-quote-band;
+}
+.express-quote-card__ribbon--idle {
   background: $dp-color-quote-idle;
-  border-bottom-right-radius: $dp-radius-24;
-  border-top-left-radius: $dp-radius-16;
 }
-// 产品名超过 4 个字时标题带加宽，避免折行被裁切。
-.express-quote-card__band--wide {
-  width: 165px;
-  padding-left: $dp-space-8;
-}
-.express-quote-card__band--active {
-  background: $dp-color-quote-active;
-}
-.express-quote-card__band-title {
-  color: $dp-color-text-ink;
-  font-size: $dp-font-size-caption;
+.express-quote-card__ribbon-title {
+  flex-shrink: 1;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-title;
   font-weight: $dp-font-weight-semibold;
-  line-height: $dp-line-height-32;
+  line-height: $dp-line-height-48;
 }
-.express-quote-card__band-title--active {
+.express-quote-card__ribbon-title--active {
   color: $dp-color-text-inverse;
+}
+/* 深色书签带右侧的折角：上不封口、左下大圆角，压出生产端的白色缺口。 */
+.express-quote-card__fold {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 47px;
+  background: $dp-color-quote-active;
+  border-top-right-radius: $dp-radius-12;
+  border-bottom-left-radius: $dp-radius-26;
 }
 .express-quote-card__medal {
   position: absolute;
-  left: 142px;
+  left: 156px;
   top: 14px;
   width: 30px;
   height: 30px;
@@ -89,21 +92,21 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  height: $dp-line-height-40;
-  margin-top: $dp-space-8;
+  height: $dp-line-height-48;
+  margin-top: $dp-space-16;
   padding: $dp-space-0 $dp-space-8;
 }
 .express-quote-card__time-label {
   color: $dp-color-brand;
-  font-size: $dp-font-size-fine;
+  font-size: $dp-font-size-caption;
   line-height: $dp-line-height-40;
 }
 .express-quote-card__time-value {
-  margin: $dp-space-0 $dp-space-4;
+  margin: $dp-space-0 $dp-space-6;
   color: $dp-color-brand;
-  font-size: $dp-font-size-label-small;
+  font-size: $dp-font-size-heading;
   font-weight: $dp-font-weight-semibold;
-  line-height: $dp-line-height-40;
+  line-height: $dp-line-height-48;
 }
 .express-quote-card__price {
   display: flex;
@@ -115,13 +118,13 @@
 }
 .express-quote-card__price-mark {
   color: $dp-color-text-ink;
-  font-size: $dp-font-size-body-small;
-  line-height: $dp-line-height-40;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-36;
 }
 .express-quote-card__price-value {
-  margin: $dp-space-0 $dp-space-2;
+  margin: $dp-space-0 $dp-space-4;
   color: $dp-color-text-ink;
-  font-size: $dp-font-size-title;
+  font-size: $dp-font-size-title-large;
   font-weight: $dp-font-weight-semibold;
   line-height: $dp-line-height-40;
 }

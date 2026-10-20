@@ -142,19 +142,22 @@ test('submission rejects stale quotes, negative volume and fractional package co
 
 test('opening the shipping agreement is independent from accepting it', t => {
   const toggle = t.mock.fn()
-  const navigate = t.mock.fn()
+  const openAgreement = t.mock.fn()
   const { ExpressOrderOptionsSection } = loadReactModule('pages/express/components/ExpressOrderOptionsSection/index.tsx', {
     'react/jsx-runtime': require('react/jsx-runtime'),
     '@tarojs/components': { Text: 'Text', View: 'View' },
     '@/shared/components': { AppPressable: 'AppPressable' },
-    '@/shared/navigation/appNavigation': { navigateToAppRoute: navigate },
-    '@/shared/webview/appWeb': require('@/shared/webview/appWeb'),
     './index.scss': {}
   })
-  const view = ExpressOrderOptionsSection({ agreementAccepted: false, submitMessage: '', validationMessages: [], onToggleAgreement: toggle })
+  const view = ExpressOrderOptionsSection({
+    agreementAccepted: false,
+    submitMessage: '',
+    validationMessages: [],
+    onOpenAgreement: openAgreement,
+    onToggleAgreement: toggle
+  })
   findElement(view, element => element.props?.accessibilityLabel === '阅读电子运单服务协议').props.onPress()
-  assert.equal(navigate.mock.callCount(), 1)
-  assert.match(navigate.mock.calls[0].arguments[0], /EXPRESS_SERVICE_PROTOCOL/)
+  assert.equal(openAgreement.mock.callCount(), 1)
   assert.equal(toggle.mock.callCount(), 0)
   findElement(view, element => element.props?.accessibilityLabel === '同意电子运单协议').props.onPress()
   assert.equal(toggle.mock.callCount(), 1)

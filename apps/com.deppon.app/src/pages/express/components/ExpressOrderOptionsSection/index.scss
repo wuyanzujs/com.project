@@ -10,25 +10,27 @@
   justify-content: flex-start;
   min-height: 72px;
 }
-.express-order-options__radio {
+/* 生产端勾选图标是 28 的圆：未选灰色描边，选中蓝色实心 + 白色对勾。 */
+.express-order-options__check {
   align-items: center;
   justify-content: center;
   width: $dp-space-28;
   height: $dp-space-28;
   margin-right: $dp-space-10;
   background: $dp-color-bg-card;
-  border-color: $dp-color-bg-track;
+  border-color: $dp-color-text-placeholder-soft;
   border-radius: $dp-radius-circle;
   border-width: 3px;
 }
-.express-order-options__radio--checked {
+.express-order-options__check--checked {
+  background: $dp-color-brand;
   border-color: $dp-color-brand;
 }
-.express-order-options__radio-dot {
-  width: 12px;
-  height: 12px;
-  background: $dp-color-brand;
-  border-radius: $dp-radius-circle;
+.express-order-options__check-mark {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-micro;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-28;
 }
 .express-order-options__agreement-text {
   color: $dp-color-text-neutral;

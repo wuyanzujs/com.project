@@ -1,4 +1,5 @@
 export * from './express.api'
+export * from './agreementStorage'
 export * from './collection.rules'
 export * from './couponOrder.rules'
 export * from './deliveryPreference.rules'
