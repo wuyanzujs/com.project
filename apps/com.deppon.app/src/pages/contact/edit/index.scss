@@ -1,5 +1,6 @@
 @use '@/styles/_tokens.scss' as *;
 .contact-edit-page {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex: 1;

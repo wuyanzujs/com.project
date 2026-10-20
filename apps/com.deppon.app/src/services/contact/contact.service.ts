@@ -68,10 +68,15 @@ function removeRepeatedPrefix(value: string, prefix: string) {
 /**
  *
  * @param contact 省市区与详细地址
- * @description 拼接联系人完整地址
+ * @description 拼接联系人展示地址：地址簿卡片为「省市区,乡镇+详址」，
+ * 乡镇只出现一次（后端 address 常已带乡镇前缀），因此在拼接前先去掉重复前缀。
  */
 export function getContactFullAddress(contact: ContactAddressParts) {
-  return [contact.province, contact.city, contact.county, contact.town, contact.address].filter(Boolean).join('')
+  const region = [normalizeAddressPart(contact.province), normalizeAddressPart(contact.city), normalizeAddressPart(contact.county)].filter(Boolean).join('')
+  const town = normalizeAddressPart(contact.town)
+  const detail = [town, removeRepeatedPrefix(normalizeAddressPart(contact.address), town)].filter(Boolean).join('')
+
+  return [region, detail].filter(Boolean).join(',')
 }
 
 /**

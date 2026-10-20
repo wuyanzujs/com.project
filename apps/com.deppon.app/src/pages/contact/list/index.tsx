@@ -368,7 +368,7 @@ const ContactListPage = () => {
       header={<ContactNavBar onShare={handleShare} title={pageTitle} />}
       safeArea='both'
       statusBar='dark'
-      surface='card'
+      surface='page'
     >
       <ScrollView className='contact-list-scroll' onScrollToLower={handleLoadMore} scrollY>
         <View className='contact-list-search'>
@@ -467,7 +467,7 @@ const ContactListPage = () => {
             <AppPressable className='contact-delete-dialog__cancel' onPress={() => setDeleteTarget(null)}>
               <Text className='contact-delete-dialog__cancel-text'>取消</Text>
             </AppPressable>
-            <AppPressable className='contact-delete-dialog__confirm' onPress={() => void confirmDelete()}>
+            <AppPressable className='contact-delete-dialog__confirm' onPress={() => confirmDelete()}>
               <Text className='contact-delete-dialog__confirm-text'>确定</Text>
             </AppPressable>
           </View>

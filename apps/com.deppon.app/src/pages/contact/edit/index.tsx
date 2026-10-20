@@ -3,13 +3,11 @@ import Taro, { useLoad, useRouter } from '@tarojs/taro'
 
 import { useCallback, useMemo, useState } from 'react'
 
-import { Defs, LinearGradient, Rect, Stop, Svg } from 'react-native-svg'
-
 import contactBookIcon from '@/assets/contact/contact_icon_book.png'
 import contactCameraIcon from '@/assets/contact/contact_icon_camera.png'
 import contactSpeechIcon from '@/assets/contact/contact_icon_speech.png'
-import { contactSelection, contactService, createEmptyContact, validateContact } from '@/services/contact'
-import type { Contact } from '@/services/contact'
+import { contactSelection, contactService, createEmptyContact, formatRegionLabel, validateContact } from '@/services/contact'
+import type { Contact, RegionSelection } from '@/services/contact'
 import { AppPage, AppPressable } from '@/shared/components'
 import { AppIcon } from '@/shared/components/AppIcon'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
@@ -21,6 +19,7 @@ import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 import { ContactNavBar } from '../components/ContactNavBar'
 import { useContactAddressActions } from '../hooks/useContactAddressActions'
 import { useContactAddressIntegrity } from '../hooks/useContactAddressIntegrity'
+import { RegionPicker } from './components/RegionPicker'
 
 import './index.scss'
 import './content.scss'
@@ -29,32 +28,18 @@ function getRoleByTarget(target: 'sender' | 'consignee'): Contact['type'] {
   return target === 'sender' ? 0 : 1
 }
 
-// RN 无 CSS 渐变，主按钮的横向渐变底用 SVG 铺（同 MineMemberCard 模式），文字叠在其上。
-function GradientFill({ id }: { id: string }) {
-  return (
-    <View className='contact-edit-gradient-fill'>
-      <Svg width='100%' height='100%'>
-        <Defs>
-          <LinearGradient id={id} x1='0' x2='1' y1='0' y2='0'>
-            <Stop offset='0' stopColor={APP_STYLE_COLORS.brand.gradientStart} />
-            <Stop offset='1' stopColor={APP_STYLE_COLORS.brand.gradientEnd} />
-          </LinearGradient>
-        </Defs>
-        <Rect width='100%' height='100%' fill={`url(#${id})`} />
-      </Svg>
-    </View>
-  )
-}
-
 const ContactEditPage = () => {
   const router = useRouter()
   const selectionParams = useMemo(() => contactSelection.parseParams(router.params as Record<string, string | undefined>), [router.params])
   const [contact, setContact] = useState<Contact>(() => createEmptyContact(getRoleByTarget(selectionParams.target)))
   const [saving, setSaving] = useState(false)
+  const [editing, setEditing] = useState(false)
   const [analysisFocused, setAnalysisFocused] = useState(false)
+  const [regionPickerVisible, setRegionPickerVisible] = useState(false)
   const { checkingKey, checkAddressIntegrity } = useContactAddressIntegrity()
   const validation = useMemo(() => validateContact(contact), [contact])
   const contactEditUrl = useMemo(() => createAppRouteUrl(APP_ROUTES.contactEdit, selectionParams), [selectionParams])
+  const pageTitle = editing ? '编辑联系人' : '创建新地址'
   const ensureContactEditAccess = useCallback(
     () =>
       ensureAuthenticated({
@@ -79,6 +64,7 @@ const ContactEditPage = () => {
 
     if (editingContact) {
       setContact(editingContact)
+      setEditing(true)
       return
     }
 
@@ -143,7 +129,7 @@ const ContactEditPage = () => {
 
   const showPendingToast = (title: string) => Taro.showToast({ title, icon: 'none' })
   const handleShare = () => {
-    void shareWithApp({
+    shareWithApp({
       source: 'CONTACT_EDIT',
       title: '德邦快递',
       description: '德邦快递地址簿'
@@ -159,6 +145,7 @@ const ContactEditPage = () => {
     updateContact({
       name: '',
       telephone: '',
+      extension: '',
       province: '',
       city: '',
       county: '',
@@ -172,18 +159,19 @@ const ContactEditPage = () => {
   const editFooter = analysisFocused ? undefined : (
     <View className='contact-edit-footer'>
       <AppPressable className='contact-edit-footer__button' disabled={saving} onPress={handleSave}>
-        <GradientFill id='contactEditSaveGradient' />
         <Text className='contact-edit-footer__button-text'>{saving ? '保存中' : '确定'}</Text>
       </AppPressable>
     </View>
   )
   const placeholderSoft = `color: ${APP_STYLE_COLORS.text.placeholderSoft}`
+  // 新建地址显示「分机号」列，编辑已有联系人时该列收起。
+  const showExtension = editing ? Boolean(contact.extension) : true
 
   return (
     <AppPage
       className='contact-edit-page'
       footer={editFooter}
-      header={<ContactNavBar onShare={handleShare} title='编辑联系人' />}
+      header={<ContactNavBar onShare={handleShare} title={pageTitle} />}
       safeArea='both'
       statusBar='dark'
       surface='card'
@@ -217,7 +205,6 @@ const ContactEditPage = () => {
               <Text className='contact-edit-recognition__action-text'>图片识别</Text>
             </AppPressable>
             <AppPressable className='contact-edit-recognition__paste' onPress={addressActions.handleAnalyze}>
-              <GradientFill id='contactEditPasteGradient' />
               <Text className='contact-edit-recognition__paste-text'>{addressActions.analyzing ? '识别中' : '粘贴并识别'}</Text>
             </AppPressable>
           </View>
@@ -228,7 +215,7 @@ const ContactEditPage = () => {
             <View className='contact-edit-inline-field contact-edit-inline-field--name'>
               <Input
                 className='contact-edit-value-input contact-edit-value-input--strong'
-                placeholder='联系人'
+                placeholder='真实姓名'
                 value={contact.name}
                 placeholderStyle={placeholderSoft}
                 onInput={event => updateContact({ name: event.detail.value })}
@@ -237,43 +224,44 @@ const ContactEditPage = () => {
             <View className='contact-edit-inline-field contact-edit-inline-field--phone'>
               <Input
                 className='contact-edit-value-input contact-edit-value-input--strong contact-edit-phone-input'
-                placeholder='手机号'
+                placeholder='固话/手机号'
                 type='number'
                 value={contact.telephone}
                 placeholderStyle={placeholderSoft}
                 onInput={event => updateContact({ telephone: event.detail.value })}
               />
-              <AppPressable className='contact-edit-side-action' onPress={() => showPendingToast('通讯录能力暂未开放')}>
-                <Image className='contact-edit-side-action__icon' mode='aspectFit' src={contactBookIcon} />
-                <Text className='contact-edit-side-action__text'>通讯录</Text>
-              </AppPressable>
             </View>
+            {showExtension ? (
+              <View className='contact-edit-inline-field contact-edit-inline-field--extension'>
+                <Input
+                  className='contact-edit-value-input contact-edit-extension-input'
+                  placeholder='分机号'
+                  type='number'
+                  value={contact.extension || ''}
+                  placeholderStyle={placeholderSoft}
+                  onInput={event => updateContact({ extension: event.detail.value })}
+                />
+              </View>
+            ) : null}
+            <AppPressable className='contact-edit-side-action' onPress={() => showPendingToast('通讯录能力暂未开放')}>
+              <Image className='contact-edit-side-action__icon' mode='aspectFit' src={contactBookIcon} />
+              <Text className='contact-edit-side-action__text'>通讯录</Text>
+            </AppPressable>
           </View>
 
           <View className='contact-edit-region-row'>
-            <View className='contact-edit-region-fields'>
-              <Input
-                className='contact-edit-region-input'
-                placeholder='省份'
-                value={contact.province}
-                placeholderStyle={placeholderSoft}
-                onInput={event => updateContact({ province: event.detail.value })}
-              />
-              <Input
-                className='contact-edit-region-input'
-                placeholder='城市'
-                value={contact.city}
-                placeholderStyle={placeholderSoft}
-                onInput={event => updateContact({ city: event.detail.value })}
-              />
-              <Input
-                className='contact-edit-region-input contact-edit-region-input--last'
-                placeholder='区县'
-                value={contact.county}
-                placeholderStyle={placeholderSoft}
-                onInput={event => updateContact({ county: event.detail.value })}
-              />
-            </View>
+            <AppPressable accessibilityLabel='选择地区城市' className='contact-edit-region-picker' onPress={() => setRegionPickerVisible(true)}>
+              <Text
+                className={
+                  contact.province || contact.city || contact.county
+                    ? 'contact-edit-region-picker__value'
+                    : 'contact-edit-region-picker__value contact-edit-region-picker__value--placeholder'
+                }
+              >
+                {formatRegionLabel(contact.province, contact.city, contact.county) || '地区/城市'}
+              </Text>
+              <AppIcon color={APP_STYLE_COLORS.text.supporting} name='chevronRight' size={28} />
+            </AppPressable>
             <AppPressable className='contact-edit-locate' onPress={() => showPendingToast('定位能力暂未开放')}>
               <AppIcon color={APP_STYLE_COLORS.text.heading} name='mapPinned' size={30} />
               <Text className='contact-edit-locate__text'>定位</Text>
@@ -283,7 +271,7 @@ const ContactEditPage = () => {
           <View className='contact-edit-detail-row'>
             <Input
               className='contact-edit-value-input'
-              placeholder='详细地址'
+              placeholder='详细地址（如街道、门牌号、小区等）'
               value={contact.address}
               placeholderStyle={placeholderSoft}
               onInput={event => updateContact({ address: event.detail.value })}
@@ -312,17 +300,17 @@ const ContactEditPage = () => {
             </AppPressable>
           </View>
         </View>
-
-        {!validation.valid ? (
-          <View className='contact-edit-validation'>
-            {validation.messages.slice(0, 3).map(message => (
-              <Text className='contact-edit-validation__message' key={message}>
-                {message}
-              </Text>
-            ))}
-          </View>
-        ) : null}
       </ScrollView>
+
+      <RegionPicker
+        value={{ cityName: contact.city, countyName: contact.county, provinceName: contact.province }}
+        visible={regionPickerVisible}
+        onClose={() => setRegionPickerVisible(false)}
+        onSelect={(selection: RegionSelection) => {
+          updateContact({ city: selection.cityName, county: selection.countyName, province: selection.provinceName })
+          setRegionPickerVisible(false)
+        }}
+      />
     </AppPage>
   )
 }

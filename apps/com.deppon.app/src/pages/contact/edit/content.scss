@@ -86,9 +86,8 @@
   margin-right: $dp-space-12;
 }
 
-/* 横向渐变由 SVG 铺底；覆盖 AppPressable 的最小高度，避免胶囊被撑高。 */
+/* 「粘贴并识别」是纯品牌蓝胶囊；覆盖 AppPressable 的最小高度，避免胶囊被撑高。 */
 .contact-edit-recognition__paste {
-  position: relative;
   align-items: center;
   justify-content: center;
   min-width: calc(2 * $dp-space-80 + $dp-space-8);
@@ -96,16 +95,8 @@
   height: $dp-space-62;
   margin-left: auto;
   padding: $dp-space-0 $dp-space-24;
-  overflow: hidden;
+  background: $dp-color-brand;
   border-radius: $dp-radius-round;
-}
-
-.contact-edit-gradient-fill {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
 }
 
 .contact-edit-recognition__paste-text {
@@ -155,12 +146,15 @@
 .contact-edit-inline-field--phone {
   flex: 1;
   min-width: 0;
-  flex-direction: row;
-  align-items: center;
+  margin-right: $dp-space-16;
 }
 
-.contact-edit-value-input,
-.contact-edit-region-input {
+.contact-edit-inline-field--extension {
+  width: $dp-contact-edit-extension-width;
+  margin-right: $dp-space-16;
+}
+
+.contact-edit-value-input {
   height: $dp-line-height-option;
   padding: $dp-space-0;
   color: $dp-color-text-heading;
@@ -177,11 +171,12 @@
   min-width: 0;
 }
 
+/* 「通讯录」固定在姓名行最右侧，图标在上文字在下。 */
 .contact-edit-side-action {
   align-items: center;
   justify-content: center;
+  width: $dp-contact-edit-side-width;
   min-height: $dp-space-80;
-  margin-left: $dp-space-12;
 }
 
 .contact-edit-side-action__text {
@@ -196,21 +191,25 @@
   margin-bottom: $dp-space-8;
 }
 
-.contact-edit-region-fields {
+/* 地区行是整行可点的选择器：左侧「省 市 区」文本，右侧箭头，不是三个输入框。 */
+.contact-edit-region-picker {
   display: flex;
   flex: 1;
   flex-direction: row;
+  align-items: center;
   min-width: 0;
 }
 
-.contact-edit-region-input {
-  flex-grow: 0;
-  min-width: $dp-space-64;
+.contact-edit-region-picker__value {
+  flex: 1;
   margin-right: $dp-space-12;
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-label-large;
+  line-height: $dp-line-height-40;
 }
 
-.contact-edit-region-input--last {
-  margin-right: 0;
+.contact-edit-region-picker__value--placeholder {
+  color: $dp-color-text-placeholder-soft;
 }
 
 .contact-edit-locate {
@@ -267,32 +266,16 @@
   font-size: $dp-font-size-caption;
 }
 
-.contact-edit-validation {
-  margin: $dp-space-16 $dp-space-24 $dp-space-0;
-  padding: $dp-space-16 $dp-space-20;
-  color: $dp-color-danger-text;
-  background: $dp-color-danger-background;
-  border-radius: $dp-radius-12;
-}
-
-.contact-edit-validation__message {
-  display: flex;
-  color: $dp-color-danger-text;
-  font-size: $dp-font-size-body;
-  line-height: $dp-line-height-body;
-}
-
 .contact-edit-footer {
   padding: $dp-space-32 $dp-space-32;
   background: $dp-color-bg-card;
 }
 
 .contact-edit-footer__button {
-  position: relative;
   align-items: center;
   justify-content: center;
   height: $dp-control-height-large;
-  overflow: hidden;
+  background: $dp-color-brand;
   border-radius: $dp-radius-round;
 }
 
