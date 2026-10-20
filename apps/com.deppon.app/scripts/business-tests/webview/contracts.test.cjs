@@ -145,7 +145,24 @@ const cases = [
   {
     name: 'account preferences web target uses controlled OWS settings page',
     run() {
-      assert.equal(APP_WEB_TARGETS.ACCOUNT_PREFERENCES.url, '/depponmobile/mow/center/accountSet')
+      // 账号偏好设置 URL：从「我的」进入带 CENTER_USER_SETTING，从订单详情进入带 ORDER_DETAIL_USER_SETTING。
+      assert.equal(APP_WEB_TARGETS.ACCOUNT_PREFERENCES.url, '/depponmobile/mow/center/accountSet?pageSource=APP&sonSource=CENTER_USER_SETTING')
+      assert.equal(
+        APP_WEB_TARGETS.ORDER_DETAIL_ACCOUNT_PREFERENCES.url,
+        '/depponmobile/mow/center/accountSet?pageSource=APP&sonSource=ORDER_DETAIL_USER_SETTING'
+      )
+    }
+  },
+  {
+    name: 'protocol record and privacy settings use controlled H5 targets',
+    run() {
+      assert.equal(APP_WEB_TARGETS.PROTOCOL_RECORD.url, '/depponmobile/protocol/record')
+      assert.equal(APP_WEB_TARGETS.PROTOCOL_RECORD.title, '法律条款与隐私政策')
+      assert.equal(APP_WEB_TARGETS.CUSTOMER_PRIVATE_BILL.url, '/depponmobile/mow/customer/privateSetting')
+      assert.equal(APP_WEB_TARGETS.CUSTOMER_PRIVATE_BILL.title, '隐私设置')
+      // 「我的 → 客服中心」是 H5，不是原生聚合页
+      assert.equal(APP_WEB_TARGETS.CUSTOMER_SERVICE_CENTER.url, '/depponmobile/h5/index#/partsPackagePages/customer/index')
+      assert.equal(APP_WEB_TARGETS.CUSTOMER_SERVICE_CENTER.title, '客服中心')
     }
   },
   {
@@ -163,13 +180,15 @@ const cases = [
   {
     name: 'support aftercare records preserve controlled paths and login guards',
     run() {
-      const aftercare = supportService.getSections().find(section => section.title === '售后处理')
+      const aftercare = supportService.getSections().find(section => section.title === '售后服务')
       const entries = new Map((aftercare?.entries ?? []).map(entry => [entry.id, entry]))
+      // 客服中心「售后服务」只保留投诉、理赔与其进展，理赔已完成收在理赔进展列表内。
       const expected = [
         ['complaint-record', 'SUPPORT_COMPLAINT_RECORD', '/depponmobile/complaint/record'],
-        ['claim-processing', 'SUPPORT_CLAIM_PROCESSING', '/depponmobile/h5/index#/claimPackagePages/list?tab=2'],
-        ['claim-completed', 'SUPPORT_CLAIM_COMPLETED', '/depponmobile/h5/index#/claimPackagePages/list?tab=3']
+        ['claim-processing', 'SUPPORT_CLAIM_PROCESSING', '/depponmobile/h5/index#/claimPackagePages/list?tab=2']
       ]
+
+      assert.equal(APP_WEB_TARGETS.SUPPORT_CLAIM_COMPLETED.url, '/depponmobile/h5/index#/claimPackagePages/list?tab=3')
 
       for (const [id, source, path] of expected) {
         assert.equal(APP_WEB_TARGETS[source].url, path)

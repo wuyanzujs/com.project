@@ -10,5 +10,6 @@ module.exports = {
   omsChannel: 'APP',
   ecardPmcSystemCode: 'APP',
   mobileLoginType: 'MOBILE_VERIFICATION_CODE',
-  supportSurveyConfigKey: 'app_survey_config'
+  supportSurveyConfigKey: 'app_survey_config',
+  appVersion: '1.0.0'
 }

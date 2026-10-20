@@ -31,8 +31,25 @@ const cases = [
         createMemberMasUrl('MEMBER_STUDENTS', 'MEMBER_STUDENTS', '', 'https://mas.deppon.com/member/home'),
         'https://mas.deppon.com/student-member/entry?source=MEMBER_STUDENTS'
       )
-      assert.equal(APP_WEB_TARGETS.MEMBER_POINTS_CENTER.url, '')
-      assert.equal(APP_WEB_TARGETS.MEMBER_STUDENT_CENTER.title, '学生专区')
+      // 积分乐园、会员中心、学生会员都在 mas 域 cms-h5，SVIP 走老 cms 路径；
+      // 这里跟随运行时 memberWebURL 的域名，测试环境是 mastest。
+      assert.equal(APP_WEB_TARGETS.MEMBER_POINTS_CENTER.url, 'https://mastest.deppon.com.cn/cms-h5/h5.html#/points-center/home')
+      assert.equal(APP_WEB_TARGETS.MEMBER_POINTS_CENTER.title, '积分乐园')
+      assert.equal(APP_WEB_TARGETS.MEMBER_CENTER_HOME.url, 'https://mastest.deppon.com.cn/cms-h5/h5.html#/member/home')
+      assert.equal(APP_WEB_TARGETS.MEMBER_SVIP_CENTER.url, 'https://mastest.deppon.com.cn/cms/h5.html#/svip-member/home')
+      assert.equal(APP_WEB_TARGETS.MEMBER_STUDENT_CENTER.url, 'https://mastest.deppon.com.cn/cms-h5/h5.html#/student-member/center')
+      assert.equal(APP_WEB_TARGETS.MEMBER_STUDENT_CENTER.title, '学生会员')
+      assert.equal(APP_WEB_TARGETS.GROUP_BENEFIT.url, '/depponmobile/h5/index#/pages/groupBenefit/index')
+      assert.equal(APP_WEB_TARGETS.EXPERIENCE_SURVEY.url, '/depponmobile/survey/center')
+      assert.equal(
+        APP_WEB_TARGETS.ENTERPRISE_WELFARE.url,
+        'https://mastest.deppon.com.cn/crm-api/mp/base/activity/ui/24-QYJ?code=50d8eefd867f40d38d36b577b45891b7'
+      )
+      assert.equal(
+        APP_WEB_TARGETS.PREFERENTIAL_CERT.url,
+        'https://mastest.deppon.com.cn/crm-api/mp/base/activity/ui/24-JRYD?code=054ef1baca474f27a08a440976c5b2d1'
+      )
+      assert.equal(APP_WEB_TARGETS.PRIVACY_SETTINGS_POLICY.url, '/depponmobile/h5/index#/homePackagePages/privacy/index')
     }
   },
   {

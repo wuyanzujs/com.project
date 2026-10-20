@@ -1,0 +1,7 @@
+@use '@/styles/_tokens.scss' as *;
+
+.account-cancel-confirm-page {
+  min-height: 100%;
+  padding-bottom: $dp-space-40;
+  background: $dp-color-bg-page;
+}

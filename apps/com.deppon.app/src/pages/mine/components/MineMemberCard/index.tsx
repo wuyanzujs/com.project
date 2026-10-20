@@ -6,7 +6,7 @@ import type { MemberOverviewView } from '@/services/member'
 import { AppPressable } from '@/shared/components'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-import { getMemberLevelAsset, getMemberRightsCount } from '../../mine.model'
+import { getExpireCouponBadgeText, getMemberLevelAsset, getMemberRightsCount } from '../../mine.model'
 
 import './index.scss'
 
@@ -14,12 +14,16 @@ interface MineMemberCardProps {
   levelCode: number
   member: MemberOverviewView | null
   couponCount?: number
+  /** 即将过期优惠券数量；> 0 时在「优惠券」上方显示「N张快过期啦」角标 */
+  expireCouponCount?: number
   /** 储值卡数量；null/undefined 表示未知（加载中或查询失败），此时不显示数字，避免把未知渲染成 0 */
   storedCardCount?: number | null
   onOpen: () => void
 }
 
-export function MineMemberCard({ levelCode, member, couponCount = 0, storedCardCount, onOpen }: MineMemberCardProps) {
+export function MineMemberCard({ levelCode, member, couponCount = 0, expireCouponCount = 0, storedCardCount, onOpen }: MineMemberCardProps) {
+  const expireBadgeText = getExpireCouponBadgeText(expireCouponCount)
+
   return (
     <AppPressable accessibilityLabel='打开会员中心' className='mine-member-card' onPress={onOpen}>
       <View className='mine-member-card__body'>
@@ -37,6 +41,11 @@ export function MineMemberCard({ levelCode, member, couponCount = 0, storedCardC
         </View>
         <View className='mine-member-card__benefits'>
           <View className='mine-member-card__benefit'>
+            {expireBadgeText ? (
+              <View className='mine-member-card__benefit-badge mine-member-card__benefit-badge--expire'>
+                <Text className='mine-member-card__benefit-badge-text'>{expireBadgeText}</Text>
+              </View>
+            ) : null}
             <Image className='mine-member-card__benefit-icon' mode='aspectFit' src='https://ca.deppon.com.cn/ows/assets/center2412/40.png' />
             <Text className='mine-member-card__benefit-text'>
               优惠券

@@ -30,7 +30,40 @@ export function requiresAppWebLogin(target: Pick<AppWebTarget, 'allowed' | 'auth
   return target.allowed && target.auth && !authenticated
 }
 
+// 会员/福利相关 H5 都在 mas 域：会员中心、积分乐园、学生会员走 cms-h5，SVIP 走老 cms 路径。
+// 这里跟随运行时 memberWebURL 的域名，避免测试/生产环境串域。
+function memberWebOrigin() {
+  try {
+    return new URL(APP_RUNTIME_CONFIG.memberWebURL).origin
+  } catch {
+    return ''
+  }
+}
+
+function memberCmsUrl(style: 'cms-h5' | 'cms', hashPath: string) {
+  const base = APP_RUNTIME_CONFIG.memberWebURL.split('#')[0]
+
+  if (!base) {
+    return ''
+  }
+
+  const scoped = style === 'cms-h5' ? base : base.replace('/cms-h5/', '/cms/')
+
+  return `${scoped}${hashPath}`
+}
+
+function memberActivityUrl(activity: string, code: string) {
+  const origin = memberWebOrigin()
+
+  return origin ? `${origin}/crm-api/mp/base/activity/ui/${activity}?code=${code}` : ''
+}
+
 export const APP_WEB_TARGETS = {
+  EXPRESS_SERVICE_PROTOCOL: {
+    title: '电子运单服务协议',
+    url: '/depponmobile/protocol/service',
+    auth: false
+  },
   AUTH_LOGIN_SERVICE_PROTOCOL: {
     title: '服务协议',
     url: '/depponmobile/protocol/service',
@@ -62,7 +95,11 @@ export const APP_WEB_TARGETS = {
   },
   ACCOUNT_PREFERENCES: {
     title: '偏好设置',
-    url: '/depponmobile/mow/center/accountSet'
+    url: '/depponmobile/mow/center/accountSet?pageSource=APP&sonSource=CENTER_USER_SETTING'
+  },
+  ORDER_DETAIL_ACCOUNT_PREFERENCES: {
+    title: '偏好设置',
+    url: '/depponmobile/mow/center/accountSet?pageSource=APP&sonSource=ORDER_DETAIL_USER_SETTING'
   },
   ORDER_DETAIL_SERVICE: {
     title: '在线客服',
@@ -99,6 +136,11 @@ export const APP_WEB_TARGETS = {
   ORDER_STUB_CONTRACT_PREVIEW: {
     title: '电子合同',
     url: '/gwapi/onlineService/eco/online/secure/contractPreview'
+  },
+  // 「我的 → 客服中心」入口是 H5：/depponmobile/h5/index#/partsPackagePages/customer/index
+  CUSTOMER_SERVICE_CENTER: {
+    title: '客服中心',
+    url: '/depponmobile/h5/index#/partsPackagePages/customer/index'
   },
   SUPPORT_ONLINE_SERVICE: {
     title: '在线客服',
@@ -176,7 +218,7 @@ export const APP_WEB_TARGETS = {
     url: '/depponmobile/electronCloudSign/index'
   },
   CUSTOMER_PRIVATE_BILL: {
-    title: '隐私面单',
+    title: '隐私设置',
     url: '/depponmobile/mow/customer/privateSetting'
   },
   CUSTOMER_PHONE_PROTECT: {
@@ -201,23 +243,43 @@ export const APP_WEB_TARGETS = {
   },
   MEMBER_CENTER_HOME: {
     title: '会员中心',
-    url: ''
+    url: memberCmsUrl('cms-h5', '#/member/home')
   },
   MEMBER_POINTS_CENTER: {
-    title: '积分中心',
-    url: ''
+    title: '积分乐园',
+    url: memberCmsUrl('cms-h5', '#/points-center/home')
   },
   MEMBER_SVIP_CENTER: {
-    title: 'SVIP 权益',
-    url: ''
+    title: 'SVIP会员',
+    url: memberCmsUrl('cms', '#/svip-member/home')
   },
   MEMBER_STUDENT_CENTER: {
-    title: '学生专区',
-    url: ''
+    title: '学生会员',
+    url: memberCmsUrl('cms-h5', '#/student-member/center')
+  },
+  GROUP_BENEFIT: {
+    title: '入群有礼',
+    url: '/depponmobile/h5/index#/pages/groupBenefit/index'
+  },
+  EXPERIENCE_SURVEY: {
+    title: '德邦快递客户体验调研',
+    url: '/depponmobile/survey/center'
+  },
+  ENTERPRISE_WELFARE: {
+    title: '企业福利',
+    url: memberActivityUrl('24-QYJ', '50d8eefd867f40d38d36b577b45891b7')
+  },
+  PREFERENTIAL_CERT: {
+    title: '优待证优惠',
+    url: memberActivityUrl('24-JRYD', '054ef1baca474f27a08a440976c5b2d1')
+  },
+  PROTOCOL_RECORD: {
+    title: '法律条款与隐私政策',
+    url: '/depponmobile/protocol/record'
   },
   PRIVACY_SETTINGS_POLICY: {
     title: '隐私政策',
-    url: '/depponmobile/protocol/policy/index',
+    url: '/depponmobile/h5/index#/homePackagePages/privacy/index',
     auth: false
   },
   PRIVACY_SETTINGS_PERSONAL_INFO: {

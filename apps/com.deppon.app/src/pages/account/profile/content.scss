@@ -1,0 +1,65 @@
+@use '@/styles/_tokens.scss' as *;
+
+.account-profile-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  background: $dp-color-bg-card;
+}
+
+.account-profile-hero {
+  align-items: center;
+  padding: $dp-account-profile-avatar-top $dp-space-24 $dp-space-0;
+}
+
+.account-profile-hero__avatar {
+  width: $dp-account-profile-avatar-size;
+  height: $dp-account-profile-avatar-size;
+  border-radius: $dp-radius-round;
+}
+
+.account-profile-hero__name {
+  margin-top: $dp-account-profile-name-gap;
+  color: $dp-color-text-ink;
+  font-size: $dp-account-profile-name-font;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-page-title;
+}
+
+.account-profile-actions {
+  padding: $dp-space-0 $dp-account-profile-logout-inset $dp-space-48;
+}
+
+.account-profile-logout {
+  align-items: center;
+  justify-content: center;
+  height: $dp-account-logout-height;
+  background: $dp-account-profile-logout-fill;
+  border-radius: $dp-account-logout-radius;
+}
+
+.account-profile-logout__text {
+  color: $dp-account-profile-logout-text;
+  font-size: $dp-account-logout-font;
+  line-height: $dp-line-height-heading;
+}
+
+.account-profile-cancel {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: $dp-account-profile-actions-gap;
+}
+
+.account-profile-cancel__link {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}
+
+.account-profile-cancel__text {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}

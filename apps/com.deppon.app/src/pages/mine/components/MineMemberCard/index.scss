@@ -96,6 +96,12 @@
   border-bottom-right-radius: $dp-radius-pill;
 }
 
+/* 优惠券快过期角标：左边缘在设计稿 x≈80（会员卡左边距 24 + 宫格内 32），
+   与「原德邦E卡」角标同为 32px 高红底白字胶囊，只是左偏移不同。 */
+.mine-member-card__benefit-badge--expire {
+  left: $dp-space-32;
+}
+
 .mine-member-card__benefit-badge-text {
   color: $dp-color-text-inverse;
   font-size: $dp-font-size-micro;

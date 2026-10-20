@@ -1,3 +1,5 @@
 export * from './account.api'
 export * from './account.service'
+export * from './settings.rules'
+export * from './settings.service'
 export * from './types'

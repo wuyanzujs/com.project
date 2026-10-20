@@ -65,16 +65,19 @@
   text-align: center;
 }
 
+/* 1440 宽设计稿：角标红底白字，高 54px（≈28 设计 px），
+   两端为半高圆角（胶囊），右边缘距格子右边 47px（≈24 设计 px）。
+   宽度由字体 18px + 左右 6px 内边距自然得到（「福利」约 92px ≈ 48 设计 px）。 */
 .mine-service-grid__badge {
   position: absolute;
   top: 0;
   right: $dp-space-24;
-  height: 32px;
+  height: $dp-line-height-28;
   padding: $dp-space-0 $dp-space-6;
   color: $dp-color-text-inverse;
   font-size: $dp-font-size-micro;
   font-weight: $dp-font-weight-bold;
-  line-height: $dp-line-height-caption;
+  line-height: $dp-line-height-28;
   background: $dp-color-danger-accent;
-  border-radius: $dp-radius-12;
+  border-radius: $dp-radius-pill;
 }

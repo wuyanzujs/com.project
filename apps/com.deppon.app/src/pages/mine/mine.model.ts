@@ -59,7 +59,8 @@ export const QUICK_ENTRIES: MineEntry[] = [
   {
     title: '隐私设置',
     image: 'https://ca.deppon.com.cn/ows/assets/center2412/20.png',
-    route: APP_ROUTES.privacySettings
+    webSource: 'CUSTOMER_PRIVATE_BILL',
+    login: true
   },
   {
     title: '发票申请',
@@ -82,7 +83,8 @@ export const SERVICE_ENTRIES: MineEntry[] = [
   {
     title: '客服中心',
     image: 'https://ca.deppon.com.cn/ows/center/3.png',
-    route: APP_ROUTES.supportCenter
+    webSource: 'CUSTOMER_SERVICE_CENTER',
+    login: true
   },
   {
     title: '投诉',
@@ -120,29 +122,31 @@ export const SERVICE_ENTRIES: MineEntry[] = [
   {
     title: '入群有礼',
     image: 'https://ca.deppon.com.cn/ows/center/22.png',
-    route: APP_ROUTES.memberCenter,
+    webSource: 'GROUP_BENEFIT',
+    login: true,
     badge: '福利'
   },
   {
     title: '协议说明',
     image: 'https://ca.deppon.com.cn/ows/center/11.png',
-    route: APP_ROUTES.privacySettings
+    webSource: 'PROTOCOL_RECORD'
   },
   {
     title: '优待证优惠',
     image: 'https://ca.deppon.com.cn/ows/center/12.png',
-    route: APP_ROUTES.memberCenter
+    webSource: 'PREFERENTIAL_CERT'
   },
   {
     title: '体验调研',
     image: 'https://ca.deppon.com.cn/ows/center/13.png',
-    route: APP_ROUTES.supportCenter,
+    webSource: 'EXPERIENCE_SURVEY',
+    login: true,
     badge: 'HOT'
   },
   {
     title: '企业福利',
     image: 'https://ca.deppon.com.cn/ows/center/14.png',
-    route: APP_ROUTES.memberCenter
+    webSource: 'ENTERPRISE_WELFARE'
   },
   {
     title: '实名认证',
@@ -152,7 +156,8 @@ export const SERVICE_ENTRIES: MineEntry[] = [
   {
     title: '学生专区',
     image: 'https://ca.deppon.com.cn/ows/center/16.png',
-    route: APP_ROUTES.memberCenter
+    webSource: 'MEMBER_STUDENT_CENTER',
+    login: true
   },
   {
     title: '号码保护',
@@ -191,6 +196,11 @@ export async function queryMineOrderCounts(): Promise<MineOrderCounts> {
     transit: getTotalRows(transit),
     signed: getTotalRows(signed)
   }
+}
+
+// 会员卡上的快过期券角标文案：`2张快过期啦`。
+export function getExpireCouponBadgeText(count: number) {
+  return count > 0 ? `${count}张快过期啦` : ''
 }
 
 export function getMemberLevelAsset(levelCode = 0) {

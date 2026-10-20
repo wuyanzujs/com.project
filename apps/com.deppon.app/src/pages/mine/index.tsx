@@ -35,6 +35,8 @@ const MinePage = () => {
   const [member, setMember] = useState<MemberOverviewView | null>(null)
   const [orderCounts, setOrderCounts] = useState<MineOrderCounts>(EMPTY_ORDER_COUNTS)
   const [couponCount, setCouponCount] = useState(0)
+  // 即将过期优惠券数量：0 表示没有或查询失败，此时不显示「N张快过期啦」角标
+  const [expireCouponCount, setExpireCouponCount] = useState(0)
   // 储值卡数量：null 表示未知（未加载或查询失败），此时 UI 不显示数字
   const [storedCardCount, setStoredCardCount] = useState<number | null>(null)
   // 消息未读数：null 表示未知（未登录或查询失败），此时保持常驻红点占位
@@ -46,16 +48,18 @@ const MinePage = () => {
       setMember(null)
       setOrderCounts(EMPTY_ORDER_COUNTS)
       setCouponCount(0)
+      setExpireCouponCount(0)
       setStoredCardCount(null)
       setUnreadCount(null)
       return
     }
 
-    const [nextUser, memberResponse, nextOrderCounts, couponResponse, storedCardResponse, unreadResponse] = await Promise.all([
+    const [nextUser, memberResponse, nextOrderCounts, couponResponse, expireCountResponse, storedCardResponse, unreadResponse] = await Promise.all([
       authService.bootstrapUser(),
       memberService.queryOverview(),
       queryMineOrderCounts(),
       couponService.queryUserCoupons('USABLE'),
+      couponService.queryExpireCount().catch(() => 0),
       ecardService.queryStoredCardCount(),
       messageService.queryUnreadCount()
     ])
@@ -64,13 +68,14 @@ const MinePage = () => {
     setMember(memberResponse.result ?? null)
     setOrderCounts(nextOrderCounts)
     setCouponCount(couponResponse.result?.totalRows ?? 0)
+    setExpireCouponCount(typeof expireCountResponse === 'number' && expireCountResponse > 0 ? expireCountResponse : 0)
     setStoredCardCount(storedCardResponse.status ? (storedCardResponse.result ?? null) : null)
     setUnreadCount(unreadResponse.status && typeof unreadResponse.result === 'number' ? unreadResponse.result : null)
   }
 
   useDidShow(() => {
     setUser(authService.getCachedUser())
-    void refreshUser()
+    refreshUser()
   })
 
   const handleLogin = () => {
@@ -86,8 +91,14 @@ const MinePage = () => {
     })
   }
 
+  const handleAccountProfile = () => {
+    navigateToAppRoute(APP_ROUTES.accountProfile, {
+      login: true
+    })
+  }
+
   const handleShare = () => {
-    void shareWithApp({
+    shareWithApp({
       source: 'MINE',
       title: '德邦快递',
       description: '德邦快递服务'
@@ -139,7 +150,7 @@ const MinePage = () => {
           authenticated={Boolean(user)}
           profileName={profileName}
           unreadCount={unreadCount}
-          onOpenProfile={user ? handleAccountSettings : handleLogin}
+          onOpenProfile={user ? handleAccountProfile : handleLogin}
           onOpenSettings={user ? handleAccountSettings : handleLogin}
           onOpenShare={handleShare}
           onOpenMessage={() => navigateToAppRoute(APP_ROUTES.messageCenter, { login: true })}
@@ -148,6 +159,7 @@ const MinePage = () => {
         {user && (
           <MineMemberCard
             couponCount={couponCount}
+            expireCouponCount={expireCouponCount}
             levelCode={levelCode}
             member={member}
             onOpen={() => navigateToAppRoute(APP_ROUTES.memberCenter)}

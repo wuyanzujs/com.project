@@ -17,77 +17,32 @@
   @include patterns.page-header-summary;
 }
 
-.support-card,
-.support-section,
-.support-footer {
+.support-section {
   @include patterns.page-surface;
 }
 
-.support-card--hotline {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  background: $dp-color-text-strong;
+.support-welcome {
+  padding: $dp-space-20 $dp-card-padding;
+  background: $dp-color-info-background-strong;
 }
 
-.support-card__label {
-  color: $dp-color-text-placeholder;
-  font-size: $dp-font-size-body-small;
-}
-
-.support-card__title {
-  display: flex;
-  margin-top: $dp-space-8;
-  color: $dp-color-text-inverse;
-  font-size: $dp-font-size-page-title;
-  font-weight: $dp-font-weight-bold;
-}
-
-.support-card__summary {
-  display: flex;
-  max-width: 440px;
-  margin-top: $dp-space-xs;
-  color: $dp-color-text-disabled;
-  font-size: $dp-font-size-body-small;
-  line-height: $dp-line-height-body-small;
-}
-
-.support-card__button,
-.support-footer__button {
-  align-items: center;
-  justify-content: center;
-  min-width: 128px;
-  height: 60px;
-  padding: $dp-space-0 $dp-space-md;
-  background: $dp-color-brand;
-  border-radius: $dp-radius-sm;
-}
-
-.support-card__button {
-  background: $dp-color-warning-accent;
-}
-
-.support-card__button-text,
-.support-footer__button-text {
-  color: $dp-color-text-inverse;
-  font-size: $dp-font-size-body-small;
-  font-weight: $dp-font-weight-bold;
+.support-welcome__text {
+  color: $dp-color-text-body;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
 }
 
 .support-section__head {
   padding-bottom: $dp-space-6;
 }
 
-.support-section__title,
-.support-footer__title {
+.support-section__title {
   color: $dp-color-text-heading;
   font-size: $dp-font-size-title;
   font-weight: $dp-font-weight-bold;
 }
 
-.support-section__summary,
-.support-footer__summary {
+.support-section__summary {
   display: flex;
   margin-top: $dp-space-8;
   color: $dp-color-text-supporting;
@@ -120,7 +75,6 @@
   font-weight: $dp-font-weight-bold;
   text-align: center;
 }
-
 .support-entry__mark--primary {
   color: $dp-color-brand;
   background: $dp-color-brand-soft;
@@ -177,12 +131,4 @@
   margin-left: $dp-space-14;
   color: $dp-color-text-placeholder;
   font-size: $dp-font-size-heading-large;
-}
-
-.support-footer {
-  align-items: flex-start;
-}
-
-.support-footer__button {
-  margin-top: $dp-space-md;
 }

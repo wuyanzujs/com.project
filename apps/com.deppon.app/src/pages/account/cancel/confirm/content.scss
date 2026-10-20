@@ -1,0 +1,84 @@
+@use '@/styles/_tokens.scss' as *;
+
+.account-cancel-confirm-page {
+  min-height: 100%;
+  background: $dp-color-bg-page;
+}
+
+.account-cancel-confirm-card {
+  margin: $dp-space-24;
+  padding: $dp-space-48;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-24;
+}
+
+.account-cancel-confirm-card__mobile {
+  color: $dp-color-text-ink;
+  font-size: $dp-account-cancel-font;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-heading;
+}
+
+.account-cancel-confirm-code {
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $dp-space-64;
+}
+
+.account-cancel-confirm-code__cell {
+  align-items: center;
+  justify-content: center;
+  width: $dp-account-cancel-code-cell;
+  height: $dp-account-cancel-code-cell-height;
+  background: $dp-account-cancel-code-fill;
+  border-radius: $dp-radius-12;
+}
+
+.account-cancel-confirm-code__cell--filled {
+  background: $dp-account-cancel-code-fill-active;
+}
+
+.account-cancel-confirm-code__digit {
+  color: $dp-color-text-ink;
+  font-size: $dp-account-cancel-code-font;
+  font-weight: $dp-font-weight-bold;
+}
+
+.account-cancel-confirm-code__input {
+  position: absolute;
+  top: $dp-space-0;
+  right: $dp-space-0;
+  bottom: $dp-space-0;
+  left: $dp-space-0;
+  color: $dp-color-transparent;
+  font-size: $dp-account-cancel-code-font;
+}
+
+.account-cancel-confirm-resend {
+  align-items: center;
+  justify-content: center;
+  margin-top: $dp-space-32;
+}
+
+.account-cancel-confirm-resend__text {
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-40;
+}
+
+.account-cancel-confirm-submit {
+  align-items: center;
+  justify-content: center;
+  height: $dp-control-height-large;
+  margin: $dp-space-32 $dp-space-24 $dp-space-0;
+  background: $dp-account-cancel-confirm-fill;
+  border-radius: $dp-radius-pill;
+}
+
+.account-cancel-confirm-submit__text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-heading-small;
+  font-weight: $dp-font-weight-bold;
+}
