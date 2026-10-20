@@ -37,17 +37,22 @@
   align-items: center;
   width: 124px;
   height: 47px;
+  padding-left: $dp-space-16;
   background: $dp-color-quote-idle;
   border-bottom-right-radius: $dp-radius-24;
   border-top-left-radius: $dp-radius-16;
+}
+// 产品名超过 4 个字时标题带加宽，避免折行被裁切。
+.express-quote-card__band--wide {
+  width: 165px;
+  padding-left: $dp-space-8;
 }
 .express-quote-card__band--active {
   background: $dp-color-quote-active;
 }
 .express-quote-card__band-title {
-  margin-left: $dp-space-24;
   color: $dp-color-text-ink;
-  font-size: $dp-font-size-label-small;
+  font-size: $dp-font-size-caption;
   font-weight: $dp-font-weight-semibold;
   line-height: $dp-line-height-32;
 }
@@ -61,21 +66,52 @@
   width: 30px;
   height: 30px;
 }
+.express-quote-card__limit {
+  position: absolute;
+  top: $dp-space-2;
+  right: -$dp-space-16;
+  align-items: center;
+  justify-content: center;
+  height: $dp-line-height-32;
+  padding: $dp-space-0 $dp-space-12;
+  background: $dp-color-danger-accent;
+  border-top-left-radius: $dp-radius-16;
+  border-top-right-radius: $dp-radius-16;
+  border-bottom-right-radius: $dp-radius-16;
+}
+.express-quote-card__limit-text {
+  color: $dp-color-text-inverse;
+  font-size: $dp-font-size-micro;
+  line-height: $dp-line-height-28;
+}
 .express-quote-card__time {
-  align-self: flex-start;
-  margin-left: $dp-space-24;
-  margin-top: $dp-space-12;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: $dp-line-height-40;
+  margin-top: $dp-space-8;
+  padding: $dp-space-0 $dp-space-8;
+}
+.express-quote-card__time-label {
   color: $dp-color-brand;
-  font-size: $dp-font-size-body-small;
-  line-height: $dp-line-height-32;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-40;
+}
+.express-quote-card__time-value {
+  margin: $dp-space-0 $dp-space-4;
+  color: $dp-color-brand;
+  font-size: $dp-font-size-label-small;
+  font-weight: $dp-font-weight-semibold;
+  line-height: $dp-line-height-40;
 }
 .express-quote-card__price {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  height: $dp-line-height-40;
-  margin-top: $dp-space-2;
+  height: 36px;
+  margin-top: $dp-space-4;
 }
 .express-quote-card__price-mark {
   color: $dp-color-text-ink;

@@ -6,15 +6,29 @@ export interface ExpressQuoteFeeRow {
   amount: number
 }
 
+export interface ExpressQuoteTimeSegments {
+  /** 时效「前」段文案，如「明天」「22号」。 */
+  start: string
+  /** 时效中的时刻文案，如「18:00」，产品卡加粗显示。 */
+  time: string
+  /** 时效「后」段文案，如「前」。 */
+  end: string
+}
+
 export interface ExpressProductQuoteView {
   key: string
   name: string
+  /** 产品名超过 4 个字，产品卡标题带需要加宽，避免折行被裁切。 */
+  longName: boolean
   priceText: string
   priceWithSuffixText: string
   /** 产品卡「¥X起」的运费口径金额；不可见时为 null（卡片显示 --）。 */
   freightAmount: number | null
   timeText: string
-  timeValue: string
+  /** 时效按「前」字拆分的三段文案，无法拆分时三段为空。 */
+  timeSegments: ExpressQuoteTimeSegments
+  /** 线路限时优惠金额（discount.marketCode = XLYHF），无优惠时为 0。 */
+  timeLimit: number
   billWeightText: string
   feeRows: ExpressQuoteFeeRow[]
 }
@@ -26,6 +40,12 @@ const EXPRESS_FEE_NAMES: Record<string, string> = {
 
 // 运费明细的 priceEntryCode，产品卡上「¥X起」取的是 FRT 口径而非总价。
 const EXPRESS_FREIGHT_ENTRY_CODE = 'FRT'
+
+// 线路限时优惠（产品卡「惊喜优惠¥X」角标）的优惠类型。
+const EXPRESS_TIME_LIMIT_MARKET_CODE = 'XLYHF'
+
+// 产品名超过 4 个字时，产品卡标题带需要按加宽形态渲染。
+const EXPRESS_QUOTE_LONG_NAME_LENGTH = 4
 
 /**
  *
@@ -124,6 +144,40 @@ export function existsExpressQuotePrice(product: ExpressProductQuote) {
 /**
  *
  * @param product 报价产品
+ * @description 取产品卡线路限时优惠金额，无优惠返回 0
+ */
+export function getExpressQuoteTimeLimit(product: ExpressProductQuote) {
+  const discount = product.discount?.find(item => item.marketCode === EXPRESS_TIME_LIMIT_MARKET_CODE)
+  const amount = toFiniteAmount(discount?.reduceFee)
+
+  return amount !== null && amount > 0 ? amount : 0
+}
+
+/**
+ *
+ * @param value 时效文案
+ * @description 按「天/号…前」把时效拆成前段、时刻、后段，无法识别时三段为空
+ */
+export function splitExpressQuoteTimeText(value: string): ExpressQuoteTimeSegments {
+  if (!value) {
+    return { start: '', time: '', end: '' }
+  }
+
+  const matched = value.includes('天') ? value.match(/天(.*?)前/) : value.includes('号') ? value.match(/号(.*?)前/) : null
+  const time = matched?.[1] ?? ''
+
+  if (!time) {
+    return { start: '', time: '', end: '' }
+  }
+
+  const [start = '', end = ''] = value.split(time)
+
+  return { start, time, end }
+}
+
+/**
+ *
+ * @param product 报价产品
  * @description 取产品时效展示文案
  */
 export function getExpressQuoteTimeText(product: ExpressProductQuote) {
@@ -180,16 +234,19 @@ export function createExpressQuoteFeeRows(product: ExpressProductQuote): Express
  */
 export function createExpressProductQuoteView(product: ExpressProductQuote): ExpressProductQuoteView {
   const freight = getExpressQuoteFreight(product)
+  const name = getExpressQuoteTimeProduct(product).name
+  const timeText = getExpressQuoteTimeText(product)
 
   return {
     key: getExpressQuoteKey(product),
-    name: getExpressQuoteTimeProduct(product).name,
+    name,
+    longName: name.length > EXPRESS_QUOTE_LONG_NAME_LENGTH,
     priceText: getExpressQuotePriceText(product),
     priceWithSuffixText: getExpressQuotePriceText(product, '起'),
     freightAmount: existsExpressQuotePrice(product).visible ? freight : null,
-    timeText: getExpressQuoteTimeText(product),
-    // 未返回时效天数时显示「暂无」。
-    timeValue: (product.days ?? '').trim() || '暂无',
+    timeText,
+    timeSegments: splitExpressQuoteTimeText(timeText),
+    timeLimit: getExpressQuoteTimeLimit(product),
     billWeightText: getExpressQuoteBillWeightText(product),
     feeRows: createExpressQuoteFeeRows(product)
   }

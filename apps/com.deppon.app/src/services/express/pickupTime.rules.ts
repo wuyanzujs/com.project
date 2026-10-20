@@ -8,6 +8,7 @@ import type {
   ExpressPickupNightCapability,
   ExpressPickupNightRequest,
   ExpressPickupNightResponse,
+  ExpressPickupStationDetail,
   ExpressPickupTimeOpeningType,
   ExpressPickupTimeType
 } from './types'
@@ -89,6 +90,31 @@ function normalizeNightCapability(value?: Partial<ExpressPickupNightCapability> 
 
 /**
  *
+ * @param value 自送网点展示信息，可为空
+ * @description 归一自送网点展示信息，全空返回空
+ */
+function normalizeStationDetail(value?: Partial<ExpressPickupStationDetail> | null) {
+  const address = normalizeText(value?.address)
+  const phone = normalizeText(value?.phone)
+  const hours = normalizeText(value?.hours)
+  const longitude = normalizeText(value?.longitude)
+  const latitude = normalizeText(value?.latitude)
+
+  if (!address && !phone && !hours && !longitude && !latitude) {
+    return undefined
+  }
+
+  return {
+    address,
+    phone,
+    hours,
+    longitude,
+    latitude
+  } satisfies ExpressPickupStationDetail
+}
+
+/**
+ *
  * @param value 取件信息，可为空
  * @description 归一取件信息
  */
@@ -103,6 +129,7 @@ export function normalizeExpressPickup(value?: Partial<ExpressPickup> | null): E
     type,
     stationCode: normalizeText(value?.stationCode),
     stationName: normalizeText(value?.stationName),
+    stationDetail: normalizeStationDetail(value?.stationDetail),
     pickPeriodTime: Number.isFinite(value?.pickPeriodTime) ? value?.pickPeriodTime : undefined,
     nightCapability: normalizeNightCapability(value?.nightCapability),
     nightNoticeAccepted: type === 'NIGHT' && value?.nightNoticeAccepted === true

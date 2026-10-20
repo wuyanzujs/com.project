@@ -71,7 +71,7 @@ export function useExpressMonthlyPay({ draft, updateService }: UseExpressMonthly
       return
     }
 
-    void loadMonthlyCustomer()
+    loadMonthlyCustomer()
   }, [draft.service.paymentType, loadMonthlyCustomer])
 
   const monthlyPayView = useMemo(
@@ -91,7 +91,7 @@ export function useExpressMonthlyPay({ draft, updateService }: UseExpressMonthly
       updateService({ paymentType })
 
       if (paymentType === 'MONTH_PAY') {
-        void loadMonthlyCustomer()
+        loadMonthlyCustomer()
       }
     },
     [loadMonthlyCustomer, updateService]

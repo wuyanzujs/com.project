@@ -23,6 +23,7 @@ export function useGoodsNameSuggestions() {
     queryVersion.current += 1
     setSuggestions([])
     setMessage('')
+    setLoading(false)
   }, [])
 
   const querySuggestions = useCallback(async (keyword: string) => {
@@ -51,6 +52,11 @@ export function useGoodsNameSuggestions() {
 
       setSuggestions(list)
       setMessage(response.status ? (list.length ? '' : '未找到匹配品名，可继续手动填写') : response.message || '暂未获取到品名推荐')
+    } catch {
+      if (queryVersion.current === requestVersion) {
+        setSuggestions([])
+        setMessage('暂未获取到品名推荐，可继续手动填写')
+      }
     } finally {
       if (queryVersion.current === requestVersion) {
         setLoading(false)
@@ -60,12 +66,8 @@ export function useGoodsNameSuggestions() {
 
   const handleNameInput = useCallback(
     (value: string) => {
-      setSuggestions([])
-      setMessage('')
-
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current)
-      }
+      // 输入变化立即使旧请求失效，不能等下一次防抖请求发出后才丢弃旧响应。
+      clearSuggestions()
 
       const keyword = value.trim()
 
@@ -75,14 +77,15 @@ export function useGoodsNameSuggestions() {
 
       debounceTimer.current = setTimeout(() => {
         debounceTimer.current = null
-        void querySuggestions(keyword)
+        querySuggestions(keyword)
       }, GOODS_NAME_SUGGEST_DEBOUNCE_MS)
     },
-    [querySuggestions]
+    [clearSuggestions, querySuggestions]
   )
 
   useEffect(
     () => () => {
+      queryVersion.current += 1
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current)
       }

@@ -143,7 +143,7 @@ export function useExpressWarehouse({ draft, setDraft }: UseExpressWarehouseOpti
     }
 
     lastAutoQueryKey.current = inputKey
-    void queryScreening()
+    queryScreening()
   }, [draft.selectedProduct, draft.warehouse.screening.inputKey, inputKey, queryScreening])
 
   const handleToggle = async () => {
@@ -325,7 +325,7 @@ export function useExpressWarehouse({ draft, setDraft }: UseExpressWarehouseOpti
     message: screeningMessage,
     onOpenAppointment: handleOpenAppointment,
     onOpenRules: handleOpenRules,
-    onQuery: () => void queryScreening(),
+    onQuery: () => queryScreening(),
     onToggle: handleToggle,
     prepareForSubmit,
     stagingLoading

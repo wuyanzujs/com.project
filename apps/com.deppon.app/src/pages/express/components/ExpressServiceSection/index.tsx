@@ -1,4 +1,4 @@
-import { Image, Input, Text, View } from '@tarojs/components'
+import { Image, Text, View } from '@tarojs/components'
 
 import { useState } from 'react'
 
@@ -48,7 +48,6 @@ interface ExpressServiceSectionProps {
   draft: ExpressDraft
   insuranceController: ExpressInsuranceController
   packaging: ExpressDraft['packaging']
-  remark: string
   scanContextView: ExpressScanContextView | null
   selectedProduct: ExpressDraft['selectedProduct']
   service: ExpressDraft['service']
@@ -57,7 +56,6 @@ interface ExpressServiceSectionProps {
   onClearScanContext: () => void
   onOpenDeliveryPoints: () => void
   onPackagingChange: (patch: Partial<ExpressPackagingDraft>) => void
-  onRemarkInput: (value: string) => void
   onReturnBillChange: (patch: Partial<ExpressDraft['service']['returnBill']>) => void
   onOpenReturnBillCloudSign: () => void
   onServiceChange: (patch: Partial<ExpressDraft['service']>) => void
@@ -72,7 +70,6 @@ export function ExpressServiceSection({
   draft,
   insuranceController,
   packaging,
-  remark,
   scanContextView,
   selectedProduct,
   service,
@@ -81,13 +78,11 @@ export function ExpressServiceSection({
   onClearScanContext,
   onOpenDeliveryPoints,
   onPackagingChange,
-  onRemarkInput,
   onReturnBillChange,
   onOpenReturnBillCloudSign,
   onServiceChange
 }: ExpressServiceSectionProps) {
   const [expanded, setExpanded] = useState(false)
-  const [remarkExpanded, setRemarkExpanded] = useState(false)
   const [deliveryExpanded, setDeliveryExpanded] = useState(false)
 
   const deliveryLabel = DELIVERY_OPTIONS.find(option => option.value === service.deliveryMode)?.label || '请选择'
@@ -99,8 +94,7 @@ export function ExpressServiceSection({
     service.returnBill.type !== 'NO_RETURN_SIGNED' && getExpressReturnBillOption(service.returnBill.type).label,
     collection.type && '代收货款',
     deliveryPreference.type && getExpressDeliveryPreferenceOption(deliveryPreference.type).label,
-    warehouse.enabled && '送货进仓',
-    remark && '备注'
+    warehouse.enabled && '送货进仓'
   ].filter(Boolean)
   // 摘要最多展示 3 项；含代收货款时最多展示 2 项，超出部分用「…」截断。
   const summaryLimit = summaryParts.includes('代收货款') ? 2 : 3
@@ -206,32 +200,6 @@ export function ExpressServiceSection({
             <ExpressDeliveryPreferenceCard controller={deliveryPreferenceController} preference={deliveryPreference} />
 
             <ExpressWarehouseCard controller={warehouseController} warehouse={warehouse} />
-
-            <AppPressable
-              accessibilityLabel={remarkExpanded ? '收起备注输入' : '展开备注输入'}
-              block
-              className='express-service-entry'
-              layout='row-start'
-              onPress={() => setRemarkExpanded(current => !current)}
-            >
-              <Text className='express-service-entry__title'>备注</Text>
-              <Text className={remark ? 'express-service-entry__summary' : 'express-service-entry__summary express-service-entry__summary--muted'}>
-                {remark ? '已填写' : '选填'}
-              </Text>
-              <AppIcon color={APP_STYLE_COLORS.text.supporting} name={remarkExpanded ? 'chevronUp' : 'chevronDown'} size={APP_NATIVE_TOKENS.icon.small} />
-            </AppPressable>
-
-            {remarkExpanded ? (
-              <View className='express-service-panel'>
-                <Input
-                  className='express-service-remark__input'
-                  placeholder='选填，交给快递员的信息'
-                  style={{ minHeight: APP_NATIVE_TOKENS.touch.minimum }}
-                  value={remark}
-                  onInput={event => onRemarkInput(event.detail.value)}
-                />
-              </View>
-            ) : null}
           </View>
         ) : null}
       </View>

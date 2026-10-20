@@ -1,8 +1,8 @@
 import Taro from '@tarojs/taro'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { expressDraftStorage, expressService, validateExpressDraft } from '@/services/express'
+import { expressDraftBridge, expressDraftStorage, expressService, validateExpressDraft } from '@/services/express'
 import type { ExpressDraft } from '@/services/express'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated, hasValidSession } from '@/shared/navigation/authGuard'
@@ -22,6 +22,8 @@ interface UseExpressSubmitParams {
 interface UseExpressSubmitResult {
   submiting: boolean
   submitMessage: string
+  /** 是否已尝试提交；协议行常显后，校验提示只在用户点过下单后才展示。 */
+  attempted: boolean
   validation: ReturnType<typeof validateExpressDraft>
   handleSubmit: () => Promise<void>
 }
@@ -30,6 +32,9 @@ interface UseExpressSubmitResult {
 export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmitParams): UseExpressSubmitResult {
   const [submiting, setSubmiting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
+  const [attempted, setAttempted] = useState(false)
+  const submissionLock = useRef(false)
+  const submittedDraft = useRef<ExpressDraft | null>(null)
 
   const validation = validateExpressDraft(draft, {
     requireAgreement: true,
@@ -41,11 +46,12 @@ export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmi
   }, [draft])
 
   const handleSubmit = useCallback(async () => {
-    if (submiting) {
+    if (submissionLock.current || submittedDraft.current === draft) {
       return
     }
 
     setSubmitMessage('')
+    setAttempted(true)
 
     if (!validation.valid) {
       Taro.showToast({
@@ -55,19 +61,25 @@ export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmi
       return
     }
 
-    if (!hasValidSession()) {
-      await expressDraftStorage.preserveForLogin(draft)
-      ensureAuthenticated({
-        redirectUrl: APP_ROUTES.express,
-        replace: true,
-        message: '请先登录后提交订单'
-      })
-      return
-    }
-
+    // ref 在首次点击同步上锁，防止 React 下一次渲染前的连续点击创建重复订单。
+    submissionLock.current = true
     setSubmiting(true)
 
     try {
+      if (!hasValidSession()) {
+        if (!(await expressDraftStorage.preserveForLogin(draft))) {
+          Taro.showToast({ title: '寄件信息保存失败，请重试', icon: 'none' })
+          return
+        }
+
+        ensureAuthenticated({
+          redirectUrl: APP_ROUTES.express,
+          replace: true,
+          message: '请先登录后提交订单'
+        })
+        return
+      }
+
       const preparation = await warehouseController.prepareForSubmit()
 
       if (!preparation || !preparation.proceed) {
@@ -104,6 +116,10 @@ export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmi
       const orderNumber = response.result.orderNumbers?.[0] || ''
       const waybillNumber = response.result.waybillNumber || response.result.waybillNumbers?.[0] || ''
 
+      submittedDraft.current = draft
+      // 系统返回键回到原寄件页时也消费全新草稿，防止重新提交已成功的表单。
+      expressDraftBridge.carryFreshSend()
+
       if (!(await expressDraftStorage.clear())) {
         Taro.showToast({ title: '订单已提交，草稿清理失败', icon: 'none' })
       }
@@ -115,14 +131,21 @@ export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmi
         }),
         { login: true }
       )
+    } catch {
+      const message = '暂未确认提交结果，请先到订单列表核实后再试'
+
+      setSubmitMessage(message)
+      Taro.showToast({ title: message, icon: 'none' })
     } finally {
+      submissionLock.current = false
       setSubmiting(false)
     }
-  }, [draft, submiting, validation, warehouseController])
+  }, [draft, validation, warehouseController])
 
   return {
     submiting,
     submitMessage,
+    attempted,
     validation,
     handleSubmit
   }

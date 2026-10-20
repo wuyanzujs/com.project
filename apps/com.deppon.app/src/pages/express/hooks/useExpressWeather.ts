@@ -47,7 +47,7 @@ export function useExpressWeather({ draft }: { draft: ExpressDraft }) {
 
     requestVersion.current = version
 
-    void loadWaterproofText({
+    loadWaterproofText({
       sender: hasSender ? { province: senderProvince, city: senderCity, county: senderCounty } : null,
       senderDate: senderDate || getTodayText(),
       consignee: hasConsignee

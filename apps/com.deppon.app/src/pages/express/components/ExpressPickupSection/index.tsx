@@ -4,10 +4,10 @@ import { useState } from 'react'
 
 import type { ExpressDraft, ExpressFlag } from '@/services/express'
 import { AppPressable } from '@/shared/components'
-import { AppIcon, APP_IMAGE_ICONS } from '@/shared/components/AppIcon'
-import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
+import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon'
 
 import { ExpressPickupTimeSheet } from '../ExpressPickupTimeSheet'
+import { ExpressServicePointCard } from '../ExpressServicePointCard'
 
 import type { ExpressPickupTimeController } from '../../hooks/useExpressPickupTime'
 
@@ -41,7 +41,6 @@ export function ExpressPickupSection({
   const isDoorPickup = pickup.dispatch === 'Y'
   const [timeSheetVisible, setTimeSheetVisible] = useState(false)
   const pickupTime = pickup.timeSlot || pickup.time || '今天 一小时内'
-  const stationName = pickup.stationName || '查看附近服务点'
 
   const handleOpenTimeSheet = () => {
     setTimeSheetVisible(true)
@@ -144,20 +143,7 @@ export function ExpressPickupSection({
         </View>
       ) : (
         <View className='express-pickup-section__body'>
-          <AppPressable
-            accessibilityLabel={`选择自送服务点${stationName}`}
-            block
-            className='express-pickup-section__row express-pickup-section__row--station'
-            layout='row-start'
-            onPress={onOpenStations}
-          >
-            <AppIcon color={APP_STYLE_COLORS.brand.default} name='mapPin' size={APP_NATIVE_TOKENS.icon.small} />
-            <Text className='express-pickup-section__label'>自送服务点</Text>
-            <Text className='express-pickup-section__value' numberOfLines={1}>
-              {stationName}
-            </Text>
-            <Image className='express-pickup-section__chevron' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
-          </AppPressable>
+          <ExpressServicePointCard pickup={pickup} onOpenStations={onOpenStations} />
         </View>
       )}
     </View>

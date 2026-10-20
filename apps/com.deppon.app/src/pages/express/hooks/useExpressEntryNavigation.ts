@@ -3,10 +3,12 @@ import Taro from '@tarojs/taro'
 import { useCallback } from 'react'
 
 import type { ExpressDraft } from '@/services/express'
+import { stationSelection } from '@/services/query'
 import { templateService } from '@/services/template'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated, hasValidSession } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
+import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
 interface UseExpressEntryNavigationParams {
   draft: ExpressDraft
@@ -42,8 +44,19 @@ export function useExpressEntryNavigation({ draft }: UseExpressEntryNavigationPa
   }, [])
 
   const handleOpenStations = useCallback(() => {
-    navigateToAppRoute(APP_ROUTES.stationQuery)
-  }, [])
+    if (draft.pickup.dispatch !== 'N') {
+      return
+    }
+
+    if (!draft.sender || !stationSelection.createAddressKey(draft.sender)) {
+      Taro.showToast({ title: '请先填写完整寄件地址', icon: 'none' })
+      return
+    }
+
+    const params = stationSelection.createParams('EXPRESS_SERVICE_POINT', draft.sender, draft.pickup.stationCode)
+
+    navigateToAppRoute(createAppRouteUrl(APP_ROUTES.stationQuery, params))
+  }, [draft.pickup.dispatch, draft.pickup.stationCode, draft.sender])
 
   const handleSaveTemplate = useCallback(() => {
     if (!hasValidSession()) {

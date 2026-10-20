@@ -264,12 +264,18 @@ export function validateExpressDraft(
     messages.push('请填写正确的货物重量')
   }
 
-  if (count < 1) {
+  if (count < 1 || !Number.isInteger(count)) {
     messages.push('货物件数至少为1件')
+  }
+
+  if (!Number.isFinite(draft.goods.volume) || draft.goods.volume < 0) {
+    messages.push('请填写正确的货物体积')
   }
 
   if (options.requireProduct && !draft.selectedProduct) {
     messages.push('请先获取并选择产品价格')
+  } else if (options.requireProduct && draft.quoteStaleReason) {
+    messages.push('寄件信息已变化，请重新获取产品价格')
   }
 
   if (options.requireAgreement && !draft.agreementAccepted) {

@@ -2,6 +2,8 @@ import type { ExpressGoods } from './types'
 
 export interface ExpressGoodsBridgePayload {
   goods: ExpressGoods
+  /** 货物信息页同时维护「给快递员捎话」，随货物一起回传给寄件页。 */
+  remark: string
   savedAt: number
 }
 
@@ -9,8 +11,8 @@ export interface ExpressGoodsBridgePayload {
 let pendingPayload: ExpressGoodsBridgePayload | null = null
 
 export const expressGoodsBridge = {
-  save(goods: ExpressGoods) {
-    pendingPayload = { goods: { ...goods }, savedAt: Date.now() }
+  save(goods: ExpressGoods, remark: string) {
+    pendingPayload = { goods: { ...goods }, remark, savedAt: Date.now() }
   },
 
   consume() {

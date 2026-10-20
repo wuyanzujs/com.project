@@ -39,7 +39,13 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
   const handleQuery = useCallback(async () => {
     await runLatestRequest(
       requestKey,
-      () => expressService.quote(draft),
+      async () => {
+        try {
+          return await expressService.quote(draft)
+        } catch {
+          return { status: false, message: '暂未获取到产品价格，请稍后重试', result: null }
+        }
+      },
       response => {
         if (latestRequestKey.current !== requestKey) {
           return
@@ -58,9 +64,11 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
           : currentDraft
 
         if (!response.status || !products.length) {
+          const failedDraft = { ...availableDraft, selectedProduct: null }
+
           setQuotes([])
-          latestDraft.current = availableDraft
-          setDraft(availableDraft)
+          latestDraft.current = failedDraft
+          setDraft(failedDraft)
           onProductChange()
           setStatus('error')
           Taro.showToast({

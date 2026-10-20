@@ -1,0 +1,53 @@
+@use '@/styles/_tokens.scss' as *;
+
+.express-goods-stepper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 401px;
+  height: 80px;
+  padding: $dp-space-0 $dp-space-12;
+  background: $dp-color-bg-subtle;
+  border-radius: $dp-radius-pill;
+}
+.express-goods-stepper__button {
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 68px;
+}
+.express-goods-stepper__button--disabled {
+  opacity: $dp-opacity-disabled;
+}
+.express-goods-stepper__symbol {
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-title-large;
+  line-height: $dp-line-height-40;
+  text-align: center;
+}
+.express-goods-stepper__field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  height: 64px;
+  margin: $dp-space-0 $dp-space-8;
+  padding: $dp-space-0 $dp-space-16;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-pill;
+}
+.express-goods-stepper__input {
+  flex: 1;
+  height: $dp-line-height-48;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-body-large;
+  font-weight: $dp-font-weight-semibold;
+  line-height: $dp-line-height-48;
+  text-align: center;
+}
+.express-goods-stepper__unit {
+  margin-left: $dp-space-8;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
+}

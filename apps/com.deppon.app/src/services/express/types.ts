@@ -150,6 +150,16 @@ export interface ExpressWarehouseDraft {
   screening: ExpressWarehouseScreening
 }
 
+export interface ExpressPickupStationDetail {
+  address: string
+  /** 网点主号码，卡片「手机」入口，未抹号前由 getStationPrimaryPhone 归一。 */
+  phone: string
+  /** 网点营业时间，如「周一至周日 08:00-19:00」。 */
+  hours: string
+  longitude: string
+  latitude: string
+}
+
 export interface ExpressPickup {
   dispatch: ExpressFlag
   time: string
@@ -158,6 +168,8 @@ export interface ExpressPickup {
   type: ExpressPickupTimeType
   stationCode: string
   stationName: string
+  /** 自送网点卡片展示用的地址、电话与营业时间，仅在自送态且网点编码一致时有效。 */
+  stationDetail?: ExpressPickupStationDetail
   pickPeriodTime?: number
   nightCapability?: ExpressPickupNightCapability
   nightNoticeAccepted: boolean

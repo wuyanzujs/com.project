@@ -121,7 +121,7 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
     setUnavailable([])
 
     if (!requestKey || !hasValidSession()) {
-      void handleQuery()
+      handleQuery()
       return undefined
     }
 
@@ -133,7 +133,7 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
         autoQueryTimerRef.current = null
       }
 
-      void handleQuery()
+      handleQuery()
     }, EXPRESS_COUPON_AUTO_QUERY_DELAY_MS)
 
     autoQueryTimerRef.current = timer

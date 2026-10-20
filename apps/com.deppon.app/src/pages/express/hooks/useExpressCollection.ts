@@ -91,7 +91,7 @@ export function useExpressCollection({ setDraft }: UseExpressCollectionOptions) 
 
   const handleEnable = () => {
     setDraft(current => updateExpressCollectionPricing(current, { type: 'NORMAL' }))
-    void loadCapability()
+    loadCapability()
   }
 
   const handleTypeChange = (type: ExpressCollectionType) => {

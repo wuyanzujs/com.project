@@ -165,7 +165,7 @@ export function useExpressDeliveryPreference({ draft, setDraft }: UseExpressDeli
     }
 
     if (type === 'SCHEDULED') {
-      void handleScheduledMode()
+      handleScheduledMode()
       return
     }
 

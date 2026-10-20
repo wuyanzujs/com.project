@@ -66,6 +66,14 @@
   text-align: right;
 }
 
+.express-success-countdown {
+  margin-top: $dp-space-24;
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-40;
+  text-align: center;
+}
+
 .express-success-actions {
   display: flex;
   flex-direction: row;

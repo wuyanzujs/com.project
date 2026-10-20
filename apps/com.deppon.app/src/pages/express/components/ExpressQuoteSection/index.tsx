@@ -32,19 +32,21 @@ export function ExpressQuoteSection({
   onSelectProduct
 }: ExpressQuoteSectionProps) {
   if (quotes.length === 0) {
+    // 收寄信息未齐、正在试算时不渲染「预计送达时间」区块，
+    // 只有取件方式/地址变化等失效原因和试算失败才显示提示与「重新获取」。
+    const pendingMessage = quoteStatus === 'loading' ? '' : quoteStaleReason || (quoteStatus === 'error' ? '获取失败，请检查信息后重试' : '')
+
+    if (!pendingMessage) {
+      return null
+    }
+
     return (
       <ExpressSection plain={plain} title='预计送达时间'>
         <View className='express-quote-status'>
-          <Text className='express-quote-status__text'>
-            {quoteStatus === 'loading'
-              ? '正在获取价格…'
-              : quoteStaleReason || (quoteStatus === 'error' ? '获取失败，请检查信息后重试' : '收寄地址与货物齐全后自动试算')}
-          </Text>
-          {quoteStatus !== 'loading' ? (
-            <AppPressable accessibilityLabel='重新获取产品价格' className='express-quote-status__retry' onPress={onQuote}>
-              <Text className='express-quote-status__retry-text'>重新获取</Text>
-            </AppPressable>
-          ) : null}
+          <Text className='express-quote-status__text'>{pendingMessage}</Text>
+          <AppPressable accessibilityLabel='重新获取产品价格' className='express-quote-status__retry' onPress={onQuote}>
+            <Text className='express-quote-status__retry-text'>重新获取</Text>
+          </AppPressable>
         </View>
       </ExpressSection>
     )
@@ -60,6 +62,7 @@ export function ExpressQuoteSection({
           const cardClassName = selected ? 'express-quote-card express-quote-card--active' : 'express-quote-card'
           const bandClassName = selected ? 'express-quote-card__band express-quote-card__band--active' : 'express-quote-card__band'
           const titleClassName = selected ? 'express-quote-card__band-title express-quote-card__band-title--active' : 'express-quote-card__band-title'
+          const { start, time, end } = view.timeSegments
 
           return (
             <View className='express-quote-slot' key={view.key}>
@@ -71,13 +74,30 @@ export function ExpressQuoteSection({
                 onPress={() => onSelectProduct(product)}
               >
                 {selected ? <View className='express-quote-card__tail' /> : null}
-                <View className={bandClassName}>
-                  <Text className={titleClassName}>{view.name}</Text>
+                <View className={view.longName ? `${bandClassName} express-quote-card__band--wide` : bandClassName}>
+                  <Text className={titleClassName} numberOfLines={1}>
+                    {view.name}
+                  </Text>
                 </View>
                 {!selected && highEnd ? <Image className='express-quote-card__medal' mode='aspectFit' src={EXPRESS_MEDAL_ICON} /> : null}
-                <Text className='express-quote-card__time' numberOfLines={1}>
-                  运输时效：{view.timeValue}
-                </Text>
+                {view.timeLimit > 0 ? (
+                  <View className='express-quote-card__limit'>
+                    <Text className='express-quote-card__limit-text'>惊喜优惠¥{view.timeLimit}</Text>
+                  </View>
+                ) : null}
+                <View className='express-quote-card__time'>
+                  {time ? (
+                    <>
+                      <Text className='express-quote-card__time-label'>{start}</Text>
+                      <Text className='express-quote-card__time-value'>{time}</Text>
+                      <Text className='express-quote-card__time-label'>{end}</Text>
+                    </>
+                  ) : (
+                    <Text className='express-quote-card__time-label' numberOfLines={1}>
+                      {view.timeText}
+                    </Text>
+                  )}
+                </View>
                 <View className='express-quote-card__price'>
                   {view.freightAmount !== null ? (
                     <>

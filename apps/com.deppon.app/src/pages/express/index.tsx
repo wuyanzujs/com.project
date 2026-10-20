@@ -19,7 +19,7 @@ import {
   updateExpressPickup,
   updateExpressService
 } from '@/services/express'
-import type { ExpressDraft, ExpressMonthlyPayView, ExpressProductQuote } from '@/services/express'
+import type { ExpressDraft, ExpressGoods, ExpressMonthlyPayView, ExpressProductQuote } from '@/services/express'
 import { AppPage, AppSupportFloat } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -54,6 +54,7 @@ import { useExpressPickupTime } from './hooks/useExpressPickupTime'
 import { useExpressPrivacy } from './hooks/useExpressPrivacy'
 import { useExpressQuote } from './hooks/useExpressQuote'
 import { useExpressReturnBill } from './hooks/useExpressReturnBill'
+import { useExpressServicePoint } from './hooks/useExpressServicePoint'
 import { useExpressSubmit } from './hooks/useExpressSubmit'
 import { useExpressWarehouse } from './hooks/useExpressWarehouse'
 import { useExpressWeather } from './hooks/useExpressWeather'
@@ -74,6 +75,8 @@ function createInitialDraft() {
 
 const ExpressPage = () => {
   const [draft, setDraft] = useState<ExpressDraft>(() => createInitialDraft())
+
+  useExpressServicePoint({ draft, setDraft })
 
   const insuranceController = useExpressInsurance({ draft, setDraft })
   const {
@@ -138,12 +141,21 @@ const ExpressPage = () => {
   }, [draft])
 
   useDidShow(() => {
-    // 读取物品信息页回传的货物并重算价格。
+    // 读取物品信息页回传的货物与捎话；只有货物变化才需要重新报价。
     const goodsPayload = expressGoodsBridge.consume()
 
     if (goodsPayload) {
-      restoreQuotes([])
-      setDraft(current => updateExpressGoods(current, goodsPayload.goods))
+      const goodsChanged = (Object.keys(goodsPayload.goods) as Array<keyof ExpressGoods>).some(key => goodsPayload.goods[key] !== draft.goods[key])
+
+      if (goodsChanged) {
+        restoreQuotes([])
+      }
+
+      setDraft(current => {
+        const next = goodsChanged ? updateExpressGoods(current, goodsPayload.goods) : current
+
+        return next.remark === goodsPayload.remark ? next : { ...next, remark: goodsPayload.remark }
+      })
     }
 
     const carriedDraft = expressDraftBridge.consume()
@@ -182,7 +194,7 @@ const ExpressPage = () => {
     const selection = contactSelection.consumeSelection()
 
     if (draft.service.paymentType === 'MONTH_PAY') {
-      void monthlyPay.loadMonthlyCustomer()
+      monthlyPay.loadMonthlyCustomer()
     }
 
     if (!selection) {
@@ -193,7 +205,7 @@ const ExpressPage = () => {
   })
 
   const handleShare = () => {
-    void shareWithApp({
+    shareWithApp({
       source: 'EXPRESS_SUBMIT',
       title: '德邦快递寄件',
       description: '在线寄快递，1小时上门取件'
@@ -301,7 +313,6 @@ const ExpressPage = () => {
           draft={draft}
           insuranceController={insuranceController}
           packaging={draft.packaging}
-          remark={draft.remark}
           scanContextView={createExpressScanContextView(draft.scanContext)}
           selectedProduct={draft.selectedProduct}
           service={draft.service}
@@ -311,31 +322,23 @@ const ExpressPage = () => {
           onOpenDeliveryPoints={deliveryPointController.onOpen}
           onOpenReturnBillCloudSign={returnBillController.onOpenCloudSign}
           onPackagingChange={goods.handlePackagingChange}
-          onRemarkInput={value =>
-            setDraft(current => ({
-              ...current,
-              remark: value
-            }))
-          }
           onReturnBillChange={returnBillController.onChange}
           onServiceChange={updateService}
         />
 
         <ExpressPrivacyCard value={draft.service.privacyProtection} onChange={privacyController.onChange} onOpenTerms={privacyController.onOpenTerms} />
 
-        {draft.goods.name && draft.sender?.address && draft.consignee?.address ? (
-          <ExpressOrderOptionsSection
-            agreementAccepted={draft.agreementAccepted}
-            submitMessage={submit.submitMessage}
-            validationMessages={submit.validation.valid ? [] : submit.validation.messages}
-            onToggleAgreement={() =>
-              setDraft(current => ({
-                ...current,
-                agreementAccepted: !current.agreementAccepted
-              }))
-            }
-          />
-        ) : null}
+        <ExpressOrderOptionsSection
+          agreementAccepted={draft.agreementAccepted}
+          submitMessage={submit.submitMessage}
+          validationMessages={submit.attempted && !submit.validation.valid ? submit.validation.messages : []}
+          onToggleAgreement={() =>
+            setDraft(current => ({
+              ...current,
+              agreementAccepted: !current.agreementAccepted
+            }))
+          }
+        />
       </ScrollView>
       <AppSupportFloat label='客服' onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)} />
     </AppPage>

@@ -1,0 +1,103 @@
+@use '@/styles/_tokens.scss' as *;
+
+/* 自送服务点信息卡：浅灰底卡片，名称/地址在左，导航与拨号在右，营业时间与「更多网点」在底部。 */
+.express-service-point-card {
+  margin: $dp-space-28 $dp-space-0;
+  padding: $dp-space-12 $dp-space-24 $dp-space-18;
+  background: $dp-color-bg-station-card;
+  border-radius: $dp-radius-24;
+}
+
+.express-service-point-card__main {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.express-service-point-card__copy {
+  flex: 1;
+  padding-right: $dp-space-16;
+}
+
+.express-service-point-card__name {
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-40;
+}
+
+.express-service-point-card__address {
+  margin-top: $dp-space-12;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-34;
+}
+
+.express-service-point-card__actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: row;
+  align-items: flex-start;
+  padding-top: $dp-space-12;
+}
+
+/* 清零最小高度，图标加文案的窄按钮不被触控尺寸撑开。 */
+.express-service-point-card__action {
+  flex-direction: column;
+  min-width: $dp-space-48;
+  min-height: 0;
+  background: $dp-color-transparent;
+}
+
+.express-service-point-card__action--spaced {
+  margin-left: $dp-space-28;
+}
+
+.express-service-point-card__action-text {
+  margin-top: $dp-space-12;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-micro;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-28;
+}
+
+.express-service-point-card__foot {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $dp-space-24;
+}
+
+.express-service-point-card__hours {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  min-height: 0;
+}
+
+.express-service-point-card__hours-text {
+  margin-left: $dp-space-12;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-40;
+}
+
+.express-service-point-card__more {
+  flex-shrink: 0;
+  flex-direction: row;
+  min-height: 0;
+  background: $dp-color-transparent;
+}
+
+.express-service-point-card__more-text {
+  margin-right: $dp-space-4;
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-caption;
+  font-weight: $dp-font-weight-regular;
+  line-height: $dp-line-height-40;
+}

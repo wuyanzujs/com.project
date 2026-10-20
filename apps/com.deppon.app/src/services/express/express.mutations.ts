@@ -43,6 +43,7 @@ function clearPickupSelection(pickup: ExpressDraft['pickup'], clearNightCapabili
     type: 'NORMAL' as const,
     stationCode: '',
     stationName: '',
+    stationDetail: undefined,
     pickPeriodTime: undefined,
     nightCapability: clearNightCapability ? undefined : pickup.nightCapability,
     nightNoticeAccepted: false
@@ -124,7 +125,12 @@ export function updateExpressGoods(draft: ExpressDraft, patch: Partial<ExpressDr
       ...draft.goods,
       ...patch
     },
-    pickup: clearPickupSelection(draft.pickup),
+    pickup: {
+      ...clearPickupSelection(draft.pickup),
+      ...(draft.pickup.dispatch === 'N'
+        ? { stationCode: draft.pickup.stationCode, stationName: draft.pickup.stationName, stationDetail: draft.pickup.stationDetail }
+        : {})
+    },
     warehouse: warehouseInputChanged ? resetExpressWarehouseInput(draft.warehouse) : draft.warehouse,
     deliveryPreference: draft.deliveryPreference.type === 'SCHEDULED' ? createExpressDeliveryPreferenceDraft() : draft.deliveryPreference
   }
@@ -274,19 +280,32 @@ export function selectExpressProduct(draft: ExpressDraft, product: ExpressProduc
 
 /**
  *
+ * @param pickup 取件信息
+ * @param stationCode 接口返回的网点编码
+ * @description 网点编码一致时保留展示信息，编码变化后旧地址电话不再可信
+ */
+function keepPickupStationDetail(pickup: ExpressDraft['pickup'], stationCode: string) {
+  return pickup.stationDetail && pickup.stationCode === stationCode ? pickup.stationDetail : undefined
+}
+
+/**
+ *
  * @param draft 寄件草稿
  * @param response 取件时间查询响应
  * @description 应用取件时间响应并选中时段
  */
 export function applyExpressPickupTime(draft: ExpressDraft, response: ExpressPickupTimeResponse): ExpressDraft {
   const selection = findExpressPickupTimeSelection(response, draft.pickup) ?? getFirstExpressPickupTimeSelection(response)
+  const stationCode = response.deptCode || ''
+  const stationDetail = keepPickupStationDetail(draft.pickup, stationCode)
   const responseDraft: ExpressDraft = {
     ...draft,
     pickup: {
       ...draft.pickup,
       endTime: response.endTime,
-      stationCode: response.deptCode || '',
+      stationCode,
       stationName: response.deptName || '',
+      stationDetail,
       pickPeriodTime: response.pickPeriodTime,
       nightCapability: response.nightCapability
     }
@@ -300,8 +319,9 @@ export function applyExpressPickupTime(draft: ExpressDraft, response: ExpressPic
         ...responseDraft,
         pickup: {
           ...clearedPickup,
-          stationCode: response.deptCode || '',
+          stationCode,
           stationName: response.deptName || '',
+          stationDetail,
           pickPeriodTime: response.pickPeriodTime,
           nightCapability: response.nightCapability
         }
@@ -317,8 +337,9 @@ export function applyExpressPickupTime(draft: ExpressDraft, response: ExpressPic
     pickup: {
       ...selectedDraft.pickup,
       endTime: response.endTime,
-      stationCode: response.deptCode || '',
+      stationCode,
       stationName: response.deptName || '',
+      stationDetail,
       pickPeriodTime: response.pickPeriodTime,
       nightCapability: response.nightCapability
     }

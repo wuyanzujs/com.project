@@ -1,106 +1,64 @@
-import { Input, ScrollView, Text, View } from '@tarojs/components'
+import { Input, ScrollView, Text, Textarea, View } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 
 import { createExpressDraft, expressDraftStorage, expressGoodsBridge } from '@/services/express'
 import type { ExpressGoods } from '@/services/express'
+import { EXPRESS_GOODS_LIMITS, resolveExpressGoodsInput } from '@/services/express/goodsEditor.rules'
+import { expressGoodsHistory } from '@/services/express/goodsHistory'
 import { goodsQueryService } from '@/services/goods'
 import { AppPage, AppPressable, AppSwitch } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { APP_ROUTES } from '@/shared/navigation/routes'
+import { getNativeCapabilityErrorMessage, shareWithApp } from '@/shared/platform'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import { ExpressNavBar } from '../components/ExpressNavBar'
+import { GoodsMediaUploader } from './components/GoodsMediaUploader'
+import { GoodsStepper } from './components/GoodsStepper'
 import { useGoodsNameSuggestions } from './hooks/useGoodsNameSuggestions'
 
 import './index.scss'
 import './content.scss'
 
-const WEIGHT_MIN = 1
-const WEIGHT_MAX = 10000
+const WEIGHT_MIN = EXPRESS_GOODS_LIMITS.minWeight
+const WEIGHT_MAX = EXPRESS_GOODS_LIMITS.maxWeight
 const WEIGHT_STEP = 1
-const COUNT_MIN = 1
-const COUNT_MAX = 999
-
-function parseAmount(value: string) {
-  const parsed = Number(value)
-
-  return Number.isFinite(parsed) ? parsed : 0
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max)
-}
-
-interface GoodsStepperProps {
-  unit: string
-  value: string
-  max: number
-  min: number
-  step: number
-  onChange: (next: string) => void
-}
-
-function GoodsStepper({ max, min, onChange, step, unit, value }: GoodsStepperProps) {
-  const amount = parseAmount(value)
-  const disabledMinus = amount <= min
-  const disabledPlus = amount >= max
-
-  const stepTo = (direction: 1 | -1) => {
-    const base = Number.isFinite(amount) && amount > 0 ? amount : min
-
-    onChange(String(clamp(base + direction * step, min, max)))
-  }
-
-  return (
-    <View className='express-goods-stepper'>
-      <AppPressable
-        accessibilityLabel='减少'
-        className={disabledMinus ? 'express-goods-stepper__button express-goods-stepper__button--disabled' : 'express-goods-stepper__button'}
-        disabled={disabledMinus}
-        onPress={() => stepTo(-1)}
-      >
-        <Text className='express-goods-stepper__symbol'>−</Text>
-      </AppPressable>
-      <View className='express-goods-stepper__field'>
-        <Input
-          className='express-goods-stepper__input'
-          type='digit'
-          value={value}
-          onBlur={event => {
-            const next = parseAmount(event.detail.value)
-
-            onChange(String(clamp(next || min, min, max)))
-          }}
-          onInput={event => onChange(event.detail.value)}
-        />
-        <Text className='express-goods-stepper__unit'>{unit}</Text>
-      </View>
-      <AppPressable
-        accessibilityLabel='增加'
-        className={disabledPlus ? 'express-goods-stepper__button express-goods-stepper__button--disabled' : 'express-goods-stepper__button'}
-        disabled={disabledPlus}
-        onPress={() => stepTo(1)}
-      >
-        <Text className='express-goods-stepper__symbol'>＋</Text>
-      </AppPressable>
-    </View>
-  )
-}
+const COUNT_MIN = EXPRESS_GOODS_LIMITS.minCount
+const COUNT_MAX = EXPRESS_GOODS_LIMITS.maxCount
+// 「给快递员捎话」计数为 0/100。
+const REMARK_MAX_LENGTH = 100
 
 const ExpressGoodsPage = () => {
-  const initialGoods = useMemo<ExpressGoods>(() => expressDraftStorage.restore()?.goods ?? createExpressDraft().goods, [])
+  const initialDraft = useMemo(() => expressDraftStorage.restore(), [])
+  const initialGoods = useMemo<ExpressGoods>(() => initialDraft?.goods ?? createExpressDraft().goods, [initialDraft])
   const [name, setName] = useState(initialGoods.name)
+  const [nameSelected, setNameSelected] = useState(Boolean(initialGoods.name.trim()))
+  const [history, setHistory] = useState(() => expressGoodsHistory.get())
+  // 「给快递员捎话」在货物信息页维护，最多 100 字；这里与寄件页共用 draft.remark。
+  const [remark, setRemark] = useState(initialDraft?.remark ?? '')
   const [weightText, setWeightText] = useState(String(initialGoods.weight > 0 ? initialGoods.weight : WEIGHT_MIN))
   const [countText, setCountText] = useState(String(initialGoods.count >= COUNT_MIN ? initialGoods.count : COUNT_MIN))
   const [volumeOn, setVolumeOn] = useState(initialGoods.volume > 0)
   const [volumeText, setVolumeText] = useState(initialGoods.volume > 0 ? String(initialGoods.volume) : '')
   const hotGoods = useMemo(() => goodsQueryService.getHotGoods(), [])
   const nameSuggestion = useGoodsNameSuggestions()
+  const confirming = useRef(false)
 
   const handleSelectName = (nextName: string) => {
     setName(nextName)
+    setNameSelected(true)
     nameSuggestion.clearSuggestions()
+  }
+
+  const handleClearHistory = async () => {
+    if (await expressGoodsHistory.clear()) {
+      setHistory([])
+    } else {
+      Taro.showToast({ title: '清空失败，请稍后重试', icon: 'none' })
+    }
   }
 
   // 语音录入尚未接入 shared/platform，使用统一降级提示。
@@ -108,30 +66,52 @@ const ExpressGoodsPage = () => {
     Taro.showToast({ title: '语音录入待接入，请先手动填写', icon: 'none' })
   }
 
-  const handleConfirm = () => {
-    const trimmedName = name.trim()
+  // 输入框右侧为图片识别入口，同样先给统一降级提示。
+  const handleImageInput = () => {
+    Taro.showToast({ title: '图片识别待接入，请先手动填写', icon: 'none' })
+  }
 
-    if (!trimmedName) {
-      Taro.showToast({ title: '请填写物品名称', icon: 'none' })
+  const handleShare = () => {
+    shareWithApp({
+      source: 'EXPRESS_GOODS',
+      title: '德邦快递寄件',
+      description: '在线寄快递，1小时上门取件'
+    }).catch(error => {
+      Taro.showToast({
+        title: getNativeCapabilityErrorMessage(error),
+        icon: 'none'
+      })
+    })
+  }
+
+  const handleConfirm = async () => {
+    if (confirming.current) {
       return
     }
 
-    const weight = parseAmount(weightText)
+    const result = resolveExpressGoodsInput(initialGoods, {
+      name,
+      weight: weightText,
+      count: countText,
+      volume: volumeText,
+      volumeEnabled: volumeOn
+    })
 
-    if (weight < WEIGHT_MIN) {
-      Taro.showToast({ title: `重量需不小于${WEIGHT_MIN}kg`, icon: 'none' })
+    if (!result.goods) {
+      Taro.showToast({ title: result.message, icon: 'none' })
       return
     }
 
     // 确认后回传货物并返回寄件页，由寄件页重算价格时效。
-    expressGoodsBridge.save({
-      ...initialGoods,
-      count: Math.floor(clamp(parseAmount(countText), COUNT_MIN, COUNT_MAX)),
-      name: trimmedName,
-      volume: volumeOn ? parseAmount(volumeText) : 0,
-      weight: clamp(weight, WEIGHT_MIN, WEIGHT_MAX)
-    })
-    Taro.navigateBack()
+    confirming.current = true
+
+    try {
+      await expressGoodsHistory.save(result.goods.name)
+      expressGoodsBridge.save(result.goods, remark.trim())
+      await Taro.navigateBack()
+    } finally {
+      confirming.current = false
+    }
   }
 
   return (
@@ -143,6 +123,7 @@ const ExpressGoodsPage = () => {
             className='express-goods-footer__button express-goods-footer__button--voice'
             onPress={handleVoiceInput}
           >
+            <AppIcon color={APP_STYLE_COLORS.text.ink} name='microphone' size={40} />
             <Text className='express-goods-footer__text express-goods-footer__text--voice'>语音填写</Text>
           </AppPressable>
           <AppPressable
@@ -154,7 +135,7 @@ const ExpressGoodsPage = () => {
           </AppPressable>
         </View>
       }
-      header={<ExpressNavBar title='货物信息' />}
+      header={<ExpressNavBar title='货物信息' onShare={handleShare} />}
       keyboardAvoiding
       safeArea='both'
       statusBar='dark'
@@ -169,25 +150,39 @@ const ExpressGoodsPage = () => {
               <Text className='express-goods-check__text'>违禁品查询 ›</Text>
             </AppPressable>
           </View>
-          {name ? (
+          {nameSelected ? (
             <View className='express-goods-name-pill'>
               <Text className='express-goods-name-pill__text'>{name}</Text>
-              <AppPressable accessibilityLabel='清除物品名称' className='express-goods-name-pill__clear' onPress={() => setName('')}>
+              <AppPressable
+                accessibilityLabel='清除物品名称'
+                className='express-goods-name-pill__clear'
+                onPress={() => {
+                  setName('')
+                  setNameSelected(false)
+                  nameSuggestion.clearSuggestions()
+                }}
+              >
                 <Text className='express-goods-name-pill__clear-text'>×</Text>
               </AppPressable>
             </View>
           ) : (
             <>
-              <Input
-                className='express-goods-input'
-                placeholder='如文件、服饰、配件'
-                value={name}
-                onBlur={event => setName(event.detail.value)}
-                onInput={event => {
-                  setName(event.detail.value)
-                  nameSuggestion.handleNameInput(event.detail.value)
-                }}
-              />
+              <View className='express-goods-input-row'>
+                <AppIcon color={APP_STYLE_COLORS.text.placeholder} name='search' size={34} />
+                <Input
+                  className='express-goods-input-row__field'
+                  placeholder='请输入物品名称'
+                  value={name}
+                  onBlur={event => setName(event.detail.value)}
+                  onInput={event => {
+                    setName(event.detail.value)
+                    nameSuggestion.handleNameInput(event.detail.value)
+                  }}
+                />
+                <AppPressable accessibilityLabel='图片识别物品名称' className='express-goods-input-row__camera' onPress={handleImageInput}>
+                  <AppIcon color={APP_STYLE_COLORS.text.faint} name='camera' size={38} />
+                </AppPressable>
+              </View>
               {nameSuggestion.suggestions.length > 0 && (
                 <View className='express-goods-suggestions'>
                   {nameSuggestion.suggestions.map((item, index) => (
@@ -205,7 +200,27 @@ const ExpressGoodsPage = () => {
                   ))}
                 </View>
               )}
-              {nameSuggestion.message && <Text className='express-goods-message'>{nameSuggestion.loading ? '推荐查询中' : nameSuggestion.message}</Text>}
+              {(nameSuggestion.loading || nameSuggestion.message) && (
+                <Text className='express-goods-message'>{nameSuggestion.loading ? '推荐查询中' : nameSuggestion.message}</Text>
+              )}
+              {!name.trim() && history.length > 0 ? (
+                <>
+                  <View className='express-goods-card__head'>
+                    <Text className='express-goods-card__title'>最近使用</Text>
+                    <AppPressable accessibilityLabel='清空最近使用的物品名称' className='express-goods-check' onPress={handleClearHistory}>
+                      <Text className='express-goods-check__text'>清空</Text>
+                    </AppPressable>
+                  </View>
+                  <View className='express-goods-chips'>
+                    {history.map(item => (
+                      <AppPressable accessibilityLabel={`最近使用${item}`} className='express-goods-chip' key={item} onPress={() => handleSelectName(item)}>
+                        <Text className='express-goods-chip__text'>{item}</Text>
+                      </AppPressable>
+                    ))}
+                  </View>
+                </>
+              ) : null}
+              <Text className='express-goods-subtitle'>热门寄件</Text>
               <View className='express-goods-chips'>
                 {hotGoods.map(item => (
                   <AppPressable
@@ -263,6 +278,26 @@ const ExpressGoodsPage = () => {
               包裹体积较大但重量较轻时（如行李包裹等），会根据包裹外箱尺寸换算为计费重量。实际重量以快递员包装后测量为准。
               <Text className='express-goods-info__link'>了解计费规则 ›</Text>
             </Text>
+          </View>
+        </View>
+
+        <View className='express-goods-card'>
+          <View className='express-goods-card__head'>
+            <Text className='express-goods-card__title'>给快递员捎话</Text>
+            <Text className='express-goods-card__link'>纸箱、缓冲物等需额外收费 ›</Text>
+          </View>
+          <View className='express-goods-media-row'>
+            <View className='express-goods-remark'>
+              <Textarea
+                className='express-goods-remark__input'
+                maxlength={REMARK_MAX_LENGTH}
+                placeholder='其他需求可以留言告诉快递小哥哦~'
+                value={remark}
+                onInput={event => setRemark(event.detail.value)}
+              />
+              <Text className='express-goods-remark__counter'>{`${remark.length}/${REMARK_MAX_LENGTH}`}</Text>
+            </View>
+            <GoodsMediaUploader />
           </View>
         </View>
       </ScrollView>
