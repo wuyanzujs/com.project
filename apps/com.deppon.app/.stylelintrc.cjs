@@ -1,6 +1,11 @@
+const path = require('node:path')
+
 module.exports = {
   ignoreFiles: ['dist/**', 'android/**', 'ios/**', 'node_modules/**'],
+  plugins: [path.join(__dirname, 'scripts/stylelint-rules/index.mjs')],
   rules: {
+    'app-rn/no-pseudo-element': true,
+    'app-rn/sass-import-full-filename': true,
     'at-rule-no-unknown': [
       true,
       {
@@ -9,6 +14,10 @@ module.exports = {
     ],
     'block-no-empty': true,
     'color-no-invalid-hex': true,
+    'declaration-property-value-disallowed-list': {
+      display: ['grid', 'inline-grid'],
+      position: ['fixed', 'sticky']
+    },
     'declaration-block-no-duplicate-properties': [true, { ignore: ['consecutive-duplicates-with-different-values'] }],
     'declaration-no-important': true,
     'function-calc-no-unspaced-operator': true,
@@ -21,7 +30,7 @@ module.exports = {
       'repeating-conic-gradient'
     ],
     'no-empty-source': true,
-    'property-disallowed-list': ['float', 'inset', 'background-image', 'box-shadow'],
+    'property-disallowed-list': ['float', 'inset', 'background-image', 'box-shadow', '/^border-(?:top|right|bottom|left)-style$/', '/^grid(?:-[\\w-]+)?$/'],
     'selector-class-pattern': '^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:__[a-z0-9]+(?:-[a-z0-9]+)*)?(?:--[a-z0-9]+(?:-[a-z0-9]+)*)?$',
     'selector-max-attribute': 0,
     'selector-max-combinators': 0,
@@ -33,5 +42,21 @@ module.exports = {
     'string-no-newline': true,
     'unit-allowed-list': ['px', '%', 'deg'],
     'unit-no-unknown': true
-  }
+  },
+  overrides: [
+    {
+      files: ['src/pages/**/*.scss'],
+      rules: {
+        'property-disallowed-list': [
+          'float',
+          'inset',
+          'background-image',
+          'box-shadow',
+          'elevation',
+          '/^border-(?:top|right|bottom|left)-style$/',
+          '/^grid(?:-[\\w-]+)?$/'
+        ]
+      }
+    }
+  ]
 }

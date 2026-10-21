@@ -330,57 +330,6 @@ const forbiddenPatterns = [
     message: '该 Taro API 不属于 RN App 可直接使用能力，请通过 shared/platform、shared/native 或业务 facade 重构。'
   },
   {
-    pattern: /\bposition\s*:\s*(?:fixed|sticky)\b/g,
-    message: 'React Native 不支持 fixed/sticky 定位，请使用可控容器内的 absolute 布局。',
-    fileExtensions: ['.scss']
-  },
-  {
-    pattern: /(^|[;{]\s*)inset\s*:/gm,
-    message: 'React Native 不支持 inset 简写，请显式设置 top/right/bottom/left。',
-    fileExtensions: ['.scss']
-  },
-  {
-    pattern: /\bborder-(?:top|right|bottom|left)-style\s*:/g,
-    message: 'Taro RN 不支持单边 border style，请使用 RN 支持的边框或独立分隔 View。',
-    fileExtensions: ['.scss']
-  },
-  {
-    pattern: new RegExp([String.raw`^\s*(?:[.#]?[A-Za-z_][\w-]*)(?:\s*[+>~]\s*|`, String.raw`\s+)(?:[.#]?[A-Za-z_][\w-]*)(?=[^,{\r\n]*\{)`].join(''), 'gm'),
-    message: 'Taro RN 会忽略后代/子级/兄弟组合选择器，请给目标元素添加独立 modifier class。',
-    fileExtensions: ['.scss']
-  },
-  {
-    pattern: /\.[A-Za-z_][\w-]*\.[A-Za-z_][\w-]*/g,
-    message: 'Taro RN 不支持复合类选择器，请给目标元素添加单一语义类或 modifier class。',
-    fileExtensions: ['.scss']
-  },
-  {
-    pattern: /\bbackground-image\s*:/g,
-    message: 'Taro RN 不支持 background-image，请使用 Image 组件配合 flex/absolute 布局。',
-    fileExtensions: ['.scss']
-  },
-  {
-    pattern: /\bbox-shadow\s*:/g,
-    message: 'box-shadow 不是可靠的 RN 跨端阴影方案，请通过共享样式封装平台阴影。',
-    fileExtensions: ['.scss']
-  },
-  {
-    pattern: /\b(?:repeating-)?(?:linear|radial|conic)-gradient\s*\(/gi,
-    message: 'RN 样式禁止 gradient，请使用 Image 或可跨端渲染的视觉资产。',
-    fileExtensions: ['.scss']
-  },
-  {
-    pattern: /::[A-Za-z][A-Za-z0-9-]*/g,
-    message: 'RN 样式不支持伪元素，请给目标元素添加独立语义类。',
-    fileExtensions: ['.scss']
-  },
-  {
-    pattern: /\belevation\s*:/g,
-    message: '页面样式不能直接使用 elevation，请使用共享跨端视觉组件。',
-    fileExtensions: ['.scss'],
-    includeRelativePathPrefixes: ['src/pages/']
-  },
-  {
     pattern: /\belevation\s*:/g,
     message: '页面原生样式不能直接使用 elevation，请使用共享跨端视觉组件。',
     fileExtensions: ['.ts', '.tsx'],
@@ -411,16 +360,6 @@ const forbiddenPatterns = [
     ),
     message: '点击控件必须统一使用 AppPressable/AppButton，禁止业务或其他 facade 直接引入 RN Pressable。',
     allowRelativePaths: ['src/shared/native/AppNativePressable.tsx']
-  },
-  {
-    pattern: /\bfloat\s*:/g,
-    message: 'React Native 不支持 float，请使用 flex 布局。',
-    fileExtensions: ['.scss']
-  },
-  {
-    pattern: /\b(?:display\s*:\s*(?:inline-)?grid|grid(?:-[\w-]+)?\s*:)/g,
-    message: 'React Native 不支持 CSS Grid，请使用 flexDirection、alignItems 和 justifyContent。',
-    fileExtensions: ['.scss']
   },
   {
     pattern: /\bbackgroundImage\s*:/g,

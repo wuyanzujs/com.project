@@ -12,8 +12,11 @@
         "es2022": true
       },
       "parser": "@typescript-eslint/parser",
-      "plugins": ["@typescript-eslint"],
+      "plugins": ["@typescript-eslint", "app"],
       "rules": {
+        "app/no-direct-react-native": ["error", { "allow": ["/src/shared/native/", "/src/shared/platform/"] }],
+        "app/no-taro-platform-api": ["error", { "allow": ["/src/shared/platform/", "/src/shared/native/"] }],
+        "app/no-service-api-import": "error",
         "semi": ["error", "never"],
         "quotes": ["error", "single", { "avoidEscape": true }],
         "jsx-quotes": ["error", "prefer-single"],

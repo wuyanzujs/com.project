@@ -41,6 +41,7 @@ function createPage(t, item, markMessageRead) {
     'react/jsx-runtime': require('react/jsx-runtime'),
     '@/services/message': { messageService: { markMessageRead } },
     '@/shared/components': { AppPressable: 'AppPressable', AppEmptyState: 'AppEmptyState' },
+    '@/shared/native': { AppVirtualList: 'AppVirtualList' },
     '@/shared/navigation/appNavigation': { navigateToAppRoute: navigate },
     '@/shared/navigation/authGuard': { ensureAuthenticated: () => true },
     '@/shared/navigation/routes': { APP_ROUTES },
@@ -64,7 +65,7 @@ function createPage(t, item, markMessageRead) {
 
   function render() {
     hookIndex = 0
-    return exports.default()
+    return expandVirtualList(exports.default())
   }
 
   function find(className, element) {
@@ -82,6 +83,20 @@ function createPage(t, item, markMessageRead) {
     hasUnreadDot: () => Boolean(find('message-item-card__dot', render())),
     press: () => find('message-item-card__body', render()).props.onPress()
   }
+}
+
+function expandVirtualList(element) {
+  if (Array.isArray(element)) return element.map(expandVirtualList)
+  if (!element || typeof element !== 'object') return element
+  if (element.type === 'AppVirtualList') {
+    const { empty, footer, header, items = [], renderItem } = element.props
+    return {
+      type: 'AppVirtualList',
+      props: { children: [header, items.map((item, index) => renderItem(item, index)), items.length ? null : empty, footer] }
+    }
+  }
+  if (!element.props) return element
+  return { ...element, props: { ...element.props, children: expandVirtualList(element.props.children) } }
 }
 
 const flushActions = () => new Promise(resolve => setImmediate(resolve))

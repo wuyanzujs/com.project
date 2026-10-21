@@ -1,0 +1,7 @@
+{
+  "name": "eslint-plugin-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local ESLint rules that keep RN boundaries enforceable in the editor.",
+  "main": "index.js"
+}

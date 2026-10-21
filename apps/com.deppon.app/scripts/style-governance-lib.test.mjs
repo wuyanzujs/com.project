@@ -845,25 +845,29 @@ test('stylelint contract rejects unsupported RN style functions and units', () =
 
   assert.equal(invalid.status !== 0, true, invalid.stdout)
   assert.equal(valid.status, 0, valid.stderr)
+
+  const migratedCases = [
+    { input: '.example { position: fixed; }', message: 'position' },
+    { input: '.example { display: grid; }', message: 'display' },
+    { input: '.example::before { width: 0; }', message: 'RN 样式不支持伪元素' },
+    { input: '.example { elevation: 1; }', message: 'elevation' },
+    { input: '.example { border-top-style: solid; }', message: 'border-top-style' },
+    { input: "@use './tokens';" + '\n' + '.example { width: 2px; }', message: 'Sass 导入必须写全' }
+  ]
+
+  for (const { input, message } of migratedCases) {
+    const result = run(process.execPath, [stylelintScriptPath, '--stdin-filename', 'src/pages/example/index.scss'], {
+      cwd: path.join(workspaceRoot, 'apps/com.deppon.app'),
+      input: input + '\n'
+    })
+
+    assert.equal(result.status !== 0, true, `${message} 未被拦截：${result.stdout}`)
+    assert.match(`${result.stdout}${result.stderr}`, new RegExp(message))
+  }
 })
 
 test('RN boundary contract rejects style, pressable and Taro alias bypasses', t => {
   const cases = [
-    {
-      file: 'src/pages/example/gradient.scss',
-      content: '.example { background: repeating-conic-gradient(red, blue); }',
-      message: 'RN 样式禁止 gradient'
-    },
-    {
-      file: 'src/pages/example/pseudo.scss',
-      content: '.example::before { width: 0; }',
-      message: 'RN 样式不支持伪元素'
-    },
-    {
-      file: 'src/pages/example/elevation.scss',
-      content: '.example { elevation: 1; }',
-      message: '页面样式不能直接使用 elevation'
-    },
     ...['Pressable', 'TouchableHighlight', 'TouchableNativeFeedback', 'TouchableOpacity', 'TouchableWithoutFeedback'].flatMap(name => [
       {
         file: `src/pages/example/${name}-import.tsx`,
