@@ -9,7 +9,9 @@
 - Android: JDK、Android SDK、Gradle 环境按 `pnpm check:app-native-env:android` 输出补齐
 - iOS: 需要 macOS、Xcode、CocoaPods
 
-根目录已声明 `packageManager`、`engines` 和 `.node-version`。团队本地、CI、打包机应使用同一套 Node/pnpm 版本。
+根目录已声明 `packageManager`、`engines`、`.node-version` 和 `.nvmrc`，四者必须保持一致。团队本地、CI、打包机应使用同一套 Node/pnpm 版本。
+
+版本不一致时不需要靠人记：`pnpm verify:app` 的第一道门禁 `pnpm check:toolchain` 会直接失败并给出修复方式。切换 Node 用 `fnm use` 或 `nvm use`，切换 pnpm 用 `corepack prepare pnpm@11.9.0 --activate`，然后重新执行 `pnpm install`。`.nvmrc` 与 `.node-version` 不一致、或 `verify:config` 里漏掉 `check:toolchain`，都会由 `pnpm check:repo-config` 报错。
 
 ## 常用命令
 
@@ -23,6 +25,7 @@ pnpm verify:app
 pnpm check:app-boundaries
 pnpm check:app-routes
 pnpm check:app-module-size
+pnpm check:app-barrels
 pnpm check:app-runtime-config
 pnpm check:app-business-rules
 pnpm check:app-platform-build
@@ -38,6 +41,7 @@ pnpm --filter com.deppon.app run lint
 pnpm --filter com.deppon.app run check:rn-boundaries
 pnpm --filter com.deppon.app run check:routes
 pnpm --filter com.deppon.app run check:module-size
+pnpm --filter com.deppon.app run check:barrels
 pnpm --filter com.deppon.app run check:runtime-config
 pnpm --filter com.deppon.app run check:business-rules
 pnpm --filter com.deppon.app run check:platform-build
@@ -48,6 +52,10 @@ pnpm --filter com.deppon.app run check:platform-build
 `pnpm check:app-native-env` 默认只检查当前操作系统对应的原生开发环境；发布机或跨平台 CI 使用 `pnpm check:app-native-env:all`，也可以单独使用 `:android` 或 `:ios`。
 
 业务测试已按领域放到 `scripts/business-tests/`，使用 Node 自带的测试运行器。可以执行 `pnpm --filter com.deppon.app run check:business-rules cache auth` 只检查缓存和登录，也可以运行 `flows` 检查登录、寄件、订单查询和退出的服务集成流程。新增用例、fixture 和 mock 的约定见 [业务测试说明](scripts/business-tests/README.md)。
+
+单元测试放在 `test/unit/`，用 vitest 直接 import TS，执行 `pnpm --filter com.deppon.app run test:unit`（会同时产出 coverage 并对已纳管文件做阈值校验，`pnpm verify:app` 已包含）。分工：`test/unit` 覆盖纯规则与数据转换，`scripts/business-tests` 覆盖跨服务流程。
+
+页面的 SCSS 导入必须写全文件名（@use '@/styles/_tokens.scss' as *;）。Taro RN 的 Sass importer 不解析无扩展名或 partial 路径，写错只会在 undle:android 阶段报「样式文件没有找到」；静态门禁 check:rn-boundaries 会拦截这类写法。
 
 需要由发布者显式生成 bundle 时执行：
 

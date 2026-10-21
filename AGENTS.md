@@ -1,6 +1,6 @@
 # 当前项目问题与优化方向
 
-生成日期：2026-07-07
+更新日期：2026-10-21（上一版 2026-07-07，其中大部分问题已落地，见第二节）
 
 ## Codex 验证边界
 
@@ -8,364 +8,192 @@
 - 项目打包由用户自行执行；仅当用户明确要求时，Codex 才能运行对应打包命令。
 - Codex 日常验证限于 TypeScript、ESLint、Stylelint、业务规则、路由、模块体积、RN 边界和其他不产出安装包的静态门禁。
 
-## 一、整体判断
-
-当前项目已经不是简单 Demo，而是在做一个 Taro RN App 的业务迁移和重构。项目底座有一定工程化意识，已经做了这些比较好的事情：
-
-- 使用 pnpm workspace 管理项目。
-- App 代码按 `pages`、`services`、`shared`、`request`、`cache` 做了基础分层。
-- 请求层、缓存层、路由层、平台能力层已经有雏形。
-- 已经有 `typecheck`、`lint`、`check-rn-boundaries`、`verify` 等工程脚本。
-- 已经通过 `shared/platform` 把扫码、定位、支付、电话、文件、实名等平台能力隔离起来，这个方向是对的。
-
-但从后期项目越做越大的角度看，现在最大的风险不是“代码跑不起来”，而是代码会随着业务迁移逐渐变重、变散、变难协作。尤其是订单、寄件、发票这些核心业务模块，如果不提前做结构收敛，后面会很容易变成几个超大文件支撑整个 App。
-
-后续优化的核心方向应该是：
-
-> 稳定工程环境，收敛项目规则，拆分核心业务巨石，补上测试和文档，让项目能支持多人长期维护。
-
-## 二、当前主要问题
-
-## 1. 本地环境和工程脚本不完全稳定
-
-当前根 `package.json` 声明使用 `pnpm@11.9.0`，但本机 Node 是 `v22.11.0`，这个版本不满足 pnpm 的要求，所以直接执行 `pnpm typecheck:app`、`pnpm lint:app`、`pnpm verify:app` 会失败。
-
-这说明项目虽然有验证脚本，但环境版本没有被真正锁住。后期团队成员增加后，不同人的 Node、pnpm、Ruby、JDK、Xcode、Android SDK 版本不一致，会导致“我这里能跑，你那里不能跑”的问题。
-
-优化方向：
-
-- 固定 Node 版本，例如增加 `.nvmrc` 或 `.node-version`。
-- 在根 `package.json` 里声明 `engines`。
-- CI 里的 Node、pnpm 版本要和本地保持一致。
-- README 要明确本地环境要求。
-- `pnpm verify:app` 应该成为本地和 CI 都稳定可跑的统一检查入口。
-
-## 2. CI 和发布配置仍有模板残留
-
-项目里还保留了一些 Taro RN 模板的 GitHub workflows，例如 `Taro Demo`、`com.tarodemo`、`pnpm@8`、`node@20` 等配置。当前真实 App 已经改成德邦 App 方向，但 CI 和发布配置没有完全同步。
-
-这类问题短期可能不影响本地开发，但后期一旦接入自动打包、测试包分发、正式发版，就很容易出现包名、App 名、证书、构建环境不一致的问题。
-
-优化方向：
-
-- 清理模板 CI 配置。
-- 把 Android/iOS workflow 改成真实 App 信息。
-- CI 要先跑质量检查，再跑构建。
-- Ruby 依赖不要在 CI 中随意 `bundle update`，应该用锁文件保证可复现。
-- App 的发布配置要和原生工程身份保持一致。
-
-## 3. 路由配置分散，后期新增页面容易漏配
-
-当前路由相关信息分散在多个地方：
-
-- `src/app.config.ts` 维护 Taro 页面列表。
-- `src/shared/navigation/routes.ts` 维护 `APP_ROUTES`。
-- `src/shared/navigation/appNavigation.ts` 维护哪些页面需要登录。
-- 一些页面里还会自己拼接 query 和跳转 URL。
-
-现在页面数量还可以人工维护，但后期页面继续增加后，很容易出现这些问题：
-
-- 页面加到了 `APP_ROUTES`，但忘了加到 `app.config.ts`。
-- 页面需要登录，但忘了加登录守卫。
-- 主导航和页面路径不一致。
-- 路由 query 参数各写各的，缺少统一约束。
-
-优化方向：
-
-- 建立统一的路由注册表。
-- 每个页面统一声明路径、名称、标题、是否主入口、是否需要登录。
-- `APP_ROUTES`、主导航、登录守卫列表都从同一个注册表派生。
-- 路由跳转和 query 拼接尽量集中封装，减少页面里手写字符串。
-
-## 4. 业务 service 已经出现巨石化趋势
-
-当前部分 service 文件已经非常大：
-
-- `src/services/order/order.service.ts` 已经超过 2300 行。
-- `src/services/express/express.service.ts` 接近 1000 行。
-- `src/services/invoice/invoice.service.ts` 接近 800 行。
-
-这些文件承担了太多职责：接口编排、后端字段转换、业务规则判断、页面展示数据组装、状态文案生成、跳转 URL 生成等都混在一起。
-
-这会导致后期几个问题：
-
-- 改一个小需求，需要理解大段无关逻辑。
-- 多人同时改订单或寄件模块，冲突会非常多。
-- 业务规则无法单独测试。
-- 新人不敢改，老功能越积越重。
-- 迁移旧小程序逻辑时，很容易继续往大文件里塞代码。
-
-优化方向：
-
-- service 不应该无限膨胀，需要按职责拆分。
-- 接口调用放在 `api.ts`。
-- 后端数据转前端展示结构放在 `mapper.ts`。
-- 状态判断、按钮显示、费用计算、校验规则放在 `rules.ts`。
-- 多接口业务编排放在 `useCases.ts`。
-- 页面真正消费的数据结构放在 `viewModel.ts`。
-- `order` 和 `express` 应该优先拆，因为它们是后期最容易继续变大的核心模块。
-
-## 5. 页面文件也开始变重
-
-一些页面已经超过正常维护体量：
-
-- `src/pages/order/detail/index.tsx` 超过 1100 行。
-- `src/pages/express/index.tsx` 超过 1000 行。
-- `src/pages/order/list/index.tsx`、`src/pages/invoice/index/index.tsx` 也已经偏大。
-
-页面里同时存在状态管理、接口调用、业务判断、事件处理、UI 渲染和局部工具函数。后期继续加功能时，页面会变得越来越难拆。
-
-优化方向：
-
-- 页面主文件只保留页面级状态和流程编排。
-- 可复用 UI 拆到当前页面的 `components` 目录。
-- 复杂事件处理抽成 hooks 或 useCases。
-- 业务判断不要直接写在 JSX 里，提前整理成 view model。
-- 列表、空态、错误态、加载态、弹窗、表单项等可以沉淀到 `shared/components`。
-
-## 6. 样式体系缺少统一约束，SCSS 已经开始重复膨胀
-
-当前项目有 43 个 SCSS 文件，总量已经超过 9000 行。样式主要分散在各个页面目录里，`src/app.scss` 目前还是空的，说明还没有形成全局样式入口、设计变量和通用样式规范。
-
-从现有样式看，很多颜色、字号、间距都在页面里直接硬编码。例如高频颜色包括：
-
-- `#16181a`
-- `#ffffff`
-- `#667085`
-- `#1a5eff`
-- `#eef2f6`
-- `#f5f7fb`
-- `#d0d5dd`
-
-高频字号也大量重复，例如 `22px`、`23px`、`24px`、`25px`、`30px`、`42px`。间距也有大量重复写法，例如 `24px`、`20px 24px 0`、`32px 24px 24px`、`20px 24px 40px`。
-
-这说明当前页面视觉风格虽然整体相近，但还没有抽象成统一 token。后期页面继续增加后，很容易出现这些问题：
-
-- 同一种主色、文本色、背景色在几十个文件里重复写。
-- 按钮、卡片、空态、列表、表单在不同页面样式不完全一致。
-- 想调整品牌色、字号、圆角、页面背景时，需要全项目搜索替换。
-- 页面 SCSS 和页面 TSX 一样继续变大。
-- 新页面容易复制旧页面样式，导致重复越来越多。
-
-优化方向：
-
-- 建立样式 token，例如颜色、字号、间距、圆角、边框、层级。
-- 新增 `src/styles/` 目录，放 `variables.scss`、`mixins.scss`、`tokens.scss`、`components.scss` 等基础样式。
-- `app.scss` 作为全局样式入口，引入基础样式和通用类。
-- 抽出常见样式模式，例如页面容器、页面 header、卡片、主按钮、次按钮、标签、空态、加载态、表单行。
-- 页面 SCSS 只保留页面特有布局，不重复定义通用视觉规则。
-- 后续新增页面必须优先使用 token 和通用组件样式。
-
-这块不建议一上来做大规模视觉重构，而是先把高频 token 抽出来，再逐步把新页面和重点页面迁过去。
-
-## 8. 配置和环境变量还需要进一步治理
-
-`src/shared/config/runtime.ts` 里目前有默认测试域名、WebView 白名单、客服 URL、会员 URL、渠道码等配置。这里已经集中管理了，比散落在页面里好，但还不够完整。
-
-当前风险是：
-
-- 默认测试域名可能被带入生产构建。
-- 环境变量缺少示例说明。
-- 某些 URL 带有固定 token，不适合长期放在默认配置里。
-- 不同环境的 API、H5、客服、会员、渠道配置边界不够明确。
-
-优化方向：
-
-- 增加 `.env.example`。
-- 区分开发、测试、预发、生产环境。
-- 生产构建缺少关键环境变量时应该直接失败。
-- WebView 白名单、接口域名、H5 域名、渠道码统一由 runtime 配置管理。
-- 不要把敏感 token 写进默认配置。
-
-## 9. README 还停留在模板阶段
-
-`apps/com.deppon.app/readme.md` 仍然是 Taro RN 模板说明，不能反映当前项目真实情况。
-
-这会影响后期协作：
-
-- 新人不知道正确的安装和启动方式。
-- 不知道为什么不能直接使用小程序 API。
-- 不知道目录分层规则。
-- 不知道原生能力应该接在哪里。
-- 不知道发版和构建流程。
-
-优化方向：
-
-- 重写 README。
-- 写清楚环境要求、启动命令、验证命令、目录结构。
-- 写清楚 RN-only 边界。
-- 写清楚迁移旧小程序业务时的规则。
-- 写清楚 `shared/platform` 的使用方式。
-
-## 10. 平台能力 facade 方向正确，但还要继续坚持
-
-当前 `shared/platform` 已经把扫码、定位、地图、电话、文件、支付、通知、外部 App、实名等能力隔离出来，这是非常重要的工程方向。
-
-后期要避免业务页面直接写：
-
-- `Taro.scanCode`
-- `Taro.getLocation`
-- `Taro.makePhoneCall`
-- `Taro.uploadFile`
-- `wx.*`
-- `my.*`
-- RN NativeModules 直调
-
-如果这些能力散落在页面里，后面接 Android/iOS 原生能力时会非常难维护。
-
-优化方向：
-
-- 所有平台能力必须先进入 `shared/platform`。
-- 页面只依赖稳定 facade。
-- 原生能力未接入时，要有统一降级提示。
-- `check-rn-boundaries` 继续扩展，禁止新增平台 API 直调。
-
-## 11. 依赖和锁文件需要整理
-
-当前工作区有未提交的 `package.json`、`pnpm-lock.yaml` 变更，以及新增的 `Gemfile.lock`。其中 App 依赖里新增了 `expo`，需要确认这是有意引入，还是某个原生能力依赖间接带入。
-
-依赖变更如果不及时整理，后期会出现这些问题：
-
-- 不知道某个包为什么被引入。
-- lockfile 变更和业务代码混在一个提交里。
-- CI、iOS、Android 依赖版本不可复现。
-
-优化方向：
-
-- 每次依赖变更单独提交，写清楚原因。
-- `Gemfile.lock` 通常应该提交，保证 Ruby 依赖稳定。
-- 定期检查未使用依赖。
-- 原生依赖新增时，同步更新 README 和 native 环境说明。
-
-## 三、建议的优化方向总结
-
-## 方向一：先把工程环境稳定下来
-
-项目后期要变大，第一件事不是拆代码，而是让所有人能在同一套环境下稳定安装、验证、运行、构建。
-
-要解决的是：
-
-- Node 版本统一。
-- pnpm 版本统一。
-- CI 版本统一。
-- 原生构建环境说明清楚。
-- `verify:app` 真正可用。
-
-## 方向二：把项目规则固化下来
-
-现在项目已经有一些好的规则，但还没有完全自动化和单源化。
-
-要继续固化的是：
-
-- 路由统一注册。
-- 登录守卫统一管理。
-- 平台能力统一 facade。
-- 请求层统一响应处理。
-- 页面不能越过 service 直接访问底层能力。
-- 小程序 API 不能重新混入 RN App。
-
-## 方向三：控制业务复杂度，不让核心模块继续变成巨石
-
-订单、寄件、发票是后期最复杂的业务域，必须提前拆。
-
-优化方向不是简单“把文件切小”，而是按职责拆：
-
-- API 调用。
-- 数据映射。
-- 业务规则。
-- 业务动作编排。
-- 页面展示模型。
-- UI 组件。
-
-这样后期需求增加时，可以清楚知道代码应该放哪里。
-
-## 方向四：补测试，保护后续重构
-
-现在最需要测试的不是 UI，而是业务规则和数据转换。
-
-优先测试：
-
-- 请求归一。
-- 缓存过期。
-- 登录守卫。
-- 路由处理。
-- 订单状态。
-- 寄件校验。
-- 发票转换。
-- 优惠券规则。
-
-测试不是为了追求覆盖率数字，而是为了让后面敢拆、敢改、敢迁移。
-
-## 方向五：建立样式体系，减少页面级重复
-
-现在的 SCSS 还处在“页面自己维护样式”的阶段。短期能跑，但后期页面越来越多时，视觉一致性和维护成本都会变差。
-
-建议朝这几个方向收敛：
-
-- 用 `src/styles` 管理颜色、字号、间距、圆角等 token。
-- 把页面容器、header、card、button、empty、loading、form row 等高频模式沉淀成通用样式或通用组件。
-- 页面样式只写业务特有布局。
-- 新页面不再随手硬编码品牌色和文本色。
-- 重点页面逐步替换高频重复样式，不做一次性大改。
-
-样式治理的目标不是让所有页面长得一样，而是让同一种 UI 语义只有一种实现方式。
-
-## 方向六：沉淀文档，降低协作成本
-
-当前 `docs/rn-refactor-plan.md` 已经记录了迁移计划，但还缺少面向日常开发的工程文档。
-
-建议补齐：
-
-- 项目 README。
-- 目录分层规范。
-- 新增模块规范。
-- 新增页面规范。
-- Native 能力接入规范。
-- 环境变量说明。
-- 发版和 CI 说明。
-
-## 四、推荐优先处理顺序
-
-第一优先级：
-
-- 统一 Node/pnpm/CI 环境。
-- 清理模板 CI 和发布配置。
-- 整理当前依赖和锁文件变更。
-
-第二优先级：
-
-- 路由配置单源化。
-- 增加路由一致性检查。
-- 扩展 RN 边界检查。
-
-第三优先级：
-
-- 引入测试框架。
-- 先给请求、缓存、路由、登录守卫补测试。
-
-第四优先级：
-
-- 拆 `order.service.ts`。
-- 拆 `pages/order/detail/index.tsx`。
-- 拆 `pages/express/index.tsx`。
-- 拆 `express.service.ts`。
-
-第五优先级：
-
-- 建立 `src/styles`。
-- 抽取颜色、字号、间距、圆角 token。
-- 抽出页面容器、卡片、按钮、空态、加载态等通用样式。
-
-第六优先级：
-
-- 重写 README。
-- 补充模块开发规范。
-- 沉淀通用 UI、hooks 和业务模板。
-
-## 五、最终建议
-
-当前项目应该朝“可长期维护的业务 App 工程”方向优化，而不是只继续堆页面和接口。
-
-短期重点是让工程链路稳定，中期重点是收敛路由、请求、平台能力、样式体系和测试，长期重点是把订单、寄件、发票这些核心业务域拆成清晰的领域模块。
-
-如果继续按照现在的方式直接迁移更多页面，项目会越来越快地进入巨石阶段；如果现在先把工程规则补好，后面业务继续增长时维护成本会低很多。
+## 图片处理边界
+
+- 主线程上下文不承载图片内容，只承载图片路径与结论；需要看图时交给子代理解析。
+- 子代理只回流结构化文本（结论、字段、`文件:行号`），不得回流图片数据。
+- 一次涉及多图时，先按 request body 字节预算分批（base64 约为原始大小的 1.37 倍），超限再降级分片，不要一次性塞给单个子代理。
+- 具体流程见全局 skill `delegate-image-analysis`。你可以优化这个skill在你实际使用的场景下,但是不要改变它的边界和原则。在优化它之前,向我确认你的优化方案,经过确认后再执行优化。
+
+---
+
+## 一、这份文档的定位
+
+项目已经跨过“先让工程能跑”的阶段：底座、分层、门禁、测试、文档都不缺了。现在剩下的问题不是“结构乱”，而是
+**性能路径、线上可观测性、以及治理手段本身的可维护性**。不要再按“拆巨石 / 建 token / 补 README”的思路重做一遍。
+
+## 二、已经落地，不要重做（2026-07-07 版清单的现状）
+
+| 原问题 | 现状 | 证据 |
+| --- | --- | --- |
+| 环境未锁（Node/pnpm） | 已锁，且 `verify:config` 第一道就查 | 根 `package.json` engines、`.node-version`、`.nvmrc`、`scripts/check-toolchain.mjs` |
+| CI 模板残留 | 已清，`app-quality` / `android-release` / `ios-release` 三个 workflow 都是真实 App 身份 | `.github/workflows/*` |
+| 路由分散 | 已单源化：`routeRegistry.ts` 派生 `APP_ROUTES`、`app.config.ts` pages、登录守卫 | `check-route-registry.mjs` |
+| service 巨石 | 已拆，`order.service.ts` / `express.service.ts` 这类文件已不存在 | `src/services/{order,express,invoice}/**` 按 `api/rules/mapper/useCases` 分裂 |
+| 页面巨石 | 已拆，express 页 346 行、order/detail 138 行 | 页面 UI 进各自 `components/` |
+| 样式无 token | 已建，`_tokens.scss` 被全部 scss 文件 `@use`，另有 baseline 门禁 | `src/styles/`、`check-style-governance.mjs` |
+| 运行时配置 | 已有 `check:runtime-config` + 产物内校验 | `apps/com.deppon.app/package.json` scripts |
+| README 模板 | 已重写（351 行，含发布门禁） | `apps/com.deppon.app/readme.md` |
+| 平台能力直调 | 已有 14 个 platform facade + 边界门禁 | `src/shared/platform/*`、`check-rn-boundaries.mjs` |
+| 缺测试 | 已有 365 个业务测试（Node test runner） | `scripts/business-tests/**` |
+| `expo` 是否误引入 | **是故意的**：Taro RN autolinking 硬性要求，且被门禁反向锁死 | `check-rn-boundaries.mjs` 的 `nativeIdentityChecks` |
+
+## 三、当前真实待办
+
+### P0 长列表虚拟化（已完成）
+
+- 现状：业务代码被禁止 `import 'react-native'`，所以历史上所有列表都是 Taro `ScrollView` + `map` + 分页追加，
+  没有任何窗口化。订单/支付/打印/消息/优惠券这类“一直往下翻”的页面会全量渲染。
+- 已做：`src/shared/native/AppVirtualList.tsx`（RN `FlatList` 唯一出口），`print/list`、`order/list`、
+  `payment/list`、`message/list`、`coupon/list` 五个列表页全部迁移。
+- 迁移要点：`extraData` 必须带渲染相关的外部状态（如状态 tab、删除中/带入中 key），否则切状态后行内容不刷新。
+- 验收：`pnpm verify:app` 全绿；真机仍需确认滚动与触底加载不掉帧。
+
+### P0 启动与错误兜底（已完成）
+
+- `AppBootScreen`：启动期有形骨架，不再是白屏；bootstrap 拒绝时展示失败原因 +「重试」。
+  重试之所以有效，是因为 `app.bootstrap` 在失败后释放了缓存的 promise。
+- 5s 超时仍放行进入 App，避免网络慢时长期卡在启动页。
+- `AppErrorBoundary` + `analytics.reportAppError` 接管渲染期异常，上报通道通过 `setAppErrorReporter` 注入。
+- 唯一待外部动作：接入 Sentry/Bugly 后在 `app.bootstrap` 里调用一次 `setAppErrorReporter(...)`，错误出口不用再改。
+
+### P1 打包体积（已量化，lucide 已治理）
+
+- 实测（`bundle:android` + sourcemap 归因）：**5.18 MB → 3.66 MB（−1.59 MB，−29%）**，模块 3420 → 1925。
+- 主因：`lucide-react-native` 从包根具名导入会把 1545 个图标全打进包（1549 模块 / 1.27 MB），实际只用 52 个。
+  已改成 `dist/esm/icons/<name>.js` 深导入（`types/lucide-icons.d.ts` 补 ambient 声明），lucide 降到 54 模块 / 34 KB。
+- `lodash` 90 模块 / 594 KB 已归因：来自 `@tarojs/helper` 与 Taro 运行时（`@tarojs/taro` → `components-rn` → `taro-rn`），
+  不是业务直接依赖。低成本手段只有 `patch-package` 把 Taro 内部的全量 `lodash` 导入改成按需，收益/风险需单独评估。
+- `expo-camera` **不能删**：`android/build.gradle` 的 `allprojects.repositories` 会校验
+  `node_modules/expo-camera/android/maven`，缺失即抛 `GradleException`。JS 侧零引用，但这是 Gradle 的硬依赖。
+- `qrcode` 27 模块 / 71 KB、`crypto-js` 87 KB 仍可评估替换（两者都是纯 JS 小包，优先级低）。
+- 仍缺 bundle 体积预算门禁：现在只校验产物配置和 sourcemap，不校验体积增速。
+
+### P1 测试基建（双层已搭好，覆盖率待迁移）
+
+- vitest 已接入：`test/unit/**` 直接 import TS，`pnpm --filter com.deppon.app run test:unit` 带 v8 coverage，
+  已挂进 `verify:static`。当前 12 个文件 154 个用例，含两个原本最薄弱的模块：`goodsCheck.rules.ts`（cjs 覆盖仅 41%）、
+  `monthlyPay.ts`（15%），现在都在 100%；另有 `request/*` 与 `auth/login.rules.ts`。
+- cjs 一侧终于有真实覆盖率入口：`pnpm --filter com.deppon.app run test:business-rules:coverage`。
+  实测 **lines 70.66% / branches 80.31%**，缺口集中在 `.service.ts` 编排层与 `.api.ts` 薄封装。
+- 阈值按文件设（`coverage.thresholds`：线 95 / 分支 90），不设全局阈值——大量 rules 仍由
+  `scripts/business-tests`（node:test）覆盖，两个 runner 的覆盖率暂不合并，全局数字（随 include 范围变化，当前 2.63%）是口径问题不是质量问题。
+- 一个关键结论：`src/services/**` 的 23 个 `*.rules.ts` 里，cjs 套件**只漏了 1 个**（`gis/weather.rules.ts`，已用 vitest 补上）。
+  规则层覆盖已接近饱和，真正的大缺口在 `.service.ts` 编排层与 `.api.ts` 薄封装——再往 vitest 迁 rules 的边际收益已经很低。
+- 覆盖率继续往上走的正确姿势已验证：`test/unit/template/template-service.test.ts` 用 `vi.mock` 同时替换 `template.api`
+  与 `template.mapper`，直接摆数据驱动 8 个编排分支（列表排序/条数上限/status=false/result=false/默认位翻转…），
+  16 个用例把 `template.service.ts` 从 37% 拉到 **lines 100% / branches 98.14% / funcs 100%**，且不需要起 HTTP。
+  这套「api + mapper mock」是后续补 `.service.ts` 的标准模板。
+- 同一模板已在 invoice 落地：`invoice.taxpayer.service.ts` 21% → **lines/branches/funcs 全 100%**（12 用例，
+  覆盖新增/修改走不同接口、企业抬头查询的 ≤3 字短路与 3s 超时、删除 payload 包装）。
+- `invoice.apply.service.ts`（13.56% → lines 97.82% / branches 91.48% / funcs 100%，18 用例）：覆盖两条提交链路
+  （电子发票 / 储值卡）的不同接口与默认文案、预览可用性、邮箱校验顺序、三个 action 透传、开票运单归一。
+- `orderSearch.service.ts`（20% → lines 98.14% / branches 94.23% / funcs 100%，19 用例）：覆盖运单号查询/付款人校验/
+  发码/验码四条链路，以及三种验证挑战（02 手机后四位、03 收/发货人电话、其余走 6 位验证码）的文案与长度契约；
+  有挑战时**结果列表被清空**只回挑战。
+- `query.dispatch.ts`（24% → lines 100% / branches 91.42% / funcs 100%，18 用例）：覆盖地址识别→收派范围的两段式流程，
+  快递/物流两条取数分支，以及提示语与下单资格的判定矩阵（空范围 / 网点自提 / 不服务 / 可寄收 / 特殊规则）。
+  其中「命中街道属于自提或不服务」的优先级、街道查询失败降级为空串，都是只看代码才能确认的契约。
+- `payment.service.ts`（59% → lines 100% / branches 95.5% / funcs 100%，24 用例）：覆盖金额取值优先级
+  （未付先 `unWriteoffAmount`、已付先 `writeoffAmount`、非法值归 0）、京东支付项在未付列表被过滤而已付保留、
+  分页字段后端缺省时的推导、两种状态的不同失败文案、运单号单/多值查询参数、以及「全部为京东支付 → 不可在线支付」。
+- 编排层这一档到此收口（template / invoice×2 / orderSearch / query.dispatch / payment 六个文件已全部纳管）。
+- `@types/jest` 仍是无主残留（删它要同步 `pnpm install`，别只改 `package.json`）。
+
+### P1 门禁实现方式（AST 层已起步）
+
+- 新增本地插件 `packages/eslint-plugin-app`，已把三条**可判定**的禁止类规则从正则下沉为 AST 规则：
+  `no-direct-react-native`（含 `require`/动态 import）、`no-taro-platform-api`（Taro 平台 API + `wx.*`/`my.*`）、
+  `no-service-api-import`（页面/shared 层绕 service 直调 `.api`）。规则带 `allow` 片段参数，与脚本白名单一致。
+  收益是**编辑器里即时报错**，且别名/字符串拼接绕不过去；已用探针文件验证 4 类违规全部被拦。
+- 脚本层（`check-rn-boundaries` / `check-styles`）保留为提交前兜底，两者重叠的部分以 ESLint 为准。
+- **scss 结构规则也已下沉**：`position: fixed/sticky`、`display: grid`、`border-*-style`、`grid-*` 用内置
+  `declaration-property-value-disallowed-list` / `property-disallowed-list` 表达（`elevation` 走 `overrides` 只压 pages）；
+  伪元素与「Sass 导入必须写全 `.scss`」两条写成自定义插件 `scripts/stylelint-rules/index.mjs`（ESM，避免 CJS 弃用告警）。
+  `check-rn-boundaries.mjs` 里 12 条 scss 正则已删除（69 → 57 条规则），scss 现在只有 stylelint 一个出口。
+  对应断言从 boundary 契约测试搬到 `style-governance-lib.test.mjs` 的 stylelint 契约测试，逐个构造片段验证会拦。
+- 仍需下沉的：`check-rn-boundaries` 里“某文件必须包含某字符串”这类行为契约（应改成“公共 API 存在 + 有单测”）。
+
+### P2 结构残留
+
+- barrel 收敛：`check:barrels` 门禁（`scripts/check-service-barrels.mjs`）统计**运行时** `export *`（`./types` 纯类型转发不计入），
+  只降不增；`update:barrels-baseline` 收紧基线。新增 `scripts/expand-service-barrels.mjs` 自动展开工具
+  （`--domains=a,b --dry-run`），把运行时 `export *` 拆成 `export { ... }` / `export type { ... }`。
+- 进度：**136 → 0**。24 个领域的运行时 `export *` 已全部展开为显式导出，纯类型转发（`./types`、`*.types`）仍保留 `export *`。
+  最大的两个 barrel 现在是 `express/index.ts`（293 行）与 `order/index.ts`（183 行），仍在模块体积门禁内（service 基准 450）。
+- 生成器要点：解析目标模块的 `export const/function/class/enum`、`export interface/type`、`export { ... }`、
+  **`export type { ... } from`**（漏了它会把 `OrderResendMode` 这类类型丢掉，`tsc` 会当场报错）；
+  单行超过 120 字符时自动换行，避免 `max-len` 告警。
+- 坑：生成器里别把局部变量命名为 `exports`——`import/no-commonjs` 会把 `exports.xxx` 误判为 CommonJS 写法。
+- 安全网：展开后如果漏了符号，`tsc` 会在消费者处直接报错，所以这一步可以放心批量做。
+- 列表空/错/载状态组件仍是每页一套（`OrderListStates`、`PaymentListStates`、`PrintListStates`、`CouponListStates`、
+  `InvoiceCenterStates`），可借 `AppVirtualList` 的 `empty` / `footer` 收敛成一套。
+- 页面里仍有业务判断回流（如 `pages/order/list/index.tsx` 的 `canCancelOrder` / `canModifyOrder`），
+  体积门禁管不到“规则是否在正确层”，可给 `check-business-rules` 加一条软告警。
+
+### P3 CI
+
+- `app-quality.yml` 每个 PR 都装 Android SDK（platform-tools/NDK/cmake），但 job 只跑静态门禁，
+  建议拆成“静态”和“native env”两个 job，省掉重复的 20+ 分钟。
+
+---
+
+## 四、本次改动（2026-10-21）
+
+1. 新增 `src/shared/native/AppVirtualList.tsx`，并在 `shared/native/index.ts` 导出。
+2. `print/list`、`order/list`、`payment/list`、`message/list`、`coupon/list` 从 `ScrollView + map` 迁到 `AppVirtualList`。
+   - `order/list`：`OrderListContent` 收敛为 `OrderListFooter`（只管空/错/载），卡片改由 `renderItem` 渲染。
+   - `payment/list`、`message/list`：筛选/标题区改为固定区（原先随列表滚动）。
+   - `coupon/list`：兑换条、状态 tab、汇总仍作为列表 header 随滚动，卡片单独左右留白。
+3. 新增 `src/shared/components/AppErrorBoundary`（组件 + scss + barrel 导出）。
+4. `src/shared/platform/analytics.ts` 新增 `reportAppError`：native 日志 + 埋点通道（未接入时返回 false）。
+5. `src/app.ts`：接入 `AppErrorBoundary`，bootstrap 增加 5s 超时与错误上报。
+6. `src/app.scss` 改为引用 `styles/index.scss`；`index.scss` 成为全局入口（forward tokens + page-patterns）。
+7. `scripts/business-tests/message/page-actions.test.cjs` 增加 `AppVirtualList` 展开逻辑（页面依赖白名单同步放行 `@/shared/native`）。
+8. 样式基线经 `update:styles-baseline` 收紧（新增 `AppErrorBoundary` / `AppBootScreen` 条目、清理迁移后消失的间距债务）。
+9. 新增 `AppBootScreen`（`shared/components`）：`app.ts` 启动期展示骨架，bootstrap 失败时给出重试入口。
+10. `app.bootstrap.ts` 失败后释放缓存 promise；`analytics` 新增 `setAppErrorReporter`，并补 3 个单测
+    （`scripts/business-tests/analytics/report-error.test.cjs`）。
+11. 接入 vitest 5 + `@vitest/coverage-v8`：`vitest.config.mts`、`test/setup.ts`（注入 `__APP_RUNTIME_CONFIG__`）、
+    `test/unit/{request,auth}/*.test.ts`；`test:unit` 带覆盖率并挂进 `verify:static`。
+12. `tsconfig` 纳入 `test/`，ESLint 同步覆盖 `test/**/*.ts`，单测也过类型与风格门禁。
+13. 依赖变更：`vitest`、`@vitest/coverage-v8`、`vite`（vitest 的 peer），lockfile 已同步。
+14. bundle 体积量化并治理 lucide：`AppIcon` 改 52 个深导入 + `types/lucide-icons.d.ts`，bundle −1.59 MB（−29%）。
+15. 新增 scss 导入门禁：`check-rn-boundaries` 要求 `@use/@forward` 写全 `.scss`。Taro RN 的 Sass importer
+    不做无扩展名解析，这类错误只在打包阶段暴露（本次真实踩到）。已用探针文件验证门禁会拦截。
+16. `app.scss` 改用 `@use '../src/styles/index.scss'`，`index.scss` 显式 forward `./_tokens.scss` / `./_page-patterns.scss`
+    ——相对路径 + 全文件名是 Taro RN importer 唯一稳定的写法。
+17. 新增 vitest 用例 16 个：`goodsCheck.rules`（41% → 100%）、`monthlyPay`（15% → 100%）。
+18. 新增 `test:business-rules:coverage` 脚本，用于查看 cjs 套件的真实覆盖率。
+19. 补 `gis/weather.rules.ts` 的 vitest 用例（cjs 套件唯一完全没加载过的 rules 文件）。
+20. 新增 service 编排层测试模板：`test/unit/template/template-service.test.ts`（16 用例，api + mapper 双 mock），
+    `template.service.ts` 覆盖率 37% → lines 100%。单测总数 63（7 个文件）。
+21. 归因结论写入文档：`lodash` 是 Taro 运行时传递依赖（需 patch-package 才可能减）；
+    `expo-camera` 被 `android/build.gradle` 硬性校验，不能按“零引用”删除。
+22. 新增本地 ESLint 插件 `packages/eslint-plugin-app`（3 条 AST 规则），接入 `.eslintrc`；已用探针验证会拦，
+    现有代码零违规。
+23. 新增 barrel 门禁 `check:barrels` + `scripts/service-barrels-baseline.json`（136 条运行时 `export *`），
+    挂进 `verify:static`；`services/goods` 作为显式导出的样板完成迁移。
+24. 根 `package.json` 增加 `check:app-barrels` 透传脚本，README 命令清单同步。
+25. 编排层测试第二批：`test/unit/invoice/taxpayer-service.test.ts`（12 用例），`invoice.taxpayer.service.ts`
+    覆盖率 21% → 100%。
+26. 编排层测试第三批：`test/unit/invoice/apply-service.test.ts`（18 用例），`invoice.apply.service.ts`
+    覆盖率 13.56% → 97.82%。
+27. 编排层测试第四批：`test/unit/invoice/order-search-service.test.ts`（19 用例），`orderSearch.service.ts`
+    覆盖率 20% → 98.14%。
+28. 编排层测试第五批：`test/unit/query/dispatch-service.test.ts`（18 用例），`query.dispatch.ts`
+    覆盖率 24% → 100%。
+29. 编排层测试第六批收口：`test/unit/payment/payment-service.test.ts`（24 用例），`payment.service.ts`
+    覆盖率 59% → 100%，单测总数 154（12 个文件，12 个文件设阈值）。
+30. barrel 收敛：新增 `scripts/expand-service-barrels.mjs`，先批量展开 18 个小领域（136 → 82），
+    修掉两个工具缺陷（漏解析 `export type { ... } from`、超长单行触发 `max-len`）后，
+    把剩余 order/express 一并展开，最终 **82 → 0**；`tsc` + 两套测试全绿。
+31. scss 规则下沉：新增 `scripts/stylelint-rules/index.mjs`（2 条自定义规则）+ 扩充 `.stylelintrc.cjs`
+    （内置规则 + pages override）；删除 `check-rn-boundaries` 的 12 条 scss 正则与 `checkScssImportSpecifiers`，
+    断言迁到 stylelint 契约测试（71 个 style-governance 用例全绿）。
+
+## 五、执行顺序
+
+1. 新领域禁止再用运行时 `export *`（门禁已是 0 基线）；新增服务时照 `expand-service-barrels.mjs` 生成的显式风格写。
+2. 把 `check-rn-boundaries` 里“必须包含某字符串”的行为契约改写成针对性单测（scss 已迁完）。
+3. 若要继续减体积：`lodash` 走 patch-package 方案评估，或给 bundle 加体积预算门禁（P2）。
