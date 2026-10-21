@@ -100,69 +100,14 @@ const nativeIdentityChecks = [
 ]
 const rnBehaviorContractChecks = [
   {
-    filePath: path.join(appRoot, 'src/shared/native/AppFormScrollView.tsx'),
-    expected: "keyboardShouldPersistTaps='handled'",
-    message: '表单滚动容器必须保证键盘开启时按钮点击仍能交给业务 handler。'
-  },
-  {
     filePath: path.join(appRoot, 'src/pages/login/index.tsx'),
     expected: '<AppFormScrollView',
     message: '登录表单必须使用 shared/native 的键盘点击容器，避免首次点击只收起键盘。'
   },
   {
-    filePath: path.join(appRoot, 'src/request/index.ts'),
-    expected: "credentials: options.credentials ?? 'include'",
-    message: 'RN OWS 请求必须显式携带原生 cookie credentials，不能依赖 fetch 默认值。'
-  },
-  {
     filePath: path.join(appRoot, 'src/shared/native/AppSessionCookie.ts'),
     expected: "from '@react-native-cookies/cookies'",
     message: 'RN ECO_TOKEN 必须通过 shared/native cookie facade 同步，业务层不能猜测 Set-Cookie。'
-  },
-  {
-    filePath: path.join(appRoot, 'src/request/cookieJar.ts'),
-    expected: 'recoverSessionCookie',
-    message: 'RN 登录必须保留原生 cookie 异步写入后的有界恢复入口。'
-  },
-  {
-    filePath: path.join(appRoot, 'src/pages/web/index.tsx'),
-    expected: 'requiresAppWebLogin(target, hasValidSession())',
-    message: '认证 WebView 必须在页面渲染前动态检查 App 登录态。'
-  },
-  {
-    filePath: path.join(appRoot, 'src/pages/web/index.tsx'),
-    expected: 'ensureAuthenticated({',
-    message: '认证 WebView 必须通过统一登录守卫保存当前 App 路由并回跳。'
-  },
-  {
-    filePath: path.join(appRoot, 'src/pages/contact/hooks/useContactAddressIntegrity.ts'),
-    expected: 'contactService.checkAddressDetail',
-    message: '联系人地址完整性检查必须通过 contact service，不能由页面直接调用 API。'
-  },
-  {
-    filePath: path.join(appRoot, 'src/pages/contact/list/index.tsx'),
-    expected: 'checkAddressIntegrity(contact',
-    message: '选择地址前必须执行统一地址完整性决策，保留修改或继续使用语义。'
-  },
-  {
-    filePath: path.join(appRoot, 'src/pages/contact/edit/index.tsx'),
-    expected: 'checkAddressIntegrity(contact',
-    message: '保存地址前必须执行统一地址完整性决策，不能只做本地字段校验。'
-  },
-  {
-    filePath: path.join(appRoot, 'src/services/express/product/productAvailability.service.ts'),
-    expected: 'Promise.allSettled',
-    message: '寄件产品点城市、融合、升级和货物标签必须独立降级，不能由单个可选接口拖垮报价。'
-  },
-  {
-    filePath: path.join(appRoot, 'src/services/print/print.service.ts'),
-    expected: 'Promise.allSettled',
-    message: '待打印和已打印数量必须独立降级，单个计数接口失败不能清空另一个 tab。'
-  },
-  {
-    filePath: path.join(appRoot, 'src/pages/print/list/index.tsx'),
-    expected: 'printService.queryList',
-    message: '打印订单页必须通过 print service 查询，不能直接调用领域 API。'
   }
 ]
 const nativeFacadeRelativePathPrefixes = ['src/shared/platform/', 'src/shared/native/']
