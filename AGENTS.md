@@ -72,8 +72,8 @@
 ### P1 测试基建（双层已搭好，覆盖率待迁移）
 
 - vitest 已接入：`test/unit/**` 直接 import TS，`pnpm --filter com.deppon.app run test:unit` 带 v8 coverage，
-  已挂进 `verify:static`。当前 12 个文件 154 个用例，含两个原本最薄弱的模块：`goodsCheck.rules.ts`（cjs 覆盖仅 41%）、
-  `monthlyPay.ts`（15%），现在都在 100%；另有 `request/*` 与 `auth/login.rules.ts`。
+  已挂进 `verify:static`。当前 22 个文件 258 个用例，含两个原本最薄弱的模块：`goodsCheck.rules.ts`（cjs 覆盖仅 41%）、
+  `monthlyPay.ts`（15%），现在都在 100%；另有 `request/*`、`auth/login.rules.ts` 与本次迁移的 10 个行为契约文件。
 - cjs 一侧终于有真实覆盖率入口：`pnpm --filter com.deppon.app run test:business-rules:coverage`。
   实测 **lines 70.66% / branches 80.31%**，缺口集中在 `.service.ts` 编排层与 `.api.ts` 薄封装。
 - 阈值按文件设（`coverage.thresholds`：线 95 / 分支 90），不设全局阈值——大量 rules 仍由
@@ -98,21 +98,36 @@
   （未付先 `unWriteoffAmount`、已付先 `writeoffAmount`、非法值归 0）、京东支付项在未付列表被过滤而已付保留、
   分页字段后端缺省时的推导、两种状态的不同失败文案、运单号单/多值查询参数、以及「全部为京东支付 → 不可在线支付」。
 - 编排层这一档到此收口（template / invoice×2 / orderSearch / query.dispatch / payment 六个文件已全部纳管）。
+- 行为契约迁移（2026-10-21）：`check-rn-boundaries` 的 `rnBehaviorContractChecks` 13 条已全部清空——
+  11 条纯行为契约改写成 vitest，2 条结构性契约改由 ESLint 强制（见「P1 门禁实现方式」）。
+  新纳管：`request/index.ts`、`request/cookieJar.ts`、`productAvailability.service.ts`、`print.service.ts`、
+  `pages/web/index.tsx`、`contact/hooks/useContactAddressIntegrity.ts`、`shared/native/AppFormScrollView.tsx`，
+  均设线 95 / 分支 90 的按文件阈值。
+- 页面级契约用「直接调用函数组件 + 遍历返回 element」验证：`test/unit/support/react-runtime.ts` 用受控 hooks
+  替代 React 运行时，页面 handler 从返回树里取 `onPress` 直接驱动，不引入 `react-test-renderer` 或
+  `@testing-library/react-native`。联系人 list/edit、打印列表、WebView 页都用这套方式断言「先决策/先鉴权，再继续」。
+  这些页面文件**不进 per-file 覆盖率**：页面渲染分支量大，UI 分支覆盖不代表契约强度，契约由 handler 用例锁定。
 - `@types/jest` 仍是无主残留（删它要同步 `pnpm install`，别只改 `package.json`）。
 
 ### P1 门禁实现方式（AST 层已起步）
 
-- 新增本地插件 `packages/eslint-plugin-app`，已把三条**可判定**的禁止类规则从正则下沉为 AST 规则：
+- 新增本地插件 `packages/eslint-plugin-app`，已把禁止类规则从正则下沉为 AST 规则：
   `no-direct-react-native`（含 `require`/动态 import）、`no-taro-platform-api`（Taro 平台 API + `wx.*`/`my.*`）、
   `no-service-api-import`（页面/shared 层绕 service 直调 `.api`）。规则带 `allow` 片段参数，与脚本白名单一致。
   收益是**编辑器里即时报错**，且别名/字符串拼接绕不过去；已用探针文件验证 4 类违规全部被拦。
+- 强制类结构契约也走 AST：`required-import-source`（指定文件必须从给定模块 import，当前锁
+  `AppSessionCookie.ts` → `@react-native-cookies/cookies`）与 `required-component-source`
+  （指定文件必须渲染来自给定模块的组件，当前锁登录页 → `@/shared/native` 的 `AppFormScrollView`）。
+  两条规则都用 ESLint `Linter` 构造正反例验证：错误来源/缺失渲染会报错，正确写法放行。
 - 脚本层（`check-rn-boundaries` / `check-styles`）保留为提交前兜底，两者重叠的部分以 ESLint 为准。
 - **scss 结构规则也已下沉**：`position: fixed/sticky`、`display: grid`、`border-*-style`、`grid-*` 用内置
   `declaration-property-value-disallowed-list` / `property-disallowed-list` 表达（`elevation` 走 `overrides` 只压 pages）；
   伪元素与「Sass 导入必须写全 `.scss`」两条写成自定义插件 `scripts/stylelint-rules/index.mjs`（ESM，避免 CJS 弃用告警）。
   `check-rn-boundaries.mjs` 里 12 条 scss 正则已删除（69 → 57 条规则），scss 现在只有 stylelint 一个出口。
   对应断言从 boundary 契约测试搬到 `style-governance-lib.test.mjs` 的 stylelint 契约测试，逐个构造片段验证会拦。
-- 仍需下沉的：`check-rn-boundaries` 里“某文件必须包含某字符串”这类行为契约（应改成“公共 API 存在 + 有单测”）。
+- 行为字符串契约已清零：`rnBehaviorContractChecks` 数组与其检查函数都已删除，脚本里不再有「某文件必须包含某字符串」。
+  仍保留的 `nativeIdentityChecks` 不是行为契约，而是 `gradle`/`plist`/`pbxproj`/`package.json` 的原生身份事实，
+  JS 单测无法替代，继续由脚本校验。后续新增行为契约一律进 `test/unit/**`，结构契约进 ESLint，不要再回写字符串断言。
 
 ### P2 结构残留
 
@@ -184,16 +199,33 @@
 28. 编排层测试第五批：`test/unit/query/dispatch-service.test.ts`（18 用例），`query.dispatch.ts`
     覆盖率 24% → 100%。
 29. 编排层测试第六批收口：`test/unit/payment/payment-service.test.ts`（24 用例），`payment.service.ts`
-    覆盖率 59% → 100%，单测总数 154（12 个文件，12 个文件设阈值）。
+    覆盖率 59% → 100%，单测总数 154（12 个文件，12 个文件设阈值；本次行为契约迁移前的基线）。
 30. barrel 收敛：新增 `scripts/expand-service-barrels.mjs`，先批量展开 18 个小领域（136 → 82），
     修掉两个工具缺陷（漏解析 `export type { ... } from`、超长单行触发 `max-len`）后，
     把剩余 order/express 一并展开，最终 **82 → 0**；`tsc` + 两套测试全绿。
 31. scss 规则下沉：新增 `scripts/stylelint-rules/index.mjs`（2 条自定义规则）+ 扩充 `.stylelintrc.cjs`
     （内置规则 + pages override）；删除 `check-rn-boundaries` 的 12 条 scss 正则与 `checkScssImportSpecifiers`，
     断言迁到 stylelint 契约测试（71 个 style-governance 用例全绿）。
+32. 行为契约迁移：新增 10 个 vitest 文件 / 104 个用例（`native/app-form-scroll-view`、`request/request-client`、
+    `request/cookie-jar`、`express/product-availability-service`、`print/print-service`、`contact/contact-address-integrity`、
+    `contact/contact-list-page`、`contact/contact-edit-page`、`web/web-page`、`print/print-list-page`），
+    加 `test/unit/support/react-runtime.ts`（受控 hooks + element 遍历），单测总数 154 → **258（22 个文件）**。
+33. `check-rn-boundaries.mjs` 删除 `rnBehaviorContractChecks` 全部 13 条与 `checkRnBehaviorContracts` 函数：
+    AppFormScrollView 透传、请求 credentials、cookie 恢复、WebView 登录分支、联系人地址决策顺序、
+    产品可用性/打印计数独立降级、打印列表 service 查询等 11 条由单测接管；登录页组件与 AppSessionCookie 来源
+    2 条改由 ESLint 强制。
+34. ESLint 插件新增 `required-import-source` / `required-component-source` 两条规则并接入 `.eslintrc`；
+    用 ESLint `Linter` 构造 5 个正反例探针，4 类违规全部被拦、2 个正确写法放行。
+35. `vitest.config.mts` 打开 `esbuild.jsx = automatic`（让 TSX 组件可被直接 import），coverage include 增加
+    `shared/native/AppFormScrollView.tsx`、`pages/web/index.tsx`、`contact/hooks/useContactAddressIntegrity.ts`，
+    并给 request/index、cookieJar、productAvailability.service、print.service、useContactAddressIntegrity、
+    pages/web、AppFormScrollView 加线 95 / 分支 90 阈值；全量 coverage 通过。
+36. 验证：`pnpm verify:app` exit 0（tsc / eslint / stylelint / 22 文件 258 单测 / 365 个 cjs 用例 / barrel /
+    模块体积 / 路由 / 平台契约），cjs 用例数不变；未执行 RN bundle、Gradle 或 Xcode。
 
 ## 五、执行顺序
 
 1. 新领域禁止再用运行时 `export *`（门禁已是 0 基线）；新增服务时照 `expand-service-barrels.mjs` 生成的显式风格写。
-2. 把 `check-rn-boundaries` 里“必须包含某字符串”的行为契约改写成针对性单测（scss 已迁完）。
+2. 行为字符串契约已迁完；后续新增契约按类型落位：纯行为进 `test/unit/**`，结构/来源约束进 `packages/eslint-plugin-app`，
+   不要再往 `check-rn-boundaries` 写「某文件必须包含某字符串」。
 3. 若要继续减体积：`lodash` 走 patch-package 方案评估，或给 bundle 加体积预算门禁（P2）。
