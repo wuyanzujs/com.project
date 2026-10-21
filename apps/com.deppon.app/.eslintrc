@@ -17,6 +17,21 @@
         "app/no-direct-react-native": ["error", { "allow": ["/src/shared/native/", "/src/shared/platform/"] }],
         "app/no-taro-platform-api": ["error", { "allow": ["/src/shared/platform/", "/src/shared/native/"] }],
         "app/no-service-api-import": "error",
+        "app/required-import-source": [
+          "error",
+          {
+            "files": ["/src/shared/native/AppSessionCookie.ts"],
+            "source": "@react-native-cookies/cookies"
+          }
+        ],
+        "app/required-component-source": [
+          "error",
+          {
+            "files": ["/src/pages/login/index.tsx"],
+            "name": "AppFormScrollView",
+            "source": "@/shared/native"
+          }
+        ],
         "semi": ["error", "never"],
         "quotes": ["error", "single", { "avoidEscape": true }],
         "jsx-quotes": ["error", "prefer-single"],

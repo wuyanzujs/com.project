@@ -98,18 +98,6 @@ const nativeIdentityChecks = [
     message: 'iOS Bundle ID 应使用 com.deppon.app。'
   }
 ]
-const rnBehaviorContractChecks = [
-  {
-    filePath: path.join(appRoot, 'src/pages/login/index.tsx'),
-    expected: '<AppFormScrollView',
-    message: '登录表单必须使用 shared/native 的键盘点击容器，避免首次点击只收起键盘。'
-  },
-  {
-    filePath: path.join(appRoot, 'src/shared/native/AppSessionCookie.ts'),
-    expected: "from '@react-native-cookies/cookies'",
-    message: 'RN ECO_TOKEN 必须通过 shared/native cookie facade 同步，业务层不能猜测 Set-Cookie。'
-  }
-]
 const nativeFacadeRelativePathPrefixes = ['src/shared/platform/', 'src/shared/native/']
 const cacheFacadeRelativePathPrefixes = ['src/cache/']
 const pageUiRelativePathPrefix = 'src/pages/'
@@ -642,33 +630,6 @@ function checkNativeIdentity() {
 }
 
 checkNativeIdentity()
-
-function checkRnBehaviorContracts() {
-  for (const item of rnBehaviorContractChecks) {
-    if (!existsSync(item.filePath)) {
-      violations.push({
-        filePath: item.filePath,
-        line: 1,
-        token: path.relative(appRoot, item.filePath),
-        message: item.message
-      })
-      continue
-    }
-
-    const content = readFileSync(item.filePath, 'utf8')
-
-    if (!content.includes(item.expected)) {
-      violations.push({
-        filePath: item.filePath,
-        line: 1,
-        token: item.expected,
-        message: item.message
-      })
-    }
-  }
-}
-
-checkRnBehaviorContracts()
 
 for (const filePath of walkFiles(srcRoot)) {
   const content = readFileSync(filePath, 'utf8')
