@@ -5,10 +5,6 @@ import { AppPressable } from '@/shared/components'
 
 import './index.scss'
 
-function getOrderCardKey(order: OrderListItem) {
-  return `${order.role}-${order.orderNumber}-${order.waybillNumber}`
-}
-
 export function OrderListEmpty(props: { title: string }) {
   return (
     <View className='order-empty'>
@@ -104,50 +100,14 @@ export function OrderCard(props: {
   )
 }
 
-export function OrderListContent(props: {
-  orders: OrderListItem[]
-  loading: boolean
-  errorMessage: string
-  emptyTitle: string
-  deletingOrderKey: string
-  resendingOrderKey: string
-  canCancelOrder: (order: OrderListItem) => boolean
-  canDeleteOrder: (order: OrderListItem) => boolean
-  canModifyOrder: (order: OrderListItem) => boolean
-  canResendOrder: (order: OrderListItem) => boolean
-  getOrderActionKey: (order: OrderListItem) => string
-  getResendActionText: (order: OrderListItem) => string
-  onOpenDetail: (order: OrderListItem) => void
-  onCancelOrder: (order: OrderListItem) => void
-  onDeleteOrder: (order: OrderListItem) => void
-  onModifyOrder: (order: OrderListItem) => void
-  onResendOrder: (order: OrderListItem) => void
-}) {
-  return (
-    <View className='order-list-content'>
-      {props.orders.map(order => (
-        <OrderCard
-          canCancelOrder={props.canCancelOrder}
-          canDeleteOrder={props.canDeleteOrder}
-          canModifyOrder={props.canModifyOrder}
-          canResendOrder={props.canResendOrder}
-          deletingOrderKey={props.deletingOrderKey}
-          getOrderActionKey={props.getOrderActionKey}
-          getResendActionText={props.getResendActionText}
-          key={getOrderCardKey(order)}
-          order={order}
-          resendingOrderKey={props.resendingOrderKey}
-          onCancelOrder={props.onCancelOrder}
-          onDeleteOrder={props.onDeleteOrder}
-          onModifyOrder={props.onModifyOrder}
-          onOpenDetail={props.onOpenDetail}
-          onResendOrder={props.onResendOrder}
-        />
-      ))}
+export function OrderListFooter(props: { emptyTitle: string; errorMessage: string; loading: boolean; orders: OrderListItem[] }) {
+  if (props.loading) {
+    return <OrderListLoading hasOrders={!!props.orders.length} />
+  }
 
-      {!props.orders.length && !props.loading && <OrderListEmpty title={props.errorMessage || props.emptyTitle} />}
+  if (!props.orders.length) {
+    return <OrderListEmpty title={props.errorMessage || props.emptyTitle} />
+  }
 
-      {props.loading && <OrderListLoading hasOrders={!!props.orders.length} />}
-    </View>
-  )
+  return null
 }

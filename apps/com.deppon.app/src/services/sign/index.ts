@@ -1,3 +1,3 @@
-export * from './sign.api'
-export * from './sign.service'
+export { signApi } from './sign.api'
+export { signService, createSignCodePayload } from './sign.service'
 export * from './types'

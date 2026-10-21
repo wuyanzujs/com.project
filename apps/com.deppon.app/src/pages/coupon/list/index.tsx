@@ -1,4 +1,4 @@
-import { ScrollView, View } from '@tarojs/components'
+import { View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useMemo, useRef, useState } from 'react'
@@ -8,6 +8,7 @@ import type { CouponCardView, CouponStatus } from '@/services/coupon'
 import { createExpressDraft, expressDraftBridge, expressDraftStorage, markExpressQuoteStale } from '@/services/express'
 import { memberService } from '@/services/member'
 import { LatestRequestCoordinator } from '@/shared/async/latestRequest'
+import { AppVirtualList } from '@/shared/native'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -223,33 +224,43 @@ const CouponListPage = () => {
   }
 
   return (
-    <ScrollView className='coupon-list-page' scrollY>
-      <CouponExchangeBar
-        exchanging={exchanging}
-        value={exchangeCode}
-        onBlur={value => setExchangeCode(value.trim())}
-        onChange={setExchangeCode}
-        onExchange={handleExchange}
+    <View className='coupon-list-page'>
+      <AppVirtualList
+        extraData={`${status}|${openingWelfare}`}
+        footer={
+          <CouponListStates
+            emptyTitle={errorMessage || `暂无${activeTabText}优惠券`}
+            hasCoupons={coupons.length > 0}
+            loading={loading}
+            openingWelfare={openingWelfare}
+            onOpenWelfare={handleOpenWelfare}
+          />
+        }
+        header={
+          <>
+            <CouponExchangeBar
+              exchanging={exchanging}
+              value={exchangeCode}
+              onBlur={value => setExchangeCode(value.trim())}
+              onChange={setExchangeCode}
+              onExchange={handleExchange}
+            />
+
+            <CouponStatusTabs activeStatus={status} tabs={COUPON_TABS} onChange={handleChangeStatus} />
+
+            <CouponSummary count={coupons.length} title={activeTabText} />
+          </>
+        }
+        items={coupons}
+        keyExtractor={getCouponKey}
+        paddingHorizontal={0}
+        renderItem={coupon => (
+          <View className='coupon-list-item'>
+            <CouponCard coupon={coupon} onOpenDetail={handleOpenDetail} onUse={handleUseCoupon} />
+          </View>
+        )}
       />
-
-      <CouponStatusTabs activeStatus={status} tabs={COUPON_TABS} onChange={handleChangeStatus} />
-
-      <CouponSummary count={coupons.length} title={activeTabText} />
-
-      <View className='coupon-list-content'>
-        {coupons.map((coupon, index) => (
-          <CouponCard coupon={coupon} key={getCouponKey(coupon, index)} onOpenDetail={handleOpenDetail} onUse={handleUseCoupon} />
-        ))}
-
-        <CouponListStates
-          emptyTitle={errorMessage || `暂无${activeTabText}优惠券`}
-          hasCoupons={coupons.length > 0}
-          loading={loading}
-          openingWelfare={openingWelfare}
-          onOpenWelfare={handleOpenWelfare}
-        />
-      </View>
-    </ScrollView>
+    </View>
   )
 }
 

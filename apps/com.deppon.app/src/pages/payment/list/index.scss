@@ -1,8 +1,8 @@
 @use '@/styles/_tokens.scss' as *;
 .payment-list-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   min-height: 100%;
   background: $dp-color-bg-page;
-}
-.payment-list-content {
-  padding: 20px 24px 40px;
 }

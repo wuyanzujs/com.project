@@ -74,7 +74,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 58
+        "lines": 59
       },
       "src/pages/account/settings/index.scss": {
         "rawColors": 0,
@@ -312,9 +312,9 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
-        "rawSpaces": 2,
+        "rawSpaces": 1,
         "usesTokens": true,
-        "lines": 11
+        "lines": 13
       },
       "src/pages/courier/detail/content.scss": {
         "rawColors": 0,
@@ -364,7 +364,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 174
+        "lines": 175
       },
       "src/pages/customer/center/CustomerCapabilitySection.scss": {
         "rawColors": 0,
@@ -624,7 +624,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 100
+        "lines": 112
       },
       "src/pages/express/components/ExpressPrivacyCard/index.scss": {
         "rawColors": 0,
@@ -1224,7 +1224,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 91
+        "lines": 87
       },
       "src/pages/message/list/index.scss": {
         "rawColors": 0,
@@ -1234,7 +1234,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 6
+        "lines": 8
       },
       "src/pages/mine/components/MineEntryGrids/index.scss": {
         "rawColors": 0,
@@ -1664,7 +1664,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 5
+        "lines": 7
       },
       "src/pages/order/stub/components/OrderStubActions/index.scss": {
         "rawColors": 0,
@@ -1892,7 +1892,7 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
-        "rawSpaces": 1,
+        "rawSpaces": 0,
         "usesTokens": true,
         "lines": 8
       },
@@ -1974,7 +1974,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 22
+        "lines": 13
       },
       "src/pages/privacy/settings/content.scss": {
         "rawColors": 0,
@@ -2254,7 +2254,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 134
+        "lines": 135
       },
       "src/pages/support/center/index.scss": {
         "rawColors": 0,
@@ -2285,6 +2285,16 @@
         "rawSpaces": 1,
         "usesTokens": true,
         "lines": 11
+      },
+      "src/shared/components/AppBootScreen/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 22
       },
       "src/shared/components/AppButton/index.scss": {
         "rawColors": 0,
@@ -2325,6 +2335,16 @@
         "rawSpaces": 0,
         "usesTokens": true,
         "lines": 49
+      },
+      "src/shared/components/AppErrorBoundary/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 30
       },
       "src/shared/components/AppFormField/index.scss": {
         "rawColors": 0,

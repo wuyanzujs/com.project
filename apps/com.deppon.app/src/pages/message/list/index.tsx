@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from '@tarojs/components'
+import { Text, View } from '@tarojs/components'
 import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 
 import { useCallback, useRef, useState } from 'react'
@@ -6,6 +6,7 @@ import { useCallback, useRef, useState } from 'react'
 import { messageService } from '@/services/message'
 import type { MessageGroupKey, MessageItemView } from '@/services/message'
 import { AppEmptyState, AppPressable } from '@/shared/components'
+import { AppVirtualList } from '@/shared/native'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -130,15 +131,33 @@ const MessageListPage = () => {
   }
 
   return (
-    <ScrollView className='message-list-page' scrollY>
+    <View className='message-list-page'>
       <View className='message-list-nav'>
         <Text className='message-list-nav__title'>{groupName}</Text>
         <Text className='message-list-nav__summary'>共 {items.length} 条</Text>
       </View>
 
-      <View className='message-list-content'>
-        {items.map(item => (
-          <View className='message-item-card' key={item.id}>
+      <AppVirtualList
+        empty={
+          loading ? null : (
+            <AppEmptyState
+              title={errorMessage || emptyText}
+              action={
+                <AppPressable className='message-list-reload' onPress={loadMessages}>
+                  <Text className='message-list-reload__text'>重新加载</Text>
+                </AppPressable>
+              }
+            />
+          )
+        }
+        extraData={processingId}
+        items={items}
+        keyExtractor={item => item.id}
+        paddingBottom={40}
+        paddingHorizontal={24}
+        paddingTop={8}
+        renderItem={item => (
+          <View className='message-item-card'>
             <AppPressable className='message-item-card__body' onPress={() => handleOpenMessage(item)}>
               <View className='message-item-card__top'>
                 {!item.isRead && <View className='message-item-card__dot' />}
@@ -151,20 +170,9 @@ const MessageListPage = () => {
               <Text className='message-item-card__delete-text'>{processingId === item.id ? '删除中' : '删除'}</Text>
             </AppPressable>
           </View>
-        ))}
-
-        {!items.length && !loading && (
-          <AppEmptyState
-            title={errorMessage || emptyText}
-            action={
-              <AppPressable className='message-list-reload' onPress={loadMessages}>
-                <Text className='message-list-reload__text'>重新加载</Text>
-              </AppPressable>
-            }
-          />
         )}
-      </View>
-    </ScrollView>
+      />
+    </View>
   )
 }
 

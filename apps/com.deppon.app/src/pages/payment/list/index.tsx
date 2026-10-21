@@ -1,4 +1,4 @@
-import { ScrollView, View } from '@tarojs/components'
+import { View } from '@tarojs/components'
 import { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useRef, useState } from 'react'
@@ -6,6 +6,7 @@ import { useCallback, useRef, useState } from 'react'
 import { createPaymentCheckoutUrl, createPaymentEvaluateWebUri, paymentService } from '@/services/payment'
 import type { PaymentItem, PaymentListStatus, PaymentRole } from '@/services/payment'
 import { LatestRequestCoordinator } from '@/shared/async/latestRequest'
+import { AppVirtualList } from '@/shared/native'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -193,7 +194,7 @@ const PaymentListPage = () => {
   }
 
   return (
-    <ScrollView className='payment-list-page' onScrollToLower={handleLoadMore} scrollY>
+    <View className='payment-list-page'>
       <PaymentListControls
         keyword={keyword}
         loadedAmount={loadedAmount}
@@ -206,16 +207,15 @@ const PaymentListPage = () => {
         onStatusChange={handleChangeStatus}
       />
 
-      <View className='payment-list-content'>
-        {payments.map(item => {
-          const itemKey = getPaymentItemKey(item)
-
-          return <PaymentCard item={item} key={itemKey} status={status} onEvaluate={handleEvaluate} onOpenOrder={handleOpenOrder} onPay={handlePay} />
-        })}
-
-        <PaymentListStates errorMessage={errorMessage} hasPayments={!!payments.length} loading={loading} status={status} />
-      </View>
-    </ScrollView>
+      <AppVirtualList
+        extraData={status}
+        footer={<PaymentListStates errorMessage={errorMessage} hasPayments={!!payments.length} loading={loading} status={status} />}
+        items={payments}
+        keyExtractor={getPaymentItemKey}
+        renderItem={item => <PaymentCard item={item} status={status} onEvaluate={handleEvaluate} onOpenOrder={handleOpenOrder} onPay={handlePay} />}
+        onEndReached={handleLoadMore}
+      />
+    </View>
   )
 }
 

@@ -1,4 +1,4 @@
-import { ScrollView } from '@tarojs/components'
+import { View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
@@ -8,12 +8,13 @@ import { canDeleteOrder, createExpressDraftFromOrderDetail, orderService } from 
 import type { OrderListItem, OrderPaymentFilter, OrderResendMode, OrderRole, OrderStatusFilter } from '@/services/order'
 import { AppPage, AppSupportFloat } from '@/shared/components'
 import AppTabBar from '@/shared/components/AppTabBar'
+import { AppVirtualList } from '@/shared/native'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
 
-import { OrderListContent } from './components/OrderListCards'
+import { OrderCard, OrderListFooter } from './components/OrderListCards'
 import { OrderFilterPanel, OrderListSummary, OrderRoleTabs, OrderSearchBar } from './components/OrderListSections'
 import { useOrderListData } from './hooks/useOrderListData'
 
@@ -266,7 +267,7 @@ const OrderListPage = () => {
 
   return (
     <AppPage className='order-list-shell' footer={<AppTabBar active='orderList' />} safeArea='top' statusBar='dark'>
-      <>
+      <View className='order-list-page'>
         <OrderRoleTabs role={role} onChange={handleChangeRole} onOpenPayment={handleOpenPaymentList} onOpenSubscriptions={handleOpenSubscriptions} />
         <OrderSearchBar
           filterVisible={filterVisible}
@@ -275,46 +276,64 @@ const OrderListPage = () => {
           onSearch={handleSearch}
           onToggleFilter={() => setFilterVisible(current => !current)}
         />
-      </>
-      {filterVisible && (
-        <OrderFilterPanel
-          orderStatus={orderStatus}
-          paymentType={paymentType}
-          rangeDays={rangeDays}
-          onPaymentChange={handleChangePayment}
-          onRangeChange={handleChangeRange}
-          onStatusChange={handleChangeStatus}
-        />
-      )}
-      <ScrollView className='order-list-page' onScrollToLower={handleLoadMore} scrollY>
-        {(listData.orders.length > 0 || listData.loading) && (
-          <OrderListSummary
+        {filterVisible && (
+          <OrderFilterPanel
+            orderStatus={orderStatus}
+            paymentType={paymentType}
             rangeDays={rangeDays}
-            totalRows={listData.totalRows}
-            onOpenPaymentList={handleOpenPaymentList}
-            onOpenSubscriptions={handleOpenSubscriptions}
+            onPaymentChange={handleChangePayment}
+            onRangeChange={handleChangeRange}
+            onStatusChange={handleChangeStatus}
           />
         )}
-        <OrderListContent
-          canCancelOrder={canCancelOrder}
-          canDeleteOrder={canDeleteOrder}
-          canModifyOrder={canModifyOrder}
-          canResendOrder={canResendOrder}
-          deletingOrderKey={deletingOrderKey}
-          emptyTitle={role === 'sender' ? '近三个月没有我寄的快递' : '近三个月没有我收的快递'}
-          errorMessage={listData.errorMessage}
-          getOrderActionKey={getOrderActionKey}
-          getResendActionText={getResendActionText}
-          loading={listData.loading}
-          orders={listData.orders}
-          resendingOrderKey={resendingOrderKey}
-          onCancelOrder={handleCancelOrder}
-          onDeleteOrder={handleDeleteOrder}
-          onModifyOrder={handleModifyOrder}
-          onOpenDetail={handleOpenDetail}
-          onResendOrder={handleResendOrder}
+        <AppVirtualList
+          extraData={`${role}|${deletingOrderKey}|${resendingOrderKey}`}
+          footer={
+            <OrderListFooter
+              emptyTitle={role === 'sender' ? '近三个月没有我寄的快递' : '近三个月没有我收的快递'}
+              errorMessage={listData.errorMessage}
+              loading={listData.loading}
+              orders={listData.orders}
+            />
+          }
+          header={
+            listData.orders.length > 0 || listData.loading ? (
+              <OrderListSummary
+                rangeDays={rangeDays}
+                totalRows={listData.totalRows}
+                onOpenPaymentList={handleOpenPaymentList}
+                onOpenSubscriptions={handleOpenSubscriptions}
+              />
+            ) : null
+          }
+          items={listData.orders}
+          keyExtractor={getOrderActionKey}
+          paddingBottom={0}
+          paddingHorizontal={0}
+          paddingTop={18}
+          renderItem={order => (
+            <View className='order-list-item'>
+              <OrderCard
+                canCancelOrder={canCancelOrder}
+                canDeleteOrder={canDeleteOrder}
+                canModifyOrder={canModifyOrder}
+                canResendOrder={canResendOrder}
+                deletingOrderKey={deletingOrderKey}
+                getOrderActionKey={getOrderActionKey}
+                getResendActionText={getResendActionText}
+                order={order}
+                resendingOrderKey={resendingOrderKey}
+                onCancelOrder={handleCancelOrder}
+                onDeleteOrder={handleDeleteOrder}
+                onModifyOrder={handleModifyOrder}
+                onOpenDetail={handleOpenDetail}
+                onResendOrder={handleResendOrder}
+              />
+            </View>
+          )}
+          onEndReached={handleLoadMore}
         />
-      </ScrollView>
+      </View>
       <AppSupportFloat onPress={() => navigateToAppRoute(APP_ROUTES.supportCenter)} />
     </AppPage>
   )

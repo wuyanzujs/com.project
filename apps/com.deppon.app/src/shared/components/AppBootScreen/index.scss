@@ -1,0 +1,22 @@
+@use '@/styles/_tokens.scss' as *;
+
+.app-boot-screen {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $dp-space-2xl $dp-page-horizontal-padding;
+  background: $dp-color-bg-page;
+}
+
+.app-boot-screen__message {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  text-align: center;
+}
+
+.app-boot-screen__action {
+  width: 100%;
+  margin-top: $dp-space-xl;
+}

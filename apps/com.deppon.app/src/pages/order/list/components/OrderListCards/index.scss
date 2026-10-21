@@ -1,7 +1,7 @@
 @use '@/styles/_tokens.scss' as *;
 
-.order-list-content {
-  padding: 18px 24px 0;
+.order-list-item {
+  padding: 0 $dp-page-horizontal-padding;
 }
 
 .order-card {

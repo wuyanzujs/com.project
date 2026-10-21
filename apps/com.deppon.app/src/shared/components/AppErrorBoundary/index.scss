@@ -1,0 +1,30 @@
+@use '@/styles/_tokens.scss' as *;
+
+.app-error-boundary {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $dp-space-2xl $dp-page-horizontal-padding;
+  background: $dp-color-bg-page;
+}
+
+.app-error-boundary__title {
+  color: $dp-color-text-heading;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+}
+
+.app-error-boundary__desc {
+  display: flex;
+  margin-top: $dp-space-sm;
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-body;
+  text-align: center;
+}
+
+.app-error-boundary__action {
+  width: 100%;
+  margin-top: $dp-space-xl;
+}

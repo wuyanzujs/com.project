@@ -1,4 +1,4 @@
-import { ScrollView, View } from '@tarojs/components'
+import { View } from '@tarojs/components'
 import { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useMemo, useRef, useState } from 'react'
@@ -7,6 +7,7 @@ import { DEFAULT_PRINT_DATE_RANGE_KEY, mergePrintOrderPages, printService } from
 import type { PrintDateRangeKey, PrintListCounts, PrintOrderListItem, PrintSearchType } from '@/services/print'
 import { LatestRequestCoordinator } from '@/shared/async/latestRequest'
 import { AppPage } from '@/shared/components'
+import { AppVirtualList } from '@/shared/native'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 
@@ -192,12 +193,13 @@ const PrintListPage = () => {
           onStatusChange={handleStatusChange}
         />
 
-        <ScrollView className='print-list-scroll' onScrollToLower={handleLoadMore} scrollY>
-          <View className='print-list-content'>
-            {orders.map(item => (
-              <PrintOrderCard item={item} key={item.key} status={status} />
-            ))}
-
+        <AppVirtualList
+          items={orders}
+          keyExtractor={item => item.key}
+          extraData={status}
+          renderItem={item => <PrintOrderCard item={item} status={status} />}
+          onEndReached={handleLoadMore}
+          footer={
             <PrintListStates
               errorMessage={errorMessage}
               hasItems={!!orders.length}
@@ -207,8 +209,8 @@ const PrintListPage = () => {
               status={status}
               onRetry={handleRetry}
             />
-          </View>
-        </ScrollView>
+          }
+        />
       </View>
     </AppPage>
   )

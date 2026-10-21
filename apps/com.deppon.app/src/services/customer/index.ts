@@ -1,3 +1,3 @@
-export * from './customer.api'
-export * from './customer.service'
+export { customerApi } from './customer.api'
+export { customerService, normalizeCustomerCapability, createCustomerCapabilitySummary } from './customer.service'
 export * from './types'

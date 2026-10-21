@@ -1,3 +1,3 @@
-export * from './member.api'
-export * from './member.service'
+export { memberApi } from './member.api'
+export { memberService, createMemberWelfareUrl, createMemberMasUrl } from './member.service'
 export * from './types'

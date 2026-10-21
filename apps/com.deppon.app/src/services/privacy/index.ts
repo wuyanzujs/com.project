@@ -1,3 +1,3 @@
-export * from './privacy.api'
-export * from './privacy.service'
+export { privacyApi } from './privacy.api'
+export { privacyService } from './privacy.service'
 export * from './types'

@@ -1,5 +1,7 @@
 @use '@/styles/_tokens.scss' as *;
 .order-list-page {
+  display: flex;
   flex: 1;
+  flex-direction: column;
   background: $dp-color-bg-page-cool;
 }

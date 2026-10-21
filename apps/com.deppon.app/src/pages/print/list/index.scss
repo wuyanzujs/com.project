@@ -11,12 +11,3 @@
 .print-list-page {
   flex-direction: column;
 }
-
-.print-list-scroll {
-  flex: 1;
-}
-
-.print-list-content {
-  min-height: 100%;
-  padding: $dp-space-md $dp-page-horizontal-padding $dp-space-2xl;
-}

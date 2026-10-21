@@ -1,4 +1,5 @@
-export * from './query.api'
-export * from './query.service'
-export * from './stationSelection'
+export { queryApi } from './query.api'
+export { queryService } from './query.service'
+export { EXPRESS_DELIVERY_POINT_MAX_DISTANCE_KM, EXPRESS_SERVICE_POINT_MAX_DISTANCE_KM, stationSelection } from './stationSelection'
+export type { StationSelectionAddress, StationSelectionParams, StationSelectionResult, StationSelectionSource } from './stationSelection'
 export * from './types'
