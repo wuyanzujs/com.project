@@ -1,0 +1,369 @@
+import { createExpressCollectionDraft, validateExpressCollection } from '../billing/collection.rules'
+import { createExpressDeliveryPointDraft } from '../delivery/deliveryPoint.rules'
+import { createExpressDeliveryPreferenceDraft, validateExpressDeliveryPreference } from '../delivery/deliveryPreference.rules'
+import { createExpressInsuranceDraft, validateExpressInsurance } from '../insurance/insurance.rules'
+import { createExpressPackagingDraft } from '../packaging/packaging.rules'
+import { validateExpressPickupTime } from '../pickup/pickupTime.rules'
+import { createExpressReturnBillDraft, validateExpressReturnBill } from '../value-added/valueAdded'
+import { createExpressValueAddedDraft, validateExpressValueAdded } from '../value-added/valueAdded.rules'
+import { createExpressWarehouseDraft, validateExpressWarehouse } from '../warehouse/warehouse.rules'
+
+import type { ExpressContact, ExpressDraft, ExpressValidationResult } from './types'
+import type { Contact } from '../../contact'
+
+const DEFAULT_GOODS_COUNT = 1
+const DEFAULT_GOODS_WEIGHT = 1
+
+/**
+ *
+ * @param value 待判断的数值
+ * @param fallback 无效时的兜底值
+ * @description 非有限数字时返回兜底值
+ */
+export function toFiniteNumber(value: number, fallback = 0) {
+  return Number.isFinite(value) ? value : fallback
+}
+
+/**
+ *
+ * @param value 待处理的文本
+ * @description 去除文本首尾空白
+ */
+export function trimText(value: string | undefined) {
+  return (value ?? '').trim()
+}
+
+/**
+ *
+ * @description 生成当前日期时间文本
+ */
+export function getNowText() {
+  const now = new Date()
+  /**
+   *
+   * @param value 待补零的数字
+   * @description 数字补零为两位
+   */
+  const pad = (value: number) => String(value).padStart(2, '0')
+
+  return [`${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`, `${pad(now.getHours())}:${pad(now.getMinutes())}:00`].join(' ')
+}
+
+/**
+ *
+ * @description 创建空的寄件草稿
+ */
+export function createExpressDraft(): ExpressDraft {
+  return {
+    sender: null,
+    consignee: null,
+    goods: {
+      name: '',
+      count: DEFAULT_GOODS_COUNT,
+      weight: DEFAULT_GOODS_WEIGHT,
+      volume: 0,
+      insuredAmount: 0
+    },
+    insurance: createExpressInsuranceDraft(),
+    packaging: createExpressPackagingDraft(),
+    service: {
+      transportMode: '',
+      deliveryMode: 'PICKNOTUPSTAIRS',
+      paymentType: 'MP',
+      returnBill: createExpressReturnBillDraft(),
+      passwordSigning: 'N',
+      needContact: 'Y',
+      privacyProtection: 'N'
+    },
+    collection: createExpressCollectionDraft(),
+    valueAdded: createExpressValueAddedDraft(),
+    deliveryPreference: createExpressDeliveryPreferenceDraft(),
+    deliveryPoint: createExpressDeliveryPointDraft(),
+    warehouse: createExpressWarehouseDraft(),
+    pickup: {
+      dispatch: 'Y',
+      time: '',
+      type: 'NORMAL',
+      stationCode: '',
+      stationName: '',
+      nightNoticeAccepted: false
+    },
+    selectedProduct: null,
+    couponNumber: '',
+    remark: '',
+    agreementAccepted: false,
+    quoteStaleReason: ''
+  }
+}
+
+/**
+ *
+ * @param contact 地址簿联系人
+ * @description 地址簿联系人转寄件联系人
+ */
+export function mapContactToExpressContact(contact: Contact): ExpressContact {
+  return {
+    id: contact.id,
+    name: contact.name,
+    mobile: contact.telephone,
+    fixedPhone: contact.fixedPhone,
+    province: contact.province,
+    city: contact.city,
+    county: contact.county,
+    town: contact.town,
+    address: contact.address,
+    company: contact.company,
+    regionType: contact.regionType
+  }
+}
+
+/**
+ *
+ * @param address 仅含地址信息的对象
+ * @description 仅用地址创建寄件联系人
+ */
+export function createAddressOnlyExpressContact(address: {
+  province?: string
+  city?: string
+  county?: string
+  town?: string
+  address?: string
+}): ExpressContact {
+  return {
+    name: '',
+    mobile: '',
+    province: trimText(address.province),
+    city: trimText(address.city),
+    county: trimText(address.county),
+    town: trimText(address.town) || undefined,
+    address: trimText(address.address)
+  }
+}
+
+/**
+ *
+ * @param contact 寄件联系人
+ * @description 拼接联系人完整地址
+ */
+export function getExpressContactFullAddress(contact: ExpressContact) {
+  return [contact.province, contact.city, contact.county, contact.town, contact.address].filter(Boolean).join('')
+}
+
+// 地址卡中的手机号保留前 3 位和后 4 位，中间四位替换为星号并用空格分隔。
+export function maskExpressContactMobile(mobile: string | null | undefined) {
+  if (!mobile) {
+    return ''
+  }
+
+  const digits = mobile.replace(/\D/g, '')
+
+  if (digits.length < 7) {
+    return mobile
+  }
+
+  return `${digits.slice(0, 3)} **** ${digits.slice(-4)}`
+}
+
+/**
+ *
+ * @param contact 寄件联系人
+ * @description 拼接联系人省市区镇
+ */
+export function getExpressContactRegion(contact: ExpressContact) {
+  return [contact.province, contact.city, contact.county, contact.town].filter(Boolean).join('')
+}
+
+// 报价接口要求「省-市-区,详细地址」，不同于直接拼接的 region 字段。
+export function getExpressContactRegionAddress(contact: ExpressContact) {
+  return [[contact.province, contact.city, contact.county].filter(Boolean).join('-'), contact.address].filter(Boolean).join(',')
+}
+
+/**
+ *
+ * @param contact 寄件或收件联系人
+ * @param label 提示语中的角色名
+ * @description 校验联系人信息并返回提示
+ */
+export function validateExpressContact(contact: ExpressContact | null, label: string): string[] {
+  if (!contact) {
+    return [`请选择${label}`]
+  }
+
+  const messages: string[] = []
+  const name = trimText(contact.name)
+  const mobile = trimText(contact.mobile)
+  const address = trimText(contact.address)
+
+  if (!name) {
+    messages.push(`请填写${label}姓名`)
+  } else if (name.length > 20) {
+    messages.push(`${label}姓名不能超过20个字符`)
+  }
+
+  if (!/^1[3-9]\d{9}$/.test(mobile)) {
+    messages.push(`请填写正确的${label}手机号`)
+  }
+
+  if (!contact.province || !contact.city || !contact.county) {
+    messages.push(`请选择${label}省市区`)
+  }
+
+  if (!address) {
+    messages.push(`请填写${label}详细地址`)
+  } else if (address.length < 4 || address.length > 100) {
+    messages.push(`${label}详细地址需为4到100个字符`)
+  }
+
+  return messages
+}
+
+/**
+ *
+ * @param draft 寄件草稿
+ * @param options 校验开关
+ * @description 校验寄件草稿并汇总错误提示
+ */
+export function validateExpressDraft(
+  draft: ExpressDraft,
+  options: {
+    requireAgreement?: boolean
+    requireProduct?: boolean
+    requireWarehouseScreening?: boolean
+  } = {}
+): ExpressValidationResult {
+  const messages: string[] = [
+    ...validateExpressContact(draft.sender, '寄件人'),
+    ...validateExpressContact(draft.consignee, '收件人'),
+    ...validateExpressInsurance(draft),
+    ...validateExpressCollection(draft.collection),
+    ...validateExpressValueAdded(draft.valueAdded),
+    ...validateExpressReturnBill(draft.service.returnBill, draft.selectedProduct?.omsProductCode || draft.service.transportMode),
+    ...validateExpressPickupTime(draft),
+    ...validateExpressDeliveryPreference(draft, {
+      requireProduct: options.requireProduct
+    }),
+    ...validateExpressWarehouse(draft, {
+      requireScreening: options.requireWarehouseScreening
+    })
+  ]
+  const goodsName = trimText(draft.goods.name)
+  const weight = toFiniteNumber(draft.goods.weight)
+  const count = toFiniteNumber(draft.goods.count)
+
+  if (draft.sender && draft.consignee) {
+    const senderAddress = getExpressContactFullAddress(draft.sender)
+    const consigneeAddress = getExpressContactFullAddress(draft.consignee)
+
+    if (senderAddress === consigneeAddress) {
+      messages.push('寄件地址和收件地址不能完全一致')
+    }
+  }
+
+  if (!goodsName) {
+    messages.push('请填写货物名称')
+  }
+
+  if (weight <= 0) {
+    messages.push('请填写正确的货物重量')
+  }
+
+  if (count < 1 || !Number.isInteger(count)) {
+    messages.push('货物件数至少为1件')
+  }
+
+  if (!Number.isFinite(draft.goods.volume) || draft.goods.volume < 0) {
+    messages.push('请填写正确的货物体积')
+  }
+
+  if (options.requireProduct && !draft.selectedProduct) {
+    messages.push('请先获取并选择产品价格')
+  } else if (options.requireProduct && draft.quoteStaleReason) {
+    messages.push('寄件信息已变化，请重新获取产品价格')
+  }
+
+  if (options.requireAgreement && !draft.agreementAccepted) {
+    messages.push('请先勾选电子运单协议')
+  }
+
+  return {
+    valid: messages.length === 0,
+    messages
+  }
+}
+
+/**
+ *
+ * @param contact 寄件或收件联系人
+ * @param label 提示语中的角色名
+ * @description 校验时效询价所需的地址信息
+ */
+function validatePriceTimeContact(contact: ExpressContact | null, label: string) {
+  if (!contact) {
+    return [`请选择${label}地址`]
+  }
+
+  const messages: string[] = []
+  const address = trimText(contact.address)
+
+  if (!contact.province || !contact.city || !contact.county) {
+    messages.push(`请填写${label}省市区`)
+  }
+
+  if (!address) {
+    messages.push(`请填写${label}详细地址`)
+  } else if (address.length < 2 || address.length > 100) {
+    messages.push(`${label}详细地址需为2到100个字符`)
+  }
+
+  return messages
+}
+
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 校验时效询价所需草稿字段
+ */
+export function validateExpressPriceTimeDraft(draft: ExpressDraft): ExpressValidationResult {
+  const messages: string[] = [...validatePriceTimeContact(draft.sender, '寄件'), ...validatePriceTimeContact(draft.consignee, '收件')]
+  const weight = toFiniteNumber(draft.goods.weight)
+  const count = toFiniteNumber(draft.goods.count)
+
+  if (draft.sender && draft.consignee) {
+    const senderAddress = getExpressContactFullAddress(draft.sender)
+    const consigneeAddress = getExpressContactFullAddress(draft.consignee)
+
+    if (senderAddress === consigneeAddress) {
+      messages.push('寄件地址和收件地址不能完全一致')
+    }
+  }
+
+  if (weight <= 0) {
+    messages.push('请填写正确的货物重量')
+  }
+
+  if (count < 1) {
+    messages.push('货物件数至少为1件')
+  }
+
+  return {
+    valid: messages.length === 0,
+    messages
+  }
+}
+
+export {
+  applyExpressPickupTime,
+  applyExpressScanContext,
+  clearExpressScanContext,
+  markExpressQuoteStale,
+  resetConsigneeDependencies,
+  resetSenderDependencies,
+  selectExpressProduct,
+  setExpressContact,
+  setExpressPrivacyProtection,
+  swapExpressContacts,
+  updateExpressCouponNumber,
+  updateExpressGoods,
+  updateExpressPickup,
+  updateExpressService
+} from './express.mutations'

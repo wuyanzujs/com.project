@@ -2,9 +2,9 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
-const { createExpressProductQuoteView } = require('@/services/express/express.quoteView')
-const { EXPRESS_CARTON_OPTIONS, EXPRESS_UNPACKING_OPTIONS, EXPRESS_WOODEN_PACKAGING_OPTIONS } = require('@/services/express/packaging.catalog')
+const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/core/express.payload')
+const { createExpressProductQuoteView } = require('@/services/express/core/express.quoteView')
+const { EXPRESS_CARTON_OPTIONS, EXPRESS_UNPACKING_OPTIONS, EXPRESS_WOODEN_PACKAGING_OPTIONS } = require('@/services/express/packaging/packaging.catalog')
 const {
   createExpressOrderPackageInfoList,
   createExpressOrderPackingText,
@@ -12,14 +12,14 @@ const {
   createExpressQuotePackageInfoList,
   createExpressUnpackingNumbers,
   getExpressPackageLtlType
-} = require('@/services/express/packaging.payload')
+} = require('@/services/express/packaging/packaging.payload')
 const {
   getExpressPackagingQuoteVolume,
   normalizeExpressCartonCode,
   normalizeExpressPackagingDraft,
   normalizeExpressUnpackingCodes,
   normalizeExpressWoodenPackagingCodes
-} = require('@/services/express/packaging.rules')
+} = require('@/services/express/packaging/packaging.rules')
 
 const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 

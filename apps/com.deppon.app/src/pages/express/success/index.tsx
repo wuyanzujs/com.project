@@ -3,7 +3,7 @@ import { useLoad, useRouter } from '@tarojs/taro'
 
 import { useEffect, useMemo, useState } from 'react'
 
-import { expressDraftBridge } from '@/services/express/draftBridge'
+import { expressDraftBridge } from '@/services/express/draft/draftBridge'
 import { getOrderIdentityText, orderService } from '@/services/order'
 import type { OrderDetail } from '@/services/order'
 import { AppPressable } from '@/shared/components'

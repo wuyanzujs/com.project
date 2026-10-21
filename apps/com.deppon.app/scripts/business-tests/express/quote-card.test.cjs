@@ -8,7 +8,7 @@ const {
   getExpressQuoteTimeLimit,
   isSameExpressQuote,
   splitExpressQuoteTimeText
-} = require('@/services/express/express.quoteView')
+} = require('@/services/express/core/express.quoteView')
 
 const { createReactHarness, findElement, loadReactModule } = require('../support/react-harness.cjs')
 
@@ -87,7 +87,7 @@ test('quote card renders one-line product name, split time text and limited offe
     '@/assets/express/express_product_bg_l_n.png': 'long-idle.png',
     '@/assets/express/express_product_bg_s_h.png': 'short-active.png',
     '@/assets/express/express_product_bg_s_n.png': 'short-idle.png',
-    '@/services/express': require('@/services/express/express.quoteView'),
+    '@/services/express': require('@/services/express/core/express.quoteView'),
     '@/shared/components': { AppPressable: 'AppPressable' },
     '../ExpressSection': { ExpressSection: 'ExpressSection' },
     './index.scss': {}

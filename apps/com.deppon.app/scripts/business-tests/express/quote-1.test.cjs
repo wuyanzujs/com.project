@@ -5,10 +5,10 @@ const { test } = require('node:test')
 const { CACHE_KEYS } = require('@/cache/keys')
 const { getStorageValue, removeStorageValue, setStorageValue } = require('@/cache/storage')
 const { customerService } = require('@/services/customer/customer.service')
-const { expressApi } = require('@/services/express/express.api')
-const { applyExpressScanContext } = require('@/services/express/express.draft')
-const { buildFreightRequest } = require('@/services/express/express.payload')
-const { expressService } = require('@/services/express/express.service')
+const { expressApi } = require('@/services/express/core/express.api')
+const { applyExpressScanContext } = require('@/services/express/core/express.draft')
+const { buildFreightRequest } = require('@/services/express/core/express.payload')
+const { expressService } = require('@/services/express/core/express.service')
 const {
   createExpressProductAvailability,
   createExpressProductPointRequest,
@@ -19,7 +19,7 @@ const {
   selectDefaultExpressQuote,
   supportsExpressDczpRecommendation,
   supportsExpressProductSwitch
-} = require('@/services/express/productAvailability.rules')
+} = require('@/services/express/product/productAvailability.rules')
 
 const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 

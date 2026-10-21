@@ -2,7 +2,6 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { updateExpressDeliveryPreference } = require('@/services/express/deliveryPreference.rules')
 const {
   applyExpressPickupTime,
   createExpressDraft,
@@ -14,7 +13,8 @@ const {
   updateExpressPickup,
   updateExpressService,
   validateExpressDraft
-} = require('@/services/express/express.draft')
+} = require('@/services/express/core/express.draft')
+const { updateExpressDeliveryPreference } = require('@/services/express/delivery/deliveryPreference.rules')
 
 const { createValidExpressDraft, expressProduct, senderContact } = require('../fixtures/express.cjs')
 

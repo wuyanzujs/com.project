@@ -2,7 +2,7 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { expressDraftBridge } = require('@/services/express/draftBridge')
+const { expressDraftBridge } = require('@/services/express/draft/draftBridge')
 const { templateApi } = require('@/services/template/template.api')
 const {
   applyTemplateMetadataUpdate,

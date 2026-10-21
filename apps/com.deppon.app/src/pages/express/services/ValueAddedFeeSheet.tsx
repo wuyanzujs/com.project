@@ -1,7 +1,7 @@
 import { Text, View } from '@tarojs/components'
 
-import type { createExpressValueAddedQuoteView } from '@/services/express/valueAdded.quoteView'
-import { formatExpressValueAddedFee } from '@/services/express/valueAdded.quoteView'
+import type { createExpressValueAddedQuoteView } from '@/services/express/value-added/valueAdded.quoteView'
+import { formatExpressValueAddedFee } from '@/services/express/value-added/valueAdded.quoteView'
 import { AppPressable } from '@/shared/components'
 import { AppNativeSheet } from '@/shared/native'
 

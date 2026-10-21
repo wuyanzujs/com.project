@@ -2,7 +2,7 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { createOrderEditDraft } = require('@/services/order/order.edit')
+const { createOrderEditDraft } = require('@/services/order/edit/order.edit')
 const {
   ORDER_EDIT_NIGHT_PICKUP_CACHE_MS,
   buildOrderEditPickupNightRequest,
@@ -12,15 +12,15 @@ const {
   createOrderEditScheduleRequestDiff,
   getFreshOrderEditPickupNightCapability,
   validateOrderEditSchedule
-} = require('@/services/order/order.edit.schedule')
-const { orderEditScheduleApi } = require('@/services/order/order.edit.schedule.api')
-const { createOrderEditPickupDateOptions, normalizeOrderEditPickupTimeResponse } = require('@/services/order/order.edit.schedule.options')
+} = require('@/services/order/edit/order.edit.schedule')
+const { orderEditScheduleApi } = require('@/services/order/edit/order.edit.schedule.api')
+const { createOrderEditPickupDateOptions, normalizeOrderEditPickupTimeResponse } = require('@/services/order/edit/order.edit.schedule.options')
 const {
   acceptOrderEditNightPickupNotice,
   applyOrderEditPickupTimeResponse,
   selectOrderEditPickupTime
-} = require('@/services/order/order.edit.schedule.selection')
-const { queryOrderEditPickupTimes } = require('@/services/order/order.edit.schedule.service')
+} = require('@/services/order/edit/order.edit.schedule.selection')
+const { queryOrderEditPickupTimes } = require('@/services/order/edit/order.edit.schedule.service')
 
 const { createOrderDetail } = require('../fixtures/order.cjs')
 

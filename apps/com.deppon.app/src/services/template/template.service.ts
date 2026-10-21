@@ -1,7 +1,7 @@
 import type { DepponResponse } from '@/request/deppon'
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
-import { expressDraftBridge } from '../express/draftBridge'
+import { expressDraftBridge } from '../express/draft/draftBridge'
 import { createServiceFailure } from '../serviceResponse'
 import { templateApi } from './template.api'
 import { templateDraftBridge } from './template.bridge'

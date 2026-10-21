@@ -9,8 +9,8 @@ const {
   createExpressCouponQueryRequest,
   createExpressCouponRequestKey,
   getExpressCouponOriginalFee
-} = require('@/services/express/couponOrder.rules')
-const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
+} = require('@/services/express/billing/couponOrder.rules')
+const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/core/express.payload')
 
 const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 

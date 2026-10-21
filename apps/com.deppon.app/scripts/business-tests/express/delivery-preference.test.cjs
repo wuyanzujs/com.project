@@ -2,6 +2,8 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
+const { selectExpressProduct } = require('@/services/express/core/express.draft')
+const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/core/express.payload')
 const {
   buildExpressDeliveryAppointmentRequest,
   createExpressDeliveryAvailabilityKey,
@@ -13,9 +15,7 @@ const {
   isExpressScheduledDeliveryProductSupported,
   updateExpressDeliveryPreference,
   validateExpressDeliveryPreference
-} = require('@/services/express/deliveryPreference.rules')
-const { selectExpressProduct } = require('@/services/express/express.draft')
-const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
+} = require('@/services/express/delivery/deliveryPreference.rules')
 
 const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 

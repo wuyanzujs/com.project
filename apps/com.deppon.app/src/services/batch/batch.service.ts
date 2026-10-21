@@ -4,7 +4,7 @@ import { APP_ROUTES } from '@/shared/navigation/routes'
 
 import { buildBatchCreateOrderRequest } from './batch.payload'
 import { quoteBatchDraft } from './batch.quote.service'
-import { expressApi } from '../express/express.api'
+import { expressApi } from '../express/core/express.api'
 import { createServiceFailure as createFailureResponse } from '../serviceResponse'
 
 import type {
@@ -17,7 +17,7 @@ import type {
   BatchSubmitSummary,
   BatchValidationResult
 } from './types'
-import type { CreateExpressOrderResponse } from '../express/types'
+import type { CreateExpressOrderResponse } from '../express/core/types'
 
 export const BATCH_MAX_CONSIGNEE_COUNT = 10
 // 跟随运行环境:生产 www.deppon.com / 测试 owstest.deppon.com。

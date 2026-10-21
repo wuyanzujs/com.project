@@ -2,9 +2,9 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { createOrderDetailActions } = require('@/services/order/order.detailActions')
-const { ORDER_EVALUATION_API_ENDPOINTS } = require('@/services/order/order.evaluation.api')
-const { getOrderEvaluationLabels } = require('@/services/order/order.evaluation.catalog')
+const { createOrderDetailActions } = require('@/services/order/detail/order.detailActions')
+const { ORDER_EVALUATION_API_ENDPOINTS } = require('@/services/order/evaluation/order.evaluation.api')
+const { getOrderEvaluationLabels } = require('@/services/order/evaluation/order.evaluation.catalog')
 const {
   ORDER_EVALUATION_SUGGESTION_MAX_LENGTH,
   applyOrderEvaluationSubmission,
@@ -18,7 +18,7 @@ const {
   updateOrderEvaluationLevel,
   updateOrderEvaluationSuggestion,
   validateOrderEvaluationDraft
-} = require('@/services/order/order.evaluation.rules')
+} = require('@/services/order/evaluation/order.evaluation.rules')
 
 const { createOrderDetail } = require('../fixtures/order.cjs')
 

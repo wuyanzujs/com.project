@@ -8,7 +8,7 @@ import type {
   ExpressProductCode,
   ExpressReturnBillType,
   ExpressScanContext
-} from '../express/types'
+} from '../express/core/types'
 
 export type BatchEntryActionKind = 'singleExpress' | 'addressRecognition' | 'excelImport' | 'print'
 

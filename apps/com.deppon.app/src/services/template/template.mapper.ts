@@ -1,5 +1,5 @@
-import { createExpressDraft } from '../express/express.draft'
-import { getExpressReturnBillRequirementText, normalizeExpressReturnBillDraft, normalizeExpressReturnBillForTemplate } from '../express/valueAdded'
+import { createExpressDraft } from '../express/core/express.draft'
+import { getExpressReturnBillRequirementText, normalizeExpressReturnBillDraft, normalizeExpressReturnBillForTemplate } from '../express/value-added/valueAdded'
 
 import type { ExpressContact, ExpressDraft, ExpressPaymentType, ExpressProductCode, ExpressReturnBillType } from '../express'
 import type { ExpressTemplateContactRaw, ExpressTemplateDraftMeta, ExpressTemplateRaw, ExpressTemplateSaveRequest, ExpressTemplateView } from './types'

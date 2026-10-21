@@ -3,8 +3,8 @@ const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
 const { dpCache, CACHE_KEYS, clearAccountScopedCache } = require('@/cache')
-const { resolveExpressGoodsInput } = require('@/services/express/goodsEditor.rules')
-const { expressGoodsHistory } = require('@/services/express/goodsHistory')
+const { resolveExpressGoodsInput } = require('@/services/express/goods/goodsEditor.rules')
+const { expressGoodsHistory } = require('@/services/express/goods/goodsHistory')
 
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
 const { createDeferred } = require('../support/deferred.cjs')
@@ -65,8 +65,8 @@ test('goods page keeps the input while typing multiple characters and returns th
       expressDraftStorage: { restore: () => null },
       expressGoodsBridge: { save: saved }
     },
-    '@/services/express/goodsEditor.rules': require('@/services/express/goodsEditor.rules'),
-    '@/services/express/goodsHistory': { expressGoodsHistory: { get: () => [], save: saveHistory } },
+    '@/services/express/goods/goodsEditor.rules': require('@/services/express/goods/goodsEditor.rules'),
+    '@/services/express/goods/goodsHistory': { expressGoodsHistory: { get: () => [], save: saveHistory } },
     '@/services/goods': { goodsQueryService: { getHotGoods: () => [{ name: '文件' }] } },
     '@/shared/components': { AppPage: 'AppPage', AppPressable: 'AppPressable', AppSwitch: 'AppSwitch' },
     '@/shared/components/AppIcon': { AppIcon: 'AppIcon' },
@@ -103,7 +103,7 @@ test('goods page keeps the input while typing multiple characters and returns th
 })
 
 test('货物信息页回传的捎话与货物只消费一次，确认后清空', () => {
-  const { expressGoodsBridge } = require('@/services/express/goodsBridge')
+  const { expressGoodsBridge } = require('@/services/express/goods/goodsBridge')
   const goods = createValidExpressDraft().goods
 
   expressGoodsBridge.save({ ...goods, name: '衣物' }, ' 放门口 ')

@@ -1,5 +1,5 @@
 require('../support/register.cjs')
-const { createExpressDraft } = require('@/services/express/express.draft')
+const { createExpressDraft } = require('@/services/express/core/express.draft')
 
 const senderContact = {
   name: '张三',

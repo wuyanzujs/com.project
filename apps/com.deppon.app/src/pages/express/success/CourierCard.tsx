@@ -3,8 +3,8 @@ import Taro from '@tarojs/taro'
 
 import { useEffect, useState } from 'react'
 
-import { queryExpressSuccessCourier } from '@/services/express/success.service'
-import type { ExpressSuccessCourierResult } from '@/services/express/success.types'
+import { queryExpressSuccessCourier } from '@/services/express/success/success.service'
+import type { ExpressSuccessCourierResult } from '@/services/express/success/success.types'
 import { AppPressable } from '@/shared/components'
 import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
 import { dialPhone, PhoneNumberError } from '@/shared/platform/phone'

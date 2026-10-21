@@ -2,9 +2,9 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { setExpressContact, updateExpressGoods, updateExpressPickup, validateExpressDraft } = require('@/services/express/express.draft')
-const { buildCreateOrderRequest } = require('@/services/express/express.payload')
-const { applyExpressServicePoint, applyExpressServicePointCandidates } = require('@/services/express/servicePoint.rules')
+const { setExpressContact, updateExpressGoods, updateExpressPickup, validateExpressDraft } = require('@/services/express/core/express.draft')
+const { buildCreateOrderRequest } = require('@/services/express/core/express.payload')
+const { applyExpressServicePoint, applyExpressServicePointCandidates } = require('@/services/express/pickup/servicePoint.rules')
 const { getStationMatchTypes, normalizeAddressStation } = require('@/services/query/query.station')
 const { stationSelection } = require('@/services/query/stationSelection')
 
@@ -166,7 +166,7 @@ function createServicePointHookFixture(t) {
         onShow = callback
       }
     },
-    '@/services/express/servicePoint.rules': require('@/services/express/servicePoint.rules'),
+    '@/services/express/pickup/servicePoint.rules': require('@/services/express/pickup/servicePoint.rules'),
     '@/services/query': {
       stationSelection,
       queryService: {

@@ -3,7 +3,7 @@ import { useDidShow } from '@tarojs/taro'
 import { type Dispatch, type SetStateAction, useEffect, useRef } from 'react'
 
 import type { ExpressDraft } from '@/services/express'
-import { applyExpressServicePoint, applyExpressServicePointCandidates } from '@/services/express/servicePoint.rules'
+import { applyExpressServicePoint, applyExpressServicePointCandidates } from '@/services/express/pickup/servicePoint.rules'
 import { queryService, stationSelection } from '@/services/query'
 
 interface UseExpressServicePointOptions {

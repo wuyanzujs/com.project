@@ -3,9 +3,9 @@ const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
 const { depponHttp } = require('@/request/deppon')
-const { expressDraftBridge } = require('@/services/express/draftBridge')
-const { expressSuccessApi } = require('@/services/express/success.api')
-const { queryExpressSuccessCourier } = require('@/services/express/success.service')
+const { expressDraftBridge } = require('@/services/express/draft/draftBridge')
+const { expressSuccessApi } = require('@/services/express/success/success.api')
+const { queryExpressSuccessCourier } = require('@/services/express/success/success.service')
 
 const { createReactHarness, findElement, loadReactModule } = require('../support/react-harness.cjs')
 
@@ -100,7 +100,7 @@ function loadSuccessPage(t) {
       useLoad: callback => useLoadCallbacks.push(callback),
       useRouter: () => ({ params: { orderNumber: 'DP123', waybillNumber: 'WB456' } })
     },
-    '@/services/express/draftBridge': { expressDraftBridge },
+    '@/services/express/draft/draftBridge': { expressDraftBridge },
     '@/services/order': {
       getOrderIdentityText: value => value.waybillNumber || value.orderNumber || '--',
       orderService: { queryDetail: async () => ({ status: false, message: '' }) }

@@ -1,9 +1,9 @@
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
-import { getExpressContactRegion, getNowText, toFiniteNumber, trimText } from '../express/express.draft'
+import { getExpressContactRegion, getNowText, toFiniteNumber, trimText } from '../express/core/express.draft'
 
 import type { BatchConsigneeDraft, BatchDraft } from './types'
-import type { CreateExpressOrderRequest, ExpressReceiveOrder, ExpressScanContext } from '../express/types'
+import type { CreateExpressOrderRequest, ExpressReceiveOrder, ExpressScanContext } from '../express/core/types'
 
 /**
  *

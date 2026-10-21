@@ -3,8 +3,8 @@ import { Input, Text, View } from '@tarojs/components'
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react'
 
 import type { ExpressDraft } from '@/services/express'
-import { updateExpressValueAdded } from '@/services/express/valueAdded.rules'
-import { queryExpressPowerMachineCategories } from '@/services/express/valueAdded.service'
+import { updateExpressValueAdded } from '@/services/express/value-added/valueAdded.rules'
+import { queryExpressPowerMachineCategories } from '@/services/express/value-added/valueAdded.service'
 import { AppPressable } from '@/shared/components'
 import { APP_NATIVE_TOKENS } from '@/styles/nativeTokens'
 

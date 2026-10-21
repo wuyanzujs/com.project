@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateA
 
 import { applyExpressInsuranceCapability, expressService, selectExpressProduct } from '@/services/express'
 import type { ExpressDraft } from '@/services/express'
-import { findExpressValueAddedProduct } from '@/services/express/valueAdded.quoteView'
+import { findExpressValueAddedProduct } from '@/services/express/value-added/valueAdded.quoteView'
 
 export function createValueAddedRequestKey(draft: ExpressDraft) {
   return JSON.stringify({ ...draft, selectedProduct: null, quoteStaleReason: '', agreementAccepted: false, remark: '' })

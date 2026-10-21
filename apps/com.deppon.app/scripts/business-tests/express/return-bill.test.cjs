@@ -2,8 +2,8 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { createExpressDraft, selectExpressProduct } = require('@/services/express/express.draft')
-const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
+const { createExpressDraft, selectExpressProduct } = require('@/services/express/core/express.draft')
+const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/core/express.payload')
 const {
   getExpressReturnBillOptions,
   getExpressReturnBillPpcType,
@@ -12,7 +12,7 @@ const {
   normalizeExpressReturnBillForTemplate,
   updateExpressReturnBillDraft,
   validateExpressReturnBill
-} = require('@/services/express/valueAdded')
+} = require('@/services/express/value-added/valueAdded')
 const { buildTemplateSaveRequest, mapTemplateToExpressDraft } = require('@/services/template/template.mapper')
 const { createAppWebUrl, isAllowedAppWebTargetUrl } = require('@/shared/webview/appWeb')
 const { appWebMessageBridge } = require('@/shared/webview/appWebMessage')

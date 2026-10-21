@@ -2,17 +2,17 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { expressDraftBridge } = require('@/services/express/draftBridge')
 const {
   applyExpressScanContext,
   clearExpressScanContext,
   createAddressOnlyExpressContact,
   createExpressDraft,
   markExpressQuoteStale
-} = require('@/services/express/express.draft')
-const { buildCreateOrderRequest, buildFilterOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
-const { createExpressPickupNightCapability } = require('@/services/express/pickupTime.rules')
-const { createExpressScanContextView } = require('@/services/express/scanContext')
+} = require('@/services/express/core/express.draft')
+const { buildCreateOrderRequest, buildFilterOrderRequest, buildFreightRequest } = require('@/services/express/core/express.payload')
+const { createExpressScanContextView } = require('@/services/express/core/scanContext')
+const { expressDraftBridge } = require('@/services/express/draft/draftBridge')
+const { createExpressPickupNightCapability } = require('@/services/express/pickup/pickupTime.rules')
 
 const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 

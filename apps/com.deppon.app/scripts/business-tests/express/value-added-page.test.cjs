@@ -2,9 +2,9 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { selectExpressProduct } = require('@/services/express/express.draft')
-const { applyExpressInsuranceCapability } = require('@/services/express/insurance.rules')
-const { createExpressValueAddedQuoteView, findExpressValueAddedProduct } = require('@/services/express/valueAdded.quoteView')
+const { selectExpressProduct } = require('@/services/express/core/express.draft')
+const { applyExpressInsuranceCapability } = require('@/services/express/insurance/insurance.rules')
+const { createExpressValueAddedQuoteView, findExpressValueAddedProduct } = require('@/services/express/value-added/valueAdded.quoteView')
 
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
 const { createDeferred } = require('../support/deferred.cjs')
@@ -72,7 +72,7 @@ function createQuotePage(quote) {
     {
       react: harness.react,
       '@/services/express': { expressService: { quote }, selectExpressProduct, applyExpressInsuranceCapability },
-      '@/services/express/valueAdded.quoteView': { findExpressValueAddedProduct }
+      '@/services/express/value-added/valueAdded.quoteView': { findExpressValueAddedProduct }
     },
     {
       setTimeout: callback => {
@@ -188,7 +188,7 @@ test('service card information opens its description, only a selected card shows
     'react/jsx-runtime': require('react/jsx-runtime'),
     '@tarojs/components': { Image: 'Image', Text: 'Text', View: 'View' },
     '@tarojs/taro': { showModal: message => messages.push(message) },
-    '@/services/express/valueAdded.quoteView': require('@/services/express/valueAdded.quoteView'),
+    '@/services/express/value-added/valueAdded.quoteView': require('@/services/express/value-added/valueAdded.quoteView'),
     '@/shared/components': { AppPressable: 'AppPressable' },
     './cards.scss': {}
   })
@@ -206,7 +206,7 @@ test('service card information opens its description, only a selected card shows
 test('machine category raw API follows the witnessed endpoint and request parameters', async () => {
   const requests = []
   const response = { status: true, result: ['电视'] }
-  const { queryExpressPowerMachineCategoriesRaw } = loadReactModule('services/express/valueAdded.api.ts', {
+  const { queryExpressPowerMachineCategoriesRaw } = loadReactModule('services/express/value-added/valueAdded.api.ts', {
     '@/request/deppon': {
       depponHttp: {
         post: async (...args) => {
@@ -223,7 +223,7 @@ test('machine category raw API follows the witnessed endpoint and request parame
 
 test('machine category service rejects failed or malformed lists and deduplicates available categories', async () => {
   let response = { status: true, result: [' 电视 ', '电视', 4, '', '冰箱'] }
-  const { queryExpressPowerMachineCategories } = loadReactModule('services/express/valueAdded.service.ts', {
+  const { queryExpressPowerMachineCategories } = loadReactModule('services/express/value-added/valueAdded.service.ts', {
     './valueAdded.api': { queryExpressPowerMachineCategoriesRaw: async () => response }
   })
   const success = await queryExpressPowerMachineCategories()
@@ -238,7 +238,7 @@ test('service page keeps changes local until confirm and passes fresh quote expl
   const harness = createReactHarness()
   const saves = []
   const carried = []
-  const services = require('@/services/express/express.draft')
+  const services = require('@/services/express/core/express.draft')
   const imports = {
     react: harness.react,
     'react/jsx-runtime': require('react/jsx-runtime'),
@@ -250,8 +250,8 @@ test('service page keeps changes local until confirm and passes fresh quote expl
       expressDraftBridge: { carryFromValueAdded: (...args) => carried.push(args) },
       getExpressReturnBillOption: () => ({ label: '无需返单' })
     },
-    '@/services/express/valueAdded.quoteView': require('@/services/express/valueAdded.quoteView'),
-    '@/services/express/valueAdded.rules': require('@/services/express/valueAdded.rules'),
+    '@/services/express/value-added/valueAdded.quoteView': require('@/services/express/value-added/valueAdded.quoteView'),
+    '@/services/express/value-added/valueAdded.rules': require('@/services/express/value-added/valueAdded.rules'),
     '@/shared/components': { AppPage: 'AppPage', AppPressable: 'AppPressable' },
     '@/shared/navigation/appNavigation': { navigateToAppRoute() {} },
     '@/shared/navigation/routes': { APP_ROUTES: { express: '/express' } },

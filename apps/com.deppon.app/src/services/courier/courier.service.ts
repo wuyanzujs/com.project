@@ -3,7 +3,7 @@ import type { DepponResponse } from '@/request/deppon'
 import { courierApi } from './courier.api'
 import { isAlreadyBoundCourierMessage, normalizeCourier } from './courier.mapper'
 import { createCourierExpressDraft } from './courier.rules'
-import { expressDraftBridge } from '../express/draftBridge'
+import { expressDraftBridge } from '../express/draft/draftBridge'
 import { createServiceFailure } from '../serviceResponse'
 
 import type { CourierBindingState, CourierDetailView, CourierView } from './types'

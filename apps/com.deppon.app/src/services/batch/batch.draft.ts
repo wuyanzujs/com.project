@@ -1,6 +1,6 @@
 import type { BatchContact, BatchRecognizedConsignee, BatchConsigneeDraft, BatchDraft, BatchGoodsDraft, BatchServiceDraft } from './types'
 import type { Contact } from '../contact/types'
-import type { ExpressContact, ExpressDraft } from '../express/types'
+import type { ExpressContact, ExpressDraft } from '../express/core/types'
 
 /**
  *

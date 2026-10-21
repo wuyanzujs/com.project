@@ -2,8 +2,8 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { validateExpressDraft } = require('@/services/express/express.draft')
-const { createExpressQuoteRequestKey } = require('@/services/express/requestKey')
+const { validateExpressDraft } = require('@/services/express/core/express.draft')
+const { createExpressQuoteRequestKey } = require('@/services/express/core/requestKey')
 
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
 const { createDeferred } = require('../support/deferred.cjs')

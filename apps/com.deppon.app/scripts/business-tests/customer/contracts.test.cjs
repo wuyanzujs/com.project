@@ -4,8 +4,8 @@ const { test } = require('node:test')
 
 const { customerApi } = require('@/services/customer/customer.api')
 const { createCustomerCapabilitySummary, customerService, normalizeCustomerCapability } = require('@/services/customer/customer.service')
-const { applyExpressScanContext } = require('@/services/express/express.draft')
-const { buildFilterOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
+const { applyExpressScanContext } = require('@/services/express/core/express.draft')
+const { buildFilterOrderRequest, buildFreightRequest } = require('@/services/express/core/express.payload')
 const { APP_WEB_TARGETS } = require('@/shared/webview/appWeb')
 
 const { createValidExpressDraft } = require('../fixtures/express.cjs')

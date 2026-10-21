@@ -4,8 +4,8 @@ const { test } = require('node:test')
 
 const { CACHE_KEYS } = require('@/cache/keys')
 const { getStorageValue, setStorageValue } = require('@/cache/storage')
-const { expressApi } = require('@/services/express/express.api')
-const { stageExpressWarehouse } = require('@/services/express/warehouse.service')
+const { expressApi } = require('@/services/express/core/express.api')
+const { stageExpressWarehouse } = require('@/services/express/warehouse/warehouse.service')
 
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
 

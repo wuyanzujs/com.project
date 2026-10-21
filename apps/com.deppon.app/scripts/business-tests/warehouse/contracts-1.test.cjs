@@ -2,9 +2,9 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { selectExpressProduct, setExpressContact, updateExpressGoods, updateExpressService } = require('@/services/express/express.draft')
-const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
-const { acknowledgeExpressWarehouseScreening, rejectExpressWarehouse } = require('@/services/express/warehouse.decisions')
+const { selectExpressProduct, setExpressContact, updateExpressGoods, updateExpressService } = require('@/services/express/core/express.draft')
+const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/core/express.payload')
+const { acknowledgeExpressWarehouseScreening, rejectExpressWarehouse } = require('@/services/express/warehouse/warehouse.decisions')
 const {
   applyExpressWarehouseScreening,
   clearExpressWarehouse,
@@ -14,7 +14,7 @@ const {
   normalizeExpressWarehouseScreeningType,
   updateExpressWarehouse,
   validateExpressWarehouse
-} = require('@/services/express/warehouse.rules')
+} = require('@/services/express/warehouse/warehouse.rules')
 
 const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 

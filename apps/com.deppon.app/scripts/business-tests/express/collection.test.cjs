@@ -12,9 +12,9 @@ const {
   updateExpressCollectionDetails,
   updateExpressCollectionPricing,
   validateExpressCollection
-} = require('@/services/express/collection.rules')
-const { selectExpressProduct } = require('@/services/express/express.draft')
-const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
+} = require('@/services/express/billing/collection.rules')
+const { selectExpressProduct } = require('@/services/express/core/express.draft')
+const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/core/express.payload')
 
 const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 

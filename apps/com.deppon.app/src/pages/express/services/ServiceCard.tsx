@@ -3,7 +3,7 @@ import Taro from '@tarojs/taro'
 
 import type { PropsWithChildren } from 'react'
 
-import { formatExpressValueAddedFee } from '@/services/express/valueAdded.quoteView'
+import { formatExpressValueAddedFee } from '@/services/express/value-added/valueAdded.quoteView'
 import { AppPressable } from '@/shared/components'
 
 import './cards.scss'

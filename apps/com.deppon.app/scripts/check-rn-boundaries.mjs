@@ -150,7 +150,7 @@ const rnBehaviorContractChecks = [
     message: '保存地址前必须执行统一地址完整性决策，不能只做本地字段校验。'
   },
   {
-    filePath: path.join(appRoot, 'src/services/express/productAvailability.service.ts'),
+    filePath: path.join(appRoot, 'src/services/express/product/productAvailability.service.ts'),
     expected: 'Promise.allSettled',
     message: '寄件产品点城市、融合、升级和货物标签必须独立降级，不能由单个可选接口拖垮报价。'
   },

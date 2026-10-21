@@ -1,9 +1,9 @@
-import { normalizeExpressDeliveryPointDraft } from '../express/deliveryPoint.rules'
-import { normalizeExpressInsuranceDraft } from '../express/insurance.rules'
-import { normalizeExpressPackagingDraft } from '../express/packaging.rules'
-import { normalizeExpressReturnBillDraft } from '../express/valueAdded'
-import { normalizeExpressValueAddedDraft } from '../express/valueAdded.rules'
-import { normalizeExpressWarehouseDraft } from '../express/warehouse.rules'
+import { normalizeExpressDeliveryPointDraft } from '../express/delivery/deliveryPoint.rules'
+import { normalizeExpressInsuranceDraft } from '../express/insurance/insurance.rules'
+import { normalizeExpressPackagingDraft } from '../express/packaging/packaging.rules'
+import { normalizeExpressReturnBillDraft } from '../express/value-added/valueAdded'
+import { normalizeExpressValueAddedDraft } from '../express/value-added/valueAdded.rules'
+import { normalizeExpressWarehouseDraft } from '../express/warehouse/warehouse.rules'
 
 import type { ExpressDraft } from '../express'
 

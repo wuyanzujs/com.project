@@ -2,7 +2,7 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { createExpressProductQuoteView } = require('@/services/express/express.quoteView')
+const { createExpressProductQuoteView } = require('@/services/express/core/express.quoteView')
 
 test('price detail separates freight from value-added fees without repeating the order total', () => {
   const view = createExpressProductQuoteView({

@@ -5,10 +5,10 @@ const { test } = require('node:test')
 const { dpCache } = require('@/cache/dpCache')
 const { CACHE_KEYS, createCacheStorageKey } = require('@/cache/keys')
 const { getStorageValue, removeStorageValue, setStorageValue } = require('@/cache/storage')
-const { expressDraftBridge } = require('@/services/express/draftBridge')
-const { expressDraftStorage } = require('@/services/express/draftStorage')
-const { createExpressDraft, validateExpressDraft } = require('@/services/express/express.draft')
-const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/express.payload')
+const { createExpressDraft, validateExpressDraft } = require('@/services/express/core/express.draft')
+const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/core/express.payload')
+const { expressDraftBridge } = require('@/services/express/draft/draftBridge')
+const { expressDraftStorage } = require('@/services/express/draft/draftStorage')
 const {
   createExpressValueAddedDraft,
   createExpressValueAddedOrderFields,
@@ -16,7 +16,7 @@ const {
   normalizeExpressValueAddedDraft,
   updateExpressValueAdded,
   validateExpressValueAdded
-} = require('@/services/express/valueAdded.rules')
+} = require('@/services/express/value-added/valueAdded.rules')
 const { templateDraftBridge } = require('@/services/template/template.bridge')
 
 const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')

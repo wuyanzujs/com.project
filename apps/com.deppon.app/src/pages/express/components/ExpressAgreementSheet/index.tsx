@@ -1,6 +1,6 @@
 import { Image, Text, View } from '@tarojs/components'
 
-import { EXPRESS_AGREEMENT_HISTORY } from '@/services/express/agreementHistory'
+import { EXPRESS_AGREEMENT_HISTORY } from '@/services/express/draft/agreementHistory'
 import { AppPressable } from '@/shared/components'
 import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon/images'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'

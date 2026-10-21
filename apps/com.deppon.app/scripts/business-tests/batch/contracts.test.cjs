@@ -16,7 +16,7 @@ const {
   validateBatchDraft,
   validateBatchSubmitDraft
 } = require('@/services/batch')
-const { expressApi } = require('@/services/express/express.api')
+const { expressApi } = require('@/services/express/core/express.api')
 
 const { createBatchContact, createValidBatchDraft } = require('../fixtures/batch.cjs')
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
