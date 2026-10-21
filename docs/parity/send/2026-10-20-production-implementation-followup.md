@@ -8,13 +8,13 @@
 | --- | --- | --- |
 | 客服浮窗 | 位移节点同时持有停靠布局、白色外壳、图标、文字和点击区域；接入生产客服原图；中断后提交位移，纵向阈值和边界有回归 | `shared/components/AppSupportFloat`、`shared/native/AppNativeDraggable.tsx` |
 | 时效卡 | 生产长/短标题、选中/未选中四张背景图替换手绘书签带、折角与描边；保留量测布局和独立文字 | `pages/express/components/ExpressQuoteSection`、`assets/express` |
-| 费用明细 | 基础费用取 FRT；增值列表排除 FRT；增值分区显示实际合计，金额按分汇总，避免把整票总价重复当基础费用 | `services/express/express.quoteView.ts`、`ExpressPriceDetailSheet` |
-| 协议历史 | 从包内 JSON 提取去重后的 11 份历史协议，弹层内按日期列出，走既有 WebView 路由与运行时域名 | `services/express/agreementHistory.ts`、`ExpressAgreementSheet` |
-| 三项新增服务 | 增加双人派送、通电验机、拍照服务草稿；报价与下单分别映射明确字段；旧草稿默认关闭；清除选择后不残留字段 | `services/express/valueAdded.rules.ts`、`types.ts`、`express.payload.ts` |
-| 验机类别与校验 | 使用已在生产 AOT 命中、MP 源码确认的 `queryGoodsNameList`；类别失败/空值不允许开启验机，可重试；至少一个阶段、类别非空、件数 1–99 整数 | `services/express/valueAdded.api.ts`、`valueAdded.service.ts`、`services/ExtraServiceEditors.tsx` |
+| 费用明细 | 基础费用取 FRT；增值列表排除 FRT；增值分区显示实际合计，金额按分汇总，避免把整票总价重复当基础费用 | `services/express/core/express.quoteView.ts`、`ExpressPriceDetailSheet` |
+| 协议历史 | 从包内 JSON 提取去重后的 11 份历史协议，弹层内按日期列出，走既有 WebView 路由与运行时域名 | `services/express/draft/agreementHistory.ts`、`ExpressAgreementSheet` |
+| 三项新增服务 | 增加双人派送、通电验机、拍照服务草稿；报价与下单分别映射明确字段；旧草稿默认关闭；清除选择后不残留字段 | `services/express/value-added/valueAdded.rules.ts`、`types.ts`、`express.payload.ts` |
+| 验机类别与校验 | 使用已在生产 AOT 命中、MP 源码确认的 `queryGoodsNameList`；类别失败/空值不允许开启验机，可重试；至少一个阶段、类别非空、件数 1–99 整数 | `services/express/value-added/valueAdded.api.ts`、`valueAdded.service.ts`、`services/ExtraServiceEditors.tsx` |
 | 增值服务页 | 8 类生产图标卡、信息说明入口、选中蓝描边、选中服务费行；保留原有表单配置，补三项服务配置 | `pages/express/services/ServiceCard.tsx`、`ExtraServiceEditors.tsx`、`index.tsx` |
-| 服务费用闭环 | 本页防抖询价，匹配原产品及线路/时间产品；迟到成功/失败响应不能覆盖新选择；服务费白名单计算合计与独立明细，失败显示未知并可重试 | `services/express/valueAdded.quoteView.ts`、`pages/express/services/useValueAddedQuote.ts`、`ValueAddedFeeSheet.tsx` |
-| 返回与回填 | 编辑只保留本页临时草稿，点击确定才保存；可携带显式、未失效的新报价；普通返回不覆盖寄件草稿 | `pages/express/services/index.tsx`、`services/express/draftBridge.ts` |
+| 服务费用闭环 | 本页防抖询价，匹配原产品及线路/时间产品；迟到成功/失败响应不能覆盖新选择；服务费白名单计算合计与独立明细，失败显示未知并可重试 | `services/express/value-added/valueAdded.quoteView.ts`、`pages/express/services/useValueAddedQuote.ts`、`ValueAddedFeeSheet.tsx` |
+| 返回与回填 | 编辑只保留本页临时草稿，点击确定才保存；可携带显式、未失效的新报价；普通返回不覆盖寄件草稿 | `pages/express/services/index.tsx`、`services/express/draft/draftBridge.ts` |
 | 草稿与模板 | 新域归一、深拷贝、旧缓存兼容；寄件入口摘要展示三项新增服务 | `draftStorage.ts`、`draftBridge.ts`、`services/template/template.bridge.ts`、`ExpressServiceSection` |
 
 新增服务使用的契约：

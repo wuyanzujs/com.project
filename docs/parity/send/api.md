@@ -20,7 +20,7 @@
 
 ## 已接(无需动作,抽样核对参数即可)
 
-RN `services/express/express.api.ts` 等已接 pricetime 主链路:queryPriceTime(价格时效)、queryPointCityByProduct、queryNewProductPointCity、queryPointCityByAddress、fixedProtection;orderService 下单主链路(createOrder 在 RN 已接,不在缺失清单);地址簿全套(见 [contact/api 参照](../contact/structure.md))。
+RN `services/express/core/express.api.ts` 等已接 pricetime 主链路:queryPriceTime(价格时效)、queryPointCityByProduct、queryNewProductPointCity、queryPointCityByAddress、fixedProtection;orderService 下单主链路(createOrder 在 RN 已接,不在缺失清单);地址簿全套(见 [contact/api 参照](../contact/structure.md))。
 
 ## RN 缺失端点(按下单链路影响排序)
 

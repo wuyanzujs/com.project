@@ -63,10 +63,10 @@ docs/
 
    ```text
    src/pages/order/list/index.tsx
-   src/services/order/order.service.ts
-   src/services/order/order.api.ts
-   src/services/order/order.mapper.ts
-   src/services/order/types.ts
+   src/services/order/core/order.service.ts
+   src/services/order/core/order.api.ts
+   src/services/order/core/order.mapper.ts
+   src/services/order/core/types.ts
    ```
 
    这样你能看到页面如何调用 service，service 如何调 api，api 如何走请求层。
@@ -388,11 +388,11 @@ services/goods
 ```text
 pages/express/index.tsx
 pages/express/components/
-services/express/express.draft.ts
-services/express/express.service.ts
-services/express/express.payload.ts
-services/express/valueAdded.ts
-services/express/monthlyPay.ts
+services/express/core/express.draft.ts
+services/express/core/express.service.ts
+services/express/core/express.payload.ts
+services/express/value-added/valueAdded.ts
+services/express/billing/monthlyPay.ts
 ```
 
 ### 订单和支付
@@ -657,13 +657,13 @@ check-native-env.mjs         检查 Android/iOS 本地构建环境
 4. 订单详情调用订单 service：
 
    ```text
-   services/order/order.service.ts
+   services/order/core/order.service.ts
    ```
 
 5. service 调接口：
 
    ```text
-   services/order/order.api.ts
+   services/order/core/order.api.ts
    ```
 
 6. api 走请求层：
@@ -676,7 +676,7 @@ check-native-env.mjs         检查 Android/iOS 本地构建环境
 7. 后端返回后，mapper 转换成页面需要的结构：
 
    ```text
-   services/order/order.mapper.ts
+   services/order/core/order.mapper.ts
    ```
 
 8. 页面根据返回结果渲染。

@@ -17,9 +17,9 @@
 | R1 | 未填地址改为卡内左右缩进 16 的圆角灰块（高 124、圆角 24），空态文案「从哪里发件 / 寄到哪里去」 | `src/pages/express/components/ExpressContactPanel/index.{tsx,scss}` |
 | R2 | 时效卡 200×152 + 深色书签带 `#434a5e` 47 高 + 右上折角 `#363b4d` + 蓝色时效三段 + 近黑价格 | `src/pages/express/components/ExpressQuoteSection/index.{tsx,scss}`、`src/styles/_tokens.scss`(`$dp-color-quote-band`) |
 | R3 | `ExpressSheet` 改用 `AppNativeModalSheet`，蒙层不再跟随动画 | `src/pages/express/components/ExpressSheet/index.{tsx,scss}` |
-| R4 | 增值服务独立页 + 入口行 + 草稿回填；保价卡移到寄件页独立卡片 | `src/pages/express/services/index.{tsx,scss}`(新)、`services/content.scss`(新)、`src/pages/express/components/ExpressServiceSection/index.{tsx,scss}`、`src/services/express/draftBridge.ts`(`VALUE_ADDED`)、`src/shared/navigation/routeRegistry.ts`、`src/pages/express/index.tsx` |
+| R4 | 增值服务独立页 + 入口行 + 草稿回填；保价卡移到寄件页独立卡片 | `src/pages/express/services/index.{tsx,scss}`(新)、`services/content.scss`(新)、`src/pages/express/components/ExpressServiceSection/index.{tsx,scss}`、`src/services/express/draft/draftBridge.ts`(`VALUE_ADDED`)、`src/shared/navigation/routeRegistry.ts`、`src/pages/express/index.tsx` |
 | R5 | 客服浮窗 104×100 半圆胶囊（`--compact`）+ 深色耳机 + 蓝色声波 + 上下拖动 | `src/shared/components/AppSupportFloat/index.{tsx,scss}` |
-| R6 | 勾选图标「灰描边圆 / 蓝实心圆 + 白勾」；首勾协议弹层 + 本地「下次不用提醒」 | `src/pages/express/components/ExpressOrderOptionsSection/index.{tsx,scss}`、`ExpressAgreementSheet/index.{tsx,scss}`(新)、`hooks/useExpressAgreement.ts`(新)、`src/services/express/agreementStorage.ts`(新)、`src/cache/keys.ts` |
+| R6 | 勾选图标「灰描边圆 / 蓝实心圆 + 白勾」；首勾协议弹层 + 本地「下次不用提醒」 | `src/pages/express/components/ExpressOrderOptionsSection/index.{tsx,scss}`、`ExpressAgreementSheet/index.{tsx,scss}`(新)、`hooks/useExpressAgreement.ts`(新)、`src/services/express/draft/agreementStorage.ts`(新)、`src/cache/keys.ts` |
 | R7 | 明细改底部弹层（标题/副标题/圆形关闭 + 基础费用/增值费用/优惠信息分区），状态上提到页面，底栏只保留切换 | `src/pages/express/components/ExpressPriceDetailSheet/index.{tsx,scss}`(新)、`ExpressSubmitBar/index.tsx`、`src/pages/express/index.tsx`；旧 `ExpressPriceDetailPanel/*` 删除 |
 | 测试 | 协议入口改回调、时效卡书签带/折角断言；样式基线重生成 | `scripts/business-tests/express/{submit-actions,quote-card}.test.cjs`、`scripts/style-governance-baseline.json` |
 

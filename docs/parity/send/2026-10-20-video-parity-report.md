@@ -115,7 +115,7 @@
 4. **缺陷 3**：`ExpressSheet` 改用 `AppNativeModalSheet`，蒙层与面板分离；优惠券/付款/上门时间等所有寄件弹层同步生效。
 5. **缺陷 4**：新增独立页 `src/pages/express/services/index.tsx`（路由 `expressServices` → `pages/express/services/index`，已登记 `routeRegistry`），承载代收货款、签收单、派送时间、送货进仓、打包服务五类 RN 已建模的服务；底栏「费用合计 / 明细 / 确定」；`ExpressServiceSection` 收敛为入口行 + 摘要；`draftBridge` 新增 `VALUE_ADDED` 回填来源（静默、报价失效）。保价卡从折叠面板移到寄件页独立卡片（与生产端位置一致）。
 6. **缺陷 5**：`AppSupportFloat` 改为 104×100 半圆胶囊（`--compact` 修饰类，两字文案触发），图标改为深色耳机 + 两道蓝色声波；外层接入 `AppNativeDraggable` 支持上下拖动，默认位置与生产端一致。
-7. **缺陷 6**：勾选图标改为「灰描边圆 / 蓝实心圆 + 白勾」；新增 `ExpressAgreementSheet`（说明段 + 《电子运单服务协议》全文 / 历史版本记录入口 + 主按钮「同意本协议，下次不用提醒我」）与 `useExpressAgreement`；`cache/keys.ts` 新增 `expressAgreementConfirm`，`services/express/agreementStorage.ts` 落盘确认态。
+7. **缺陷 6**：勾选图标改为「灰描边圆 / 蓝实心圆 + 白勾」；新增 `ExpressAgreementSheet`（说明段 + 《电子运单服务协议》全文 / 历史版本记录入口 + 主按钮「同意本协议，下次不用提醒我」）与 `useExpressAgreement`；`cache/keys.ts` 新增 `expressAgreementConfirm`，`services/express/draft/agreementStorage.ts` 落盘确认态。
 8. **缺陷 7**：新增 `ExpressPriceDetailSheet`（页面内弹层 + 静态蒙层 + 分区排版 + 圆形关闭），`ExpressSubmitBar` 只保留「明细」切换，弹层状态上提到页面；旧 `ExpressPriceDetailPanel` 删除。
 9. **测试同步**：`business-tests/express/submit-actions.test.cjs`（协议入口改为回调）、`quote-card.test.cjs`（时效卡书签带/折角断言）更新；`style-governance-baseline.json` 按新文件重生成。
 
@@ -139,7 +139,7 @@
 
 ## 七、未决项与风险（需要你确认或下轮补）
 
-1. **增值服务的 3 个生产端条目缺后端契约**：`双人派送`、`通电验机`、`拍照服务（拍照签收 / 取货照片）` 在 RN 下单载荷 `src/services/express/express.payload.ts` 中没有对应字段，生产端包内可见 `验机件数`、`5元/票` 等计费文案但拿不到字段名与取值规则。**本轮没有为了「看起来一致」而伪造这几行**，页面只列 RN 已建模的 5 类服务。要补齐需要抓生产端请求或后端接口文档。
+1. **增值服务的 3 个生产端条目缺后端契约**：`双人派送`、`通电验机`、`拍照服务（拍照签收 / 取货照片）` 在 RN 下单载荷 `src/services/express/core/express.payload.ts` 中没有对应字段，生产端包内可见 `验机件数`、`5元/票` 等计费文案但拿不到字段名与取值规则。**本轮没有为了「看起来一致」而伪造这几行**，页面只列 RN 已建模的 5 类服务。要补齐需要抓生产端请求或后端接口文档。
 2. **明细里的「优惠信息 -¥1」**：生产端数值来自券抵扣；RN 只有券列表里的 `optimalFee`（分），本轮按「匹配到已选券」才渲染优惠分区，未选券时不显示。若生产端在无券时仍显示 0 元行，需要再对齐。
 3. **协议弹层的「历史记录」版本列表**：生产端是内嵌列表（11 条日期链接）；RN 只有 `PROTOCOL_RECORD` H5 页，本轮以「历史版本记录 >」跳 H5 承接，接口级对齐需要后端版本接口。
 4. **蒙层动画无法录屏复核**：本机 `screenrecord` 不可用，只能按静态截图 + 生产端 UI 结构推断「蒙层静态、面板滑入」；建议换一台可录屏机型抓 30fps 开场帧确认。

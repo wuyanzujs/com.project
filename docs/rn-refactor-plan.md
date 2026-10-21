@@ -411,59 +411,59 @@ type ContactSelectMode = 'select' | 'manage'
 
 寄件模块已开始按 RN App 端重新建模，首期不照搬参考项目 `send/express` 的巨石页面和 Redux 状态机，而是拆成“页面草稿 + 领域 service + API 薄封装”：
 
-- `services/express/types.ts`：定义 `ExpressDraft`、`ExpressContact`、`ExpressGoods`、产品报价、取件时间、下单请求/响应等首期契约。
-- `services/express/express.api.ts`：只封装 OWS 端点，包含价格时效、取件时间、货物品名/标签、保价、筛单、下单拦截、创建订单、订单详情、取消订单。
-- `services/express/express.draft.ts`：拆出 draft 默认值、联系人映射、地址展示和下单/查价基础校验；草稿变更规则由独立 mutation 模块承接。
-- `services/express/express.mutations.ts`：集中处理货物/服务/取件方式变更、优惠券归一、报价失效、产品选择、取件时间映射和收寄地址依赖清理，页面只保留状态更新编排。
-- `services/express/couponOrder.rules.ts`：按当前报价恢复优惠券查询所需的原始 `FRT/BF/AD/NMBZ` 费用；优惠券减免只加回 `couponRankType` 对应费用，线路限时优惠只加回运费，并生成绑定产品、地址、手机号和 App OMS 渠道的稳定请求与竞态 key。
+- `services/express/core/types.ts`：定义 `ExpressDraft`、`ExpressContact`、`ExpressGoods`、产品报价、取件时间、下单请求/响应等首期契约。
+- `services/express/core/express.api.ts`：只封装 OWS 端点，包含价格时效、取件时间、货物品名/标签、保价、筛单、下单拦截、创建订单、订单详情、取消订单。
+- `services/express/core/express.draft.ts`：拆出 draft 默认值、联系人映射、地址展示和下单/查价基础校验；草稿变更规则由独立 mutation 模块承接。
+- `services/express/core/express.mutations.ts`：集中处理货物/服务/取件方式变更、优惠券归一、报价失效、产品选择、取件时间映射和收寄地址依赖清理，页面只保留状态更新编排。
+- `services/express/billing/couponOrder.rules.ts`：按当前报价恢复优惠券查询所需的原始 `FRT/BF/AD/NMBZ` 费用；优惠券减免只加回 `couponRankType` 对应费用，线路限时优惠只加回运费，并生成绑定产品、地址、手机号和 App OMS 渠道的稳定请求与竞态 key。
 - `services/coupon/expressCoupon.api.ts` 与 `expressCoupon.service.ts`：接入 `/queryCouponOrder`，将 `available/unAvailable` 分别归一为可选与只读券卡 VM；API 或映射运行时异常统一返回可重试失败，个人券列表、兑换码领取和寄件上下文可用券查询保持独立接口职责。
 - `pages/express/hooks/useExpressCoupons.ts` 与 `ExpressCouponCard.tsx`：报价选中产品后以 300ms debounce 自动查询适用券，旧响应按请求 key 丢弃；自动 timer、手动刷新和卸载共享清理边界，异常按 mounted/key 收敛为 error，不会留下旧列表或 loading。页面支持可用/不可用券、详情、手输券码、选择、清除和登录后恢复草稿。任一券码变化都清空页面旧报价并要求重新计价，不复制旧 Redux Picker 或自动推荐状态机。
-- `services/express/express.payload.ts`：拆出价格时效、取件时间、保价试算、筛单和创建订单 payload 组装，页面不直接拼 OWS 字段。
-- `services/express/express.service.ts`：保留货物品名、报价、取件时间、保价、筛单、下单拦截、创建订单、订单详情和取消订单等 API 编排。
-- `services/express/draftBridge.ts`：提供一次性跨页草稿桥，当前用于价格时效查询结果带入寄件页，不引入 Redux 巨石状态。
+- `services/express/core/express.payload.ts`：拆出价格时效、取件时间、保价试算、筛单和创建订单 payload 组装，页面不直接拼 OWS 字段。
+- `services/express/core/express.service.ts`：保留货物品名、报价、取件时间、保价、筛单、下单拦截、创建订单、订单详情和取消订单等 API 编排。
+- `services/express/draft/draftBridge.ts`：提供一次性跨页草稿桥，当前用于价格时效查询结果带入寄件页，不引入 Redux 巨石状态。
 - `pages/express/index`：升级为 RN App 表单壳，包含收寄地址、货物信息、付款/送货方式、取件时间、产品价格、备注、协议和提交入口。
 - `pages/express/components/ExpressContactPanel.tsx`、`ExpressGoodsSection.tsx`、`ExpressServiceSection.tsx` 和 `ExpressQuoteSection.tsx`：拆出收寄地址、货物信息、服务方式和产品价格面板，页面继续负责草稿状态、报价失效、登录守卫和提交编排，避免寄件页继续膨胀。
 - `pages/express/index`：货物名称支持按输入关键词查询后端品名推荐，点击候选只回填标准品名；分类信息仅作为辅助展示，不写入下单字段。
-- `services/express/insurance.product.ts`、`insurance.rules.ts` 与 `insurance.view.ts`：独立承接产品必保/免费保障/全额保/省心保权限、货物标签能力、动态上限、金额校验、报价/下单字段和页面 VM，不把保价状态并回货物或 Redux 巨石。
+- `services/express/insurance/insurance.product.ts`、`insurance.rules.ts` 与 `insurance.view.ts`：独立承接产品必保/免费保障/全额保/省心保权限、货物标签能力、动态上限、金额校验、报价/下单字段和页面 VM，不把保价状态并回货物或 Redux 巨石。
 - `services/customer/customer.service.ts`：归一 `customerLabel.insuredPriceCap` 为客户保价额度；客户编码二维码只有与当前账号客户一致时才继承该额度，避免扫码上下文跨客户复用权限。
-- `services/express/productAvailability.service.ts`：有货物名称时始终在 `Promise.allSettled` 中查询货物标签，不再只为 DCZP 推荐查询；结果同时生成当前地址/品名指纹绑定的保价能力。
+- `services/express/product/productAvailability.service.ts`：有货物名称时始终在 `Promise.allSettled` 中查询货物标签，不再只为 DCZP 推荐查询；结果同时生成当前地址/品名指纹绑定的保价能力。
 - `pages/express/hooks/useExpressInsurance.ts` 与 `ExpressInsuranceCard.tsx`：提供基础保/全额保/省心保选择、易碎保自动归一、动态额度、免费保障、费用试算和请求版本隔离；旧单金额输入已从货物卡移除。
-- `services/express/insuranceRules.ts`：新增保价规则 VM，将基础保、全额保、省心保的收费和理赔说明结构化为 App 页面可消费的数据，不复用旧项目保价编辑 Redux 状态机。
+- `services/express/insurance/insuranceRules.ts`：新增保价规则 VM，将基础保、全额保、省心保的收费和理赔说明结构化为 App 页面可消费的数据，不复用旧项目保价编辑 Redux 状态机。
 - `pages/express/insurance/index`：新增 App 原生保价说明页，寄件页保价金额旁提供规则入口；页面只展示规则说明，不承担保价金额提交或费用试算。
-- `services/express/monthlyPay.ts`：新增月结付款提示 VM，只消费客户中心读结果并输出页面提示/引导，不复用旧项目付款弹窗、合同状态机和优惠联动。
+- `services/express/billing/monthlyPay.ts`：新增月结付款提示 VM，只消费客户中心读结果并输出页面提示/引导，不复用旧项目付款弹窗、合同状态机和优惠联动。
 - `pages/express/index`：选择月结时同步当前账号客户中心状态；已绑定时展示客户编码并引导月结中心，未绑定或未登录时引导受控客户绑定 WebView，提交结果仍以后端月结/合同权限校验为准。
-- `services/express/collection.rules.ts`：将代收货款收敛为独立 `ExpressCollectionDraft`，统一返款类型、金额、审核账户、额度、协议、手续费和报价/下单字段映射；不复用旧项目 Redux 代收状态。
+- `services/express/billing/collection.rules.ts`：将代收货款收敛为独立 `ExpressCollectionDraft`，统一返款类型、金额、审核账户、额度、协议、手续费和报价/下单字段映射；不复用旧项目 Redux 代收状态。
 - `services/customer/customer.service.ts`：通过 `customerLabel` 能力归一当前客户代收额度、保价额度和合同标识，寄件页只消费稳定的 `CustomerCapability`，接口异常时保守使用默认额度并展示可刷新提示。
 - `pages/express/hooks/useExpressCollection.ts` 与 `ExpressCollectionCard.tsx`：编排三日退/即日退、金额、账户、协议和额度刷新；关闭服务时统一清理代收草稿并使旧报价失效。
 - `shared/webview/appWebMessage.ts`：为代收账户页提供来源受限、事件受限的一次性内存消息桥；H5 只能以 `EXPRESS_COLLECTION_ACCOUNT/COLLECTION_CHANGE` 回传已审核账户，业务代码不使用同步缓存或直接访问 RN Native API。
-- `services/express/deliveryPreference.rules.ts`：将派送偏好收敛为独立草稿，统一常规派送、定时派送、等寄件人通知和等收件人通知四种互斥状态，负责日期窗口、能力请求、报价字段、下单扩展字段和校验规则。
-- `services/express/express.api.ts` 与 `express.service.ts`：接入定时派送范围查询；只有当前产品提供预计到达时间、收件地址完整且后端明确返回支持时，页面才会启用定时派送；`DCZP/TKDR` 按参考端已知规则保守排除。
+- `services/express/delivery/deliveryPreference.rules.ts`：将派送偏好收敛为独立草稿，统一常规派送、定时派送、等寄件人通知和等收件人通知四种互斥状态，负责日期窗口、能力请求、报价字段、下单扩展字段和校验规则。
+- `services/express/core/express.api.ts` 与 `express.service.ts`：接入定时派送范围查询；只有当前产品提供预计到达时间、收件地址完整且后端明确返回支持时，页面才会启用定时派送；`DCZP/TKDR` 按参考端已知规则保守排除。
 - `pages/express/hooks/useExpressDeliveryPreference.ts` 与 `ExpressDeliveryPreferenceCard.tsx`：承接派送范围查询、预计到达后 7 天日期、六个派送时段和未来 30 天不可收货日期；能力结果带地址、货物、产品和送货方式指纹，输入变化或异步旧响应不能重新写入失效的定时派送状态。
-- `services/express/pickupTime.rules.ts` 与 `pickupTime.options.ts`：拆出夜间揽收能力缓存、草稿兼容、北京时间截单、费用确认、时段响应归一和日期/时段 VM；普通、夜间和不可用时段按日期合并排序，重复“一小时上门”优先保留夜间时段。
-- `services/express/express.api.ts` 与 `express.service.ts`：先通过 `matchFeatureAoi` 查询寄件地址是否支持夜间揽收，再将 `nightOpening/nightStartTime/nightEndTime` 传给 `dispatchTimeByDeptCode`；地址能力在草稿缓存中保留 2 小时，失败时仍可降级查询普通取件时段。
+- `services/express/pickup/pickupTime.rules.ts` 与 `pickupTime.options.ts`：拆出夜间揽收能力缓存、草稿兼容、北京时间截单、费用确认、时段响应归一和日期/时段 VM；普通、夜间和不可用时段按日期合并排序，重复“一小时上门”优先保留夜间时段。
+- `services/express/core/express.api.ts` 与 `express.service.ts`：先通过 `matchFeatureAoi` 查询寄件地址是否支持夜间揽收，再将 `nightOpening/nightStartTime/nightEndTime` 传给 `dispatchTimeByDeptCode`；地址能力在草稿缓存中保留 2 小时，失败时仍可降级查询普通取件时段。
 - `pages/express/hooks/useExpressPickupTime.ts` 与 `ExpressPickupTimeCard.tsx`：提供 RN 日期/时段选择、刷新保留有效选择、旧请求输入指纹隔离和夜间费用确认；页面主文件只消费控制器，不保存取件状态机。
-- `services/express/warehouse.rules.ts`、`warehouse.payload.ts`、`warehouse.service.ts`：将送货进仓筛单、预约暂存、报价字段、订单扩展字段和 H5 URI 编排收敛为独立领域边界；筛单结果缺失或 type 非 0-4 时 fail-closed。
+- `services/express/warehouse/warehouse.rules.ts`、`warehouse.payload.ts`、`warehouse.service.ts`：将送货进仓筛单、预约暂存、报价字段、订单扩展字段和 H5 URI 编排收敛为独立领域边界；筛单结果缺失或 type 非 0-4 时 fail-closed。
 - `pages/express/hooks/useExpressWarehouse.ts` 与 `ExpressWarehouseCard.tsx`：承接 type 0-4、100kg 精准进仓一次自动开启、用户确认/拒绝、自提与派送互斥、staging 等待和报价失效；type 2/3/4 未得到当前证明上的明确确认时不能提交。
 - `shared/webview/appWebMessage.ts`：`SEND_WAREHOUSE` 必须匹配当前 WebView URL 的 `warehouseId/stagingId`、输入指纹和一次性 expectation；附件限制为 HTTPS、无凭据、最多 9 个，并在账号切换/登出时清空桥状态。
-- `services/express/packaging.catalog.ts`、`packaging.rules.ts` 与 `packaging.payload.ts`：独立承接 9 种普通纸箱、4 种木包装和 2 种拆包装目录、非法 code 归一、报价体积下限、报价失效及报价/下单差异映射，不把旧小程序包装 Redux 状态并回货物模型。
+- `services/express/packaging/packaging.catalog.ts`、`packaging.rules.ts` 与 `packaging.payload.ts`：独立承接 9 种普通纸箱、4 种木包装和 2 种拆包装目录、非法 code 归一、报价体积下限、报价失效及报价/下单差异映射，不把旧小程序包装 Redux 状态并回货物模型。
 - `pages/express/components/ExpressPackagingCard.tsx`：使用参考端真实纸箱/木包装目录和价格提供 RN 纸箱单选、木包装多选与拆包装多选；“无需包装”清理三类服务，组件作为寄件页顶层分区，不嵌套在货物卡中。
-- `services/express/draftStorage.ts`、`draftBridge.ts` 与 `template.bridge.ts`：旧缓存缺少包装或包含非法 code 时恢复为空；查价、优惠券和品名选择往返保留当前包装，再寄、批量、扫码、派送范围、快递员和模板带入不隐式继承实际包材，所有桥均深拷贝包装对象。
-- `services/express/productAvailability.rules.ts`：将 `passProductCode` 从 OMS 产品码中拆出，按普通寄件、快递员二维码、客户编码二维码、司机二维码和营业部二维码归一为产品融合角色；当前 RN 没有旧端运单号、特快、铁路等输入，不虚构 `NEWEXP/TZKJC/DZLY` 分支。
-- `services/express/productAvailability.service.ts`：登录态先通过客户能力 service 获取客户编码、月结、合同与保价额度，客户编码二维码优先使用扫码值且只有与账号客户一致时才继承权限；随后以 `Promise.allSettled` 独立查询 DCZP 点城市、产品融合、产品升级和货物标签，单个可选接口失败不会拖垮主报价。
-- `services/express/express.api.ts`：接入 `queryPointCityByProduct`、`queryNewProductPointCity` 和 `queryPointCityByAddress`；融合接口只有明确 `false` 才切到 `OLD`，升级接口只有明确 `NEW` 才按合同客户/散客切到 `CONTRACT/UNIVERSAL`，其他结果保持 `EXP`。
+- `services/express/draft/draftStorage.ts`、`draftBridge.ts` 与 `template.bridge.ts`：旧缓存缺少包装或包含非法 code 时恢复为空；查价、优惠券和品名选择往返保留当前包装，再寄、批量、扫码、派送范围、快递员和模板带入不隐式继承实际包材，所有桥均深拷贝包装对象。
+- `services/express/product/productAvailability.rules.ts`：将 `passProductCode` 从 OMS 产品码中拆出，按普通寄件、快递员二维码、客户编码二维码、司机二维码和营业部二维码归一为产品融合角色；当前 RN 没有旧端运单号、特快、铁路等输入，不虚构 `NEWEXP/TZKJC/DZLY` 分支。
+- `services/express/product/productAvailability.service.ts`：登录态先通过客户能力 service 获取客户编码、月结、合同与保价额度，客户编码二维码优先使用扫码值且只有与账号客户一致时才继承权限；随后以 `Promise.allSettled` 独立查询 DCZP 点城市、产品融合、产品升级和货物标签，单个可选接口失败不会拖垮主报价。
+- `services/express/core/express.api.ts`：接入 `queryPointCityByProduct`、`queryNewProductPointCity` 和 `queryPointCityByAddress`；融合接口只有明确 `false` 才切到 `OLD`，升级接口只有明确 `NEW` 才按合同客户/散客切到 `CONTRACT/UNIVERSAL`，其他结果保持 `EXP`。
 - `express.payload.ts` 与 `pages/express/hooks/useExpressQuote.ts`：报价请求发送产品角色、客户权限、`isOffSiteTransfer=N` 和升级角色需要的 `collectMode/deliveryMode`；同时按保价类型发送 `fullCoverage/sxb/isFragileArticles`，把客户动态额度和标签能力应用到草稿后再选择产品；报价列表原顺序不变。
 - `services/query/query.station.ts` 与 `stationSelection.ts`：地址网点查询在 `PICKUP + EXPRESS` 下使用 `expressPickup`，选择模式只保留 `source=Address`、`pickupSelf=true`、距离 `0..20km`、非空 `deptNo` 和名称的服务点；`StationItem.id/code` 分别固定映射 `deptNo/deptCode`。
-- `services/express/deliveryPoint.rules.ts`：将收件自提服务点独立为 `{ code, name }` 草稿，`code` 只接受 `StationItem.id/deptNo`，不回退 `deptCode`；未指定网点表示由后端匹配最近服务点，收件地址变化、地址互换或退出 `PICKSELF` 统一清空。
+- `services/express/delivery/deliveryPoint.rules.ts`：将收件自提服务点独立为 `{ code, name }` 草稿，`code` 只接受 `StationItem.id/deptNo`，不回退 `deptCode`；未指定网点表示由后端匹配最近服务点，收件地址变化、地址互换或退出 `PICKSELF` 统一清空。
 - `pages/express/hooks/useExpressDeliveryPoint.ts`、`ExpressDeliveryPointField.tsx` 与 `pages/query/stations` 选择模式：通过 source 隔离的一次性内存桥往返具体服务点或 null 最近点；网点筛选、结果列表和选择提示分别拆入独立组件/SCSS，页面主文件只保留查询和导航编排。
 - `express.payload.ts`：创建订单仅按有效自提草稿写 `receivingToPoint=deptNo` 与 `receivingToPointName`；异常网点、未指定网点和非自提方式均写空字段，不猜测编码。
-- `services/express/valueAdded.ts`：将签收单返单拆成独立规则，承接 OMS/PPC 五类映射、R1-R8 归一、纸质/纯云签校验、1-99 张数、`DCZP` 云签限制和模板/旧缓存兼容，不迁旧项目委托书、图片上传和复杂营销状态机。
+- `services/express/value-added/valueAdded.ts`：将签收单返单拆成独立规则，承接 OMS/PPC 五类映射、R1-R8 归一、纸质/纯云签校验、1-99 张数、`DCZP` 云签限制和模板/旧缓存兼容，不迁旧项目委托书、图片上传和复杂营销状态机。
 - `pages/express/components/ExpressReturnBillCard.tsx` 与 `hooks/useExpressReturnBill.ts`：服务方式中提供纸质返单要求、返单张数和电子云签入口；hook 负责类型更新、报价失效和一次性 WebView 回填，寄件主页面只保留控制器接线并维持 720 行冻结预算。
 - `express.payload.ts`：报价和下单分别映射 PPC/OMS 返单类型；只有云签类型携带 `fileCode`，纸质返单张数大于 1 时才追加 `orderExtendFields[{ key: 'returnBillQty', value }]`。
 - `shared/webview/appWebMessage.ts` 与 `pages/web/index.tsx`：电子云签使用受控 source、一次性 `messageContext` 和 `ONLINE_SIGN` 消息回填 `fileCode`；错误来源、上下文、额外字段、空值和重复消费均拒绝，离开页面会取消 expectation。
 - `services/template`：模板 schema 不保存临时 `fileCode`，加载/保存仍保留返单类型与纸质要求，带入寄件页后云签类型必须重新签署。
 - `pages/express/index`：隐私面单作为服务选项接入，首次开启时展示 App 内确认说明，确认结果写入本地缓存；创建订单时通过 `encryptInfo: 'Y' | 'N'` 传给后端。
 - `pages/express/index` 已移除演示联系人“填入”能力，联系人来源只保留地址簿选择、新增后回填和查价草稿带入。
-- `services/express/draftStorage.ts`：新增寄件草稿持久化，使用 2 小时 TTL 缓存收寄件、货物、服务、报价和备注；提交成功后清理。
+- `services/express/draft/draftStorage.ts`：新增寄件草稿持久化，使用 2 小时 TTL 缓存收寄件、货物、服务、报价和备注；提交成功后清理。
 - `pages/express/index`：寄件页已按生产端登录策略改为登录必需（`routeRegistry` 声明 `loginRequired`），未登录从首页、扫码、查价、优惠券、再来一单等任意入口进入都会先走统一登录守卫并携带回跳地址；草稿变化自动保存，页面初始化优先恢复草稿；会话过期兜底保留提交前草稿并跳登录页，登录后继续提交。
 - `shared/navigation/routeRegistry.ts`、`scripts/check-route-registry.mjs` 与 `scripts/business-tests/navigation/gating.test.cjs`：寄件主页声明 `loginRequired` 后，`APP_LOGIN_ROUTE_PATHS`、导航守卫和 App 恢复态检查自动按同一注册表拦截；物品信息等子页只从寄件页进入，由父页面守卫覆盖，不单独声明；门禁脚本锁定寄件主页的登录必需声明，业务测试断言匿名进入跳登录并携带回跳地址（含 query）、已登录直接进入。
 - `services/express.submitDraft`：下单前新增货物标签和筛单校验。`queryGoodsRemark` 返回 `displayType=forbid` 时阻断；`sieveOrder/tips` 返回 `type=2/3/4` 时必须完成当前证明上的明确确认，未确认时阻断并展示后端 `reason`，`type=1` 作为提醒类结果暂不阻断。
@@ -562,8 +562,8 @@ APP_RUNTIME_CONFIG.omsChannel
 - `pages/query/price/components/QueryPriceProductCard.tsx`：承接可选产品卡片展示，复用统一报价 VM 展示价格、时效、计费重量和费用明细，页面主文件只保留查询流程和寄件跳转。
 - `services/express.validateExpressPriceTimeDraft`：新增轻量价格查询校验，只校验收寄地址、重量、件数和地址差异，不要求姓名、手机号和电子运单协议。
 - `services/express.quotePriceTime`：复用 PPC 价格时效端点和 `buildFreightRequest`，但与下单 `quote` 的联系人校验解耦。
-- `services/express/express.quoteView.ts`：沉淀报价结果展示 VM，统一价格文案、时效兜底、计费重量和费用明细行；价格时效页和寄件报价组件不再各自判断 PPC 字段。
-- `services/express/draftBridge.ts`：价格结果点击“去寄件”时携带当前 draft 和已选产品，寄件页 `useDidShow` 消费后立即清理。
+- `services/express/core/express.quoteView.ts`：沉淀报价结果展示 VM，统一价格文案、时效兜底、计费重量和费用明细行；价格时效页和寄件报价组件不再各自判断 PPC 字段。
+- `services/express/draft/draftBridge.ts`：价格结果点击“去寄件”时携带当前 draft 和已选产品，寄件页 `useDidShow` 消费后立即清理。
 - `services/contact/selection.ts`：选择来源扩展为 `EXPRESS | QUERY_PRICE`，保证地址簿文案和回填意图可追踪。
 - `pages/home/home.data.ts`：`查价格` 入口改为 `APP_ROUTES.priceQuery`，不再落入空 Web 承接页。
 
@@ -627,7 +627,7 @@ APP_RUNTIME_CONFIG.omsChannel
 - `services/express.checkGoodsByName`：复用货物备注接口，将后端标签归一为 `ok / risk / unknown / forbid` 四类结果。
 - `services/goods`：负责品名搜索、热门品名兜底、最近查询缓存和校验结果历史。
 - `pages/query/goods/index`：支持货物名搜索推荐、热门品名、最近查询、禁寄/风险/未知提示和“带入寄件”。
-- `services/express/draftBridge.ts`：新增 `GOODS_QUERY` 来源，带入寄件时只写货物名称并清空报价结果。
+- `services/express/draft/draftBridge.ts`：新增 `GOODS_QUERY` 来源，带入寄件时只写货物名称并清空报价结果。
 - 首页快捷入口和客服中心自助查询已接入 `APP_ROUTES.goodsQuery`。
 
 关键约束：
@@ -776,29 +776,29 @@ APP_RUNTIME_CONFIG.omsChannel
 
 已落地边界：
 
-- `services/order/types.ts`：定义寄件/收件列表原始响应、列表 VM、订单详情 VM、运单详情原始响应和轨迹响应。
-- `services/order/order.api.ts`：封装寄件订单列表、收件订单列表、订单详情、运单详情、轨迹列表、取消订单和删除订单端点。
-- `services/order/order.display.ts`：沉淀订单展示格式化能力，包含空值展示、金额、尺寸、手机号脱敏、加密判断和地址拼接。
-- `services/order/order.mapper.ts`：拆出寄件/收件列表归一、运单详情字段归一和再来一单/一键回寄草稿转换，不继续膨胀主 service。
-- `services/order/order.detailRules.ts`：拆出订单详情状态、角色、运单号、受控 H5 URL 和通用取值规则，供动作 VM 和 service 复用。
-- `services/order/order.detailActions.ts`：拆出订单详情售后动作 VM，统一生成在线客服、催单、通知派送、拦截作废、收件方式、联系营业部、评价、投诉、在线理赔、去开票和修改运单入口。
-- `services/order/order.detailUseCases.ts`：拆出催单按钮/话术/提交、通知派送、拦截作废和营业部电话兜底等详情动作 API 编排。
-- `services/order/order.stubView.ts`：拆出电子存根入口、复制单号、寄收地址、身份文案、货物/费用/订单分区、尺寸明细和后置能力提示 VM，不继续堆进主 service。
-- `services/order/order.stubFiles.ts`：拆出电子存根包装费用明细、电子合同状态、合同预览路由和单据票证 VM。
-- `services/order/order.stubImages.ts`：拆出取货、复磅、签收、返单、增值服务和木包装等照片凭证查询与图片分组归一。
-- `services/order/order.service.ts`：统一最近一个月默认查询范围、订单接口编排、轨迹查询、取消订单、终态订单删除和删除权限判断。
-- `services/order/order.subscription.ts`：归一关注运单列表并编排关注状态查询、关注和取消；详情页动态动作由纯 VM 生成。
-- `services/order/order.edit.ts`：把安全订单详情归一为编辑草稿，统一校验收寄件、货物、代收、保价和改单上门服务，并合并各领域实际变化的 `/modifyOrder` 请求；页面进入前统一校验 `modifyFlag`、发件人身份、待揽件状态和产品修改权限。
-- `services/order/order.edit.collection.ts`：独立承接改单代收货款类型、金额、额度、账户、协议、详情字段兼容和四字段 diff；关闭服务固定发送 `NORMAL/0/空户名/空账户`，未变化时完全不发送代收字段。
-- `services/order/order.edit.insurance.ts`：独立承接普通基础保价的详情归一、产品必保/赠送保障策略、特殊 `bjlx` 锁定、金额校验和 `insuredAmount + insuranceSource` 成组差异。
-- `services/order/order.edit.packaging.ts`：独立承接改单打包动作件数，从详情扩展字段 `packingService` 恢复 `0..999` 的 canonical 数量，统一 2 元/件参考费用、整数校验和字符串扩展字段 diff；它不表示纸箱、木包装或其他具体包材类型。
-- `services/order/order.edit.schedule.ts`、`schedule.options.ts`、`schedule.selection.ts`：独立承接上门时段输入指纹、夜揽能力、普通/夜间/不可用时段归一、送货方式显示规则、选择校验和 `/modifyOrder` 差异；不复用详情快捷预约的 `source=4` 或 `/orderDispatchFlag`。
-- `services/order/order.edit.schedule.service.ts` 与 `schedule.api.ts`：先查询地址夜揽能力，再以 `source=0` 查询改单时段；旧异步响应由页面 hook 的请求指纹隔离，不会覆盖新地址或新重体积草稿。
-- `services/order/order.edit.types.ts`：隔离改单专属 draft、扩展字段和请求类型，避免继续膨胀共享订单 DTO。
-- `services/order/order.detailActions.ts`：新增催单、通知派送、拦截作废、收件方式 H5、联系营业部和 App 评价路由的动作 VM，页面不散落状态判断或 H5 参数。
-- `services/order/order.detailUseCases.ts`：催单点击后查询后端话术和按钮；查看进度走受控 H5，提交催单走 `orderUrgent` 接口。
-- `services/order/order.detailUseCases.ts`：通知派送统一调用 `modifyNotifyDeliver`；拦截作废统一调用 `invalidWaybill`，并把“货物已出发需去运单修改拦截”的后端文案归一为页面可消费的结果 VM。
-- `services/order/order.detailUseCases.ts`：联系营业部优先使用详情电话，否则通过 `deptTelephone` 查询，最终兜底 95353。
+- `services/order/core/types.ts`：定义寄件/收件列表原始响应、列表 VM、订单详情 VM、运单详情原始响应和轨迹响应。
+- `services/order/core/order.api.ts`：封装寄件订单列表、收件订单列表、订单详情、运单详情、轨迹列表、取消订单和删除订单端点。
+- `services/order/core/order.display.ts`：沉淀订单展示格式化能力，包含空值展示、金额、尺寸、手机号脱敏、加密判断和地址拼接。
+- `services/order/core/order.mapper.ts`：拆出寄件/收件列表归一、运单详情字段归一和再来一单/一键回寄草稿转换，不继续膨胀主 service。
+- `services/order/detail/order.detailRules.ts`：拆出订单详情状态、角色、运单号、受控 H5 URL 和通用取值规则，供动作 VM 和 service 复用。
+- `services/order/detail/order.detailActions.ts`：拆出订单详情售后动作 VM，统一生成在线客服、催单、通知派送、拦截作废、收件方式、联系营业部、评价、投诉、在线理赔、去开票和修改运单入口。
+- `services/order/detail/order.detailUseCases.ts`：拆出催单按钮/话术/提交、通知派送、拦截作废和营业部电话兜底等详情动作 API 编排。
+- `services/order/stub/order.stubView.ts`：拆出电子存根入口、复制单号、寄收地址、身份文案、货物/费用/订单分区、尺寸明细和后置能力提示 VM，不继续堆进主 service。
+- `services/order/stub/order.stubFiles.ts`：拆出电子存根包装费用明细、电子合同状态、合同预览路由和单据票证 VM。
+- `services/order/stub/order.stubImages.ts`：拆出取货、复磅、签收、返单、增值服务和木包装等照片凭证查询与图片分组归一。
+- `services/order/core/order.service.ts`：统一最近一个月默认查询范围、订单接口编排、轨迹查询、取消订单、终态订单删除和删除权限判断。
+- `services/order/subscription/order.subscription.ts`：归一关注运单列表并编排关注状态查询、关注和取消；详情页动态动作由纯 VM 生成。
+- `services/order/edit/order.edit.ts`：把安全订单详情归一为编辑草稿，统一校验收寄件、货物、代收、保价和改单上门服务，并合并各领域实际变化的 `/modifyOrder` 请求；页面进入前统一校验 `modifyFlag`、发件人身份、待揽件状态和产品修改权限。
+- `services/order/edit/order.edit.collection.ts`：独立承接改单代收货款类型、金额、额度、账户、协议、详情字段兼容和四字段 diff；关闭服务固定发送 `NORMAL/0/空户名/空账户`，未变化时完全不发送代收字段。
+- `services/order/edit/order.edit.insurance.ts`：独立承接普通基础保价的详情归一、产品必保/赠送保障策略、特殊 `bjlx` 锁定、金额校验和 `insuredAmount + insuranceSource` 成组差异。
+- `services/order/edit/order.edit.packaging.ts`：独立承接改单打包动作件数，从详情扩展字段 `packingService` 恢复 `0..999` 的 canonical 数量，统一 2 元/件参考费用、整数校验和字符串扩展字段 diff；它不表示纸箱、木包装或其他具体包材类型。
+- `services/order/edit/order.edit.schedule.ts`、`schedule.options.ts`、`schedule.selection.ts`：独立承接上门时段输入指纹、夜揽能力、普通/夜间/不可用时段归一、送货方式显示规则、选择校验和 `/modifyOrder` 差异；不复用详情快捷预约的 `source=4` 或 `/orderDispatchFlag`。
+- `services/order/edit/order.edit.schedule.service.ts` 与 `schedule.api.ts`：先查询地址夜揽能力，再以 `source=0` 查询改单时段；旧异步响应由页面 hook 的请求指纹隔离，不会覆盖新地址或新重体积草稿。
+- `services/order/edit/order.edit.types.ts`：隔离改单专属 draft、扩展字段和请求类型，避免继续膨胀共享订单 DTO。
+- `services/order/detail/order.detailActions.ts`：新增催单、通知派送、拦截作废、收件方式 H5、联系营业部和 App 评价路由的动作 VM，页面不散落状态判断或 H5 参数。
+- `services/order/detail/order.detailUseCases.ts`：催单点击后查询后端话术和按钮；查看进度走受控 H5，提交催单走 `orderUrgent` 接口。
+- `services/order/detail/order.detailUseCases.ts`：通知派送统一调用 `modifyNotifyDeliver`；拦截作废统一调用 `invalidWaybill`，并把“货物已出发需去运单修改拦截”的后端文案归一为页面可消费的结果 VM。
+- `services/order/detail/order.detailUseCases.ts`：联系营业部优先使用详情电话，否则通过 `deptTelephone` 查询，最终兜底 95353。
 - `pages/order/detail/hooks/useOrderDetailData.ts`：集中加载公开轨迹或安全订单详情，并行编排轨迹、待支付、催单入口和关注状态，统一派生页面状态与动作列表。
 - `pages/order/detail/hooks/useOrderDetailActions.ts`：承接复制、删除、再寄、支付和通用动作分发；支付动作只生成统一收银台路由，电话和剪贴板等原生能力继续通过 platform facade 调用。
 - `pages/order/detail/hooks/useOrderDetailServiceActions.ts`：承接催单、通知派送、拦截作废、营业部电话和预约上门等服务动作，页面不再保存这些流程状态机。
@@ -821,12 +821,12 @@ APP_RUNTIME_CONFIG.omsChannel
 - `pages/order/edit/hooks/useOrderEditSchedule.ts` 与 `OrderEditScheduleSection.tsx`：自动查询当前地址和货物输入对应的时段，提供日期/时段与三种送货方式选择；地址、件重体积或产品输入变化会取消旧响应并要求重新确认有效时段。
 - `shared/webview/appWebMessage.ts`：寄件和改单账户页都必须先注册一次性 expectation，消息回填要求 WebView source 与 `messageContext` 同时匹配；改单 context 绑定订单号，旧页面或其他订单不能消费账户。
 - `pages/order/detail/hooks/useOrderSubscription.ts`：独立管理关注状态查询、确认取消和状态切换，避免继续扩大详情页主流程。
-- `services/order/order.pdcFeedback.api.ts`：独立封装签收反馈状态查询与提交端点；查询保持参考端 `loading=false/login=false/timeout=3000`，提交仍走登录会话且使用 3 秒超时。
-- `services/order/order.pdcFeedback.ts`：将已签收状态、`PDC_KDYZJO/PDC_KDYZJT` 来源、`ONE/TWO` 频次和 `Y/N` payload 收敛为纯规则与 service，不把来源判断散回页面。
+- `services/order/feedback/order.pdcFeedback.api.ts`：独立封装签收反馈状态查询与提交端点；查询保持参考端 `loading=false/login=false/timeout=3000`，提交仍走登录会话且使用 3 秒超时。
+- `services/order/feedback/order.pdcFeedback.ts`：将已签收状态、`PDC_KDYZJO/PDC_KDYZJT` 来源、`ONE/TWO` 频次和 `Y/N` payload 收敛为纯规则与 service，不把来源判断散回页面。
 - `pages/order/detail/hooks/useOrderPdcFeedback.ts` 与 `OrderPdcFeedbackPanel.tsx`：安全详情加载后只查询一次当前来源运单；后端明确返回 `N` 才展示“是否已收到货物”底部面板，提交失败保留面板并允许重试。
-- `services/order/order.evaluation.api.ts`、`order.evaluation.rules.ts` 与 `order.evaluation.catalog.ts`：独立承接订单评价详情查询、寄/收角色与签收状态映射、快递员身份 fail-closed、1-5 星标签目录、草稿校验和提交 payload；不把参考端评价弹层或 Redux 快递员状态并回订单详情。
+- `services/order/evaluation/order.evaluation.api.ts`、`order.evaluation.rules.ts` 与 `order.evaluation.catalog.ts`：独立承接订单评价详情查询、寄/收角色与签收状态映射、快递员身份 fail-closed、1-5 星标签目录、草稿校验和提交 payload；不把参考端评价弹层或 Redux 快递员状态并回订单详情。
 - `pages/order/evaluation`：提供登录后原生服务评价页，支持星级、标签、最多 250 字建议、已评价只读状态和提交反馈；原生查询失败时才提供 `ORDER_DETAIL_EVALUATE` 受控 WebView 降级，fallback 使用 App 渠道 `channel=APP` 并保留 `S0505/S0907` 场景。
-- `services/order/order.sceneSurvey.*` 与 `order.npsSurvey.*`：独立承接动态场景计划、SCORE/LABEL 首题、0-10 NPS 目录、状态查询、提交 payload 和部分失败编排，不与快递员服务评价或 PDC 收货反馈混用。
+- `services/order/survey/order.sceneSurvey.*` 与 `services/order/survey/order.npsSurvey.*`：独立承接动态场景计划、SCORE/LABEL 首题、0-10 NPS 目录、状态查询、提交 payload 和部分失败编排，不与快递员服务评价或 PDC 收货反馈混用。
 - `pages/order/detail/hooks/useOrderSceneSurvey.ts` 与 `OrderSceneSurveyPanel`：按当前详情上下文查询并顺序展示可填写问卷；旧请求由 generation 隔离，PDC 面板优先，关闭会清空整个队列。
 
 关注运单端点：
@@ -855,16 +855,16 @@ APP_RUNTIME_CONFIG.omsChannel
 - `pages/order/detail/components/OrderDetailSections.tsx`：拆出头部、空态、轨迹、待支付提示、电子存根入口、运输信息和寄收信息等纯展示区块。
 - `pages/order/detail/components/OrderDetailActionSections.tsx`：拆出售后动作、底部动作和催单弹层展示；页面主文件保留动作处理和状态编排。
 - `pages/order/stub`：新增电子存根首期只读页，入口由订单详情的 `orderService.getStubEntry` 生成，页面通过 `orderService.queryDetail` 重新读取详情并消费 `OrderStubView`，展示寄收信息、货物明细、费用、订单编号和照片凭证分组。
-- `services/order/order.stubView.ts`：统一处理存根标题、单号、寄收件信息、号码脱敏、基础费用字段、结构化分区和后置能力提示；页面不直接拼旧项目 `orderService/doc` 巨石字段。
-- `services/order/order.stubView.ts`：新增货物补充 VM，解析 `goodsSize` 为尺寸详情，补充计费重量/计费方式；包装费查询由 `order.stubFiles.ts` 承接，接口失败不会影响存根正文展示。
+- `services/order/stub/order.stubView.ts`：统一处理存根标题、单号、寄收件信息、号码脱敏、基础费用字段、结构化分区和后置能力提示；页面不直接拼旧项目 `orderService/doc` 巨石字段。
+- `services/order/stub/order.stubView.ts`：新增货物补充 VM，解析 `goodsSize` 为尺寸详情，补充计费重量/计费方式；包装费查询由 `order.stubFiles.ts` 承接，接口失败不会影响存根正文展示。
 - `pages/order/stub`：新增货物补充分区，展示尺寸详情和包装费用明细，不迁旧项目尺寸/包装底部弹窗状态机。
-- `services/order/order.stubImages.ts`：新增照片凭证 VM，按运输中/已签收且有运单号的订单并发查询取货照片、复磅照片、送达照片、拍照签收照片、签回单、国补信息采集、拆包装、清点码货、贴码、家装完工、通电验机、双人派送、木包装、送新取旧和揽收拍照；单个图片接口失败不会影响存根正文展示。
-- `services/order/order.stubImages.ts`：统一封装快递/零担增值服务图片 `imageScene` 映射，页面不需要知道 `queryWayBillImages`、`queryLtlWayBillImages` 或各业务 scene 常量。
+- `services/order/stub/order.stubImages.ts`：新增照片凭证 VM，按运输中/已签收且有运单号的订单并发查询取货照片、复磅照片、送达照片、拍照签收照片、签回单、国补信息采集、拆包装、清点码货、贴码、家装完工、通电验机、双人派送、木包装、送新取旧和揽收拍照；单个图片接口失败不会影响存根正文展示。
+- `services/order/stub/order.stubImages.ts`：统一封装快递/零担增值服务图片 `imageScene` 映射，页面不需要知道 `queryWayBillImages`、`queryLtlWayBillImages` 或各业务 scene 常量。
 - `pages/order/stub`：新增照片凭证分区，首期只展示远程缩略图和页面内大图预览，不调用小程序 `Taro.previewImage`、下载或保存相册能力。
-- `services/order/order.stubFiles.ts`：新增单据票证 VM，抽取详情中的 `fileCode/returnFileId`，查询电子合同状态并生成完成态合同 WebView 预览入口；状态文案和预览 URL 都收敛在存根文件模块。
+- `services/order/stub/order.stubFiles.ts`：新增单据票证 VM，抽取详情中的 `fileCode/returnFileId`，查询电子合同状态并生成完成态合同 WebView 预览入口；状态文案和预览 URL 都收敛在存根文件模块。
 - `pages/order/stub`：新增单据票证分区，展示电子合同状态；合同完成时通过 `ORDER_STUB_CONTRACT_PREVIEW` 进入受控 RN WebView，不调用 `Taro.downloadFile` 或 `Taro.openDocument`。
 - `pages/order/detail`：安全详情模式下已接入在线客服，统一走 `shared/webview/appWeb.ts` 的 `ORDER_DETAIL_SERVICE` 来源和 RN WebView 白名单，不在页面散落 H5 URL。
-- `services/order/order.detailActions.ts`：新增订单详情售后动作 VM，统一生成在线客服、投诉、在线理赔、去开票和修改运单入口，页面只按 `OrderDetailActionView` 渲染，不直接拼 H5 URL 或散落状态判断。
+- `services/order/detail/order.detailActions.ts`：新增订单详情售后动作 VM，统一生成在线客服、投诉、在线理赔、去开票和修改运单入口，页面只按 `OrderDetailActionView` 渲染，不直接拼 H5 URL 或散落状态判断。
 - `pages/order/detail`：新增“售后服务”分区。催单在 App 内展示后端话术弹层，通知派送和拦截作废在 App 内二次确认后提交，联系营业部统一走 App 电话 facade，服务评价进入 App 原生评价页，收件方式、投诉、在线理赔和运输中修改运单继续由 RN WebView 承接；去开票优先进入 App 原生发票中心；公开轨迹模式不展示售后动作。
 - `pages/order/cancel`：提供 App 原生取消原因选择和其他原因输入，提交时复用 `orderService.cancelOrder(orderNumber, reason)`，成功返回后列表/详情通过 `useDidShow` 刷新。
 - `pages/payment/list`：提供独立待支付运单页，支持我寄的/我收的切换、运单号搜索、分页、金额汇总、基础/增值/减免/已支付费用明细和跳订单详情；“去支付”统一进入 App 收银台，入口已接入我的页和订单列表。
@@ -1140,7 +1140,7 @@ APP_RUNTIME_CONFIG.omsChannel
 关键约束：
 
 - 优惠券 service 只处理券展示、兑换和寄件上下文查询，不直接跳转页面、不修改寄件表单。
-- 寄件页仍负责报价和下单校验；优惠券只是草稿字段，最终可用性由价格时效/下单接口确认。选择优惠券后，价格时效请求会携带 `promotionsCode` 和发件人手机号 `customerMobile`，该旧语义统一收口在 `services/express/express.payload.ts`。
+- 寄件页仍负责报价和下单校验；优惠券只是草稿字段，最终可用性由价格时效/下单接口确认。选择优惠券后，价格时效请求会携带 `promotionsCode` 和发件人手机号 `customerMobile`，该旧语义统一收口在 `services/express/core/express.payload.ts`。
 - `queryCouponOrder` 的费用列表沿用参考端真实枚举 `FRT/BF/AD/NMBZ`。当前报价若已含优惠券或线路限时减免，会按 `couponRankType` 和 `YHJ/YHQ/XLYHF` 折扣明细恢复原始费用后再查询，避免用优惠后价格错误筛券。
 - 参考端自动选择首张券、月结自动切现付、Redux `couponSource/couponRecommend` 和小程序 Picker 不迁；App 由用户明确选择，随后显式重新获取价格。
 - 旧项目的购买记录、会员福利中心、转赠分享、订阅消息、特殊渠道跳转、券包购买和营销 banner 不进入 RN 首期。

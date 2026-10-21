@@ -78,7 +78,7 @@ interface ExpressCollectionDraft {
 }
 ```
 
-核心规则集中在 `src/services/express/collection.rules.ts`：
+核心规则集中在 `src/services/express/billing/collection.rules.ts`：
 
 - `NORMAL` 表示三日退，报价映射为 `R3`。
 - `INTRADAY` 表示即日退，报价映射为 `R1`。
@@ -138,7 +138,7 @@ url: /depponmobile/h5/index#/queryPackagePages/service/detail/index?value=COLLEC
 
 新增：
 
-- `apps/com.deppon.app/src/services/express/collection.rules.ts`
+- `apps/com.deppon.app/src/services/express/billing/collection.rules.ts`
 - `apps/com.deppon.app/src/pages/express/hooks/useExpressCollection.ts`
 - `apps/com.deppon.app/src/pages/express/components/ExpressCollectionCard.tsx`
 - `apps/com.deppon.app/src/pages/express/components/ExpressCollectionCard.scss`
@@ -147,10 +147,10 @@ url: /depponmobile/h5/index#/queryPackagePages/service/detail/index?value=COLLEC
 
 主要修改：
 
-- `services/express/types.ts`
-- `services/express/express.draft.ts`
-- `services/express/express.payload.ts`
-- `services/express/draftStorage.ts`
+- `services/express/core/types.ts`
+- `services/express/core/express.draft.ts`
+- `services/express/core/express.payload.ts`
+- `services/express/draft/draftStorage.ts`
 - `services/customer/customer.api.ts`
 - `services/customer/customer.service.ts`
 - `services/customer/types.ts`
@@ -278,7 +278,7 @@ url: /depponmobile/h5/index#/queryPackagePages/service/detail/index?value=COLLEC
 
 ### 10.4 签收单返单与电子云签增强
 
-- `services/express/valueAdded.ts` 统一 OMS `NO_RETURN_SIGNED/CUSTOMER_SIGNED_FAX/CUSTOMER_SIGNED_ORIGINAL/RETURNBILL_TYPE_ONLINE/ORIGINAL_ONLINE` 与 PPC `NONE/FAX/ORIGINAL/ONLINE/ORIGINAL_ONLINE`；纸质返单要求按 R1-R8 去重并固定顺序，备注最多 20 字，返单张数限制为 1-99。
+- `services/express/value-added/valueAdded.ts` 统一 OMS `NO_RETURN_SIGNED/CUSTOMER_SIGNED_FAX/CUSTOMER_SIGNED_ORIGINAL/RETURNBILL_TYPE_ONLINE/ORIGINAL_ONLINE` 与 PPC `NONE/FAX/ORIGINAL/ONLINE/ORIGINAL_ONLINE`；纸质返单要求按 R1-R8 去重并固定顺序，备注最多 20 字，返单张数限制为 1-99。
 - `FAX/ORIGINAL/ORIGINAL_ONLINE` 必须至少选择一项 R1-R8，备注不能替代要求；`ONLINE` 只要求 `fileCode`。`DCZP` 选择后会清理云签类型、要求、备注、张数和凭证。
 - `express.payload.ts` 只在云签类型发送 `fileCode`，只在纸质返单张数大于 1 时发送 `returnBillQty`；报价、下单和旧草稿恢复均 fail-closed。
 - 模板保存不持久化临时 `fileCode`，但保留返单类型和纸质要求；模板带入后的云签必须重新完成签署。
@@ -331,7 +331,7 @@ url: /depponmobile/h5/index#/queryPackagePages/service/detail/index?value=COLLEC
 
 ### 12.4 本次续作：订单改单基础保价
 
-- `services/order/order.edit.insurance.ts` 将待揽件改单保价独立为 draft/rules/payload 边界，读取详情 `insuredAmount` 与 `orderExtendFields`，不把保价字段散回货物模型。
+- `services/order/edit/order.edit.insurance.ts` 将待揽件改单保价独立为 draft/rules/payload 边界，读取详情 `insuredAmount` 与 `orderExtendFields`，不把保价字段散回货物模型。
 - 普通产品允许编辑或清除保价金额；普通产品上限为 1000000 元，参考端必保产品（如 `DJBK`）上限按 9990000 元处理，必保产品不能提交 0 金额。
 - 参考端 `orderExtendFields.bjlx=0/1` 分别代表全额保/省心保，未知非空特殊类型同样 fail-closed 为只读；免费基础保障产品无金额时展示 2000 元默认保障。
 - 用户修改保价金额时提交 `insuredAmount` 与空 `insuranceSource`；`NFLF/NLRF` 详情金额为 0 时按参考端契约显式补交 2000 元与 `insuranceSource=DEFAULT`，确认变更会展示“免费基础保障”，其他本地状态不会伪造保价 diff。
@@ -377,15 +377,15 @@ url: /depponmobile/h5/index#/queryPackagePages/service/detail/index?value=COLLEC
 
 ## 16. 本次续作：签收 PDC 轻量反馈
 
-- `services/order/order.pdcFeedback.api.ts` 独立封装 `/queryFeedback` 与 `/submitFeedback`，没有继续扩大共享 `order.api.ts`；查询保持参考端 `login=false/loading=false/timeout=3000`，提交保持登录请求。
-- `services/order/order.pdcFeedback.ts` 只接受已签收 `orderClassification=2`、有效运单号和 `PDC_KDYZJO/PDC_KDYZJT` 来源；前者映射 `ONE`，后者映射 `TWO`，普通详情和公开轨迹模式都不触发。
+- `services/order/feedback/order.pdcFeedback.api.ts` 独立封装 `/queryFeedback` 与 `/submitFeedback`，没有继续扩大共享 `order.api.ts`；查询保持参考端 `login=false/loading=false/timeout=3000`，提交保持登录请求。
+- `services/order/feedback/order.pdcFeedback.ts` 只接受已签收 `orderClassification=2`、有效运单号和 `PDC_KDYZJO/PDC_KDYZJT` 来源；前者映射 `ONE`，后者映射 `TWO`，普通详情和公开轨迹模式都不触发。
 - `useOrderPdcFeedback.ts` 在当前详情上下文上查询反馈状态，只有后端明确返回 `N` 才展示；`OrderPdcFeedbackPanel` 通过共享 `AppDialog` 提交“已收到/未收到”，失败时保留面板供重试。
 - 提交 payload 固定为 `waybillNo/sendFrequency/feedbackResult`，没有迁入旧小程序埋点、CoverView、图片资产或全局状态；原生服务评价保持独立领域边界。
 - 新增业务规则锁定来源、签收状态、公开模式、`ONE/TWO`、`Y/N` 和两个端点；叠加后续切片后当前 162 条。新增 SCSS 为 74 行，全量 token/Flex，201 个业务 SCSS 债务仍为 0。
 
 ## 17. 本次续作：订单原生服务评价
 
-- `services/order/order.evaluation.api.ts` 独立封装 `/queryEvaluateDetail` 与 `/courier/evaluation/secure/commit`，没有把评价接口并回订单 API 巨石；订单评价查询与快递员详情页的 `isCommited` 是两套场景契约，当前采用订单详情能够返回快递员身份的前者。
+- `services/order/evaluation/order.evaluation.api.ts` 独立封装 `/queryEvaluateDetail` 与 `/courier/evaluation/secure/commit`，没有把评价接口并回订单 API 巨石；订单评价查询与快递员详情页的 `isCommited` 是两套场景契约，当前采用订单详情能够返回快递员身份的前者。
 - `order.evaluation.rules.ts` 只允许寄件角色的运输中/已签收订单和收件角色的运输中/已签收订单进入；收件角色或已签收映射 `cateGory=0/recordType=DELIVERY`，寄件运输中映射 `cateGory=1/recordType=COLLECTION`，已签收提交 `sign=Y`。
 - 查询结果必须同时提供快递员工号和姓名才生成评价 VM；`NOT_EVALUATED` 映射待评价，已评价结果归一星级与标签，缺失身份时 fail-closed 并提供受控 H5 降级。
 - `order.evaluation.catalog.ts` 按揽收/派送和 1-5 星提供参考端稳定标签：揽收 1-4 星 12 个负向标签、5 星 11 个正向标签；派送 1-4 星 10 个负向标签、5 星 9 个正向标签。提交至少选择一个标签，建议可空，非空至少 8 字、最多 250 字。
@@ -428,7 +428,7 @@ url: /depponmobile/h5/index#/queryPackagePages/service/detail/index?value=COLLEC
 
 ### 20.1 领域与接口边界
 
-- `services/express/productAvailability.rules.ts` 独立承接产品角色、地址参数、客户能力归一、融合/升级开关、DCZP 电池标签判断和默认报价选择；`passProductCode` 不再错误复用用户选择的 `omsProductCode`。
+- `services/express/product/productAvailability.rules.ts` 独立承接产品角色、地址参数、客户能力归一、融合/升级开关、DCZP 电池标签判断和默认报价选择；`passProductCode` 不再错误复用用户选择的 `omsProductCode`。
 - `express.api.ts` 新增 `/queryPointCityByProduct`、`/queryNewProductPointCity`、`/queryPointCityByAddress`。三个接口作为报价可选能力使用 3 秒超时和 `login=false`，即使旧会话异常也不会把能力失败误当成必须中断报价的登录失效。
 - `productAvailability.service.ts` 先在真实 `ECO_TOKEN` 存在时查询账号客户能力，再用 `Promise.allSettled` 查询 DCZP 点城市、产品融合、产品升级和货物标签。融合只有明确 `false` 才为 `OLD`；升级只有明确 `NEW` 才按合同标记选择 `CONTRACT/UNIVERSAL`；不明确结果保持 `EXP`。
 - 当前 RN 角色只映射已存在输入：普通寄件默认融合角色，`pickupManId` 保持快递产品，`shipperNumber` 使用扫码客户编码，`driverId/acceptDept` 使用 `DRIVER_QR_CODE`，`businessCode` 保持 `EXP`；没有迁入旧端 WAYBILL、特快、铁路或雪具分支。
@@ -587,7 +587,7 @@ url: /depponmobile/h5/index#/queryPackagePages/service/detail/index?value=COLLEC
 
 ### 28.1 详情、状态与校验边界
 
-- `services/order/order.edit.packaging.ts` 将参考端稳定的 `orderExtendFields.packingService` 收敛为独立 `{ count }` 草稿；详情缺失、空值、非法值恢复为 0，重复扩展字段按最后一个值处理。
+- `services/order/edit/order.edit.packaging.ts` 将参考端稳定的 `orderExtendFields.packingService` 收敛为独立 `{ count }` 草稿；详情缺失、空值、非法值恢复为 0，重复扩展字段按最后一个值处理。
 - `0` 表示关闭打包服务，启用后件数限制为 `1..999` 的整数；参考端 2 元/件只用于页面估算，不伪造报价接口或具体包材价格。
 - 本能力表示快递员按现场难度执行的“打包动作件数”，不是普通寄件的纸箱、木包装、拆包装目录，也不增加未知包装 code、类型或图片上传字段。
 

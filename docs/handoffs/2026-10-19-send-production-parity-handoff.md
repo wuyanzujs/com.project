@@ -48,14 +48,14 @@
 
 | 领域 | 本轮结果 | 主要入口 |
 |---|---|---|
-| 货物编辑 | 修复输入一个字即收起；显式选择后才显示标签；500ms 联想防抖，输入/清空/卸载作废旧请求；非法体积和非整数件数校验 | `src/pages/express/goods/index.tsx`、`goods/hooks/useGoodsNameSuggestions.ts`、`src/services/express/goodsEditor.rules.ts` |
-| 最近使用 | 最多 8 条去重历史、清空入口；独立缓存并纳入账号切换清理。8 条是本地实现选择，不是生产数值实证 | `src/services/express/goodsHistory.ts`、`src/cache/keys.ts` |
-| 自送服务点 | 根据寄件地址按 LEAVE+EXPRESS 查询；20 公里内默认最近；手动选择、回填与地址/模式过期结果保护；修改货物保留已选网点 | `src/pages/express/hooks/useExpressServicePoint.ts`、`src/services/express/servicePoint.rules.ts`、`src/services/query/stationSelection.ts`、`src/pages/query/stations/` |
-| 报价 | 失败清除旧产品，过期报价不能提交；协议勾选和备注不打断在途报价 | `src/pages/express/hooks/useExpressQuote.ts`、`src/services/express/requestKey.ts` |
-| 货物信息页 | 热词与生产端 12 个标签一致、标题「热门寄件」、占位「请输入物品名称」；「给快递员捎话」迁到本页，100 字计数并随货物回传寄件页 | `src/pages/express/goods/index.tsx`、`src/services/goods/goods.service.ts`、`src/services/express/goodsBridge.ts` |
+| 货物编辑 | 修复输入一个字即收起；显式选择后才显示标签；500ms 联想防抖，输入/清空/卸载作废旧请求；非法体积和非整数件数校验 | `src/pages/express/goods/index.tsx`、`goods/hooks/useGoodsNameSuggestions.ts`、`src/services/express/goods/goodsEditor.rules.ts` |
+| 最近使用 | 最多 8 条去重历史、清空入口；独立缓存并纳入账号切换清理。8 条是本地实现选择，不是生产数值实证 | `src/services/express/goods/goodsHistory.ts`、`src/cache/keys.ts` |
+| 自送服务点 | 根据寄件地址按 LEAVE+EXPRESS 查询；20 公里内默认最近；手动选择、回填与地址/模式过期结果保护；修改货物保留已选网点 | `src/pages/express/hooks/useExpressServicePoint.ts`、`src/services/express/pickup/servicePoint.rules.ts`、`src/services/query/stationSelection.ts`、`src/pages/query/stations/` |
+| 报价 | 失败清除旧产品，过期报价不能提交；协议勾选和备注不打断在途报价 | `src/pages/express/hooks/useExpressQuote.ts`、`src/services/express/core/requestKey.ts` |
+| 货物信息页 | 热词与生产端 12 个标签一致、标题「热门寄件」、占位「请输入物品名称」；「给快递员捎话」迁到本页，100 字计数并随货物回传寄件页 | `src/pages/express/goods/index.tsx`、`src/services/goods/goods.service.ts`、`src/services/express/goods/goodsBridge.ts` |
 | 协议 | 通过共享 WebView 打开正文；阅读和同意分开，阅读不自动勾选 | `src/pages/express/components/ExpressOrderOptionsSection/index.tsx`、`src/shared/webview/appWeb.ts` |
-| 提交与草稿 | ref 同步防重复点击；登录前草稿保存失败时停止跳转；异常保留草稿；已成功表单禁止再次提交 | `src/pages/express/hooks/useExpressSubmit.ts`、`useExpressEntryNavigation.ts`、`src/services/express/express.draft.ts`、`express.mutations.ts` |
-| 成功页 | 按订单号查询已调度快递员，待分配/失败可重试；电话走平台 facade；继续寄件及系统返回使用全新草稿 | `src/pages/express/success/index.tsx`、`CourierCard.tsx`、`src/services/express/success.api.ts`、`success.service.ts`、`success.types.ts` |
+| 提交与草稿 | ref 同步防重复点击；登录前草稿保存失败时停止跳转；异常保留草稿；已成功表单禁止再次提交 | `src/pages/express/hooks/useExpressSubmit.ts`、`useExpressEntryNavigation.ts`、`src/services/express/core/express.draft.ts`、`express.mutations.ts` |
+| 成功页 | 按订单号查询已调度快递员，待分配/失败可重试；电话走平台 facade；继续寄件及系统返回使用全新草稿 | `src/pages/express/success/index.tsx`、`CourierCard.tsx`、`src/services/express/success/success.api.ts`、`success.service.ts`、`success.types.ts` |
 | 真机样式 | 修复体积说明第二行被固定高度裁切；改为自适应高度并保留最小高度，已重新安装确认 | `src/pages/express/goods/content.scss` |
 
 业务测试主要新增在 `scripts/business-tests/express/`：`goods-editor.test.cjs`、`service-point.test.cjs`、`submit-actions.test.cjs`、`success.test.cjs`；共用真实处理器模拟环境在 `scripts/business-tests/support/react-harness.cjs`。账号隔离登记同步修改 `scripts/business-tests/auth/session.test.cjs`。
