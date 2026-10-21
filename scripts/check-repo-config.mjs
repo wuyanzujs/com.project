@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
@@ -60,6 +60,7 @@ function listWorktreeCrlfFiles() {
 const rootPackage = readJson('package.json')
 const appPackage = readJson('apps/com.deppon.app/package.json')
 const nodeVersion = readRequired('.node-version').trim()
+const nvmrcVersion = readRequired('.nvmrc').trim()
 const workspaceConfig = readRequired('pnpm-workspace.yaml')
 const prettierIgnore = readRequired('.prettierignore')
 const preCommit = readRequired('.husky/pre-commit')
@@ -77,6 +78,10 @@ if (rootPackage.engines?.node !== nodeVersion) {
 
 if (rootPackage.packageManager !== `pnpm@${rootPackage.engines?.pnpm}`) {
   violations.push('packageManager must match engines.pnpm exactly.')
+}
+
+if (nvmrcVersion !== nodeVersion) {
+  violations.push('.nvmrc must match .node-version so nvm and fnm users get the same Node.js version.')
 }
 
 for (const entry of ['apps/*', 'packages/*']) {
@@ -153,15 +158,49 @@ if (!stagedPatterns.some(pattern => pattern.includes('yml'))) {
   violations.push('lint-staged must cover workflow YAML files.')
 }
 
-for (const scriptName of ['format:config:check', 'check:repo-config', 'verify:config']) {
+for (const scriptName of ['check:toolchain', 'format:config:check', 'check:repo-config', 'verify:config']) {
   if (!rootPackage.scripts?.[scriptName]) {
     violations.push(`Root package script is missing: ${scriptName}`)
   }
 }
 
+if (!rootPackage.scripts?.['verify:config']?.includes('check:toolchain')) {
+  violations.push('verify:config must fail fast through check:toolchain before other checks run.')
+}
+
 if (!rootPackage.scripts?.['verify:app']?.includes('verify:config')) {
   violations.push('verify:app must include repository configuration verification.')
 }
+
+// CI 必须用与本地相同的 Node/pnpm 版本，否则“我这里能跑”会重新出现。
+const workflowDirectory = path.join(repoRoot, '.github/workflows')
+const workflowFiles = existsSync(workflowDirectory) ? readdirSync(workflowDirectory).filter(file => /\.ya?ml$/.test(file)) : []
+
+if (!workflowFiles.length) {
+  violations.push('.github/workflows must keep the CI workflows that run pnpm verify:app.')
+}
+
+for (const file of workflowFiles) {
+  const workflowPath = `.github/workflows/${file}`
+  const workflowContent = readRequired(workflowPath)
+
+  for (const match of workflowContent.matchAll(/node-version:\s*['"]?(\d[^\s'"]*)/g)) {
+    if (match[1] !== nodeVersion) {
+      violations.push(`${workflowPath} pins Node ${match[1]}, but .node-version pins ${nodeVersion}.`)
+    }
+  }
+
+  for (const match of workflowContent.matchAll(/pnpm\/action-setup@v4[\s\S]{0,160}?version:\s*['"]?([\w.-]+)/g)) {
+    if (match[1] !== rootPackage.engines?.pnpm) {
+      violations.push(`${workflowPath} pins pnpm ${match[1]}, but engines.pnpm pins ${rootPackage.engines?.pnpm}.`)
+    }
+  }
+}
+
+const appQualityWorkflow = readRequired('.github/workflows/app-quality.yml')
+
+requireIncludes(appQualityWorkflow, 'pnpm install --frozen-lockfile', 'App quality workflow install step')
+requireIncludes(appQualityWorkflow, 'pnpm verify:app', 'App quality workflow verification entry')
 
 if (!appPackage.scripts?.['lint:config']) {
   violations.push('App package must expose lint:config for configuration-only checks.')
