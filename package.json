@@ -28,6 +28,8 @@
     "check:app-module-size": "pnpm --filter com.deppon.app check:module-size",
     "check:app-barrels": "pnpm --filter com.deppon.app check:barrels",
     "check:app-runtime-config": "pnpm --filter com.deppon.app check:runtime-config",
+    "check:app-bundle-size": "pnpm --filter com.deppon.app check:bundle-size",
+    "update:app-bundle-size-baseline": "pnpm --filter com.deppon.app update:bundle-size-baseline",
     "check:app-business-rules": "pnpm --filter com.deppon.app check:business-rules",
     "check:app-platform-build": "pnpm --filter com.deppon.app check:platform-build",
     "check:app-native-env": "pnpm --filter com.deppon.app check:native-env",

@@ -202,6 +202,20 @@ const appQualityWorkflow = readRequired('.github/workflows/app-quality.yml')
 requireIncludes(appQualityWorkflow, 'pnpm install --frozen-lockfile', 'App quality workflow install step')
 requireIncludes(appQualityWorkflow, 'pnpm verify:app', 'App quality workflow verification entry')
 
+if (!appPackage.scripts?.['check:bundle-size']?.includes('check-bundle-size.mjs')) {
+  violations.push('App package must expose check:bundle-size for the bundle size budget gate.')
+}
+
+if (!appPackage.scripts?.['update:bundle-size-baseline']?.includes('--update')) {
+  violations.push('App package must expose update:bundle-size-baseline with the --update flag.')
+}
+
+for (const relativePath of ['apps/com.deppon.app/scripts/check-bundle-size.mjs', 'apps/com.deppon.app/scripts/bundle-size-baseline.json']) {
+  if (!existsSync(path.join(repoRoot, relativePath))) {
+    violations.push(`Bundle size gate file is missing: ${relativePath}`)
+  }
+}
+
 if (!appPackage.scripts?.['lint:config']) {
   violations.push('App package must expose lint:config for configuration-only checks.')
 }
@@ -244,6 +258,15 @@ const assembleIndex = androidReleaseWorkflow.indexOf('./gradlew assembleRelease'
 
 if (bundleIndex < 0 || assembleIndex < 0 || bundleIndex > assembleIndex) {
   violations.push('Android release workflow must generate the production RN bundle before Gradle assembles the APK.')
+}
+
+const bundleSizeIndex = androidReleaseWorkflow.indexOf('check:bundle-size')
+const keystoreIndex = androidReleaseWorkflow.indexOf('Decode release keystore')
+
+if (bundleSizeIndex < 0 || keystoreIndex < 0 || bundleSizeIndex < bundleIndex || bundleSizeIndex > keystoreIndex) {
+  violations.push(
+    'Android release workflow must check the bundle size budget after building the production RN bundle and before decoding the release keystore.'
+  )
 }
 
 requireIncludes(androidReleaseWorkflow, 'pnpm check:app-native-env', 'Android release native environment gate')

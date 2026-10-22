@@ -122,6 +122,9 @@ jobs:
       - name: Build production Android RN bundle
         run: pnpm --filter com.deppon.app run bundle:android:production
 
+      - name: Check bundle size budget
+        run: pnpm --filter com.deppon.app run check:bundle-size
+
       - name: Decode release keystore
         env:
           ANDROID_RELEASE_KEYSTORE_BASE64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
