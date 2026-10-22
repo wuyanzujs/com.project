@@ -40,6 +40,17 @@ function hasExactLine(content, expected) {
   return content.split(/\r?\n/).some(line => line.trim() === expected)
 }
 
+function readWorkflowJob(content, jobName) {
+  const lines = content.split(/\r?\n/)
+  const start = lines.findIndex(line => new RegExp(`^  ${jobName}:\\s*$`).test(line))
+
+  if (start < 0) return ''
+
+  const end = lines.findIndex((line, index) => index > start && /^ {2}[A-Za-z0-9_-]+:\s*$/.test(line))
+
+  return lines.slice(start, end < 0 ? lines.length : end).join('\n')
+}
+
 function listWorktreeCrlfFiles() {
   let output = ''
 
@@ -201,6 +212,40 @@ const appQualityWorkflow = readRequired('.github/workflows/app-quality.yml')
 
 requireIncludes(appQualityWorkflow, 'pnpm install --frozen-lockfile', 'App quality workflow install step')
 requireIncludes(appQualityWorkflow, 'pnpm verify:app', 'App quality workflow verification entry')
+
+// 静态门禁与原生 SDK 环境必须是两个 job：PR 的静态反馈不能等 NDK/cmake 安装。
+const staticJob = readWorkflowJob(appQualityWorkflow, 'static')
+const nativeEnvJob = readWorkflowJob(appQualityWorkflow, 'native-env')
+
+for (const [jobName, job] of [
+  ['static', staticJob],
+  ['native-env', nativeEnvJob]
+]) {
+  if (!job) {
+    violations.push(`App quality workflow must define a ${jobName} job.`)
+    continue
+  }
+
+  if (!job.includes('pnpm install --frozen-lockfile')) {
+    violations.push(`App quality ${jobName} job must install dependencies with pnpm install --frozen-lockfile.`)
+  }
+}
+
+if (staticJob && !staticJob.includes('pnpm verify:app')) {
+  violations.push('App quality static job must run pnpm verify:app.')
+}
+
+if (staticJob && /sdkmanager/.test(staticJob)) {
+  violations.push('App quality static job must not install Android SDK packages; keep them in native-env.')
+}
+
+if (nativeEnvJob && !nativeEnvJob.includes('sdkmanager --install')) {
+  violations.push('App quality native-env job must install the Android SDK packages it verifies.')
+}
+
+if (nativeEnvJob && !nativeEnvJob.includes('pnpm check:app-native-env:android')) {
+  violations.push('App quality native-env job must run pnpm check:app-native-env:android.')
+}
 
 if (!appPackage.scripts?.['check:bundle-size']?.includes('check-bundle-size.mjs')) {
   violations.push('App package must expose check:bundle-size for the bundle size budget gate.')

@@ -8,8 +8,42 @@ on:
       - master
 
 jobs:
-  verify-rn-app:
-    name: Verify Taro RN App
+  # 静态门禁不依赖 Android SDK：拆出去以后 PR 反馈不再等 NDK/cmake 安装。
+  static:
+    name: Static gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.13.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify app
+        run: pnpm verify:app
+        env:
+          STYLE_GOVERNANCE_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+
+  # 与 static 并行：SDK 安装只影响这一个 job，不再拖慢静态门禁。
+  native-env:
+    name: Native environment
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -43,11 +77,6 @@ jobs:
 
       - name: Install Android SDK packages
         run: sdkmanager --install "platforms;android-34" "build-tools;34.0.0" "platform-tools" "ndk;25.1.8937393" "cmake;3.22.1"
-
-      - name: Verify app
-        run: pnpm verify:app
-        env:
-          STYLE_GOVERNANCE_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
 
       - name: Check native environment
         run: pnpm check:app-native-env:android
