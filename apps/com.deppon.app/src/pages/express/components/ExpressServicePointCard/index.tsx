@@ -4,6 +4,7 @@ import Taro from '@tarojs/taro'
 import type { ExpressPickup } from '@/services/express'
 import { AppPressable } from '@/shared/components'
 import { AppIcon } from '@/shared/components/AppIcon'
+import { isValidCoordinate } from '@/shared/geo/coordinates'
 import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
 import { openMapLocation } from '@/shared/platform/map'
 import { dialPhone, PhoneNumberError } from '@/shared/platform/phone'
@@ -24,7 +25,7 @@ export function ExpressServicePointCard({ pickup, onOpenStations }: ExpressServi
   const stationName = pickup.stationName || STATION_NAME_PLACEHOLDER
   const latitude = Number(detail?.latitude)
   const longitude = Number(detail?.longitude)
-  const canNavigate = Number.isFinite(latitude) && Number.isFinite(longitude) && Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180
+  const canNavigate = isValidCoordinate(latitude, longitude)
   const phone = detail?.phone ?? ''
 
   const handleDial = async () => {

@@ -24,6 +24,7 @@ export default defineConfig({
       include: [
         'src/request/**/*.ts',
         'src/services/**/*.ts',
+        'src/shared/geo/**/*.ts',
         'src/shared/native/AppFormScrollView.tsx',
         'src/pages/web/index.tsx',
         'src/pages/contact/hooks/useContactAddressIntegrity.ts'
@@ -46,6 +47,8 @@ export default defineConfig({
         'src/services/invoice/orderSearch.service.ts': { lines: 95, statements: 95, functions: 95, branches: 90 },
         'src/services/query/query.dispatch.ts': { lines: 95, statements: 95, functions: 95, branches: 90 },
         'src/services/payment/payment.service.ts': { lines: 95, statements: 95, functions: 95, branches: 90 },
+        'src/services/order/core/order.actionRules.ts': { lines: 95, statements: 95, functions: 95, branches: 90 },
+        'src/shared/geo/coordinates.ts': { lines: 95, statements: 95, functions: 95, branches: 90 },
         'src/pages/web/index.tsx': { lines: 95, statements: 95, functions: 95, branches: 90 },
         'src/pages/contact/hooks/useContactAddressIntegrity.ts': { lines: 95, statements: 95, functions: 95, branches: 90 },
         'src/shared/native/AppFormScrollView.tsx': { lines: 95, statements: 95, functions: 95, branches: 90 }
