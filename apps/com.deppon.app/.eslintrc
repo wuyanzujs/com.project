@@ -16,6 +16,24 @@
       "rules": {
         "app/no-direct-react-native": ["error", { "allow": ["/src/shared/native/", "/src/shared/platform/"] }],
         "app/no-taro-platform-api": ["error", { "allow": ["/src/shared/platform/", "/src/shared/native/"] }],
+        "app/no-page-business-decisions": [
+          "warn",
+          {
+            "files": ["/src/pages/"],
+            "allow": [
+              { "file": "/src/pages/login/index.tsx", "name": "canSend", "reason": "登录表单纯 UI 可用性（会话态 + 本地输入 + 倒计时）" },
+              { "file": "/src/pages/login/index.tsx", "name": "canSubmit", "reason": "登录表单纯 UI 可用性（会话态 + 本地输入 + 协议勾选）" },
+              { "file": "/src/pages/express/components/ExpressContactPanel/index.tsx", "name": "canSwap", "reason": "寄收件地址齐全后的纯 UI 入口开关" },
+              { "file": "/src/pages/express/components/ExpressCouponCard/index.tsx", "name": "isCouponHighlighted", "reason": "优惠券卡片纯 UI 高亮态" },
+              { "file": "/src/pages/order/edit/components/OrderEditInsuranceSection/index.tsx", "name": "canClear", "reason": "保价金额表单的纯 UI 可清空态" },
+              {
+                "file": "/src/pages/order/detail/orderDetailViewModel.ts",
+                "name": "isPublicOrderTrackMode",
+                "reason": "路由参数派生的公开物流态，与服务端字段无关"
+              }
+            ]
+          }
+        ],
         "app/no-service-api-import": "error",
         "app/required-import-source": [
           "error",

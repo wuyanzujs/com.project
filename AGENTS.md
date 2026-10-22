@@ -166,8 +166,14 @@
 - 安全网：展开后如果漏了符号，`tsc` 会在消费者处直接报错，所以这一步可以放心批量做。
 - 列表空/错/载状态组件仍是每页一套（`OrderListStates`、`PaymentListStates`、`PrintListStates`、`CouponListStates`、
   `InvoiceCenterStates`），可借 `AppVirtualList` 的 `empty` / `footer` 收敛成一套。
-- 页面里仍有业务判断回流（如 `pages/order/list/index.tsx` 的 `canCancelOrder` / `canModifyOrder`），
-  体积门禁管不到“规则是否在正确层”，可给 `check-business-rules` 加一条软告警。
+- 页面业务判断回流已收敛（2026-10-22 完成）：订单动作判定集中到 `services/order/core/order.actionRules.ts`
+  （列表 `canCancelOrder` / `canModifyOrder`、详情 `canCancelOrderDetail` / `canDeleteOrderDetail` /
+  `isCancelledOrderDetail`、`canDeleteOrder`、再寄模式与文案；列表与详情语义保持各自独立，只共享
+  `isWaitAllotOrderClass` / `isCancelledOrderClass` 等底层谓词），列表页、详情 viewModel、卡片只做调用。
+  坐标范围校验统一到 `shared/geo/coordinates.ts`，服务站详情、服务点卡片、`shared/platform/map.ts` 三处共用。
+  新增 ESLint 规则 `app/no-page-business-decisions`：页面目录新声明 `can*/should*/is*` 决策函数时告警，
+  只识别多输入/本地决策转发，单字段 UI 派生（`canUse = status === 'USABLE'`、`isDoorPickup = dispatch === 'Y'`）
+  自动放行；存量纯 UI 决策在 `.eslintrc` 的 allow 列表登记并写原因。
 
 ### P3 CI（已完成 2026-10-22）
 
@@ -278,6 +284,31 @@
 42. 验证：无 bundle 的干净工作区 `pnpm verify:app` exit 0（130.5 s，本地 Windows），日志明确打印体积门禁 skip；
     复制并追加 200 KiB 的假 bundle 时 `check:bundle-size` exit 1，删除产物后恢复 exit 0；`pnpm verify:config`
     在拆 job 后通过。未执行 RN bundle、Gradle 或 Xcode。
+
+### 2026-10-22 页面规则收敛与决策函数门禁
+
+43. 订单动作判定收敛：新增 `src/services/order/core/order.actionRules.ts`，把 `canDeleteOrder` 从
+    `order.service.ts` 搬入，并迁入列表页的 `canCancelOrder` / `canModifyOrder` / `getResendMode` /
+    `getResendActionText` 与详情 viewModel 的 `canCancelOrderDetail` / `canDeleteOrderDetail` /
+    `isCancelledOrderDetail`；列表与详情条件保持原样（详情仍看 `publicTrackMode` / 取消态，列表仍看
+    `isAllowCancel` / role），只把 `isWaitAllotOrderClass` / `isCancelledOrderClass` 等谓词共享。
+    页面里的 `canResendOrder` 只是 `canDeleteOrder` 转发，直接删除；`OrderCard` 的再寄文案入参从订单改为角色。
+44. 坐标校验去重：新增 `src/shared/geo/coordinates.ts` 的 `isValidCoordinate(lat, lng)`，服务站详情、
+    自送服务点卡片、`shared/platform/map.ts` 三处调用；保留旧实现对空串/null 的 `Number(...)` 语义。
+45. 等价性测试：迁移前用临时差分用例把旧函数与新规则在 112 个列表组合（role × orderClass ×
+    isAllowCancel × 订单号 × 运单号）和 168 个详情组合（publicTrackMode × 分类 × modifyFlag × 单号）
+    上逐条对比，全部一致后删除旧实现；随后把同一批组合固化成
+    `test/unit/order/order-action-rules.test.ts`（27 用例，含旧实现快照基准），新增
+    `test/unit/shared/coordinates.test.ts`（5 用例，含 ±90/±180 边界与非法值），两个文件设线 95 / 分支 90 阈值。
+46. 新增 ESLint 规则 `app/no-page-business-decisions`（`packages/eslint-plugin-app`）：页面目录下声明
+    `can*/should*/is*` 决策函数或布尔常量时，若读取 ≥2 个输入或转发到本文件内其它决策函数则告警，
+    提示「业务规则放 services/<domain>/*.rules.ts」；单字段派生自动放行，存量 6 处纯 UI/路由派生
+    （`canSend`、`canSubmit`、`canSwap`、`isCouponHighlighted`、`canClear`、`isPublicOrderTrackMode`）
+    在 `.eslintrc` allow 列表登记并写明原因。探针验证：页面内 `canProbeCancel`、转发函数、多输入布尔常量
+    均被报出，`canUse` / `isDoorPickup` 放行；删除探针后 lint 仍为 0 告警。
+47. 验证：`pnpm verify:app` exit 0（tsc / eslint / stylelint / 24 文件 290 vitest 用例 / 365 个 cjs 用例 /
+    barrel / 模块体积 / 路由 / 平台契约），四处页面仅替换调用表达式与删除页面内函数，JSX 结构与文案无改动；
+    未执行 RN bundle、Gradle 或 Xcode。
 
 ## 五、执行顺序
 
