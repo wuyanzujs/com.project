@@ -1,6 +1,6 @@
 # 当前项目问题与优化方向
 
-更新日期：2026-10-21（上一版 2026-07-07，其中大部分问题已落地，见第二节）
+更新日期：2026-10-22（上一版 2026-07-07，其中大部分问题已落地，见第二节）
 
 ## Codex 验证边界
 
@@ -57,17 +57,39 @@
 - `AppErrorBoundary` + `analytics.reportAppError` 接管渲染期异常，上报通道通过 `setAppErrorReporter` 注入。
 - 唯一待外部动作：接入 Sentry/Bugly 后在 `app.bootstrap` 里调用一次 `setAppErrorReporter(...)`，错误出口不用再改。
 
-### P1 打包体积（已量化，lucide 已治理）
+### P1 打包体积（已量化，lucide 已治理，预算门禁已落地）
 
 - 实测（`bundle:android` + sourcemap 归因）：**5.18 MB → 3.66 MB（−1.59 MB，−29%）**，模块 3420 → 1925。
 - 主因：`lucide-react-native` 从包根具名导入会把 1545 个图标全打进包（1549 模块 / 1.27 MB），实际只用 52 个。
   已改成 `dist/esm/icons/<name>.js` 深导入（`types/lucide-icons.d.ts` 补 ambient 声明），lucide 降到 54 模块 / 34 KB。
-- `lodash` 90 模块 / 594 KB 已归因：来自 `@tarojs/helper` 与 Taro 运行时（`@tarojs/taro` → `components-rn` → `taro-rn`），
-  不是业务直接依赖。低成本手段只有 `patch-package` 把 Taro 内部的全量 `lodash` 导入改成按需，收益/风险需单独评估。
+- `lodash` 归因已复核（2026-10-22，详见下方）：不是 `@tarojs/helper`，实际来自 `@tarojs/router-rn@4.2.0` 的
+  4 个 `import { camelCase } from 'lodash'` 全量导入；bundle 里只有 1 个 lodash 模块（id 607），minified
+  73,103 B / gzip 24,968 B，不是 90 模块 / 594 KB（594 KB 是未压缩 `lodash.js` 的源码体积）。
 - `expo-camera` **不能删**：`android/build.gradle` 的 `allprojects.repositories` 会校验
   `node_modules/expo-camera/android/maven`，缺失即抛 `GradleException`。JS 侧零引用，但这是 Gradle 的硬依赖。
 - `qrcode` 27 模块 / 71 KB、`crypto-js` 87 KB 仍可评估替换（两者都是纯 JS 小包，优先级低）。
-- 仍缺 bundle 体积预算门禁：现在只校验产物配置和 sourcemap，不校验体积增速。
+- bundle 体积预算门禁已落地（2026-10-22）：`scripts/check-bundle-size.mjs` + `scripts/bundle-size-baseline.json`。
+  基线 raw **3,838,060 B（3.66 MiB）** / gzip **867,051 B（846.7 KiB）**；超预算 exit 1，无产物自动 skip。
+  - 容差：raw 与 gzip 都取 `max(基线 × 3%, 150 KiB)`，当前两个指标都是 150 KiB。
+  - 入口：`check:bundle-size` 挂在 `verify:static` 末尾（无 bundle 的机器跳过）；发布 workflow 在
+    「Build production Android RN bundle」之后、「Decode release keystore」之前强制跑，出包必过门禁。
+  - 更新基线：`node scripts/check-bundle-size.mjs --update --reason="..."`（CI 禁止更新），PR 必须解释增长。
+
+#### lodash 归因复核结论（2026-10-22）
+
+- 证据链：`@tarojs/router-rn@4.2.0` 的 `package.json` 声明 `lodash ^4.17.21`；dist 里 4 个文件具名导入：
+  `dist/provider.js:1`、`dist/rootNavigation.js:3`、`dist/router.js:5`、`dist/utils/index.js:1`。
+  Metro 产物中 lodash 是模块 607（`VERSION="4.18.1"` 仅 1 处），依赖它的模块 600 / 601 / 703 / 704 正好对应
+  上述 4 个文件；8 个调用点全部只用了 `camelCase`。
+- 体积事实：lodash 模块在 bundle 内 73,103 B（gzip 24,968 B），占 raw 1.9% / gzip 2.9%；
+  `lodash.js` 源码 545,945 B 是未压缩口径，不能直接当安装增量。
+- 方案：patch-package 改 4 行 import 为 `import camelCase from 'lodash/camelCase'`；需要
+  `pnpm.patchedDependencies` + postinstall，补丁文件名绑定 `@tarojs/router-rn@4.2.0`；Taro 一升级就要重新生成
+  并验证，4 个文件任一改动都会让补丁失效（安装期显式报错，不会静默）。
+- 预估收益：raw 约 −60~70 KB（1.6%~1.8%），gzip 约 −20~25 KB（2.3%~2.9%），相对 lucide 的 −1.59 MB 很小。
+- **结论：本轮不值得做，不动依赖。** 维护 4 处补丁 + 每次 Taro 升级复验的成本高于收益；若要做，优先给
+  Taro 上游提 PR（改动只有 4 行），本地补丁必须绑定 Taro 版本并写进升级 checklist。下一步减体积的优先级
+  应低于业务/页面包体积与重复依赖治理。
 
 ### P1 测试基建（双层已搭好，覆盖率待迁移）
 
@@ -107,7 +129,8 @@
   替代 React 运行时，页面 handler 从返回树里取 `onPress` 直接驱动，不引入 `react-test-renderer` 或
   `@testing-library/react-native`。联系人 list/edit、打印列表、WebView 页都用这套方式断言「先决策/先鉴权，再继续」。
   这些页面文件**不进 per-file 覆盖率**：页面渲染分支量大，UI 分支覆盖不代表契约强度，契约由 handler 用例锁定。
-- `@types/jest` 仍是无主残留（删它要同步 `pnpm install`，别只改 `package.json`）。
+- `@types/jest` 已移除（2026-10-22）：测试只用 vitest + node:test，`tsconfig` 的 `types` 从继承的
+  `["react-native", "jest"]` 覆盖为 `["react-native"]`，`pnpm install` 已同步 lockfile（移除 18 个包）。
 
 ### P1 门禁实现方式（AST 层已起步）
 
@@ -146,10 +169,19 @@
 - 页面里仍有业务判断回流（如 `pages/order/list/index.tsx` 的 `canCancelOrder` / `canModifyOrder`），
   体积门禁管不到“规则是否在正确层”，可给 `check-business-rules` 加一条软告警。
 
-### P3 CI
+### P3 CI（已完成 2026-10-22）
 
-- `app-quality.yml` 每个 PR 都装 Android SDK（platform-tools/NDK/cmake），但 job 只跑静态门禁，
-  建议拆成“静态”和“native env”两个 job，省掉重复的 20+ 分钟。
+- `app-quality.yml` 已拆成两个并行 job：
+  - `static`：checkout → setup pnpm → setup Node → install → `pnpm verify:app`；不装 Java / Android SDK，
+    timeout 15 min。静态门禁不再等 NDK/cmake。
+  - `native-env`：checkout → Java 17 → pnpm → Node → install → `sdkmanager --install ...` →
+    `pnpm check:app-native-env:android`；timeout 30 min。
+  - 两个 job 没有 `needs`，并行执行；静态反馈预计从原来的 20+ 分钟降到 4–6 分钟（安装 1–2 分钟 +
+    门禁 2–3 分钟），SDK 安装只在 native-env 后台进行。
+- `check-repo-config.mjs` 增加 job 级断言（`readWorkflowJob` 按缩进切出每个 job）：
+  `static` 必须含 `pnpm verify:app` 且不得出现 `sdkmanager`；`native-env` 必须含 SDK 安装与
+  `check:app-native-env:android`。另断言 bundle 门禁位于发布 workflow 的「出包之后、解 keystore 之前」。
+- 已用探针验证：把 `static` job 改名后 `check:repo-config` 立即失败，不会静默放过。
 
 ---
 
@@ -223,9 +255,34 @@
 36. 验证：`pnpm verify:app` exit 0（tsc / eslint / stylelint / 22 文件 258 单测 / 365 个 cjs 用例 / barrel /
     模块体积 / 路由 / 平台契约），cjs 用例数不变；未执行 RN bundle、Gradle 或 Xcode。
 
+### 2026-10-22 防回归与 CI 收尾
+
+37. 新增 bundle 体积预算门禁：`apps/com.deppon.app/scripts/check-bundle-size.mjs` +
+    `scripts/bundle-size-baseline.json`。基线 raw **3,838,060 B（3.66 MiB）** / gzip **867,051 B（846.7 KiB）**，
+    容差 raw/gzip 均为 `max(3%, 150 KiB)`；超预算 exit 1，无产物打印 skip 并 exit 0。
+    新增 `check:bundle-size` / `update:bundle-size-baseline` 与根透传 `check:app-bundle-size` /
+    `update:app-bundle-size-baseline`；`check:bundle-size` 挂在 `verify:static` 末尾。
+38. 发布 workflow 接入体积门禁：`.github/workflows/android-release.yml` 在「Build production Android RN bundle」
+    之后、「Decode release keystore」之前跑 `check:bundle-size`；`check-repo-config.mjs` 断言该顺序，
+    并校验脚本/基线文件与 npm scripts 存在。
+39. `app-quality.yml` 拆为 `static`（无 Java/SDK，跑 `pnpm verify:app`）与 `native-env`（Java 17 + SDK 安装 +
+    `check:app-native-env:android`）两个并行 job；`check-repo-config.mjs` 新增 `readWorkflowJob` 做 job 级断言
+    （static 不得出现 sdkmanager，native-env 必须装 SDK 并跑原生环境检查），探针验证改名 static 会失败。
+40. 移除未使用的 `@types/jest`：`apps/com.deppon.app/package.json` 删除依赖，`tsconfig` 把继承的
+    `types: ["react-native", "jest"]` 覆盖为 `["react-native"]`，`pnpm install` 同步 lockfile（−170 行 / −18 包）；
+    `tsc`、22 文件 258 vitest 用例、365 个 cjs 用例全部通过。
+41. lodash 归因复核（不改依赖）：定位到 `@tarojs/router-rn@4.2.0` 的 4 个文件具名导入 `camelCase`，
+    Metro 产物只含 1 个 lodash 模块（73,103 B / gzip 24,968 B，占 raw 1.9% / gzip 2.9%）；patch-package
+    需改 4 行并绑定 Taro 版本，预估净收益 raw −60~70 KB、gzip −20~25 KB。**结论：不值得做**，
+    优先走 Taro 上游 PR。同时修正旧文档「90 模块 / 594 KB」的未压缩口径。
+42. 验证：无 bundle 的干净工作区 `pnpm verify:app` exit 0（130.5 s，本地 Windows），日志明确打印体积门禁 skip；
+    复制并追加 200 KiB 的假 bundle 时 `check:bundle-size` exit 1，删除产物后恢复 exit 0；`pnpm verify:config`
+    在拆 job 后通过。未执行 RN bundle、Gradle 或 Xcode。
+
 ## 五、执行顺序
 
 1. 新领域禁止再用运行时 `export *`（门禁已是 0 基线）；新增服务时照 `expand-service-barrels.mjs` 生成的显式风格写。
 2. 行为字符串契约已迁完；后续新增契约按类型落位：纯行为进 `test/unit/**`，结构/来源约束进 `packages/eslint-plugin-app`，
    不要再往 `check-rn-boundaries` 写「某文件必须包含某字符串」。
-3. 若要继续减体积：`lodash` 走 patch-package 方案评估，或给 bundle 加体积预算门禁（P2）。
+3. 打包体积门禁已落地；下一轮减体积先做归因（sourcemap / Metro module id），不要再用“模块数 / 源码 KB”
+   估算安装增量。`lodash` 的结论是本轮不值得本地 patch；若要动，优先给 Taro 上游提 PR，并把补丁绑定到 Taro 版本。
