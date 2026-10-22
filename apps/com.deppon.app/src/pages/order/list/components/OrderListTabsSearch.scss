@@ -3,24 +3,28 @@
 .order-tabs {
   display: flex;
   flex-direction: row;
-  height: 86px;
-  padding: 8px 18px 0;
+  align-items: flex-end;
+  height: 88px;
+  padding: $dp-space-8 $dp-space-16 0 $dp-space-8;
   background: $dp-color-brand-faint;
 }
 
 .order-tab {
   display: flex;
   flex: 1;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 72px;
-  margin: 0 8px;
-  border-bottom-color: $dp-color-transparent;
-  border-bottom-width: 5px;
+  height: 80px;
+  margin: 0 $dp-space-4;
 }
 
-.order-tab--active {
-  border-bottom-color: $dp-color-brand;
+.order-tab__indicator {
+  width: 60px;
+  height: 6px;
+  margin-top: $dp-space-8;
+  background: $dp-color-brand;
+  border-radius: $dp-radius-3;
 }
 
 .order-tab__text {
@@ -34,11 +38,20 @@
   font-weight: $dp-font-weight-bold;
 }
 
+.order-tabs__share {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 80px;
+  margin-left: $dp-space-4;
+}
+
 .order-search {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 8px 24px 16px;
+  padding: $dp-space-8 $dp-space-24 $dp-space-16;
   background: $dp-color-brand-faint;
 }
 
@@ -48,19 +61,19 @@
   flex-direction: row;
   align-items: center;
   height: 64px;
-  padding: 0 16px;
+  padding: 0 $dp-space-16;
   background: $dp-color-bg-card;
-  border-radius: $dp-radius-search;
+  border-radius: $dp-radius-pill;
 }
 
 .order-search__input {
   flex: 1;
   min-width: 0;
   height: 58px;
-  margin-left: 10px;
+  margin-left: $dp-space-10;
   color: $dp-color-text-heading;
-  font-size: $dp-font-size-body-small;
-  line-height: $dp-line-height-search;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-body;
 }
 
 .order-search__submit {
@@ -78,13 +91,13 @@
   justify-content: center;
   min-width: 140px;
   height: 64px;
-  margin-left: 24px;
+  margin-left: $dp-space-24;
   background: $dp-color-bg-card;
-  border-radius: $dp-radius-search;
+  border-radius: $dp-radius-pill;
 }
 
 .order-search__filter-text {
-  margin-right: 5px;
+  margin-right: $dp-space-5;
   color: $dp-color-text-heading;
   font-size: $dp-font-size-label-large;
   font-weight: $dp-font-weight-regular;

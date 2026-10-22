@@ -141,7 +141,10 @@ export {
   canCancelOrderDetail,
   canDeleteOrder,
   canDeleteOrderDetail,
+  canEvaluateOrder,
   canModifyOrder,
+  canNotifyRecipient,
+  getOrderListTimeText,
   getOrderResendActionText,
   getOrderResendMode,
   isCancelledOrderDetail

@@ -309,6 +309,17 @@
 47. 验证：`pnpm verify:app` exit 0（tsc / eslint / stylelint / 24 文件 290 vitest 用例 / 365 个 cjs 用例 /
     barrel / 模块体积 / 路由 / 平台契约），四处页面仅替换调用表达式与删除页面内函数，JSX 结构与文案无改动；
     未执行 RN bundle、Gradle 或 Xcode。
+48. 订单列表对齐生产 UI（真机对比后返工）：移除「最近90天/共 N 单」汇总条，改为 4 个 tab（激活项带数量）+
+    分享入口；卡片改为「运单号+复制 / 快递-零担标签 / 城市-状态-城市 / 操作胶囊 / 底部时间条」，
+    时间条改为按钮下方的内嵌圆角淡黄块，卡片恢复左右留白与更大圆角。
+    业务规则继续下沉：`order.actionRules` 新增 `canEvaluateOrder` / `canNotifyRecipient` /
+    `getOrderListTimeText`，`OrderListItem` 补充 `viewTextFlag`，`orderClass=0` 文案由「待揽件」改为「待揽收」；
+    「通知收件人」复用 `modifyNotifyDeliver`（新增 `orderService.notifyWaybill`），
+    「去评价」按小程序 survey 场景（待揽收/已退回 S0206，其它 S0601）跳 H5。
+    样式拆出 `OrderCardActions.scss`（新文件零间距债务），样式基线从 630 收紧到 616；
+    真机 PDEM10 上已确认列表、tab 计数、复制、四个操作与底部时间条渲染正常。
+49. 验证：`pnpm verify:app` exit 0（tsc / eslint / stylelint / 24 文件 295 vitest 用例 / 365 个 cjs 用例 /
+    barrel / 模块体积 / 路由 / 平台契约），未执行 RN bundle、Gradle 或 Xcode。
 
 ## 五、执行顺序
 

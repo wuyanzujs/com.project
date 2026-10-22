@@ -3,6 +3,7 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
+import { getCurrentUser } from '@/services/auth'
 import { expressDraftBridge } from '@/services/express'
 import {
   canCancelOrder,
@@ -20,10 +21,12 @@ import { AppVirtualList } from '@/shared/native'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
-import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { appendRouteQuery, createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { shareWithApp } from '@/shared/platform/share'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
 
 import { OrderCard, OrderListFooter } from './components/OrderListCards'
-import { OrderFilterPanel, OrderListSummary, OrderRoleTabs, OrderSearchBar } from './components/OrderListSections'
+import { OrderFilterPanel, OrderRoleTabs, OrderSearchBar } from './components/OrderListSections'
 import { useOrderListData } from './hooks/useOrderListData'
 
 import type { OrderDateRangeDays } from './components/OrderListSections'
@@ -151,6 +154,62 @@ const OrderListPage = () => {
     navigateToAppRoute(getRouteToDetail(order), { login: true })
   }
 
+  const handleShare = () => {
+    shareWithApp({
+      source: 'ORDER_LIST',
+      title: '德邦快递',
+      description: '我的德邦快递订单'
+    }).catch(() => undefined)
+  }
+
+  const handleEvaluateOrder = (order: OrderListItem) => {
+    const scene = order.orderClass === 0 || order.orderClass === 3 ? 'S0206' : 'S0601'
+    const rowData = encodeURIComponent(
+      JSON.stringify([
+        {
+          field: 'orderNumber',
+          data: order.orderNumber
+        },
+        {
+          field: 'waybillNumber',
+          data: order.waybillNumber
+        }
+      ])
+    )
+    const uri = appendRouteQuery('/depponmobile/survey/land', {
+      scene,
+      channel: 'OWS',
+      mobile: getCurrentUser()?.mobile || '',
+      rowData
+    })
+
+    navigateToAppRoute(createAppWebUrl({ source: 'ORDER_DETAIL_EVALUATE', title: '服务评价', uri }), { login: true })
+  }
+
+  const handleNotifyOrder = async (order: OrderListItem) => {
+    if (!order.waybillNumber) {
+      return
+    }
+
+    const confirmResult = await Taro.showModal({
+      title: '通知收件人',
+      content: '是否通知收件人安排派送？',
+      confirmText: '通知',
+      cancelText: '暂不通知'
+    })
+
+    if (!confirmResult.confirm) {
+      return
+    }
+
+    const response = await orderService.notifyWaybill(order.waybillNumber)
+
+    Taro.showToast({
+      title: response.status ? '已通知' : response.message || '通知失败，请稍后再试',
+      icon: 'none'
+    })
+  }
+
   const handleCancelOrder = (order: OrderListItem) => {
     if (!canCancelOrder(order)) {
       return
@@ -256,7 +315,14 @@ const OrderListPage = () => {
   return (
     <AppPage className='order-list-shell' footer={<AppTabBar active='orderList' />} safeArea='top' statusBar='dark'>
       <View className='order-list-page'>
-        <OrderRoleTabs role={role} onChange={handleChangeRole} onOpenPayment={handleOpenPaymentList} onOpenSubscriptions={handleOpenSubscriptions} />
+        <OrderRoleTabs
+          activeCount={listData.totalRows}
+          role={role}
+          onChange={handleChangeRole}
+          onOpenPayment={handleOpenPaymentList}
+          onOpenSubscriptions={handleOpenSubscriptions}
+          onShare={handleShare}
+        />
         <OrderSearchBar
           filterVisible={filterVisible}
           keyword={keyword}
@@ -284,16 +350,6 @@ const OrderListPage = () => {
               orders={listData.orders}
             />
           }
-          header={
-            listData.orders.length > 0 || listData.loading ? (
-              <OrderListSummary
-                rangeDays={rangeDays}
-                totalRows={listData.totalRows}
-                onOpenPaymentList={handleOpenPaymentList}
-                onOpenSubscriptions={handleOpenSubscriptions}
-              />
-            ) : null
-          }
           items={listData.orders}
           keyExtractor={getOrderActionKey}
           paddingBottom={0}
@@ -302,10 +358,6 @@ const OrderListPage = () => {
           renderItem={order => (
             <View className='order-list-item'>
               <OrderCard
-                canCancelOrder={canCancelOrder}
-                canDeleteOrder={canDeleteOrder}
-                canModifyOrder={canModifyOrder}
-                canResendOrder={canDeleteOrder}
                 deletingOrderKey={deletingOrderKey}
                 getOrderActionKey={getOrderActionKey}
                 getResendActionText={getOrderResendActionText}
@@ -313,7 +365,9 @@ const OrderListPage = () => {
                 resendingOrderKey={resendingOrderKey}
                 onCancelOrder={handleCancelOrder}
                 onDeleteOrder={handleDeleteOrder}
+                onEvaluateOrder={handleEvaluateOrder}
                 onModifyOrder={handleModifyOrder}
+                onNotifyOrder={handleNotifyOrder}
                 onOpenDetail={handleOpenDetail}
                 onResendOrder={handleResendOrder}
               />

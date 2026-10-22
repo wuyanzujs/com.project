@@ -79,6 +79,21 @@ function getDefaultDateRange() {
   return getOrderDateRange()
 }
 
+/**
+ *
+ * @param waybillNumber 运单号
+ * @description 通知营业部为运单安排派送
+ */
+export function notifyOrderWaybill(waybillNumber?: string | null): Promise<DepponResponse<boolean>> {
+  if (!waybillNumber) {
+    return Promise.resolve(createFailure<boolean>('缺少运单号，暂无法通知派送'))
+  }
+
+  return orderApi.notifyDeliver({
+    waybillNo: waybillNumber
+  })
+}
+
 export const orderService = {
   getDefaultDateRange,
   getDateRange: getOrderDateRange,
@@ -95,6 +110,7 @@ export const orderService = {
   resolveUrgeMenuAction: resolveOrderUrgeMenuAction,
   submitUrge: submitOrderUrge,
   notifyDeliver: notifyOrderDeliver,
+  notifyWaybill: notifyOrderWaybill,
   invalidWaybill: invalidOrderWaybill,
   resolveDepartmentPhone,
 

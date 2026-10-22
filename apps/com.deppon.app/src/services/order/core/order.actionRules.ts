@@ -131,3 +131,87 @@ export function canDeleteOrderDetail(detail: OrderDetail | null, publicTrackMode
 export function isCancelledOrderDetail(detail: OrderDetail | null, publicTrackMode: boolean) {
   return !publicTrackMode && !!detail && isCancelledOrderClass(getOrderClass(detail))
 }
+
+const EVALUATABLE_ORDER_CLASSES = new Set([0, 1, 4])
+
+/**
+ *
+ * @param order 订单列表项
+ * @description 判断列表订单是否展示去评价入口
+ */
+export function canEvaluateOrder(order: Pick<OrderListItem, 'orderClass' | 'orderNumber' | 'waybillNumber'>) {
+  return EVALUATABLE_ORDER_CLASSES.has(order.orderClass) && (!!order.orderNumber || !!order.waybillNumber)
+}
+
+/**
+ *
+ * @param order 订单列表项
+ * @description 判断列表订单是否展示通知收件人入口
+ */
+export function canNotifyRecipient(order: Pick<OrderListItem, 'role' | 'orderClass' | 'waybillNumber'>) {
+  return isSenderRole(order.role) && isWaitAllotOrderClass(order.orderClass) && !!order.waybillNumber
+}
+
+function padTime(value: number) {
+  return String(value).padStart(2, '0')
+}
+
+function formatChineseDateTime(date: Date) {
+  return `${date.getFullYear()}年${padTime(date.getMonth() + 1)}月${padTime(date.getDate())}日 ${padTime(date.getHours())}:${padTime(date.getMinutes())}`
+}
+
+function parseOrderTime(value: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(value)
+
+  if (!match) {
+    return null
+  }
+
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4]), Number(match[5]))
+
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+function getOrderListTimeLabel(order: Pick<OrderListItem, 'orderClass' | 'viewTextFlag'>) {
+  if (isCancelledOrderClass(order.orderClass)) {
+    return '取消时间'
+  }
+
+  if (isWaitAllotOrderClass(order.orderClass)) {
+    return order.viewTextFlag === 'Y' ? '预计上门时间' : '下单时间'
+  }
+
+  if (order.orderClass === 2) {
+    return '签收时间'
+  }
+
+  if (order.orderClass === 3) {
+    return '下单时间'
+  }
+
+  return '开单时间'
+}
+
+/**
+ *
+ * @param order 订单列表项
+ * @description 按订单状态生成列表底部时间文案
+ */
+export function getOrderListTimeText(order: Pick<OrderListItem, 'orderClass' | 'orderTime' | 'viewTextFlag'>) {
+  const label = getOrderListTimeLabel(order)
+  const start = parseOrderTime(order.orderTime)
+
+  if (!start) {
+    return `${label}：${order.orderTime || '--'}`
+  }
+
+  if (label !== '预计上门时间') {
+    return `${label}：${formatChineseDateTime(start)}`
+  }
+
+  const end = new Date(start.getTime() + 2 * 60 * 60 * 1000)
+  const sameDay = start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth() && start.getDate() === end.getDate()
+  const endText = sameDay ? `${padTime(end.getHours())}:${padTime(end.getMinutes())}` : `次日 ${padTime(end.getHours())}:${padTime(end.getMinutes())}`
+
+  return `${label}：${formatChineseDateTime(start)}-${endText}`
+}

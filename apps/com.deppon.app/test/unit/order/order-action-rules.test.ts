@@ -5,7 +5,10 @@ import {
   canCancelOrderDetail,
   canDeleteOrder,
   canDeleteOrderDetail,
+  canEvaluateOrder,
   canModifyOrder,
+  canNotifyRecipient,
+  getOrderListTimeText,
   getOrderResendActionText,
   getOrderResendMode,
   isCancelledOrderDetail
@@ -164,8 +167,7 @@ describe('详情动作规则与迁移前快照等价', () => {
   })
 })
 
-describe('列表动作真实字段组合', () => {
-  it('寄件人待分配且允许取消的订单可取消、可修改', () => {
+describe('列表动作真实字段组合', () => {  it('寄件人待分配且允许取消的订单可取消、可修改', () => {
     const order = createListItem()
 
     expect(canCancelOrder(order)).toBe(true)
@@ -207,6 +209,49 @@ describe('列表动作真实字段组合', () => {
     expect(getOrderResendMode('receive')).toBe('return')
     expect(getOrderResendActionText('sender')).toBe('再来一单')
     expect(getOrderResendActionText('receive')).toBe('一键回寄')
+  })
+})
+
+describe('列表评价、通知与时间文案', () => {
+  it('待揽收/运输中/已退回订单展示去评价，已签收与已作废不展示', () => {
+    expect(canEvaluateOrder(createListItem({ orderClass: 0 }))).toBe(true)
+    expect(canEvaluateOrder(createListItem({ orderClass: 1 }))).toBe(true)
+    expect(canEvaluateOrder(createListItem({ orderClass: 4 }))).toBe(true)
+    expect(canEvaluateOrder(createListItem({ orderClass: 2 }))).toBe(false)
+    expect(canEvaluateOrder(createListItem({ orderClass: 5 }))).toBe(false)
+    expect(canEvaluateOrder(createListItem({ orderClass: 0, orderNumber: '', waybillNumber: '' }))).toBe(false)
+  })
+
+  it('只有寄件人待揽收且带运单号的订单展示通知收件人', () => {
+    expect(canNotifyRecipient(createListItem({ role: 'sender', orderClass: 0, waybillNumber: 'WB001' }))).toBe(true)
+    expect(canNotifyRecipient(createListItem({ role: 'receive', orderClass: 0, waybillNumber: 'WB001' }))).toBe(false)
+    expect(canNotifyRecipient(createListItem({ role: 'sender', orderClass: 1, waybillNumber: 'WB001' }))).toBe(false)
+    expect(canNotifyRecipient(createListItem({ role: 'sender', orderClass: 0, waybillNumber: '' }))).toBe(false)
+  })
+
+  it('待揽收订单按 viewTextFlag 生成预计上门时间区间', () => {
+    expect(getOrderListTimeText(createListItem({ orderClass: 0, viewTextFlag: 'Y', orderTime: '2026-10-13 13:31' }))).toBe(
+      '预计上门时间：2026年10月13日 13:31-15:31'
+    )
+    expect(getOrderListTimeText(createListItem({ orderClass: 0, viewTextFlag: null, orderTime: '2026-10-13 13:31' }))).toBe(
+      '下单时间：2026年10月13日 13:31'
+    )
+    expect(getOrderListTimeText(createListItem({ orderClass: 0, viewTextFlag: 'Y', orderTime: '2026-10-13 23:30' }))).toBe(
+      '预计上门时间：2026年10月13日 23:30-次日 01:30'
+    )
+  })
+
+  it('其它订单状态取对应时间标签', () => {
+    expect(getOrderListTimeText(createListItem({ orderClass: 1, orderTime: '2026-10-13 13:31' }))).toBe('开单时间：2026年10月13日 13:31')
+    expect(getOrderListTimeText(createListItem({ orderClass: 2, orderTime: '2026-10-13 13:31' }))).toBe('签收时间：2026年10月13日 13:31')
+    expect(getOrderListTimeText(createListItem({ orderClass: 3, orderTime: '2026-10-13 13:31' }))).toBe('下单时间：2026年10月13日 13:31')
+    expect(getOrderListTimeText(createListItem({ orderClass: 4, orderTime: '2026-10-13 13:31' }))).toBe('取消时间：2026年10月13日 13:31')
+    expect(getOrderListTimeText(createListItem({ orderClass: 5, orderTime: '2026-10-13 13:31' }))).toBe('开单时间：2026年10月13日 13:31')
+  })
+
+  it('时间缺失或非法时保留原始文案', () => {
+    expect(getOrderListTimeText(createListItem({ orderClass: 0, viewTextFlag: 'Y', orderTime: '' }))).toBe('预计上门时间：--')
+    expect(getOrderListTimeText(createListItem({ orderClass: 1, orderTime: 'not-a-date' }))).toBe('开单时间：not-a-date')
   })
 })
 

@@ -1632,9 +1632,19 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
-        "rawSpaces": 13,
+        "rawSpaces": 8,
         "usesTokens": true,
-        "lines": 162
+        "lines": 179
+      },
+      "src/pages/order/list/components/OrderListCards/OrderCardActions.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 81
       },
       "src/pages/order/list/components/OrderListFilters.scss": {
         "rawColors": 0,
@@ -1642,9 +1652,9 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
-        "rawSpaces": 10,
+        "rawSpaces": 5,
         "usesTokens": true,
-        "lines": 109
+        "lines": 51
       },
       "src/pages/order/list/components/OrderListTabsSearch.scss": {
         "rawColors": 0,
@@ -1652,9 +1662,9 @@
         "rawLineHeights": 0,
         "rawRadii": 0,
         "rawFontWeights": 0,
-        "rawSpaces": 7,
+        "rawSpaces": 3,
         "usesTokens": true,
-        "lines": 91
+        "lines": 101
       },
       "src/pages/order/list/index.scss": {
         "rawColors": 0,
