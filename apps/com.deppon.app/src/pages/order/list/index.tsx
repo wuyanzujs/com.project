@@ -4,8 +4,16 @@ import Taro, { useDidShow } from '@tarojs/taro'
 import { useCallback, useState } from 'react'
 
 import { expressDraftBridge } from '@/services/express'
-import { canDeleteOrder, createExpressDraftFromOrderDetail, orderService } from '@/services/order'
-import type { OrderListItem, OrderPaymentFilter, OrderResendMode, OrderRole, OrderStatusFilter } from '@/services/order'
+import {
+  canCancelOrder,
+  canDeleteOrder,
+  canModifyOrder,
+  createExpressDraftFromOrderDetail,
+  getOrderResendActionText,
+  getOrderResendMode,
+  orderService
+} from '@/services/order'
+import type { OrderListItem, OrderPaymentFilter, OrderRole, OrderStatusFilter } from '@/services/order'
 import { AppPage, AppSupportFloat } from '@/shared/components'
 import AppTabBar from '@/shared/components/AppTabBar'
 import { AppVirtualList } from '@/shared/native'
@@ -30,28 +38,8 @@ function getRouteToDetail(order: OrderListItem) {
   })
 }
 
-function canCancelOrder(order: OrderListItem) {
-  return order.role === 'sender' && order.orderClass === 0 && order.isAllowCancel && !!order.orderNumber
-}
-
-function canModifyOrder(order: OrderListItem) {
-  return order.role === 'sender' && order.orderClass === 0 && order.isAllowCancel && !!order.orderNumber
-}
-
 function getOrderActionKey(order: OrderListItem) {
   return `${order.role}-${order.orderNumber}-${order.waybillNumber}`
-}
-
-function canResendOrder(order: OrderListItem) {
-  return canDeleteOrder(order)
-}
-
-function getResendMode(order: OrderListItem): OrderResendMode {
-  return order.role === 'receive' ? 'return' : 'repeat'
-}
-
-function getResendActionText(order: OrderListItem) {
-  return order.role === 'receive' ? '一键回寄' : '再来一单'
 }
 
 const OrderListPage = () => {
@@ -234,7 +222,7 @@ const OrderListPage = () => {
   }
 
   const handleResendOrder = async (order: OrderListItem) => {
-    if (!canResendOrder(order) || resendingOrderKey) {
+    if (!canDeleteOrder(order) || resendingOrderKey) {
       return
     }
 
@@ -256,7 +244,7 @@ const OrderListPage = () => {
         return
       }
 
-      expressDraftBridge.carryFromOrderResend(createExpressDraftFromOrderDetail(response.result, getResendMode(order)))
+      expressDraftBridge.carryFromOrderResend(createExpressDraftFromOrderDetail(response.result, getOrderResendMode(order.role)))
       navigateToAppRoute(APP_ROUTES.express, {
         replace: true
       })
@@ -317,10 +305,10 @@ const OrderListPage = () => {
                 canCancelOrder={canCancelOrder}
                 canDeleteOrder={canDeleteOrder}
                 canModifyOrder={canModifyOrder}
-                canResendOrder={canResendOrder}
+                canResendOrder={canDeleteOrder}
                 deletingOrderKey={deletingOrderKey}
                 getOrderActionKey={getOrderActionKey}
-                getResendActionText={getResendActionText}
+                getResendActionText={getOrderResendActionText}
                 order={order}
                 resendingOrderKey={resendingOrderKey}
                 onCancelOrder={handleCancelOrder}

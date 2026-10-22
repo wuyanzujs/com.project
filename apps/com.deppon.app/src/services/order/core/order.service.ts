@@ -33,8 +33,6 @@ interface OrderTrackQueryOptions {
 const DEFAULT_PAGE_SIZE = 10
 const DEFAULT_RANGE_DAYS = 30
 
-const DELETABLE_ORDER_CLASSES = new Set([2, 3, 4, 5, 99])
-
 /**
  *
  * @param value 数字
@@ -79,22 +77,6 @@ export function getOrderDateRange(days = DEFAULT_RANGE_DAYS) {
  */
 function getDefaultDateRange() {
   return getOrderDateRange()
-}
-
-/**
- *
- * @param order 订单简要信息
- * @description 判断订单是否可删除
- */
-export function canDeleteOrder(order: {
-  orderClass?: number
-  orderClassification?: string | number
-  orderNumber?: string | null
-  waybillNumber?: string | null
-}) {
-  const orderClass = Number(order.orderClass ?? order.orderClassification)
-
-  return DELETABLE_ORDER_CLASSES.has(orderClass) && (!!order.orderNumber || !!order.waybillNumber)
 }
 
 export const orderService = {

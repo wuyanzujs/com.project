@@ -27,7 +27,7 @@ export function OrderCard(props: {
   canModifyOrder: (order: OrderListItem) => boolean
   canResendOrder: (order: OrderListItem) => boolean
   getOrderActionKey: (order: OrderListItem) => string
-  getResendActionText: (order: OrderListItem) => string
+  getResendActionText: (role: OrderListItem['role']) => string
   onOpenDetail: (order: OrderListItem) => void
   onCancelOrder: (order: OrderListItem) => void
   onDeleteOrder: (order: OrderListItem) => void
@@ -85,7 +85,7 @@ export function OrderCard(props: {
           {resendable && (
             <AppPressable accessibilityLabel='再次下单' className='order-card__outline-button' onPress={() => props.onResendOrder(props.order)}>
               <Text className='order-card__outline-button-text'>
-                {props.resendingOrderKey === orderKey ? '带入中' : props.getResendActionText(props.order)}
+                {props.resendingOrderKey === orderKey ? '带入中' : props.getResendActionText(props.order.role)}
               </Text>
             </AppPressable>
           )}
