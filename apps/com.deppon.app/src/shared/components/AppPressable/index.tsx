@@ -14,9 +14,12 @@ export interface AppPressableProps extends PropsWithChildren {
   allowDisabledPress?: boolean
   block?: boolean
   className?: string
+  /** 视觉盒子不再套用 44dp 最小尺寸，热区改由 hitSlop 补齐。 */
+  compact?: boolean
   contentElement?: 'text' | 'view'
   disabled?: boolean
   flex?: boolean
+  hitSlop?: number
   layout?: AppPressableLayout
   selected?: boolean
   variant?: AppPressableVariant
@@ -38,9 +41,11 @@ export function AppPressable({
   block = false,
   children,
   className,
+  compact = false,
   contentElement = 'view',
   disabled = false,
   flex = false,
+  hitSlop,
   layout = 'center',
   onLongPress,
   onPress,
@@ -54,6 +59,7 @@ export function AppPressable({
     'app-pressable',
     `app-pressable--${variant}`,
     block && 'app-pressable--block',
+    compact && 'app-pressable--compact',
     flex && 'app-pressable--flex',
     layout !== 'center' && `app-pressable--${layout}`,
     disabled && 'app-pressable--disabled',
@@ -71,7 +77,9 @@ export function AppPressable({
         accessibilityLabel={accessibilityLabel}
         allowDisabledPress={allowDisabledPress}
         block={block}
+        compact={compact}
         disabled={disabled}
+        hitSlop={hitSlop}
         overlay
         selected={selected}
         onLongPress={onLongPress}

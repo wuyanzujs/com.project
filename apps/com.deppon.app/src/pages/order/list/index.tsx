@@ -3,6 +3,9 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Defs, LinearGradient, Rect, Stop, Svg } from 'react-native-svg'
+
 import { getCurrentUser } from '@/services/auth'
 import { expressDraftBridge } from '@/services/express'
 import {
@@ -24,6 +27,7 @@ import { APP_ROUTES } from '@/shared/navigation/routes'
 import { appendRouteQuery, createAppRouteUrl } from '@/shared/navigation/routeUrl'
 import { shareWithApp } from '@/shared/platform/share'
 import { createAppWebUrl } from '@/shared/webview/appWeb'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import { OrderCard, OrderListFooter } from './components/OrderListCards'
 import { OrderFilterPanel, OrderRoleTabs, OrderSearchBar } from './components/OrderListSections'
@@ -45,7 +49,10 @@ function getOrderActionKey(order: OrderListItem) {
   return `${order.role}-${order.orderNumber}-${order.waybillNumber}`
 }
 
+const HEADER_GRADIENT_ID = 'orderListHeaderGradient'
+
 const OrderListPage = () => {
+  const insets = useSafeAreaInsets()
   const [role, setRole] = useState<OrderRole>('sender')
   const [rangeDays, setRangeDays] = useState<OrderDateRangeDays>(90)
   const [orderStatus, setOrderStatus] = useState<OrderStatusFilter>('')
@@ -313,33 +320,46 @@ const OrderListPage = () => {
   }
 
   return (
-    <AppPage className='order-list-shell' footer={<AppTabBar active='orderList' />} safeArea='top' statusBar='dark'>
+    <AppPage className='order-list-shell' footer={<AppTabBar active='orderList' />} safeArea='none' statusBar='dark'>
       <View className='order-list-page'>
-        <OrderRoleTabs
-          activeCount={listData.totalRows}
-          role={role}
-          onChange={handleChangeRole}
-          onOpenPayment={handleOpenPaymentList}
-          onOpenSubscriptions={handleOpenSubscriptions}
-          onShare={handleShare}
-        />
-        <OrderSearchBar
-          filterVisible={filterVisible}
-          keyword={keyword}
-          onKeywordChange={setKeyword}
-          onSearch={handleSearch}
-          onToggleFilter={() => setFilterVisible(current => !current)}
-        />
-        {filterVisible && (
-          <OrderFilterPanel
-            orderStatus={orderStatus}
-            paymentType={paymentType}
-            rangeDays={rangeDays}
-            onPaymentChange={handleChangePayment}
-            onRangeChange={handleChangeRange}
-            onStatusChange={handleChangeStatus}
+        <View className='order-list-header' style={{ paddingTop: insets.top }}>
+          <View className='order-list-gradient'>
+            <Svg width='100%' height='100%'>
+              <Defs>
+                <LinearGradient id={HEADER_GRADIENT_ID} x1='0' x2='0' y1='0' y2='1'>
+                  <Stop offset='0' stopColor={APP_STYLE_COLORS.order.headerGradientStart} />
+                  <Stop offset='1' stopColor={APP_STYLE_COLORS.surface.pageCool} />
+                </LinearGradient>
+              </Defs>
+              <Rect width='100%' height='100%' fill={`url(#${HEADER_GRADIENT_ID})`} />
+            </Svg>
+          </View>
+          <OrderRoleTabs
+            activeCount={listData.totalRows}
+            role={role}
+            onChange={handleChangeRole}
+            onOpenPayment={handleOpenPaymentList}
+            onOpenSubscriptions={handleOpenSubscriptions}
+            onShare={handleShare}
           />
-        )}
+          <OrderSearchBar
+            filterVisible={filterVisible}
+            keyword={keyword}
+            onKeywordChange={setKeyword}
+            onSearch={handleSearch}
+            onToggleFilter={() => setFilterVisible(current => !current)}
+          />
+          {filterVisible && (
+            <OrderFilterPanel
+              orderStatus={orderStatus}
+              paymentType={paymentType}
+              rangeDays={rangeDays}
+              onPaymentChange={handleChangePayment}
+              onRangeChange={handleChangeRange}
+              onStatusChange={handleChangeStatus}
+            />
+          )}
+        </View>
         <AppVirtualList
           extraData={`${role}|${deletingOrderKey}|${resendingOrderKey}`}
           footer={
@@ -354,7 +374,7 @@ const OrderListPage = () => {
           keyExtractor={getOrderActionKey}
           paddingBottom={0}
           paddingHorizontal={0}
-          paddingTop={18}
+          paddingTop={8}
           renderItem={order => (
             <View className='order-list-item'>
               <OrderCard

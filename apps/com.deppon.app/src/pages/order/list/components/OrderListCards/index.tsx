@@ -1,10 +1,13 @@
 import { Image, Text, View } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 
+import { Defs, LinearGradient, Rect, Stop, Svg } from 'react-native-svg'
+
 import { canCancelOrder, canDeleteOrder, canEvaluateOrder, canModifyOrder, canNotifyRecipient, getOrderListTimeText } from '@/services/order'
 import type { OrderListItem } from '@/services/order'
 import { AppPressable } from '@/shared/components'
 import { AppIcon } from '@/shared/components/AppIcon'
+import { AppElevatedView, designPxToDp } from '@/shared/native'
 import { copyTextToClipboard } from '@/shared/platform/clipboard'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
@@ -12,6 +15,13 @@ import './index.scss'
 import './OrderCardActions.scss'
 
 type OrderCardTone = 'brand' | 'success' | 'danger' | 'muted'
+
+const ORDER_CARD_STYLE = {
+  marginBottom: designPxToDp(20),
+  marginHorizontal: designPxToDp(24)
+}
+
+const WAIT_TIME_GRADIENT_ID = 'orderWaitTimeGradient'
 
 function getOrderCardTone(orderClass: number): OrderCardTone {
   if (orderClass === 2) {
@@ -108,65 +118,80 @@ export function OrderCard(props: {
   }
 
   return (
-    <View className={`order-card order-card--${tone}`}>
-      <View className='order-card__top'>
-        <View className='order-card__number-row'>
-          <AppPressable accessibilityLabel='查看订单详情' onPress={() => props.onOpenDetail(props.order)}>
-            <Text className='order-card__number'>{numberText}</Text>
-          </AppPressable>
-          {copyValue && (
-            <AppPressable accessibilityLabel='复制单号' className='order-card__copy' onPress={handleCopy}>
-              <Text className='order-card__copy-text'>复制</Text>
+    <AppElevatedView borderRadius={32} shadow style={ORDER_CARD_STYLE}>
+      <View className={`order-card order-card--${tone}`}>
+        <View className='order-card__top'>
+          <View className='order-card__number-row'>
+            <AppPressable compact accessibilityLabel='查看订单详情' hitSlop={10} onPress={() => props.onOpenDetail(props.order)}>
+              <Text className='order-card__number'>{numberText}</Text>
             </AppPressable>
-          )}
-        </View>
-        <View className='order-card__tag'>
-          <Text className='order-card__tag-text'>{props.order.isExpress ? '快递' : '零担'}</Text>
-        </View>
-      </View>
-
-      <AppPressable accessibilityLabel='查看订单详情' className='order-card__main' onPress={() => props.onOpenDetail(props.order)}>
-        <View className='order-card__route'>
-          <View className='order-card__party'>
-            <Text className='order-card__city'>{props.order.senderCity || '--'}</Text>
-            <Text className='order-card__name'>{props.order.senderName || '--'}</Text>
+            {copyValue && (
+              <AppPressable compact accessibilityLabel='复制单号' className='order-card__copy' hitSlop={10} onPress={handleCopy}>
+                <Text className='order-card__copy-text'>复制</Text>
+              </AppPressable>
+            )}
           </View>
+          <View className='order-card__tag'>
+            <Text className='order-card__tag-text'>{props.order.isExpress ? '快递' : '零担'}</Text>
+          </View>
+        </View>
 
-          <View className='order-card__status'>
-            <View className='order-card__status-line'>
-              <View className='order-card__status-dot' />
-              <View className='order-card__status-dot' />
-              <View className='order-card__status-dot' />
-              <AppIcon color={APP_STYLE_COLORS.brand.default} name='chevronRight' size={22} strokeWidth={3} />
-              <View className='order-card__status-dot' />
-              <View className='order-card__status-dot' />
-              <View className='order-card__status-dot' />
+        <AppPressable accessibilityLabel='查看订单详情' className='order-card__main' onPress={() => props.onOpenDetail(props.order)}>
+          <View className='order-card__route'>
+            <View className='order-card__party'>
+              <Text className='order-card__city'>{props.order.senderCity || '--'}</Text>
+              <Text className='order-card__name'>{props.order.senderName || '--'}</Text>
             </View>
-            <Text className={`order-card__status-text order-card__status-text--${tone}`}>{props.order.orderClassName}</Text>
+
+            <View className='order-card__status'>
+              <View className='order-card__status-line'>
+                <View className='order-card__status-dot' />
+                <View className='order-card__status-dot' />
+                <View className='order-card__status-dot' />
+                <AppIcon color={APP_STYLE_COLORS.brand.default} name='chevronRight' size={34} strokeWidth={2.4} />
+                <View className='order-card__status-dot' />
+                <View className='order-card__status-dot' />
+                <View className='order-card__status-dot' />
+              </View>
+              <Text className={`order-card__status-text order-card__status-text--${tone}`}>{props.order.orderClassName}</Text>
+            </View>
+
+            <View className='order-card__party order-card__party--right'>
+              <Text className='order-card__city'>{props.order.consigneeCity || '--'}</Text>
+              <Text className='order-card__name'>{props.order.consigneeName || '--'}</Text>
+            </View>
           </View>
+        </AppPressable>
 
-          <View className='order-card__party order-card__party--right'>
-            <Text className='order-card__city'>{props.order.consigneeCity || '--'}</Text>
-            <Text className='order-card__name'>{props.order.consigneeName || '--'}</Text>
+        {actions.length > 0 && (
+          <View className='order-card__actions'>
+            {actions.map(action => (
+              <AppPressable compact key={action.key} accessibilityLabel={action.label} className='order-card__action' hitSlop={8} onPress={action.onPress}>
+                <Text className='order-card__action-text'>{action.label}</Text>
+              </AppPressable>
+            ))}
           </View>
-        </View>
-      </AppPressable>
+        )}
 
-      {actions.length > 0 && (
-        <View className={actions.length >= 4 ? 'order-card__actions order-card__actions--wide' : 'order-card__actions'}>
-          {actions.map(action => (
-            <AppPressable key={action.key} accessibilityLabel={action.label} className='order-card__action' onPress={action.onPress}>
-              <Text className='order-card__action-text'>{action.label}</Text>
-            </AppPressable>
-          ))}
+        <View className={`order-card__bottom order-card__bottom--${tone}`}>
+          {tone === 'brand' && (
+            <View className='order-card__bottom-gradient'>
+              <Svg width='100%' height='100%'>
+                <Defs>
+                  <LinearGradient id={WAIT_TIME_GRADIENT_ID} x1='0' x2='0' y1='0' y2='1'>
+                    <Stop offset='0' stopColor={APP_STYLE_COLORS.order.waitGradientStart} />
+                    <Stop offset='1' stopColor={APP_STYLE_COLORS.order.waitBackground} />
+                  </LinearGradient>
+                </Defs>
+                <Rect width='100%' height='100%' fill={`url(#${WAIT_TIME_GRADIENT_ID})`} />
+              </Svg>
+            </View>
+          )}
+          <Text className={`order-card__time order-card__time--${tone}`}>{getOrderListTimeText(props.order)}</Text>
+          {props.order.orderPrice > 0 && <Text className='order-card__price'>¥{props.order.orderPrice}</Text>}
         </View>
-      )}
-
-      <View className={`order-card__bottom order-card__bottom--${tone}`}>
-        <Text className={`order-card__time order-card__time--${tone}`}>{getOrderListTimeText(props.order)}</Text>
-        {props.order.orderPrice > 0 && <Text className='order-card__price'>¥{props.order.orderPrice}</Text>}
       </View>
-    </View>
+    </AppElevatedView>
   )
 }
 

@@ -133,29 +133,31 @@ export function OrderRoleTabs(props: {
     <View className='order-tabs'>
       {ORDER_TABS.map(tab => {
         const active = tab.value === props.role
-        const label = active && props.activeCount > 0 ? `${tab.label} ${props.activeCount}` : tab.label
 
         return (
           <AppPressable
-            flex
+            compact
             accessibilityLabel={tab.label}
             className={active ? 'order-tab order-tab--active' : 'order-tab'}
             key={tab.value}
             onPress={() => props.onChange(tab.value)}
           >
-            <Text className={active ? 'order-tab__text order-tab__text--active' : 'order-tab__text'}>{label}</Text>
+            <View className='order-tab__label'>
+              <Text className={active ? 'order-tab__text order-tab__text--active' : 'order-tab__text'}>{tab.label}</Text>
+              {active && props.activeCount > 0 && <Text className='order-tab__count'>{props.activeCount}</Text>}
+            </View>
             {active && <View className='order-tab__indicator' />}
           </AppPressable>
         )
       })}
-      <AppPressable flex accessibilityLabel='待支付' className='order-tab' onPress={props.onOpenPayment}>
+      <AppPressable compact accessibilityLabel='待支付' className='order-tab' onPress={props.onOpenPayment}>
         <Text className='order-tab__text'>待支付</Text>
       </AppPressable>
-      <AppPressable flex accessibilityLabel='关注运单' className='order-tab' onPress={props.onOpenSubscriptions}>
+      <AppPressable compact accessibilityLabel='关注运单' className='order-tab' onPress={props.onOpenSubscriptions}>
         <Text className='order-tab__text'>关注</Text>
       </AppPressable>
-      <AppPressable accessibilityLabel='分享订单列表' className='order-tabs__share' onPress={props.onShare}>
-        <AppIcon color={APP_STYLE_COLORS.text.heading} name='redo' size={44} />
+      <AppPressable compact accessibilityLabel='分享订单列表' className='order-tabs__share' onPress={props.onShare}>
+        <AppIcon color={APP_STYLE_COLORS.text.ink} name='redo' size={52} strokeWidth={2.2} />
       </AppPressable>
     </View>
   )
@@ -185,7 +187,7 @@ export function OrderSearchBar(props: {
       </View>
       <AppPressable accessibilityLabel='筛选订单' className='order-search__filter' onPress={props.onToggleFilter}>
         <Text className='order-search__filter-text'>筛选</Text>
-        <AppIcon color={props.filterVisible ? APP_STYLE_COLORS.brand.default : APP_STYLE_COLORS.text.body} name='filter' size={26} />
+        <AppIcon color={props.filterVisible ? APP_STYLE_COLORS.brand.default : APP_STYLE_COLORS.text.body} name='funnel' size={26} />
       </AppPressable>
     </View>
   )

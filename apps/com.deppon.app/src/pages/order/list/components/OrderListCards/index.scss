@@ -5,12 +5,9 @@
 }
 
 .order-card {
-  margin: 0 $dp-page-horizontal-padding $dp-space-24;
   overflow: hidden;
   background: $dp-color-bg-card;
-  border-color: $dp-color-border-light;
   border-radius: $dp-radius-32;
-  border-width: $dp-border-width-hairline;
 }
 
 .order-card__top {
@@ -18,7 +15,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: $dp-space-20 $dp-space-24 0;
+  padding: $dp-space-28 $dp-space-32 0;
 }
 
 .order-card__number-row {
@@ -30,8 +27,8 @@
 }
 
 .order-card__number {
-  color: $dp-color-text-placeholder;
-  font-size: $dp-font-size-caption;
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-body;
 }
 
 .order-card__copy {
@@ -45,7 +42,7 @@
 
 .order-card__copy-text {
   color: $dp-color-brand;
-  font-size: $dp-font-size-caption;
+  font-size: $dp-font-size-fine;
 }
 
 .order-card__tag {
@@ -60,8 +57,8 @@
 }
 
 .order-card__tag-text {
-  color: $dp-color-text-placeholder-soft;
-  font-size: $dp-font-size-fine;
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-legal;
 }
 
 .order-card__main {
@@ -73,7 +70,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: $dp-space-20 $dp-space-24 $dp-space-18;
+  padding: $dp-space-32 $dp-space-32 $dp-space-36;
 }
 
 .order-card__party {
@@ -88,15 +85,15 @@
 }
 
 .order-card__city {
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-page-title;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-display-large;
   font-weight: $dp-font-weight-bold;
 }
 
 .order-card__name {
-  margin-top: $dp-space-6;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-body-large;
+  margin-top: $dp-space-4;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-label-large;
 }
 
 .order-card__status {
@@ -106,6 +103,7 @@
   align-items: center;
   justify-content: center;
   min-width: 0;
+  padding-bottom: $dp-space-6;
 }
 
 .order-card__status-line {
@@ -117,16 +115,16 @@
 }
 
 .order-card__status-dot {
-  width: $dp-space-8;
-  height: $dp-space-8;
+  width: $dp-space-10;
+  height: $dp-space-10;
   margin: 0 $dp-space-2;
   background: $dp-color-brand-border-soft;
   border-radius: $dp-radius-pill;
 }
 
 .order-card__status-text {
-  margin-top: $dp-space-6;
-  font-size: $dp-font-size-caption;
+  margin-top: $dp-space-12;
+  font-size: $dp-font-size-body;
   font-weight: $dp-font-weight-bold;
 }
 

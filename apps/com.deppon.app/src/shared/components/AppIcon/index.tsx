@@ -17,6 +17,7 @@ import ContactRound from 'lucide-react-native/dist/esm/icons/contact-round.js'
 import Copy from 'lucide-react-native/dist/esm/icons/copy.js'
 import CreditCard from 'lucide-react-native/dist/esm/icons/credit-card.js'
 import FileCheck2 from 'lucide-react-native/dist/esm/icons/file-check-2.js'
+import Funnel from 'lucide-react-native/dist/esm/icons/filter.js'
 import Headphones from 'lucide-react-native/dist/esm/icons/headphones.js'
 import House from 'lucide-react-native/dist/esm/icons/house.js'
 import Info from 'lucide-react-native/dist/esm/icons/info.js'
@@ -88,6 +89,7 @@ const APP_ICONS = {
   info: Info,
   key: KeyRound,
   filter: ListFilter,
+  funnel: Funnel,
   mapPin: MapPin,
   mapPinned: MapPinned,
   mailbox: Mailbox,

@@ -62,6 +62,8 @@ $dp-color-warning-surface: #ffeee3;
 $dp-color-warning-foreground: #ec8235;
 $dp-color-order-wait-background: #ffffe5;
 $dp-color-order-wait-text: #8a8455;
+$dp-color-order-wait-text-soft: #a39465;
+$dp-color-order-header-gradient-start: #cdeaff;
 
 $dp-color-danger: #f04438;
 $dp-color-danger-accent: #f0484e;
@@ -160,6 +162,7 @@ $dp-font-size-heading: 36px;
 $dp-font-size-heading-large: 38px;
 $dp-font-size-display-small: 40px;
 $dp-font-size-page-title: 42px;
+$dp-font-size-display-large: 48px;
 $dp-font-size-display: 44px;
 $dp-font-size-hero: 54px;
 $dp-font-size-hero-large: 56px;
@@ -244,6 +247,7 @@ $dp-space-36: 36px;
 $dp-space-40: 40px;
 $dp-space-48: 48px;
 $dp-space-56: 56px;
+$dp-space-60: 60px;
 /* 地址编辑页的识别按钮、聚焦输入区及表单行尺寸。 */
 $dp-space-62: 62px;
 $dp-space-90: 90px;

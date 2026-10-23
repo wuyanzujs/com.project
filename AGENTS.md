@@ -321,6 +321,33 @@
 49. 验证：`pnpm verify:app` exit 0（tsc / eslint / stylelint / 24 文件 295 vitest 用例 / 365 个 cjs 用例 /
     barrel / 模块体积 / 路由 / 平台契约），未执行 RN bundle、Gradle 或 Xcode。
 
+### 2026-10-22 订单列表像素级对齐生产 App
+
+50. 基准确认：设备上同时装有生产包 `com.deppon.dpapp`，直接抓生产端 PNG 与当前 debug 包逐像素对比。
+    量测口径统一为 1440 宽截图（1 设计 px = 1.92 物理 px），对比卡片起止行、文本 bbox、胶囊矩形、
+    时间条渐变与阴影灰阶；最终 tab / 单号 / 城市 / 状态 / 胶囊 / 时间条 / 卡片间距均在 1–3px 内。
+51. 头部渐变：订单列表改为 `safeArea='none'`，由页面头部自己补 `insets.top`，并用 `react-native-svg`
+    铺全宽渐变（`#cdeaff → #f4f7fb`，覆盖状态栏到搜索区底部），替代原来的纯色 `#eef6ff`。
+    搜索框、tab、分享入口改为透明背景，渐变从屏幕 y=0 连续过渡；生产端 y=20/300/480 的采样值为
+    (205,234,255)/(231,243,253)/(242,247,252)，当前实现误差 ≤2 个灰阶。
+52. tab 与搜索区：tab 改为固定 142 设计 px 宽、计数单独 `Text`（30px regular）、指示条 64×8、
+    分享图标 52；标题色统一 `text-ink(#111)`；筛选图标从 `list-filter` 换成漏斗，`AppIcon` 新增
+    `funnel` 映射；搜索框左内边距改为 24、图标与文字间距 20、占位字号 28。
+    tab 文字、计数、指示条、分享图标、搜索占位与生产端 bbox 偏差 ≤4px。
+53. `AppPressable` 新增 `compact` + `hitSlop`：compact 去掉视觉盒子的 88 设计 px 最小宽高，
+    原生 overlay 同步取消最小尺寸，热区由 hitSlop 补（胶囊 8dp、单号/复制 10dp）。此前 44dp 最小高度
+    把操作胶囊撑到 170px，是卡片比生产高 35px 的主因；现在胶囊 115px，与生产一致且不换行。
+54. 卡片重排：去掉描边，改用 `AppElevatedView` 的三层低透明度圆角层模拟软阴影（spread 18/10/4，
+    `overlay.cardShadow*` token；RN 0.73 的 `elevation` 在 FlatList 里只渲染硬边，已实测淘汰）。
+    内边距 28/32、城市 48px、姓名 28px 深色、单号 24px `text-subdued`、复制 20px、标签 21px；
+    操作区 `padding-bottom 16`、胶囊高 60 / 左右 26 / min-width 142 / 间距 8；
+    时间条改为整宽 72 设计 px 的 `#ffffff → #ffffe5` 竖向渐变（SVG），文字 24px `#a39465`。
+    新增 token：`$dp-font-size-display-large(48)`、`$dp-space-60`、`$dp-color-order-wait-text-soft`、
+    `$dp-color-order-header-gradient-start`，并在 `nativeTokens.ts` 同步登记。
+55. 验证：`pnpm verify:app` exit 0（tsc / eslint / stylelint / style-governance 间距债务 616→614 /
+    24 文件 295 vitest 用例 / 365 个 cjs 用例 / barrel / 模块体积 / 路由 / 平台契约 / 体积门禁）；
+    JS 由 Metro 热更新验证，未执行 RN bundle、Gradle 或 Xcode。
+
 ## 五、执行顺序
 
 1. 新领域禁止再用运行时 `export *`（门禁已是 0 基线）；新增服务时照 `expand-service-barrels.mjs` 生成的显式风格写。
