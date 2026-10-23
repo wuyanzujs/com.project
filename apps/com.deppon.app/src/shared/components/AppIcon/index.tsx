@@ -12,6 +12,7 @@ import ChevronDown from 'lucide-react-native/dist/esm/icons/chevron-down.js'
 import ChevronLeft from 'lucide-react-native/dist/esm/icons/chevron-left.js'
 import ChevronRight from 'lucide-react-native/dist/esm/icons/chevron-right.js'
 import ChevronUp from 'lucide-react-native/dist/esm/icons/chevron-up.js'
+import CirclePause from 'lucide-react-native/dist/esm/icons/circle-pause.js'
 import Clock3 from 'lucide-react-native/dist/esm/icons/clock-3.js'
 import ContactRound from 'lucide-react-native/dist/esm/icons/contact-round.js'
 import Copy from 'lucide-react-native/dist/esm/icons/copy.js'
@@ -94,6 +95,7 @@ const APP_ICONS = {
   mapPinned: MapPinned,
   mailbox: Mailbox,
   microphone: Mic,
+  voiceInput: CirclePause,
   minus: Minus,
   package: Package,
   packagePlus: PackagePlus,

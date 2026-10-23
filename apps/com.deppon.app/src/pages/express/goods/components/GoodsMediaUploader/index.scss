@@ -3,12 +3,11 @@
 .express-goods-media {
   align-items: center;
   justify-content: center;
-  width: 184px;
-  height: 184px;
-  /* 与左侧「给快递员捎话」输入框的间距由使用方一侧负责，保持组件自身无外边距。 */
+  width: 172px;
+  height: 172px;
   margin-left: $dp-space-24;
-  background: $dp-color-bg-subtle;
-  border-color: $dp-color-border;
+  background: $dp-color-bg-card;
+  border-color: $dp-color-border-default;
   border-radius: $dp-radius-16;
   border-style: dashed;
   border-width: 2px;
@@ -19,7 +18,7 @@
 }
 .express-goods-media__text {
   margin-top: $dp-space-8;
-  color: $dp-color-text-secondary;
-  font-size: $dp-font-size-caption;
-  line-height: $dp-line-height-32;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-28;
 }

@@ -1,0 +1,66 @@
+@use '@/styles/_tokens.scss' as *;
+
+.express-goods-chips {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: $dp-space-12;
+}
+.express-goods-chip {
+  align-items: center;
+  justify-content: center;
+  min-height: $dp-control-height-compact;
+  padding: $dp-space-0 $dp-space-20;
+  margin: $dp-space-0 $dp-space-12 $dp-space-12 $dp-space-0;
+  background: $dp-color-bg-neutral-soft;
+  border-radius: $dp-radius-pill;
+}
+.express-goods-chip__text {
+  color: $dp-color-text-neutral;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}
+/* 热门寄件：生产端是四列等宽栅格，标签高 60、列/行间距均为 16。 */
+.express-goods-chips--grid {
+  flex-direction: column;
+}
+.express-goods-chips-row {
+  display: flex;
+  flex-direction: row;
+}
+.express-goods-chips-row--spaced {
+  margin-bottom: $dp-space-16;
+}
+.express-goods-chip--grid {
+  flex: 1;
+  height: 60px;
+  min-height: 0;
+  padding: $dp-space-0;
+  margin: $dp-space-0;
+}
+.express-goods-chip--grid-gap {
+  margin-right: $dp-space-16;
+}
+/* 给快递员捎话的快捷留言：内容宽度药丸，高 60、横向间距 22、纵向 16。 */
+.express-goods-quick-tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: $dp-space-22;
+  column-gap: $dp-space-22;
+  row-gap: $dp-space-16;
+}
+.express-goods-quick-tag {
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  padding: $dp-space-0 $dp-space-12;
+  margin: $dp-space-0;
+  background: $dp-color-bg-neutral-soft;
+  border-radius: $dp-radius-pill;
+}
+.express-goods-quick-tag__text {
+  color: $dp-color-text-neutral;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-caption;
+}

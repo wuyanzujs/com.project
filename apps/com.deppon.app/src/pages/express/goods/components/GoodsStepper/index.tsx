@@ -1,6 +1,8 @@
 import { Input, Text, View } from '@tarojs/components'
 
 import { AppPressable } from '@/shared/components'
+import { AppIcon } from '@/shared/components/AppIcon'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import './index.scss'
 
@@ -38,12 +40,14 @@ export function GoodsStepper({ max, min, onChange, step, unit, value }: GoodsSte
   return (
     <View className='express-goods-stepper'>
       <AppPressable
+        compact
         accessibilityLabel='减少'
         className={disabledMinus ? 'express-goods-stepper__button express-goods-stepper__button--disabled' : 'express-goods-stepper__button'}
         disabled={disabledMinus}
+        hitSlop={8}
         onPress={() => stepTo(-1)}
       >
-        <Text className='express-goods-stepper__symbol'>−</Text>
+        <AppIcon color={APP_STYLE_COLORS.text.ink} name='minus' size={33} strokeWidth={1.5} />
       </AppPressable>
       <View className='express-goods-stepper__field'>
         <Input
@@ -60,12 +64,14 @@ export function GoodsStepper({ max, min, onChange, step, unit, value }: GoodsSte
         <Text className='express-goods-stepper__unit'>{unit}</Text>
       </View>
       <AppPressable
+        compact
         accessibilityLabel='增加'
         className={disabledPlus ? 'express-goods-stepper__button express-goods-stepper__button--disabled' : 'express-goods-stepper__button'}
         disabled={disabledPlus}
+        hitSlop={8}
         onPress={() => stepTo(1)}
       >
-        <Text className='express-goods-stepper__symbol'>＋</Text>
+        <AppIcon color={APP_STYLE_COLORS.text.ink} name='plus' size={33} strokeWidth={1.5} />
       </AppPressable>
     </View>
   )

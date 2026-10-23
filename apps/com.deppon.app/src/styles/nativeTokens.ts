@@ -41,6 +41,8 @@ export const APP_STYLE_COLORS = {
     pageAlt: '#f4f6f8',
     pageCool: '#f4f7fb',
     subtle: '#f8fafc',
+    neutral: '#f5f5f5',
+    neutralSoft: '#f7f7f7',
     card: '#ffffff',
     muted: '#eef2f6',
     disabled: '#f2f4f7',

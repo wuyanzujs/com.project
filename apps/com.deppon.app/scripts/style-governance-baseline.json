@@ -454,7 +454,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 121
+        "lines": 131
       },
       "src/pages/express/components/ExpressCouponCard/index.scss": {
         "rawColors": 0,
@@ -736,6 +736,16 @@
         "usesTokens": true,
         "lines": 41
       },
+      "src/pages/express/goods/chips.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 43
+      },
       "src/pages/express/goods/components/GoodsMediaUploader/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
@@ -744,7 +754,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 25
+        "lines": 19
       },
       "src/pages/express/goods/components/GoodsStepper/index.scss": {
         "rawColors": 0,
@@ -764,7 +774,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 284
+        "lines": 279
       },
       "src/pages/express/goods/index.scss": {
         "rawColors": 0,

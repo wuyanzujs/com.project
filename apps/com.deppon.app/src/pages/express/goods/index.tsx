@@ -22,6 +22,7 @@ import { useGoodsNameSuggestions } from './hooks/useGoodsNameSuggestions'
 
 import './index.scss'
 import './content.scss'
+import './chips.scss'
 
 const WEIGHT_MIN = EXPRESS_GOODS_LIMITS.minWeight
 const WEIGHT_MAX = EXPRESS_GOODS_LIMITS.maxWeight
@@ -30,6 +31,22 @@ const COUNT_MIN = EXPRESS_GOODS_LIMITS.minCount
 const COUNT_MAX = EXPRESS_GOODS_LIMITS.maxCount
 // 「给快递员捎话」计数为 0/100。
 const REMARK_MAX_LENGTH = 100
+// 输入框占位文字沿用生产端的浅灰。
+const PLACEHOLDER_STYLE = `color: ${APP_STYLE_COLORS.text.placeholderSoft}`
+// 热门寄件固定四列，标签等宽排布。
+const HOT_GOODS_COLUMNS = 4
+// 「给快递员捎话」的快捷留言，与生产端一致。
+const REMARK_QUICK_TAGS = ['提前电联', '带纸箱', '带文件封', '别按门铃', '带缓冲物', '尽快上门', '贵重物品', '体积大', '当面报价', '需打木架']
+
+function chunkGoodsRows<T>(items: T[]) {
+  const rows: T[][] = []
+
+  for (let index = 0; index < items.length; index += HOT_GOODS_COLUMNS) {
+    rows.push(items.slice(index, index + HOT_GOODS_COLUMNS))
+  }
+
+  return rows
+}
 
 const ExpressGoodsPage = () => {
   const initialDraft = useMemo(() => expressDraftStorage.restore(), [])
@@ -44,6 +61,7 @@ const ExpressGoodsPage = () => {
   const [volumeOn, setVolumeOn] = useState(initialGoods.volume > 0)
   const [volumeText, setVolumeText] = useState(initialGoods.volume > 0 ? String(initialGoods.volume) : '')
   const hotGoods = useMemo(() => goodsQueryService.getHotGoods(), [])
+  const hotGoodsRows = useMemo(() => chunkGoodsRows(hotGoods), [hotGoods])
   const nameSuggestion = useGoodsNameSuggestions()
   const confirming = useRef(false)
 
@@ -69,6 +87,17 @@ const ExpressGoodsPage = () => {
   // 输入框右侧为图片识别入口，同样先给统一降级提示。
   const handleImageInput = () => {
     Taro.showToast({ title: '图片识别待接入，请先手动填写', icon: 'none' })
+  }
+
+  // 快捷留言写进捎话内容；已经有该标签时不重复追加。
+  const handleQuickTag = (tag: string) => {
+    if (remark.includes(tag)) {
+      return
+    }
+
+    const next = remark.trim() ? `${remark.trim()}，${tag}` : tag
+
+    setRemark(next.slice(0, REMARK_MAX_LENGTH))
   }
 
   const handleShare = () => {
@@ -123,7 +152,7 @@ const ExpressGoodsPage = () => {
             className='express-goods-footer__button express-goods-footer__button--voice'
             onPress={handleVoiceInput}
           >
-            <AppIcon color={APP_STYLE_COLORS.text.ink} name='microphone' size={40} />
+            <AppIcon color={APP_STYLE_COLORS.text.ink} name='voiceInput' size={62} />
             <Text className='express-goods-footer__text express-goods-footer__text--voice'>语音填写</Text>
           </AppPressable>
           <AppPressable
@@ -147,7 +176,12 @@ const ExpressGoodsPage = () => {
             <Text className='express-goods-card__title'>物品名称</Text>
             <Text className='express-goods-card__hint'>必填</Text>
             <AppPressable accessibilityLabel='违禁品查询' className='express-goods-check' onPress={() => navigateToAppRoute(APP_ROUTES.goodsQuery)}>
-              <Text className='express-goods-check__text'>违禁品查询 ›</Text>
+              <View className='express-goods-check__content'>
+                <Text className='express-goods-check__text'>违禁品查询</Text>
+                <View className='express-goods-link__arrow'>
+                  <AppIcon color={APP_STYLE_COLORS.text.faint} name='chevronRight' size={32} strokeWidth={1.8} />
+                </View>
+              </View>
             </AppPressable>
           </View>
           {nameSelected ? (
@@ -168,10 +202,11 @@ const ExpressGoodsPage = () => {
           ) : (
             <>
               <View className='express-goods-input-row'>
-                <AppIcon color={APP_STYLE_COLORS.text.placeholder} name='search' size={34} />
+                <AppIcon color={APP_STYLE_COLORS.text.placeholder} name='search' size={48} />
                 <Input
                   className='express-goods-input-row__field'
                   placeholder='请输入物品名称'
+                  placeholderStyle={PLACEHOLDER_STYLE}
                   value={name}
                   onBlur={event => setName(event.detail.value)}
                   onInput={event => {
@@ -179,7 +214,7 @@ const ExpressGoodsPage = () => {
                     nameSuggestion.handleNameInput(event.detail.value)
                   }}
                 />
-                <AppPressable accessibilityLabel='图片识别物品名称' className='express-goods-input-row__camera' onPress={handleImageInput}>
+                <AppPressable compact accessibilityLabel='图片识别物品名称' className='express-goods-input-row__camera' onPress={handleImageInput}>
                   <AppIcon color={APP_STYLE_COLORS.text.faint} name='camera' size={38} />
                 </AppPressable>
               </View>
@@ -221,16 +256,23 @@ const ExpressGoodsPage = () => {
                 </>
               ) : null}
               <Text className='express-goods-subtitle'>热门寄件</Text>
-              <View className='express-goods-chips'>
-                {hotGoods.map(item => (
-                  <AppPressable
-                    accessibilityLabel={`热门品名${item.name}`}
-                    className='express-goods-chip'
-                    key={item.name}
-                    onPress={() => handleSelectName(item.name)}
+              <View className='express-goods-chips express-goods-chips--grid'>
+                {hotGoodsRows.map((row, rowIndex) => (
+                  <View
+                    className={rowIndex < hotGoodsRows.length - 1 ? 'express-goods-chips-row express-goods-chips-row--spaced' : 'express-goods-chips-row'}
+                    key={row.map(item => item.name).join('-')}
                   >
-                    <Text className='express-goods-chip__text'>{item.name}</Text>
-                  </AppPressable>
+                    {row.map((item, index) => (
+                      <AppPressable
+                        accessibilityLabel={`热门品名${item.name}`}
+                        className={`express-goods-chip express-goods-chip--grid${index < row.length - 1 ? ' express-goods-chip--grid-gap' : ''}`}
+                        key={item.name}
+                        onPress={() => handleSelectName(item.name)}
+                      >
+                        <Text className='express-goods-chip__text'>{item.name}</Text>
+                      </AppPressable>
+                    ))}
+                  </View>
                 ))}
               </View>
             </>
@@ -284,7 +326,12 @@ const ExpressGoodsPage = () => {
         <View className='express-goods-card'>
           <View className='express-goods-card__head'>
             <Text className='express-goods-card__title'>给快递员捎话</Text>
-            <Text className='express-goods-card__link'>纸箱、缓冲物等需额外收费 ›</Text>
+            <View className='express-goods-card__link-row'>
+              <Text className='express-goods-card__link'>纸箱、缓冲物等需额外收费</Text>
+              <View className='express-goods-link__arrow'>
+                <AppIcon color={APP_STYLE_COLORS.text.faint} name='chevronRight' size={32} strokeWidth={1.8} />
+              </View>
+            </View>
           </View>
           <View className='express-goods-media-row'>
             <View className='express-goods-remark'>
@@ -292,6 +339,7 @@ const ExpressGoodsPage = () => {
                 className='express-goods-remark__input'
                 maxlength={REMARK_MAX_LENGTH}
                 placeholder='其他需求可以留言告诉快递小哥哦~'
+                placeholderStyle={PLACEHOLDER_STYLE}
                 value={remark}
                 onInput={event => setRemark(event.detail.value)}
               />
@@ -299,7 +347,22 @@ const ExpressGoodsPage = () => {
             </View>
             <GoodsMediaUploader />
           </View>
+          <View className='express-goods-quick-tags'>
+            {REMARK_QUICK_TAGS.map(tag => (
+              <AppPressable
+                compact
+                accessibilityLabel={`快捷留言${tag}`}
+                className='express-goods-quick-tag'
+                hitSlop={8}
+                key={tag}
+                onPress={() => handleQuickTag(tag)}
+              >
+                <Text className='express-goods-quick-tag__text'>{tag}</Text>
+              </AppPressable>
+            ))}
+          </View>
         </View>
+        <View className='express-goods-bottom-space' />
       </ScrollView>
     </AppPage>
   )

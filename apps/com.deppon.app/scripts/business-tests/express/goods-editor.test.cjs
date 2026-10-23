@@ -83,7 +83,8 @@ test('goods page keeps the input while typing multiple characters and returns th
       useGoodsNameSuggestions: () => ({ suggestions: [], message: '', loading: false, handleNameInput: suggest, clearSuggestions() {} })
     },
     './index.scss': {},
-    './content.scss': {}
+    './content.scss': {},
+    './chips.scss': {}
   }).default
   const render = () => harness.render(page)
   const input = () => findElement(render(), element => element.type === 'Input' && element.props.placeholder === '请输入物品名称')
