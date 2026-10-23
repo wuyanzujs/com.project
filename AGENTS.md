@@ -373,6 +373,19 @@
     + `adb push` / `pm install -r`；空表单与仅寄件人两档均确认实名条、取件切换、期望上门时间、优惠券、保价按门控显隐，
     收寄件人两行图标 x 完全对齐。`pnpm verify:app` exit 0；bundle raw +75.9 KiB / gzip +11.2 KiB，仍在 150 KiB 容差内。
 
+### 2026-10-23 导航栏与状态栏连续
+
+63. 差异定位：寄快递页真机截图顶部 y=0–123 为 `#f5f7fb`（页面底色），y=124 起才是白色导航栏，形成 124px 灰带；
+    生产端同一区域 y=0–193 为纯白，状态栏与导航栏连续。根因是 `AppPage` 用 `surface` 颜色给整个
+    `AppSafeAreaView` 上色，白色头部只能从状态栏下方开始。
+64. 修复：`AppPage` 改用 `useSafeAreaInsets` 接管安全区——有 `header` 时把顶部 inset 转为 `.app-page__header`
+    的 `paddingTop`（白底直铺屏幕顶部），有 `footer` 时把底部 inset 转为 `.app-page__footer` 的 `paddingBottom`，
+    并从 `SafeAreaView` 的 edges 中移除对应边；无头部/底栏的页面（member、print 等）行为不变。
+65. 验证：修复后 y=0–307 全白，状态栏深色图标不受影响；与生产端 p30 相比标题中心同为 x≈719，
+    返回箭头偏差 ≤3px，首个卡片顶边 y=331 vs 生产端 343。新增 `test/unit/shared/app-page.test.ts` 3 条安全区契约；
+    `pnpm verify:app` exit 0（27 文件 328 vitest / 371 cjs / 体积门禁通过）。
+    未处理的既有差异：分享入口图标/文字间距与字号、导航栏比生产端短 4px，本轮不动。
+
 ## 五、执行顺序
 
 1. 新领域禁止再用运行时 `export *`（门禁已是 0 基线）；新增服务时照 `expand-service-barrels.mjs` 生成的显式风格写。

@@ -3,7 +3,7 @@ import { useDidHide, useDidShow } from '@tarojs/taro'
 
 import { type PropsWithChildren, type ReactNode, useState } from 'react'
 
-import { type Edge } from 'react-native-safe-area-context'
+import { type Edge, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { AppKeyboardAvoidingView, AppSafeAreaView, AppStatusBar } from '@/shared/native'
 import { APP_NATIVE_TOKENS, APP_STYLE_COLORS } from '@/styles/nativeTokens'
@@ -62,12 +62,26 @@ export function AppPage({
   statusBar = 'none',
   surface = 'page'
 }: AppPageProps) {
+  const insets = useSafeAreaInsets()
+  const edges = SAFE_AREA_EDGES[safeArea]
+  const headerInset = header && edges.includes('top') ? insets.top : 0
+  const footerInset = footer && edges.includes('bottom') ? insets.bottom : 0
+  const safeAreaEdges = edges.filter(edge => !(edge === 'top' && headerInset > 0) && !(edge === 'bottom' && footerInset > 0))
+
   const content = (
-    <AppSafeAreaView backgroundColor={SURFACE_COLORS[surface]} edges={[...SAFE_AREA_EDGES[safeArea]]}>
+    <AppSafeAreaView backgroundColor={SURFACE_COLORS[surface]} edges={[...safeAreaEdges]}>
       <View className={['app-page', `app-page--${surface}`, className].filter(Boolean).join(' ')}>
-        {header ? <View className='app-page__header'>{header}</View> : null}
+        {header ? (
+          <View className='app-page__header' style={headerInset > 0 ? { paddingTop: headerInset } : undefined}>
+            {header}
+          </View>
+        ) : null}
         <View className='app-page__content'>{children}</View>
-        {footer ? <View className='app-page__footer'>{footer}</View> : null}
+        {footer ? (
+          <View className='app-page__footer' style={footerInset > 0 ? { paddingBottom: footerInset } : undefined}>
+            {footer}
+          </View>
+        ) : null}
       </View>
     </AppSafeAreaView>
   )
