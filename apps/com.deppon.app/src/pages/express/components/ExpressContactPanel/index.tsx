@@ -19,7 +19,7 @@ interface ExpressContactCardProps {
   markType: 'sender' | 'consignee'
   /** 空态灰底：寄件人未填，或收件人未填且寄件人已填；灰底是卡片内缩的圆角块。 */
   background: boolean
-  /** 收件人卡与寄件人卡之间保持生产端的 8dp 间距。 */
+  /** 收件人卡与寄件人卡之间保持 8dp 间距。 */
   spaced?: boolean
   emptyText: string
   target: ExpressContactTarget

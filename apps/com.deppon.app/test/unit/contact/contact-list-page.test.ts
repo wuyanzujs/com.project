@@ -121,7 +121,18 @@ vi.mock('@/shared/platform', () => ({
 }))
 
 vi.mock('@/styles/nativeTokens', () => ({
-  APP_STYLE_COLORS: { text: { subdued: '#999', neutral: '#666', inverse: '#fff' } }
+  APP_STYLE_COLORS: {
+    brand: { gradientEnd: '#4b7cff', gradientStart: '#1b58ff' },
+    text: { inverse: '#fff', neutral: '#666', neutralHint: '#868686', neutralSoft: '#747474', subdued: '#999' }
+  }
+}))
+
+vi.mock('react-native-svg', () => ({
+  Defs: 'Defs',
+  LinearGradient: 'LinearGradient',
+  Rect: 'Rect',
+  Stop: 'Stop',
+  Svg: 'Svg'
 }))
 
 vi.mock('@/pages/contact/components/ContactNavBar', () => ({

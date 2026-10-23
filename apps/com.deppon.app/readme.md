@@ -23,6 +23,7 @@ pnpm dev:app
 pnpm build:app
 pnpm verify:app
 pnpm check:app-boundaries
+pnpm check:app-comments
 pnpm check:app-routes
 pnpm check:app-module-size
 pnpm check:app-barrels
@@ -39,6 +40,7 @@ pnpm check:app-native-env:all
 pnpm --filter com.deppon.app run typecheck
 pnpm --filter com.deppon.app run lint
 pnpm --filter com.deppon.app run check:rn-boundaries
+pnpm --filter com.deppon.app run check:comments
 pnpm --filter com.deppon.app run check:routes
 pnpm --filter com.deppon.app run check:module-size
 pnpm --filter com.deppon.app run check:barrels
@@ -203,6 +205,13 @@ src/
 - WebView 承接统一走 `shared/webview/appWeb.ts` 的 `createAppWebUrl`，业务代码不要直接拼 `APP_ROUTES.web` 或散落 H5 URL。
 - 新增 H5 承接入口必须先登记到 `shared/webview/appWeb.ts` 的 `APP_WEB_TARGETS`，页面和 service 使用 `AppWebSource` 类型引用来源，不在静态入口数据里写任意字符串。
 - 运行时域名、H5 入口、渠道码和系统码统一从 `shared/config/runtime.ts` 读取；生产值走环境变量，不在代码里写固定 token。
+
+## 代码注释规则
+
+- 注释用中文，函数和组件补极简 JSDoc：`@description` 一句话，`@param` 只写短语，不复述实现步骤。
+- 注释只写当前代码的行为、尺寸和约束，不写对照来源。不要出现「生产端」「与生产端一致」「取自生产端取色」这类外部基准词：读者无法从代码本身验证，对照结论过时后注释会变成错误约束。
+- 对照过程、量测数据和差异结论写进 `docs/parity/**`；源码注释只保留结论本身，例如「标签高 60、列/行间距均为 16」。
+- `pnpm check:app-comments` 扫描 `src`、`test`、`config`、`scripts`、`types` 下的 TS/SCSS 注释，命中外部基准词直接失败；已挂进 `verify:static`，并通过 lint-staged 在 pre-commit 阶段拦截。
 
 ## 样式规则
 

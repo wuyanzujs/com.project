@@ -1,7 +1,7 @@
 @use '@/styles/_tokens.scss' as *;
 
 .contact-list-search {
-  padding: $dp-space-16 $dp-space-24 $dp-space-12;
+  padding: $dp-space-16 $dp-space-24 $dp-space-18;
   background: $dp-color-bg-card;
 }
 
@@ -9,22 +9,22 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: $dp-control-height-medium;
+  height: 78px;
   padding: $dp-space-0 $dp-space-24;
-  background: $dp-color-bg-muted;
+  background: $dp-color-bg-neutral;
   border-radius: $dp-radius-round;
 }
 
 .contact-list-search__icon {
-  margin-right: $dp-space-12;
+  margin-right: $dp-space-16;
 }
 
 .contact-list-search__input {
   flex: 1;
-  height: $dp-control-height-medium;
+  height: 78px;
   padding: 0;
   color: $dp-color-text-heading;
-  font-size: $dp-font-size-body-large;
+  font-size: $dp-font-size-label-large;
 }
 
 .contact-list-body {
@@ -33,10 +33,10 @@
 
 /* 联系人卡：姓名+掩码手机同行加粗，灰色地址，分隔线，动作行（默认地址单选 + 复制/编辑/删除） */
 .contact-card {
-  padding: $dp-space-24 $dp-space-32 $dp-space-12;
-  margin-bottom: $dp-space-12;
+  padding: $dp-space-24 $dp-space-32 $dp-space-24;
+  margin-bottom: $dp-space-24;
   background: $dp-color-bg-card;
-  border-radius: $dp-radius-16;
+  border-radius: $dp-radius-24;
 }
 
 .contact-card__body {
@@ -51,8 +51,8 @@
 
 .contact-card__name {
   flex-shrink: 1;
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-title;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-title-large;
   font-weight: $dp-font-weight-bold;
   line-height: $dp-line-height-title;
 }
@@ -60,14 +60,16 @@
 .contact-card__phone {
   flex-shrink: 0;
   margin-left: $dp-space-4;
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-title;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-title-large;
   font-weight: $dp-font-weight-bold;
   line-height: $dp-line-height-title;
 }
 
 .contact-card__address {
   display: flex;
+  /* 卡片固定预留两行地址，单行地址的卡片高度与两行一致。 */
+  min-height: $dp-line-height-38 * 2;
   margin-top: $dp-space-8;
   color: $dp-color-text-neutral;
   font-size: $dp-font-size-label-large;
@@ -77,8 +79,8 @@
 
 .contact-card__divider {
   height: $dp-border-width-hairline;
-  margin-top: $dp-space-24;
-  background: $dp-color-border-default;
+  margin-top: $dp-space-28;
+  background: $dp-color-border-divider;
 }
 
 .contact-card__footer {
@@ -86,6 +88,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  padding-top: $dp-space-28;
 }
 
 .contact-card__default {
@@ -98,7 +101,7 @@
   width: $dp-space-28;
   height: $dp-space-28;
   background: $dp-color-bg-card;
-  border-color: $dp-color-border;
+  border-color: $dp-color-text-neutral-soft;
   border-width: 2px;
   border-radius: $dp-radius-circle;
 }
@@ -123,12 +126,12 @@
 
 .contact-card__action {
   align-items: center;
-  margin-left: $dp-space-24;
+  margin-left: $dp-space-36;
 }
 
 .contact-card__action-text {
-  margin-left: $dp-space-8;
-  color: $dp-color-text-neutral;
+  margin-left: $dp-space-12;
+  color: $dp-color-text-neutral-soft;
   font-size: $dp-font-size-body-large;
 }
 
@@ -167,26 +170,38 @@
 .contact-list-footer {
   flex-direction: row;
   align-items: center;
-  padding-top: $dp-space-16;
+  padding-top: $dp-space-36;
   padding-right: $dp-space-32;
+  padding-bottom: $dp-space-32;
   padding-left: $dp-space-32;
   background: $dp-color-bg-card;
 }
 
 .contact-list-footer__button {
+  /* flex 基准取 0，配合 flex-grow 严格按 1:2 分配（min-width 会参与基准计算）。 */
+  flex-basis: 0;
   align-items: center;
   justify-content: center;
-  height: $dp-control-height-default;
+  height: 92px;
+  overflow: hidden;
   border-radius: $dp-radius-round;
 }
 
+.contact-list-footer__gradient {
+  position: absolute;
+  top: $dp-space-0;
+  right: $dp-space-0;
+  bottom: $dp-space-0;
+  left: $dp-space-0;
+}
+
 .contact-list-footer__button-text {
-  font-size: $dp-font-size-title;
+  font-size: $dp-font-size-title-large;
   font-weight: $dp-font-weight-medium;
 }
 
 .contact-list-footer__button-text--ghost {
-  color: $dp-color-text-body;
+  color: $dp-color-text-supporting;
 }
 
 .contact-list-footer__button-text--primary,
@@ -197,18 +212,18 @@
 
 .contact-list-footer__button--ghost {
   flex: 1;
-  background: $dp-color-bg-muted;
+  background: $dp-color-bg-page;
 }
 
 .contact-list-footer__button--primary {
   flex: 2;
-  margin-left: $dp-space-24;
+  margin-left: $dp-space-32;
   background: $dp-color-brand;
 }
 
 .contact-list-footer__button--danger {
   flex: 2;
-  margin-left: $dp-space-24;
+  margin-left: $dp-space-32;
   background: $dp-color-danger-accent;
 }
 

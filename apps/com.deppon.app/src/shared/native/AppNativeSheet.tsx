@@ -10,7 +10,7 @@ import { AppNativePressable } from './AppNativePressable'
 
 interface AppNativeSheetProps extends PropsWithChildren {
   accessibilityLabel?: string
-  /** 遮罩颜色，默认与生产端弹层一致的 rgba(0,0,0,0.26)。 */
+  /** 遮罩颜色，默认 rgba(0,0,0,0.26)。 */
   overlayColor?: string
   /** 面板自底部上滑时长（毫秒）。 */
   duration?: number
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
 
 /**
  * @description 底部弹层基件：遮罩首帧即铺满且不参与动画，只有面板自底部上滑，
- * 与生产端「点开弹窗蒙层直接出现、面板滑入」的表现一致。
+ * 点开弹窗蒙层直接出现、面板滑入。
  */
 export function AppNativeSheet({ accessibilityLabel, children, duration = 260, onRequestClose, overlayColor, visible }: AppNativeSheetProps) {
   const { height: windowHeight } = useWindowDimensions()

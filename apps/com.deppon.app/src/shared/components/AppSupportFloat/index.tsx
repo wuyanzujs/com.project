@@ -16,7 +16,7 @@ export interface AppSupportFloatProps {
  * @description 右侧停靠的客服浮窗：贴右边缘的白色半圆胶囊，可沿右边缘上下拖动。
  */
 export function AppSupportFloat({ label = '客服中心', onPress }: AppSupportFloatProps) {
-  // 两字文案（寄件页「客服」）按生产端量测收窄为 104×100 的半圆胶囊。
+  // 两字文案（寄件页「客服」）收窄为 104×100 的半圆胶囊。
   const compact = label.length <= 2
 
   return (

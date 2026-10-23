@@ -16,7 +16,7 @@ interface AppNativeDraggableProps extends PropsWithChildren {
 
 /**
  * @description 右侧停靠浮窗的上下拖动基件：只有纵向位移超过触碰阈值才接管手势，
- * 轻点仍交给内部按钮，与生产端「客服浮窗可贴着右边缘上下滑动」一致。
+ * 轻点仍交给内部按钮；客服浮窗可贴着右边缘上下滑动。
  */
 export function AppNativeDraggable({ children, maxDown = 40, maxUp = 520, style }: AppNativeDraggableProps) {
   const translateY = useRef(new Animated.Value(0)).current

@@ -15,6 +15,9 @@ $dp-color-text-member: #7c482d;
 $dp-color-text-member-muted: #968372;
 $dp-color-text-member-strong: #262638;
 $dp-color-text-neutral: #5b5b5b;
+/* 地址簿动作行文字/图标与搜索框占位的中间灰。 */
+$dp-color-text-neutral-soft: #747474;
+$dp-color-text-neutral-hint: #868686;
 
 $dp-color-text-primary: $dp-color-text-heading;
 $dp-color-text-muted: $dp-color-text-placeholder;
@@ -102,6 +105,8 @@ $dp-color-bg-track: #e2e2e2;
 $dp-color-border: #d0d5dd;
 $dp-color-border-default: #e4e7ec;
 $dp-color-border-light: #eef2f6;
+/* 地址簿卡片的行分隔线，比通用描边更浅。 */
+$dp-color-border-divider: #ededed;
 $dp-color-bg-inverse: $dp-color-text-heading;
 $dp-color-bg-strong: $dp-color-text-body;
 $dp-color-bg-disabled-strong: $dp-color-border;

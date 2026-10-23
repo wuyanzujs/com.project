@@ -18,7 +18,7 @@ interface ExpressPriceDetailSheetProps {
 }
 
 /**
- * @description 预估费用明细弹层：与生产端一致，从页面底部上滑、蒙层不参与动画，底栏保持可见。
+ * @description 预估费用明细弹层：从页面底部上滑、蒙层不参与动画，底栏保持可见。
  */
 export function ExpressPriceDetailSheet({ couponDiscountText = '', onClose, onOpenBillingRules, view, visible }: ExpressPriceDetailSheetProps) {
   const weightValue = view.billWeightText.replace(/^计费重量\s*/, '')

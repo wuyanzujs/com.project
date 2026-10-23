@@ -20,6 +20,7 @@
     "test:app-style-governance": "pnpm --filter com.deppon.app test:style-governance",
     "lint:app:fix": "pnpm --filter com.deppon.app lint:fix",
     "check:app-boundaries": "pnpm --filter com.deppon.app check:rn-boundaries",
+    "check:app-comments": "pnpm --filter com.deppon.app check:comments",
     "check:app-styles": "pnpm --filter com.deppon.app check:styles",
     "check:app-styles:strict": "pnpm --filter com.deppon.app check:styles:strict",
     "report:app-styles": "pnpm --filter com.deppon.app check:styles:report",
@@ -69,6 +70,9 @@
     "apps/com.deppon.app/src/**/*.scss": [
       "pnpm --filter com.deppon.app exec stylelint --fix",
       "prettier --write"
+    ],
+    "apps/com.deppon.app/{src,test,config,scripts,types}/**/*.{ts,tsx,js,cjs,mjs,scss,css}": [
+      "pnpm --filter com.deppon.app run check:comments"
     ],
     "**/*.{json,md,yml,yaml}": [
       "prettier --write"

@@ -3,6 +3,8 @@ import Taro, { useDidShow, useLoad, useRouter } from '@tarojs/taro'
 
 import { useCallback, useMemo, useState } from 'react'
 
+import { Defs, LinearGradient, Rect, Stop, Svg } from 'react-native-svg'
+
 import { contactSelection, contactService, getContactFullAddress } from '@/services/contact'
 import type { Contact } from '@/services/contact'
 import { maskExpressContactMobile } from '@/services/express'
@@ -22,6 +24,8 @@ import './index.scss'
 import './content.scss'
 
 const PAGE_SIZE = 20
+
+const CTA_GRADIENT_ID = 'contactListCtaGradient'
 
 const PAGE_TITLE_BY_TARGET = {
   consignee: '选择收件人',
@@ -333,13 +337,14 @@ const ContactListPage = () => {
   }
 
   const footer = (
-    <View className='contact-list-footer' style={{ paddingBottom: 16 }}>
+    <View className='contact-list-footer'>
       {deleting ? (
         <>
-          <AppPressable contentElement='view' className='contact-list-footer__button contact-list-footer__button--ghost' onPress={exitDeleting}>
+          <AppPressable compact contentElement='view' className='contact-list-footer__button contact-list-footer__button--ghost' onPress={exitDeleting}>
             <Text className='contact-list-footer__button-text contact-list-footer__button-text--ghost'>取消</Text>
           </AppPressable>
           <AppPressable
+            compact
             contentElement='view'
             className='contact-list-footer__button contact-list-footer__button--danger'
             disabled={processingContactId === 'batch'}
@@ -350,10 +355,26 @@ const ContactListPage = () => {
         </>
       ) : (
         <>
-          <AppPressable contentElement='view' className='contact-list-footer__button contact-list-footer__button--ghost' onPress={() => setDeleting(true)}>
+          <AppPressable
+            compact
+            contentElement='view'
+            className='contact-list-footer__button contact-list-footer__button--ghost'
+            onPress={() => setDeleting(true)}
+          >
             <Text className='contact-list-footer__button-text contact-list-footer__button-text--ghost'>管理</Text>
           </AppPressable>
-          <AppPressable contentElement='view' className='contact-list-footer__button contact-list-footer__button--primary' onPress={handleCreate}>
+          <AppPressable compact contentElement='view' className='contact-list-footer__button contact-list-footer__button--primary' onPress={handleCreate}>
+            <View className='contact-list-footer__gradient'>
+              <Svg width='100%' height='100%'>
+                <Defs>
+                  <LinearGradient id={CTA_GRADIENT_ID} x1='0' x2='1' y1='0' y2='0'>
+                    <Stop offset='0' stopColor={APP_STYLE_COLORS.brand.gradientStart} />
+                    <Stop offset='1' stopColor={APP_STYLE_COLORS.brand.gradientEnd} />
+                  </LinearGradient>
+                </Defs>
+                <Rect width='100%' height='100%' fill={`url(#${CTA_GRADIENT_ID})`} />
+              </Svg>
+            </View>
             <Text className='contact-list-footer__button-text contact-list-footer__button-text--primary'>创建新地址</Text>
           </AppPressable>
         </>
@@ -374,7 +395,7 @@ const ContactListPage = () => {
         <View className='contact-list-search'>
           <View className='contact-list-search__field'>
             <View className='contact-list-search__icon'>
-              <AppIcon color={APP_STYLE_COLORS.text.subdued} name='search' size={24} strokeWidth={2.4} />
+              <AppIcon color={APP_STYLE_COLORS.text.neutralHint} name='search' size={32} strokeWidth={2.4} />
             </View>
             <Input
               className='contact-list-search__input'
@@ -382,7 +403,7 @@ const ContactListPage = () => {
               onConfirm={handleSearch}
               onInput={event => setKeyword(event.detail.value)}
               placeholder='请输入姓名/手机号/地址/公司名称'
-              placeholderTextColor={APP_STYLE_COLORS.text.subdued}
+              placeholderTextColor={APP_STYLE_COLORS.text.neutralHint}
               value={keyword}
             />
           </View>
@@ -414,7 +435,7 @@ const ContactListPage = () => {
                 <View className='contact-card__divider' />
                 <View className='contact-card__footer'>
                   {deleting ? (
-                    <AppPressable className='contact-card__default' layout='row-start' onPress={() => toggleDeletingId(contact)}>
+                    <AppPressable compact className='contact-card__default' hitSlop={10} layout='row-start' onPress={() => toggleDeletingId(contact)}>
                       <View className={selected ? 'contact-card__radio contact-card__radio--checked' : 'contact-card__radio'}>
                         {selected && <AppIcon color={APP_STYLE_COLORS.text.inverse} name='check' size={24} strokeWidth={3.2} />}
                       </View>
@@ -422,23 +443,23 @@ const ContactListPage = () => {
                     </AppPressable>
                   ) : (
                     <>
-                      <AppPressable className='contact-card__default' layout='row-start' onPress={() => handleSetDefault(contact)}>
+                      <AppPressable compact className='contact-card__default' hitSlop={10} layout='row-start' onPress={() => handleSetDefault(contact)}>
                         <View className={checked ? 'contact-card__radio contact-card__radio--checked' : 'contact-card__radio'}>
                           {checked && <AppIcon color={APP_STYLE_COLORS.text.inverse} name='check' size={24} strokeWidth={3.2} />}
                         </View>
                         <Text className='contact-card__default-label'>默认地址</Text>
                       </AppPressable>
                       <View className='contact-card__actions'>
-                        <AppPressable className='contact-card__action' layout='row-start' onPress={() => handleCopy(contact)}>
-                          <AppIcon color={APP_STYLE_COLORS.text.neutral} name='copy' size={22} />
+                        <AppPressable compact className='contact-card__action' hitSlop={10} layout='row-start' onPress={() => handleCopy(contact)}>
+                          <AppIcon color={APP_STYLE_COLORS.text.neutralSoft} name='copy' size={30} />
                           <Text className='contact-card__action-text'>复制</Text>
                         </AppPressable>
-                        <AppPressable className='contact-card__action' layout='row-start' onPress={() => handleEdit(contact)}>
-                          <AppIcon color={APP_STYLE_COLORS.text.neutral} name='edit' size={22} />
+                        <AppPressable compact className='contact-card__action' hitSlop={10} layout='row-start' onPress={() => handleEdit(contact)}>
+                          <AppIcon color={APP_STYLE_COLORS.text.neutralSoft} name='edit' size={30} />
                           <Text className='contact-card__action-text'>编辑</Text>
                         </AppPressable>
-                        <AppPressable className='contact-card__action' layout='row-start' onPress={() => handleDelete(contact)}>
-                          <AppIcon color={APP_STYLE_COLORS.text.neutral} name='trash' size={22} />
+                        <AppPressable compact className='contact-card__action' hitSlop={10} layout='row-start' onPress={() => handleDelete(contact)}>
+                          <AppIcon color={APP_STYLE_COLORS.text.neutralSoft} name='trash' size={30} />
                           <Text className='contact-card__action-text'>删除</Text>
                         </AppPressable>
                       </View>

@@ -20,7 +20,7 @@
   font-size: $dp-font-size-caption;
   line-height: $dp-line-height-caption;
 }
-/* 热门寄件：生产端是四列等宽栅格，标签高 60、列/行间距均为 16。 */
+/* 热门寄件：四列等宽栅格，标签高 60、列/行间距均为 16。 */
 .express-goods-chips--grid {
   flex-direction: column;
 }

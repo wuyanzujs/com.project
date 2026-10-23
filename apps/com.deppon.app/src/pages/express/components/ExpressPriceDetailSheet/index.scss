@@ -1,6 +1,6 @@
 @use '@/styles/_tokens.scss' as *;
 
-/* 预估费用明细弹层：白面板贴底、顶部 24 圆角，标题区与内容区都按生产端量测排版。 */
+/* 预估费用明细弹层：白面板贴底、顶部 24 圆角，标题区与内容区都按量测值排版。 */
 .express-price-sheet {
   display: flex;
   flex-direction: column;

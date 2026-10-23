@@ -23,7 +23,7 @@ export function ExpressOrderOptionsSection({
     <View className='express-order-options'>
       <View className='express-order-options__agreement'>
         <AppPressable accessibilityLabel={agreementAccepted ? '取消同意电子运单协议' : '同意电子运单协议'} layout='row-start' onPress={onToggleAgreement}>
-          {/* 生产端为蓝色实心圆点勾选图标：未勾选是灰色描边圆，勾选后填充并压白色对勾。 */}
+          {/* 勾选图标为蓝色实心圆点：未勾选是灰色描边圆，勾选后填充并压白色对勾。 */}
           <View className={agreementAccepted ? 'express-order-options__check express-order-options__check--checked' : 'express-order-options__check'}>
             {agreementAccepted ? <Text className='express-order-options__check-mark'>✓</Text> : null}
           </View>

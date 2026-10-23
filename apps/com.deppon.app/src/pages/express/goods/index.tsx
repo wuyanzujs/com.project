@@ -31,11 +31,11 @@ const COUNT_MIN = EXPRESS_GOODS_LIMITS.minCount
 const COUNT_MAX = EXPRESS_GOODS_LIMITS.maxCount
 // 「给快递员捎话」计数为 0/100。
 const REMARK_MAX_LENGTH = 100
-// 输入框占位文字沿用生产端的浅灰。
+// 输入框占位文字使用浅灰。
 const PLACEHOLDER_STYLE = `color: ${APP_STYLE_COLORS.text.placeholderSoft}`
 // 热门寄件固定四列，标签等宽排布。
 const HOT_GOODS_COLUMNS = 4
-// 「给快递员捎话」的快捷留言，与生产端一致。
+// 「给快递员捎话」的快捷留言标签。
 const REMARK_QUICK_TAGS = ['提前电联', '带纸箱', '带文件封', '别按门铃', '带缓冲物', '尽快上门', '贵重物品', '体积大', '当面报价', '需打木架']
 
 function chunkGoodsRows<T>(items: T[]) {

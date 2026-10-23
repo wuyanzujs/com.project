@@ -8,7 +8,7 @@
   border-bottom-left-radius: $dp-radius-side-dock;
   border-top-left-radius: $dp-radius-side-dock;
 }
-/* 寄件页只放两字「客服」，按生产端量测收窄到 104×100 的半圆胶囊。 */
+/* 寄件页只放两字「客服」，收窄到 104×100 的半圆胶囊。 */
 .app-support-float--compact {
   width: 104px;
   height: 100px;

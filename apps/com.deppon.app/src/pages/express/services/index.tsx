@@ -49,7 +49,7 @@ function createInitialDraft() {
 }
 
 /**
- * @description 增值服务专属页：生产端把代收货款、签收单、派送时间、送货进仓、打包服务
+ * @description 增值服务专属页：代收货款、签收单、派送时间、送货进仓、打包服务
  * 等服务项收在这一页里配置，寄件页只保留入口行，不再原地展开。
  */
 const ExpressServicesPage = () => {

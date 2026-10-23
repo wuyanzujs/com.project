@@ -25,7 +25,7 @@ interface ExpressServiceSectionProps {
 }
 
 /**
- * @description 寄件页的增值服务入口行：与生产端一致，只做入口，点击跳增值服务专属页。
+ * @description 寄件页的增值服务入口行：只做入口，点击跳增值服务专属页。
  */
 export function ExpressServiceSection({ draft, onClearScanContext, onOpenServices, scanContextView }: ExpressServiceSectionProps) {
   const { collection, deliveryPreference, packaging, service, valueAdded, warehouse } = draft

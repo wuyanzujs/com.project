@@ -17,7 +17,7 @@ interface ExpressAgreementSheetProps {
 }
 
 /**
- * @description 电子运单服务协议首次勾选确认弹层：与生产端一致，先阅读协议说明再确认勾选。
+ * @description 电子运单服务协议首次勾选确认弹层：先阅读协议说明再确认勾选。
  */
 export function ExpressAgreementSheet({ onAgree, onClose, visible }: ExpressAgreementSheetProps) {
   return (

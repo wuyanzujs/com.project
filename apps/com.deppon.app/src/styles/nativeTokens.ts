@@ -16,7 +16,10 @@ export const APP_STYLE_COLORS = {
     faint: '#a3a3a3',
     inverse: '#ffffff',
     ink: '#111111',
-    neutral: '#5b5b5b'
+    neutral: '#5b5b5b',
+    neutralStrong: '#525252',
+    neutralSoft: '#747474',
+    neutralHint: '#868686'
   },
   brand: {
     default: '#1a5eff',
