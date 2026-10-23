@@ -38,17 +38,17 @@ export function ExpressInsuranceCard({ controller, draft }: ExpressInsuranceCard
   const view = useMemo(() => createExpressInsuranceView(draft), [draft])
   const selectedOption = view.options.find(option => option.type === view.type)
   const summary = view.disabled
-    ? '当前货物不支持保价'
+    ? '当前货物品类不支持保价服务'
     : view.effectiveAmount > 0
       ? `${selectedOption?.label || '保价'} · ${view.effectiveAmount}元`
-      : '未填写保价金额'
+      : '未保价物品最高赔付3倍运费'
 
   return (
     <ExpressSection
       expanded={expanded}
-      hint={view.required ? '必填' : '选填'}
+      hint={view.required ? '必填' : undefined}
       summary={summary}
-      title='保价服务'
+      title='保价'
       onHeaderPress={() => setExpanded(current => !current)}
     >
       {expanded ? (

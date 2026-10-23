@@ -166,8 +166,14 @@
 - 安全网：展开后如果漏了符号，`tsc` 会在消费者处直接报错，所以这一步可以放心批量做。
 - 列表空/错/载状态组件仍是每页一套（`OrderListStates`、`PaymentListStates`、`PrintListStates`、`CouponListStates`、
   `InvoiceCenterStates`），可借 `AppVirtualList` 的 `empty` / `footer` 收敛成一套。
-- 页面里仍有业务判断回流（如 `pages/order/list/index.tsx` 的 `canCancelOrder` / `canModifyOrder`），
-  体积门禁管不到“规则是否在正确层”，可给 `check-business-rules` 加一条软告警。
+- 页面业务判断回流已收敛（2026-10-22 完成）：订单动作判定集中到 `services/order/core/order.actionRules.ts`
+  （列表 `canCancelOrder` / `canModifyOrder`、详情 `canCancelOrderDetail` / `canDeleteOrderDetail` /
+  `isCancelledOrderDetail`、`canDeleteOrder`、再寄模式与文案；列表与详情语义保持各自独立，只共享
+  `isWaitAllotOrderClass` / `isCancelledOrderClass` 等底层谓词），列表页、详情 viewModel、卡片只做调用。
+  坐标范围校验统一到 `shared/geo/coordinates.ts`，服务站详情、服务点卡片、`shared/platform/map.ts` 三处共用。
+  新增 ESLint 规则 `app/no-page-business-decisions`：页面目录新声明 `can*/should*/is*` 决策函数时告警，
+  只识别多输入/本地决策转发，单字段 UI 派生（`canUse = status === 'USABLE'`、`isDoorPickup = dispatch === 'Y'`）
+  自动放行；存量纯 UI 决策在 `.eslintrc` 的 allow 列表登记并写原因。
 
 ### P3 CI（已完成 2026-10-22）
 
@@ -278,6 +284,94 @@
 42. 验证：无 bundle 的干净工作区 `pnpm verify:app` exit 0（130.5 s，本地 Windows），日志明确打印体积门禁 skip；
     复制并追加 200 KiB 的假 bundle 时 `check:bundle-size` exit 1，删除产物后恢复 exit 0；`pnpm verify:config`
     在拆 job 后通过。未执行 RN bundle、Gradle 或 Xcode。
+
+### 2026-10-22 页面规则收敛与决策函数门禁
+
+43. 订单动作判定收敛：新增 `src/services/order/core/order.actionRules.ts`，把 `canDeleteOrder` 从
+    `order.service.ts` 搬入，并迁入列表页的 `canCancelOrder` / `canModifyOrder` / `getResendMode` /
+    `getResendActionText` 与详情 viewModel 的 `canCancelOrderDetail` / `canDeleteOrderDetail` /
+    `isCancelledOrderDetail`；列表与详情条件保持原样（详情仍看 `publicTrackMode` / 取消态，列表仍看
+    `isAllowCancel` / role），只把 `isWaitAllotOrderClass` / `isCancelledOrderClass` 等谓词共享。
+    页面里的 `canResendOrder` 只是 `canDeleteOrder` 转发，直接删除；`OrderCard` 的再寄文案入参从订单改为角色。
+44. 坐标校验去重：新增 `src/shared/geo/coordinates.ts` 的 `isValidCoordinate(lat, lng)`，服务站详情、
+    自送服务点卡片、`shared/platform/map.ts` 三处调用；保留旧实现对空串/null 的 `Number(...)` 语义。
+45. 等价性测试：迁移前用临时差分用例把旧函数与新规则在 112 个列表组合（role × orderClass ×
+    isAllowCancel × 订单号 × 运单号）和 168 个详情组合（publicTrackMode × 分类 × modifyFlag × 单号）
+    上逐条对比，全部一致后删除旧实现；随后把同一批组合固化成
+    `test/unit/order/order-action-rules.test.ts`（27 用例，含旧实现快照基准），新增
+    `test/unit/shared/coordinates.test.ts`（5 用例，含 ±90/±180 边界与非法值），两个文件设线 95 / 分支 90 阈值。
+46. 新增 ESLint 规则 `app/no-page-business-decisions`（`packages/eslint-plugin-app`）：页面目录下声明
+    `can*/should*/is*` 决策函数或布尔常量时，若读取 ≥2 个输入或转发到本文件内其它决策函数则告警，
+    提示「业务规则放 services/<domain>/*.rules.ts」；单字段派生自动放行，存量 6 处纯 UI/路由派生
+    （`canSend`、`canSubmit`、`canSwap`、`isCouponHighlighted`、`canClear`、`isPublicOrderTrackMode`）
+    在 `.eslintrc` allow 列表登记并写明原因。探针验证：页面内 `canProbeCancel`、转发函数、多输入布尔常量
+    均被报出，`canUse` / `isDoorPickup` 放行；删除探针后 lint 仍为 0 告警。
+47. 验证：`pnpm verify:app` exit 0（tsc / eslint / stylelint / 24 文件 290 vitest 用例 / 365 个 cjs 用例 /
+    barrel / 模块体积 / 路由 / 平台契约），四处页面仅替换调用表达式与删除页面内函数，JSX 结构与文案无改动；
+    未执行 RN bundle、Gradle 或 Xcode。
+48. 订单列表对齐生产 UI（真机对比后返工）：移除「最近90天/共 N 单」汇总条，改为 4 个 tab（激活项带数量）+
+    分享入口；卡片改为「运单号+复制 / 快递-零担标签 / 城市-状态-城市 / 操作胶囊 / 底部时间条」，
+    时间条改为按钮下方的内嵌圆角淡黄块，卡片恢复左右留白与更大圆角。
+    业务规则继续下沉：`order.actionRules` 新增 `canEvaluateOrder` / `canNotifyRecipient` /
+    `getOrderListTimeText`，`OrderListItem` 补充 `viewTextFlag`，`orderClass=0` 文案由「待揽件」改为「待揽收」；
+    「通知收件人」复用 `modifyNotifyDeliver`（新增 `orderService.notifyWaybill`），
+    「去评价」按小程序 survey 场景（待揽收/已退回 S0206，其它 S0601）跳 H5。
+    样式拆出 `OrderCardActions.scss`（新文件零间距债务），样式基线从 630 收紧到 616；
+    真机 PDEM10 上已确认列表、tab 计数、复制、四个操作与底部时间条渲染正常。
+49. 验证：`pnpm verify:app` exit 0（tsc / eslint / stylelint / 24 文件 295 vitest 用例 / 365 个 cjs 用例 /
+    barrel / 模块体积 / 路由 / 平台契约），未执行 RN bundle、Gradle 或 Xcode。
+
+### 2026-10-22 订单列表像素级对齐生产 App
+
+50. 基准确认：设备上同时装有生产包 `com.deppon.dpapp`，直接抓生产端 PNG 与当前 debug 包逐像素对比。
+    量测口径统一为 1440 宽截图（1 设计 px = 1.92 物理 px），对比卡片起止行、文本 bbox、胶囊矩形、
+    时间条渐变与阴影灰阶；最终 tab / 单号 / 城市 / 状态 / 胶囊 / 时间条 / 卡片间距均在 1–3px 内。
+51. 头部渐变：订单列表改为 `safeArea='none'`，由页面头部自己补 `insets.top`，并用 `react-native-svg`
+    铺全宽渐变（`#cdeaff → #f4f7fb`，覆盖状态栏到搜索区底部），替代原来的纯色 `#eef6ff`。
+    搜索框、tab、分享入口改为透明背景，渐变从屏幕 y=0 连续过渡；生产端 y=20/300/480 的采样值为
+    (205,234,255)/(231,243,253)/(242,247,252)，当前实现误差 ≤2 个灰阶。
+52. tab 与搜索区：tab 改为固定 142 设计 px 宽、计数单独 `Text`（30px regular）、指示条 64×8、
+    分享图标 52；标题色统一 `text-ink(#111)`；筛选图标从 `list-filter` 换成漏斗，`AppIcon` 新增
+    `funnel` 映射；搜索框左内边距改为 24、图标与文字间距 20、占位字号 28。
+    tab 文字、计数、指示条、分享图标、搜索占位与生产端 bbox 偏差 ≤4px。
+53. `AppPressable` 新增 `compact` + `hitSlop`：compact 去掉视觉盒子的 88 设计 px 最小宽高，
+    原生 overlay 同步取消最小尺寸，热区由 hitSlop 补（胶囊 8dp、单号/复制 10dp）。此前 44dp 最小高度
+    把操作胶囊撑到 170px，是卡片比生产高 35px 的主因；现在胶囊 115px，与生产一致且不换行。
+54. 卡片重排：去掉描边，改用 `AppElevatedView` 的三层低透明度圆角层模拟软阴影（spread 18/10/4，
+    `overlay.cardShadow*` token；RN 0.73 的 `elevation` 在 FlatList 里只渲染硬边，已实测淘汰）。
+    内边距 28/32、城市 48px、姓名 28px 深色、单号 24px `text-subdued`、复制 20px、标签 21px；
+    操作区 `padding-bottom 16`、胶囊高 60 / 左右 26 / min-width 142 / 间距 8；
+    时间条改为整宽 72 设计 px 的 `#ffffff → #ffffe5` 竖向渐变（SVG），文字 24px `#a39465`。
+    新增 token：`$dp-font-size-display-large(48)`、`$dp-space-60`、`$dp-color-order-wait-text-soft`、
+    `$dp-color-order-header-gradient-start`，并在 `nativeTokens.ts` 同步登记。
+55. 验证：`pnpm verify:app` exit 0（tsc / eslint / stylelint / style-governance 间距债务 616→614 /
+    24 文件 295 vitest 用例 / 365 个 cjs 用例 / barrel / 模块体积 / 路由 / 平台契约 / 体积门禁）；
+    JS 由 Metro 热更新验证，未执行 RN bundle、Gradle 或 Xcode。
+
+### 2026-10-22 寄件页初始态区块门控对齐生产端
+
+56. 差异归因：同机对比截图确认左侧长截图是 RN 包，右侧是生产 `com.deppon.dpapp 4.0.6.8`。左侧「寄件地址变化，请重新获取价格」只存在于
+    `services/express/core/express.mutations.ts`，生产 4.0.6.8/4.0.7.0 的 `libapp.so` 均无此文案；真机 `RKStorage` 的 2 小时草稿
+    （sender 已填、consignee 空、goods 空、quoteStaleReason 已置）恢复后把失效态画成了整块「预计送达时间」。
+57. 生产条件取证：真机拉包解包得 133 MB base.apk / 19 MB `libapp.so` / 709 个 Dart 文件，AOT 保留
+    `contactPickupTimeVisible`、`productVisible`、`couponEntity`、`RealAuthControllerEx|isAlreadyAuth`。运行态三档对比：p30 空表单
+    无实名条/取件切换/取件时间行；当前仅寄件人时无取件时间行；p17 双方地址+货物+报价才出现「今天 一小时内」。
+    `queryRealNameAuth` 探针显示账号已实名，`queryNewCouponList` 可用/不可用券均为空。
+58. 新增服务层谓词：`isExpressOrderFormReady(draft)`（收寄详细地址 + 货物名称 + 重量）与
+    `shouldShowExpressCouponRow(state)`（已选券/有券/报价查询开始后）；页面只消费谓词，不在页面新增决策函数。
+59. 页面门控：实名条改由 `useExpressRealName` 查 `realNameService.query()`，仅已登录且未实名时渲染；取件切换按寄件地址、
+    期望上门时间按表单齐备分别门控；预计送达去掉 `quoteStaleReason` 渲染条件（失效原因仅保留给自动重算），
+    并在草稿恢复时清理无产品时的失效原因；优惠券行按谓词显隐；保价卡按表单齐备 + 新鲜保价能力显隐，
+    文案改为生产端「保价 / 未保价物品最高赔付3倍运费」，去掉「选填」角标。
+60. 测试与验证：新增 `realname-banner.test.cjs`、`panel-gates.test.cjs` 与 `draft.test.cjs` 门控用例（cjs 371）；
+    `pnpm verify:app` exit 0（tsc / eslint / stylelint / 24 文件 295 vitest / 371 cjs / barrel / 模块体积 / 路由 /
+    平台契约 / 体积门禁）。未执行 RN bundle、Gradle 或 Xcode。
+61. 收寄件人空态灰底修复：`ExpressContactPanel` 的灰底由卡片 `margin` 改为绝对定位 `__bg` 视觉层，灰底不再参与行布局；
+    寄件人/收件人图标、文字、地址簿恢复同列（真机 x=92/276，灰底仍为 77..1363 × 238）；
+    同时补生产端 8dp 两行间距（`express-contact-card--spaced`）与地址簿内容 4dp 左移（`padding-right: 8`）。
+62. 真机验证（用户明确要求出包）：Taro bundle + `assembleDebug -PtargetAbis=arm64-v8a -PreactNativeArchitectures=arm64-v8a --offline`
+    + `adb push` / `pm install -r`；空表单与仅寄件人两档均确认实名条、取件切换、期望上门时间、优惠券、保价按门控显隐，
+    收寄件人两行图标 x 完全对齐。`pnpm verify:app` exit 0；bundle raw +75.9 KiB / gzip +11.2 KiB，仍在 150 KiB 容差内。
 
 ## 五、执行顺序
 

@@ -5,3 +5,15 @@
   flex-direction: column;
   background: $dp-color-bg-page-cool;
 }
+
+.order-list-header {
+  position: relative;
+}
+
+.order-list-gradient {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}

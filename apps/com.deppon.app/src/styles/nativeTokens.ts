@@ -88,6 +88,12 @@ export const APP_STYLE_COLORS = {
     successBackgroundSoft: '#dcfce7',
     successBorder: '#bbf7d0'
   },
+  order: {
+    headerGradientStart: '#cdeaff',
+    waitBackground: '#ffffe5',
+    waitGradientStart: '#ffffff',
+    waitTextSoft: '#a39465'
+  },
   member: {
     text: '#7c482d',
     textMuted: '#968372',
@@ -99,6 +105,9 @@ export const APP_STYLE_COLORS = {
     svipGradientEnd: '#fda9c9'
   },
   overlay: {
+    cardShadowSoft: 'rgba(16, 24, 40, 0.005)',
+    cardShadowMid: 'rgba(16, 24, 40, 0.006)',
+    cardShadowStrong: 'rgba(16, 24, 40, 0.007)',
     soft: 'rgba(22, 24, 26, 0.42)',
     default: 'rgba(22, 24, 26, 0.48)',
     strong: 'rgba(16, 24, 40, 0.48)',

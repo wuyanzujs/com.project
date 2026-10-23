@@ -33,8 +33,6 @@ interface OrderTrackQueryOptions {
 const DEFAULT_PAGE_SIZE = 10
 const DEFAULT_RANGE_DAYS = 30
 
-const DELETABLE_ORDER_CLASSES = new Set([2, 3, 4, 5, 99])
-
 /**
  *
  * @param value 数字
@@ -83,18 +81,17 @@ function getDefaultDateRange() {
 
 /**
  *
- * @param order 订单简要信息
- * @description 判断订单是否可删除
+ * @param waybillNumber 运单号
+ * @description 通知营业部为运单安排派送
  */
-export function canDeleteOrder(order: {
-  orderClass?: number
-  orderClassification?: string | number
-  orderNumber?: string | null
-  waybillNumber?: string | null
-}) {
-  const orderClass = Number(order.orderClass ?? order.orderClassification)
+export function notifyOrderWaybill(waybillNumber?: string | null): Promise<DepponResponse<boolean>> {
+  if (!waybillNumber) {
+    return Promise.resolve(createFailure<boolean>('缺少运单号，暂无法通知派送'))
+  }
 
-  return DELETABLE_ORDER_CLASSES.has(orderClass) && (!!order.orderNumber || !!order.waybillNumber)
+  return orderApi.notifyDeliver({
+    waybillNo: waybillNumber
+  })
 }
 
 export const orderService = {
@@ -113,6 +110,7 @@ export const orderService = {
   resolveUrgeMenuAction: resolveOrderUrgeMenuAction,
   submitUrge: submitOrderUrge,
   notifyDeliver: notifyOrderDeliver,
+  notifyWaybill: notifyOrderWaybill,
   invalidWaybill: invalidOrderWaybill,
   resolveDepartmentPhone,
 

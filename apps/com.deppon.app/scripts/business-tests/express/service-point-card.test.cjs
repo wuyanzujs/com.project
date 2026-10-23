@@ -106,6 +106,7 @@ test('自送服务点卡片渲染名称、地址、营业时间与导航/拨号�
     '@tarojs/taro': { showToast() {}, navigateBack() {} },
     '@/shared/components': { AppPressable: 'AppPressable' },
     '@/shared/components/AppIcon': { AppIcon: 'AppIcon' },
+    '@/shared/geo/coordinates': require('@/shared/geo/coordinates'),
     '@/shared/platform/capabilities': { getNativeCapabilityErrorMessage: () => '' },
     '@/shared/platform/map': { openMapLocation: async () => {} },
     '@/shared/platform/phone': { dialPhone: async () => '', PhoneNumberError: class extends Error {} },

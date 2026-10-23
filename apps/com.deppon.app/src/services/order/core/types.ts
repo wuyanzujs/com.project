@@ -429,6 +429,7 @@ export interface OrderListItem {
   isExpress: boolean
   isDispatch: boolean
   isAllowCancel: boolean
+  viewTextFlag?: 'Y' | 'N' | null
 }
 
 export interface OrderListResult {

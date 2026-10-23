@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { queryService } from '@/services/query'
 import type { StationDetailView } from '@/services/query'
 import { AppPressable } from '@/shared/components'
+import { isValidCoordinate } from '@/shared/geo/coordinates'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { getNativeCapabilityErrorMessage } from '@/shared/platform/capabilities'
 import { openMapLocation } from '@/shared/platform/map'
@@ -25,13 +26,6 @@ function decodeParam(value?: string) {
   } catch {
     return value
   }
-}
-
-function isValidCoordinate(detail: StationDetailView) {
-  const latitude = Number(detail.lat)
-  const longitude = Number(detail.lng)
-
-  return Number.isFinite(latitude) && Number.isFinite(longitude) && Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180
 }
 
 function renderInfo(label: string, value?: string) {
@@ -113,7 +107,7 @@ const QueryStationDetailPage = () => {
       return
     }
 
-    if (!isValidCoordinate(detail)) {
+    if (!isValidCoordinate(detail.lat, detail.lng)) {
       Taro.showToast({
         title: '未获取到网点经纬度',
         icon: 'none'
@@ -174,9 +168,9 @@ const QueryStationDetailPage = () => {
       {detail && (
         <>
           <View className='station-detail-map-panel'>
-            <Text className='station-detail-map-panel__title'>{isValidCoordinate(detail) ? '网点位置' : '暂无坐标'}</Text>
+            <Text className='station-detail-map-panel__title'>{isValidCoordinate(detail.lat, detail.lng) ? '网点位置' : '暂无坐标'}</Text>
             <Text className='station-detail-map-panel__address'>{detail.address || '暂无地址'}</Text>
-            {isValidCoordinate(detail) && (
+            {isValidCoordinate(detail.lat, detail.lng) && (
               <Text className='station-detail-map-panel__coord'>
                 {detail.lat}, {detail.lng}
               </Text>

@@ -1,3 +1,5 @@
+import { isValidCoordinate } from '@/shared/geo/coordinates'
+
 import { NativeCapabilityError, ensureNativeCapability } from './capabilities'
 
 import type { AppCoordinateSystem } from './location'
@@ -25,14 +27,10 @@ export interface ChooseMapLocationResult extends AppMapLocation {
   source: string
 }
 
-function isValidCoordinate(location: AppMapLocation) {
-  return Number.isFinite(location.latitude) && Number.isFinite(location.longitude) && Math.abs(location.latitude) <= 90 && Math.abs(location.longitude) <= 180
-}
-
 export async function openMapLocation(options: OpenMapLocationOptions) {
   ensureNativeCapability('map')
 
-  if (!isValidCoordinate(options.location)) {
+  if (!isValidCoordinate(options.location.latitude, options.location.longitude)) {
     throw new Error('请输入正确的经纬度')
   }
 

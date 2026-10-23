@@ -7,7 +7,7 @@ export type OrderResendMode = 'repeat' | 'return'
 
 const ORDER_CLASS_LABELS: Record<number, string> = {
   [-1]: '异常',
-  0: '待揽件',
+  0: '待揽收',
   1: '运输中',
   2: '已签收',
   3: '已退回',
@@ -164,7 +164,8 @@ export function normalizeSenderOrder(item: SenderOrderItem): OrderListItem {
     orderPrice: item.totalFee ?? 0,
     isExpress: item.tableType === 'EXPRESS' || item.tableType === '2',
     isDispatch: item.dispatchFlag === 'Y',
-    isAllowCancel: !!item.modifyFlag
+    isAllowCancel: !!item.modifyFlag,
+    viewTextFlag: item.viewTextFlag ?? null
   }
 }
 
@@ -191,7 +192,8 @@ export function normalizeConsigneeOrder(item: ConsigneeOrderItem): OrderListItem
     orderPrice: 0,
     isExpress: true,
     isDispatch: true,
-    isAllowCancel: false
+    isAllowCancel: false,
+    viewTextFlag: null
   }
 }
 

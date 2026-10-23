@@ -137,9 +137,21 @@ export {
 export { orderSceneSurveyService } from './survey/order.sceneSurvey.service'
 export * from './survey/order.sceneSurvey.types'
 export {
+  canCancelOrder,
+  canCancelOrderDetail,
+  canDeleteOrder,
+  canDeleteOrderDetail,
+  canEvaluateOrder,
+  canModifyOrder,
+  canNotifyRecipient,
+  getOrderListTimeText,
+  getOrderResendActionText,
+  getOrderResendMode,
+  isCancelledOrderDetail
+} from './core/order.actionRules'
+export {
   orderService,
   getOrderDateRange,
-  canDeleteOrder,
   createExpressDraftFromOrderDetail,
   getOrderClassLabel,
   getOrderCopyNumber,

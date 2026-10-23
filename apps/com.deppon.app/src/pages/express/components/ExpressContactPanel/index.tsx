@@ -19,6 +19,8 @@ interface ExpressContactCardProps {
   markType: 'sender' | 'consignee'
   /** 空态灰底：寄件人未填，或收件人未填且寄件人已填；灰底是卡片内缩的圆角块。 */
   background: boolean
+  /** 收件人卡与寄件人卡之间保持生产端的 8dp 间距。 */
+  spaced?: boolean
   emptyText: string
   target: ExpressContactTarget
   onCreateContact: (target: ExpressContactTarget) => void
@@ -32,11 +34,22 @@ interface ExpressContactPanelProps {
   onSwapContacts: () => void
 }
 
-function ExpressContactCard({ background, contact, emptyText, mark, markType, target, onCreateContact, onSelectContact }: ExpressContactCardProps) {
+function ExpressContactCard({
+  background,
+  contact,
+  emptyText,
+  mark,
+  markType,
+  spaced = false,
+  target,
+  onCreateContact,
+  onSelectContact
+}: ExpressContactCardProps) {
   const contentLabel = contact ? `编辑${mark === '寄' ? '寄件人' : '收件人'}` : emptyText
 
   return (
-    <View className={`express-contact-card${background ? ' express-contact-card--bg' : ''}${contact ? ' express-contact-card--filled' : ''}`}>
+    <View className={`express-contact-card${spaced ? ' express-contact-card--spaced' : ''}${contact ? ' express-contact-card--filled' : ''}`}>
+      {background ? <View className='express-contact-card__bg' /> : null}
       <AppPressable
         accessibilityLabel={contentLabel}
         className={`express-contact-card__main${contact ? ' express-contact-card__main--filled' : ''}`}
@@ -110,6 +123,7 @@ export function ExpressContactPanel({ draft, onCreateContact, onSelectContact, o
         emptyText='寄到哪里去'
         mark='收'
         markType='consignee'
+        spaced
         target='consignee'
         onCreateContact={onCreateContact}
         onSelectContact={onSelectContact}

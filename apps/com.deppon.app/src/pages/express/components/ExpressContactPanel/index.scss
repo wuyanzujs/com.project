@@ -8,20 +8,29 @@
   border-radius: $dp-radius-32;
 }
 .express-contact-card {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
   min-height: 124px;
   border-radius: $dp-radius-24;
 }
-/* 灰底用于待填写地址：生产端是卡内左右各缩进 16 的圆角灰块，而不是通栏色带。 */
-.express-contact-card--bg {
-  margin: $dp-space-0 $dp-space-16;
+/* 灰底只做视觉层，不参与行布局；否则寄件人行会被整体缩进，和收件人行错开。 */
+.express-contact-card__bg {
+  position: absolute;
+  top: 0;
+  right: $dp-space-16;
+  bottom: 0;
+  left: $dp-space-16;
   background: $dp-color-bg-page;
+  border-radius: $dp-radius-24;
 }
 .express-contact-card--filled {
   padding-top: $dp-space-16;
   padding-bottom: $dp-space-16;
+}
+.express-contact-card--spaced {
+  margin-top: $dp-space-8;
 }
 .express-contact-card__main--filled {
   align-items: flex-start;
@@ -93,6 +102,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding-right: $dp-space-8;
 }
 .express-contact-card__address-book-icon {
   width: $dp-space-48;

@@ -114,6 +114,8 @@ function normalizeDraft(draft: ExpressDraft): ExpressDraft {
       ...defaultDraft.pickup,
       ...draft.pickup
     }),
+    // 报价失效原因只服务本次会话的自动重算，不跟随草稿恢复成初始提示。
+    quoteStaleReason: draft.selectedProduct ? draft.quoteStaleReason || '' : '',
     selectedProduct: draft.selectedProduct ? { ...draft.selectedProduct } : null,
     scanContext: draft.scanContext ? { ...draft.scanContext } : undefined
   }

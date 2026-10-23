@@ -3,19 +3,34 @@ import Taro, { useDidShow } from '@tarojs/taro'
 
 import { useCallback, useState } from 'react'
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Defs, LinearGradient, Rect, Stop, Svg } from 'react-native-svg'
+
+import { getCurrentUser } from '@/services/auth'
 import { expressDraftBridge } from '@/services/express'
-import { canDeleteOrder, createExpressDraftFromOrderDetail, orderService } from '@/services/order'
-import type { OrderListItem, OrderPaymentFilter, OrderResendMode, OrderRole, OrderStatusFilter } from '@/services/order'
+import {
+  canCancelOrder,
+  canDeleteOrder,
+  canModifyOrder,
+  createExpressDraftFromOrderDetail,
+  getOrderResendActionText,
+  getOrderResendMode,
+  orderService
+} from '@/services/order'
+import type { OrderListItem, OrderPaymentFilter, OrderRole, OrderStatusFilter } from '@/services/order'
 import { AppPage, AppSupportFloat } from '@/shared/components'
 import AppTabBar from '@/shared/components/AppTabBar'
 import { AppVirtualList } from '@/shared/native'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
-import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { appendRouteQuery, createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { shareWithApp } from '@/shared/platform/share'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import { OrderCard, OrderListFooter } from './components/OrderListCards'
-import { OrderFilterPanel, OrderListSummary, OrderRoleTabs, OrderSearchBar } from './components/OrderListSections'
+import { OrderFilterPanel, OrderRoleTabs, OrderSearchBar } from './components/OrderListSections'
 import { useOrderListData } from './hooks/useOrderListData'
 
 import type { OrderDateRangeDays } from './components/OrderListSections'
@@ -30,31 +45,14 @@ function getRouteToDetail(order: OrderListItem) {
   })
 }
 
-function canCancelOrder(order: OrderListItem) {
-  return order.role === 'sender' && order.orderClass === 0 && order.isAllowCancel && !!order.orderNumber
-}
-
-function canModifyOrder(order: OrderListItem) {
-  return order.role === 'sender' && order.orderClass === 0 && order.isAllowCancel && !!order.orderNumber
-}
-
 function getOrderActionKey(order: OrderListItem) {
   return `${order.role}-${order.orderNumber}-${order.waybillNumber}`
 }
 
-function canResendOrder(order: OrderListItem) {
-  return canDeleteOrder(order)
-}
-
-function getResendMode(order: OrderListItem): OrderResendMode {
-  return order.role === 'receive' ? 'return' : 'repeat'
-}
-
-function getResendActionText(order: OrderListItem) {
-  return order.role === 'receive' ? '一键回寄' : '再来一单'
-}
+const HEADER_GRADIENT_ID = 'orderListHeaderGradient'
 
 const OrderListPage = () => {
+  const insets = useSafeAreaInsets()
   const [role, setRole] = useState<OrderRole>('sender')
   const [rangeDays, setRangeDays] = useState<OrderDateRangeDays>(90)
   const [orderStatus, setOrderStatus] = useState<OrderStatusFilter>('')
@@ -163,6 +161,62 @@ const OrderListPage = () => {
     navigateToAppRoute(getRouteToDetail(order), { login: true })
   }
 
+  const handleShare = () => {
+    shareWithApp({
+      source: 'ORDER_LIST',
+      title: '德邦快递',
+      description: '我的德邦快递订单'
+    }).catch(() => undefined)
+  }
+
+  const handleEvaluateOrder = (order: OrderListItem) => {
+    const scene = order.orderClass === 0 || order.orderClass === 3 ? 'S0206' : 'S0601'
+    const rowData = encodeURIComponent(
+      JSON.stringify([
+        {
+          field: 'orderNumber',
+          data: order.orderNumber
+        },
+        {
+          field: 'waybillNumber',
+          data: order.waybillNumber
+        }
+      ])
+    )
+    const uri = appendRouteQuery('/depponmobile/survey/land', {
+      scene,
+      channel: 'OWS',
+      mobile: getCurrentUser()?.mobile || '',
+      rowData
+    })
+
+    navigateToAppRoute(createAppWebUrl({ source: 'ORDER_DETAIL_EVALUATE', title: '服务评价', uri }), { login: true })
+  }
+
+  const handleNotifyOrder = async (order: OrderListItem) => {
+    if (!order.waybillNumber) {
+      return
+    }
+
+    const confirmResult = await Taro.showModal({
+      title: '通知收件人',
+      content: '是否通知收件人安排派送？',
+      confirmText: '通知',
+      cancelText: '暂不通知'
+    })
+
+    if (!confirmResult.confirm) {
+      return
+    }
+
+    const response = await orderService.notifyWaybill(order.waybillNumber)
+
+    Taro.showToast({
+      title: response.status ? '已通知' : response.message || '通知失败，请稍后再试',
+      icon: 'none'
+    })
+  }
+
   const handleCancelOrder = (order: OrderListItem) => {
     if (!canCancelOrder(order)) {
       return
@@ -234,7 +288,7 @@ const OrderListPage = () => {
   }
 
   const handleResendOrder = async (order: OrderListItem) => {
-    if (!canResendOrder(order) || resendingOrderKey) {
+    if (!canDeleteOrder(order) || resendingOrderKey) {
       return
     }
 
@@ -256,7 +310,7 @@ const OrderListPage = () => {
         return
       }
 
-      expressDraftBridge.carryFromOrderResend(createExpressDraftFromOrderDetail(response.result, getResendMode(order)))
+      expressDraftBridge.carryFromOrderResend(createExpressDraftFromOrderDetail(response.result, getOrderResendMode(order.role)))
       navigateToAppRoute(APP_ROUTES.express, {
         replace: true
       })
@@ -266,26 +320,46 @@ const OrderListPage = () => {
   }
 
   return (
-    <AppPage className='order-list-shell' footer={<AppTabBar active='orderList' />} safeArea='top' statusBar='dark'>
+    <AppPage className='order-list-shell' footer={<AppTabBar active='orderList' />} safeArea='none' statusBar='dark'>
       <View className='order-list-page'>
-        <OrderRoleTabs role={role} onChange={handleChangeRole} onOpenPayment={handleOpenPaymentList} onOpenSubscriptions={handleOpenSubscriptions} />
-        <OrderSearchBar
-          filterVisible={filterVisible}
-          keyword={keyword}
-          onKeywordChange={setKeyword}
-          onSearch={handleSearch}
-          onToggleFilter={() => setFilterVisible(current => !current)}
-        />
-        {filterVisible && (
-          <OrderFilterPanel
-            orderStatus={orderStatus}
-            paymentType={paymentType}
-            rangeDays={rangeDays}
-            onPaymentChange={handleChangePayment}
-            onRangeChange={handleChangeRange}
-            onStatusChange={handleChangeStatus}
+        <View className='order-list-header' style={{ paddingTop: insets.top }}>
+          <View className='order-list-gradient'>
+            <Svg width='100%' height='100%'>
+              <Defs>
+                <LinearGradient id={HEADER_GRADIENT_ID} x1='0' x2='0' y1='0' y2='1'>
+                  <Stop offset='0' stopColor={APP_STYLE_COLORS.order.headerGradientStart} />
+                  <Stop offset='1' stopColor={APP_STYLE_COLORS.surface.pageCool} />
+                </LinearGradient>
+              </Defs>
+              <Rect width='100%' height='100%' fill={`url(#${HEADER_GRADIENT_ID})`} />
+            </Svg>
+          </View>
+          <OrderRoleTabs
+            activeCount={listData.totalRows}
+            role={role}
+            onChange={handleChangeRole}
+            onOpenPayment={handleOpenPaymentList}
+            onOpenSubscriptions={handleOpenSubscriptions}
+            onShare={handleShare}
           />
-        )}
+          <OrderSearchBar
+            filterVisible={filterVisible}
+            keyword={keyword}
+            onKeywordChange={setKeyword}
+            onSearch={handleSearch}
+            onToggleFilter={() => setFilterVisible(current => !current)}
+          />
+          {filterVisible && (
+            <OrderFilterPanel
+              orderStatus={orderStatus}
+              paymentType={paymentType}
+              rangeDays={rangeDays}
+              onPaymentChange={handleChangePayment}
+              onRangeChange={handleChangeRange}
+              onStatusChange={handleChangeStatus}
+            />
+          )}
+        </View>
         <AppVirtualList
           extraData={`${role}|${deletingOrderKey}|${resendingOrderKey}`}
           footer={
@@ -296,36 +370,24 @@ const OrderListPage = () => {
               orders={listData.orders}
             />
           }
-          header={
-            listData.orders.length > 0 || listData.loading ? (
-              <OrderListSummary
-                rangeDays={rangeDays}
-                totalRows={listData.totalRows}
-                onOpenPaymentList={handleOpenPaymentList}
-                onOpenSubscriptions={handleOpenSubscriptions}
-              />
-            ) : null
-          }
           items={listData.orders}
           keyExtractor={getOrderActionKey}
           paddingBottom={0}
           paddingHorizontal={0}
-          paddingTop={18}
+          paddingTop={8}
           renderItem={order => (
             <View className='order-list-item'>
               <OrderCard
-                canCancelOrder={canCancelOrder}
-                canDeleteOrder={canDeleteOrder}
-                canModifyOrder={canModifyOrder}
-                canResendOrder={canResendOrder}
                 deletingOrderKey={deletingOrderKey}
                 getOrderActionKey={getOrderActionKey}
-                getResendActionText={getResendActionText}
+                getResendActionText={getOrderResendActionText}
                 order={order}
                 resendingOrderKey={resendingOrderKey}
                 onCancelOrder={handleCancelOrder}
                 onDeleteOrder={handleDeleteOrder}
+                onEvaluateOrder={handleEvaluateOrder}
                 onModifyOrder={handleModifyOrder}
+                onNotifyOrder={handleNotifyOrder}
                 onOpenDetail={handleOpenDetail}
                 onResendOrder={handleResendOrder}
               />

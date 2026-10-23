@@ -96,7 +96,6 @@ test('quote card renders one-line product name, split time text and limited offe
   const view = harness.render(() =>
     ExpressQuoteSection({
       plain: true,
-      quoteStaleReason: '',
       quoteStatus: 'done',
       quotes: [product],
       selectedProduct: product,

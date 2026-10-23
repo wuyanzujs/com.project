@@ -1,4 +1,4 @@
-import { canDeleteOrder } from '@/services/order'
+import { canCancelOrderDetail, canDeleteOrderDetail, getOrderResendActionText, isCancelledOrderDetail } from '@/services/order'
 import type { OrderDetail, OrderRole } from '@/services/order'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
@@ -52,31 +52,6 @@ export function getOrderDetailRole(detail: OrderDetail, routeRole: string): Orde
   return detail.isReceiver === 'Y' && detail.isSender !== 'Y' ? 'receive' : 'sender'
 }
 
-function canCancelOrderDetail(detail: OrderDetail | null, publicTrackMode: boolean) {
-  if (!detail || publicTrackMode || !detail.orderNumber) {
-    return false
-  }
-
-  return Number(detail.orderClassification) === 0 && detail.modifyFlag !== false
-}
-
-function canDeleteOrderDetail(detail: OrderDetail | null, publicTrackMode: boolean) {
-  return !publicTrackMode && !!detail && canDeleteOrder(detail)
-}
-
-/**
- * @param detail 订单详情
- * @param publicTrackMode 公开物流态
- * @description 判断订单是否已取消。
- */
-function isCancelledOrderDetail(detail: OrderDetail | null, publicTrackMode: boolean) {
-  return !publicTrackMode && !!detail && Number(detail.orderClassification) === 4
-}
-
-function getResendActionText(role: OrderRole) {
-  return role === 'receive' ? '一键回寄' : '再来一单'
-}
-
 export function getOrderDetailRouteUrl(params: OrderDetailRouteParams, view: OrderDetailViewMode = params.view) {
   return createAppRouteUrl(APP_ROUTES.orderDetail, {
     orderNumber: params.orderNumber,
@@ -97,6 +72,6 @@ export function createOrderDetailViewModel(params: OrderDetailRouteParams, detai
     deletable: canDeleteOrderDetail(detail, publicTrackMode),
     cancelled: isCancelledOrderDetail(detail, publicTrackMode),
     detailRole,
-    resendActionText: getResendActionText(detailRole)
+    resendActionText: getOrderResendActionText(detailRole)
   }
 }

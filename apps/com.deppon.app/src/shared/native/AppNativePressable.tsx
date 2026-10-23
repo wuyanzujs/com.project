@@ -8,9 +8,12 @@ interface AppNativePressableProps extends PropsWithChildren {
   accessibilityLabel?: string
   allowDisabledPress?: boolean
   block?: boolean
+  /** 去掉 44dp 最小尺寸，交由调用方用 hitSlop 控制热区。 */
+  compact?: boolean
   disabled?: boolean
   fill?: boolean
   flex?: boolean
+  hitSlop?: PressableProps['hitSlop']
   overlay?: boolean
   selected?: boolean
   onLayout?: PressableProps['onLayout']
@@ -51,9 +54,11 @@ export function AppNativePressable({
   allowDisabledPress = false,
   block = false,
   children,
+  compact = false,
   disabled = false,
   fill = false,
   flex = false,
+  hitSlop,
   overlay = false,
   onLayout,
   onLongPress,
@@ -70,8 +75,9 @@ export function AppNativePressable({
       accessibilityRole='button'
       accessibilityState={{ disabled, selected }}
       disabled={nativeDisabled}
+      hitSlop={hitSlop}
       style={({ pressed }) => [
-        styles.target,
+        !compact && styles.target,
         overlay && styles.overlay,
         block && styles.block,
         fill && styles.fill,

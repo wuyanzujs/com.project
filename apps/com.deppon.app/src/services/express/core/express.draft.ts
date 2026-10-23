@@ -98,6 +98,15 @@ export function createExpressDraft(): ExpressDraft {
 
 /**
  *
+ * @param draft 寄件草稿
+ * @description 收寄地址与货物齐备，可展示取件时间、保价等完整区块
+ */
+export function isExpressOrderFormReady(draft: ExpressDraft) {
+  return Boolean(trimText(draft.sender?.address) && trimText(draft.consignee?.address) && trimText(draft.goods.name) && toFiniteNumber(draft.goods.weight) > 0)
+}
+
+/**
+ *
  * @param contact 地址簿联系人
  * @description 地址簿联系人转寄件联系人
  */

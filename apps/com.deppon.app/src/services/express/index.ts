@@ -20,7 +20,8 @@ export {
   EXPRESS_COUPON_AUTO_QUERY_DELAY_MS,
   getExpressCouponOriginalFee,
   createExpressCouponQueryRequest,
-  createExpressCouponRequestKey
+  createExpressCouponRequestKey,
+  shouldShowExpressCouponRow
 } from './billing/couponOrder.rules'
 export {
   EXPRESS_DELIVERY_PREFERENCE_OPTIONS,
@@ -64,6 +65,7 @@ export {
   trimText,
   getNowText,
   createExpressDraft,
+  isExpressOrderFormReady,
   mapContactToExpressContact,
   createAddressOnlyExpressContact,
   getExpressContactFullAddress,
