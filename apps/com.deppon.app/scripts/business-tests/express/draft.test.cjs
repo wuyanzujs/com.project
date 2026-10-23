@@ -51,7 +51,7 @@ const cases = [
 
       assert.equal(result.valid, false)
       assert.ok(result.messages.includes('寄件地址和收件地址不能完全一致'))
-      assert.ok(result.messages.includes('请先获取并选择产品价格'))
+      assert.ok(result.messages.includes('产品价格尚未就绪，请稍候'))
       assert.ok(result.messages.includes('请先勾选电子运单协议'))
     }
   },
@@ -143,7 +143,7 @@ const cases = [
       assert.equal(swappedDraft.consignee.name, '张三')
       assert.equal(swappedDraft.pickup.time, '')
       assert.equal(swappedDraft.pickup.stationCode, '')
-      assert.equal(swappedDraft.quoteStaleReason, '收寄地址互换，请重新获取价格')
+      assert.equal(swappedDraft.quoteStaleReason, '收寄地址互换')
 
       const senderUpdated = setExpressContact(createValidExpressDraft(), 'sender', {
         ...senderContact,

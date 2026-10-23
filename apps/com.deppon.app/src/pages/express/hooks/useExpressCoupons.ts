@@ -77,7 +77,7 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
 
     if (!currentRequest || !currentKey) {
       setStatus('idle')
-      setMessage(latestDraft.current.couponNumber ? '优惠券已选择，请重新获取价格校验' : '获取产品价格后可匹配优惠券')
+      setMessage('计价完成后自动匹配优惠券')
       return
     }
 
@@ -167,7 +167,7 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
       onInvalidateQuote()
       setDraft(current => updateExpressCouponNumber(current, normalizedCode))
       Taro.showToast({
-        title: normalizedCode ? '优惠券已选择，请重新获取价格' : '已取消优惠券，请重新获取价格',
+        title: normalizedCode ? '优惠券已选择' : '已取消优惠券',
         icon: 'none'
       })
     },

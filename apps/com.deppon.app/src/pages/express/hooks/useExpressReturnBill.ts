@@ -68,7 +68,7 @@ export function useExpressReturnBill({ draft, restoreQuotes, setDraft }: UseExpr
     }))
     restoreQuotes([])
     Taro.showToast({
-      title: '电子云签已回填，请重新获取价格',
+      title: '电子云签已回填',
       icon: 'none'
     })
   })

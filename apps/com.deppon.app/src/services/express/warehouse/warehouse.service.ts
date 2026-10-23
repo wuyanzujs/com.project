@@ -46,7 +46,7 @@ function getErrorMessage(error: unknown, fallback: string) {
  */
 export async function queryExpressWarehouseScreening(draft: ExpressDraft): Promise<DepponResponse<ExpressWarehouseScreening>> {
   if (!draft.selectedProduct?.omsProductCode) {
-    return createFailure('请先获取并选择产品价格')
+    return createFailure('产品价格尚未就绪，请稍候')
   }
 
   try {
@@ -84,7 +84,7 @@ export async function stageExpressWarehouse(draft: ExpressDraft): Promise<Deppon
   const productCode = draft.selectedProduct?.omsProductCode
 
   if (!productCode) {
-    return createFailure('请先获取并选择产品价格')
+    return createFailure('产品价格尚未就绪，请稍候')
   }
 
   try {

@@ -172,7 +172,7 @@ const ExpressPage = () => {
 
     if (carriedDraft) {
       setDraft(carriedDraft.draft)
-      restoreQuotes(carriedDraft.quotes)
+      restoreQuotes(carriedDraft.quotes, carriedDraft.draft)
 
       const carriedMessage = getExpressDraftCarriedMessage(carriedDraft.source)
 
@@ -253,7 +253,6 @@ const ExpressPage = () => {
           priceText={getProductPriceText(draft.selectedProduct)}
           quoteLoading={quoteStatus === 'loading'}
           submitting={submit.submiting}
-          onQuote={handleQuote}
           onSubmit={submit.handleSubmit}
           onToggleDetail={() => setDetailVisible(current => !current)}
         />
@@ -289,7 +288,7 @@ const ExpressPage = () => {
             onSelect={monthlyPay.handlePaymentTypeSelect}
           />
 
-          {quotes.length > 0 || quoteStatus === 'loading' || draft.quoteStaleReason ? (
+          {quotes.length > 0 || quoteStatus === 'error' ? (
             <ExpressQuoteSection
               plain
               quoteStaleReason={draft.quoteStaleReason}

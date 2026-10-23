@@ -452,7 +452,7 @@ export function swapExpressContacts(draft: ExpressDraft): ExpressDraft {
       clearService: true
     }),
     selectedProduct: null,
-    quoteStaleReason: '收寄地址互换，请重新获取价格'
+    quoteStaleReason: '收寄地址互换'
   }
 
   return resetExpressInsuranceCapability(nextDraft)

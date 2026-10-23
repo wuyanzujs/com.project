@@ -343,9 +343,9 @@ const cases = [
         const stageResponse = await stageExpressWarehouse(draft)
 
         assert.equal(queryResponse.status, false)
-        assert.equal(queryResponse.message, '请先获取并选择产品价格')
+        assert.equal(queryResponse.message, '产品价格尚未就绪，请稍候')
         assert.equal(stageResponse.status, false)
-        assert.equal(stageResponse.message, '请先获取并选择产品价格')
+        assert.equal(stageResponse.message, '产品价格尚未就绪，请稍候')
       } finally {
         await setStorageValue(CACHE_KEYS.cookie, originalCookie)
       }

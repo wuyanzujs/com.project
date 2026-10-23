@@ -261,6 +261,7 @@ export interface ExpressDraft {
   couponNumber: string
   remark: string
   agreementAccepted: boolean
+  /** 报价失效的内部原因；寄件页自动重算，不将其展示为手动取价提示。 */
   quoteStaleReason: string
   scanContext?: ExpressScanContext
 }

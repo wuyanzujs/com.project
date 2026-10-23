@@ -6,6 +6,6 @@ import type { ExpressDraft } from './types'
  * @description 生成报价请求 key
  */
 export function createExpressQuoteRequestKey(draft: ExpressDraft) {
-  // 协议勾选和给快递员的备注不参与询价，变化时不应丢弃正在返回的价格。
-  return JSON.stringify({ ...draft, agreementAccepted: false, remark: '' })
+  // 报价结果、失效文案、协议和备注不属于计价条件，不能触发重复请求或丢弃正在返回的价格。
+  return JSON.stringify({ ...draft, selectedProduct: null, quoteStaleReason: '', agreementAccepted: false, remark: '' })
 }

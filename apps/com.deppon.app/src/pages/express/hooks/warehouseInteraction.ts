@@ -23,7 +23,7 @@ export function consumeExpressWarehouseResult(draft: ExpressDraft) {
 
   return {
     draft: result.warehouse.enabled ? updateExpressWarehouse(draft, result.warehouse) : rejectExpressWarehouse(draft),
-    message: result.warehouse.enabled ? '已回填送货进仓预约信息，请重新获取价格' : '已取消送货进仓服务'
+    message: result.warehouse.enabled ? '已回填送货进仓预约信息' : '已取消送货进仓服务'
   }
 }
 

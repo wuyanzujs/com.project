@@ -276,9 +276,9 @@ export function validateExpressDraft(
   }
 
   if (options.requireProduct && !draft.selectedProduct) {
-    messages.push('请先获取并选择产品价格')
+    messages.push('产品价格尚未就绪，请稍候')
   } else if (options.requireProduct && draft.quoteStaleReason) {
-    messages.push('寄件信息已变化，请重新获取产品价格')
+    messages.push('寄件信息已变化，正在更新产品价格')
   }
 
   if (options.requireAgreement && !draft.agreementAccepted) {

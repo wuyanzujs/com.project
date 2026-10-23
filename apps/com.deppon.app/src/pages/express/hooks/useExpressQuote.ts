@@ -23,6 +23,7 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
   const [quotes, setQuotes] = useState<ExpressProductQuote[]>([])
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const requestKey = createExpressQuoteRequestKey(draft)
+  const quoteRequestKey = useRef(requestKey)
   const latestDraft = useRef(draft)
   const latestRequestKey = useRef(requestKey)
   const startRequest = useCallback(() => setStatus('loading'), [])
@@ -31,9 +32,18 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
 
   latestDraft.current = draft
   latestRequestKey.current = requestKey
+  // 条件变化的首帧就隐藏旧报价，后续 effect 清理请求并启动自动重算。
+  const currentQuote = quoteRequestKey.current === requestKey
 
   useEffect(() => {
+    if (quoteRequestKey.current === requestKey) {
+      return
+    }
+
     invalidateLatestRequest()
+    quoteRequestKey.current = requestKey
+    setQuotes([])
+    setStatus('idle')
   }, [invalidateLatestRequest, requestKey])
 
   const handleQuery = useCallback(async () => {
@@ -66,6 +76,7 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
         if (!response.status || !products.length) {
           const failedDraft = { ...availableDraft, selectedProduct: null }
 
+          quoteRequestKey.current = createExpressQuoteRequestKey(failedDraft)
           setQuotes([])
           latestDraft.current = failedDraft
           setDraft(failedDraft)
@@ -81,6 +92,8 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
         const defaultProduct = selectDefaultExpressQuote(products, availability?.recommendDczp === true)
         const nextDraft = selectExpressProduct(availableDraft, defaultProduct)
 
+        // 产品、保价能力等由本次报价回填，记录回填后的条件，避免把结果当作新的输入再次计价。
+        quoteRequestKey.current = createExpressQuoteRequestKey(nextDraft)
         setQuotes(products)
         latestDraft.current = nextDraft
         setDraft(nextDraft)
@@ -93,22 +106,34 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
   const handleSelectProduct = useCallback(
     (product: ExpressProductQuote) => {
       onProductChange()
-      setDraft(current => selectExpressProduct(current, product))
+      setDraft(current => {
+        const nextDraft = selectExpressProduct(current, product)
+
+        quoteRequestKey.current = createExpressQuoteRequestKey(nextDraft)
+        latestDraft.current = nextDraft
+        return nextDraft
+      })
     },
     [onProductChange, setDraft]
   )
 
-  const restore = useCallback((nextQuotes: ExpressProductQuote[]) => {
-    setQuotes(nextQuotes)
-    setStatus(nextQuotes.length ? 'done' : 'idle')
-  }, [])
+  const restore = useCallback(
+    (nextQuotes: ExpressProductQuote[], restoredDraft = latestDraft.current) => {
+      invalidateLatestRequest()
+      quoteRequestKey.current = createExpressQuoteRequestKey(restoredDraft)
+      latestDraft.current = restoredDraft
+      setQuotes(nextQuotes)
+      setStatus(nextQuotes.length ? 'done' : 'idle')
+    },
+    [invalidateLatestRequest]
+  )
 
   return {
     onQuery: handleQuery,
     onSelectProduct: handleSelectProduct,
-    quotes,
+    quotes: currentQuote ? quotes : [],
     restore,
-    status
+    status: currentQuote ? status : ('idle' as const)
   }
 }
 

@@ -187,7 +187,7 @@ export function ExpressCouponSheet({ controller, couponNumber, onClose, visible 
       ))}
 
       {!controller.available.length && !controller.unavailable.length ? (
-        <Text className='express-coupon-sheet__empty'>{controller.message || '获取产品价格后可查询适用优惠券'}</Text>
+        <Text className='express-coupon-sheet__empty'>{controller.message || '计价完成后自动匹配适用优惠券'}</Text>
       ) : (
         <View className='express-coupon-sheet__end'>
           <Text className='express-coupon-sheet__end-text'>已经到底了</Text>

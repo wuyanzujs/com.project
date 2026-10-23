@@ -201,7 +201,7 @@ export function buildInsurancePriceRequest(draft: ExpressDraft, capability?: Exp
   const productCode = getDraftProductCode(draft)
 
   if (!productCode) {
-    throw new Error('请先获取并选择产品价格')
+    throw new Error('产品价格尚未就绪，请稍候')
   }
 
   const validationMessages = validateExpressInsurance(draft, capability)

@@ -276,7 +276,7 @@ export function useExpressWarehouse({ draft, setDraft }: UseExpressWarehouseOpti
     if (currentDraft.selectedProduct && !preparedDraft.selectedProduct) {
       latestDraft.current = preparedDraft
       setDraft(preparedDraft)
-      setScreeningMessage('送货进仓规则已更新，请重新获取产品价格')
+      setScreeningMessage('送货进仓规则已更新，价格将自动重算')
       return { draft: preparedDraft, proceed: false }
     }
 
@@ -308,7 +308,7 @@ export function useExpressWarehouse({ draft, setDraft }: UseExpressWarehouseOpti
       })
       latestDraft.current = preparedDraft
       setDraft(preparedDraft)
-      setScreeningMessage('已开启送货进仓，请完善预约信息并重新获取价格')
+      setScreeningMessage('已开启送货进仓，请完善预约信息')
       return { draft: preparedDraft, proceed: false }
     } else if (decision === 'REJECT') {
       preparedDraft = rejectExpressWarehouse(preparedDraft)
