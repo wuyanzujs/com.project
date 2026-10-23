@@ -348,6 +348,31 @@
     24 文件 295 vitest 用例 / 365 个 cjs 用例 / barrel / 模块体积 / 路由 / 平台契约 / 体积门禁）；
     JS 由 Metro 热更新验证，未执行 RN bundle、Gradle 或 Xcode。
 
+### 2026-10-22 寄件页初始态区块门控对齐生产端
+
+56. 差异归因：同机对比截图确认左侧长截图是 RN 包，右侧是生产 `com.deppon.dpapp 4.0.6.8`。左侧「寄件地址变化，请重新获取价格」只存在于
+    `services/express/core/express.mutations.ts`，生产 4.0.6.8/4.0.7.0 的 `libapp.so` 均无此文案；真机 `RKStorage` 的 2 小时草稿
+    （sender 已填、consignee 空、goods 空、quoteStaleReason 已置）恢复后把失效态画成了整块「预计送达时间」。
+57. 生产条件取证：真机拉包解包得 133 MB base.apk / 19 MB `libapp.so` / 709 个 Dart 文件，AOT 保留
+    `contactPickupTimeVisible`、`productVisible`、`couponEntity`、`RealAuthControllerEx|isAlreadyAuth`。运行态三档对比：p30 空表单
+    无实名条/取件切换/取件时间行；当前仅寄件人时无取件时间行；p17 双方地址+货物+报价才出现「今天 一小时内」。
+    `queryRealNameAuth` 探针显示账号已实名，`queryNewCouponList` 可用/不可用券均为空。
+58. 新增服务层谓词：`isExpressOrderFormReady(draft)`（收寄详细地址 + 货物名称 + 重量）与
+    `shouldShowExpressCouponRow(state)`（已选券/有券/报价查询开始后）；页面只消费谓词，不在页面新增决策函数。
+59. 页面门控：实名条改由 `useExpressRealName` 查 `realNameService.query()`，仅已登录且未实名时渲染；取件切换按寄件地址、
+    期望上门时间按表单齐备分别门控；预计送达去掉 `quoteStaleReason` 渲染条件（失效原因仅保留给自动重算），
+    并在草稿恢复时清理无产品时的失效原因；优惠券行按谓词显隐；保价卡按表单齐备 + 新鲜保价能力显隐，
+    文案改为生产端「保价 / 未保价物品最高赔付3倍运费」，去掉「选填」角标。
+60. 测试与验证：新增 `realname-banner.test.cjs`、`panel-gates.test.cjs` 与 `draft.test.cjs` 门控用例（cjs 371）；
+    `pnpm verify:app` exit 0（tsc / eslint / stylelint / 24 文件 295 vitest / 371 cjs / barrel / 模块体积 / 路由 /
+    平台契约 / 体积门禁）。未执行 RN bundle、Gradle 或 Xcode。
+61. 收寄件人空态灰底修复：`ExpressContactPanel` 的灰底由卡片 `margin` 改为绝对定位 `__bg` 视觉层，灰底不再参与行布局；
+    寄件人/收件人图标、文字、地址簿恢复同列（真机 x=92/276，灰底仍为 77..1363 × 238）；
+    同时补生产端 8dp 两行间距（`express-contact-card--spaced`）与地址簿内容 4dp 左移（`padding-right: 8`）。
+62. 真机验证（用户明确要求出包）：Taro bundle + `assembleDebug -PtargetAbis=arm64-v8a -PreactNativeArchitectures=arm64-v8a --offline`
+    + `adb push` / `pm install -r`；空表单与仅寄件人两档均确认实名条、取件切换、期望上门时间、优惠券、保价按门控显隐，
+    收寄件人两行图标 x 完全对齐。`pnpm verify:app` exit 0；bundle raw +75.9 KiB / gzip +11.2 KiB，仍在 150 KiB 容差内。
+
 ## 五、执行顺序
 
 1. 新领域禁止再用运行时 `export *`（门禁已是 0 基线）；新增服务时照 `expand-service-barrels.mjs` 生成的显式风格写。

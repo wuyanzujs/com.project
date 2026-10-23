@@ -12,6 +12,8 @@ import {
   expressDraftBridge,
   expressDraftStorage,
   expressGoodsBridge,
+  getFreshExpressInsuranceCapability,
+  isExpressOrderFormReady,
   mapContactToExpressContact,
   setExpressContact,
   swapExpressContacts,
@@ -53,6 +55,7 @@ import { useExpressMonthlyPay } from './hooks/useExpressMonthlyPay'
 import { useExpressPickupTime } from './hooks/useExpressPickupTime'
 import { useExpressPrivacy } from './hooks/useExpressPrivacy'
 import { useExpressQuote } from './hooks/useExpressQuote'
+import { useExpressRealName } from './hooks/useExpressRealName'
 import { useExpressServicePoint } from './hooks/useExpressServicePoint'
 import { useExpressSubmit } from './hooks/useExpressSubmit'
 import { useExpressWarehouse } from './hooks/useExpressWarehouse'
@@ -129,6 +132,7 @@ const ExpressPage = () => {
   const monthlyPay = useExpressMonthlyPay({ draft, updateService })
   const submit = useExpressSubmit({ draft, warehouseController })
   const entryNav = useExpressEntryNavigation({ draft })
+  const realName = useExpressRealName()
   const { weatherText } = useExpressWeather({ draft })
 
   useExpressAutoQuote({
@@ -137,6 +141,9 @@ const ExpressPage = () => {
     quoteStatus,
     onQuote: handleQuote
   })
+
+  const formReady = isExpressOrderFormReady(draft)
+  const insuranceVisible = formReady && Boolean(getFreshExpressInsuranceCapability(draft))
 
   const handleOpenGoods = useCallback(() => {
     navigateToAppRoute(APP_ROUTES.expressGoods)
@@ -265,15 +272,16 @@ const ExpressPage = () => {
       surface='page'
     >
       <ScrollView className='express-page' scrollY style={{ flex: 1 }}>
-        <ExpressHeader onOpenRealName={entryNav.handleOpenRealName} />
+        {realName.visible ? <ExpressHeader onOpenRealName={entryNav.handleOpenRealName} /> : null}
 
         <ExpressContactPanel draft={draft} onCreateContact={handleContactCreate} onSelectContact={handleContactSelect} onSwapContacts={handleSwapContacts} />
 
         <ExpressPickupSection
-          hasSenderAddress={Boolean(draft.sender)}
+          hasSenderAddress={Boolean(draft.sender?.address)}
           needContact={draft.service.needContact}
           pickup={draft.pickup}
           pickupTimeController={pickupTimeController}
+          pickupTimeReady={formReady}
           onModeChange={dispatch => updatePickup({ dispatch })}
           onNeedContactChange={needContact => updateService({ needContact })}
           onOpenStations={entryNav.handleOpenStations}
@@ -289,10 +297,9 @@ const ExpressPage = () => {
             onSelect={monthlyPay.handlePaymentTypeSelect}
           />
 
-          {quotes.length > 0 || quoteStatus === 'loading' || draft.quoteStaleReason ? (
+          {quotes.length > 0 || quoteStatus === 'loading' || (formReady && quoteStatus === 'error') ? (
             <ExpressQuoteSection
               plain
-              quoteStaleReason={draft.quoteStaleReason}
               quoteStatus={quoteStatus}
               quotes={quotes}
               selectedProduct={draft.selectedProduct}
@@ -303,10 +310,10 @@ const ExpressPage = () => {
 
           <ExpressWeatherBanner text={weatherText} onPress={handleOpenGoods} />
 
-          <ExpressCouponCard controller={couponController} couponNumber={draft.couponNumber} />
+          {couponController.showRow ? <ExpressCouponCard controller={couponController} couponNumber={draft.couponNumber} /> : null}
         </ExpressBaseInfoCard>
 
-        <ExpressInsuranceCard controller={insuranceController} draft={draft} />
+        {insuranceVisible ? <ExpressInsuranceCard controller={insuranceController} draft={draft} /> : null}
 
         <ExpressServiceSection
           draft={draft}

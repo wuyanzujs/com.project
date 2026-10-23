@@ -17,8 +17,10 @@ export interface ExpressPickupSectionProps {
   pickup: ExpressDraft['pickup']
   pickupTimeController: ExpressPickupTimeController
   needContact: ExpressFlag
-  // 取件时段依赖寄件地址，选定地址后才展示时间入口。
+  // 取件模式切换依赖寄件地址。
   hasSenderAddress: boolean
+  // 期望上门时间依赖收寄双方地址与货物齐备。
+  pickupTimeReady: boolean
   onModeChange: (dispatch: ExpressFlag) => void
   onNeedContactChange: (needContact: ExpressFlag) => void
   onOpenStations: () => void
@@ -34,6 +36,7 @@ export function ExpressPickupSection({
   pickupTimeController,
   needContact,
   hasSenderAddress,
+  pickupTimeReady,
   onModeChange,
   onNeedContactChange,
   onOpenStations
@@ -49,51 +52,57 @@ export function ExpressPickupSection({
 
   return (
     <View className='express-pickup-section'>
-      <View className='express-pickup-section__modes'>
-        <View
-          className={
-            isDoorPickup
-              ? 'express-pickup-section__notch express-pickup-section__notch--top-right'
-              : 'express-pickup-section__notch express-pickup-section__notch--top-left'
-          }
-        />
-        <View
-          className={
-            isDoorPickup
-              ? 'express-pickup-section__notch express-pickup-section__notch--main-right'
-              : 'express-pickup-section__notch express-pickup-section__notch--main-left'
-          }
-        />
-        <View
-          className={
-            isDoorPickup ? 'express-pickup-section__cap express-pickup-section__cap--left' : 'express-pickup-section__cap express-pickup-section__cap--right'
-          }
-        />
-        <AppPressable
-          accessibilityLabel='选择上门取件'
-          className={isDoorPickup ? 'express-pickup-section__mode express-pickup-section__mode--active' : 'express-pickup-section__mode'}
-          flex
-          onPress={() => onModeChange('Y')}
-        >
-          <Text className={isDoorPickup ? 'express-pickup-section__mode-text express-pickup-section__mode-text--active' : 'express-pickup-section__mode-text'}>
-            上门取件
-          </Text>
-        </AppPressable>
-        <AppPressable
-          accessibilityLabel='选择自送服务点'
-          className={isDoorPickup ? 'express-pickup-section__mode' : 'express-pickup-section__mode express-pickup-section__mode--active'}
-          flex
-          onPress={() => onModeChange('N')}
-        >
-          <Text className={isDoorPickup ? 'express-pickup-section__mode-text' : 'express-pickup-section__mode-text express-pickup-section__mode-text--active'}>
-            自送服务点
-          </Text>
-        </AppPressable>
-      </View>
+      {hasSenderAddress ? (
+        <View className='express-pickup-section__modes'>
+          <View
+            className={
+              isDoorPickup
+                ? 'express-pickup-section__notch express-pickup-section__notch--top-right'
+                : 'express-pickup-section__notch express-pickup-section__notch--top-left'
+            }
+          />
+          <View
+            className={
+              isDoorPickup
+                ? 'express-pickup-section__notch express-pickup-section__notch--main-right'
+                : 'express-pickup-section__notch express-pickup-section__notch--main-left'
+            }
+          />
+          <View
+            className={
+              isDoorPickup ? 'express-pickup-section__cap express-pickup-section__cap--left' : 'express-pickup-section__cap express-pickup-section__cap--right'
+            }
+          />
+          <AppPressable
+            accessibilityLabel='选择上门取件'
+            className={isDoorPickup ? 'express-pickup-section__mode express-pickup-section__mode--active' : 'express-pickup-section__mode'}
+            flex
+            onPress={() => onModeChange('Y')}
+          >
+            <Text
+              className={isDoorPickup ? 'express-pickup-section__mode-text express-pickup-section__mode-text--active' : 'express-pickup-section__mode-text'}
+            >
+              上门取件
+            </Text>
+          </AppPressable>
+          <AppPressable
+            accessibilityLabel='选择自送服务点'
+            className={isDoorPickup ? 'express-pickup-section__mode' : 'express-pickup-section__mode express-pickup-section__mode--active'}
+            flex
+            onPress={() => onModeChange('N')}
+          >
+            <Text
+              className={isDoorPickup ? 'express-pickup-section__mode-text' : 'express-pickup-section__mode-text express-pickup-section__mode-text--active'}
+            >
+              自送服务点
+            </Text>
+          </AppPressable>
+        </View>
+      ) : null}
 
       {isDoorPickup ? (
         <View className='express-pickup-section__body'>
-          {hasSenderAddress ? (
+          {pickupTimeReady ? (
             <>
               <AppPressable
                 accessibilityLabel={`期望上门时间${pickupTime}`}

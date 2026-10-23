@@ -2,9 +2,13 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
+const { CACHE_KEYS, createCacheStorageKey } = require('@/cache/keys')
+const { getStorageValue, removeStorageValue, setStorageValue } = require('@/cache/storage')
+const { shouldShowExpressCouponRow } = require('@/services/express/billing/couponOrder.rules')
 const {
   applyExpressPickupTime,
   createExpressDraft,
+  isExpressOrderFormReady,
   selectExpressProduct,
   setExpressContact,
   swapExpressContacts,
@@ -15,6 +19,7 @@ const {
   validateExpressDraft
 } = require('@/services/express/core/express.draft')
 const { updateExpressDeliveryPreference } = require('@/services/express/delivery/deliveryPreference.rules')
+const { expressDraftStorage } = require('@/services/express/draft/draftStorage')
 
 const { createValidExpressDraft, expressProduct, senderContact } = require('../fixtures/express.cjs')
 
@@ -152,6 +157,57 @@ const cases = [
       assert.equal(senderUpdated.selectedProduct, null)
       assert.equal(senderUpdated.pickup.time, '')
       assert.equal(senderUpdated.quoteStaleReason, '寄件地址变化，请重新获取价格')
+    }
+  },
+  {
+    name: 'express form readiness and coupon row visibility follow production state gates',
+    run() {
+      const empty = createExpressDraft()
+      const draft = createValidExpressDraft()
+
+      assert.equal(isExpressOrderFormReady(empty), false)
+      assert.equal(isExpressOrderFormReady(draft), true)
+      assert.equal(isExpressOrderFormReady({ ...draft, consignee: null }), false)
+      assert.equal(isExpressOrderFormReady({ ...draft, sender: { ...draft.sender, address: '  ' } }), false)
+      assert.equal(isExpressOrderFormReady({ ...draft, goods: { ...draft.goods, name: '' } }), false)
+      assert.equal(isExpressOrderFormReady({ ...draft, goods: { ...draft.goods, weight: 0 } }), false)
+
+      assert.equal(shouldShowExpressCouponRow({ available: 0, unavailable: 0, requestReady: false, selected: false, status: 'idle' }), false)
+      assert.equal(shouldShowExpressCouponRow({ available: 0, unavailable: 0, requestReady: false, selected: true, status: 'idle' }), true)
+      assert.equal(shouldShowExpressCouponRow({ available: 1, unavailable: 0, requestReady: true, selected: false, status: 'done' }), true)
+      assert.equal(shouldShowExpressCouponRow({ available: 0, unavailable: 1, requestReady: true, selected: false, status: 'done' }), true)
+      assert.equal(shouldShowExpressCouponRow({ available: 0, unavailable: 0, requestReady: true, selected: false, status: 'loading' }), true)
+      assert.equal(shouldShowExpressCouponRow({ available: 0, unavailable: 0, requestReady: true, selected: false, status: 'done' }), true)
+      assert.equal(shouldShowExpressCouponRow({ available: 0, unavailable: 0, requestReady: true, selected: false, status: 'idle' }), false)
+      assert.equal(shouldShowExpressCouponRow({ available: 0, unavailable: 0, requestReady: true, selected: false, status: 'error' }), true)
+    }
+  },
+  {
+    name: 'restored draft drops a stale quote reason when no product is selected',
+    async run() {
+      const storageKey = createCacheStorageKey(CACHE_KEYS.expressDraft)
+      const originalStorageValue = getStorageValue(storageKey)
+
+      try {
+        await expressDraftStorage.save({
+          ...createValidExpressDraft(),
+          selectedProduct: null,
+          quoteStaleReason: '寄件地址变化，请重新获取价格'
+        })
+        assert.equal(expressDraftStorage.restore().quoteStaleReason, '')
+
+        await expressDraftStorage.save({
+          ...createValidExpressDraft(),
+          quoteStaleReason: '货物信息变化，请重新获取价格'
+        })
+        assert.equal(expressDraftStorage.restore().quoteStaleReason, '货物信息变化，请重新获取价格')
+      } finally {
+        if (originalStorageValue) {
+          await setStorageValue(storageKey, originalStorageValue)
+        } else {
+          await removeStorageValue(storageKey)
+        }
+      }
     }
   }
 ]

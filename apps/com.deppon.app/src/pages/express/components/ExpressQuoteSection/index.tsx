@@ -18,7 +18,6 @@ const EXPRESS_MEDAL_CODES = ['TKDR', 'TKCR', 'XJTK', 'DJTK']
 interface ExpressQuoteSectionProps {
   /** 嵌入基础信息卡时使用行样式。 */
   plain?: boolean
-  quoteStaleReason: string
   quoteStatus: 'idle' | 'loading' | 'done' | 'error'
   quotes: ExpressProductQuote[]
   selectedProduct: ExpressProductQuote | null
@@ -26,28 +25,17 @@ interface ExpressQuoteSectionProps {
   onSelectProduct: (product: ExpressProductQuote) => void
 }
 
-export function ExpressQuoteSection({
-  plain = false,
-  quoteStaleReason,
-  quoteStatus,
-  quotes,
-  selectedProduct,
-  onQuote,
-  onSelectProduct
-}: ExpressQuoteSectionProps) {
+export function ExpressQuoteSection({ plain = false, quoteStatus, quotes, selectedProduct, onQuote, onSelectProduct }: ExpressQuoteSectionProps) {
   if (quotes.length === 0) {
-    // 收寄信息未齐、正在试算时不渲染「预计送达时间」区块，
-    // 只有取件方式/地址变化等失效原因和试算失败才显示提示与「重新获取」。
-    const pendingMessage = quoteStatus === 'loading' ? '' : quoteStaleReason || (quoteStatus === 'error' ? '获取失败，请检查信息后重试' : '')
-
-    if (!pendingMessage) {
+    // 报价加载中不占位；试算失败时展示重试入口。
+    if (quoteStatus !== 'error') {
       return null
     }
 
     return (
       <ExpressSection plain={plain} title='预计送达时间'>
         <View className='express-quote-status'>
-          <Text className='express-quote-status__text'>{pendingMessage}</Text>
+          <Text className='express-quote-status__text'>获取失败，请检查信息后重试</Text>
           <AppPressable accessibilityLabel='重新获取产品价格' className='express-quote-status__retry' onPress={onQuote}>
             <Text className='express-quote-status__retry-text'>重新获取</Text>
           </AppPressable>

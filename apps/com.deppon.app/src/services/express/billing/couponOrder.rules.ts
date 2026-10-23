@@ -160,3 +160,22 @@ export function createExpressCouponRequestKey(draft: ExpressDraft) {
 
   return request ? JSON.stringify(request) : ''
 }
+
+/**
+ *
+ * @param state 优惠券行状态
+ * @description 有券、已选券或报价查询开始后才展示优惠券行
+ */
+export function shouldShowExpressCouponRow(state: {
+  available: number
+  unavailable: number
+  requestReady: boolean
+  selected: boolean
+  status: 'idle' | 'loading' | 'done' | 'error'
+}) {
+  if (state.selected || state.available > 0 || state.unavailable > 0) {
+    return true
+  }
+
+  return state.requestReady && state.status !== 'idle'
+}

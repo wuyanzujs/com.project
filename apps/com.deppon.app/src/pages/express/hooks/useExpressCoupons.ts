@@ -9,6 +9,7 @@ import {
   createExpressCouponQueryRequest,
   createExpressCouponRequestKey,
   expressDraftStorage,
+  shouldShowExpressCouponRow,
   updateExpressCouponNumber
 } from '@/services/express'
 import type { ExpressDraft } from '@/services/express'
@@ -183,11 +184,20 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
     })
   }, [])
 
+  const showRow = shouldShowExpressCouponRow({
+    available: available.length,
+    unavailable: unavailable.length,
+    requestReady: Boolean(requestKey),
+    selected: Boolean(draft.couponNumber),
+    status
+  })
+
   return {
     available,
     loginRequired: !hasValidSession(),
     message,
     requestReady: Boolean(requestKey),
+    showRow,
     status,
     unavailable,
     onApplyCode: applyCoupon,
