@@ -458,25 +458,6 @@
     「签收密码、双人派送」、通电验机无说明入口、展开态卡片增高正常。未执行 RN bundle、Gradle 或 Xcode。
     未处理：价格占位「--」生产端短横更宽（左组整体右移 19 设计 px）、页头比生产短 4 物理 px。
 
-### 2026-10-24 预计送达时间产品卡按小程序参考实现还原
-
-89. 归因：寄件页产品卡此前「200×152 拉伸底图 + ribbon View 叠字」与生产端不符。参照
-    `D:\10531845\Desktop\CZH-DEV\mp-taro3`（`send/express/basic/product/item`）重写
-    `ExpressQuoteSection`：底图 1–4.png 与 RN 现有 `express_product_bg_*.png` 是同素材两次导出
-    （深色掩膜 IoU 0.97+），卡片恢复原始 184×152（slot 200×192：上 24 留给「惊喜优惠」角标外挂、
-    槽尾 16 即卡间距），标题 22dp 左对齐（短名 pl-16/长名 pl-8，选中白/未选 #111）、
-    时效行 mt-8 h-40 蓝 `#1957ff`（分段 20/26semibold/20，整段 22）、价格行 mt-4 h-36 全 24 常规
-    （数字不再放大加粗）、高端勋章改常显（top-14 right-8）、「惊喜优惠」角标移出 overflow 卡片
-    （slot 级 right:0 top:2，白描边 2px + 282° 红渐变 `#fa7073→#f83a3c`，radius 20/20/20/0）。
-90. 新 token：`$dp-color-quote-time`、`$dp-color-quote-limit-start/end`、`$dp-radius-20`，
-    `APP_STYLE_COLORS.quote` 同步登记；cjs 测试断言同步新价格结构并补 `@/styles/nativeTokens`
-    依赖映射。真机 Metro 量测：卡 353×292px/间距 31px/圆角、选中描边 #363b4d（蓝环消失）、
-    渐变带 91px 齐平卡顶（采样与底图逐点吻合）、标题/时效/价格行位与生产 p17 的 mp-taro3 流式
-    布局推算值一致；未选卡顶部 `#edefff` 实心带经 APK 底图与小程序 4.png 双重比对确认为生产
-    原生设计（与选中带同构，掩膜差 0.072%），非实现偏差。`pnpm verify:app` exit 0。
-    未处理：报价接口偶发失败（失败态文案与重试入口按既有设计）、区块标题行下间距比生产约多
-    12dp（ExpressSection 行高 82 为整页共用，未单独调）。
-
 ### 2026-10-24 登录协议确认弹层对齐生产端
 
 84. 行为同步：登录页协议未勾选时「获取验证码」不再直接发送（原先完全不校验）、「立即登录」不再弹 toast，
@@ -501,6 +482,50 @@
     样式基线 614 / 体积门禁）。未执行 RN bundle、Gradle 或 Xcode。
     未处理：链接行换行点与生产差 2 字（生产在《德后断行、RN 整词换行），两行结构一致不追。
 
+### 2026-10-24 预计送达时间产品卡按小程序参考实现还原
+
+89. 归因：寄件页产品卡此前「200×152 拉伸底图 + ribbon View 叠字」与生产端不符。参照
+    `D:\10531845\Desktop\CZH-DEV\mp-taro3`（`send/express/basic/product/item`）重写
+    `ExpressQuoteSection`：底图 1–4.png 与 RN 现有 `express_product_bg_*.png` 是同素材两次导出
+    （深色掩膜 IoU 0.97+），卡片恢复原始 184×152（slot 200×192：上 24 留给「惊喜优惠」角标外挂、
+    槽尾 16 即卡间距），标题 22dp 左对齐（短名 pl-16/长名 pl-8，选中白/未选 #111）、
+    时效行 mt-8 h-40 蓝 `#1957ff`（分段 20/26semibold/20，整段 22）、价格行 mt-4 h-36 全 24 常规
+    （数字不再放大加粗）、高端勋章改常显（top-14 right-8）、「惊喜优惠」角标移出 overflow 卡片
+    （slot 级 right:0 top:2，白描边 2px + 282° 红渐变 `#fa7073→#f83a3c`，radius 20/20/20/0）。
+90. 新 token：`$dp-color-quote-time`、`$dp-color-quote-limit-start/end`、`$dp-radius-20`，
+    `APP_STYLE_COLORS.quote` 同步登记；cjs 测试断言同步新价格结构并补 `@/styles/nativeTokens`
+    依赖映射。真机 Metro 量测：卡 353×292px/间距 31px/圆角、选中描边 #363b4d（蓝环消失）、
+    渐变带 91px 齐平卡顶（采样与底图逐点吻合）、标题/时效/价格行位与生产 p17 的 mp-taro3 流式
+    布局推算值一致；未选卡顶部 `#edefff` 实心带经 APK 底图与小程序 4.png 双重比对确认为生产
+    原生设计（与选中带同构，掩膜差 0.072%），非实现偏差。`pnpm verify:app` exit 0。
+    未处理：报价接口偶发失败（失败态文案与重试入口按既有设计）、区块标题行下间距比生产约多
+    12dp（ExpressSection 行高 82 为整页共用，未单独调）。
+
+### 2026-10-24 静态门禁提速（5min → 约 100s）
+
+91. 实测账单（全绿一轮 ≈300s）：eslint 122s / stylelint 52s / cjs 371 用例 34s / tsc 29s /
+    style-governance 契约测试 28s（其中单个用例 17.6s——每条断言都 spawn 一个 `node stylelint.mjs`
+    冷启动整个引擎）/ vitest 10s / 其余 9 个秒级 check 合计约 20s。
+92. P0 缓存三件套：`lint` 加 `--cache`（mtime 策略，cache-strategy content 命中时仍要逐文件哈希
+    读取反而更慢）、`lint:styles` 加 `--cache`、`typecheck` 加 `--incremental`；三份缓存文件
+    （.eslintcache / .stylelintcache / tsconfig.tsbuildinfo）已进 .gitignore。单跑热缓存：
+    eslint 17s、stylelint 16s、tsc 9s。
+93. P1 编排：新增零依赖 `scripts/verify-static.mjs`——11 个秒级 check 串行快速失败在前，
+    6 个重型门禁（typecheck/lint/lint:styles/test:unit/test:style-governance/test:business-rules）
+    并行在后，完成即打印各自耗时、失败汇总输出。`check:business-rules` 拆成两半：预算检查留在
+    原脚本（快相），371 个用例挪进新 `scripts/test-business-rules.cjs`（TZ=Asia/Shanghai、
+    concurrency=4 不变）挂 `test:business-rules`。契约测试 `formal verify includes the strict
+    style gate` 同步改为断言编排器文件里的门禁清单。
+94. P2：契约测试里 stylelint 子进程断言改为进程内 `stylelint.lint({ code, codeFilename })`，
+    套件 28s → 16s（剩余大头是 CLI 固件用例的固有 spawn，已并行化不占关键路径）。
+95. 效果与坑：热缓存全绿墙钟 ≈97–107s（原 ≈300s）；并行下各门禁仍比单跑慢 2–4 倍（16 核实测
+    仍互相拖慢，疑似 I/O 串行化/功耗墙，墙钟收益约 30% 但为正）。另注意：后台常驻的 Taro watch
+    会显著拖慢全量验证（实测有 watch 时单门禁膨胀 2–8 倍），跑 verify 前先停 dev:rn。
+96. 审查修复：旧 `check:business-rules` / 根 `check:app-business-rules` 保留执行用例的语义，快速阶段改用
+    `check:business-test-structure`（`--structure-only`），重型阶段的 `test:business-rules` 复用旧入口，领域校验
+    与失败退出码保持一致。新增 `prepare-lint-cache.mjs`，ESLint / Stylelint 运行前按本地规则目录源码哈希
+    判断是否清除旧缓存，未变更规则时继续复用；对应源码哈希文件也加入 `.gitignore`。
+
 ## 五、执行顺序
 
 1. 新领域禁止再用运行时 `export *`（门禁已是 0 基线）；新增服务时照 `expand-service-barrels.mjs` 生成的显式风格写。
@@ -508,3 +533,9 @@
    不要再往 `check-rn-boundaries` 写「某文件必须包含某字符串」。
 3. 打包体积门禁已落地；下一轮减体积先做归因（sourcemap / Metro module id），不要再用“模块数 / 源码 KB”
    估算安装增量。`lodash` 的结论是本轮不值得本地 patch；若要动，优先给 Taro 上游提 PR，并把补丁绑定到 Taro 版本。
+4. 新增 / 改名 / 拆分出业务 scss（含共享组件自带的 index.scss）后，**先**跑
+   `pnpm --filter com.deppon.app run update:styles-baseline` 登记基线，**再**跑 verify:app——
+   零债务的新文件也必须登记。2026-10-24 起 11 个秒级 check 已前置并行编排器首段，忘登记会在
+   20s 内报「尚未登记」，不再白烧两分钟；`verify:static` 重活由 `scripts/verify-static.mjs`
+   并行编排，异常时看「[门禁名] ✗」汇总段定位。改动门禁组成要同步改
+   `style-governance-lib.test.mjs` 的 formal verify 契约。

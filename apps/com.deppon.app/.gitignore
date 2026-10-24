@@ -67,6 +67,13 @@ yarn-error.log
 # testing
 /coverage
 
+# Static gate caches (eslint --cache / stylelint --cache / tsc --incremental)
+/.eslintcache
+/.eslintcache.rules
+/.stylelintcache
+/.stylelintcache.rules
+/tsconfig.tsbuildinfo
+
 /android/app/src/main/java/com/deppon/app/generated
 
 ## taro-react-native-release

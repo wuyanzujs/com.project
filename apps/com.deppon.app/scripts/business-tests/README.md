@@ -1,6 +1,6 @@
 # 业务测试
 
-业务规则和集成测试使用 Node.js 自带的 `node:test`，不新增测试框架依赖。`scripts/check-business-rules.cjs` 只负责发现测试文件、选择领域和启动运行器，继续由 `pnpm verify:app` 调用。
+业务规则和集成测试使用 Node.js 自带的 `node:test`，不新增测试框架依赖。`scripts/check-business-rules.cjs` 负责检查文件预算、选择领域和启动运行器，`test:business-rules` 复用同一入口。`pnpm verify:app` 在快速阶段运行 `check:business-test-structure`，在并行阶段运行 `test:business-rules`；原有测试命令继续执行用例。
 
 ## 运行
 
@@ -19,6 +19,8 @@ pnpm --filter com.deppon.app run check:business-rules flows
 ```
 
 未知领域会报错退出，不会静默跳过。运行器固定测试时区为 `Asia/Shanghai`，每个文件在独立进程中运行，最多同时运行四个文件。同一文件内测试顺序执行，避免旧用例临时替换 API 时相互干扰。
+
+仅检查目录结构与文件预算、不执行用例时，运行 `pnpm --filter com.deppon.app run check:business-test-structure`。
 
 ## 目录
 

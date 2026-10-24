@@ -6,6 +6,10 @@ import path from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
 
+import eslint from 'eslint'
+import stylelint from 'stylelint'
+
+import { prepareLintCache } from './prepare-lint-cache.mjs'
 import {
   analyzeNativePressableContract,
   analyzeNativeTouchMinimum,
@@ -832,19 +836,14 @@ test('collectProjectSnapshot rejects direct RN pressable bypasses outside the sh
   assert.match(current.systemFailures.join('\n'), /SmallPressable\.tsx:3 不能直接使用 RN TinyPressable/)
 })
 
-test('stylelint contract rejects unsupported RN style functions and units', () => {
-  const stylelintScriptPath = path.join(workspaceRoot, 'apps/com.deppon.app/node_modules/stylelint/bin/stylelint.mjs')
-  const invalid = run(process.execPath, [stylelintScriptPath, '--stdin-filename', 'src/pages/example/index.scss'], {
-    cwd: path.join(workspaceRoot, 'apps/com.deppon.app'),
-    input: '.example { width: 2ch; background: repeating-conic-gradient(red, blue); }\n'
-  })
-  const valid = run(process.execPath, [stylelintScriptPath, '--stdin-filename', 'src/pages/example/index.scss'], {
-    cwd: path.join(workspaceRoot, 'apps/com.deppon.app'),
-    input: '.example { width: 2px; transform: rotate(2deg); }\n'
-  })
+test('stylelint contract rejects unsupported RN style functions and units', async () => {
+  const codeFilename = 'src/pages/example/index.scss'
+  const lint = code => stylelint.lint({ code, codeFilename })
+  const invalid = await lint('.example { width: 2ch; background: repeating-conic-gradient(red, blue); }\n')
+  const valid = await lint('.example { width: 2px; transform: rotate(2deg); }\n')
 
-  assert.equal(invalid.status !== 0, true, invalid.stdout)
-  assert.equal(valid.status, 0, valid.stderr)
+  assert.equal(invalid.errored, true, invalid.output)
+  assert.equal(valid.errored, false, valid.output)
 
   const migratedCases = [
     { input: '.example { position: fixed; }', message: 'position' },
@@ -856,13 +855,10 @@ test('stylelint contract rejects unsupported RN style functions and units', () =
   ]
 
   for (const { input, message } of migratedCases) {
-    const result = run(process.execPath, [stylelintScriptPath, '--stdin-filename', 'src/pages/example/index.scss'], {
-      cwd: path.join(workspaceRoot, 'apps/com.deppon.app'),
-      input: input + '\n'
-    })
+    const result = await lint(input + '\n')
 
-    assert.equal(result.status !== 0, true, `${message} 未被拦截：${result.stdout}`)
-    assert.match(`${result.stdout}${result.stderr}`, new RegExp(message))
+    assert.equal(result.errored, true, `${message} 未被拦截：${result.output}`)
+    assert.match(result.output, new RegExp(message))
   }
 })
 
@@ -1626,12 +1622,92 @@ test('Android and iOS releases use the reusable baseline ratchet contract', () =
   assert.match(contract, /check-style-governance\.mjs/)
 })
 
+test('local rule changes invalidate warm ESLint results without disabling the cache', async t => {
+  const root = createProjectFixture(t, { 'probe.js': 'var probe = 1\n', 'rules/nested/local.js': '// allowed\n' })
+  const cacheFile = path.join(root, '.eslintcache')
+  const rulesDirectory = path.join(root, 'rules')
+  const ruleFile = path.join(rulesDirectory, 'nested/local.js')
+  const sourceFile = path.join(root, 'probe.js')
+  const lint = report =>
+    new eslint.ESLint({
+      cwd: root,
+      useEslintrc: false,
+      cache: true,
+      cacheLocation: cacheFile,
+      baseConfig: { plugins: ['probe'], rules: { 'probe/local': 'error' } },
+      plugins: {
+        probe: {
+          rules: {
+            local: {
+              meta: { schema: [] },
+              create: context => (report ? { Program: node => context.report({ node, message: 'new local rule violation' }) } : {})
+            }
+          }
+        }
+      }
+    }).lintFiles([sourceFile])
+
+  prepareLintCache(cacheFile, rulesDirectory)
+  assert.equal((await lint(false))[0].errorCount, 0)
+  prepareLintCache(cacheFile, rulesDirectory)
+  assert.equal((await lint(true))[0].errorCount, 0, 'unchanged rules preserve the existing warm cache')
+
+  const previous = fs.statSync(ruleFile)
+  fs.writeFileSync(ruleFile, '// blocked\n')
+  fs.utimesSync(ruleFile, previous.atime, previous.mtime)
+  prepareLintCache(cacheFile, rulesDirectory)
+
+  assert.equal((await lint(true))[0].errorCount, 1, 'same-size rule changes must be detected even when mtime is unchanged')
+})
+
+test('business test entrypoints preserve domain selection, failures and unknown-domain rejection', t => {
+  const root = createProjectFixture(t, {
+    'scripts/business-tests/pass/probe.test.cjs':
+      "require('node:test')('selected passing domain', () => require('node:assert/strict').equal(process.env.TZ, 'Asia/Shanghai'))\n",
+    'scripts/business-tests/fail/probe.test.cjs': "require('node:test')('selected failing domain', () => { throw new Error('fixture failure') })\n"
+  })
+
+  for (const entry of ['check-business-rules.cjs', 'test-business-rules.cjs']) {
+    fs.copyFileSync(path.join(scriptDirectory, entry), path.join(root, 'scripts', entry))
+  }
+
+  // CLI 应作为独立进程运行，不能继承当前 node:test worker 的内部测试上下文。
+  const runEntry = args => run(process.execPath, args, { cwd: root, env: { NODE_TEST_CONTEXT: undefined } })
+
+  for (const entry of ['check-business-rules.cjs', 'test-business-rules.cjs']) {
+    const script = path.join(root, 'scripts', entry)
+    const passing = runEntry([script, 'pass'])
+    const failing = runEntry([script, 'fail'])
+    const unknown = runEntry([script, 'unknown'])
+
+    assert.equal(passing.status, 0, passing.stderr)
+    assert.match(passing.stdout, /selected passing domain/)
+    assert.doesNotMatch(passing.stdout, /selected failing domain/)
+    assert.equal(failing.status, 1, failing.stderr)
+    assert.match(failing.stdout, /fixture failure/)
+    assert.equal(unknown.status, 1, unknown.stderr)
+    assert.match(unknown.stderr, /Unknown test domains: unknown/)
+    assert.doesNotMatch(unknown.stdout, /selected (passing|failing) domain/)
+  }
+
+  const structure = runEntry([path.join(root, 'scripts/check-business-rules.cjs'), '--structure-only'])
+  assert.equal(structure.status, 0, structure.stderr)
+  assert.match(structure.stdout, /Business test structure OK/)
+  assert.doesNotMatch(structure.stdout, /selected (passing|failing) domain/)
+})
+
 test('formal verify includes the strict style gate', () => {
   const packageJson = JSON.parse(fs.readFileSync(path.join(workspaceRoot, 'apps/com.deppon.app/package.json')))
+  const orchestrator = fs.readFileSync(path.join(workspaceRoot, 'apps/com.deppon.app/scripts/verify-static.mjs'), 'utf8')
 
-  assert.match(packageJson.scripts['verify:static'], /pnpm run check:styles:strict/)
+  assert.match(packageJson.scripts['verify:static'], /node scripts\/verify-static\.mjs/)
+  assert.match(orchestrator, /'check:styles:strict'/)
+  assert.match(orchestrator, /'check:platform-build'/)
+  assert.match(orchestrator, /'check:business-test-structure'/)
+  assert.match(orchestrator, /'test:business-rules'/)
+  assert.match(packageJson.scripts.lint, /^node scripts\/prepare-lint-cache\.mjs eslint && eslint /)
+  assert.match(packageJson.scripts['lint:styles'], /^node scripts\/prepare-lint-cache\.mjs stylelint && stylelint /)
   assert.doesNotMatch(packageJson.scripts.verify, /bundle:android|bundle:ios|gradle|xcode|taro build/i)
-  assert.match(packageJson.scripts['verify:static'], /check:platform-build/)
   assert.match(packageJson.scripts['verify:bundle:android'], /bundle:android/)
   assert.match(packageJson.scripts['verify:bundle:ios'], /bundle:ios/)
 })

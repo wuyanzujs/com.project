@@ -4,7 +4,8 @@ const path = require('node:path')
 
 const appRoot = path.resolve(__dirname, '..')
 const testRoot = path.join(__dirname, 'business-tests')
-const domains = process.argv.slice(2).filter(value => value !== '--')
+const structureOnly = process.argv.includes('--structure-only')
+const domains = process.argv.slice(2).filter(value => value !== '--' && value !== '--structure-only')
 
 function findTests(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
@@ -31,6 +32,8 @@ if (oversized.length) {
   console.error('Unknown test domains: ' + unknownDomains.join(', '))
   console.error('Available domains: ' + [...knownDomains].sort().join(', '))
   process.exitCode = 1
+} else if (structureOnly) {
+  console.log(`Business test structure OK: ${files.length} files in ${knownDomains.size} domains.`)
 } else {
   const selected = files.filter(file => !domains.length || domains.includes(path.relative(testRoot, file).split(path.sep)[0]))
   const result = spawnSync(process.execPath, ['--test', '--test-concurrency=4', '--test-timeout=15000', '--test-reporter=spec', ...selected], {

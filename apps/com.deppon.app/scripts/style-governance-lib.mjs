@@ -1767,7 +1767,7 @@ const compareDailySnapshot = (current, baseline, failures) => {
       if (!isStrictStyle(file, metrics, limits)) {
         failures.push(`${file} 是新增样式文件，必须满足严格零债务规则`)
       } else {
-        failures.push(`${file} 尚未登记，请运行 update:styles-baseline`)
+        failures.push(`${file} 尚未登记：先跑 pnpm --filter com.deppon.app run update:styles-baseline，再跑 verify:app`)
       }
       continue
     }
