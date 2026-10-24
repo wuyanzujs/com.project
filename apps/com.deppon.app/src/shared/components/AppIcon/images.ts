@@ -1,4 +1,4 @@
-// CDN 位图地址集中维护，避免在组件内重复定义。
+// 页面直接以 <Image> 引用的 CDN 位图（行箭头、角标等装饰图），不走 AppIcon 渲染。
 export const APP_IMAGE_ICONS = {
   /** 行尾通用灰色右箭头。 */
   arrowRightGrey: 'https://ca.deppon.com.cn/ows/assets/common/next_grey_100.png',

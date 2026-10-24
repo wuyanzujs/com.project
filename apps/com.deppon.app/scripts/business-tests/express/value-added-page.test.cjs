@@ -190,6 +190,8 @@ test('service card information opens its description, only a selected card shows
     '@tarojs/taro': { showModal: message => messages.push(message) },
     '@/services/express/value-added/valueAdded.quoteView': require('@/services/express/value-added/valueAdded.quoteView'),
     '@/shared/components': { AppPressable: 'AppPressable' },
+    '@/shared/components/AppIcon': { AppIcon: 'AppIcon' },
+    '@/styles/nativeTokens': require('@/styles/nativeTokens'),
     './cards.scss': {}
   })
   const props = { title: '双人派送', description: '不适用于自提、外发及进仓', icon: 'icon', fee: 3, selected: false, onPress() {} }
@@ -248,7 +250,8 @@ test('service page keeps changes local until confirm and passes fresh quote expl
       createExpressDraft: services.createExpressDraft,
       expressDraftStorage: { restore: () => ({ ...createValidExpressDraft(), selectedProduct: product }), save: draft => saves.push(draft) },
       expressDraftBridge: { carryFromValueAdded: (...args) => carried.push(args) },
-      getExpressReturnBillOption: () => ({ label: '无需返单' })
+      getExpressReturnBillOption: () => ({ label: '无需返单' }),
+      updateExpressService: services.updateExpressService
     },
     '@/services/express/value-added/valueAdded.quoteView': require('@/services/express/value-added/valueAdded.quoteView'),
     '@/services/express/value-added/valueAdded.rules': require('@/services/express/value-added/valueAdded.rules'),
@@ -268,7 +271,7 @@ test('service page keeps changes local until confirm and passes fresh quote expl
     './content.scss': {},
     './cards.scss': {}
   }
-  for (const name of ['collection', 'delivery', 'double_delivery', 'packing', 'powercheck', 'signform', 'take_photo', 'warehouse']) {
+  for (const name of ['collection', 'delivery', 'double_delivery', 'packing', 'powercheck', 'pwd', 'signform', 'take_photo', 'warehouse']) {
     imports[`@/assets/express/services/service_icon_${name}.png`] = 'icon'
   }
   for (const name of ['CollectionCard', 'DeliveryPreferenceCard', 'NavBar', 'PackagingCard', 'ReturnBillCard', 'WarehouseCard']) {
@@ -294,5 +297,10 @@ test('service page keeps changes local until confirm and passes fresh quote expl
   assert.equal(carried.length, 1)
   assert.equal(saves[0].valueAdded.doubleDelivery, true)
   assert.equal(carried[0][1].length, 0, 'an edited draft with invalidated quote must not invent a fresh quote')
+  const passwordSigning = findElement(view, element => element.type === 'ServiceCard' && element.props.title === '口令签收')
+  passwordSigning.props.onPress()
+  view = harness.render(Page)
+  await findElement(view.props.footer, element => element.props?.accessibilityLabel === '确定增值服务').props.onPress()
+  assert.equal(saves[1].service.passwordSigning, 'Y')
   harness.unmount()
 })

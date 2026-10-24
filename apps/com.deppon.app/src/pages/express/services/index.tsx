@@ -8,10 +8,11 @@ import deliveryIcon from '@/assets/express/services/service_icon_delivery.png'
 import doubleDeliveryIcon from '@/assets/express/services/service_icon_double_delivery.png'
 import packingIcon from '@/assets/express/services/service_icon_packing.png'
 import powerCheckIcon from '@/assets/express/services/service_icon_powercheck.png'
+import pwdSignIcon from '@/assets/express/services/service_icon_pwd.png'
 import signformIcon from '@/assets/express/services/service_icon_signform.png'
 import photoIcon from '@/assets/express/services/service_icon_take_photo.png'
 import warehouseIcon from '@/assets/express/services/service_icon_warehouse.png'
-import { createExpressDraft, expressDraftBridge, expressDraftStorage, getExpressReturnBillOption } from '@/services/express'
+import { createExpressDraft, expressDraftBridge, expressDraftStorage, getExpressReturnBillOption, updateExpressService } from '@/services/express'
 import type { ExpressDraft } from '@/services/express'
 import { createExpressValueAddedQuoteView } from '@/services/express/value-added/valueAdded.quoteView'
 import { updateExpressValueAdded, validateExpressValueAdded } from '@/services/express/value-added/valueAdded.rules'
@@ -72,6 +73,10 @@ const ExpressServicesPage = () => {
   const detailView = createExpressValueAddedQuoteView(quote.product)
   const fees = detailView.serviceAmounts
   const toggleExpanded = (key: string) => setExpanded(current => (current === key ? '' : key))
+
+  const handlePasswordSigning = () => {
+    setDraft(current => updateExpressService(current, { passwordSigning: current.service.passwordSigning === 'Y' ? 'N' : 'Y' }))
+  }
 
   useEffect(() => {
     if (quote.status !== 'done') setDetailVisible(false)
@@ -154,7 +159,7 @@ const ExpressServicesPage = () => {
       <ScrollView className='express-services' scrollY style={{ flex: 1 }}>
         <ServiceCard
           title='代收货款'
-          description='由快递员向收件人代收货款并返款'
+          description='签收成功后，在承诺返款时间内，将货款返款至指定银行卡中'
           icon={collectionIcon}
           selected={Boolean(draft.collection.type)}
           expanded={expanded === 'collection'}
@@ -167,7 +172,7 @@ const ExpressServicesPage = () => {
           title='签收单'
           description={
             draft.service.returnBill.type === 'NO_RETURN_SIGNED'
-              ? '提供电子或纸质签收单返回服务'
+              ? '为您提供纸质回单原件返回、拍照回传电子返回、全程线上电子云签的签收单服务'
               : getExpressReturnBillOption(draft.service.returnBill.type).label
           }
           icon={signformIcon}
@@ -185,7 +190,7 @@ const ExpressServicesPage = () => {
         </ServiceCard>
         <ServiceCard
           title='派送时间'
-          description='选择预约派送或等通知派送'
+          description='如对派件时间有要求，下单时可指定具体的送达时段（精准至两小时内），或等待您点击通知再派送'
           icon={deliveryIcon}
           selected={Boolean(draft.deliveryPreference.type)}
           expanded={expanded === 'delivery'}
@@ -194,6 +199,13 @@ const ExpressServicesPage = () => {
         >
           <ExpressDeliveryPreferenceCard controller={deliveryPreferenceController} preference={draft.deliveryPreference} />
         </ServiceCard>
+        <ServiceCard
+          title='口令签收'
+          description='我司会发送一组4位数的签收口令给收件人，派件快递员需凭借口令签收'
+          icon={pwdSignIcon}
+          selected={draft.service.passwordSigning === 'Y'}
+          onPress={handlePasswordSigning}
+        />
         <ServiceCard
           title='送货进仓'
           description='特殊仓库、机场或物流园区预约派送'
@@ -207,7 +219,7 @@ const ExpressServicesPage = () => {
         </ServiceCard>
         <ServiceCard
           title='双人派送'
-          description='提供双人派送服务，不适用于自提、外发及进仓'
+          description='货物到达后提供双人派送服务；不适用于自提、外发、进仓等场景'
           icon={doubleDeliveryIcon}
           selected={draft.valueAdded.doubleDelivery}
           fee={fees.doubleDelivery}
@@ -215,7 +227,7 @@ const ExpressServicesPage = () => {
         />
         <ServiceCard
           title='打包服务'
-          description='提供纸箱、木包装及拆包装服务'
+          description='代替客户做打包动作，根据现场打包难易程度填写打包件数，具体打包件数可咨询揽收小哥'
           icon={packingIcon}
           selected={Boolean(draft.packaging.cartonCode || draft.packaging.woodenCodes.length || draft.packaging.unpackingCodes.length)}
           expanded={expanded === 'packaging'}
@@ -229,9 +241,10 @@ const ExpressServicesPage = () => {
           description={
             draft.valueAdded.powerMachine.enabled
               ? `${draft.valueAdded.powerMachine.category || '待选品类'} · ${draft.valueAdded.powerMachine.count}件`
-              : '选择可验机品类、件数与验机环节'
+              : '针对电器类货物，由揽收人员/派送人员在揽收/派送时同步提供的服务，并将完工后照片通过系统回传供寄方客户查看'
           }
           icon={powerCheckIcon}
+          info={false}
           selected={draft.valueAdded.powerMachine.enabled}
           expanded={expanded === 'powerMachine'}
           fee={fees.powerMachine}
@@ -241,7 +254,7 @@ const ExpressServicesPage = () => {
         </ServiceCard>
         <ServiceCard
           title='拍照服务'
-          description='可选择揽收拍照及拍照签收'
+          description='为您提供揽收或签收时的货物照片，全程可视(小程序-电子存根-增值服务图片中可查看)，收发货物更安心'
           icon={photoIcon}
           selected={draft.valueAdded.photo.sign || draft.valueAdded.photo.pickup}
           expanded={expanded === 'photo'}
