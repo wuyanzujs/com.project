@@ -22,6 +22,7 @@ import type { AppWebSource } from '@/shared/webview/appWeb'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import { ClickWordCaptcha } from './components/ClickWordCaptcha'
+import { LoginAgreementSheet } from './components/LoginAgreementSheet'
 
 import './index.scss'
 import './content.scss'
@@ -37,6 +38,8 @@ const LoginPage = () => {
   const [submitting, setSubmitting] = useState(false)
   const [countdown, setCountdown] = useState(0)
   const [agreementAccepted, setAgreementAccepted] = useState(false)
+  const [agreementSheetVisible, setAgreementSheetVisible] = useState(false)
+  const pendingAgreementActionRef = useRef<'send' | 'login' | null>(null)
   const [captchaVisible, setCaptchaVisible] = useState(false)
   const [captchaVerification, setCaptchaVerification] = useState('')
   const captchaRetryRef = useRef(false)
@@ -115,6 +118,13 @@ const LoginPage = () => {
       return
     }
 
+    if (!agreementAccepted) {
+      // 未勾选协议先弹确认层，同意后继续发送验证码
+      pendingAgreementActionRef.current = 'send'
+      setAgreementSheetVisible(true)
+      return
+    }
+
     await requestSendSms(captchaVerification || undefined)
   }
 
@@ -142,6 +152,46 @@ const LoginPage = () => {
     }
 
     return navigated
+  }
+
+  const submitLogin = async () => {
+    setSubmitting(true)
+
+    try {
+      const result = await authService.loginWithSms(mobile, smsCode, targetUrl, captchaVerification || undefined)
+
+      if (!mountedRef.current) {
+        return
+      }
+
+      if (!result.status) {
+        Taro.showToast({
+          title: result.message,
+          icon: 'none'
+        })
+
+        // 登录失败若为频控信号,弹验证码;凭证留待下次登录提交携带
+        if (shouldOfferCaptcha(result.message)) {
+          setCaptchaVisible(true)
+        }
+
+        return
+      }
+
+      setSessionReady(true)
+      await returnAfterLogin()
+    } catch {
+      if (mountedRef.current) {
+        Taro.showToast({
+          title: '登录失败，请检查网络后重试',
+          icon: 'none'
+        })
+      }
+    } finally {
+      if (mountedRef.current) {
+        setSubmitting(false)
+      }
+    }
   }
 
   const handleSubmit = async () => {
@@ -180,50 +230,32 @@ const LoginPage = () => {
     }
 
     if (!agreementAccepted) {
-      Taro.showToast({
-        title: '请先阅读并同意协议',
-        icon: 'none'
-      })
+      // 未勾选协议先弹确认层，同意后继续登录
+      pendingAgreementActionRef.current = 'login'
+      setAgreementSheetVisible(true)
       return
     }
 
-    setSubmitting(true)
+    await submitLogin()
+  }
 
-    try {
-      const result = await authService.loginWithSms(mobile, smsCode, targetUrl, captchaVerification || undefined)
+  const handleAgreementAgree = () => {
+    const action = pendingAgreementActionRef.current
+    pendingAgreementActionRef.current = null
+    setAgreementSheetVisible(false)
+    setAgreementAccepted(true)
 
-      if (!mountedRef.current) {
-        return
-      }
-
-      if (!result.status) {
-        Taro.showToast({
-          title: result.message,
-          icon: 'none'
-        })
-
-        // 登录失败若为频控信号,弹验证码;凭证留待下次登录提交携带
-        if (shouldOfferCaptcha(result.message)) {
-          setCaptchaVisible(true)
-        }
-
-        return
-      }
-
-      setSessionReady(true)
-      await returnAfterLogin()
-    } catch {
-      if (mountedRef.current) {
-        Taro.showToast({
-          title: '登录失败，请检查网络后重试',
-          icon: 'none'
-        })
-      }
-    } finally {
-      if (mountedRef.current) {
-        setSubmitting(false)
-      }
+    // 同意视为已勾选，继续弹层前被拦下的动作
+    if (action === 'send') {
+      requestSendSms(captchaVerification || undefined)
+    } else if (action === 'login') {
+      submitLogin()
     }
+  }
+
+  const handleAgreementDecline = () => {
+    pendingAgreementActionRef.current = null
+    setAgreementSheetVisible(false)
   }
 
   const handlePolicyPress = (source: AppWebSource) => {
@@ -344,6 +376,7 @@ const LoginPage = () => {
         </View>
       </AppFormScrollView>
       <ClickWordCaptcha visible={captchaVisible} onClose={() => setCaptchaVisible(false)} onVerified={handleCaptchaVerified} />
+      <LoginAgreementSheet visible={agreementSheetVisible} onAgree={handleAgreementAgree} onDecline={handleAgreementDecline} />
     </AppKeyboardAvoidingView>
   )
 }

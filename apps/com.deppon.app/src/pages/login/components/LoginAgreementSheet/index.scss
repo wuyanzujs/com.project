@@ -1,0 +1,144 @@
+@use '@/styles/_tokens.scss' as *;
+
+/* 登录协议确认弹层：贴底全宽白面板、标题左置、正文可滚、底部双按钮按 1:1.92 分宽。 */
+.login-agreement-sheet {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  overflow: hidden;
+  padding-bottom: $dp-space-32;
+  background: $dp-color-bg-card;
+  border-top-left-radius: $dp-radius-48;
+  border-top-right-radius: $dp-radius-48;
+}
+
+.login-agreement-sheet__header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: $dp-space-32 $dp-space-32 $dp-space-0;
+}
+
+.login-agreement-sheet__title {
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-bold;
+  line-height: $dp-line-height-58;
+}
+
+.login-agreement-sheet__close {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width: $dp-space-96;
+  height: $dp-space-48;
+}
+
+/* 关闭圆右缘贴面板内边距，AppNativePressable 的 44dp 最小宽由外层补齐。 */
+.login-agreement-sheet__close-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $dp-space-48;
+  height: $dp-space-48;
+  background: $dp-color-bg-neutral-soft;
+  border-radius: $dp-radius-round;
+}
+
+.login-agreement-sheet__scroll {
+  display: flex;
+  flex-shrink: 1;
+}
+
+.login-agreement-sheet__body {
+  display: flex;
+  flex-direction: column;
+  padding: $dp-space-24 $dp-space-32 $dp-space-0;
+}
+
+.login-agreement-sheet__text {
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-label-large;
+  line-height: $dp-line-height-38;
+}
+
+.login-agreement-sheet__text--note {
+  margin-top: $dp-space-24;
+}
+
+.login-agreement-sheet__links {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: $dp-space-16;
+}
+
+.login-agreement-sheet__links-text {
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-36;
+}
+
+/* 行内链接的字号颜色放在内层 Text 上：AppPressable 的内部 Text 不在调用方模块的样式表里。 */
+.login-agreement-sheet__links-item {
+  margin: $dp-space-0 $dp-space-12;
+  min-width: $dp-space-0;
+  min-height: $dp-space-0;
+}
+
+.login-agreement-sheet__links-item-text {
+  color: $dp-color-text-link;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-36;
+}
+
+.login-agreement-sheet__footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: $dp-space-48;
+  padding: $dp-space-0 $dp-space-32;
+}
+
+.login-agreement-sheet__button {
+  flex-basis: 0;
+  align-items: center;
+  justify-content: center;
+  height: $dp-space-96;
+  overflow: hidden;
+  border-radius: $dp-radius-48;
+}
+
+.login-agreement-sheet__button--ghost {
+  flex-grow: 1;
+  background: $dp-color-bg-neutral-soft;
+}
+
+.login-agreement-sheet__button--primary {
+  flex-grow: 1.92;
+  margin-left: $dp-space-32;
+  background: $dp-color-brand;
+}
+
+.login-agreement-sheet__gradient {
+  position: absolute;
+  top: $dp-space-0;
+  right: $dp-space-0;
+  bottom: $dp-space-0;
+  left: $dp-space-0;
+}
+
+.login-agreement-sheet__button-text {
+  font-size: $dp-font-size-title-large;
+  font-weight: $dp-font-weight-medium;
+}
+
+.login-agreement-sheet__button-text--ghost {
+  color: $dp-color-text-neutral-strong;
+}
+
+.login-agreement-sheet__button-text--primary {
+  color: $dp-color-text-inverse;
+  font-weight: $dp-font-weight-semibold;
+}

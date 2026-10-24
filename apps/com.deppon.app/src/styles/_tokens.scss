@@ -26,6 +26,8 @@ $dp-color-text-muted: $dp-color-text-placeholder;
 
 $dp-color-brand: #1a5eff;
 $dp-color-brand-pressed: #0f4fe6;
+/* 登录协议弹窗行内协议链接的蓝，比品牌色更深一档。 */
+$dp-color-text-link: #2458e2;
 /* 地址识别和确定按钮的渐变端色，与 nativeTokens.ts 中的 brand.gradientStart/End 同步维护。 */
 $dp-color-brand-gradient-start: #1b58ff;
 $dp-color-brand-gradient-end: #4b7cff;

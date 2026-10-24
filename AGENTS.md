@@ -438,6 +438,30 @@
     底栏按钮矩形与渐变采样均与生产一致或差 ≤4px。未执行 RN bundle、Gradle 或 Xcode。
     未处理：分享图标字形（生产箭头更粗）、底栏蓝框比生产窄 7px。
 
+### 2026-10-24 登录协议确认弹层对齐生产端
+
+84. 行为同步：登录页协议未勾选时「获取验证码」不再直接发送（原先完全不校验）、「立即登录」不再弹 toast，
+    两者都弹出底部「服务协议及隐私政策」确认弹层；「同意」自动勾选协议并继续被拦下的动作
+    （继续发验证码 / 继续登录），「不同意」/×/蒙层仅关闭。弹层文案与生产 `libapp-4.0.7.0.so`
+    字符串池逐句核对一致；链接走 `AUTH_LOGIN_SERVICE_PROTOCOL` / `AUTH_LOGIN_PRIVACY_PROTOCOL` 两个 H5。
+85. 新增 `pages/login/components/LoginAgreementSheet`（AppNativeModalSheet + ScrollView 正文 +
+    不同意/同意双按钮 flex 1:1.92，同意按钮复用 brand 渐变 + Svg LinearGradient 模式），
+    登录页把登录执行拆出 `submitLogin`、`handleAgreementAgree` 里用 ref 记录 pending 动作后续跑；
+    契约测试 `test/unit/auth/login-page.test.ts` 5 用例（拦截/同意续跑/拒绝不勾选）。
+86. 新 token `$dp-color-text-link: #2458e2`（生产链接蓝比品牌色深）；弹层几何按生产量测
+    （`docs/parity/login/ui-measure.md`）：面板顶圆角 48、标题 42 左置、正文 28/38 两段各 6 行、
+    按钮 96 高 pill、底部留白 32。
+87. 两个 Taro RN 陷阱（真机踩实，写入记忆）：① 弹层内 `useAppSafeAreaBottomInset` 恒为 0
+    （窗口已全屏但 safe-area-context 上报 0），底部留白改用固定 token；② Taro RN 样式按模块作用域——
+    `AppPressable` 内部 Text 用 AppPressable 模块的样式表解析 className，调用方传入的
+    字号/颜色全部失效（`contentElement='text'` 的文字样式不生效），文字样式必须放在
+    children 的内层 Text 上；`AppNativePressable` 的 44dp 最小尺寸需要外层容器（96 宽右对齐）补位。
+88. 验证：真机三轮截图量测（面板顶边 −4、标题/正文/按钮全部 ≤6 物理 px、渐变端色差 2、
+    链接蓝色 #2458e2 生效）；真机确认未勾选点「获取验证码」弹层且不发短信、同意后自动勾选并
+    续跑（触发频控点选验证码）、不同意仅关闭。`pnpm verify:app` exit 0（28 文件 333 vitest / 371 cjs /
+    样式基线 614 / 体积门禁）。未执行 RN bundle、Gradle 或 Xcode。
+    未处理：链接行换行点与生产差 2 字（生产在《德后断行、RN 整词换行），两行结构一致不追。
+
 ## 五、执行顺序
 
 1. 新领域禁止再用运行时 `export *`（门禁已是 0 基线）；新增服务时照 `expand-service-barrels.mjs` 生成的显式风格写。

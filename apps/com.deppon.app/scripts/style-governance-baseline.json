@@ -1156,6 +1156,16 @@
         "usesTokens": true,
         "lines": 79
       },
+      "src/pages/login/components/LoginAgreementSheet/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 140
+      },
       "src/pages/login/content.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,
