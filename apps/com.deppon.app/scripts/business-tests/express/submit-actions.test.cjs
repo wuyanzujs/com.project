@@ -15,35 +15,51 @@ function createSubmit(t, options = {}) {
   const clear = t.mock.fn(async () => true)
   const fresh = t.mock.fn()
   const submitDraft = t.mock.fn(options.submit || (async () => ({ status: true, result: { orderNumbers: ['ORDER_ONE'] } })))
+  const stageSignInfo = t.mock.fn(
+    options.stageSign ||
+      (async () => ({
+        status: true,
+        result: { stagingId: 'STAGE_ONE', uri: '/depponmobile/signStatement?queryId=STAGE_ONE' }
+      }))
+  )
+  const saveOrderPriceLog = t.mock.fn(async () => ({ status: true }))
   const prepare = t.mock.fn(async () => ({ draft, proceed: true }))
   const preserve = t.mock.fn(options.preserve || (async () => true))
   const navigate = t.mock.fn()
   const login = t.mock.fn()
   const toast = t.mock.fn()
+  const showModal = t.mock.fn(async () => ({ confirm: true }))
   const { useExpressSubmit } = loadReactModule('pages/express/hooks/useExpressSubmit.ts', {
     react: harness.react,
-    '@tarojs/taro': { showToast: toast },
+    '@tarojs/taro': { showToast: toast, showModal },
     '@/services/express': {
       validateExpressDraft,
+      isExpressSignResponseCode: code => String(code || '').startsWith('1|'),
       expressDraftBridge: { carryFreshSend: fresh },
       expressDraftStorage: { clear, preserveForLogin: preserve },
-      expressService: { submitDraft }
+      expressService: { submitDraft, stageSignInfo, saveOrderPriceLog }
     },
     '@/shared/navigation/appNavigation': { navigateToAppRoute: navigate },
     '@/shared/navigation/authGuard': { hasValidSession: () => options.authenticated !== false, ensureAuthenticated: login },
     '@/shared/navigation/routes': { APP_ROUTES: { express: '/express', expressSuccess: '/success' } },
-    '@/shared/navigation/routeUrl': { createAppRouteUrl: route => route }
+    '@/shared/navigation/routeUrl': { createAppRouteUrl: route => route },
+    '@/shared/webview/appWeb': {
+      createAppWebUrl: ({ source, uri }) => `/web?source=${source}&uri=${encodeURIComponent(uri)}`
+    }
   })
   return {
     fresh,
     render: () => harness.render(() => useExpressSubmit({ draft, warehouseController: { prepareForSubmit: prepare } })),
     submitDraft,
+    stageSignInfo,
+    saveOrderPriceLog,
     prepare,
     clear,
     preserve,
     navigate,
     login,
-    toast
+    toast,
+    showModal
   }
 }
 
@@ -79,6 +95,89 @@ test('a thrown submit keeps the draft, releases loading, and tells the user to v
   assert.match(page.render().submitMessage, /订单列表核实/)
 })
 
+test('a successful order records the price log without blocking the success page', async t => {
+  const page = createSubmit(t)
+  await page.render().handleSubmit()
+  assert.equal(page.saveOrderPriceLog.mock.callCount(), 1)
+  assert.equal(page.saveOrderPriceLog.mock.calls[0].arguments[1], 'ORDER_ONE')
+  assert.equal(page.navigate.mock.callCount(), 1)
+})
+
+test('a signature interception stages the statement and opens the signing page instead of failing', async t => {
+  const page = createSubmit(t, {
+    submit: async () => ({ status: false, message: '需先签署协议', code: '1|家电|AGREEMENT_001' })
+  })
+  await page.render().handleSubmit()
+
+  assert.equal(page.stageSignInfo.mock.callCount(), 1)
+  assert.equal(page.stageSignInfo.mock.calls[0].arguments[1], '1|家电|AGREEMENT_001')
+  assert.equal(page.clear.mock.callCount(), 0)
+  assert.equal(page.fresh.mock.callCount(), 0)
+  assert.match(page.navigate.mock.calls[0].arguments[0], /source=EXPRESS_STATEMENT/)
+  assert.match(page.render().submitMessage, /完成电子签名/)
+  assert.equal(page.showModal.mock.callCount(), 0)
+})
+
+test('login expiry during submission preserves the draft and returns to login', async t => {
+  const page = createSubmit(t, {
+    submit: async () => ({ status: false, message: '登录超时，请重新登录' })
+  })
+  await page.render().handleSubmit()
+
+  assert.equal(page.preserve.mock.callCount(), 1)
+  assert.equal(page.login.mock.callCount(), 1)
+  assert.equal(page.clear.mock.callCount(), 0)
+  assert.equal(page.showModal.mock.callCount(), 0)
+})
+
+test('an ordinary submit failure shows a blocking modal and keeps the failed message inline', async t => {
+  const page = createSubmit(t, {
+    submit: async () => ({ status: false, message: '当前货物暂不支持寄递' })
+  })
+  await page.render().handleSubmit()
+
+  assert.equal(page.showModal.mock.callCount(), 1)
+  assert.equal(page.showModal.mock.calls[0].arguments[0].content, '当前货物暂不支持寄递')
+  assert.equal(page.render().submitMessage, '当前货物暂不支持寄递')
+  assert.equal(page.clear.mock.callCount(), 0)
+})
+
+test('monthly payment is rejected only when the account is confirmed not to be a monthly customer', async t => {
+  const harness = createReactHarness()
+  const monthlyDraft = createValidExpressDraft()
+  monthlyDraft.service = { ...monthlyDraft.service, paymentType: 'MONTH_PAY' }
+  const results = []
+  const { useExpressSubmit } = loadReactModule('pages/express/hooks/useExpressSubmit.ts', {
+    react: harness.react,
+    '@tarojs/taro': { showToast: t.mock.fn(), showModal: t.mock.fn() },
+    '@/services/express': {
+      validateExpressDraft,
+      isExpressSignResponseCode: () => false,
+      expressDraftBridge: { carryFreshSend: t.mock.fn() },
+      expressDraftStorage: { clear: t.mock.fn(async () => true), preserveForLogin: t.mock.fn(async () => true) },
+      expressService: { submitDraft: t.mock.fn(async () => ({ status: true, result: { orderNumbers: ['ORDER_ONE'] } })) }
+    },
+    '@/shared/navigation/appNavigation': { navigateToAppRoute: t.mock.fn() },
+    '@/shared/navigation/authGuard': { hasValidSession: () => true, ensureAuthenticated: t.mock.fn() },
+    '@/shared/navigation/routes': { APP_ROUTES: { express: '/express', expressSuccess: '/success' } },
+    '@/shared/navigation/routeUrl': { createAppRouteUrl: route => route },
+    '@/shared/webview/appWeb': { createAppWebUrl: ({ source, uri }) => `${source}:${uri}` }
+  })
+
+  const warehouseController = {
+    prepareForSubmit: async () => ({ draft: monthlyDraft, proceed: true })
+  }
+
+  for (const monthlyEnabled of [null, true, false]) {
+    results.push(harness.render(() => useExpressSubmit({ draft: monthlyDraft, monthlyEnabled, warehouseController })).validation)
+  }
+
+  assert.equal(results[0].valid, true)
+  assert.equal(results[1].valid, true)
+  assert.equal(results[2].valid, false)
+  assert.match(results[2].messages[0], /不是月结客户/)
+})
+
 test('login navigation is blocked when the shipping draft cannot be persisted', async t => {
   const page = createSubmit(t, { authenticated: false, preserve: async () => false })
   await page.render().handleSubmit()
@@ -104,6 +203,7 @@ test('a failed or rejected quote cannot leave the old product available for subm
       '@tarojs/taro': { showToast: t.mock.fn() },
       '@/services/express': {
         createExpressQuoteRequestKey,
+        sortExpressQuotes: products => products,
         expressService: {
           quote: async () => {
             if (reject) throw new Error('offline')

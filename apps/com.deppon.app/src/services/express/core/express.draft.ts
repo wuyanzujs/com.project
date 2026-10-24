@@ -228,6 +228,40 @@ export function validateExpressContact(contact: ExpressContact | null, label: st
 
 /**
  *
+ * @param province 省份名称
+ * @description 判断是否港澳台特殊区域
+ */
+export function isExpressSpecialRegion(province?: string | null) {
+  const value = trimText(province ?? '')
+
+  return value.includes('香港') || value.includes('澳门') || value.includes('台湾')
+}
+
+/**
+ *
+ * @param senderProvince 寄件省份
+ * @param consigneeProvince 收件省份
+ * @description 判断港澳台互寄是否被拦截；澳门↔澳门与香港/澳门出发可以下单，台湾出发要拦截
+ */
+export function isExpressSpecialRegionBlocked(senderProvince?: string | null, consigneeProvince?: string | null) {
+  const sender = trimText(senderProvince ?? '')
+  const consignee = trimText(consigneeProvince ?? '')
+  const senderSpecial = isExpressSpecialRegion(sender)
+  const consigneeSpecial = isExpressSpecialRegion(consignee)
+
+  if (senderSpecial && consigneeSpecial) {
+    return !(sender.includes('澳门') && consignee.includes('澳门'))
+  }
+
+  if (senderSpecial) {
+    return sender.includes('台湾')
+  }
+
+  return false
+}
+
+/**
+ *
  * @param draft 寄件草稿
  * @param options 校验开关
  * @description 校验寄件草稿并汇总错误提示
@@ -238,11 +272,21 @@ export function validateExpressDraft(
     requireAgreement?: boolean
     requireProduct?: boolean
     requireWarehouseScreening?: boolean
+    /** 月结资格：null 表示未确认，false 时拦截月结提交。 */
+    monthlyEnabled?: boolean | null
   } = {}
 ): ExpressValidationResult {
-  const messages: string[] = [
-    ...validateExpressContact(draft.sender, '寄件人'),
-    ...validateExpressContact(draft.consignee, '收件人'),
+  const messages: string[] = [...validateExpressContact(draft.sender, '寄件人'), ...validateExpressContact(draft.consignee, '收件人')]
+
+  if (draft.sender && draft.consignee && isExpressSpecialRegionBlocked(draft.sender.province, draft.consignee.province)) {
+    messages.push('港澳台互寄服务请联系营业部0755-36360474/82')
+  }
+
+  if (options.monthlyEnabled === false && draft.service.paymentType === 'MONTH_PAY') {
+    messages.push('您不是月结客户，请重新选择支付方式！')
+  }
+
+  messages.push(
     ...validateExpressInsurance(draft),
     ...validateExpressCollection(draft.collection),
     ...validateExpressValueAdded(draft.valueAdded),
@@ -254,7 +298,7 @@ export function validateExpressDraft(
     ...validateExpressWarehouse(draft, {
       requireScreening: options.requireWarehouseScreening
     })
-  ]
+  )
   const goodsName = trimText(draft.goods.name)
   const weight = toFiniteNumber(draft.goods.weight)
   const count = toFiniteNumber(draft.goods.count)

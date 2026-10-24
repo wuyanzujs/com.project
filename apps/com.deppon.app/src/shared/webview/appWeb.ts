@@ -69,6 +69,11 @@ export const APP_WEB_TARGETS = {
     url: '/depponmobile/billingRules',
     auth: false
   },
+  // 电子签署函：queryId 由 setStaging 返回，source 为系统编码。
+  EXPRESS_STATEMENT: {
+    title: '电子签名',
+    url: '/depponmobile/signStatement'
+  },
   AUTH_LOGIN_SERVICE_PROTOCOL: {
     title: '服务协议',
     url: '/depponmobile/protocol/service',

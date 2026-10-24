@@ -39,13 +39,80 @@ import type {
   ExpressFreightRequest,
   ExpressInsuranceCapability,
   ExpressInsurancePriceRequest,
+  ExpressOrderPriceLogRequest,
   ExpressPickupNightCapability,
   ExpressPickupTimeRequest,
-  ExpressProductAvailability
+  ExpressProductAvailability,
+  ExpressProductQuote,
+  ExpressOrderExtendField,
+  ExpressSignStagingRequest
 } from './types'
 
 const DEFAULT_GOODS_COUNT = 1
 const DEFAULT_GOODS_WEIGHT = 1
+// 与小程序 GetExpressType 同口径：重量 > 60kg 或体积 > 0.36m³ 按零担（物流）处理。
+const EXPRESS_LTL_MAX_WEIGHT = 60
+const EXPRESS_LTL_MAX_VOLUME = 0.36
+
+/**
+ *
+ * @param paymentType 页面付款方式
+ * @description 付款方式转 PPC 报价编码
+ */
+function getPpcPaymentType(paymentType: ExpressDraft['service']['paymentType']) {
+  switch (paymentType) {
+    case 'PAY_ARIIVE':
+      return 'FC' as const
+    case 'MONTH_PAY':
+      return 'CT' as const
+    default:
+      return 'MP' as const
+  }
+}
+
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 判断当前货物是否按零担口径下单
+ */
+function isExpressLtlDraft(draft: ExpressDraft) {
+  const weight = toFiniteNumber(draft.goods.weight, DEFAULT_GOODS_WEIGHT)
+  const volume = toFiniteNumber(draft.goods.volume)
+
+  return weight > EXPRESS_LTL_MAX_WEIGHT || volume > EXPRESS_LTL_MAX_VOLUME
+}
+
+/**
+ *
+ * @param product 选中的报价产品
+ * @description 生成报价产品的下单扩展字段
+ */
+function createExpressQuoteOrderFields(product: ExpressProductQuote | null): ExpressOrderExtendField[] {
+  if (!product) {
+    return []
+  }
+
+  const fields: ExpressOrderExtendField[] = []
+  const timeProduct = product.timeProducts?.[0]
+
+  if (product.totalfee !== null && product.totalfee !== undefined) {
+    fields.push({ key: 'productPrice', value: String(product.totalfee) })
+  }
+
+  if (product.daysFormat) {
+    fields.push({ key: 'days', value: product.daysFormat })
+  }
+
+  if (timeProduct?.timeProductsCode) {
+    fields.push({ key: 'timeProductsCode', value: timeProduct.timeProductsCode })
+  }
+
+  if (timeProduct?.timeProductsName) {
+    fields.push({ key: 'timeProductsName', value: timeProduct.timeProductsName })
+  }
+
+  return fields
+}
 
 /**
  *
@@ -138,6 +205,7 @@ export function buildFreightRequest(draft: ExpressDraft, availability?: ExpressP
     receiveMethod: getPpcDeliveryMode(draft.service.deliveryMode),
     reviceMoneyAmount: toFiniteNumber(draft.collection.amount),
     totalVolume: getExpressPackagingQuoteVolume(draft),
+    totalQuantity: toFiniteNumber(draft.goods.count, DEFAULT_GOODS_COUNT),
     totalWeight: toFiniteNumber(draft.goods.weight, DEFAULT_GOODS_WEIGHT),
     goodsName: trimText(draft.goods.name),
     client: true,
@@ -145,6 +213,7 @@ export function buildFreightRequest(draft: ExpressDraft, availability?: ExpressP
     sendDateTime: draft.pickup.time || getNowText(),
     promotionsCode: couponNumber || undefined,
     customerMobile: couponNumber ? trimText(draft.sender.mobile) : undefined,
+    paidMethod: getPpcPaymentType(draft.service.paymentType),
     pickUpToDoor: draft.pickup.dispatch === 'Y',
     passwordSigning: draft.service.passwordSigning,
     ...productFields,
@@ -263,7 +332,12 @@ function getScanContextOrderFields(scanContext: ExpressDraft['scanContext']) {
   const fields = {
     acceptDept: '',
     shipperNumber: '',
-    pickupManId: ''
+    pickupManId: '',
+    /** 营业部/服务点二维码把扫描到的网点同时作为始发网点。 */
+    startStation: '',
+    startStationName: '',
+    /** 服务点二维码视为客户自送到点，不再调度上门取件。 */
+    forceNoDispatch: false
   }
 
   if (!scanContext) {
@@ -287,6 +361,9 @@ function getScanContextOrderFields(scanContext: ExpressDraft['scanContext']) {
     case 'acceptDept':
     case 'businessCode':
       fields.acceptDept = value
+      fields.startStation = value
+      fields.startStationName = ''
+      fields.forceNoDispatch = scanContext.role === 'businessCode'
       break
   }
 
@@ -339,7 +416,8 @@ export function buildCreateOrderRequest(draft: ExpressDraft, insuranceCapability
     ...insuranceOrderFields.orderExtendFields,
     ...returnBillOrderFields,
     ...returnBillQuantityFields,
-    ...createExpressValueAddedOrderFields(draft.valueAdded)
+    ...createExpressValueAddedOrderFields(draft.valueAdded),
+    ...createExpressQuoteOrderFields(draft.selectedProduct)
   ]
 
   return {
@@ -348,7 +426,8 @@ export function buildCreateOrderRequest(draft: ExpressDraft, insuranceCapability
     unpackageLtlInfo,
     ...(warehouseOrderFields.deliveryToWarehouse ? { deliveryToWarehouse: warehouseOrderFields.deliveryToWarehouse } : {}),
     isAgreement: draft.agreementAccepted ? 'Y' : 'N',
-    isContact: draft.service.needContact,
+    // 服务点自送由用户自己送到网点，不再让快递员电话联系，与小程序 STATION 分支一致。
+    isContact: scanOrderFields.forceNoDispatch || draft.pickup.dispatch === 'N' ? 'N' : draft.service.needContact,
     clientChannel: APP_RUNTIME_CONFIG.appClientChannel,
     contactName: draft.sender.name,
     contactMobile: draft.sender.mobile,
@@ -357,12 +436,12 @@ export function buildCreateOrderRequest(draft: ExpressDraft, insuranceCapability
     contactArea: draft.sender.county,
     contactAddress: getExpressContactRegion(draft.sender),
     contactAddressDetail: draft.sender.address,
-    startStation: draft.pickup.stationCode,
-    startStationName: draft.pickup.stationName,
+    startStation: scanOrderFields.startStation || draft.pickup.stationCode,
+    startStationName: scanOrderFields.startStation ? scanOrderFields.startStationName : draft.pickup.stationName,
     acceptDept: scanOrderFields.acceptDept,
     shipperNumber: scanOrderFields.shipperNumber,
     pickupManId: scanOrderFields.pickupManId,
-    dispatchFlag: draft.pickup.dispatch,
+    dispatchFlag: scanOrderFields.forceNoDispatch ? 'N' : draft.pickup.dispatch,
     passwordSigning: draft.service.passwordSigning,
     receive: [
       {
@@ -387,7 +466,8 @@ export function buildCreateOrderRequest(draft: ExpressDraft, insuranceCapability
         encryptInfo: draft.service.privacyProtection,
         remark: trimText(draft.remark),
         packing,
-        isRecieveGoods: 0,
+        // 零担自送由客户自行送达，快递口径始终算上门收货。
+        isRecieveGoods: isExpressLtlDraft(draft) && draft.pickup.dispatch === 'N' ? 0 : 1,
         reviceMoneyAmount: toFiniteNumber(draft.collection.amount),
         insuredAmount: insuranceOrderFields.insuredAmount,
         beginAcceptTime: getPickupOrderTime(draft),
@@ -406,5 +486,52 @@ export function buildCreateOrderRequest(draft: ExpressDraft, insuranceCapability
         newOrderExtendFields: deliveryOrderFields.newOrderExtendFields.length > 0 ? deliveryOrderFields.newOrderExtendFields : undefined
       }
     ]
+  }
+}
+
+/**
+ *
+ * @param draft 寄件草稿
+ * @param orderNumber 下单返回的订单号
+ * @description 组装下单成功后的价格日志入参
+ */
+export function buildOrderPriceLogRequest(draft: ExpressDraft, orderNumber: string): ExpressOrderPriceLogRequest | null {
+  // 与小程序一致：没有订单号或没有报价金额时不回写价格日志。
+  if (!draft.selectedProduct?.totalfee || !trimText(orderNumber)) {
+    return null
+  }
+
+  return {
+    orderNumber: trimText(orderNumber),
+    priceBody: {
+      totalWeight: toFiniteNumber(draft.goods.weight, DEFAULT_GOODS_WEIGHT),
+      totalVolume: getExpressPackagingQuoteVolume(draft),
+      deliveryMode: draft.service.deliveryMode,
+      productDetail: draft.selectedProduct
+    }
+  }
+}
+
+/**
+ *
+ * @param draft 寄件草稿
+ * @param sign 签署函类型与协议号
+ * @param orderPhone 下单账号手机号
+ * @description 组装电子签署函暂存入参
+ */
+export function buildSignStagingRequest(draft: ExpressDraft, sign: { goodsType: string; agreementId: string }, orderPhone: string): ExpressSignStagingRequest {
+  if (!draft.sender || !draft.consignee) {
+    throw new Error('缺少收寄件联系人')
+  }
+
+  return {
+    agreementId: sign.agreementId,
+    goodsName: trimText(draft.goods.name),
+    goodsType: sign.goodsType,
+    orderPhone: trimText(orderPhone),
+    senderPhone: trimText(draft.sender.mobile),
+    senderAddress: getExpressContactRegionAddress(draft.sender),
+    consigneePhone: trimText(draft.consignee.mobile),
+    consigneeAddress: getExpressContactRegionAddress(draft.consignee)
   }
 }

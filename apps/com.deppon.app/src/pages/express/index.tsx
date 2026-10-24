@@ -130,7 +130,7 @@ const ExpressPage = () => {
   }, [])
 
   const monthlyPay = useExpressMonthlyPay({ draft, updateService })
-  const submit = useExpressSubmit({ draft, warehouseController })
+  const submit = useExpressSubmit({ draft, monthlyEnabled: monthlyPay.monthlyEnabled, warehouseController })
   const entryNav = useExpressEntryNavigation({ draft })
   const realName = useExpressRealName()
   const { weatherText } = useExpressWeather({ draft })

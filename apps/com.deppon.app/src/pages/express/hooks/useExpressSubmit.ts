@@ -2,15 +2,18 @@ import Taro from '@tarojs/taro'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { expressDraftBridge, expressDraftStorage, expressService, validateExpressDraft } from '@/services/express'
+import { expressDraftBridge, expressDraftStorage, expressService, isExpressSignResponseCode, validateExpressDraft } from '@/services/express'
 import type { ExpressDraft } from '@/services/express'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated, hasValidSession } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
 import { createAppRouteUrl } from '@/shared/navigation/routeUrl'
+import { createAppWebUrl } from '@/shared/webview/appWeb'
 
 interface UseExpressSubmitParams {
   draft: ExpressDraft
+  /** 月结资格：null 表示尚未确认，只在明确不是月结客户时拦截。 */
+  monthlyEnabled?: boolean | null
   warehouseController: {
     prepareForSubmit: () => Promise<{
       draft: ExpressDraft
@@ -28,8 +31,10 @@ interface UseExpressSubmitResult {
   handleSubmit: () => Promise<void>
 }
 
+const LOGIN_EXPIRED_MESSAGE_KEYWORD = '登录超时'
+
 /** 寄件首页提交流程：完成草稿校验、送货进仓提交前准备、登录处理和下单成功跳转。 */
-export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmitParams): UseExpressSubmitResult {
+export function useExpressSubmit({ draft, monthlyEnabled, warehouseController }: UseExpressSubmitParams): UseExpressSubmitResult {
   const [submiting, setSubmiting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
   const [attempted, setAttempted] = useState(false)
@@ -38,7 +43,8 @@ export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmi
 
   const validation = validateExpressDraft(draft, {
     requireAgreement: true,
-    requireProduct: true
+    requireProduct: true,
+    monthlyEnabled
   })
 
   useEffect(() => {
@@ -65,18 +71,39 @@ export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmi
     submissionLock.current = true
     setSubmiting(true)
 
+    /** 登录态缺失时先保草稿再跳登录，保存失败不跳转避免丢单。 */
+    const redirectToLogin = async (message: string) => {
+      if (!(await expressDraftStorage.preserveForLogin(draft))) {
+        Taro.showToast({ title: '寄件信息保存失败，请重试', icon: 'none' })
+        return
+      }
+
+      ensureAuthenticated({
+        redirectUrl: APP_ROUTES.express,
+        replace: true,
+        message
+      })
+    }
+
+    /** 下单被电子签署函拦截时暂存发货信息并打开签署页，草稿保留以便签名后重新提交。 */
+    const redirectToSign = async (sourceDraft: ExpressDraft, code: string) => {
+      const stage = await expressService.stageSignInfo(sourceDraft, code)
+
+      if (!stage.status || !stage.result) {
+        const message = stage.message || '发货信息暂存失败，请稍后再试'
+
+        setSubmitMessage(message)
+        Taro.showToast({ title: message, icon: 'none' })
+        return
+      }
+
+      setSubmitMessage('请先完成电子签名，返回后重新提交订单')
+      navigateToAppRoute(createAppWebUrl({ source: 'EXPRESS_STATEMENT', uri: stage.result.uri }))
+    }
+
     try {
       if (!hasValidSession()) {
-        if (!(await expressDraftStorage.preserveForLogin(draft))) {
-          Taro.showToast({ title: '寄件信息保存失败，请重试', icon: 'none' })
-          return
-        }
-
-        ensureAuthenticated({
-          redirectUrl: APP_ROUTES.express,
-          replace: true,
-          message: '请先登录后提交订单'
-        })
+        await redirectToLogin('请先登录后提交订单')
         return
       }
 
@@ -89,7 +116,8 @@ export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmi
       const preparedValidation = validateExpressDraft(preparation.draft, {
         requireAgreement: true,
         requireProduct: true,
-        requireWarehouseScreening: true
+        requireWarehouseScreening: true,
+        monthlyEnabled
       })
 
       if (!preparedValidation.valid) {
@@ -105,10 +133,22 @@ export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmi
       if (!response.status || !response.result) {
         const message = response.message || '提交失败，请稍后重试'
 
+        if (isExpressSignResponseCode(response.code)) {
+          await redirectToSign(preparation.draft, response.code as string)
+          return
+        }
+
+        if (message.includes(LOGIN_EXPIRED_MESSAGE_KEYWORD)) {
+          await redirectToLogin('登录已失效，请重新登录后提交订单')
+          return
+        }
+
         setSubmitMessage(message)
-        Taro.showToast({
-          title: message,
-          icon: 'none'
+        Taro.showModal({
+          title: '下单失败',
+          content: message,
+          showCancel: false,
+          confirmText: '知道了'
         })
         return
       }
@@ -117,6 +157,8 @@ export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmi
       const waybillNumber = response.result.waybillNumber || response.result.waybillNumbers?.[0] || ''
 
       submittedDraft.current = draft
+      // 价格日志只做报价留痕，失败不影响已成功的订单。
+      void expressService.saveOrderPriceLog(preparation.draft, orderNumber)
       // 系统返回键回到原寄件页时也消费全新草稿，防止重新提交已成功的表单。
       expressDraftBridge.carryFreshSend()
 
@@ -140,7 +182,7 @@ export function useExpressSubmit({ draft, warehouseController }: UseExpressSubmi
       submissionLock.current = false
       setSubmiting(false)
     }
-  }, [draft, validation, warehouseController])
+  }, [draft, monthlyEnabled, validation, warehouseController])
 
   return {
     submiting,

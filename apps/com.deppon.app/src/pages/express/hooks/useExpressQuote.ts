@@ -7,7 +7,8 @@ import {
   createExpressQuoteRequestKey,
   expressService,
   selectDefaultExpressQuote,
-  selectExpressProduct
+  selectExpressProduct,
+  sortExpressQuotes
 } from '@/services/express'
 import type { ExpressDraft, ExpressProductQuote } from '@/services/express'
 import { useLatestRequestRunner } from '@/shared/async/useLatestRequest'
@@ -61,7 +62,7 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
           return
         }
 
-        const products = response.result?.products ?? []
+        const products = sortExpressQuotes(response.result?.products ?? [])
         const availability = response.result?.availability
         const currentDraft = latestDraft.current
 

@@ -141,3 +141,30 @@ RN 之前进入的是通用「网点查询」页：标题「网点查询」、�
 RN 已按上表改写 [pages/express/success](apps/com.deppon.app/src/pages/express/success/index.tsx)：标题「下单成功」、信息区「寄件信息」（订单号/运单号两行，去掉「当前状态」）、底部「继续寄件」+「查看订单」、新增「60秒后自动返回首页」倒计时（回到寄件首页）。
 
 未决：**倒计时秒数**生产端无法从字符串确定（只拿到「秒后自动返回首页」模板），RN 暂定 60 秒；真机截图需等有授权的测试下单后再核对。快递员卡的状态文案也还有自造痕迹（「待分配快递员，可稍后刷新查看」等），生产端用的是「自动分配快递员 / 已通知」，待有截图后一并收敛。
+
+## 2026-10-24 寄件主链路业务逻辑对齐 mp-taro3
+
+本轮按用户要求，以 `D:\10531845\Desktop\CZH-DEV\mp-taro3` 为参考补齐 RN 的寄件逻辑，范围是询价 → 提交校验 → 下单载荷 → 失败/成功处理，不动 UI。
+
+证据：参考端 `src/utils/send.ts`（`CreateProductParams` / `CreateOrderParams` / `CheckOrderParams`）、`src/api/send.ts`（`FetchFreight` / `CreateOrderMySql`）、`src/pages/send/express/index.tsx`（`handleCheckOrder` / `handleSubmitOrder` / `handleSubmitSuccess`）。
+
+| 环节 | 参考端行为 | RN 本轮改动 |
+|---|---|---|
+| 询价 | `paidMethod`（MP/FC/CT）与 `totalQuantity`（件数）参与计价（`send.ts:485`、`469`） | `ExpressFreightRequest` 增加两字段，`buildFreightRequest` 输出付款方式与件数 |
+| 询价排序 | `FetchFreight` 把 `YTY` 挪到列表末尾再选默认产品（`api/send.ts:36-44`） | 新增 `sortExpressQuotes`，`useExpressQuote` 在选默认产品前排序 |
+| 提交校验 | 港澳台互寄、月结资格、3C 原厂包装、显示器尺寸、报关等拦截（`CheckOrderParams`） | 新增港澳台互寄规则（澳门↔澳门放行、香港/澳门出发放行、台湾出发拦截）与月结资格拦截；3C/显示器/报关暂未建模，列入下方剩余缺口 |
+| 月结资格 | 非月结客户选月结直接拦截（`send.ts:2051`） | `useExpressMonthlyPay` 并行查询 `customerLabel`，仅在确认「不是月结」时拦截；查询失败保持未知，不误杀 |
+| 下单载荷 | `isRecieveGoods = isLd && !dispatch ? 0 : 1`（`send.ts:1052`） | 按 `weight > 60kg 或 volume > 0.36m³` 判零担：零担自送 0，其余 1 |
+| 下单载荷 | 服务点自送强制 `isContact='N'`（`send.ts:1127-1135`） | 自送模式统一送 `N`，上门模式沿用用户选择 |
+| 下单载荷 | 营业部/服务点二维码：`startStation = 扫描值`，服务点再 `dispatchFlag='N'`（`send.ts:1137-1145`） | 扫码网点同时作为始发网点；服务点二维码按自送到点处理（不调度、不联系） |
+| 下单载荷 | 扩展字段 `productPrice` / `days` / `timeProductsCode` / `timeProductsName`（`send.ts:1366-1381`、`1497-1711`） | 从选中报价回填这四项 |
+| 失败处理 | `1\|货类\|协议号` 先暂存发货信息再打开签署函；`登录超时` 跳登录；其余弹单按钮弹窗（`index.tsx:8383-8422`） | `stageExpressSign` + `EXPRESS_STATEMENT` WebView；`preserveForLogin` 后跳登录；普通失败改 `showModal` 且保留行内文案 |
+| 成功处理 | 下单成功后 `orderPriceLog/save` 回写价格（`index.tsx:8578-8588`） | 新增 `saveOrderPriceLog`，成功路径异步回写，失败不影响跳转 |
+
+剩余缺口（未建模，不是漏改）：
+
+- 3C 原厂包装选择与显示器尺寸：RN 草稿没有 `isOriginalFactory` / `tvSize` 字段，需要先在货物域建模再加拦截。
+- 报关信息：RN 无 `customs` 域；港澳台收件场景目前只能被互寄规则拦住。
+- 高价值物品实价：RN 保价金额即物品价值，没有小程序 `realPrice` 的双字段结构。
+- 「电子云签」：RN 已有 `fileCode` 校验，本轮未改。
+- 报价接口偶发失败仍是既有失败态（文案 + 重试入口），本轮未改。

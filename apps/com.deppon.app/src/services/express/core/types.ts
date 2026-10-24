@@ -401,12 +401,15 @@ export interface ExpressFreightRequest {
   reviceMoneyAmount: number
   totalVolume: number
   totalWeight: number
+  totalQuantity: number
   goodsName?: string
   client: boolean
   detail: boolean
   sendDateTime: string
   promotionsCode?: string
   customerMobile?: string
+  /** PPC 付款方式口径：现付 MP、到付 FC、月结 CT。 */
+  paidMethod: 'MP' | 'FC' | 'CT'
   pickUpToDoor: boolean
   passwordSigning: ExpressFlag
   passProductCode: ExpressProductRole
@@ -695,4 +698,33 @@ export interface ExpressOrderCancelRequest {
   orderNumber: string
   cancelReason?: string
   sysCode?: string
+}
+
+/** 电子签署函暂存入参，字段与小程序 setStaging 契约一致。 */
+export interface ExpressSignStagingRequest {
+  agreementId: string
+  goodsName: string
+  goodsType: string
+  orderPhone: string
+  senderPhone: string
+  senderAddress: string
+  consigneePhone: string
+  consigneeAddress: string
+}
+
+export interface ExpressSignStageResult {
+  stagingId: string
+  /** 已拼好 queryId / source / ecoToken 的签署函地址。 */
+  uri: string
+}
+
+/** 下单成功后回写价格日志，供订单侧核对报价口径。 */
+export interface ExpressOrderPriceLogRequest {
+  orderNumber: string
+  priceBody: {
+    totalWeight: number
+    totalVolume: number
+    deliveryMode: ExpressDeliveryMode
+    productDetail: ExpressProductQuote
+  }
 }

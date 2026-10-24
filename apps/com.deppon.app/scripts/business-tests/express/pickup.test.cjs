@@ -346,7 +346,8 @@ const cases = [
       assert.equal(freightRequest.nightAccept, 'Y')
       assert.deepEqual(orderRequest.receive[0].orderExtendFields, [
         { key: 'nightAccept', value: 'Y' },
-        { key: 'nightAcceptStatus', value: -1 }
+        { key: 'nightAcceptStatus', value: -1 },
+        { key: 'productPrice', value: '28' }
       ])
 
       const quickDraft = {
@@ -362,7 +363,10 @@ const cases = [
 
       assert.equal(quickRequest.receive[0].beginAcceptTime, '下单后 1 小时内')
       assert.equal(quickRequest.receive[0].currentFirstTime, 'Y')
-      assert.deepEqual(quickRequest.receive[0].orderExtendFields, [{ key: 'nightAccept', value: 'N' }])
+      assert.deepEqual(quickRequest.receive[0].orderExtendFields, [
+        { key: 'nightAccept', value: 'N' },
+        { key: 'productPrice', value: '28' }
+      ])
 
       assert.equal(normalizeExpressPickup({ type: 0 }).type, 'NORMAL')
     }

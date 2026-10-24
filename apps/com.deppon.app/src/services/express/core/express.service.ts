@@ -3,7 +3,8 @@ import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
 import { expressApi } from './express.api'
 import { createExpressDraft, trimText, validateExpressDraft, validateExpressPriceTimeDraft, toFiniteNumber } from './express.draft'
-import { buildCreateOrderRequest, buildFreightRequest, buildInsurancePriceRequest } from './express.payload'
+import { buildCreateOrderRequest, buildFreightRequest, buildInsurancePriceRequest, buildOrderPriceLogRequest } from './express.payload'
+import { stageExpressSign } from './express.sign'
 import { createServiceFailure as createFailure } from '../../serviceResponse'
 import { buildExpressDeliveryAppointmentRequest, isExpressScheduledDeliveryProductSupported } from '../delivery/deliveryPreference.rules'
 import { getBlockingExpressGoodsLabel, normalizeExpressGoodsCheckResult } from '../goods/goodsCheck.rules'
@@ -337,6 +338,36 @@ export const expressService = {
     }
 
     return expressApi.createOrder(buildCreateOrderRequest(draft, submitCheck.result))
+  },
+
+  /**
+   *
+   * @param draft 寄件草稿
+   * @param code 下单接口返回的签署函业务码
+   * @description 暂存发货信息并返回电子签署函地址
+   */
+  stageSignInfo(draft: ExpressDraft, code: string) {
+    return stageExpressSign(draft, code)
+  },
+
+  /**
+   *
+   * @param draft 寄件草稿
+   * @param orderNumber 下单返回的订单号
+   * @description 下单成功后回写价格日志；失败只降级不打断成功流程
+   */
+  async saveOrderPriceLog(draft: ExpressDraft, orderNumber: string): Promise<DepponResponse<boolean>> {
+    const request = buildOrderPriceLogRequest(draft, orderNumber)
+
+    if (!request) {
+      return createFailure('订单号或报价缺失，跳过价格日志')
+    }
+
+    try {
+      return await expressApi.saveOrderPriceLog(request)
+    } catch (error) {
+      return createFailure(error instanceof Error && error.message ? error.message : '价格日志写入失败')
+    }
   },
 
   /**

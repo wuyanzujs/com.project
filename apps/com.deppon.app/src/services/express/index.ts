@@ -75,6 +75,8 @@ export {
   validateExpressContact,
   validateExpressDraft,
   validateExpressPriceTimeDraft,
+  isExpressSpecialRegion,
+  isExpressSpecialRegionBlocked,
   applyExpressPickupTime,
   applyExpressScanContext,
   clearExpressScanContext,
@@ -96,8 +98,11 @@ export {
   buildPickupTimeRequest,
   buildInsurancePriceRequest,
   buildFilterOrderRequest,
-  buildCreateOrderRequest
+  buildCreateOrderRequest,
+  buildOrderPriceLogRequest,
+  buildSignStagingRequest
 } from './core/express.payload'
+export { isExpressSignResponseCode, parseExpressSignResponseCode } from './core/express.sign'
 export {
   getExpressQuoteKey,
   getExpressQuoteIdentity,
@@ -212,7 +217,8 @@ export {
   hasExpressBatteryGoodsLabel,
   createExpressProductAvailability,
   createExpressProductFreightFields,
-  selectDefaultExpressQuote
+  selectDefaultExpressQuote,
+  sortExpressQuotes
 } from './product/productAvailability.rules'
 export type { ExpressProductCustomerCapabilitySource } from './product/productAvailability.rules'
 export { queryExpressProductAvailability } from './product/productAvailability.service'

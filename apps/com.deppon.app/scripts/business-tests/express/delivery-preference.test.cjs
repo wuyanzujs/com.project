@@ -79,7 +79,8 @@ const cases = [
       assert.equal(orderRequest.receive[0].appointmentDeliveryTime, '2026-07-16 14:00-16:00')
       assert.deepEqual(orderRequest.receive[0].orderExtendFields, [
         { key: 'isAppointmentDeliver', value: 'Y' },
-        { key: 'nightAccept', value: 'N' }
+        { key: 'nightAccept', value: 'N' },
+        { key: 'productPrice', value: '28' }
       ])
 
       const nightFields = createExpressDeliveryOrderFields({

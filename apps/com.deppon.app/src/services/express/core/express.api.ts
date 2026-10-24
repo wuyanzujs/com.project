@@ -27,6 +27,8 @@ import type {
   ExpressProductSwitchRequest,
   ExpressProductUpgradeRequest,
   ExpressProductUpgradeResult,
+  ExpressOrderPriceLogRequest,
+  ExpressSignStagingRequest,
   ExpressWarehouseStagingRequest
 } from './types'
 
@@ -121,6 +123,23 @@ export const expressApi = {
 
   stageWarehouse(data: ExpressWarehouseStagingRequest) {
     return depponHttp.post<string, ExpressWarehouseStagingRequest>('/gwapi/queryService/eco/query/staging/secure/setStaging', data, {
+      loading: false,
+      login: false,
+      timeout: 3000
+    })
+  },
+
+  /** 电子签署函暂存，与送货进仓同一个 setStaging 端点但入参不同。 */
+  stageStagingInfo(data: ExpressSignStagingRequest) {
+    return depponHttp.post<string, ExpressSignStagingRequest>('/gwapi/queryService/eco/query/staging/secure/setStaging', data, {
+      loading: false,
+      timeout: 10000
+    })
+  },
+
+  /** 下单成功后回写报价日志；失败不影响订单结果。 */
+  saveOrderPriceLog(data: ExpressOrderPriceLogRequest) {
+    return depponHttp.post<boolean, ExpressOrderPriceLogRequest>('/gwapi/pricetimeService/eco/pricetime/orderPriceLog/save', data, {
       loading: false,
       login: false,
       timeout: 3000

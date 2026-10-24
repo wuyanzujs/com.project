@@ -49,7 +49,8 @@ test('value added quote and order preserve field names, stages and number repres
       { key: 'pickupPhoto', value: 'LSPZ' },
       { key: 'installationCategory', value: '电视' },
       { key: 'testMacHineQty', value: '2' },
-      { key: 'powerMachineTypes', value: 'collect,delivery' }
+      { key: 'powerMachineTypes', value: 'collect,delivery' },
+      { key: 'productPrice', value: '28' }
     ]
   )
   assert.equal(

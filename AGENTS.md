@@ -526,6 +526,26 @@
     与失败退出码保持一致。新增 `prepare-lint-cache.mjs`，ESLint / Stylelint 运行前按本地规则目录源码哈希
     判断是否清除旧缓存，未变更规则时继续复用；对应源码哈希文件也加入 `.gitignore`。
 
+### 2026-10-24 寄件主链路业务逻辑对齐 mp-taro3
+
+97. 询价口径：`ExpressFreightRequest` 增加 `paidMethod`（MP/FC/CT）与 `totalQuantity`（件数），
+    `buildFreightRequest` 按草稿付款方式与件数输出；`sortExpressQuotes` 把 `YTY` 挪到列表末尾再选默认产品，
+    对齐参考端 `FetchFreight`（`mp-taro3/src/api/send.ts:36-44`）。
+98. 提交校验：新增港澳台互寄规则 `isExpressSpecialRegionBlocked`（澳门↔澳门、香港/澳门出发放行，
+    台湾出发与港澳台互寄拦截）与月结资格拦截。`useExpressMonthlyPay` 并行查询 `customerLabel`，
+    `monthlyEnabled` 为 null 时不拦截，只有确认「不是月结客户」才提示「您不是月结客户，请重新选择支付方式！」。
+99. 下单载荷：`isRecieveGoods` 由常量 0 改为参考端口径（`weight > 60kg` 或 `volume > 0.36m³` 判零担，
+    零担自送为 0，其余为 1）；自送模式 `isContact` 强制 `N`；扩展字段补 `productPrice` / `days` /
+    `timeProductsCode` / `timeProductsName`；营业部/服务点二维码把扫描网点同时作为 `startStation`，
+    服务点二维码再强制 `dispatchFlag='N'` 与不联系。
+100. 失败与成功：下单返回 `1|货类|协议号` 时先 `setStaging` 暂存再打开 `EXPRESS_STATEMENT` WebView（草稿保留，
+    返回后重新提交）；`登录超时` 走「保草稿 + 跳登录」；普通失败改 `Taro.showModal` 且保留行内文案。
+    下单成功后异步调用 `orderPriceLog/save` 回写价格（无订单号或无报价金额时跳过），失败不影响跳转。
+101. 测试与验证：新增 `scripts/business-tests/express/main-flow-parity.test.cjs`（9 用例）并在 `submit-actions`
+    补签署函、登录超时、弹窗、价格日志、月结拦截 5 用例；cjs express 域 138 用例、vitest 341 用例、
+    `pnpm verify:app` 全绿。剩余未建模缺口（3C 原厂包装、显示器尺寸、报关、实价双字段）记录在
+    `docs/parity/send/gaps.md`。未执行 RN bundle、Gradle 或 Xcode。
+
 ## 五、执行顺序
 
 1. 新领域禁止再用运行时 `export *`（门禁已是 0 基线）；新增服务时照 `expand-service-barrels.mjs` 生成的显式风格写。

@@ -337,6 +337,21 @@ export function createExpressProductFreightFields(draft: ExpressDraft, availabil
 /**
  *
  * @param products 产品报价列表
+ * @description 按小程序口径把 YTY（特快专配类）挪到列表末尾，避免默认选中高价产品
+ */
+export function sortExpressQuotes(products: ExpressProductQuote[]) {
+  const priorityLast = products.filter(product => product.omsProductCode === 'YTY')
+
+  if (!priorityLast.length) {
+    return products
+  }
+
+  return [...products.filter(product => product.omsProductCode !== 'YTY'), ...priorityLast]
+}
+
+/**
+ *
+ * @param products 产品报价列表
  * @param recommendDczp 是否推荐 DCZP
  * @description 选择默认选中的产品报价
  */
