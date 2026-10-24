@@ -99,6 +99,11 @@ export const APP_STYLE_COLORS = {
     waitGradientStart: '#ffffff',
     waitTextSoft: '#a39465'
   },
+  quote: {
+    /* 时效卡「惊喜优惠」角标横向渐变端色，与 _tokens.scss 的 quote-limit-* 同步登记。 */
+    limitGradientStart: '#fa7073',
+    limitGradientEnd: '#f83a3c'
+  },
   member: {
     text: '#7c482d',
     textMuted: '#968372',

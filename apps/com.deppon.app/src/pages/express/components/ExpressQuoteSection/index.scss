@@ -1,18 +1,23 @@
 @use '@/styles/_tokens.scss' as *;
 
 .express-quote-scroll {
-  height: 168px;
+  height: 192px;
   margin-top: $dp-space-8;
 }
+/* 卡片 184×152 落在 200×192 的热区槽内：上 24 是「惊喜优惠」角标的外挂空间，槽尾 16 即卡间距。 */
 .express-quote-slot {
-  width: 200px;
-  height: 152px;
-  margin-right: $dp-space-16;
-}
-/* 书签渐变、折角和描边使用生产 APK 原图，布局维持真机量测的 200×152。 */
-.express-quote-card {
   position: relative;
   width: 200px;
+  height: 192px;
+}
+.express-quote-scroll-end {
+  width: $dp-space-24;
+}
+.express-quote-card {
+  position: absolute;
+  top: 24px;
+  left: 0;
+  width: 184px;
   height: 152px;
   border-radius: $dp-radius-16;
   overflow: hidden;
@@ -21,96 +26,97 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 200px;
+  width: 184px;
   height: 152px;
 }
+/* 标题带压在底图书签上：短名 16、长名 8 的左内边距与参考实现一致。 */
 .express-quote-card__ribbon {
-  display: flex;
   flex-direction: row;
   align-items: center;
-  width: 126px;
-  height: 47px;
-  padding-left: $dp-space-12;
-  padding-right: $dp-space-8;
+  height: $dp-line-height-48;
+  padding-left: $dp-space-16;
 }
 .express-quote-card__ribbon--long {
-  width: 180px;
+  padding-left: $dp-space-8;
 }
 .express-quote-card__ribbon-title {
   flex-shrink: 1;
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-semibold;
-  line-height: $dp-line-height-48;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-caption;
 }
 .express-quote-card__ribbon-title--active {
   color: $dp-color-text-inverse;
 }
 .express-quote-card__medal {
   position: absolute;
-  left: 156px;
   top: 14px;
-  width: 30px;
-  height: 30px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+}
+.express-quote-card__time {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: $dp-line-height-40;
+  margin-top: $dp-space-8;
+}
+.express-quote-card__time-label {
+  color: $dp-color-quote-time;
+  font-size: $dp-font-size-fine;
+}
+.express-quote-card__time-value {
+  margin: $dp-space-0 $dp-space-4;
+  color: $dp-color-quote-time;
+  font-size: $dp-font-size-label-small;
+  font-weight: $dp-font-weight-semibold;
+}
+.express-quote-card__time-text {
+  color: $dp-color-quote-time;
+  font-size: $dp-font-size-body;
+}
+.express-quote-card__price {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: $dp-line-height-36;
+  margin-top: $dp-space-4;
+}
+.express-quote-card__price-text {
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-body;
+}
+.express-quote-card__price-suffix {
+  margin-left: $dp-space-4;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-body;
 }
 .express-quote-card__limit {
   position: absolute;
   top: $dp-space-2;
-  right: -$dp-space-16;
+  right: 0;
   align-items: center;
   justify-content: center;
   height: $dp-line-height-32;
   padding: $dp-space-0 $dp-space-12;
-  background: $dp-color-danger-accent;
-  border-top-left-radius: $dp-radius-16;
-  border-top-right-radius: $dp-radius-16;
-  border-bottom-right-radius: $dp-radius-16;
+  background: $dp-color-quote-limit-end;
+  border-style: solid;
+  border-width: 2px;
+  border-color: $dp-color-bg-card;
+  border-top-left-radius: $dp-radius-20;
+  border-top-right-radius: $dp-radius-20;
+  border-bottom-right-radius: $dp-radius-20;
+}
+.express-quote-card__limit-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 .express-quote-card__limit-text {
   color: $dp-color-text-inverse;
   font-size: $dp-font-size-micro;
-  line-height: $dp-line-height-28;
-}
-.express-quote-card__time {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  height: $dp-line-height-48;
-  margin-top: $dp-space-16;
-  padding: $dp-space-0 $dp-space-8;
-}
-.express-quote-card__time-label {
-  color: $dp-color-brand;
-  font-size: $dp-font-size-caption;
-  line-height: $dp-line-height-40;
-}
-.express-quote-card__time-value {
-  margin: $dp-space-0 $dp-space-6;
-  color: $dp-color-brand;
-  font-size: $dp-font-size-heading;
-  font-weight: $dp-font-weight-semibold;
-  line-height: $dp-line-height-48;
-}
-.express-quote-card__price {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  height: 36px;
-  margin-top: $dp-space-4;
-}
-.express-quote-card__price-mark {
-  color: $dp-color-text-ink;
-  font-size: $dp-font-size-body;
-  line-height: $dp-line-height-36;
-}
-.express-quote-card__price-value {
-  margin: $dp-space-0 $dp-space-4;
-  color: $dp-color-text-ink;
-  font-size: $dp-font-size-title-large;
-  font-weight: $dp-font-weight-semibold;
-  line-height: $dp-line-height-40;
 }
 .express-quote-status {
   display: flex;

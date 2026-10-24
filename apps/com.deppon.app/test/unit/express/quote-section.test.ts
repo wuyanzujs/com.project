@@ -12,6 +12,7 @@ vi.mock('@/services/express', async () =>
   vi.importActual<typeof import('@/services/express/core/express.quoteView')>('@/services/express/core/express.quoteView')
 )
 vi.mock('@/shared/components', () => ({ AppPressable: 'AppPressable' }))
+vi.mock('@/shared/native', () => ({ AppLinearGradient: 'AppLinearGradient' }))
 vi.mock('@/shared/components/AppIcon', () => ({ APP_IMAGE_ICONS: { arrowUpGrey: 'arrow.png' } }))
 vi.mock('@/pages/express/components/ExpressSection', () => ({ ExpressSection: 'ExpressSection' }))
 vi.mock('@/pages/express/components/ExpressQuoteSection/index.scss', () => ({}))

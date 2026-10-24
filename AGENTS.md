@@ -458,6 +458,25 @@
     「签收密码、双人派送」、通电验机无说明入口、展开态卡片增高正常。未执行 RN bundle、Gradle 或 Xcode。
     未处理：价格占位「--」生产端短横更宽（左组整体右移 19 设计 px）、页头比生产短 4 物理 px。
 
+### 2026-10-24 预计送达时间产品卡按小程序参考实现还原
+
+89. 归因：寄件页产品卡此前「200×152 拉伸底图 + ribbon View 叠字」与生产端不符。参照
+    `D:\10531845\Desktop\CZH-DEV\mp-taro3`（`send/express/basic/product/item`）重写
+    `ExpressQuoteSection`：底图 1–4.png 与 RN 现有 `express_product_bg_*.png` 是同素材两次导出
+    （深色掩膜 IoU 0.97+），卡片恢复原始 184×152（slot 200×192：上 24 留给「惊喜优惠」角标外挂、
+    槽尾 16 即卡间距），标题 22dp 左对齐（短名 pl-16/长名 pl-8，选中白/未选 #111）、
+    时效行 mt-8 h-40 蓝 `#1957ff`（分段 20/26semibold/20，整段 22）、价格行 mt-4 h-36 全 24 常规
+    （数字不再放大加粗）、高端勋章改常显（top-14 right-8）、「惊喜优惠」角标移出 overflow 卡片
+    （slot 级 right:0 top:2，白描边 2px + 282° 红渐变 `#fa7073→#f83a3c`，radius 20/20/20/0）。
+90. 新 token：`$dp-color-quote-time`、`$dp-color-quote-limit-start/end`、`$dp-radius-20`，
+    `APP_STYLE_COLORS.quote` 同步登记；cjs 测试断言同步新价格结构并补 `@/styles/nativeTokens`
+    依赖映射。真机 Metro 量测：卡 353×292px/间距 31px/圆角、选中描边 #363b4d（蓝环消失）、
+    渐变带 91px 齐平卡顶（采样与底图逐点吻合）、标题/时效/价格行位与生产 p17 的 mp-taro3 流式
+    布局推算值一致；未选卡顶部 `#edefff` 实心带经 APK 底图与小程序 4.png 双重比对确认为生产
+    原生设计（与选中带同构，掩膜差 0.072%），非实现偏差。`pnpm verify:app` exit 0。
+    未处理：报价接口偶发失败（失败态文案与重试入口按既有设计）、区块标题行下间距比生产约多
+    12dp（ExpressSection 行高 82 为整页共用，未单独调）。
+
 ### 2026-10-24 登录协议确认弹层对齐生产端
 
 84. 行为同步：登录页协议未勾选时「获取验证码」不再直接发送（原先完全不校验）、「立即登录」不再弹 toast，

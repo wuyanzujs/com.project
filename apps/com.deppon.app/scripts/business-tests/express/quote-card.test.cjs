@@ -89,6 +89,8 @@ test('quote card renders one-line product name, split time text and limited offe
     '@/assets/express/express_product_bg_s_n.png': 'short-idle.png',
     '@/services/express': require('@/services/express/core/express.quoteView'),
     '@/shared/components': { AppPressable: 'AppPressable' },
+    '@/shared/native': { AppLinearGradient: 'AppLinearGradient' },
+    '@/styles/nativeTokens': require('@/styles/nativeTokens'),
     '../ExpressSection': { ExpressSection: 'ExpressSection' },
     './index.scss': {}
   })
@@ -138,7 +140,11 @@ test('quote card renders one-line product name, split time text and limited offe
     'limited offer badge rendered'
   )
   assert.ok(
-    findElement(view, element => element.props?.children === '¥ ' && element.props?.className === 'express-quote-card__price-mark'),
+    findElement(view, element => textOf(element) === '¥10' && element.props?.className === 'express-quote-card__price-text'),
     'price keeps the ¥ prefix'
+  )
+  assert.ok(
+    findElement(view, element => element.props?.children === '起' && element.props?.className === 'express-quote-card__price-suffix'),
+    'price keeps the 起 suffix'
   )
 })

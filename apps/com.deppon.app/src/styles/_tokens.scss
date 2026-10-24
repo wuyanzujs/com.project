@@ -153,6 +153,10 @@ $dp-color-sheet-payment: #f2fbff;
 $dp-color-quote-band: #434a5e;
 $dp-color-quote-idle: #edefff;
 $dp-color-quote-active: #363b4d;
+/* 时效行取样的蓝与「惊喜优惠」角标 282° 渐变端色。 */
+$dp-color-quote-time: #1957ff;
+$dp-color-quote-limit-start: #fa7073;
+$dp-color-quote-limit-end: #f83a3c;
 
 $dp-font-size-micro: 18px;
 $dp-font-size-fine: 20px;
@@ -329,6 +333,7 @@ $dp-radius-9: 9px;
 $dp-radius-12: 12px;
 $dp-radius-16: 16px;
 $dp-radius-18: 18px;
+$dp-radius-20: 20px;
 $dp-radius-21: 21px;
 $dp-radius-24: 24px;
 $dp-radius-26: 26px;
