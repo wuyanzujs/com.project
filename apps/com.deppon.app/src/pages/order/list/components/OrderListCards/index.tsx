@@ -1,13 +1,11 @@
 import { Image, Text, View } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 
-import { Defs, LinearGradient, Rect, Stop, Svg } from 'react-native-svg'
-
 import { canCancelOrder, canDeleteOrder, canEvaluateOrder, canModifyOrder, canNotifyRecipient, getOrderListTimeText } from '@/services/order'
 import type { OrderListItem } from '@/services/order'
 import { AppPressable } from '@/shared/components'
 import { AppIcon } from '@/shared/components/AppIcon'
-import { AppElevatedView, designPxToDp } from '@/shared/native'
+import { AppElevatedView, AppLinearGradient, designPxToDp } from '@/shared/native'
 import { copyTextToClipboard } from '@/shared/platform/clipboard'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
@@ -20,8 +18,6 @@ const ORDER_CARD_STYLE = {
   marginBottom: designPxToDp(20),
   marginHorizontal: designPxToDp(24)
 }
-
-const WAIT_TIME_GRADIENT_ID = 'orderWaitTimeGradient'
 
 function getOrderCardTone(orderClass: number): OrderCardTone {
   if (orderClass === 2) {
@@ -175,17 +171,12 @@ export function OrderCard(props: {
 
         <View className={`order-card__bottom order-card__bottom--${tone}`}>
           {tone === 'brand' && (
-            <View className='order-card__bottom-gradient'>
-              <Svg width='100%' height='100%'>
-                <Defs>
-                  <LinearGradient id={WAIT_TIME_GRADIENT_ID} x1='0' x2='0' y1='0' y2='1'>
-                    <Stop offset='0' stopColor={APP_STYLE_COLORS.order.waitGradientStart} />
-                    <Stop offset='1' stopColor={APP_STYLE_COLORS.order.waitBackground} />
-                  </LinearGradient>
-                </Defs>
-                <Rect width='100%' height='100%' fill={`url(#${WAIT_TIME_GRADIENT_ID})`} />
-              </Svg>
-            </View>
+            <AppLinearGradient
+              className='order-card__bottom-gradient'
+              colors={[APP_STYLE_COLORS.order.waitGradientStart, APP_STYLE_COLORS.order.waitBackground]}
+              end={{ x: 0, y: 1 }}
+              start={{ x: 0, y: 0 }}
+            />
           )}
           <Text className={`order-card__time order-card__time--${tone}`}>{getOrderListTimeText(props.order)}</Text>
           {props.order.orderPrice > 0 && <Text className='order-card__price'>¥{props.order.orderPrice}</Text>}

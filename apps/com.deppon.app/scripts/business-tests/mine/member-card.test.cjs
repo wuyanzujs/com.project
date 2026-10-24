@@ -19,14 +19,8 @@ function loadCard(harness) {
     react: harness.react,
     'react/jsx-runtime': require('react/jsx-runtime'),
     '@tarojs/components': { Image: 'Image', Text: 'Text', View: 'View' },
-    'react-native-svg': {
-      Defs: 'Defs',
-      LinearGradient: 'LinearGradient',
-      Rect: 'Rect',
-      Stop: 'Stop',
-      Svg: 'Svg'
-    },
     '@/shared/components': { AppPressable: 'AppPressable' },
+    '@/shared/native': { AppLinearGradient: 'AppLinearGradient' },
     '@/styles/nativeTokens': {
       APP_STYLE_COLORS: { member: { svipGradientStart: '#fff', svipGradientMid: '#fff', svipGradientEnd: '#fff' } }
     },

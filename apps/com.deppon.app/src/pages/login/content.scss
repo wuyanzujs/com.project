@@ -83,32 +83,6 @@
   margin-top: $dp-login-agreement-margin-top;
 }
 
-.login-agreement__checkbox {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: $dp-login-agreement-size;
-  height: $dp-login-agreement-size;
-  min-width: $dp-login-agreement-size;
-  min-height: $dp-login-agreement-size;
-  border-color: $dp-color-text-subdued;
-  border-radius: $dp-radius-round;
-  border-width: 2px;
-  background: $dp-color-bg-card;
-}
-
-.login-agreement__checkbox--checked {
-  background: $dp-color-brand;
-  border-color: $dp-color-brand;
-}
-
-.login-agreement__check {
-  color: $dp-color-text-inverse;
-  font-size: $dp-font-size-caption;
-  font-weight: $dp-font-weight-bold;
-}
-
 .login-agreement__content {
   display: flex;
   flex: 1;

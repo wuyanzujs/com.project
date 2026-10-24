@@ -9,7 +9,7 @@ import alipayLogo from '@/assets/login/logo-alipay.png'
 import wechatLogo from '@/assets/login/logo-wechat.png'
 import { authService, isValidMobile, isValidSmsCode } from '@/services/auth'
 import { shouldOfferCaptcha } from '@/services/captcha'
-import { AppPressable } from '@/shared/components'
+import { AppPressable, AppRadio } from '@/shared/components'
 import { AppIcon } from '@/shared/components/AppIcon'
 import { AppFormScrollView, AppKeyboardAvoidingView } from '@/shared/native'
 import { navigateToAppRoute, navigateToAppRouteAsync } from '@/shared/navigation/appNavigation'
@@ -328,12 +328,7 @@ const LoginPage = () => {
           </View>
 
           <View className='login-agreement'>
-            <AppPressable
-              className={agreementAccepted ? 'login-agreement__checkbox login-agreement__checkbox--checked' : 'login-agreement__checkbox'}
-              onPress={() => setAgreementAccepted(current => !current)}
-            >
-              <Text className='login-agreement__check'>{agreementAccepted ? '✓' : ''}</Text>
-            </AppPressable>
+            <AppRadio accessibilityLabel='勾选同意服务协议及隐私政策' checked={agreementAccepted} onChange={() => setAgreementAccepted(current => !current)} />
             <View className='login-agreement__content'>
               <Text className='login-agreement__text'>已阅读并同意</Text>
               <AppPressable contentElement='text' className='login-agreement__link' onPress={() => handlePolicyPress('AUTH_LOGIN_SERVICE_PROTOCOL')}>

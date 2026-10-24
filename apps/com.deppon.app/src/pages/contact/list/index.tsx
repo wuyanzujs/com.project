@@ -3,13 +3,12 @@ import Taro, { useDidShow, useLoad, useRouter } from '@tarojs/taro'
 
 import { useCallback, useMemo, useState } from 'react'
 
-import { Defs, LinearGradient, Rect, Stop, Svg } from 'react-native-svg'
-
 import { contactSelection, contactService, getContactFullAddress } from '@/services/contact'
 import type { Contact } from '@/services/contact'
 import { maskExpressContactMobile } from '@/services/express'
 import { AppDialog, AppPage, AppPressable } from '@/shared/components'
 import { AppIcon } from '@/shared/components/AppIcon'
+import { AppLinearGradient } from '@/shared/native'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -24,8 +23,6 @@ import './index.scss'
 import './content.scss'
 
 const PAGE_SIZE = 20
-
-const CTA_GRADIENT_ID = 'contactListCtaGradient'
 
 const PAGE_TITLE_BY_TARGET = {
   consignee: '选择收件人',
@@ -364,17 +361,7 @@ const ContactListPage = () => {
             <Text className='contact-list-footer__button-text contact-list-footer__button-text--ghost'>管理</Text>
           </AppPressable>
           <AppPressable compact contentElement='view' className='contact-list-footer__button contact-list-footer__button--primary' onPress={handleCreate}>
-            <View className='contact-list-footer__gradient'>
-              <Svg width='100%' height='100%'>
-                <Defs>
-                  <LinearGradient id={CTA_GRADIENT_ID} x1='0' x2='1' y1='0' y2='0'>
-                    <Stop offset='0' stopColor={APP_STYLE_COLORS.brand.gradientStart} />
-                    <Stop offset='1' stopColor={APP_STYLE_COLORS.brand.gradientEnd} />
-                  </LinearGradient>
-                </Defs>
-                <Rect width='100%' height='100%' fill={`url(#${CTA_GRADIENT_ID})`} />
-              </Svg>
-            </View>
+            <AppLinearGradient className='contact-list-footer__gradient' colors={[APP_STYLE_COLORS.brand.gradientStart, APP_STYLE_COLORS.brand.gradientEnd]} />
             <Text className='contact-list-footer__button-text contact-list-footer__button-text--primary'>创建新地址</Text>
           </AppPressable>
         </>

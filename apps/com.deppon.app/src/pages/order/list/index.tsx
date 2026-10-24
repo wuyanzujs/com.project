@@ -4,7 +4,6 @@ import Taro, { useDidShow } from '@tarojs/taro'
 import { useCallback, useState } from 'react'
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Defs, LinearGradient, Rect, Stop, Svg } from 'react-native-svg'
 
 import { getCurrentUser } from '@/services/auth'
 import { expressDraftBridge } from '@/services/express'
@@ -20,7 +19,7 @@ import {
 import type { OrderListItem, OrderPaymentFilter, OrderRole, OrderStatusFilter } from '@/services/order'
 import { AppPage, AppSupportFloat } from '@/shared/components'
 import AppTabBar from '@/shared/components/AppTabBar'
-import { AppVirtualList } from '@/shared/native'
+import { AppLinearGradient, AppVirtualList } from '@/shared/native'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { ensureAuthenticated } from '@/shared/navigation/authGuard'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -48,8 +47,6 @@ function getRouteToDetail(order: OrderListItem) {
 function getOrderActionKey(order: OrderListItem) {
   return `${order.role}-${order.orderNumber}-${order.waybillNumber}`
 }
-
-const HEADER_GRADIENT_ID = 'orderListHeaderGradient'
 
 const OrderListPage = () => {
   const insets = useSafeAreaInsets()
@@ -323,17 +320,12 @@ const OrderListPage = () => {
     <AppPage className='order-list-shell' footer={<AppTabBar active='orderList' />} safeArea='none' statusBar='dark'>
       <View className='order-list-page'>
         <View className='order-list-header' style={{ paddingTop: insets.top }}>
-          <View className='order-list-gradient'>
-            <Svg width='100%' height='100%'>
-              <Defs>
-                <LinearGradient id={HEADER_GRADIENT_ID} x1='0' x2='0' y1='0' y2='1'>
-                  <Stop offset='0' stopColor={APP_STYLE_COLORS.order.headerGradientStart} />
-                  <Stop offset='1' stopColor={APP_STYLE_COLORS.surface.pageCool} />
-                </LinearGradient>
-              </Defs>
-              <Rect width='100%' height='100%' fill={`url(#${HEADER_GRADIENT_ID})`} />
-            </Svg>
-          </View>
+          <AppLinearGradient
+            className='order-list-gradient'
+            colors={[APP_STYLE_COLORS.order.headerGradientStart, APP_STYLE_COLORS.surface.pageCool]}
+            end={{ x: 0, y: 1 }}
+            start={{ x: 0, y: 0 }}
+          />
           <OrderRoleTabs
             activeCount={listData.totalRows}
             role={role}

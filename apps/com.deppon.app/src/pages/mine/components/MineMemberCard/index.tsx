@@ -1,9 +1,8 @@
 import { Image, Text, View } from '@tarojs/components'
 
-import { Defs, LinearGradient, Rect, Stop, Svg } from 'react-native-svg'
-
 import type { MemberOverviewView } from '@/services/member'
 import { AppPressable } from '@/shared/components'
+import { AppLinearGradient } from '@/shared/native'
 import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
 import { getExpireCouponBadgeText, getMemberLevelAsset, getMemberRightsCount } from '../../mine.model'
@@ -75,18 +74,11 @@ export function MineMemberCard({ levelCode, member, couponCount = 0, expireCoupo
         <Image className='mine-member-card__svip-logo' mode='aspectFit' src='https://ca.deppon.com.cn/ows/assets/center2412/50.png' />
         <Text className='mine-member-card__svip-text'>{member?.svipMessage || 'SVIP 专属权益'}</Text>
         <View className='mine-member-card__svip-button'>
-          <View className='mine-member-card__svip-button-gradient'>
-            <Svg width='100%' height='100%'>
-              <Defs>
-                <LinearGradient id='mineSvipButtonGradient' x1='0' x2='1' y1='0' y2='0'>
-                  <Stop offset='0' stopColor={APP_STYLE_COLORS.member.svipGradientStart} />
-                  <Stop offset='0.53' stopColor={APP_STYLE_COLORS.member.svipGradientMid} />
-                  <Stop offset='1' stopColor={APP_STYLE_COLORS.member.svipGradientEnd} />
-                </LinearGradient>
-              </Defs>
-              <Rect width='100%' height='100%' fill='url(#mineSvipButtonGradient)' />
-            </Svg>
-          </View>
+          <AppLinearGradient
+            className='mine-member-card__svip-button-gradient'
+            colors={[APP_STYLE_COLORS.member.svipGradientStart, APP_STYLE_COLORS.member.svipGradientMid, APP_STYLE_COLORS.member.svipGradientEnd]}
+            locations={[0, 0.53, 1]}
+          />
           <Text className='mine-member-card__svip-button-text'>{member?.svipButtonText || '立即开通'}</Text>
         </View>
       </View>

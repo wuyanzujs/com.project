@@ -1,0 +1,27 @@
+@use '@/styles/_tokens.scss' as *;
+
+.app-radio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 未选中描边沿用参考端 DPRadio 的 #e2e2e2 中灰。 */
+  background: $dp-color-bg-card;
+  border-color: $dp-color-bg-track;
+  border-radius: $dp-radius-round;
+  border-width: 3px;
+}
+
+.app-radio--checked {
+  /* RN 渲染不了 CSS 渐变，参考端的渐变圆底用纯品牌色替代。 */
+  background: $dp-color-brand;
+  border-width: 0;
+}
+
+.app-radio--disabled {
+  background: $dp-color-bg-neutral-soft;
+}
+
+.app-radio__check {
+  width: 50%;
+  height: 50%;
+}

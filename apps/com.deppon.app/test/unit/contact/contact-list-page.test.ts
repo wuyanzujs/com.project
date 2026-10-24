@@ -127,12 +127,8 @@ vi.mock('@/styles/nativeTokens', () => ({
   }
 }))
 
-vi.mock('react-native-svg', () => ({
-  Defs: 'Defs',
-  LinearGradient: 'LinearGradient',
-  Rect: 'Rect',
-  Stop: 'Stop',
-  Svg: 'Svg'
+vi.mock('@/shared/native', () => ({
+  AppLinearGradient: 'AppLinearGradient'
 }))
 
 vi.mock('@/pages/contact/components/ContactNavBar', () => ({
