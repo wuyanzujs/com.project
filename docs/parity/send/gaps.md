@@ -151,20 +151,46 @@ RN 已按上表改写 [pages/express/success](apps/com.deppon.app/src/pages/expr
 | 环节 | 参考端行为 | RN 本轮改动 |
 |---|---|---|
 | 询价 | `paidMethod`（MP/FC/CT）与 `totalQuantity`（件数）参与计价（`send.ts:485`、`469`） | `ExpressFreightRequest` 增加两字段，`buildFreightRequest` 输出付款方式与件数 |
-| 询价排序 | `FetchFreight` 把 `YTY` 挪到列表末尾再选默认产品（`api/send.ts:36-44`） | 新增 `sortExpressQuotes`，`useExpressQuote` 在选默认产品前排序 |
-| 提交校验 | 港澳台互寄、月结资格、3C 原厂包装、显示器尺寸、报关等拦截（`CheckOrderParams`） | 新增港澳台互寄规则（澳门↔澳门放行、香港/澳门出发放行、台湾出发拦截）与月结资格拦截；3C/显示器/报关暂未建模，列入下方剩余缺口 |
-| 月结资格 | 非月结客户选月结直接拦截（`send.ts:2051`） | `useExpressMonthlyPay` 并行查询 `customerLabel`，仅在确认「不是月结」时拦截；查询失败保持未知，不误杀 |
-| 下单载荷 | `isRecieveGoods = isLd && !dispatch ? 0 : 1`（`send.ts:1052`） | 按 `weight > 60kg 或 volume > 0.36m³` 判零担：零担自送 0，其余 1 |
-| 下单载荷 | 服务点自送强制 `isContact='N'`（`send.ts:1127-1135`） | 自送模式统一送 `N`，上门模式沿用用户选择 |
-| 下单载荷 | 营业部/服务点二维码：`startStation = 扫描值`，服务点再 `dispatchFlag='N'`（`send.ts:1137-1145`） | 扫码网点同时作为始发网点；服务点二维码按自送到点处理（不调度、不联系） |
+| 询价排序 | `FetchFreight` 把 `YTY` 挪到列表末尾（`api/send.ts:36-44`） | `sortExpressQuotes` 下沉到 `expressService.quote` / `quotePriceTime`，寄件页与查价页共用 |
+| 默认产品 | `GetProductDefault` 按 `PACKAGE / RCP / NFLF / JZKH / DJBK / XJBK` 优先，兜底取列表末位（`utils/prodcuts.ts:94-128`） | `selectDefaultExpressQuote` 改为同一优先级；已选产品在同码同线路仍存在时保留（`findExpressQuoteSelection`） |
+| 提交校验 | 港澳台互寄、月结资格、3C 原厂包装、显示器尺寸、报关等拦截（`CheckOrderParams`） | 港澳台互寄与月结资格只在提交时拦截，询价阶段不挡价格；3C/显示器/报关暂未建模，列入下方剩余缺口 |
+| 月结资格 | 非月结客户选月结直接拦截；客户编码扫码固定月结（`send.ts:2051`、`store/reducers/send.ts:60-71`） | `useExpressMonthlyPay` 并行查 `customerLabel`，确认不是月结才拦截；`shipperNumber` 扫码除排除码外视为固定月结 |
+| 下单载荷 | `contactAddress` 放详细地址、`AddressDetail` 放「省-市-区,详细地址」（`send.ts:1762`、`1786`） | RN 之前把省市区和详细地址写反；本轮修正（批量下单同源修正），与 RN 订单修改接口口径一致 |
+| 下单载荷 | `isRecieveGoods = isLd && !dispatch ? 0 : 1`（`send.ts:1052`） | 按 `weight > 60kg 或 volume > 0.36m³` 判零担，营业部二维码固定零担；自送为 0，其余 1 |
+| 下单载荷 | 扫码单 `isContact='N'`（`send.ts:1122-1124` 的 `!role` 分支） | 任意扫码来源都不主动联系；自送同样为 `N` |
+| 下单载荷 | 营业部/司机二维码固定 61kg、送货不上楼；服务点二维码置 `dispatch=false`（`store/reducers/send.ts:1475-1500`） | `applyExpressScanContext` 同步这三条初始态；服务点二维码再强制 `dispatchFlag='N'`、`startStation` 用扫码值 |
+| 筛单 | `contactAddress / receiverAddress` 为「省-市-区,详细地址」，并带 `totalVolume`；`limitCust` 表示合同客户（`send.ts:5340-5420`） | 地址格式与 `totalVolume` 对齐；`limitCust` 改回仅扫码客户码为 1（合同客户标记待接） |
+| 取件时间 | `handleQueryPickupTime` 在地址/货物/产品变化后重查；`handlePickupList` 保留仍有效的 `pickupTime`，失效才选首个普通时段（`index.tsx:4953`、`store/reducers/send.ts:810-965`） | `useExpressPickupTime` 表单齐备且上门时自动查询并选首个普通时段；重量/体积/件数/产品变化后重查并保留有效时段，自送不查；`updateExpressGoods` 不再清空取件时间 |
+| 快递/零担切换 | `handleGoodsChange`：`!isLd` 时清空自送网点/收件自提点并把送货方式置上楼；快递→零担切换时清空网点与产品（`store/reducers/send.ts:1004-1090`） | 新增 `express.goodsType.ts`（60kg / 0.36m³）；回到快递或跨越快递/零担边界时清空自送网点，零担内部修改保留网点 |
+| 产品联动 | `handleProductChange`：新产品无券优惠时清空券；`DCZP` 到付回落现付、电子云签回落无（`store/reducers/send.ts:697-795`） | `selectExpressProduct` 同步清券与到付回落；保价类型按新产品策略归一 |
 | 下单载荷 | 扩展字段 `productPrice` / `days` / `timeProductsCode` / `timeProductsName`（`send.ts:1366-1381`、`1497-1711`） | 从选中报价回填这四项 |
 | 失败处理 | `1\|货类\|协议号` 先暂存发货信息再打开签署函；`登录超时` 跳登录；其余弹单按钮弹窗（`index.tsx:8383-8422`） | `stageExpressSign` + `EXPRESS_STATEMENT` WebView；`preserveForLogin` 后跳登录；普通失败改 `showModal` 且保留行内文案 |
 | 成功处理 | 下单成功后 `orderPriceLog/save` 回写价格（`index.tsx:8578-8588`） | 新增 `saveOrderPriceLog`，成功路径异步回写，失败不影响跳转 |
 
-剩余缺口（未建模，不是漏改）：
+剩余缺口（未建模或未取证，不是漏改）：
 
 - 3C 原厂包装选择与显示器尺寸：RN 草稿没有 `isOriginalFactory` / `tvSize` 字段，需要先在货物域建模再加拦截。
 - 报关信息：RN 无 `customs` 域；港澳台收件场景目前只能被互寄规则拦住。
 - 高价值物品实价：RN 保价金额即物品价值，没有小程序 `realPrice` 的双字段结构。
+- `limitCust` 的合同客户口径：RN 筛单请求没有合同能力入参，目前只能按扫码客户码置 1。
+- 保价必保产品：参考端 `ExistsProductInsurance`（`utils/prodcuts.ts:1-35`）必保只有 JZZH/NJZZH/YTY/YTYDS/NZBRH，
+  RN 仍把 DJBK/DJTH 视为必保（旧交接文档如此记录）；需要生产端真机核对后再决定是否收窄，本轮未改。
+- 送货方式默认值：参考端快递默认 `PICKUPSTAIRS`、零担默认 `PICKNOTUPSTAIRS`，RN 草稿默认固定 `PICKNOTUPSTAIRS`；
+  生产 App 的实际默认值未取证，本轮未改。
+- 联系人公司名：参考端会把 `company` 拼进详细地址，RN 下单载荷尚未使用该字段。
+- 地址详细字段已按参考端修正，但需要真实下单后核对运单地址；静态门禁不能替代这一步。
 - 「电子云签」：RN 已有 `fileCode` 校验，本轮未改。
 - 报价接口偶发失败仍是既有失败态（文案 + 重试入口），本轮未改。
+
+## 2026-10-25 寄件优惠券链路复核
+
+完整链路、触发条件、清除规则与特殊场景见 [coupon-flow.md](./coupon-flow.md)。本轮对齐的代码点：
+
+- 请求门槛：产品价格不可见、客户编码扫码不再请求优惠券（createExpressCouponQueryRequest）。
+- 自动选券：普通现付、非扫码、手机号 11 位时自动选第一张可用券并重算；手动/列表带入的券不被覆盖；输入指纹不变时不重复自动选券。
+- 月结联动：选券时若为月结，切回现付并提示「已取消月结支付」。
+- 清除：最新券列表为空时清空已选券并重算；新产品无券优惠时清空（上一轮已做）。
+- 弹层：打开时无已选券默认预选第一张可用券，与参考端 Picker 一致。
+- 测试：新增 coupon-actions.test.cjs 5 例，coupon/contracts 补价格可见性与扫码门槛 1 例。
+- 模板带入的取件时间：参考端按模板 `beginAcceptTime` 的小时匹配首日时段，RN 直接把模板时间当已选值、匹配不到就走默认时段；`templateId` / `templatePickupTime` 未进草稿。
+- 送货方式默认值：参考端快递默认上楼（`PICKUPSTAIRS`）、零担默认不上楼，RN 固定 `PICKNOTUPSTAIRS`；电梯上楼（`isHasElevator`）未建模。

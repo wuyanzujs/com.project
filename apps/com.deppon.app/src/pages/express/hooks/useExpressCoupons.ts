@@ -6,11 +6,13 @@ import { expressCouponService } from '@/services/coupon'
 import type { CouponCardView } from '@/services/coupon'
 import {
   EXPRESS_COUPON_AUTO_QUERY_DELAY_MS,
+  canAutoApplyExpressCoupon,
   createExpressCouponQueryRequest,
   createExpressCouponRequestKey,
   expressDraftStorage,
   shouldShowExpressCouponRow,
-  updateExpressCouponNumber
+  updateExpressCouponNumber,
+  updateExpressService
 } from '@/services/express'
 import type { ExpressDraft } from '@/services/express'
 import { useLatestRequestRunner } from '@/shared/async/useLatestRequest'
@@ -21,6 +23,10 @@ interface UseExpressCouponsOptions {
   draft: ExpressDraft
   setDraft: Dispatch<SetStateAction<ExpressDraft>>
   onInvalidateQuote: () => void
+}
+
+function createCouponRecommendKey(draft: ExpressDraft) {
+  return JSON.stringify([draft.goods.weight, draft.goods.volume, draft.selectedProduct?.omsProductCode ?? '', draft.selectedProduct?.mainRoutePref ?? ''])
 }
 
 /** 寄件页的优惠券匹配：草稿变化后自动查询可用券，并在选券后让报价重新计算。 */
@@ -36,6 +42,8 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
   const latestDraft = useRef(draft)
   const latestRequest = useRef(request)
   const latestRequestKey = useRef(requestKey)
+  const recommendKey = useRef('')
+  const autoCouponCode = useRef('')
   const startRequest = useCallback(() => {
     if (!mountedRef.current) {
       return
@@ -63,6 +71,33 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
       autoQueryTimerRef.current = null
     }
   }, [])
+
+  const applyCouponCode = useCallback(
+    (couponCode: string, silent = false) => {
+      const current = latestDraft.current
+      const code = couponCode.replace(/\s+/g, '').toUpperCase()
+
+      if (code === current.couponNumber) {
+        return
+      }
+
+      const cancelMonthly = Boolean(code) && current.service.paymentType === 'MONTH_PAY'
+
+      onInvalidateQuote()
+      setDraft(currentDraft => {
+        const nextDraft = updateExpressCouponNumber(currentDraft, code)
+
+        return cancelMonthly ? updateExpressService(nextDraft, { paymentType: 'MP' }) : nextDraft
+      })
+
+      if (cancelMonthly) {
+        Taro.showToast({ title: '已取消月结支付', icon: 'none' })
+      } else if (!silent) {
+        Taro.showToast({ title: code ? '优惠券已选择' : '已取消优惠券', icon: 'none' })
+      }
+    },
+    [onInvalidateQuote, setDraft]
+  )
 
   const handleQuery = useCallback(async () => {
     clearAutoQueryTimer()
@@ -99,10 +134,32 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
             return
           }
 
-          setAvailable(response.result.available)
-          setUnavailable(response.result.unavailable)
+          const availableCoupons = response.result.available
+          const unavailableCoupons = response.result.unavailable
+          const current = latestDraft.current
+          const bestCoupon = availableCoupons[0]
+          const nextRecommendKey = createCouponRecommendKey(current)
+
+          setAvailable(availableCoupons)
+          setUnavailable(unavailableCoupons)
           setStatus('done')
-          setMessage(response.result.available.length ? '' : '当前订单暂无可用优惠券')
+          setMessage(availableCoupons.length ? '' : '当前订单暂无可用优惠券')
+
+          if (bestCoupon && canAutoApplyExpressCoupon(current) && recommendKey.current !== nextRecommendKey) {
+            recommendKey.current = nextRecommendKey
+
+            const autoOwned = !current.couponNumber || current.couponNumber === autoCouponCode.current
+
+            if (autoOwned && bestCoupon.code !== current.couponNumber) {
+              autoCouponCode.current = bestCoupon.code
+              applyCouponCode(bestCoupon.code, true)
+              return
+            }
+          }
+
+          if (!availableCoupons.length && !unavailableCoupons.length && current.couponNumber) {
+            applyCouponCode('', true)
+          }
         }
       )
     } catch {
@@ -113,7 +170,7 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
         setMessage('可用优惠券查询失败，请检查网络后重试')
       }
     }
-  }, [clearAutoQueryTimer, runLatestRequest])
+  }, [applyCouponCode, clearAutoQueryTimer, runLatestRequest])
 
   useEffect(() => {
     invalidateLatestRequest()
@@ -157,23 +214,7 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
     [clearAutoQueryTimer, invalidateLatestRequest]
   )
 
-  const applyCoupon = useCallback(
-    (couponCode: string) => {
-      const normalizedCode = couponCode.replace(/\s+/g, '').toUpperCase()
-
-      if (normalizedCode === latestDraft.current.couponNumber) {
-        return
-      }
-
-      onInvalidateQuote()
-      setDraft(current => updateExpressCouponNumber(current, normalizedCode))
-      Taro.showToast({
-        title: normalizedCode ? '优惠券已选择' : '已取消优惠券',
-        icon: 'none'
-      })
-    },
-    [onInvalidateQuote, setDraft]
-  )
+  const applyCoupon = useCallback((couponCode: string) => applyCouponCode(couponCode), [applyCouponCode])
 
   const handleLogin = useCallback(async () => {
     await expressDraftStorage.preserveForLogin(latestDraft.current)

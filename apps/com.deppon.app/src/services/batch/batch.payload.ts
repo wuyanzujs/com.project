@@ -1,6 +1,6 @@
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
-import { getExpressContactRegion, getNowText, toFiniteNumber, trimText } from '../express/core/express.draft'
+import { getExpressContactRegionAddress, getNowText, toFiniteNumber, trimText } from '../express/core/express.draft'
 
 import type { BatchConsigneeDraft, BatchDraft } from './types'
 import type { CreateExpressOrderRequest, ExpressReceiveOrder, ExpressScanContext } from '../express/core/types'
@@ -59,8 +59,8 @@ function buildReceiveOrder(item: BatchConsigneeDraft, draft: BatchDraft, pickupT
   return {
     receiverCustName: trimText(item.contact.name),
     receiverCustMobile: trimText(item.contact.mobile),
-    receiverCustAddress: getExpressContactRegion(item.contact),
-    receiverCustAddressDetail: trimText(item.contact.address),
+    receiverCustAddress: trimText(item.contact.address),
+    receiverCustAddressDetail: getExpressContactRegionAddress(item.contact),
     receiverCustProvince: trimText(item.contact.province),
     receiverCustCity: trimText(item.contact.city),
     receiverCustArea: trimText(item.contact.county),
@@ -121,8 +121,8 @@ export function buildBatchCreateOrderRequest(draft: BatchDraft): CreateExpressOr
     contactProvince: trimText(draft.sender.province),
     contactCity: trimText(draft.sender.city),
     contactArea: trimText(draft.sender.county),
-    contactAddress: getExpressContactRegion(draft.sender),
-    contactAddressDetail: trimText(draft.sender.address),
+    contactAddress: trimText(draft.sender.address),
+    contactAddressDetail: getExpressContactRegionAddress(draft.sender),
     startStation: draft.pickup.stationCode,
     startStationName: draft.pickup.stationName,
     acceptDept: scanOrderFields.acceptDept,

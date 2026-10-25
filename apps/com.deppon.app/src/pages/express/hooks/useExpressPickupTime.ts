@@ -1,10 +1,11 @@
-import { type Dispatch, type SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
+import { type Dispatch, type SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   acceptExpressNightPickupNotice,
   applyExpressPickupTime,
   createExpressPickupDateOptions,
   expressService,
+  isExpressOrderFormReady,
   selectExpressPickupTime
 } from '@/services/express'
 import type { ExpressDraft, ExpressPickupTimeResponse, ExpressPickupTimeSelection } from '@/services/express'
@@ -76,7 +77,7 @@ export function useExpressPickupTime({ draft, setDraft }: UseExpressPickupTimeOp
   const dateOptions = useMemo(() => createExpressPickupDateOptions(response), [response])
   const selectedDate = getPickupDate(draft.pickup.time)
 
-  const handleQuery = async () => {
+  const handleQuery = useCallback(async () => {
     if (loading) {
       return
     }
@@ -125,7 +126,27 @@ export function useExpressPickupTime({ draft, setDraft }: UseExpressPickupTimeOp
         setLoading(false)
       }
     }
-  }
+  }, [draft, loading, queryKey, setDraft])
+
+  const autoReady = draft.pickup.dispatch === 'Y' && isExpressOrderFormReady(draft)
+  const autoQueryKey = useRef('')
+
+  useEffect(() => {
+    if (!autoReady || response || loading || autoQueryKey.current === queryKey) {
+      return
+    }
+
+    autoQueryKey.current = queryKey
+    void handleQuery()
+  }, [autoReady, handleQuery, loading, queryKey, response])
+
+  useEffect(() => {
+    if (!autoReady || !response || draft.pickup.time) {
+      return
+    }
+
+    setDraft(current => (createPickupQueryKey(current) === queryKey ? applyExpressPickupTime(current, response) : current))
+  }, [autoReady, draft.pickup.time, queryKey, response, setDraft])
 
   const handleDateChange = (date: string) => {
     const dateOption = dateOptions.find(option => option.value === date)

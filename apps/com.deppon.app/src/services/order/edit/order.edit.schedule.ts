@@ -14,7 +14,7 @@ import type {
 } from '../core/types'
 
 export const ORDER_EDIT_NIGHT_PICKUP_CACHE_MS = 2 * 60 * 60 * 1000
-export const ORDER_EDIT_NIGHT_PICKUP_NOTICE = '夜间揽收服务费标准为 50 元/票，最终费用以后端核价为准。'
+export const ORDER_EDIT_NIGHT_PICKUP_NOTICE = '夜间揽收存在夜间揽收费（按时间段差异化计价），请知晓。'
 
 export const ORDER_EDIT_DELIVERY_OPTIONS: Array<{
   value: Exclude<OrderEditDeliveryMode, ''>

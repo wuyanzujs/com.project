@@ -204,10 +204,11 @@ export function createExpressWarehouseInputKey(draft: ExpressDraft) {
     consignee: getContactInput(draft.consignee),
     goodsName: normalizeText(draft.goods.name),
     totalWeight: normalizeNumber(draft.goods.weight, 1),
+    totalVolume: normalizeNumber(draft.goods.volume),
     transportMode: getProductCode(draft),
     deliveryMode: draft.service.deliveryMode,
     customerCode,
-    limitCust: !!customerCode || draft.service.paymentType === 'MONTH_PAY' ? 1 : 0
+    limitCust: customerCode ? 1 : 0
   })
 }
 

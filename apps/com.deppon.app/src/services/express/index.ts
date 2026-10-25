@@ -18,6 +18,8 @@ export {
 export type { ExpressCollectionOption } from './billing/collection.rules'
 export {
   EXPRESS_COUPON_AUTO_QUERY_DELAY_MS,
+  canAutoApplyExpressCoupon,
+  getExpressCouponDiscount,
   getExpressCouponOriginalFee,
   createExpressCouponQueryRequest,
   createExpressCouponRequestKey,
@@ -152,7 +154,7 @@ export {
 export { createExpressInsuranceView } from './insurance/insurance.view'
 export type { ExpressInsuranceOptionView, ExpressInsuranceView } from './insurance/insurance.view'
 export * from './insurance/insuranceRule.types'
-export { createExpressMonthlyPayView } from './billing/monthlyPay'
+export { createExpressMonthlyPayView, isExpressFixedMonthlyCustomer } from './billing/monthlyPay'
 export type { ExpressMonthlyPayView, ExpressMonthlyPayViewOptions, ExpressMonthlyPayTone, ExpressMonthlyPayActionSource } from './billing/monthlyPay'
 export {
   EXPRESS_CARTON_OPTIONS,
@@ -218,6 +220,7 @@ export {
   createExpressProductAvailability,
   createExpressProductFreightFields,
   selectDefaultExpressQuote,
+  findExpressQuoteSelection,
   sortExpressQuotes
 } from './product/productAvailability.rules'
 export type { ExpressProductCustomerCapabilitySource } from './product/productAvailability.rules'

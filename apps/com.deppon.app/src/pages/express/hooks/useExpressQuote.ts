@@ -6,9 +6,9 @@ import {
   applyExpressInsuranceCapability,
   createExpressQuoteRequestKey,
   expressService,
+  findExpressQuoteSelection,
   selectDefaultExpressQuote,
-  selectExpressProduct,
-  sortExpressQuotes
+  selectExpressProduct
 } from '@/services/express'
 import type { ExpressDraft, ExpressProductQuote } from '@/services/express'
 import { useLatestRequestRunner } from '@/shared/async/useLatestRequest'
@@ -62,7 +62,7 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
           return
         }
 
-        const products = sortExpressQuotes(response.result?.products ?? [])
+        const products = response.result?.products ?? []
         const availability = response.result?.availability
         const currentDraft = latestDraft.current
 
@@ -90,7 +90,8 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
           return
         }
 
-        const defaultProduct = selectDefaultExpressQuote(products, availability?.recommendDczp === true)
+        const defaultProduct =
+          findExpressQuoteSelection(products, currentDraft.selectedProduct) ?? selectDefaultExpressQuote(products, availability?.recommendDczp === true)
         const nextDraft = selectExpressProduct(availableDraft, defaultProduct)
 
         // 产品、保价能力等由本次报价回填，记录回填后的条件，避免把结果当作新的输入再次计价。

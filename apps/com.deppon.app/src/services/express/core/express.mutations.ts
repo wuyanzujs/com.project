@@ -1,3 +1,5 @@
+import { isExpressLtlGoods } from './express.goodsType'
+import { getExpressCouponDiscount } from '../billing/couponOrder.rules'
 import { createExpressDeliveryPointDraft } from '../delivery/deliveryPoint.rules'
 import { createExpressDeliveryAvailabilityKey, createExpressDeliveryPreferenceDraft } from '../delivery/deliveryPreference.rules'
 import { normalizeExpressInsuranceDraft, resetExpressInsuranceCapability } from '../insurance/insurance.rules'
@@ -18,6 +20,7 @@ import type {
 
 const SCAN_CONTEXT_STALE_REASON = '扫码寄件信息变化，请重新获取价格'
 const SCAN_CONTEXT_CLEAR_REASON = '扫码寄件信息已移除，请重新获取价格'
+const SCAN_LTL_WEIGHT = 61
 
 /**
  *
@@ -119,18 +122,22 @@ export function updateExpressGoods(draft: ExpressDraft, patch: Partial<ExpressDr
   const warehouseInputChanged =
     (patch.name !== undefined && patch.name !== draft.goods.name) || (patch.weight !== undefined && patch.weight !== draft.goods.weight)
   const insuranceInputChanged = patch.name !== undefined && patch.name !== draft.goods.name
+  const nextGoods = {
+    ...draft.goods,
+    ...patch
+  }
+  const clearStation = !isExpressLtlGoods(draft.goods) || !isExpressLtlGoods(nextGoods)
   const nextDraft: ExpressDraft = {
     ...draft,
-    goods: {
-      ...draft.goods,
-      ...patch
-    },
-    pickup: {
-      ...clearPickupSelection(draft.pickup),
-      ...(draft.pickup.dispatch === 'N'
-        ? { stationCode: draft.pickup.stationCode, stationName: draft.pickup.stationName, stationDetail: draft.pickup.stationDetail }
-        : {})
-    },
+    goods: nextGoods,
+    pickup: clearStation
+      ? {
+          ...draft.pickup,
+          stationCode: '',
+          stationName: '',
+          stationDetail: undefined
+        }
+      : draft.pickup,
     warehouse: warehouseInputChanged ? resetExpressWarehouseInput(draft.warehouse) : draft.warehouse,
     deliveryPreference: draft.deliveryPreference.type === 'SCHEDULED' ? createExpressDeliveryPreferenceDraft() : draft.deliveryPreference
   }
@@ -249,10 +256,12 @@ export function setExpressPrivacyProtection(draft: ExpressDraft, value: ExpressD
 export function selectExpressProduct(draft: ExpressDraft, product: ExpressProductQuote | null): ExpressDraft {
   const currentProductCode = draft.selectedProduct?.omsProductCode || draft.service.transportMode
   const nextProductCode = product?.omsProductCode || draft.service.transportMode
+  const nextPaymentType = product?.omsProductCode === 'DCZP' && draft.service.paymentType === 'PAY_ARIIVE' ? 'MP' : draft.service.paymentType
   const nextService = product
     ? {
         ...draft.service,
         transportMode: product.omsProductCode,
+        paymentType: nextPaymentType,
         returnBill: normalizeExpressReturnBillDraft(draft.service.returnBill, product.omsProductCode)
       }
     : {
@@ -263,6 +272,7 @@ export function selectExpressProduct(draft: ExpressDraft, product: ExpressProduc
     ...draft,
     selectedProduct: product,
     service: nextService,
+    couponNumber: product && getExpressCouponDiscount(product) <= 0 ? '' : draft.couponNumber,
     insurance: normalizeExpressInsuranceDraft(draft.insurance, nextProductCode),
     warehouse: currentProductCode === nextProductCode ? draft.warehouse : resetExpressWarehouseInput(draft.warehouse),
     quoteStaleReason: ''
@@ -385,8 +395,12 @@ export function applyExpressScanContext(draft: ExpressDraft, context: ExpressSca
     return resetExpressInsuranceCapability(nextDraft, { clearLimit: true })
   }
 
+  const isLtlScan = scanContext.role === 'acceptDept' || scanContext.role === 'driverId'
   const nextDraft = {
     ...draft,
+    goods: isLtlScan ? { ...draft.goods, weight: SCAN_LTL_WEIGHT } : draft.goods,
+    service: isLtlScan ? { ...draft.service, deliveryMode: 'PICKNOTUPSTAIRS' as const } : draft.service,
+    pickup: scanContext.role === 'businessCode' ? { ...clearPickupSchedule(draft.pickup), dispatch: 'N' as const } : draft.pickup,
     scanContext,
     warehouse: resetExpressWarehouseInput(draft.warehouse),
     selectedProduct: null,

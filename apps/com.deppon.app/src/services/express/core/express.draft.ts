@@ -274,11 +274,12 @@ export function validateExpressDraft(
     requireWarehouseScreening?: boolean
     /** 月结资格：null 表示未确认，false 时拦截月结提交。 */
     monthlyEnabled?: boolean | null
+    requireOrderableRegion?: boolean
   } = {}
 ): ExpressValidationResult {
   const messages: string[] = [...validateExpressContact(draft.sender, '寄件人'), ...validateExpressContact(draft.consignee, '收件人')]
 
-  if (draft.sender && draft.consignee && isExpressSpecialRegionBlocked(draft.sender.province, draft.consignee.province)) {
+  if (options.requireOrderableRegion && draft.sender && draft.consignee && isExpressSpecialRegionBlocked(draft.sender.province, draft.consignee.province)) {
     messages.push('港澳台互寄服务请联系营业部0755-36360474/82')
   }
 

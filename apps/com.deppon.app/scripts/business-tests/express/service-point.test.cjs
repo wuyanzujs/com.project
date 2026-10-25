@@ -133,22 +133,26 @@ test('默认最近网点，保留有效手动选择，无匹配结果允许空�
   assert.equal(validateExpressDraft(empty).valid, true)
 })
 
-test('修改货物保留自送网点，同时重置取件时间，寄件地址和取件模式变化仍清空网点', () => {
+test('修改货物按快递/零担切换自送网点，仍有效的取件时间保留', () => {
   const draft = createSelfSendDraft()
   const selected = applyExpressServicePoint(draft, station(), stationSelection.createAddressKey(draft.sender))
   const withOldSchedule = { ...selected, pickup: { ...selected.pickup, time: '2026-10-20 10:00', timeSlot: '10:00-11:00' } }
   const changed = updateExpressGoods(withOldSchedule, { name: '衣物', weight: 2 })
 
-  assert.equal(changed.pickup.stationCode, 'DEPT_CODE')
-  assert.equal(changed.pickup.stationName, '青浦服务点')
-  assert.equal(changed.pickup.time, '')
-  assert.equal(changed.pickup.timeSlot, undefined)
-  assert.equal(buildCreateOrderRequest(changed).startStation, 'DEPT_CODE')
+  assert.equal(changed.pickup.stationCode, '')
+  assert.equal(changed.pickup.stationName, '')
+  assert.equal(changed.pickup.time, '2026-10-20 10:00')
+  assert.equal(changed.pickup.timeSlot, '10:00-11:00')
+  assert.equal(buildCreateOrderRequest(changed).startStation, '')
   assert.equal(setExpressContact(changed, 'sender', { ...draft.sender, address: '另一条路' }).pickup.stationCode, '')
   assert.equal(updateExpressPickup(changed, { dispatch: 'Y' }).pickup.stationCode, '')
 
   const pickupDraft = { ...withOldSchedule, pickup: { ...withOldSchedule.pickup, dispatch: 'Y' } }
   assert.equal(updateExpressGoods(pickupDraft, { weight: 2 }).pickup.stationCode, '')
+
+  const ltlDraft = updateExpressGoods(withOldSchedule, { weight: 61 })
+  const ltlSelected = applyExpressServicePoint(ltlDraft, station(), stationSelection.createAddressKey(draft.sender))
+  assert.equal(updateExpressGoods(ltlSelected, { weight: 62 }).pickup.stationCode, 'DEPT_CODE')
 })
 
 function createServicePointHookFixture(t) {

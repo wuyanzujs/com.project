@@ -218,6 +218,7 @@ export interface ExpressProductQuote {
   message: string | null
   label: string
   totalfee: number | null
+  ppcTotalFee?: number | null
   detail: ExpressPriceDetail[] | null
   discount?: Array<{ marketCode: string; marketName?: string; reduceFee: number }> | null
   expBillCalculateResponse?: { billType?: string | null; weightBubbleRate?: number | null } | null
@@ -419,6 +420,7 @@ export interface ExpressFreightRequest {
   isOffSiteTransfer: ExpressFlag
   packageInfoList?: ExpressPackageInfo[]
   nightAccept: ExpressFlag
+  nightAcceptServiceTime?: string
   nightDelivery: '' | 'Y'
   appointmentDelivery: '' | 'Y'
   notifyIsDeliver?: 'N'
@@ -455,7 +457,7 @@ export interface ExpressPickupTimeRequest {
   originalsaddress?: string
   originalsStreet?: string
   priceTimeProductCode?: ExpressProductCode
-  source: 0
+  source: 0 | 1 | 2 | 3 | 5
   nightOpening?: ExpressFlag
   nightStartTime?: string
   nightEndTime?: string
@@ -546,6 +548,7 @@ export interface ExpressFilterRequest {
   receiverMobile: string
   goodsName: string
   totalWeight: number
+  totalVolume?: number
   transportMode: ExpressProductCode
   deliveryMode: ExpressDeliveryMode
   customerCode?: string

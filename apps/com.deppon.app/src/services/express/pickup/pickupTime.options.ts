@@ -192,7 +192,15 @@ export function getFirstExpressPickupTimeSelection(response: ExpressPickupTimeRe
 export function createExpressPickupDateTime(date: string, time: string) {
   const normalizedTime = normalizeText(time)
 
-  return /^\d{4}-\d{2}-\d{2}/.test(normalizedTime) ? normalizedTime : `${normalizeText(date)} ${normalizedTime}`.trim()
+  if (/^\d{4}-\d{2}-\d{2}/.test(normalizedTime)) {
+    return normalizedTime
+  }
+
+  if (/^\d{1,2}:\d{2}/.test(normalizedTime)) {
+    return `${normalizeText(date)} ${normalizedTime}`.trim()
+  }
+
+  return normalizedTime
 }
 
 /**

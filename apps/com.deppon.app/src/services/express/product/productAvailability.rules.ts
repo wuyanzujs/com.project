@@ -8,6 +8,7 @@ import type {
   ExpressGoodsLabel,
   ExpressGoodsLabelRequest,
   ExpressProductAvailability,
+  ExpressProductCode,
   ExpressProductCustomerCapability,
   ExpressProductPointRequest,
   ExpressProductQuote,
@@ -17,6 +18,8 @@ import type {
   ExpressProductUpgradeRequest,
   ExpressProductUpgradeResult
 } from '../core/types'
+
+const EXPRESS_DEFAULT_PRODUCT_PRIORITY: ExpressProductCode[] = ['PACKAGE', 'RCP', 'NFLF', 'JZKH', 'DJBK', 'XJBK']
 
 export interface ExpressProductCustomerCapabilitySource {
   customerCode?: string | null
@@ -364,5 +367,21 @@ export function selectDefaultExpressQuote(products: ExpressProductQuote[], recom
     }
   }
 
-  return products[0] ?? null
+  for (const code of EXPRESS_DEFAULT_PRODUCT_PRIORITY) {
+    const matched = products.find(product => product.omsProductCode === code)
+
+    if (matched) {
+      return matched
+    }
+  }
+
+  return products[products.length - 1] ?? null
+}
+
+export function findExpressQuoteSelection(products: ExpressProductQuote[], product: ExpressProductQuote | null | undefined) {
+  if (!product) {
+    return null
+  }
+
+  return products.find(item => item.omsProductCode === product.omsProductCode && (item.mainRoutePref ?? '') === (product.mainRoutePref ?? '')) ?? null
 }

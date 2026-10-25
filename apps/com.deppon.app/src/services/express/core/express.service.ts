@@ -15,7 +15,7 @@ import {
   validateExpressInsurance
 } from '../insurance/insurance.rules'
 import { queryExpressPickupTime } from '../pickup/pickupTime.service'
-import { createExpressGoodsLabelRequest } from '../product/productAvailability.rules'
+import { createExpressGoodsLabelRequest, sortExpressQuotes } from '../product/productAvailability.rules'
 import { queryExpressProductAvailability } from '../product/productAvailability.service'
 import { validateExpressWarehouseScreeningForSubmit } from '../warehouse/warehouse.rules'
 import { queryExpressWarehouseScreening, stageExpressWarehouse } from '../warehouse/warehouse.service'
@@ -236,7 +236,7 @@ export const expressService = {
       ...response,
       result: {
         availability,
-        products: response.result ?? []
+        products: sortExpressQuotes(response.result ?? [])
       }
     }
   },
@@ -246,14 +246,16 @@ export const expressService = {
    * @param draft 寄件草稿
    * @description 按地址时效口径询价
    */
-  quotePriceTime(draft: ExpressDraft) {
+  async quotePriceTime(draft: ExpressDraft): Promise<DepponResponse<ExpressProductQuote[]>> {
     const validation = validateExpressPriceTimeDraft(draft)
 
     if (!validation.valid) {
-      return Promise.resolve(createFailure<ExpressProductQuote[]>(validation.messages[0]))
+      return createFailure<ExpressProductQuote[]>(validation.messages[0])
     }
 
-    return expressApi.queryFreight(buildFreightRequest(draft), false)
+    const response = await expressApi.queryFreight(buildFreightRequest(draft), false)
+
+    return response.status && response.result ? { ...response, result: sortExpressQuotes(response.result) } : response
   },
 
   /**
@@ -311,10 +313,12 @@ export const expressService = {
    * @param draft 寄件草稿
    * @description 校验并提交寄件草稿下单
    */
-  async submitDraft(draft: ExpressDraft): Promise<DepponResponse<CreateExpressOrderResponse>> {
+  async submitDraft(draft: ExpressDraft, options: { monthlyEnabled?: boolean | null } = {}): Promise<DepponResponse<CreateExpressOrderResponse>> {
     const validation = validateExpressDraft(draft, {
       requireAgreement: true,
-      requireProduct: true
+      requireProduct: true,
+      requireOrderableRegion: true,
+      monthlyEnabled: options.monthlyEnabled
     })
 
     if (!validation.valid) {

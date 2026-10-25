@@ -3,7 +3,7 @@ const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
 const { expressApi } = require('@/services/express/core/express.api')
-const { applyExpressPickupTime, selectExpressProduct, updateExpressPickup } = require('@/services/express/core/express.draft')
+const { applyExpressPickupTime, applyExpressScanContext, selectExpressProduct, updateExpressPickup } = require('@/services/express/core/express.draft')
 const { buildCreateOrderRequest, buildFreightRequest, buildPickupTimeRequest } = require('@/services/express/core/express.payload')
 const { expressService } = require('@/services/express/core/express.service')
 const {
@@ -27,6 +27,40 @@ const {
 const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 
 const cases = [
+  {
+    name: 'quick pickup label keeps the reference time string',
+    run() {
+      const response = normalizeExpressPickupTimeResponse({
+        serviceTime: '2026-07-13 12:00:00',
+        opening: true,
+        openingList: [
+          {
+            date: '2026-07-13',
+            dateList: [{ time: '现在发货', text: '一小时内', type: 'NORMAL' }]
+          }
+        ]
+      })
+      const draft = applyExpressPickupTime(createValidExpressDraft(), response)
+
+      assert.equal(draft.pickup.time, '现在发货')
+      assert.equal(buildFreightRequest(draft).sendDateTime, '现在发货')
+      assert.equal(buildCreateOrderRequest(draft).receive[0].beginAcceptTime, '一小时内')
+      assert.ok(findExpressPickupTimeSelection(response, draft.pickup))
+    }
+  },
+  {
+    name: 'pickup time request source follows the scanned role',
+    run() {
+      const draft = createValidExpressDraft()
+      const sourceOf = role => buildPickupTimeRequest(applyExpressScanContext(draft, { role, value: 'SCAN_001' })).source
+
+      assert.equal(buildPickupTimeRequest(draft).source, 0)
+      assert.equal(sourceOf('pickupManId'), 1)
+      assert.equal(sourceOf('shipperNumber'), 2)
+      assert.equal(sourceOf('acceptDept'), 3)
+      assert.equal(sourceOf('driverId'), 5)
+    }
+  },
   {
     name: 'express night pickup capability uses address key and two hour cache',
     run() {
@@ -344,6 +378,7 @@ const cases = [
       const orderRequest = buildCreateOrderRequest(draft)
 
       assert.equal(freightRequest.nightAccept, 'Y')
+      assert.equal(freightRequest.nightAcceptServiceTime, '20:00-22:00')
       assert.deepEqual(orderRequest.receive[0].orderExtendFields, [
         { key: 'nightAccept', value: 'Y' },
         { key: 'nightAcceptStatus', value: -1 },

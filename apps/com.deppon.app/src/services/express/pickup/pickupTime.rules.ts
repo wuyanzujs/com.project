@@ -14,7 +14,7 @@ import type {
 } from '../core/types'
 
 export const EXPRESS_NIGHT_PICKUP_CACHE_MS = 2 * 60 * 60 * 1000
-export const EXPRESS_NIGHT_PICKUP_NOTICE = '夜间揽收服务费标准为 50 元/票，最终以重新报价明细为准。'
+export const EXPRESS_NIGHT_PICKUP_NOTICE = '夜间揽收存在夜间揽收费（按时间段差异化计价），请知晓。'
 
 /**
  *
@@ -349,8 +349,11 @@ export function validateExpressPickupTime(draft: ExpressDraft, options: { now?: 
  * @description 生成报价用的夜间揽收字段
  */
 export function createExpressPickupQuoteFields(draft: ExpressDraft) {
+  const night = draft.pickup.dispatch === 'Y' && draft.pickup.type === 'NIGHT'
+
   return {
-    nightAccept: draft.pickup.dispatch === 'Y' && draft.pickup.type === 'NIGHT' ? ('Y' as const) : ('N' as const)
+    nightAccept: night ? ('Y' as const) : ('N' as const),
+    ...(night && draft.pickup.timeSlot ? { nightAcceptServiceTime: draft.pickup.timeSlot } : {})
   }
 }
 

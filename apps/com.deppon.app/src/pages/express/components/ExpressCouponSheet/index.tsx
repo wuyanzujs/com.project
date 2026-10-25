@@ -112,8 +112,12 @@ export function ExpressCouponSheet({ controller, couponNumber, onClose, visible 
     setPrevVisible(visible)
 
     if (visible) {
-      setDraftCode(couponNumber)
+      setDraftCode(couponNumber || controller.available[0]?.code || '')
     }
+  }
+
+  if (visible && !draftCode && controller.available.length) {
+    setDraftCode(controller.available[0].code)
   }
 
   const handleOpenDetail = (coupon: CouponCardView, status: CouponStatus) => {

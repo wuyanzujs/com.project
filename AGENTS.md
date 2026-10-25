@@ -529,22 +529,87 @@
 ### 2026-10-24 寄件主链路业务逻辑对齐 mp-taro3
 
 97. 询价口径：`ExpressFreightRequest` 增加 `paidMethod`（MP/FC/CT）与 `totalQuantity`（件数），
-    `buildFreightRequest` 按草稿付款方式与件数输出；`sortExpressQuotes` 把 `YTY` 挪到列表末尾再选默认产品，
-    对齐参考端 `FetchFreight`（`mp-taro3/src/api/send.ts:36-44`）。
-98. 提交校验：新增港澳台互寄规则 `isExpressSpecialRegionBlocked`（澳门↔澳门、香港/澳门出发放行，
-    台湾出发与港澳台互寄拦截）与月结资格拦截。`useExpressMonthlyPay` 并行查询 `customerLabel`，
-    `monthlyEnabled` 为 null 时不拦截，只有确认「不是月结客户」才提示「您不是月结客户，请重新选择支付方式！」。
-99. 下单载荷：`isRecieveGoods` 由常量 0 改为参考端口径（`weight > 60kg` 或 `volume > 0.36m³` 判零担，
-    零担自送为 0，其余为 1）；自送模式 `isContact` 强制 `N`；扩展字段补 `productPrice` / `days` /
-    `timeProductsCode` / `timeProductsName`；营业部/服务点二维码把扫描网点同时作为 `startStation`，
-    服务点二维码再强制 `dispatchFlag='N'` 与不联系。
-100. 失败与成功：下单返回 `1|货类|协议号` 时先 `setStaging` 暂存再打开 `EXPRESS_STATEMENT` WebView（草稿保留，
+    `buildFreightRequest` 按草稿付款方式与件数输出；`sortExpressQuotes` 下沉到 `expressService.quote` /
+    `quotePriceTime`，把 `YTY` 挪到列表末尾（`mp-taro3/src/api/send.ts:36-44`）。
+98. 默认产品：`selectDefaultExpressQuote` 改为参考端 `GetProductDefault` 的优先级
+    （PACKAGE / RCP / NFLF / JZKH / DJBK / XJBK，兜底列表末位）；已选产品同码同线路仍存在时保留
+    （`findExpressQuoteSelection`），手动重新询价不再重置用户选择。
+99. 提交校验：港澳台互寄规则 `isExpressSpecialRegionBlocked`（澳门↔澳门、香港/澳门出发放行，台湾出发拦截）
+    与月结资格拦截都**只在提交时**生效（`requireOrderableRegion`），询价阶段照常取价；
+    `useExpressMonthlyPay` 并行查询 `customerLabel`，`monthlyEnabled` 为 null 不拦截；`shipperNumber`
+    扫码按参考端 `CheckFixedMonthly` 视为固定月结（排除码 1013495806）。
+100. 下单载荷：`isRecieveGoods` 由常量 0 改为参考端口径（`weight > 60kg` 或 `volume > 0.36m³` 判零担，
+    营业部二维码固定零担；自送为 0，其余为 1）；扫码单 `isContact='N'`；`contactAddress` / `AddressDetail`
+    按参考端改正为「详细地址」/「省-市-区,详细地址」（寄件与批量两个入口），此前两者写反；
+    筛单请求补 `totalVolume`、地址格式对齐，`limitCust` 改回仅扫码客户码为 1。
+101. 扫码初始态：营业部/司机二维码固定 61kg 且送货不上楼，服务点二维码置自送并清空取件时段
+    （`applyExpressScanContext`）；扫码网点同时作为 `startStation`，服务点二维码强制 `dispatchFlag='N'`。
+102. 失败与成功：下单返回 `1|货类|协议号` 时先 `setStaging` 暂存再打开 `EXPRESS_STATEMENT` WebView（草稿保留，
     返回后重新提交）；`登录超时` 走「保草稿 + 跳登录」；普通失败改 `Taro.showModal` 且保留行内文案。
     下单成功后异步调用 `orderPriceLog/save` 回写价格（无订单号或无报价金额时跳过），失败不影响跳转。
-101. 测试与验证：新增 `scripts/business-tests/express/main-flow-parity.test.cjs`（9 用例）并在 `submit-actions`
-    补签署函、登录超时、弹窗、价格日志、月结拦截 5 用例；cjs express 域 138 用例、vitest 341 用例、
-    `pnpm verify:app` 全绿。剩余未建模缺口（3C 原厂包装、显示器尺寸、报关、实价双字段）记录在
-    `docs/parity/send/gaps.md`。未执行 RN bundle、Gradle 或 Xcode。
+103. 测试与验证：`main-flow-parity.test.cjs`（11 用例）覆盖询价参数、默认产品、港澳台、扫码、地址与筛单；
+    `submit-actions` 补签署函、登录超时、弹窗、价格日志、月结 5 用例；auto-quote / monthly-pay 各补 1 用例。
+    cjs express 域 140 用例、vitest 343 用例、`pnpm verify:app` 全绿。剩余缺口（3C 原厂包装、显示器尺寸、
+    报关、实价双字段、合同客户 `limitCust`、公司名）记录在 `docs/parity/send/gaps.md`。
+    未执行 RN bundle、Gradle 或 Xcode。
+
+### 2026-10-24 普通寄件主流程分支对齐
+
+104. 取件时间：`useExpressPickupTime` 在表单齐备且上门取件时自动查询并选中首个普通时段；重量/体积/件数/产品变化后
+    按新参数重查，仍有效的已选时段保留，查不到才退回首个；自送模式不查。`updateExpressGoods` 不再清空取件时间
+    （参考端 `handleGoodsChange` / `handlePickupList` 都保留 `pickupTime`，只在失效时重选）。
+105. 快递/零担切换：新增 `services/express/core/express.goodsType.ts`（60kg / 0.36m³ 同口径）。货物修改回到快递、
+    或快递↔零担切换时清空自送网点（`updateExpressGoods`）；零担内部修改保留网点，与参考端
+    `handleGoodsChange` 的 `!isLd` 分支一致。
+106. 产品联动：`selectExpressProduct` 在新报价没有券优惠（YHJ/YHQ）时清空已选券；`DCZP` 产品把到付回落为现付
+    （参考端 `handleProductChange`）。保价类型仍按新产品策略归一，金额保留。
+107. 测试：新增 `pickup-auto.test.cjs` 3 例（自动查询/重量变化保留时段/自送不查）、`main-flow-parity` 补
+    产品变化券与到付 1 例、`service-point` 改为按快递/零担切换网点；cjs express 144、vitest 343 全绿。
+
+### 2026-10-25 寄件优惠券链路对齐
+
+108. 请求门槛：`createExpressCouponQueryRequest` 增加「产品价格可见」与「客户编码扫码不请求」两条，和参考端
+    `handleQueryCoupon` 一致；请求参数继续用券前原价（FRT/BF/AD/NMBZ + 线路优惠 + 当前券抵扣还原）。
+109. 自动选券：`useExpressCoupons` 在普通现付、非扫码、寄件人手机号 11 位时自动选 `available[0]` 并重算；
+    用输入指纹（重量/体积/产品/线路）防重复，用 `autoCouponCode` 记录自动选中的券，手动选择或券列表带入的券不会被覆盖。
+110. 月结与清除：选券时若付款方式为月结，切回现付并提示「已取消月结支付」；最新券列表为空时清空已选券并重算；
+    查询网络失败保留已选券（与参考端「失败也清空」不同，避免网络抖动丢券）。
+111. 弹层：无已选券时打开券弹层默认预选第一张可用券，与参考端 Picker 一致。
+112. 测试：新增 `coupon-actions.test.cjs` 5 例（自动选券/取消后不复选/月结切换/列表为空清券/手动券保留/扫码不自动选），
+    `coupon/contracts` 补价格可见性与扫码门槛 1 例；完整链路与特殊场景整理在 `docs/parity/send/coupon-flow.md`。
+    未做：券弹窗广告、不可用原因弹层、`couponSource` 埋点、合同客户不自动选券（客户能力未进草稿）。
+
+### 2026-10-25 寄件主流程逐项审计（进行中）
+
+审计计划：01 询价请求逐字段、02 报价响应与状态、03 取件时间、04 货物/产品/送货方式、05 付款方式、
+06 保价、07 提交校验与下单载荷、08 草稿与恢复、09 优惠券复核、10 异常与边界。
+
+113. 01 询价请求：补齐 `nightAcceptServiceTime`（夜间取件报价必须带时段，参考端 `CreateProductParams`），
+    寄件与批量共用。其余逐字段结论：`sendDateTime`（参考端空值透传、RN 兜底当前时间）、
+    `pickUpToDoor`（参考端 `isExpress || dispatch`、RN 仅看 dispatch）、`passwordSigning` / `isWarehousingService` /
+    `reciveLoanType`（参考端按需省略、RN 显式默认值）属于等价或显式默认差异，暂不改；
+    `packagingGoodsNum` / `proxySignedReceipt` / `sendNewRetrieveOld` / `isHasElevator` / `skiingPackage` / 报关 /
+    `carPickup` 属于 RN 未建模能力，继续记录在 `docs/parity/send/gaps.md`。
+114. 02 报价响应：复核 YTY 排序、默认产品优先级、已选产品保留、失败清空与旧响应竞态，无新增改动；
+    排序与默认产品逻辑已在前一轮落地，`quote` / `quotePriceTime` 共用。
+
+115. 03 取件时间：请求 `source` 按扫码角色映射（参考端 `GetPickupTimeType`：快递员 1 / 客户码 2 / 营业部 3 / 司机 5），
+    普通预约仍为 0；「现在发货」这类非时刻文案不再拼日期，报价 `sendDateTime` 与下单 `beginAcceptTime` 回到参考端口径；
+    夜间费用提示常量改为参考端「按时间段差异化计价」表述。默认时段、日期切换、夜间提示、自送清空复核无新增问题。
+    模板带入的「每天 X 点」偏好未实现（参考端按小时匹配首日时段），记入 gaps。
+116. 04 货物/产品/送货方式：复核 60kg / 0.36m³ 切换、自送网点清空、产品清空、进仓与派送偏好重置；
+    参考端在快递内改货物会强制上门+上楼、切入零担会强制不上楼，RN 保留用户显式选择（自送/上楼是 RN 显式能力），暂不改；
+    送货方式默认值与电梯上楼（`isHasElevator`）仍未建模，留在 gaps。
+117. 05 付款方式：现付/到付/月结的 `paidMethod` 映射与改付款重算已对齐；参考端 ECARD/支付分未建模；
+    月结资格提交拦截、选券取消月结已在前几轮落地。
+118. 06 保价：必保/免费/省心保/全额保策略、上限、货物标签、报价与下单字段复核；DJBK/DJTH 是否必保仍与参考端不一致
+    （参考端只对 JZZH/NJZZH/YTY/YTYDS/NZBRH 必保），待生产端确认；免费产品按 RN 生产口径发 2000 + `insuranceSource=DEFAULT`。
+119. 07 提交校验与下单载荷：校验顺序与文案、防重复提交锁、登录保草稿、签署函暂存、筛单+货物校验、成功清理复核；
+    下单扩展字段补 `totalFee` / `basicFee` / `discountFee`（仅在报价返回 `ppcTotalFee` 时）。
+120. 08 草稿与恢复：2 小时过期、账号隔离、登录保留、成功清理、券/货物/扫码/再寄带入复核；
+    模板带入的取件时间只保留字符串，未按参考端「首日同小时」匹配（同 115）。
+121. 09/10 优惠券回归与异常边界：券套件全绿；旧响应竞态（报价/取件/券按 key 丢弃）、并发提交锁、网络失败文案复核；
+    cjs express 151 用例、`pnpm verify:app` 全绿。
 
 ## 五、执行顺序
 

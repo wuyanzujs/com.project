@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { createExpressMonthlyPayView } from '@/services/express/billing/monthlyPay'
+import { createExpressMonthlyPayView, isExpressFixedMonthlyCustomer } from '@/services/express/billing/monthlyPay'
 
 import type { CustomerCenterView } from '@/services/customer/types'
 
@@ -13,6 +13,15 @@ const createCustomer = (overrides: Partial<CustomerCenterView> = {}): CustomerCe
   privateBillText: '',
   hasBoundCustomer: true,
   ...overrides
+})
+
+describe('isExpressFixedMonthlyCustomer', () => {
+  it('treats scanned customer codes as fixed monthly customers except the excluded code', () => {
+    expect(isExpressFixedMonthlyCustomer({ role: 'shipperNumber', value: 'CUS_001' })).toBe(true)
+    expect(isExpressFixedMonthlyCustomer({ role: 'shipperNumber', value: '1013495806' })).toBe(false)
+    expect(isExpressFixedMonthlyCustomer({ role: 'pickupManId', value: 'CUS_001' })).toBe(false)
+    expect(isExpressFixedMonthlyCustomer(undefined)).toBe(false)
+  })
 })
 
 describe('createExpressMonthlyPayView', () => {

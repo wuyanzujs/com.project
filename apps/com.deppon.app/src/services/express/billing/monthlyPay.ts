@@ -1,7 +1,9 @@
 import type { AppWebSource } from '@/shared/webview/appWeb'
 
 import type { CustomerCenterView } from '../../customer'
-import type { ExpressPaymentType } from '../core/types'
+import type { ExpressPaymentType, ExpressScanContext } from '../core/types'
+
+const EXPRESS_FIXED_MONTHLY_EXCLUDED_CODE = '1013495806'
 
 export type ExpressMonthlyPayTone = 'info' | 'success' | 'warning'
 
@@ -21,6 +23,10 @@ export interface ExpressMonthlyPayViewOptions {
   loading: boolean
   checked: boolean
   errorMessage: string
+}
+
+export function isExpressFixedMonthlyCustomer(scanContext?: ExpressScanContext | null) {
+  return scanContext?.role === 'shipperNumber' && scanContext.value !== EXPRESS_FIXED_MONTHLY_EXCLUDED_CODE
 }
 
 /**

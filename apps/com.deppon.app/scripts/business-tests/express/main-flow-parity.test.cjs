@@ -7,9 +7,16 @@ const {
   applyExpressScanContext,
   isExpressSpecialRegion,
   isExpressSpecialRegionBlocked,
+  selectExpressProduct,
   validateExpressDraft
 } = require('@/services/express/core/express.draft')
-const { buildCreateOrderRequest, buildFreightRequest, buildOrderPriceLogRequest, buildSignStagingRequest } = require('@/services/express/core/express.payload')
+const {
+  buildCreateOrderRequest,
+  buildFilterOrderRequest,
+  buildFreightRequest,
+  buildOrderPriceLogRequest,
+  buildSignStagingRequest
+} = require('@/services/express/core/express.payload')
 const { isExpressSignResponseCode, parseExpressSignResponseCode, stageExpressSign } = require('@/services/express/core/express.sign')
 const { sortExpressQuotes, selectDefaultExpressQuote } = require('@/services/express/product/productAvailability.rules')
 
@@ -61,8 +68,9 @@ test('special region interchange follows the mini program guard matrix', () => {
     sender: { ...createValidExpressDraft().sender, province: '台湾省' }
   })
 
-  assert.equal(validateExpressDraft(draft).valid, false)
-  assert.match(validateExpressDraft(draft).messages[0], /港澳台互寄/)
+  assert.equal(validateExpressDraft(draft).valid, true)
+  assert.equal(validateExpressDraft(draft, { requireOrderableRegion: true }).valid, false)
+  assert.match(validateExpressDraft(draft, { requireOrderableRegion: true }).messages[0], /港澳台互寄/)
 })
 
 test('order payload differentiates express and LTL drop-off without changing contact intent for door pickup', () => {
@@ -109,30 +117,86 @@ test('business point scan drops off at the scanned station without dispatching a
   assert.equal(businessOrder.startStationName, '')
   assert.equal(businessOrder.dispatchFlag, 'N')
   assert.equal(businessOrder.isContact, 'N')
+  assert.equal(businessDraft.pickup.dispatch, 'N')
 
+  assert.equal(departmentDraft.goods.weight, 61)
+  assert.equal(departmentDraft.service.deliveryMode, 'PICKNOTUPSTAIRS')
   assert.equal(departmentOrder.acceptDept, 'DEPT_002')
   assert.equal(departmentOrder.startStation, 'DEPT_002')
   assert.equal(departmentOrder.dispatchFlag, 'Y')
-  assert.equal(departmentOrder.isContact, 'Y')
+  assert.equal(departmentOrder.isContact, 'N')
+  assert.equal(departmentOrder.receive[0].isRecieveGoods, 1)
+  assert.equal(
+    buildCreateOrderRequest({
+      ...departmentDraft,
+      pickup: { ...departmentDraft.pickup, dispatch: 'N' }
+    }).receive[0].isRecieveGoods,
+    0
+  )
+})
+
+test('product change keeps a coupon only when the new quote can use it and drops arrive pay for battery products', () => {
+  const couponProduct = {
+    ...expressProduct,
+    discount: [{ marketCode: 'YHJ', reduceFee: 5 }]
+  }
+  const plainProduct = { ...expressProduct, omsProductCode: 'RCP' }
+  const dczpProduct = { ...expressProduct, omsProductCode: 'DCZP' }
+  const base = withDraft({
+    couponNumber: 'COUPON001',
+    service: { ...createValidExpressDraft().service, paymentType: 'PAY_ARIIVE' }
+  })
+
+  assert.equal(selectExpressProduct(base, couponProduct).couponNumber, 'COUPON001')
+  assert.equal(selectExpressProduct(base, plainProduct).couponNumber, '')
+  assert.equal(selectExpressProduct(base, plainProduct).service.paymentType, 'PAY_ARIIVE')
+  assert.equal(selectExpressProduct(base, dczpProduct).service.paymentType, 'MP')
+})
+
+test('create order payload puts the detail address in Address fields like the mini program', () => {
+  const draft = createValidExpressDraft()
+  const request = buildCreateOrderRequest(draft)
+
+  assert.equal(request.contactAddress, '徐泾镇明珠路100号')
+  assert.equal(request.contactAddressDetail, '上海市-上海市-青浦区,徐泾镇明珠路100号')
+  assert.equal(request.receive[0].receiverCustAddress, '科技园科苑路200号')
+  assert.equal(request.receive[0].receiverCustAddressDetail, '广东省-深圳市-南山区,科技园科苑路200号')
+})
+
+test('filter request keeps the mini program address format and volume', () => {
+  const draft = withDraft({
+    goods: { ...createValidExpressDraft().goods, volume: 0.02 }
+  })
+  const request = buildFilterOrderRequest(draft)
+
+  assert.equal(request.contactAddress, '上海市-上海市-青浦区,徐泾镇明珠路100号')
+  assert.equal(request.receiverAddress, '广东省-深圳市-南山区,科技园科苑路200号')
+  assert.equal(request.totalVolume, 0.02)
 })
 
 test('order extension fields keep quote price and time product information', () => {
   const product = {
     ...expressProduct,
     totalfee: 36.5,
+    ppcTotalFee: 40,
     daysFormat: '明天18:00前',
+    detail: [{ priceEntryCode: 'FRT', caculateFee: 30 }],
+    discount: [{ marketCode: 'YHJ', reduceFee: 5 }],
     timeProducts: [{ timeProductsCode: 'TP001', timeProductsName: '特快' }]
   }
   const draft = withDraft({ selectedProduct: product })
   const fields = buildCreateOrderRequest(draft).receive[0].orderExtendFields.filter(field =>
-    ['productPrice', 'days', 'timeProductsCode', 'timeProductsName'].includes(field.key)
+    ['productPrice', 'days', 'timeProductsCode', 'timeProductsName', 'totalFee', 'basicFee', 'discountFee'].includes(field.key)
   )
 
   assert.deepEqual(fields, [
     { key: 'productPrice', value: '36.5' },
     { key: 'days', value: '明天18:00前' },
     { key: 'timeProductsCode', value: 'TP001' },
-    { key: 'timeProductsName', value: '特快' }
+    { key: 'timeProductsName', value: '特快' },
+    { key: 'totalFee', value: 40 },
+    { key: 'basicFee', value: 35 },
+    { key: 'discountFee', value: 5 }
   ])
 })
 
@@ -200,14 +264,18 @@ test('sign staging failures keep the draft usable and surface the backend messag
   }
 })
 
-test('YTY quotes move to the end so the cheaper default product stays selected', () => {
+test('default quote follows the mini program product priority instead of response order', () => {
   const yty = { ...expressProduct, omsProductCode: 'YTY', totalfee: 99 }
-  const sorted = sortExpressQuotes([yty, expressProduct])
+  const xjbk = { ...expressProduct, omsProductCode: 'XJBK', totalfee: 20 }
+  const packageProduct = { ...expressProduct, omsProductCode: 'PACKAGE', totalfee: 28 }
+  const sorted = sortExpressQuotes([yty, xjbk, packageProduct])
 
   assert.deepEqual(
     sorted.map(product => product.omsProductCode),
-    ['PACKAGE', 'YTY']
+    ['XJBK', 'PACKAGE', 'YTY']
   )
-  assert.equal(selectDefaultExpressQuote(sorted, false), expressProduct)
-  assert.deepEqual(sortExpressQuotes([expressProduct]), [expressProduct])
+  assert.equal(selectDefaultExpressQuote(sorted, false), packageProduct)
+  assert.equal(selectDefaultExpressQuote([yty, xjbk], false), xjbk)
+  assert.equal(selectDefaultExpressQuote([yty], false), yty)
+  assert.deepEqual(sortExpressQuotes([packageProduct]), [packageProduct])
 })

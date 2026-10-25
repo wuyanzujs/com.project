@@ -10,6 +10,7 @@ const {
   createExpressCouponRequestKey,
   getExpressCouponOriginalFee
 } = require('@/services/express/billing/couponOrder.rules')
+const { applyExpressScanContext } = require('@/services/express/core/express.draft')
 const { buildCreateOrderRequest, buildFreightRequest } = require('@/services/express/core/express.payload')
 
 const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
@@ -283,6 +284,24 @@ const cases = [
       } finally {
         expressCouponApi.queryOrderCoupons = originalQueryOrderCoupons
       }
+    }
+  },
+  {
+    name: 'express coupon request requires a priced product and skips customer code scans',
+    run() {
+      const draft = {
+        ...createValidExpressDraft(),
+        selectedProduct: { ...expressProduct, producteCode: 'PACKAGE' }
+      }
+      const unpriced = { ...draft, selectedProduct: { ...expressProduct, producteCode: 'PACKAGE', totalfee: null, detail: null, discount: null } }
+      const customerScan = applyExpressScanContext(draft, {
+        role: 'shipperNumber',
+        value: 'CUS_001'
+      })
+
+      assert.ok(createExpressCouponQueryRequest(draft))
+      assert.equal(createExpressCouponQueryRequest(unpriced), null)
+      assert.equal(createExpressCouponQueryRequest(customerScan), null)
     }
   },
   {

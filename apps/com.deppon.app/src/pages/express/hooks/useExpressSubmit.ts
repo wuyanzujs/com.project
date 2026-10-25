@@ -44,6 +44,7 @@ export function useExpressSubmit({ draft, monthlyEnabled, warehouseController }:
   const validation = validateExpressDraft(draft, {
     requireAgreement: true,
     requireProduct: true,
+    requireOrderableRegion: true,
     monthlyEnabled
   })
 
@@ -116,6 +117,7 @@ export function useExpressSubmit({ draft, monthlyEnabled, warehouseController }:
       const preparedValidation = validateExpressDraft(preparation.draft, {
         requireAgreement: true,
         requireProduct: true,
+        requireOrderableRegion: true,
         requireWarehouseScreening: true,
         monthlyEnabled
       })
@@ -128,7 +130,7 @@ export function useExpressSubmit({ draft, monthlyEnabled, warehouseController }:
         return
       }
 
-      const response = await expressService.submitDraft(preparation.draft)
+      const response = await expressService.submitDraft(preparation.draft, { monthlyEnabled })
 
       if (!response.status || !response.result) {
         const message = response.message || '提交失败，请稍后重试'

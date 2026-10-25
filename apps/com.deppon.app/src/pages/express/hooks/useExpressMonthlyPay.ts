@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { customerService } from '@/services/customer'
 import type { CustomerCapabilityView, CustomerCenterView } from '@/services/customer'
-import { createExpressMonthlyPayView } from '@/services/express'
+import { createExpressMonthlyPayView, isExpressFixedMonthlyCustomer } from '@/services/express'
 import type { ExpressDraft, ExpressMonthlyPayView, ExpressPaymentType } from '@/services/express'
 import { hasValidSession } from '@/shared/navigation/authGuard'
 
@@ -84,7 +84,8 @@ export function useExpressMonthlyPay({ draft, updateService }: UseExpressMonthly
     loadMonthlyCustomer()
   }, [draft.service.paymentType, loadMonthlyCustomer])
 
-  const monthlyEnabled = monthlyCustomerChecked && !monthlyCustomerLoading && monthlyCapability ? monthlyCapability.monthlyEnabled : null
+  const fixedMonthly = isExpressFixedMonthlyCustomer(draft.scanContext)
+  const monthlyEnabled = fixedMonthly || (monthlyCustomerChecked && !monthlyCustomerLoading && monthlyCapability ? monthlyCapability.monthlyEnabled : null)
 
   const monthlyPayView = useMemo(
     () =>

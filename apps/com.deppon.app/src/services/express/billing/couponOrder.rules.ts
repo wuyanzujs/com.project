@@ -1,5 +1,7 @@
 import { APP_RUNTIME_CONFIG } from '@/shared/config/runtime'
 
+import { existsExpressQuotePrice } from '../core/express.quoteView'
+
 import type { ExpressCouponFee, ExpressCouponFeeType, ExpressCouponQueryRequest } from '../../coupon'
 import type { ExpressDraft, ExpressProductQuote } from '../core/types'
 
@@ -71,6 +73,16 @@ function normalizeCouponRankType(value?: string) {
   return type === 'BZ' ? 'NMBZ' : type
 }
 
+export function getExpressCouponDiscount(product: ExpressProductQuote) {
+  return getDiscountFee(product, marketCode => COUPON_MARKET_CODES.has(marketCode))
+}
+
+export function canAutoApplyExpressCoupon(draft: ExpressDraft) {
+  const mobile = normalizeText(draft.sender?.mobile)
+
+  return !draft.scanContext && draft.service.paymentType === 'MP' && /^\d{11}$/.test(mobile)
+}
+
 /**
  *
  * @param product 报价产品信息
@@ -123,6 +135,10 @@ export function createExpressCouponQueryRequest(draft: ExpressDraft): ExpressCou
   const productCode = normalizeText(product?.producteCode)
 
   if (!sender || !consignee || !product || !productCode) {
+    return null
+  }
+
+  if (draft.scanContext?.role === 'shipperNumber' || !existsExpressQuotePrice(product).visible) {
     return null
   }
 

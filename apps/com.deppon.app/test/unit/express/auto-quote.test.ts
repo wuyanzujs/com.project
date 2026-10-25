@@ -304,4 +304,18 @@ describe('express automatic pricing', () => {
     expect(render().quotes).toEqual([otherProduct])
     expect(mocks.quote).toHaveBeenCalledTimes(1)
   })
+
+  it('keeps the user selected product when the same inputs are re-quoted', async () => {
+    const otherProduct = { ...product, omsProductCode: 'DCZP' as const, totalfee: 25 }
+
+    mocks.quote.mockResolvedValue(success([product, otherProduct]))
+    render()
+    await flush()
+    render().onSelectProduct(otherProduct)
+
+    await render().onQuery()
+    await flush()
+
+    expect(draft.selectedProduct?.omsProductCode).toBe('DCZP')
+  })
 })
