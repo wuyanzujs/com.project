@@ -69,6 +69,14 @@
 .express-price-sheet__label-group {
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  align-items: center;
+}
+.express-price-sheet__rule {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
 }
 .express-price-sheet__label {

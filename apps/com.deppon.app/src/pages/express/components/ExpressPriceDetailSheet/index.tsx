@@ -46,10 +46,16 @@ export function ExpressPriceDetailSheet({ couponDiscountText = '', onClose, onOp
           <View className='express-price-sheet__row'>
             <View className='express-price-sheet__label-group'>
               <Text className='express-price-sheet__label'>计费重量</Text>
-              <Text className='express-price-sheet__label-accent'>({view.billType === 'CALC_WEIGHT' ? '体积计费' : '重量计费'})</Text>
-              <AppNativePressable accessibilityLabel='打开计费规则' onPress={onOpenBillingRules}>
-                <Text className='express-price-sheet__rule-link'>计费规则</Text>
-                <Image className='express-price-sheet__rule-arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightBlue} />
+              <Text className='express-price-sheet__label-accent' numberOfLines={1}>
+                ({view.billType === 'CALC_WEIGHT' ? '体积计费' : '重量计费'})
+              </Text>
+              <AppNativePressable accessibilityLabel='打开计费规则' compact hitSlop={8} onPress={onOpenBillingRules}>
+                <View className='express-price-sheet__rule'>
+                  <Text className='express-price-sheet__rule-link' numberOfLines={1}>
+                    计费规则
+                  </Text>
+                  <Image className='express-price-sheet__rule-arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightBlue} />
+                </View>
               </AppNativePressable>
             </View>
             <Text className='express-price-sheet__value'>{weightValue}</Text>

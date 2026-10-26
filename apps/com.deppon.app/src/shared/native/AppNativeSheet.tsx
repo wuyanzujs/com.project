@@ -26,6 +26,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     justifyContent: 'flex-end',
+    // 裁剪到内容区：面板自底部滑入时不得越界扫过页脚底栏，否则底栏会被瞬时不透明面板遮挡闪一下。
+    overflow: 'hidden',
     zIndex: APP_NATIVE_TOKENS.layer.dialog
   },
   overlay: {

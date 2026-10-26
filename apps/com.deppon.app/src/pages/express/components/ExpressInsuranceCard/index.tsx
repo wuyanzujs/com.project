@@ -145,17 +145,16 @@ export function ExpressInsuranceCard({ children, controller, draft, selectedProd
                   <Text className='express-insurance-banner__slogan'>{view.banner.slogan}</Text>
                 </View>
               </View>
-              <View className='express-insurance-banner__tray'>
-                {renderInsuranceRow({
-                  amount: view.amount,
-                  free: view.free,
-                  modifier: 'raised',
-                  premium,
-                  selected: view.selectedType === view.banner.type && view.amount > 0,
-                  tier: view.banner,
-                  onOpenEditor: setEditingTier
-                })}
-              </View>
+              <View className='express-insurance-banner__tray' />
+              {renderInsuranceRow({
+                amount: view.amount,
+                free: view.free,
+                modifier: 'raised',
+                premium,
+                selected: view.selectedType === view.banner.type && view.amount > 0,
+                tier: view.banner,
+                onOpenEditor: setEditingTier
+              })}
             </View>
           ) : null}
 
