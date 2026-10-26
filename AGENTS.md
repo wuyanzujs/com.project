@@ -611,6 +611,28 @@
 121. 09/10 优惠券回归与异常边界：券套件全绿；旧响应竞态（报价/取件/券按 key 丢弃）、并发提交锁、网络失败文案复核；
     cjs express 151 用例、`pnpm verify:app` 全绿。
 
+### 2026-10-24 保价面板对齐生产端两档结构
+
+122. 差异归因：寄件页保价此前是「保价折叠行 + 通用展开选项」，生产端（4.0.7.0 量测
+    `docs/parity/send/ui-measure.md`）是常驻两档面板——「保价」标题行（tip 25px #9D9D9D + ⓘ 28），
+    「全额保」奶油渐变横幅（垂直 #FFF1D2→#FFFBE7、琥珀盾牌 + 36px #D78B24 标题 + 22px #A28367
+    标语），内嵌白色价值行 606×108 悬浮在奶油头（134 高）与灰托盘（91 高 #F7F7F7）的边界上
+    （行顶距横幅 94、托盘四周露 24）；「基础保」标题行（蓝勾盾牌 + 31px #111）+ 灰底价值行
+    654×97；增值服务行并入同一张白卡（间距 48，卡圆角 32、内边距 32/24）。
+123. 逻辑照 mp-taro3 `send/express/service` 与 RealPrice：横幅档位按 易碎保(NORMAL+YSB)→省心保(SXB)→
+    全额保(QEB) 优先、物流产品无全额保；基础保在非易碎时展示；价值行选中态显示「保价金额 ¥N +
+    保费（报价明细 BF 口径）+ 单选圆」，空态「自定义物品价值 / 填写实际价值」，免费产品（NFLF/NLRF）
+    ≤2000 元带「免费赠送」角标。点击价值行打开 `ExpressInsuranceValueSheet`（AppNativeModalSheet：
+    物品价值 42px + 必填角标、暂行条例提示、最近使用 4 条历史、未保价风险提醒 + 「知悉风险，
+    不保价」出口），确认经 `useExpressInsurance.onCommit` 走 `updateExpressInsurance` 一次性提交
+    （type+amount）并触发自动重算；超上限弹「保价金额超限」可转拨 95353。
+124. 新增 `createExpressInsurancePanelView`（两档视图）与 `getExpressQuoteInsurancePremium`（BF 保费）；
+    历史金额 `expressRealPriceHistory` 走 cache 门面（`DEPPON_EXPRESS_REAL_PRICE_HISTORY` 账号隔离，
+    Taro 同步存储会被 RN 边界门禁拦截）。价值行抽成 `renderInsuranceRow` 直接函数调用而非子组件
+    ——cjs 契约测试的 jsx-runtime 只建元素不调函数组件，子组件永远渲染不出来。
+    验证：`pnpm verify:app` exit 0（新增 insurance-panel.test.cjs 9 用例，380 cjs 全绿）。
+    未执行 RN bundle、Gradle 或 Xcode。
+
 ## 五、执行顺序
 
 1. 新领域禁止再用运行时 `export *`（门禁已是 0 基线）；新增服务时照 `expand-service-barrels.mjs` 生成的显式风格写。

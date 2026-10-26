@@ -524,7 +524,17 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 159
+        "lines": 217
+      },
+      "src/pages/express/components/ExpressInsuranceValueSheet/index.scss": {
+        "rawColors": 0,
+        "rawFontSizes": 0,
+        "rawLineHeights": 0,
+        "rawRadii": 0,
+        "rawFontWeights": 0,
+        "rawSpaces": 0,
+        "usesTokens": true,
+        "lines": 221
       },
       "src/pages/express/components/ExpressMonthlyPayCard/index.scss": {
         "rawColors": 0,
@@ -694,7 +704,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 136
+        "lines": 139
       },
       "src/pages/express/components/ExpressSheet/index.scss": {
         "rawColors": 0,

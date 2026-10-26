@@ -1,12 +1,15 @@
 import { getExpressInsuranceProductPolicy } from './insurance.product'
 import {
+  EXPRESS_INSURANCE_DEFAULT_LIMIT,
   EXPRESS_INSURANCE_FREE_AMOUNT,
+  EXPRESS_INSURANCE_REQUIRED_LIMIT,
   EXPRESS_INSURANCE_SXB_LIMIT,
   getExpressInsuranceEffectiveAmount,
   getExpressInsuranceLimit,
   getExpressInsuranceType,
   getFreshExpressInsuranceCapability,
-  normalizeExpressInsuranceAmount
+  normalizeExpressInsuranceAmount,
+  normalizePositiveNumber
 } from './insurance.rules'
 
 import type { ExpressDraft, ExpressInsuranceType } from '../core/types'
@@ -31,6 +34,27 @@ export interface ExpressInsuranceView {
   worryFree: boolean
   summary: string
   options: ExpressInsuranceOptionView[]
+}
+
+export interface ExpressInsurancePanelTierView {
+  /** 档位对应的草稿保价类型；易碎保按基础保类型提交，由报价子类型走 YSB。 */
+  type: ExpressInsuranceType
+  title: string
+  slogan: string
+  /** 该档位的保价金额上限。 */
+  limit: number
+}
+
+export interface ExpressInsurancePanelView {
+  disabled: boolean
+  amount: number
+  effectiveAmount: number
+  selectedType: ExpressInsuranceType
+  free: boolean
+  /** 高档横幅（全额保/省心保/易碎保），产品与货物均不支持时为 null。 */
+  banner: ExpressInsurancePanelTierView | null
+  basicAvailable: boolean
+  basicLimit: number
 }
 
 /**
@@ -95,5 +119,46 @@ export function createExpressInsuranceView(draft: ExpressDraft): ExpressInsuranc
     worryFree,
     summary,
     options
+  }
+}
+
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 生成寄件页保价面板的两档展示模型：高档横幅（全额保/省心保/易碎保）与基础保行。
+ */
+export function createExpressInsurancePanelView(draft: ExpressDraft): ExpressInsurancePanelView {
+  const capability = getFreshExpressInsuranceCapability(draft)
+  const productCode = draft.selectedProduct?.omsProductCode || draft.service.transportMode
+  const policy = getExpressInsuranceProductPolicy(productCode)
+  const disabled = capability?.disabled === true
+  const fragile = capability?.fragile === true
+  const worryFree = capability?.worryFree === true
+  const fullSlogan = '专人受理 足额理赔 快速到账'
+  const basicLimit = policy.required ? EXPRESS_INSURANCE_REQUIRED_LIMIT : normalizePositiveNumber(draft.insurance.limit) || EXPRESS_INSURANCE_DEFAULT_LIMIT
+
+  let banner: ExpressInsurancePanelTierView | null = null
+
+  if (!disabled) {
+    if (fragile) {
+      banner = { type: 'NORMAL', title: '易碎保', slogan: '保价更安心', limit: basicLimit }
+    } else if (worryFree && policy.supportsSxb) {
+      banner = { type: 'SXB', title: '省心保', slogan: fullSlogan, limit: EXPRESS_INSURANCE_SXB_LIMIT }
+    } else if (policy.supportsFullCoverage) {
+      banner = { type: 'QEB', title: '全额保', slogan: fullSlogan, limit: basicLimit }
+    } else if (policy.supportsSxb) {
+      banner = { type: 'SXB', title: '省心保', slogan: fullSlogan, limit: EXPRESS_INSURANCE_SXB_LIMIT }
+    }
+  }
+
+  return {
+    disabled,
+    amount: normalizeExpressInsuranceAmount(draft.goods.insuredAmount),
+    effectiveAmount: getExpressInsuranceEffectiveAmount(draft, capability),
+    selectedType: getExpressInsuranceType(draft, capability),
+    free: policy.free,
+    banner,
+    basicAvailable: !fragile,
+    basicLimit
   }
 }

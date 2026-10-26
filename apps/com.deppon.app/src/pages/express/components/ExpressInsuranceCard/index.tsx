@@ -1,122 +1,206 @@
-import { Input, Text, View } from '@tarojs/components'
+import { Image, Text, View } from '@tarojs/components'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type PropsWithChildren } from 'react'
 
-import { createExpressInsuranceView } from '@/services/express'
-import type { ExpressDraft } from '@/services/express'
-import { AppPressable } from '@/shared/components'
-import { APP_NATIVE_TOKENS } from '@/styles/nativeTokens'
+import { createExpressInsurancePanelView, getExpressQuoteInsurancePremium } from '@/services/express'
+import type { ExpressDraft, ExpressInsurancePanelTierView, ExpressProductQuote } from '@/services/express'
+import { AppPressable, AppRadio } from '@/shared/components'
+import { APP_IMAGE_ICONS, AppIcon } from '@/shared/components/AppIcon'
+import { AppLinearGradient } from '@/shared/native'
+import { APP_STYLE_COLORS } from '@/styles/nativeTokens'
 
-import { ExpressSection } from '../ExpressSection'
+import { ExpressInsuranceValueSheet } from '../ExpressInsuranceValueSheet'
 
 import type { ExpressInsuranceController } from '../../hooks/useExpressInsurance'
 
 import './index.scss'
 
-interface ExpressInsuranceCardProps {
+interface ExpressInsuranceCardProps extends PropsWithChildren {
   controller: ExpressInsuranceController
   draft: ExpressDraft
+  selectedProduct: ExpressProductQuote | null
 }
 
-function getMoneyText(value: number) {
-  return Number.isInteger(value) ? String(value) : value.toFixed(2)
+interface ExpressInsuranceRowProps {
+  tier: ExpressInsurancePanelTierView
+  selected: boolean
+  amount: number
+  free: boolean
+  premium: number | null
+  modifier: string
+  onOpenEditor: (tier: ExpressInsurancePanelTierView) => void
 }
 
-function getOptionClassName(selected: boolean, disabled: boolean, spaced: boolean) {
-  return [
-    'express-insurance-option',
-    selected && 'express-insurance-option--selected',
-    disabled && 'express-insurance-option--disabled',
-    spaced && 'express-insurance-option--spaced'
-  ]
-    .filter(Boolean)
-    .join(' ')
-}
+/** 「免费赠送」角标阈值：2000 元内免费的产品才展示。 */
+const FREE_BADGE_AMOUNT_LIMIT = 2000
 
-export function ExpressInsuranceCard({ controller, draft }: ExpressInsuranceCardProps) {
-  const [expanded, setExpanded] = useState(false)
-  const view = useMemo(() => createExpressInsuranceView(draft), [draft])
-  const selectedOption = view.options.find(option => option.type === view.type)
-  const summary = view.disabled
-    ? '当前货物品类不支持保价服务'
-    : view.effectiveAmount > 0
-      ? `${selectedOption?.label || '保价'} · ${view.effectiveAmount}元`
-      : '未保价物品最高赔付3倍运费'
+/**
+ * @description 保价价值行：未填时展示「自定义物品价值 / 填写实际价值」，已填展示金额、保费与选中圆。
+ */
+function renderInsuranceRow({ amount, free, modifier, onOpenEditor, premium, selected, tier }: ExpressInsuranceRowProps) {
+  const freeBadgeVisible = free && (!selected || amount <= FREE_BADGE_AMOUNT_LIMIT)
 
   return (
-    <ExpressSection
-      expanded={expanded}
-      hint={view.required ? '必填' : undefined}
-      summary={summary}
-      title='保价'
-      onHeaderPress={() => setExpanded(current => !current)}
+    <AppPressable
+      accessibilityLabel={`填写${tier.title}物品价值`}
+      block
+      className={`express-insurance-row express-insurance-row--${modifier}`}
+      onPress={() => onOpenEditor(tier)}
     >
-      {expanded ? (
-        <View className='express-insurance'>
-          <Text className='express-insurance__summary'>{view.summary}</Text>
+      <View className='express-insurance-row__lead'>
+        {selected ? (
+          <>
+            <Text className='express-insurance-row__label'>保价金额</Text>
+            <Text className='express-insurance-row__amount'>¥{amount}</Text>
+          </>
+        ) : (
+          <Text className='express-insurance-row__label'>自定义物品价值</Text>
+        )}
+      </View>
+      <View className='express-insurance-row__side'>
+        {freeBadgeVisible ? (
+          <View className='express-insurance-row__badge'>
+            <Text className='express-insurance-row__badge-text'>免费赠送</Text>
+          </View>
+        ) : null}
+        {selected ? (
+          <>
+            {premium !== null && premium > 0 ? <Text className='express-insurance-row__premium'>¥{premium}</Text> : null}
+            <AppRadio checked size={32} />
+          </>
+        ) : free ? (
+          <>
+            <Text className='express-insurance-row__gift'>2000元</Text>
+            <Image className='express-insurance-row__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
+          </>
+        ) : (
+          <>
+            <Text className='express-insurance-row__hint'>填写实际价值</Text>
+            <Image className='express-insurance-row__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
+          </>
+        )}
+      </View>
+    </AppPressable>
+  )
+}
 
-          <View className='express-insurance-options'>
-            {view.options.map((option, index) => (
-              <AppPressable
-                accessibilityLabel={`选择${option.label}`}
-                block
-                className={getOptionClassName(option.type === view.type, option.disabled, index > 0)}
-                disabled={option.disabled}
-                key={option.type}
-                selected={option.type === view.type}
-                onPress={() => controller.onTypeChange(option.type)}
-              >
-                <View className='express-insurance-option__title-row'>
-                  <Text className='express-insurance-option__title'>{option.label}</Text>
-                  {option.recommended && !option.disabled ? <Text className='express-insurance-option__badge'>推荐</Text> : null}
+/**
+ * @description 寄件页保价面板：高档横幅（全额保/省心保/易碎保）+ 基础保两档，点击价值行弹物品价值编辑。
+ */
+export function ExpressInsuranceCard({ children, controller, draft, selectedProduct }: ExpressInsuranceCardProps) {
+  const view = useMemo(() => createExpressInsurancePanelView(draft), [draft])
+  const premium = useMemo(() => (selectedProduct ? getExpressQuoteInsurancePremium(selectedProduct) : null), [selectedProduct])
+  const [editingTier, setEditingTier] = useState<ExpressInsurancePanelTierView | null>(null)
+
+  const basicTier = useMemo<ExpressInsurancePanelTierView>(() => ({ limit: view.basicLimit, slogan: '', title: '基础保', type: 'NORMAL' }), [view.basicLimit])
+
+  const closeEditor = () => setEditingTier(null)
+
+  const handleConfirm = (amount: number) => {
+    if (editingTier) {
+      controller.onCommit(editingTier.type, amount)
+    }
+
+    closeEditor()
+  }
+
+  const handleDecline = () => {
+    if (editingTier) {
+      controller.onCommit(editingTier.type, 0)
+    }
+
+    closeEditor()
+  }
+
+  return (
+    <View className='express-insurance-card'>
+      <View className='express-insurance-head'>
+        <Text className='express-insurance-head__title'>保价</Text>
+        <AppPressable
+          accessibilityLabel='查看保价说明'
+          className='express-insurance-head__rules'
+          compact
+          hitSlop={8}
+          onPress={() => controller.onOpenRules(view.disabled ? 'NORMAL' : view.selectedType)}
+        >
+          <Text className='express-insurance-head__tip'>{view.disabled ? '当前货物暂不支持保价' : '未保价物品最高赔付3倍运费'}</Text>
+          {view.disabled ? null : <AppIcon color={APP_STYLE_COLORS.text.subdued} name='info' size={28} strokeWidth={1.5} />}
+        </AppPressable>
+      </View>
+
+      {view.disabled ? null : (
+        <>
+          {view.banner ? (
+            <View className='express-insurance-banner'>
+              <View className='express-insurance-banner__hero'>
+                <AppLinearGradient
+                  className='express-insurance-banner__hero-bg'
+                  colors={[APP_STYLE_COLORS.insurance.bannerGradientStart, APP_STYLE_COLORS.insurance.bannerGradientEnd]}
+                  end={{ x: 0, y: 1 }}
+                  start={{ x: 0, y: 0 }}
+                />
+                <View className='express-insurance-banner__branding'>
+                  <Image className='express-insurance-banner__shield' mode='aspectFit' src={APP_IMAGE_ICONS.insuranceFullShield} />
+                  <Text className='express-insurance-banner__name'>{view.banner.title}</Text>
+                  <Text className='express-insurance-banner__slogan'>{view.banner.slogan}</Text>
                 </View>
-                <Text className='express-insurance-option__summary'>{option.summary}</Text>
-              </AppPressable>
-            ))}
-          </View>
-
-          <View className='express-insurance__field-head'>
-            <Text className='express-insurance__label'>保价金额</Text>
-            <Text className='express-insurance__limit'>最高 {view.limit} 元</Text>
-          </View>
-          <View className='express-insurance-amount'>
-            <Text className='express-insurance-amount__currency'>¥</Text>
-            <Input
-              className='express-insurance-amount__input'
-              disabled={view.disabled}
-              maxlength={8}
-              placeholder={view.free ? '赠送基础保障' : '请输入整数金额'}
-              style={{ minHeight: APP_NATIVE_TOKENS.touch.minimum }}
-              type='number'
-              value={String(view.amount || '')}
-              onInput={event => controller.onAmountChange(event.detail.value)}
-            />
-          </View>
-
-          {view.effectiveAmount !== view.amount ? <Text className='express-insurance__hint'>下单保障金额 {view.effectiveAmount} 元</Text> : null}
-
-          <View className='express-insurance__actions'>
-            <AppPressable accessibilityLabel='查看当前保价规则' className='express-insurance__action' onPress={() => controller.onOpenRules(view.type)}>
-              <Text className='express-insurance__action-text'>规则</Text>
-            </AppPressable>
-            <AppPressable
-              accessibilityLabel='试算保价费用'
-              className='express-insurance__action express-insurance__action--primary'
-              disabled={view.disabled || controller.loading}
-              onPress={controller.onQuery}
-            >
-              <Text className='express-insurance__action-text express-insurance__action-text--primary'>{controller.loading ? '试算中' : '试算费用'}</Text>
-            </AppPressable>
-          </View>
-
-          {controller.quote ? (
-            <Text className='express-insurance__result'>
-              {controller.quote.name || '保价费'}约 ¥{getMoneyText(controller.quote.price)}
-            </Text>
+              </View>
+              <View className='express-insurance-banner__tray'>
+                {renderInsuranceRow({
+                  amount: view.amount,
+                  free: view.free,
+                  modifier: 'raised',
+                  premium,
+                  selected: view.selectedType === view.banner.type && view.amount > 0,
+                  tier: view.banner,
+                  onOpenEditor: setEditingTier
+                })}
+              </View>
+            </View>
           ) : null}
-          {controller.message ? <Text className='express-insurance__message'>{controller.message}</Text> : null}
-        </View>
-      ) : null}
-    </ExpressSection>
+
+          {view.basicAvailable ? (
+            <View className='express-insurance-basic'>
+              <View className='express-insurance-basic__head'>
+                <Image className='express-insurance-basic__shield' mode='aspectFit' src={APP_IMAGE_ICONS.insuranceBasicShield} />
+                <Text className='express-insurance-basic__title'>基础保</Text>
+                <AppPressable
+                  accessibilityLabel='查看基础保说明'
+                  className='express-insurance-head__rules'
+                  compact
+                  hitSlop={8}
+                  onPress={() => controller.onOpenRules('NORMAL')}
+                >
+                  <Text className='express-insurance-head__tip'>未保价物品最高赔付3倍运费</Text>
+                  <AppIcon color={APP_STYLE_COLORS.text.subdued} name='info' size={28} strokeWidth={1.5} />
+                </AppPressable>
+              </View>
+              {renderInsuranceRow({
+                amount: view.amount,
+                free: view.free,
+                modifier: 'flat',
+                premium,
+                selected: view.selectedType === 'NORMAL' && view.amount > 0,
+                tier: basicTier,
+                onOpenEditor: setEditingTier
+              })}
+            </View>
+          ) : null}
+        </>
+      )}
+
+      {children}
+
+      <ExpressInsuranceValueSheet
+        initialAmount={view.amount}
+        insured={view.amount > 0}
+        limit={editingTier?.limit ?? view.basicLimit}
+        tierTitle={editingTier?.title ?? '保价'}
+        visible={Boolean(editingTier)}
+        onClose={closeEditor}
+        onConfirm={handleConfirm}
+        onDecline={handleDecline}
+      />
+    </View>
   )
 }

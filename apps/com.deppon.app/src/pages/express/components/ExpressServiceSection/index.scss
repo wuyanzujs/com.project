@@ -48,11 +48,14 @@
   min-height: $dp-touch-target-min;
   padding: $dp-space-16 $dp-space-0;
 }
+.express-service-entry--plain {
+  margin-top: $dp-space-48;
+}
 .express-service-entry__title {
-  color: $dp-color-text-neutral;
-  font-size: $dp-font-size-label-large;
+  color: $dp-color-text-neutral-strong;
+  font-size: $dp-font-size-label;
   font-weight: $dp-font-weight-regular;
-  line-height: $dp-line-height-42;
+  line-height: $dp-line-height-40;
 }
 .express-service-entry__summary {
   flex: 1;

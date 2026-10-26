@@ -36,7 +36,7 @@ function normalizeText(value?: string | null) {
  * @param value 待校验数值
  * @description 转成正数，非法值返回 0
  */
-function normalizePositiveNumber(value: unknown) {
+export function normalizePositiveNumber(value: unknown) {
   const number = Number(value)
 
   return Number.isFinite(number) && number > 0 ? number : 0

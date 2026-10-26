@@ -1,159 +1,217 @@
 @use '@/styles/_tokens.scss' as *;
 
-.express-insurance {
-  padding-top: $dp-space-16;
-  border-top-color: $dp-color-border-light;
-  border-top-width: $dp-border-width-hairline;
+/* 卡圆角 32、上下内边距 32、banner 再缩进一档，白行悬浮在奶油头与灰托盘边界上。 */
+.express-insurance-card {
+  margin-bottom: $dp-space-16;
+  padding: $dp-space-32 $dp-space-24;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-32;
 }
 
-.express-insurance__summary,
-.express-insurance__hint,
-.express-insurance__result,
-.express-insurance__message {
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-body-small;
-  line-height: $dp-line-height-body-small;
-}
-
-.express-insurance-options {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  margin-top: $dp-space-16;
-}
-
-.express-insurance-option {
-  flex: 1;
-  min-height: $dp-control-height-large;
-  padding: $dp-space-12;
-  background: $dp-color-bg-subtle;
-  border-color: $dp-color-border-light;
-  border-width: $dp-border-width-hairline;
-  border-radius: $dp-radius-control;
-}
-
-.express-insurance-option--spaced {
-  margin-left: $dp-space-8;
-}
-
-.express-insurance-option--selected {
-  background: $dp-color-brand-faint;
-  border-color: $dp-color-brand;
-}
-
-.express-insurance-option--disabled {
-  opacity: $dp-opacity-disabled;
-}
-
-.express-insurance-option__title-row,
-.express-insurance__field-head,
-.express-insurance__actions {
+.express-insurance-head {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
 }
 
-.express-insurance-option__title,
-.express-insurance__label {
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-body;
-  font-weight: $dp-font-weight-bold;
-  line-height: $dp-line-height-body;
+.express-insurance-head__title {
+  color: $dp-color-text-neutral-strong;
+  font-size: $dp-font-size-label;
+  line-height: $dp-line-height-36;
 }
 
-.express-insurance-option__badge {
-  padding: $dp-space-0 $dp-space-6;
-  margin-left: $dp-space-4;
-  color: $dp-color-warning-text;
-  font-size: $dp-font-size-micro;
-  line-height: $dp-line-height-fine;
-  background: $dp-color-warning-background-soft;
-  border-radius: $dp-radius-xs;
-}
-
-.express-insurance-option__summary {
-  margin-top: $dp-space-4;
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-fine;
-  line-height: $dp-line-height-fine;
-}
-
-.express-insurance__field-head {
-  margin-top: $dp-space-20;
-}
-
-.express-insurance__limit {
-  color: $dp-color-text-supporting;
-  font-size: $dp-font-size-caption;
-  line-height: $dp-line-height-caption;
-}
-
-.express-insurance-amount {
+.express-insurance-head__rules {
   display: flex;
+  flex: 1;
   flex-direction: row;
   align-items: center;
-  min-height: $dp-control-height-default;
-  padding: $dp-space-0 $dp-space-20;
-  margin-top: $dp-space-12;
-  background: $dp-color-bg-subtle;
-  border-radius: $dp-radius-control;
-}
-
-.express-insurance-amount__currency {
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-title;
-  font-weight: $dp-font-weight-bold;
-}
-
-.express-insurance-amount__input {
-  flex: 1;
-  min-height: $dp-control-height-default;
-  margin-left: $dp-space-12;
-  color: $dp-color-text-heading;
-  font-size: $dp-font-size-label-large;
-}
-
-.express-insurance__hint,
-.express-insurance__result,
-.express-insurance__message {
-  margin-top: $dp-space-8;
-}
-
-.express-insurance__result {
-  color: $dp-color-success-text;
-}
-
-.express-insurance__message {
-  color: $dp-color-danger;
-}
-
-.express-insurance__actions {
   justify-content: flex-end;
-  margin-top: $dp-space-16;
 }
 
-.express-insurance__action {
-  min-width: $dp-space-96;
-  min-height: $dp-touch-target-min;
-  padding: $dp-space-0 $dp-space-16;
-  border-color: $dp-color-border;
-  border-width: $dp-border-width-hairline;
-  border-radius: $dp-radius-control;
+.express-insurance-head__tip {
+  margin-right: $dp-space-12;
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-body-large;
+  line-height: $dp-line-height-32;
 }
 
-.express-insurance__action--primary {
-  margin-left: $dp-space-12;
-  background: $dp-color-brand;
-  border-color: $dp-color-brand;
+/* 高档横幅：奶油渐变头 + 灰托盘，价值行悬浮在两段边界上（顶 94、下露 24）。 */
+.express-insurance-banner {
+  position: relative;
+  height: 226px;
+  margin-top: $dp-space-24;
+  overflow: hidden;
+  border-radius: $dp-radius-24;
 }
 
-.express-insurance__action-text {
-  color: $dp-color-text-body;
-  font-size: $dp-font-size-body-small;
-  font-weight: $dp-font-weight-bold;
+.express-insurance-banner__hero {
+  position: relative;
+  height: 134px;
+  padding: $dp-space-32 $dp-space-24 $dp-space-0 $dp-space-32;
 }
 
-.express-insurance__action-text--primary {
-  color: $dp-color-text-inverse;
+.express-insurance-banner__hero-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.express-insurance-banner__branding {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.express-insurance-banner__shield {
+  width: 30px;
+  height: 35px;
+}
+
+.express-insurance-banner__name {
+  margin-left: $dp-space-18;
+  color: $dp-color-insurance-full-text;
+  font-size: $dp-font-size-heading;
+  font-weight: $dp-font-weight-semibold;
+  line-height: $dp-line-height-44;
+}
+
+.express-insurance-banner__slogan {
+  flex: 1;
+  margin-left: $dp-space-24;
+  color: $dp-color-insurance-slogan;
+  font-size: $dp-font-size-caption;
+  line-height: $dp-line-height-32;
+  text-align: right;
+}
+
+.express-insurance-banner__tray {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 91px;
+  background: $dp-color-bg-neutral-soft;
+}
+
+.express-insurance-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: $dp-color-bg-card;
+  border-radius: $dp-radius-26;
+}
+
+.express-insurance-row--raised {
+  position: absolute;
+  top: 94px;
+  right: $dp-space-24;
+  left: $dp-space-24;
+  height: 108px;
+  padding: $dp-space-0 $dp-space-32 $dp-space-0 $dp-space-28;
+}
+
+.express-insurance-row--flat {
+  height: 97px;
+  margin-top: $dp-space-24;
+  padding: $dp-space-0 $dp-space-32 $dp-space-0 $dp-space-28;
+  background: $dp-color-bg-neutral-soft;
+  border-radius: $dp-radius-24;
+}
+
+.express-insurance-row__lead {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+}
+
+.express-insurance-row__label {
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-label;
+  line-height: $dp-line-height-40;
+}
+
+.express-insurance-row__amount {
+  margin-left: $dp-space-8;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-semibold;
+  line-height: $dp-line-height-40;
+}
+
+.express-insurance-row__side {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.express-insurance-row__badge {
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  margin-right: $dp-space-8;
+  padding: $dp-space-0 $dp-space-8;
+  background: $dp-color-insurance-risk-bg;
+  border-radius: $dp-radius-8;
+}
+
+.express-insurance-row__badge-text {
+  color: $dp-color-danger-accent;
+  font-size: $dp-font-size-fine;
+  line-height: $dp-line-height-28;
+}
+
+.express-insurance-row__premium {
+  margin-right: $dp-space-8;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-label;
+  font-weight: $dp-font-weight-semibold;
+  line-height: $dp-line-height-40;
+}
+
+.express-insurance-row__gift {
+  margin-right: $dp-space-8;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-label;
+  line-height: $dp-line-height-40;
+}
+
+.express-insurance-row__hint {
+  margin-right: $dp-space-8;
+  color: $dp-color-text-subdued;
+  font-size: $dp-font-size-label;
+  line-height: $dp-line-height-40;
+}
+
+.express-insurance-row__arrow {
+  width: 16px;
+  height: 28px;
+}
+
+/* 基础保：独立标题行与灰底价值行。 */
+.express-insurance-basic {
+  margin-top: $dp-space-32;
+}
+
+.express-insurance-basic__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.express-insurance-basic__shield {
+  width: 31px;
+  height: 34px;
+}
+
+.express-insurance-basic__title {
+  flex: 1;
+  margin-left: $dp-space-18;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-title-compact;
+  font-weight: $dp-font-weight-semibold;
+  line-height: $dp-line-height-40;
 }

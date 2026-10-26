@@ -56,6 +56,9 @@ const EXPRESS_FEE_NAMES: Record<string, string> = {
 // 运费明细的 priceEntryCode，产品卡上「¥X起」取的是 FRT 口径而非总价。
 const EXPRESS_FREIGHT_ENTRY_CODE = 'FRT'
 
+// 保价费的明细口径，保价面板选中行展示保费。
+const EXPRESS_INSURANCE_ENTRY_CODE = 'BF'
+
 // 线路限时优惠（产品卡「惊喜优惠¥X」角标）的优惠类型。
 const EXPRESS_TIME_LIMIT_MARKET_CODE = 'XLYHF'
 
@@ -153,6 +156,17 @@ export function getExpressQuoteFreight(product: ExpressProductQuote) {
   const freight = product.detail?.find(item => item.priceEntryCode.trim().toUpperCase() === EXPRESS_FREIGHT_ENTRY_CODE)
 
   return toFiniteAmount(freight?.caculateFee)
+}
+
+/**
+ *
+ * @param product 报价产品
+ * @description 取报价明细里的保价费，未含保价项返回 null
+ */
+export function getExpressQuoteInsurancePremium(product: ExpressProductQuote) {
+  const entry = product.detail?.find(item => item.priceEntryCode.trim().toUpperCase() === EXPRESS_INSURANCE_ENTRY_CODE)
+
+  return toFiniteAmount(entry?.caculateFee)
 }
 
 // totalfee 有值时展示价格；运费被优惠券全额抵扣时，也允许展示 0 元起。

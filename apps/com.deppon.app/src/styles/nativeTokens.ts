@@ -104,6 +104,14 @@ export const APP_STYLE_COLORS = {
     limitGradientStart: '#fa7073',
     limitGradientEnd: '#f83a3c'
   },
+  insurance: {
+    /* 保价横幅奶油渐变端色、全额保字色与角标语色，与 _tokens.scss 的 insurance-* 同步登记。 */
+    bannerGradientStart: '#fff1d2',
+    bannerGradientEnd: '#fffbe7',
+    fullText: '#d78b24',
+    slogan: '#a28367',
+    riskBackground: '#ffeded'
+  },
   member: {
     text: '#7c482d',
     textMuted: '#968372',

@@ -112,6 +112,7 @@ export {
   getExpressQuotePriceText,
   getExpressQuoteTimeProduct,
   getExpressQuoteFreight,
+  getExpressQuoteInsurancePremium,
   existsExpressQuotePrice,
   getExpressQuoteTimeLimit,
   splitExpressQuoteTimeText,
@@ -127,6 +128,7 @@ export { expressGoodsBridge } from './goods/goodsBridge'
 export type { ExpressGoodsBridgePayload } from './goods/goodsBridge'
 export { getBlockingExpressGoodsLabel, normalizeExpressGoodsCheckResult } from './goods/goodsCheck.rules'
 export { expressInsuranceRules } from './insurance/insuranceRules'
+export { expressRealPriceHistory } from './insurance/realPriceHistory'
 export { getExpressInsuranceProductPolicy } from './insurance/insurance.product'
 export {
   EXPRESS_INSURANCE_DEFAULT_LIMIT,
@@ -151,8 +153,8 @@ export {
   resetExpressInsuranceCapability,
   updateExpressInsurance
 } from './insurance/insurance.rules'
-export { createExpressInsuranceView } from './insurance/insurance.view'
-export type { ExpressInsuranceOptionView, ExpressInsuranceView } from './insurance/insurance.view'
+export { createExpressInsuranceView, createExpressInsurancePanelView } from './insurance/insurance.view'
+export type { ExpressInsuranceOptionView, ExpressInsuranceView, ExpressInsurancePanelTierView, ExpressInsurancePanelView } from './insurance/insurance.view'
 export * from './insurance/insuranceRule.types'
 export { createExpressMonthlyPayView, isExpressFixedMonthlyCustomer } from './billing/monthlyPay'
 export type { ExpressMonthlyPayView, ExpressMonthlyPayViewOptions, ExpressMonthlyPayTone, ExpressMonthlyPayActionSource } from './billing/monthlyPay'

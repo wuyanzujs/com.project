@@ -1,0 +1,227 @@
+@use '@/styles/_tokens.scss' as *;
+
+/* 弹层内 safe-area 恒为 0，底部留白走固定设计 px（登录协议弹层同款陷阱）。 */
+.express-insurance-sheet {
+  display: flex;
+  flex-direction: column;
+  height: 820px;
+  padding-bottom: $dp-space-32;
+  background: $dp-color-bg-card;
+  border-top-left-radius: $dp-radius-48;
+  border-top-right-radius: $dp-radius-48;
+}
+
+.express-insurance-sheet__header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 128px;
+  padding-right: $dp-space-24;
+}
+
+.express-insurance-sheet__title {
+  margin-left: $dp-space-32;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-page-title;
+  font-weight: $dp-font-weight-semibold;
+  line-height: $dp-line-height-48;
+}
+
+.express-insurance-sheet__required {
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  margin-left: $dp-space-16;
+  padding: $dp-space-0 $dp-space-16;
+  background: $dp-color-brand-soft;
+  border-radius: $dp-radius-pill;
+}
+
+.express-insurance-sheet__required-text {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-32;
+}
+
+.express-insurance-sheet__close {
+  flex: 1;
+  align-items: flex-end;
+}
+
+.express-insurance-sheet__scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.express-insurance-sheet__body {
+  padding: $dp-space-0 $dp-space-32;
+}
+
+.express-insurance-sheet__notice {
+  color: $dp-color-text-strong;
+  font-size: $dp-font-size-label-large;
+  line-height: $dp-line-height-44;
+}
+
+.express-insurance-sheet__field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 104px;
+  margin-top: $dp-space-32;
+  background: $dp-color-bg-neutral-soft;
+  border-radius: $dp-radius-24;
+}
+
+.express-insurance-sheet__currency {
+  width: 80px;
+  padding-left: $dp-space-28;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-label-large;
+  line-height: $dp-line-height-40;
+}
+
+.express-insurance-sheet__input {
+  flex: 1;
+  height: 104px;
+  padding: $dp-space-0;
+  color: $dp-color-text-ink;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-semibold;
+}
+
+.express-insurance-sheet__placeholder {
+  color: $dp-color-text-placeholder;
+  font-size: $dp-font-size-label-large;
+  font-weight: $dp-font-weight-regular;
+}
+
+.express-insurance-sheet__clear {
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-right: $dp-space-28;
+  background: $dp-color-text-faint;
+  border-radius: $dp-radius-pill;
+}
+
+.express-insurance-sheet__history {
+  margin-top: $dp-space-16;
+}
+
+.express-insurance-sheet__history-title {
+  color: $dp-color-text-strong;
+  font-size: $dp-font-size-label-large;
+  line-height: $dp-line-height-40;
+}
+
+.express-insurance-sheet__history-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: $dp-space-4;
+  margin-left: -$dp-space-8;
+}
+
+.express-insurance-sheet__history-item {
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  margin: $dp-space-8;
+  padding: $dp-space-0 $dp-space-24;
+  background: $dp-color-bg-neutral-soft;
+  border-radius: $dp-radius-32;
+}
+
+.express-insurance-sheet__history-item-text {
+  color: $dp-color-text-supporting;
+  font-size: $dp-font-size-label-large;
+  line-height: $dp-line-height-40;
+}
+
+.express-insurance-sheet__risk {
+  margin-top: $dp-space-32;
+  padding: $dp-space-16 $dp-space-0;
+  background: $dp-color-insurance-risk-bg;
+  border-radius: $dp-radius-24;
+}
+
+.express-insurance-sheet__risk-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 36px;
+  padding-left: $dp-space-24;
+}
+
+.express-insurance-sheet__risk-title {
+  color: $dp-color-danger-accent;
+  font-size: $dp-font-size-body;
+  font-weight: $dp-font-weight-semibold;
+  line-height: $dp-line-height-32;
+}
+
+.express-insurance-sheet__risk-text {
+  margin-top: $dp-space-4;
+  padding: $dp-space-0 $dp-space-24;
+  color: $dp-color-text-strong;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-36;
+}
+
+.express-insurance-sheet__risk-entry {
+  padding: $dp-space-8 $dp-space-24 $dp-space-0;
+}
+
+.express-insurance-sheet__risk-link {
+  color: $dp-color-brand;
+  font-size: $dp-font-size-body;
+  line-height: $dp-line-height-36;
+}
+
+.express-insurance-sheet__footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: $dp-space-32 $dp-space-32 $dp-space-0;
+}
+
+.express-insurance-sheet__button {
+  position: relative;
+  height: 96px;
+  overflow: hidden;
+  border-radius: $dp-radius-48;
+}
+
+.express-insurance-sheet__button--ghost {
+  margin-right: $dp-space-24;
+  padding: $dp-space-0 $dp-space-48;
+  background: $dp-color-bg-neutral-soft;
+}
+
+.express-insurance-sheet__button--primary {
+  flex: 1;
+}
+
+.express-insurance-sheet__gradient {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.express-insurance-sheet__button-text {
+  font-size: $dp-font-size-subtitle;
+  font-weight: $dp-font-weight-semibold;
+  line-height: $dp-line-height-42;
+}
+
+.express-insurance-sheet__button-text--ghost {
+  color: $dp-color-text-supporting;
+}
+
+.express-insurance-sheet__button-text--primary {
+  color: $dp-color-text-inverse;
+}

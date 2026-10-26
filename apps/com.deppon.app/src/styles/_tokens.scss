@@ -158,6 +158,13 @@ $dp-color-quote-time: #1957ff;
 $dp-color-quote-limit-start: #fa7073;
 $dp-color-quote-limit-end: #f83a3c;
 
+/* 保价面板：横幅奶油渐变端色、全额保字色与角标语色，对照记录见 docs/parity/send/ui-measure.md。 */
+$dp-color-insurance-banner-start: #fff1d2;
+$dp-color-insurance-banner-end: #fffbe7;
+$dp-color-insurance-full-text: #d78b24;
+$dp-color-insurance-slogan: #a28367;
+$dp-color-insurance-risk-bg: #ffeded;
+
 $dp-font-size-micro: 18px;
 $dp-font-size-fine: 20px;
 $dp-font-size-legal: 21px;

@@ -313,14 +313,24 @@ const ExpressPage = () => {
           {couponController.showRow ? <ExpressCouponCard controller={couponController} couponNumber={draft.couponNumber} /> : null}
         </ExpressBaseInfoCard>
 
-        {insuranceVisible ? <ExpressInsuranceCard controller={insuranceController} draft={draft} /> : null}
-
-        <ExpressServiceSection
-          draft={draft}
-          scanContextView={createExpressScanContextView(draft.scanContext)}
-          onClearScanContext={() => setDraft(clearExpressScanContext)}
-          onOpenServices={handleOpenServices}
-        />
+        {insuranceVisible ? (
+          <ExpressInsuranceCard controller={insuranceController} draft={draft} selectedProduct={draft.selectedProduct}>
+            <ExpressServiceSection
+              draft={draft}
+              plain
+              scanContextView={createExpressScanContextView(draft.scanContext)}
+              onClearScanContext={() => setDraft(clearExpressScanContext)}
+              onOpenServices={handleOpenServices}
+            />
+          </ExpressInsuranceCard>
+        ) : (
+          <ExpressServiceSection
+            draft={draft}
+            scanContextView={createExpressScanContextView(draft.scanContext)}
+            onClearScanContext={() => setDraft(clearExpressScanContext)}
+            onOpenServices={handleOpenServices}
+          />
+        )}
 
         <ExpressPrivacyCard value={draft.service.privacyProtection} onChange={privacyController.onChange} onOpenTerms={privacyController.onOpenTerms} />
 

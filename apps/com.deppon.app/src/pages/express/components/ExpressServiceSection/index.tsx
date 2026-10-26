@@ -20,6 +20,8 @@ const DELIVERY_LABELS: Record<ExpressDraft['service']['deliveryMode'], string> =
 interface ExpressServiceSectionProps {
   draft: ExpressDraft
   scanContextView: ExpressScanContextView | null
+  /** 并入保价卡渲染：只出增值服务行，不带自有白卡与扫描卡外边距。 */
+  plain?: boolean
   onClearScanContext: () => void
   onOpenServices: () => void
 }
@@ -27,7 +29,7 @@ interface ExpressServiceSectionProps {
 /**
  * @description 寄件页的增值服务入口行：只做入口，点击跳增值服务专属页。
  */
-export function ExpressServiceSection({ draft, onClearScanContext, onOpenServices, scanContextView }: ExpressServiceSectionProps) {
+export function ExpressServiceSection({ draft, onClearScanContext, onOpenServices, plain = false, scanContextView }: ExpressServiceSectionProps) {
   const { collection, deliveryPreference, packaging, service, valueAdded, warehouse } = draft
   const packagingSelected = Boolean(packaging.cartonCode || packaging.woodenCodes.length || packaging.unpackingCodes.length)
   const summaryParts = [
@@ -45,23 +47,31 @@ export function ExpressServiceSection({ draft, onClearScanContext, onOpenService
   // 摘要最多展示 3 项；含代收货款时最多展示 2 项，超出部分用「…」截断。
   const summaryLimit = summaryParts.includes('代收货款') ? 2 : 3
   const summary = summaryParts.length > summaryLimit ? `${summaryParts.slice(0, summaryLimit).join('、')}…` : summaryParts.join('、')
+  const entry = (
+    <AppPressable
+      accessibilityLabel='打开增值服务'
+      block
+      className={plain ? 'express-service-entry express-service-entry--plain' : 'express-service-entry'}
+      layout='row-start'
+      onPress={onOpenServices}
+    >
+      <Text className='express-service-entry__title'>增值服务</Text>
+      <Text className={summary ? 'express-service-entry__summary' : 'express-service-entry__summary express-service-entry__summary--muted'} numberOfLines={1}>
+        {summary || '代收货款、签收单…'}
+      </Text>
+      <Image className='express-service-entry__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
+    </AppPressable>
+  )
+
+  if (plain) {
+    return entry
+  }
 
   return (
     <View className='express-value-added'>
       {scanContextView ? <ExpressScanContextCard view={scanContextView} onClear={onClearScanContext} /> : null}
 
-      <View className='express-value-added__card'>
-        <AppPressable accessibilityLabel='打开增值服务' block className='express-service-entry' layout='row-start' onPress={onOpenServices}>
-          <Text className='express-service-entry__title'>增值服务</Text>
-          <Text
-            className={summary ? 'express-service-entry__summary' : 'express-service-entry__summary express-service-entry__summary--muted'}
-            numberOfLines={1}
-          >
-            {summary || '代收货款、签收单…'}
-          </Text>
-          <Image className='express-service-entry__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
-        </AppPressable>
-      </View>
+      <View className='express-value-added__card'>{entry}</View>
     </View>
   )
 }

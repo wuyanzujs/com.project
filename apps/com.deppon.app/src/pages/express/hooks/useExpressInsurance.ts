@@ -69,6 +69,13 @@ export function useExpressInsurance({ draft, setDraft }: UseExpressInsuranceOpti
     [setDraft]
   )
 
+  const handleCommit = useCallback(
+    (type: ExpressInsuranceType, amount: number) => {
+      setDraft(current => updateExpressInsurance(current, { type, amount }))
+    },
+    [setDraft]
+  )
+
   const handleOpenRules = useCallback((type: ExpressInsuranceType) => {
     navigateToAppRoute(expressInsuranceRules.createRuleRoute(type))
   }, [])
@@ -113,6 +120,7 @@ export function useExpressInsurance({ draft, setDraft }: UseExpressInsuranceOpti
     message,
     quote,
     onAmountChange: handleAmountChange,
+    onCommit: handleCommit,
     onInvalidate: invalidate,
     onOpenRules: handleOpenRules,
     onQuery: handleQuery,

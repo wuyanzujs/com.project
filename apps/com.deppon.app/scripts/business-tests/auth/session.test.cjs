@@ -17,6 +17,7 @@ const cases = [
         CACHE_KEYS.batchDraft,
         CACHE_KEYS.expressDraft,
         CACHE_KEYS.expressGoodsHistory,
+        CACHE_KEYS.expressRealPriceHistory,
         CACHE_KEYS.goodsQueryHistory,
         CACHE_KEYS.invoiceOrderAuth,
         CACHE_KEYS.invoiceOrderAuthCodeSend,

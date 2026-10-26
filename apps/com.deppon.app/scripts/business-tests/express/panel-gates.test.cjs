@@ -2,7 +2,7 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const { createExpressInsuranceView } = require('@/services/express/insurance/insurance.view')
+const { createExpressInsurancePanelView } = require('@/services/express/insurance/insurance.view')
 
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
 const { createReactHarness, findElement, loadReactModule } = require('../support/react-harness.cjs')
@@ -71,16 +71,21 @@ test('取件模式切换和期望上门时间分别按寄件地址与表单齐�
   assert.equal(ready.hasText('今天 一小时内'), true)
 })
 
-test('保价卡折叠摘要使用生产端文案且不再渲染选填角标', () => {
+test('保价面板渲染生产端两档结构且不渲染选填角标', () => {
   const harness = createReactHarness()
   const { ExpressInsuranceCard } = loadReactModule('pages/express/components/ExpressInsuranceCard/index.tsx', {
     'react/jsx-runtime': require('react/jsx-runtime'),
     react: harness.react,
-    '@tarojs/components': { Input: 'Input', Text: 'Text', View: 'View' },
-    '@/services/express': { createExpressInsuranceView },
-    '@/shared/components': { AppPressable: 'AppPressable' },
-    '@/styles/nativeTokens': { APP_NATIVE_TOKENS: { touch: { minimum: 44 } } },
-    '../ExpressSection': { ExpressSection: props => ({ type: 'ExpressSection', props }) },
+    '@tarojs/components': { Image: 'Image', Text: 'Text', View: 'View' },
+    '@/services/express': { createExpressInsurancePanelView, getExpressQuoteInsurancePremium: () => null },
+    '@/shared/components': { AppPressable: 'AppPressable', AppRadio: 'AppRadio' },
+    '@/shared/components/AppIcon': {
+      APP_IMAGE_ICONS: { arrowRightGrey: 'arrow.png', insuranceFullShield: 'full-shield.png', insuranceBasicShield: 'basic-shield.png' },
+      AppIcon: 'AppIcon'
+    },
+    '@/shared/native': { AppLinearGradient: 'AppLinearGradient' },
+    '@/styles/nativeTokens': { APP_STYLE_COLORS: require('@/styles/nativeTokens').APP_STYLE_COLORS },
+    '../ExpressInsuranceValueSheet': { ExpressInsuranceValueSheet: 'ExpressInsuranceValueSheet' },
     './index.scss': {}
   })
   const controller = {
@@ -88,15 +93,20 @@ test('保价卡折叠摘要使用生产端文案且不再渲染选填角标', ()
     message: '',
     quote: null,
     onAmountChange() {},
+    onCommit() {},
     onInvalidate() {},
     onOpenRules() {},
     onQuery() {},
     onTypeChange() {}
   }
-  const view = harness.render(() => ExpressInsuranceCard({ controller, draft: createValidExpressDraft() }))
-  const section = findElement(view, element => element.props?.title)
+  const view = harness.render(() => ExpressInsuranceCard({ controller, draft: createValidExpressDraft(), selectedProduct: null }))
 
-  assert.equal(section.props.title, '保价')
-  assert.equal(section.props.summary, '未保价物品最高赔付3倍运费')
-  assert.equal(section.props.hint, undefined)
+  assert.equal(hasText(view, '保价'), true)
+  assert.equal(hasText(view, '未保价物品最高赔付3倍运费'), true, 'header shows the production tip')
+  assert.equal(hasText(view, '全额保'), true, 'banner tier renders')
+  assert.equal(hasText(view, '专人受理 足额理赔 快速到账'), true, 'banner slogan renders')
+  assert.equal(hasText(view, '基础保'), true, 'basic tier renders')
+  assert.equal(hasText(view, '自定义物品价值'), true, 'empty value row renders')
+  assert.equal(hasText(view, '填写实际价值'), true, 'empty value hint renders')
+  assert.equal(hasText(view, '必填'), false, 'no required badge on collapsed panel')
 })
