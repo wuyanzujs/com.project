@@ -2,15 +2,8 @@ require('../support/register.cjs')
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 
-const {
-  applyExpressScanContext,
-  clearExpressScanContext,
-  createAddressOnlyExpressContact,
-  createExpressDraft,
-  markExpressQuoteStale
-} = require('@/services/express/core/express.draft')
+const { applyExpressScanContext, createAddressOnlyExpressContact, createExpressDraft, markExpressQuoteStale } = require('@/services/express/core/express.draft')
 const { buildCreateOrderRequest, buildFilterOrderRequest, buildFreightRequest } = require('@/services/express/core/express.payload')
-const { createExpressScanContextView } = require('@/services/express/core/scanContext')
 const { expressDraftBridge } = require('@/services/express/draft/draftBridge')
 const { createExpressPickupNightCapability } = require('@/services/express/pickup/pickupTime.rules')
 
@@ -110,72 +103,6 @@ const cases = [
       assert.equal(freightRequest.customerContract, undefined)
       assert.equal(filterRequest.customerCode, undefined)
       assert.equal(filterRequest.limitCust, 0)
-    }
-  },
-  {
-    name: 'express scan context view explains customer code and backend guard',
-    run() {
-      const view = createExpressScanContextView({
-        role: 'shipperNumber',
-        value: 'CUS_001',
-        sceneId: 'SCENE_001',
-        expressRole: 'PARTNER'
-      })
-      const emptyView = createExpressScanContextView()
-
-      assert.equal(view.title, '扫码寄件信息')
-      assert.equal(view.tag, '客户编码二维码')
-      assert.equal(view.actionText, '移除')
-      assert.equal(view.tone, 'success')
-      assert.ok(view.summary.includes('客户编码 CUS_001'))
-      assert.ok(view.summary.includes('场景 SCENE_001'))
-      assert.ok(view.summary.includes('合作伙伴'))
-      assert.ok(view.summary.includes('以后端校验为准'))
-      assert.equal(emptyView, null)
-    }
-  },
-  {
-    name: 'express scan context view labels courier and department roles',
-    run() {
-      const courierView = createExpressScanContextView({
-        role: 'pickupManId',
-        value: 'PM_001'
-      })
-      const departmentView = createExpressScanContextView({
-        role: 'businessCode',
-        value: 'DEPT_001'
-      })
-
-      assert.equal(courierView.tag, '快递员二维码')
-      assert.ok(courierView.summary.includes('pickupManId'))
-      assert.equal(departmentView.tag, '服务点二维码')
-      assert.ok(departmentView.summary.includes('acceptDept'))
-    }
-  },
-  {
-    name: 'clearing express scan context removes payload fields and stale quote',
-    run() {
-      const scannedDraft = applyExpressScanContext(createValidExpressDraft(), {
-        role: 'pickupManId',
-        value: 'PM_001'
-      })
-      const quotedDraft = {
-        ...scannedDraft,
-        selectedProduct: expressProduct,
-        agreementAccepted: true,
-        quoteStaleReason: ''
-      }
-      const clearedDraft = clearExpressScanContext(quotedDraft)
-      const request = buildCreateOrderRequest(clearedDraft)
-
-      assert.equal(clearedDraft.scanContext, undefined)
-      assert.equal(clearedDraft.selectedProduct, null)
-      assert.equal(clearedDraft.agreementAccepted, false)
-      assert.equal(clearedDraft.quoteStaleReason, '扫码寄件信息已移除，请重新获取价格')
-      assert.equal(request.pickupManId, '')
-      assert.equal(request.shipperNumber, '')
-      assert.equal(request.acceptDept, '')
-      assert.equal(clearExpressScanContext(createValidExpressDraft()).scanContext, undefined)
     }
   },
   {

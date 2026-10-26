@@ -1,11 +1,9 @@
 import { Image, Text, View } from '@tarojs/components'
 
 import { getExpressDeliveryPreferenceOption, getExpressReturnBillOption } from '@/services/express'
-import type { ExpressDraft, ExpressScanContextView } from '@/services/express'
+import type { ExpressDraft } from '@/services/express'
 import { AppPressable } from '@/shared/components'
 import { APP_IMAGE_ICONS } from '@/shared/components/AppIcon'
-
-import { ExpressScanContextCard } from '../ExpressScanContextCard'
 
 import './index.scss'
 
@@ -19,17 +17,15 @@ const DELIVERY_LABELS: Record<ExpressDraft['service']['deliveryMode'], string> =
 
 interface ExpressServiceSectionProps {
   draft: ExpressDraft
-  scanContextView: ExpressScanContextView | null
-  /** 并入保价卡渲染：只出增值服务行，不带自有白卡与扫描卡外边距。 */
+  /** 并入保价卡渲染：只出增值服务行，不带自有白卡。 */
   plain?: boolean
-  onClearScanContext: () => void
   onOpenServices: () => void
 }
 
 /**
  * @description 寄件页的增值服务入口行：只做入口，点击跳增值服务专属页。
  */
-export function ExpressServiceSection({ draft, onClearScanContext, onOpenServices, plain = false, scanContextView }: ExpressServiceSectionProps) {
+export function ExpressServiceSection({ draft, onOpenServices, plain = false }: ExpressServiceSectionProps) {
   const { collection, deliveryPreference, packaging, service, valueAdded, warehouse } = draft
   const packagingSelected = Boolean(packaging.cartonCode || packaging.woodenCodes.length || packaging.unpackingCodes.length)
   const summaryParts = [
@@ -69,8 +65,6 @@ export function ExpressServiceSection({ draft, onClearScanContext, onOpenService
 
   return (
     <View className='express-value-added'>
-      {scanContextView ? <ExpressScanContextCard view={scanContextView} onClear={onClearScanContext} /> : null}
-
       <View className='express-value-added__card'>{entry}</View>
     </View>
   )

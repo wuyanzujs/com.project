@@ -665,6 +665,10 @@
     页面只按 `quotes.length > 0` 渲染产品区，重新计价期间旧时效卡与优惠券区保持可见；优惠券查询的输入 key
     去掉当前选中产品（`createExpressCouponInputKey`），切时效不再重查券/清空券列表。
     验证：auto-quote 27、quote-section 4、coupon-actions 8 用例全过；`pnpm verify:app` exit 0（墙钟 71.2s）。
+133. 清理参考端没有的「带入」提示：删除寄件页 `EXPRESS_DRAFT_CARRIED_MESSAGES` 及桥接回填后的 toast；
+    删除 `ExpressScanContextCard`（扫码来源卡）与 `createExpressScanContextView` / `clearExpressScanContext`，
+    扫码上下文仍保留在草稿与下单载荷里，只是不再展示来源卡片和「移除」入口。桥接测试去掉对应三条视图/清除用例，
+    样式基线随组件删除收紧到 610。`pnpm verify:app` exit 0（墙钟 92.6s）。
 ## 五、执行顺序
 
 1. 新领域禁止再用运行时 `export *`（门禁已是 0 基线）；新增服务时照 `expand-service-barrels.mjs` 生成的显式风格写。

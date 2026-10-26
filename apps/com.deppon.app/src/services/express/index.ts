@@ -82,7 +82,6 @@ export {
   isExpressSpecialRegionBlocked,
   applyExpressPickupTime,
   applyExpressScanContext,
-  clearExpressScanContext,
   markExpressQuoteStale,
   resetConsigneeDependencies,
   resetSenderDependencies,
@@ -230,8 +229,6 @@ export {
 export type { ExpressProductCustomerCapabilitySource } from './product/productAvailability.rules'
 export { queryExpressProductAvailability } from './product/productAvailability.service'
 export { createExpressQuoteRequestKey } from './core/requestKey'
-export { createExpressScanContextView } from './core/scanContext'
-export type { ExpressScanContextView, ExpressScanContextTone } from './core/scanContext'
 export * from './core/types'
 export {
   EXPRESS_RETURN_BILL_CUSTOM_MAX_LENGTH,

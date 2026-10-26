@@ -666,16 +666,6 @@
         "usesTokens": true,
         "lines": 153
       },
-      "src/pages/express/components/ExpressScanContextCard/index.scss": {
-        "rawColors": 0,
-        "rawFontSizes": 0,
-        "rawLineHeights": 0,
-        "rawRadii": 0,
-        "rawFontWeights": 0,
-        "rawSpaces": 4,
-        "usesTokens": true,
-        "lines": 56
-      },
       "src/pages/express/components/ExpressSection/index.scss": {
         "rawColors": 0,
         "rawFontSizes": 0,

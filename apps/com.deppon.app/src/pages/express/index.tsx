@@ -5,9 +5,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { contactSelection } from '@/services/contact'
 import {
-  clearExpressScanContext,
   createExpressProductQuoteView,
-  createExpressScanContextView,
   createExpressDraft,
   expressDraftBridge,
   expressDraftStorage,
@@ -286,21 +284,10 @@ const ExpressPage = () => {
 
         {insuranceVisible ? (
           <ExpressInsuranceCard controller={insuranceController} draft={draft} selectedProduct={draft.selectedProduct}>
-            <ExpressServiceSection
-              draft={draft}
-              plain
-              scanContextView={createExpressScanContextView(draft.scanContext)}
-              onClearScanContext={() => setDraft(clearExpressScanContext)}
-              onOpenServices={handleOpenServices}
-            />
+            <ExpressServiceSection draft={draft} plain onOpenServices={handleOpenServices} />
           </ExpressInsuranceCard>
         ) : (
-          <ExpressServiceSection
-            draft={draft}
-            scanContextView={createExpressScanContextView(draft.scanContext)}
-            onClearScanContext={() => setDraft(clearExpressScanContext)}
-            onOpenServices={handleOpenServices}
-          />
+          <ExpressServiceSection draft={draft} onOpenServices={handleOpenServices} />
         )}
 
         <ExpressPrivacyCard value={draft.service.privacyProtection} onChange={privacyController.onChange} onOpenTerms={privacyController.onOpenTerms} />

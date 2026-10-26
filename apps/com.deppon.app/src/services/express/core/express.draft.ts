@@ -408,7 +408,6 @@ export function validateExpressPriceTimeDraft(draft: ExpressDraft): ExpressValid
 export {
   applyExpressPickupTime,
   applyExpressScanContext,
-  clearExpressScanContext,
   markExpressQuoteStale,
   resetConsigneeDependencies,
   resetSenderDependencies,

@@ -19,7 +19,6 @@ import type {
 } from './types'
 
 const SCAN_CONTEXT_STALE_REASON = '扫码寄件信息变化，请重新获取价格'
-const SCAN_CONTEXT_CLEAR_REASON = '扫码寄件信息已移除，请重新获取价格'
 const SCAN_LTL_WEIGHT = 61
 
 /**
@@ -426,28 +425,6 @@ export function applyExpressScanContext(draft: ExpressDraft, context: ExpressSca
     selectedProduct: null,
     agreementAccepted: false,
     quoteStaleReason: SCAN_CONTEXT_STALE_REASON
-  }
-
-  return resetExpressInsuranceCapability(nextDraft, { clearLimit: true })
-}
-
-/**
- *
- * @param draft 寄件草稿
- * @description 清除扫码上下文并标记报价过期
- */
-export function clearExpressScanContext(draft: ExpressDraft): ExpressDraft {
-  if (!draft.scanContext) {
-    return draft
-  }
-
-  const nextDraft = {
-    ...draft,
-    scanContext: undefined,
-    warehouse: resetExpressWarehouseInput(draft.warehouse),
-    selectedProduct: null,
-    agreementAccepted: false,
-    quoteStaleReason: SCAN_CONTEXT_CLEAR_REASON
   }
 
   return resetExpressInsuranceCapability(nextDraft, { clearLimit: true })
