@@ -7,6 +7,7 @@ import type { CouponCardView } from '@/services/coupon'
 import {
   EXPRESS_COUPON_AUTO_QUERY_DELAY_MS,
   canAutoApplyExpressCoupon,
+  createExpressCouponInputKey,
   createExpressCouponQueryRequest,
   createExpressCouponRequestKey,
   expressDraftStorage,
@@ -23,6 +24,8 @@ interface UseExpressCouponsOptions {
   draft: ExpressDraft
   setDraft: Dispatch<SetStateAction<ExpressDraft>>
   onInvalidateQuote: () => void
+  contractEnabled?: boolean
+  monthlyEnabled?: boolean | null
 }
 
 function createCouponRecommendKey(draft: ExpressDraft) {
@@ -30,7 +33,7 @@ function createCouponRecommendKey(draft: ExpressDraft) {
 }
 
 /** 寄件页的优惠券匹配：草稿变化后自动查询可用券，并在选券后让报价重新计算。 */
-export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExpressCouponsOptions) {
+export function useExpressCoupons({ draft, setDraft, onInvalidateQuote, contractEnabled = false, monthlyEnabled = null }: UseExpressCouponsOptions) {
   const [available, setAvailable] = useState<CouponCardView[]>([])
   const [unavailable, setUnavailable] = useState<CouponCardView[]>([])
   const [message, setMessage] = useState('')
@@ -44,6 +47,9 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
   const latestRequestKey = useRef(requestKey)
   const recommendKey = useRef('')
   const autoCouponCode = useRef('')
+  const couponInputKey = createExpressCouponInputKey(draft)
+  const lastCouponInputKey = useRef('')
+  const hadCouponProduct = useRef(false)
   const startRequest = useCallback(() => {
     if (!mountedRef.current) {
       return
@@ -131,6 +137,12 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
             setUnavailable([])
             setStatus('error')
             setMessage(response.message || '可用优惠券查询失败，请重试')
+
+            if (latestDraft.current.couponNumber) {
+              autoCouponCode.current = ''
+              applyCouponCode('', true)
+            }
+
             return
           }
 
@@ -145,7 +157,7 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
           setStatus('done')
           setMessage(availableCoupons.length ? '' : '当前订单暂无可用优惠券')
 
-          if (bestCoupon && canAutoApplyExpressCoupon(current) && recommendKey.current !== nextRecommendKey) {
+          if (bestCoupon && canAutoApplyExpressCoupon(current, { contractEnabled, monthlyEnabled }) && recommendKey.current !== nextRecommendKey) {
             recommendKey.current = nextRecommendKey
 
             const autoOwned = !current.couponNumber || current.couponNumber === autoCouponCode.current
@@ -168,22 +180,35 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
         setUnavailable([])
         setStatus('error')
         setMessage('可用优惠券查询失败，请检查网络后重试')
+
+        if (latestDraft.current.couponNumber) {
+          autoCouponCode.current = ''
+          applyCouponCode('', true)
+        }
       }
     }
-  }, [applyCouponCode, clearAutoQueryTimer, runLatestRequest])
+  }, [applyCouponCode, clearAutoQueryTimer, contractEnabled, monthlyEnabled, runLatestRequest])
 
   useEffect(() => {
-    invalidateLatestRequest()
-    clearAutoQueryTimer()
-    setAvailable([])
-    setUnavailable([])
-
     if (!requestKey || !hasValidSession()) {
+      hadCouponProduct.current = false
+      lastCouponInputKey.current = ''
+      invalidateLatestRequest()
+      clearAutoQueryTimer()
+      setAvailable([])
+      setUnavailable([])
       handleQuery()
       return undefined
     }
 
-    setStatus('idle')
+    if (hadCouponProduct.current && lastCouponInputKey.current === couponInputKey) {
+      return undefined
+    }
+
+    lastCouponInputKey.current = couponInputKey
+    hadCouponProduct.current = true
+    invalidateLatestRequest()
+    clearAutoQueryTimer()
     setMessage('')
 
     const timer = setTimeout(() => {
@@ -203,7 +228,7 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote }: UseExp
         autoQueryTimerRef.current = null
       }
     }
-  }, [clearAutoQueryTimer, handleQuery, invalidateLatestRequest, requestKey])
+  }, [clearAutoQueryTimer, couponInputKey, handleQuery, invalidateLatestRequest, requestKey])
 
   useEffect(
     () => () => {

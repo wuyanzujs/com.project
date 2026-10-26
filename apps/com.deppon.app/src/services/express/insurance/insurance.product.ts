@@ -1,6 +1,6 @@
 import type { ExpressProductCode } from '../core/types'
 
-const REQUIRED_PRODUCTS = new Set<ExpressProductCode>(['DJBK', 'DJTH', 'JZZH', 'NJZZH', 'YTY', 'YTYDS', 'NZBRH'])
+const REQUIRED_PRODUCTS = new Set<ExpressProductCode>(['JZZH', 'NJZZH', 'YTY', 'YTYDS', 'NZBRH'])
 
 const FREE_PRODUCTS = new Set<ExpressProductCode>(['NFLF', 'NLRF'])
 const LOGISTICS_PRODUCTS = new Set<ExpressProductCode>(['JZKH', 'JZQY_LONG'])

@@ -367,7 +367,8 @@ export function buildTemplateSaveRequest(draft: ExpressDraft, meta: ExpressTempl
   const returnBill = normalizeExpressReturnBillForTemplate(draft.service.returnBill, draft.selectedProduct?.omsProductCode || draft.service.transportMode)
   const returnBillType = returnBill.type
   const productCode = draft.service.transportMode
-  const pickupTime = draft.pickup.time || '现在发货'
+  const pickupSlot = draft.pickup.timeSlot || draft.pickup.time.match(/(\d{1,2}:\d{2}-\d{1,2}:\d{2})/)?.[1] || ''
+  const pickupTime = pickupSlot || '现在发货'
 
   return {
     id,

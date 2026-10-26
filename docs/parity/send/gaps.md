@@ -175,7 +175,6 @@ RN 已按上表改写 [pages/express/success](apps/com.deppon.app/src/pages/expr
 - `limitCust` 的合同客户口径：RN 筛单请求没有合同能力入参，目前只能按扫码客户码置 1。
 - 保价必保产品：参考端 `ExistsProductInsurance`（`utils/prodcuts.ts:1-35`）必保只有 JZZH/NJZZH/YTY/YTYDS/NZBRH，
   RN 仍把 DJBK/DJTH 视为必保（旧交接文档如此记录）；需要生产端真机核对后再决定是否收窄，本轮未改。
-- 送货方式默认值：参考端快递默认 `PICKUPSTAIRS`、零担默认 `PICKNOTUPSTAIRS`，RN 草稿默认固定 `PICKNOTUPSTAIRS`；
   生产 App 的实际默认值未取证，本轮未改。
 - 联系人公司名：参考端会把 `company` 拼进详细地址，RN 下单载荷尚未使用该字段。
 - 地址详细字段已按参考端修正，但需要真实下单后核对运单地址；静态门禁不能替代这一步。
@@ -192,5 +191,4 @@ RN 已按上表改写 [pages/express/success](apps/com.deppon.app/src/pages/expr
 - 清除：最新券列表为空时清空已选券并重算；新产品无券优惠时清空（上一轮已做）。
 - 弹层：打开时无已选券默认预选第一张可用券，与参考端 Picker 一致。
 - 测试：新增 coupon-actions.test.cjs 5 例，coupon/contracts 补价格可见性与扫码门槛 1 例。
-- 模板带入的取件时间：参考端按模板 `beginAcceptTime` 的小时匹配首日时段，RN 直接把模板时间当已选值、匹配不到就走默认时段；`templateId` / `templatePickupTime` 未进草稿。
-- 送货方式默认值：参考端快递默认上楼（`PICKUPSTAIRS`）、零担默认不上楼，RN 固定 `PICKNOTUPSTAIRS`；电梯上楼（`isHasElevator`）未建模。
+- 送货方式：默认值与货物联动已按参考端（快递上楼、零担不上楼）；电梯上楼（`isHasElevator`）与零担上楼限制未建模。

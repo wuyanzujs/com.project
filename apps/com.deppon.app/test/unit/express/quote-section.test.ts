@@ -31,47 +31,25 @@ const product: ExpressProductQuote = {
 }
 
 describe('automatic quote presentation', () => {
-  it.each(['idle', 'loading', 'done'] as const)('hides stale quote instructions while the quote is %s', quoteStatus => {
+  it('hides the section until a quote is available', () => {
     expect(
       ExpressQuoteSection({
-        quoteStaleReason: '收寄地址互换，请重新获取价格',
-        quoteStatus,
         quotes: [],
         selectedProduct: null,
-        onQuote: vi.fn(),
         onSelectProduct: vi.fn()
       })
     ).toBeNull()
   })
 
-  it('hides previous product cards as soon as their conditions change', () => {
-    expect(
-      ExpressQuoteSection({
-        quoteStaleReason: '寄件信息变化',
-        quoteStatus: 'done',
-        quotes: [product],
-        selectedProduct: null,
-        onQuote: vi.fn(),
-        onSelectProduct: vi.fn()
-      })
-    ).toBeNull()
-  })
-
-  it('provides a retry only after a failed quote and never shows the stale reason', () => {
-    const onQuote = vi.fn()
+  it('keeps the current cards visible while the quote is refreshing', () => {
     const view = ExpressQuoteSection({
-      quoteStaleReason: '收寄地址互换',
-      quoteStatus: 'error',
-      quotes: [],
-      selectedProduct: null,
-      onQuote,
+      quotes: [product],
+      selectedProduct: product,
       onSelectProduct: vi.fn()
     })
 
-    expect(textOf(view)).toContain('获取失败，请检查信息后重试')
-    expect(textOf(view)).not.toContain('收寄地址互换')
-    findElement(view, element => element.props?.accessibilityLabel === '重新获取产品价格').props.onPress()
-    expect(onQuote).toHaveBeenCalledOnce()
+    expect(view).not.toBeNull()
+    expect(textOf(view)).toContain('标准快递')
   })
 
   it('shows prices as output and disables details until a quote is available', () => {

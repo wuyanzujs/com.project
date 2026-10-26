@@ -4,6 +4,7 @@ const { test } = require('node:test')
 
 const {
   canAutoApplyExpressCoupon,
+  createExpressCouponInputKey,
   createExpressCouponQueryRequest,
   createExpressCouponRequestKey,
   shouldShowExpressCouponRow
@@ -50,6 +51,7 @@ function createCouponHook(t, options = {}) {
     '@/services/express': {
       EXPRESS_COUPON_AUTO_QUERY_DELAY_MS: 0,
       canAutoApplyExpressCoupon,
+      createExpressCouponInputKey,
       createExpressCouponQueryRequest,
       createExpressCouponRequestKey,
       expressDraftStorage: { preserveForLogin: async () => true },
@@ -78,7 +80,16 @@ function createCouponHook(t, options = {}) {
     invalidate,
     queryOrderCoupons,
     toasts,
-    render: () => harness.render(() => useExpressCoupons({ draft, setDraft, onInvalidateQuote: invalidate })),
+    render: () =>
+      harness.render(() =>
+        useExpressCoupons({
+          contractEnabled: options.contractEnabled,
+          draft,
+          monthlyEnabled: options.monthlyEnabled,
+          onInvalidateQuote: invalidate,
+          setDraft
+        })
+      ),
     setDraft(next) {
       draft = next
     }
@@ -150,6 +161,26 @@ test('a manual coupon is kept even when it is missing from the latest lists', as
   assert.equal(page.draft.couponNumber, 'MANUAL')
 })
 
+test('switching the selected product does not re-query coupons', async t => {
+  const page = createCouponHook(t, { contractEnabled: true })
+
+  page.render()
+  await flush()
+  assert.equal(page.queryOrderCoupons.mock.callCount(), 1)
+  assert.equal(page.render().available.length, 2)
+
+  page.setDraft({
+    ...page.draft,
+    selectedProduct: { ...expressProduct, omsProductCode: 'RCP', producteCode: 'RCP' },
+    service: { ...page.draft.service, transportMode: 'RCP' }
+  })
+  page.render()
+  await flush()
+
+  assert.equal(page.queryOrderCoupons.mock.callCount(), 1)
+  assert.equal(page.render().available.length, 2)
+})
+
 test('scanned orders do not auto apply coupons', async t => {
   const page = createCouponHook(t)
 
@@ -161,5 +192,31 @@ test('scanned orders do not auto apply coupons', async t => {
   await flush()
 
   assert.equal(page.queryOrderCoupons.mock.callCount(), 1)
+  assert.equal(page.draft.couponNumber, '')
+})
+
+test('contract and monthly customers do not auto apply coupons', async t => {
+  for (const options of [{ contractEnabled: true }, { monthlyEnabled: true }]) {
+    const page = createCouponHook(t, options)
+
+    page.render()
+    await flush()
+
+    assert.equal(page.queryOrderCoupons.mock.callCount(), 1)
+    assert.equal(page.draft.couponNumber, '')
+  }
+})
+
+test('coupon query failure clears the selected coupon', async t => {
+  const page = createCouponHook(t, { response: { status: false, message: '查询失败' } })
+
+  page.setDraft({
+    ...page.draft,
+    couponNumber: 'OLD',
+    scanContext: { role: 'pickupManId', value: 'PM_001' }
+  })
+  page.render()
+  await flush()
+
   assert.equal(page.draft.couponNumber, '')
 })

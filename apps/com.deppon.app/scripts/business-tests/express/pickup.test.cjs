@@ -28,6 +28,29 @@ const { createValidExpressDraft, expressProduct } = require('../fixtures/express
 
 const cases = [
   {
+    name: 'template pickup time matches the first day slot by hour',
+    run() {
+      const response = normalizeExpressPickupTimeResponse({
+        serviceTime: '2026-07-14 07:30:00',
+        opening: true,
+        openingList: [
+          {
+            date: '2026-07-14',
+            dateList: [
+              { time: '07:00-08:00', text: '07:00-08:00', type: 'NORMAL' },
+              { time: '08:00-10:00', text: '08:00-10:00', type: 'NORMAL' }
+            ]
+          }
+        ]
+      })
+      const base = createValidExpressDraft()
+      const draft = applyExpressPickupTime({ ...base, pickup: { ...base.pickup, time: '08:00-10:00' } }, response)
+
+      assert.equal(draft.pickup.time, '2026-07-14 08:00-10:00')
+      assert.equal(draft.pickup.timeSlot, '08:00-10:00')
+    }
+  },
+  {
     name: 'quick pickup label keeps the reference time string',
     run() {
       const response = normalizeExpressPickupTimeResponse({

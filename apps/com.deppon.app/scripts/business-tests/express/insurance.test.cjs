@@ -78,8 +78,8 @@ const cases = [
       const required = {
         ...regular,
         goods: { ...regular.goods, insuredAmount: 0 },
-        service: { ...regular.service, transportMode: 'DJBK' },
-        selectedProduct: { ...expressProduct, omsProductCode: 'DJBK' }
+        service: { ...regular.service, transportMode: 'JZZH' },
+        selectedProduct: { ...expressProduct, omsProductCode: 'JZZH' }
       }
 
       assert.equal(EXPRESS_INSURANCE_DEFAULT_LIMIT, 1000000)
@@ -90,7 +90,17 @@ const cases = [
       assert.match(validateExpressInsurance(overLimit)[0], /750000/)
       assert.equal(getExpressInsuranceLimit(sxb), 500)
       assert.match(validateExpressInsurance(sxb)[0], /500/)
-      assert.equal(getExpressInsuranceProductPolicy('DJBK').required, true)
+      assert.equal(getExpressInsuranceProductPolicy('DJBK').required, false)
+      assert.equal(getExpressInsuranceProductPolicy('DJTH').required, false)
+      assert.equal(
+        getExpressInsuranceLimit({
+          ...required,
+          service: { ...required.service, transportMode: 'DJBK' },
+          selectedProduct: { ...expressProduct, omsProductCode: 'DJBK' }
+        }),
+        750000
+      )
+      assert.equal(getExpressInsuranceProductPolicy('JZZH').required, true)
       assert.equal(getExpressInsuranceLimit(required), 9990000)
       assert.match(validateExpressInsurance(required)[0], /必须填写/)
       assert.equal(getExpressInsuranceProductPolicy('NFLF').free, true)

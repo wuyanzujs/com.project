@@ -68,7 +68,7 @@ export function createExpressDraft(): ExpressDraft {
     packaging: createExpressPackagingDraft(),
     service: {
       transportMode: '',
-      deliveryMode: 'PICKNOTUPSTAIRS',
+      deliveryMode: 'PICKUPSTAIRS',
       paymentType: 'MP',
       returnBill: createExpressReturnBillDraft(),
       passwordSigning: 'N',

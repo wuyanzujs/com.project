@@ -223,3 +223,28 @@ export function findExpressPickupTimeSelection(response: ExpressPickupTimeRespon
 
   return null
 }
+
+/**
+ *
+ * @param response 取件时间响应
+ * @param pickupTime 模板带入的取件时间
+ * @description 按模板时间的小时匹配首日时段
+ */
+export function findExpressPickupTimeByHour(response: ExpressPickupTimeResponse, pickupTime: string): ExpressPickupTimeSelection | null {
+  const matched = normalizeText(pickupTime).match(/^(\d{1,2}):(\d{2})/)
+
+  if (!matched) {
+    return null
+  }
+
+  const hour = `${matched[1].padStart(2, '0')}:${matched[2]}`
+  const opening = response.openingList[0]
+
+  if (!opening) {
+    return null
+  }
+
+  const item = opening.dateList.find(candidate => isAvailablePickupType(candidate.type) && normalizeText(candidate.text).indexOf(hour) === 0)
+
+  return item ? { date: opening.date, ...item } : null
+}

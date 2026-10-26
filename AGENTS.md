@@ -498,7 +498,7 @@
     渐变带 91px 齐平卡顶（采样与底图逐点吻合）、标题/时效/价格行位与生产 p17 的 mp-taro3 流式
     布局推算值一致；未选卡顶部 `#edefff` 实心带经 APK 底图与小程序 4.png 双重比对确认为生产
     原生设计（与选中带同构，掩膜差 0.072%），非实现偏差。`pnpm verify:app` exit 0。
-    未处理：报价接口偶发失败（失败态文案与重试入口按既有设计）、区块标题行下间距比生产约多
+    报价失败已按参考端改为静默处理（见 130）、区块标题行下间距比生产约多
     12dp（ExpressSection 行高 82 为整页共用，未单独调）。
 
 ### 2026-10-24 静态门禁提速（5min → 约 100s）
@@ -573,7 +573,7 @@
 109. 自动选券：`useExpressCoupons` 在普通现付、非扫码、寄件人手机号 11 位时自动选 `available[0]` 并重算；
     用输入指纹（重量/体积/产品/线路）防重复，用 `autoCouponCode` 记录自动选中的券，手动选择或券列表带入的券不会被覆盖。
 110. 月结与清除：选券时若付款方式为月结，切回现付并提示「已取消月结支付」；最新券列表为空时清空已选券并重算；
-    查询网络失败保留已选券（与参考端「失败也清空」不同，避免网络抖动丢券）。
+    查询失败（含网络失败）按参考端清空已选券并重算，避免把失效券带进下单。
 111. 弹层：无已选券时打开券弹层默认预选第一张可用券，与参考端 Picker 一致。
 112. 测试：新增 `coupon-actions.test.cjs` 5 例（自动选券/取消后不复选/月结切换/列表为空清券/手动券保留/扫码不自动选），
     `coupon/contracts` 补价格可见性与扫码门槛 1 例；完整链路与特殊场景整理在 `docs/parity/send/coupon-flow.md`。
@@ -596,18 +596,18 @@
 115. 03 取件时间：请求 `source` 按扫码角色映射（参考端 `GetPickupTimeType`：快递员 1 / 客户码 2 / 营业部 3 / 司机 5），
     普通预约仍为 0；「现在发货」这类非时刻文案不再拼日期，报价 `sendDateTime` 与下单 `beginAcceptTime` 回到参考端口径；
     夜间费用提示常量改为参考端「按时间段差异化计价」表述。默认时段、日期切换、夜间提示、自送清空复核无新增问题。
-    模板带入的「每天 X 点」偏好未实现（参考端按小时匹配首日时段），记入 gaps。
+    模板取件时间已按参考端「首日同小时」匹配（见 127）。
 116. 04 货物/产品/送货方式：复核 60kg / 0.36m³ 切换、自送网点清空、产品清空、进仓与派送偏好重置；
-    参考端在快递内改货物会强制上门+上楼、切入零担会强制不上楼，RN 保留用户显式选择（自送/上楼是 RN 显式能力），暂不改；
-    送货方式默认值与电梯上楼（`isHasElevator`）仍未建模，留在 gaps。
+    已按参考端对齐：快递内改货物清空自送/自提网点、`dispatch='Y'`、送货上楼；切入零担送货不上楼；
+    电梯上楼（`isHasElevator`）仍未建模，留在 gaps。
 117. 05 付款方式：现付/到付/月结的 `paidMethod` 映射与改付款重算已对齐；参考端 ECARD/支付分未建模；
     月结资格提交拦截、选券取消月结已在前几轮落地。
-118. 06 保价：必保/免费/省心保/全额保策略、上限、货物标签、报价与下单字段复核；DJBK/DJTH 是否必保仍与参考端不一致
-    （参考端只对 JZZH/NJZZH/YTY/YTYDS/NZBRH 必保），待生产端确认；免费产品按 RN 生产口径发 2000 + `insuranceSource=DEFAULT`。
+118. 06 保价：必保/免费/省心保/全额保策略、上限、货物标签、报价与下单字段复核；已按参考端收窄为 JZZH/NJZZH/YTY/YTYDS/NZBRH（DJBK/DJTH 不再必保，见 125）；
+    免费产品按 RN 生产口径发 2000 + `insuranceSource=DEFAULT`。
 119. 07 提交校验与下单载荷：校验顺序与文案、防重复提交锁、登录保草稿、签署函暂存、筛单+货物校验、成功清理复核；
     下单扩展字段补 `totalFee` / `basicFee` / `discountFee`（仅在报价返回 `ppcTotalFee` 时）。
 120. 08 草稿与恢复：2 小时过期、账号隔离、登录保留、成功清理、券/货物/扫码/再寄带入复核；
-    模板带入的取件时间只保留字符串，未按参考端「首日同小时」匹配（同 115）。
+    模板带入的取件时间已按参考端「首日同小时」匹配（同 115 / 127）。
 121. 09/10 优惠券回归与异常边界：券套件全绿；旧响应竞态（报价/取件/券按 key 丢弃）、并发提交锁、网络失败文案复核；
     cjs express 151 用例、`pnpm verify:app` 全绿。
 
@@ -633,6 +633,38 @@
     验证：`pnpm verify:app` exit 0（新增 insurance-panel.test.cjs 9 用例，380 cjs 全绿）。
     未执行 RN bundle、Gradle 或 Xcode。
 
+### 2026-10-26 寄件口径按参考端收口
+
+125. 保价必保：`insurance.product.ts` 移除 `DJBK` / `DJTH`，必保集合回到参考端 `JZZH / NJZZH / YTY / YTYDS / NZBRH`；
+    DJBK 上限回到客户保价上限（测试 750000），不再强制填写保价金额。
+126. 送货方式：`createExpressDraft` 默认 `PICKUPSTAIRS`；`updateExpressGoods` 按参考端联动——快递货物清空自送/自提网点、
+    `dispatch='Y'`、送货上楼；切入零担清空自送网点、送货不上楼；零担内部改重量保留用户选择。
+127. 模板取件时间：新增 `findExpressPickupTimeByHour`，`applyExpressPickupTime` 按「精确匹配 → 首日同小时 → 首个普通时段」
+    顺序选时段，模板带入的 `08:00-10:00` 可落到首日 08:00 档；模板保存改为存「每天时段」`08:00-10:00`
+    或「现在发货」，不再存完整日期时间。
+128. 优惠券：查询失败按参考端清空已选券并重算；自动选券增加合同客户与月结客户排除（`useExpressQuote` 回传
+    `customerContractEnabled`，页面把 `monthlyEnabled` / 合同标记一起传给 `useExpressCoupons`）。
+129. 验证：`pnpm verify:app` exit 0（typecheck / eslint / stylelint / vitest / cjs / 桶 / 路由 / 体积门禁；
+    墙钟 206.1s）；本轮新增/调整用例覆盖模板时段、货物联动、必保收窄、券失败清空与合同/月结不自动选券。
+    未执行 RN bundle、Gradle 或 Xcode。
+130. 报价失败（含超时）：按参考端删掉 RN 的失败 toast、行内「获取失败」和「重新获取」入口，`ExpressQuoteSection`
+    在无报价时直接不渲染；`useExpressQuote` 失败时清空 `selectedProduct`、`couponNumber`、送货进仓（`createExpressWarehouseDraft`）
+    与定时派送（`createExpressDeliveryPreferenceDraft`，仅 SCHEDULED），保留地址/货物/付款/取件时间。
+    失败后 `status='error'` 阻止同参数自动重试，任一计价条件变化后重新报价；提交仍由 `requireProduct` 拦截，避免参考端
+    「空产品带到下单接口」的问题。测试改为失败不展示重试、失败清理券/进仓/定时派送；`pnpm verify:app` exit 0（墙钟 93.5s）。
+131. 手动切换时效导致反复计价：根因有两处——① `useExpressQuote.handleSelectProduct` 在 `setDraft` updater 里写
+    `quoteRequestKey`/`latestDraft` ref，选择产品引起 `transportMode` 等条件变化时可能先触发请求失效；改为用
+    `latestDraft.current` 同步算出 `nextDraft`、先写 ref 再 `setDraft`，选产品不再清空报价或重新询价。
+    ② `useExpressPickupTime` 的查询 key 带 `selectedProduct/transportMode`，切产品会重查取件时间，`applyExpressPickupTime`
+    选中时段时又会清空 `selectedProduct`，形成「选 A → 重查时段 → 清产品 → 回默认 B」的循环；按参考端去掉产品维度，
+    仅在寄件地址/件数/重量/体积变化时重查。新增「切产品不重查取件时段」用例；`pnpm verify:app` exit 0（墙钟 72.0s）。
+132. 时效切换的二次问题：① 报价请求 key 在选中产品后仍带 `service.transportMode`，切产品会改变 key；已在
+    `createExpressQuoteRequestKey` 里把「已选产品时的 transportMode」归一为空，选中产品不再算计价输入。
+    ② 自动报价改为按 `quotedKey` 判断（`useExpressQuote` 回传最近一次报价的条件 key），而不是「quotes 为空 + 无失效文案」，
+    这样旧价格可以保留、产品切换不会误触发、报价回填草稿也不会自激。③ 报价请求 key 变化时不再清空 `quotes`，
+    页面只按 `quotes.length > 0` 渲染产品区，重新计价期间旧时效卡与优惠券区保持可见；优惠券查询的输入 key
+    去掉当前选中产品（`createExpressCouponInputKey`），切时效不再重查券/清空券列表。
+    验证：auto-quote 27、quote-section 4、coupon-actions 8 用例全过；`pnpm verify:app` exit 0（墙钟 71.2s）。
 ## 五、执行顺序
 
 1. 新领域禁止再用运行时 `export *`（门禁已是 0 基线）；新增服务时照 `expand-service-barrels.mjs` 生成的显式风格写。

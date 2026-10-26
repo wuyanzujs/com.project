@@ -44,8 +44,10 @@ vi.mock('@tarojs/taro', () => ({ default: { showToast: mocks.showToast } }))
 vi.mock('@/services/express', async () => ({
   ...(await vi.importActual<typeof import('@/services/express/core/express.draft')>('@/services/express/core/express.draft')),
   ...(await vi.importActual<typeof import('@/services/express/core/requestKey')>('@/services/express/core/requestKey')),
+  ...(await vi.importActual<typeof import('@/services/express/delivery/deliveryPreference.rules')>('@/services/express/delivery/deliveryPreference.rules')),
   ...(await vi.importActual<typeof import('@/services/express/insurance/insurance.rules')>('@/services/express/insurance/insurance.rules')),
   ...(await vi.importActual<typeof import('@/services/express/product/productAvailability.rules')>('@/services/express/product/productAvailability.rules')),
+  ...(await vi.importActual<typeof import('@/services/express/warehouse/warehouse.rules')>('@/services/express/warehouse/warehouse.rules')),
   expressService: { quote: mocks.quote }
 }))
 
@@ -99,7 +101,13 @@ function render() {
   return reactRuntime.render(() => {
     const controller = useExpressQuote({ draft, setDraft, onProductChange: mocks.productChanged })
 
-    useExpressAutoQuote({ draft, quotes: controller.quotes, quoteStatus: controller.status, onQuote: controller.onQuery })
+    useExpressAutoQuote({
+      draft,
+      quotedKey: controller.quotedKey,
+      quotes: controller.quotes,
+      quoteStatus: controller.status,
+      onQuote: controller.onQuery
+    })
     return controller
   })
 }
@@ -155,7 +163,7 @@ describe('express automatic pricing', () => {
     expect(render().quotes).toEqual([product])
 
     draft = change(draft)
-    expect(render().quotes).toEqual([])
+    expect(render().quotes).toEqual([product])
     await flush()
     expect(render().status).toBe('done')
     expect(mocks.quote).toHaveBeenCalledTimes(2)
@@ -259,7 +267,7 @@ describe('express automatic pricing', () => {
     expect(mocks.quote).toHaveBeenCalledTimes(2)
   })
 
-  it('keeps failures available for retry without repeatedly requesting automatically', async () => {
+  it('stops automatic retries after a failed quote', async () => {
     mocks.quote.mockResolvedValueOnce({ status: false, message: '网络异常', result: null })
     render()
     await flush()
@@ -268,9 +276,33 @@ describe('express automatic pricing', () => {
     render()
     expect(controller.status).toBe('error')
     expect(mocks.quote).toHaveBeenCalledTimes(1)
-    await controller.onQuery()
-    expect(render().status).toBe('done')
-    expect(mocks.quote).toHaveBeenCalledTimes(2)
+    expect(mocks.showToast).not.toHaveBeenCalled()
+  })
+
+  it('clears coupon and scheduled delivery when the quote fails', async () => {
+    draft = {
+      ...draft,
+      couponNumber: 'CPN001',
+      deliveryPreference: { ...draft.deliveryPreference, scheduledWindow: '2030-01-01 09:00-12:00', type: 'SCHEDULED' }
+    }
+    mocks.quote.mockResolvedValueOnce({ status: false, message: '', result: null })
+    render()
+    await flush()
+
+    expect(draft.couponNumber).toBe('')
+    expect(draft.deliveryPreference.type).toBe('')
+  })
+
+  it('clears warehouse when the quote fails', async () => {
+    draft = {
+      ...draft,
+      warehouse: { ...draft.warehouse, enabled: true }
+    }
+    mocks.quote.mockResolvedValueOnce({ status: false, message: '', result: null })
+    render()
+    await flush()
+
+    expect(draft.warehouse.enabled).toBe(false)
   })
 
   it('automatically retries changed inputs after a failed quote', async () => {
@@ -286,6 +318,20 @@ describe('express automatic pricing', () => {
     expect(mocks.quote).toHaveBeenCalledTimes(2)
   })
 
+  it('ignores the selected product when building the quote request key', () => {
+    const base = createValidDraft()
+    const first = { ...product, mainRoutePref: 'R0', omsProductCode: 'PACKAGE' as const }
+    const second = { ...product, mainRoutePref: 'R1', omsProductCode: 'RCP' as const }
+    const keyOf = (selectedProduct: ExpressProductQuote) =>
+      createExpressQuoteRequestKey({
+        ...base,
+        selectedProduct,
+        service: { ...base.service, transportMode: selectedProduct.omsProductCode }
+      })
+
+    expect(keyOf(first)).toBe(keyOf(second))
+  })
+
   it('keeps valid quotes when selecting another returned product or restoring a carried draft', async () => {
     const otherProduct = { ...product, omsProductCode: 'DCZP' as const, totalfee: 25 }
 
@@ -298,7 +344,6 @@ describe('express automatic pricing', () => {
     expect(mocks.quote).toHaveBeenCalledTimes(1)
 
     const carried = selectExpressProduct(updateExpressGoods(draft, { weight: 5 }), otherProduct)
-
     render().restore([otherProduct], carried)
     draft = carried
     expect(render().quotes).toEqual([otherProduct])

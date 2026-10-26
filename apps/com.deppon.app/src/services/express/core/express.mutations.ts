@@ -3,7 +3,7 @@ import { getExpressCouponDiscount } from '../billing/couponOrder.rules'
 import { createExpressDeliveryPointDraft } from '../delivery/deliveryPoint.rules'
 import { createExpressDeliveryAvailabilityKey, createExpressDeliveryPreferenceDraft } from '../delivery/deliveryPreference.rules'
 import { normalizeExpressInsuranceDraft, resetExpressInsuranceCapability } from '../insurance/insurance.rules'
-import { findExpressPickupTimeSelection, getFirstExpressPickupTimeSelection } from '../pickup/pickupTime.options'
+import { findExpressPickupTimeByHour, findExpressPickupTimeSelection, getFirstExpressPickupTimeSelection } from '../pickup/pickupTime.options'
 import { selectExpressPickupTime } from '../pickup/pickupTime.rules'
 import { normalizeExpressReturnBillDraft } from '../value-added/valueAdded'
 import { resetExpressWarehouseInput } from '../warehouse/warehouse.rules'
@@ -126,18 +126,35 @@ export function updateExpressGoods(draft: ExpressDraft, patch: Partial<ExpressDr
     ...draft.goods,
     ...patch
   }
-  const clearStation = !isExpressLtlGoods(draft.goods) || !isExpressLtlGoods(nextGoods)
+  const wasLtl = isExpressLtlGoods(draft.goods)
+  const isLtl = isExpressLtlGoods(nextGoods)
+  const enteringLtl = isLtl && !wasLtl
+  const returningExpress = !isLtl
   const nextDraft: ExpressDraft = {
     ...draft,
     goods: nextGoods,
-    pickup: clearStation
+    service: returningExpress
+      ? { ...draft.service, deliveryMode: 'PICKUPSTAIRS' }
+      : enteringLtl
+        ? { ...draft.service, deliveryMode: 'PICKNOTUPSTAIRS' }
+        : draft.service,
+    pickup: returningExpress
       ? {
           ...draft.pickup,
+          dispatch: 'Y',
           stationCode: '',
           stationName: '',
           stationDetail: undefined
         }
-      : draft.pickup,
+      : enteringLtl
+        ? {
+            ...draft.pickup,
+            stationCode: '',
+            stationName: '',
+            stationDetail: undefined
+          }
+        : draft.pickup,
+    deliveryPoint: returningExpress || enteringLtl ? createExpressDeliveryPointDraft() : draft.deliveryPoint,
     warehouse: warehouseInputChanged ? resetExpressWarehouseInput(draft.warehouse) : draft.warehouse,
     deliveryPreference: draft.deliveryPreference.type === 'SCHEDULED' ? createExpressDeliveryPreferenceDraft() : draft.deliveryPreference
   }
@@ -305,7 +322,10 @@ function keepPickupStationDetail(pickup: ExpressDraft['pickup'], stationCode: st
  * @description 应用取件时间响应并选中时段
  */
 export function applyExpressPickupTime(draft: ExpressDraft, response: ExpressPickupTimeResponse): ExpressDraft {
-  const selection = findExpressPickupTimeSelection(response, draft.pickup) ?? getFirstExpressPickupTimeSelection(response)
+  const selection =
+    findExpressPickupTimeSelection(response, draft.pickup) ??
+    findExpressPickupTimeByHour(response, draft.pickup.time) ??
+    getFirstExpressPickupTimeSelection(response)
   const stationCode = response.deptCode || ''
   const stationDetail = keepPickupStationDetail(draft.pickup, stationCode)
   const responseDraft: ExpressDraft = {

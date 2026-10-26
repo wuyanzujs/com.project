@@ -1,10 +1,10 @@
-import Taro from '@tarojs/taro'
-
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 import {
   applyExpressInsuranceCapability,
+  createExpressDeliveryPreferenceDraft,
   createExpressQuoteRequestKey,
+  createExpressWarehouseDraft,
   expressService,
   findExpressQuoteSelection,
   selectDefaultExpressQuote,
@@ -22,6 +22,8 @@ interface UseExpressQuoteOptions {
 /** 寄件产品报价：根据当前草稿获取产品价格，自动选择推荐产品，并在草稿变化时丢弃旧报价。 */
 export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpressQuoteOptions) {
   const [quotes, setQuotes] = useState<ExpressProductQuote[]>([])
+  const [contractEnabled, setContractEnabled] = useState(false)
+  const [quotedKey, setQuotedKey] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const requestKey = createExpressQuoteRequestKey(draft)
   const quoteRequestKey = useRef(requestKey)
@@ -43,7 +45,6 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
 
     invalidateLatestRequest()
     quoteRequestKey.current = requestKey
-    setQuotes([])
     setStatus('idle')
   }, [invalidateLatestRequest, requestKey])
 
@@ -74,19 +75,27 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
           ? applyExpressInsuranceCapability(currentDraft, availability.insuranceCapability, availability.customer.insuranceLimit)
           : currentDraft
 
+        if (availability) {
+          setContractEnabled(availability.customer.contractEnabled === true)
+        }
+
         if (!response.status || !products.length) {
-          const failedDraft = { ...availableDraft, selectedProduct: null }
+          const failedDraft: ExpressDraft = {
+            ...availableDraft,
+            couponNumber: '',
+            deliveryPreference:
+              availableDraft.deliveryPreference.type === 'SCHEDULED' ? createExpressDeliveryPreferenceDraft() : availableDraft.deliveryPreference,
+            selectedProduct: null,
+            warehouse: createExpressWarehouseDraft()
+          }
 
           quoteRequestKey.current = createExpressQuoteRequestKey(failedDraft)
           setQuotes([])
+          setQuotedKey('')
           latestDraft.current = failedDraft
           setDraft(failedDraft)
           onProductChange()
           setStatus('error')
-          Taro.showToast({
-            title: response.message || '暂未获取到产品价格',
-            icon: 'none'
-          })
           return
         }
 
@@ -97,6 +106,7 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
         // 产品、保价能力等由本次报价回填，记录回填后的条件，避免把结果当作新的输入再次计价。
         quoteRequestKey.current = createExpressQuoteRequestKey(nextDraft)
         setQuotes(products)
+        setQuotedKey(createExpressQuoteRequestKey(nextDraft))
         latestDraft.current = nextDraft
         setDraft(nextDraft)
         onProductChange()
@@ -107,14 +117,13 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
 
   const handleSelectProduct = useCallback(
     (product: ExpressProductQuote) => {
-      onProductChange()
-      setDraft(current => {
-        const nextDraft = selectExpressProduct(current, product)
+      const nextDraft = selectExpressProduct(latestDraft.current, product)
 
-        quoteRequestKey.current = createExpressQuoteRequestKey(nextDraft)
-        latestDraft.current = nextDraft
-        return nextDraft
-      })
+      onProductChange()
+      quoteRequestKey.current = createExpressQuoteRequestKey(nextDraft)
+      latestDraft.current = nextDraft
+      setQuotedKey(createExpressQuoteRequestKey(nextDraft))
+      setDraft(nextDraft)
     },
     [onProductChange, setDraft]
   )
@@ -125,15 +134,18 @@ export function useExpressQuote({ draft, setDraft, onProductChange }: UseExpress
       quoteRequestKey.current = createExpressQuoteRequestKey(restoredDraft)
       latestDraft.current = restoredDraft
       setQuotes(nextQuotes)
+      setQuotedKey(nextQuotes.length ? createExpressQuoteRequestKey(restoredDraft) : '')
       setStatus(nextQuotes.length ? 'done' : 'idle')
     },
     [invalidateLatestRequest]
   )
 
   return {
+    customerContractEnabled: contractEnabled,
     onQuery: handleQuery,
     onSelectProduct: handleSelectProduct,
-    quotes: currentQuote ? quotes : [],
+    quotedKey,
+    quotes,
     restore,
     status: currentQuote ? status : ('idle' as const)
   }

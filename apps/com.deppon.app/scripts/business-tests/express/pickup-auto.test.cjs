@@ -6,7 +6,7 @@ const { applyExpressPickupTime, isExpressOrderFormReady, selectExpressPickupTime
 const { createExpressPickupDateOptions } = require('@/services/express/pickup/pickupTime.options')
 const { acceptExpressNightPickupNotice } = require('@/services/express/pickup/pickupTime.rules')
 
-const { createValidExpressDraft } = require('../fixtures/express.cjs')
+const { createValidExpressDraft, expressProduct } = require('../fixtures/express.cjs')
 const { createReactHarness, loadReactModule } = require('../support/react-harness.cjs')
 
 function createResponse(date = '2026-10-25') {
@@ -93,6 +93,26 @@ test('a weight change re-queries pickup slots and keeps the selected slot when i
   await flush()
 
   assert.equal(page.queryPickupTime.mock.calls.length, 2)
+  assert.equal(page.draft.pickup.time, '2026-10-25 09:00-11:00')
+})
+
+test('switching products does not re-query pickup slots', async t => {
+  const page = createPickupTime(t)
+
+  page.render()
+  await flush()
+  assert.equal(page.queryPickupTime.mock.callCount(), 1)
+
+  page.setDraft({
+    ...page.draft,
+    selectedProduct: { ...expressProduct, omsProductCode: 'RCP' },
+    service: { ...page.draft.service, transportMode: 'RCP' }
+  })
+  page.render()
+  page.render()
+  await flush()
+
+  assert.equal(page.queryPickupTime.mock.callCount(), 1)
   assert.equal(page.draft.pickup.time, '2026-10-25 09:00-11:00')
 })
 

@@ -59,6 +59,19 @@ const cases = [
       assert.equal(request.template.receiver.telephone, '13900139000')
       assert.equal(request.template.goodInfo.goodsName, '文件')
       assert.equal(request.template.payment.paymentType, 'MP')
+      assert.equal(request.template.pickupTime.beginAcceptTime, '现在发货')
+
+      const scheduledRequest = buildTemplateSaveRequest(
+        {
+          ...draft,
+          pickup: { ...draft.pickup, time: '2026-10-26 08:00-10:00', timeSlot: '08:00-10:00' }
+        },
+        { name: '定时件', defaultFlag: 2 },
+        'APP'
+      )
+
+      assert.equal(scheduledRequest.template.pickupTime.beginAcceptTime, '08:00-10:00')
+      assert.equal(scheduledRequest.template.pickupTime.beginAcceptTimeText, '每天 08:00-10:00')
 
       const specialInsuranceRequest = buildTemplateSaveRequest(
         {

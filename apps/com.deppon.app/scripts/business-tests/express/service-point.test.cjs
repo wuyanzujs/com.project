@@ -155,6 +155,19 @@ test('修改货物按快递/零担切换自送网点，仍有效的取件时间�
   assert.equal(updateExpressGoods(ltlSelected, { weight: 62 }).pickup.stationCode, 'DEPT_CODE')
 })
 
+test('修改货物按参考端恢复上门与上楼方式', () => {
+  const expressDraft = updateExpressGoods(createSelfSendDraft(), { weight: 2 })
+
+  assert.equal(expressDraft.pickup.dispatch, 'Y')
+  assert.equal(expressDraft.service.deliveryMode, 'PICKUPSTAIRS')
+
+  const ltlDraft = updateExpressGoods(expressDraft, { weight: 61 })
+  assert.equal(ltlDraft.service.deliveryMode, 'PICKNOTUPSTAIRS')
+
+  const customDelivery = { ...ltlDraft, service: { ...ltlDraft.service, deliveryMode: 'PICKUPSTAIRS' } }
+  assert.equal(updateExpressGoods(customDelivery, { weight: 62 }).service.deliveryMode, 'PICKUPSTAIRS')
+})
+
 function createServicePointHookFixture(t) {
   const harness = createReactHarness()
   const requests = []

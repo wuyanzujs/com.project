@@ -18,17 +18,7 @@ interface UseExpressPickupTimeOptions {
 function createPickupQueryKey(draft: ExpressDraft) {
   const sender = draft.sender
 
-  return [
-    sender?.province,
-    sender?.city,
-    sender?.county,
-    sender?.town,
-    sender?.address,
-    draft.goods.count,
-    draft.goods.weight,
-    draft.goods.volume,
-    draft.selectedProduct?.omsProductCode || draft.service.transportMode
-  ]
+  return [sender?.province, sender?.city, sender?.county, sender?.town, sender?.address, draft.goods.count, draft.goods.weight, draft.goods.volume]
     .map(value => String(value ?? '').trim())
     .join('|')
 }

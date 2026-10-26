@@ -4,6 +4,8 @@ const { test } = require('node:test')
 
 const { validateExpressDraft } = require('@/services/express/core/express.draft')
 const { createExpressQuoteRequestKey } = require('@/services/express/core/requestKey')
+const { createExpressDeliveryPreferenceDraft } = require('@/services/express/delivery/deliveryPreference.rules')
+const { createExpressWarehouseDraft } = require('@/services/express/warehouse/warehouse.rules')
 
 const { createValidExpressDraft } = require('../fixtures/express.cjs')
 const { createDeferred } = require('../support/deferred.cjs')
@@ -202,7 +204,9 @@ test('a failed or rejected quote cannot leave the old product available for subm
       react: harness.react,
       '@tarojs/taro': { showToast: t.mock.fn() },
       '@/services/express': {
+        createExpressDeliveryPreferenceDraft,
         createExpressQuoteRequestKey,
+        createExpressWarehouseDraft,
         sortExpressQuotes: products => products,
         expressService: {
           quote: async () => {

@@ -77,10 +77,16 @@ export function getExpressCouponDiscount(product: ExpressProductQuote) {
   return getDiscountFee(product, marketCode => COUPON_MARKET_CODES.has(marketCode))
 }
 
-export function canAutoApplyExpressCoupon(draft: ExpressDraft) {
+export function canAutoApplyExpressCoupon(
+  draft: ExpressDraft,
+  options: {
+    contractEnabled?: boolean
+    monthlyEnabled?: boolean | null
+  } = {}
+) {
   const mobile = normalizeText(draft.sender?.mobile)
 
-  return !draft.scanContext && draft.service.paymentType === 'MP' && /^\d{11}$/.test(mobile)
+  return !draft.scanContext && !options.contractEnabled && options.monthlyEnabled !== true && draft.service.paymentType === 'MP' && /^\d{11}$/.test(mobile)
 }
 
 /**
@@ -175,6 +181,21 @@ export function createExpressCouponRequestKey(draft: ExpressDraft) {
   const request = createExpressCouponQueryRequest(draft)
 
   return request ? JSON.stringify(request) : ''
+}
+
+/**
+ *
+ * @param draft 寄件草稿
+ * @description 生成优惠券查询的输入 key，不含当前选中的产品，避免切换时效重复查券
+ */
+export function createExpressCouponInputKey(draft: ExpressDraft) {
+  return JSON.stringify({
+    ...draft,
+    couponNumber: '',
+    selectedProduct: null,
+    service: { ...draft.service, transportMode: '' },
+    quoteStaleReason: ''
+  })
 }
 
 /**

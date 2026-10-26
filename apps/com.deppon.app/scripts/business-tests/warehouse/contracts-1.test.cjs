@@ -39,7 +39,7 @@ const cases = [
       assert.equal(input.goodsName, '文件')
       assert.equal(input.totalWeight, 1)
       assert.equal(input.transportMode, 'PACKAGE')
-      assert.equal(input.deliveryMode, 'PICKNOTUPSTAIRS')
+      assert.equal(input.deliveryMode, 'PICKUPSTAIRS')
 
       for (let type = 0; type <= 4; type += 1) {
         const screening = createExpressWarehouseScreening(draft, {

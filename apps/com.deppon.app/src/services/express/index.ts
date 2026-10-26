@@ -19,6 +19,7 @@ export type { ExpressCollectionOption } from './billing/collection.rules'
 export {
   EXPRESS_COUPON_AUTO_QUERY_DELAY_MS,
   canAutoApplyExpressCoupon,
+  createExpressCouponInputKey,
   getExpressCouponDiscount,
   getExpressCouponOriginalFee,
   createExpressCouponQueryRequest,
@@ -190,6 +191,7 @@ export {
   createExpressPickupDateOptions,
   getFirstExpressPickupTimeSelection,
   createExpressPickupDateTime,
+  findExpressPickupTimeByHour,
   findExpressPickupTimeSelection
 } from './pickup/pickupTime.options'
 export type { ExpressPickupTimeSelection, ExpressPickupTimeOption, ExpressPickupDateOption } from './pickup/pickupTime.options'

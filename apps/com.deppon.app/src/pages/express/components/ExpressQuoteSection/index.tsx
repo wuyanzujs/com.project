@@ -20,39 +20,14 @@ const EXPRESS_MEDAL_CODES = ['TKDR', 'TKCR', 'XJTK', 'DJTK']
 interface ExpressQuoteSectionProps {
   /** 嵌入基础信息卡时使用行样式。 */
   plain?: boolean
-  quoteStaleReason: string
-  quoteStatus: 'idle' | 'loading' | 'done' | 'error'
   quotes: ExpressProductQuote[]
   selectedProduct: ExpressProductQuote | null
-  onQuote: () => void
   onSelectProduct: (product: ExpressProductQuote) => void
 }
 
-export function ExpressQuoteSection({
-  plain = false,
-  quoteStaleReason,
-  quoteStatus,
-  quotes,
-  selectedProduct,
-  onQuote,
-  onSelectProduct
-}: ExpressQuoteSectionProps) {
-  if (quotes.length === 0 || quoteStaleReason || quoteStatus === 'loading') {
-    // 条件未齐或变化后等待自动计价，只有请求失败才提供重试入口。
-    if (quoteStatus !== 'error') {
-      return null
-    }
-
-    return (
-      <ExpressSection plain={plain} title='预计送达时间'>
-        <View className='express-quote-status'>
-          <Text className='express-quote-status__text'>获取失败，请检查信息后重试</Text>
-          <AppPressable accessibilityLabel='重新获取产品价格' className='express-quote-status__retry' onPress={onQuote}>
-            <Text className='express-quote-status__retry-text'>重新获取</Text>
-          </AppPressable>
-        </View>
-      </ExpressSection>
-    )
+export function ExpressQuoteSection({ plain = false, quotes, selectedProduct, onSelectProduct }: ExpressQuoteSectionProps) {
+  if (quotes.length === 0) {
+    return null
   }
 
   return (

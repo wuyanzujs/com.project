@@ -100,8 +100,10 @@ const ExpressPage = () => {
 
   const insuranceController = useExpressInsurance({ draft, setDraft })
   const {
+    customerContractEnabled,
     onQuery: handleQuote,
     onSelectProduct: handleSelectProduct,
+    quotedKey,
     quotes,
     restore: restoreQuotes,
     status: quoteStatus
@@ -111,11 +113,6 @@ const ExpressPage = () => {
     onProductChange: insuranceController.onInvalidate
   })
   const invalidateCouponQuote = useCallback(() => restoreQuotes([]), [restoreQuotes])
-  const couponController = useExpressCoupons({
-    draft,
-    setDraft,
-    onInvalidateQuote: invalidateCouponQuote
-  })
   const pickupTimeController = useExpressPickupTime({ draft, setDraft })
   const warehouseController = useExpressWarehouse({ draft, setDraft })
   const privacyController = useExpressPrivacy(setDraft)
@@ -130,6 +127,13 @@ const ExpressPage = () => {
   }, [])
 
   const monthlyPay = useExpressMonthlyPay({ draft, updateService })
+  const couponController = useExpressCoupons({
+    contractEnabled: customerContractEnabled,
+    draft,
+    monthlyEnabled: monthlyPay.monthlyEnabled,
+    onInvalidateQuote: invalidateCouponQuote,
+    setDraft
+  })
   const submit = useExpressSubmit({ draft, monthlyEnabled: monthlyPay.monthlyEnabled, warehouseController })
   const entryNav = useExpressEntryNavigation({ draft })
   const realName = useExpressRealName()
@@ -137,6 +141,7 @@ const ExpressPage = () => {
 
   useExpressAutoQuote({
     draft,
+    quotedKey,
     quotes,
     quoteStatus,
     onQuote: handleQuote
@@ -296,16 +301,8 @@ const ExpressPage = () => {
             onSelect={monthlyPay.handlePaymentTypeSelect}
           />
 
-          {quotes.length > 0 || draft.quoteStaleReason || quoteStatus === 'loading' || (formReady && quoteStatus === 'error') ? (
-            <ExpressQuoteSection
-              plain
-              quoteStaleReason={draft.quoteStaleReason}
-              quoteStatus={quoteStatus}
-              quotes={quotes}
-              selectedProduct={draft.selectedProduct}
-              onQuote={handleQuote}
-              onSelectProduct={handleSelectProduct}
-            />
+          {quotes.length > 0 ? (
+            <ExpressQuoteSection plain quotes={quotes} selectedProduct={draft.selectedProduct} onSelectProduct={handleSelectProduct} />
           ) : null}
 
           <ExpressWeatherBanner text={weatherText} onPress={handleOpenGoods} />
