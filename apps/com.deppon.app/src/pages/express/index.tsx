@@ -21,7 +21,7 @@ import {
   updateExpressPickup,
   updateExpressService
 } from '@/services/express'
-import type { ExpressDraft, ExpressDraftBridgeSource, ExpressGoods, ExpressMonthlyPayView, ExpressProductQuote } from '@/services/express'
+import type { ExpressDraft, ExpressGoods, ExpressMonthlyPayView, ExpressProductQuote } from '@/services/express'
 import { AppPage, AppSupportFloat } from '@/shared/components'
 import { navigateToAppRoute } from '@/shared/navigation/appNavigation'
 import { APP_ROUTES } from '@/shared/navigation/routes'
@@ -62,23 +62,6 @@ import { useExpressWarehouse } from './hooks/useExpressWarehouse'
 import { useExpressWeather } from './hooks/useExpressWeather'
 
 import './index.scss'
-
-const EXPRESS_DRAFT_CARRIED_MESSAGES: Partial<Record<ExpressDraftBridgeSource, string>> = {
-  ORDER_RESEND: '已带入原订单信息',
-  COUPON_LIST: '已带入优惠券',
-  GOODS_QUERY: '已带入货物名称',
-  BATCH_RECOGNITION: '已带入批量识别结果',
-  SCAN_QR_CODE: '已带入扫码寄件信息',
-  DISPATCH_QUERY: '已带入收派范围地址',
-  COURIER: '已带入专属快递员',
-  TEMPLATE: '已带入寄件模板',
-  QUERY_PRICE: '已带入查价结果'
-}
-
-// 全新寄件与增值服务回填不打扰用户，其余带入来源提示一句。
-function getExpressDraftCarriedMessage(source: ExpressDraftBridgeSource) {
-  return EXPRESS_DRAFT_CARRIED_MESSAGES[source] ?? ''
-}
 
 function getProductPriceText(product: ExpressProductQuote | null) {
   if (!product || product.totalfee === null || product.totalfee === undefined) {
@@ -185,15 +168,6 @@ const ExpressPage = () => {
     if (carriedDraft) {
       setDraft(carriedDraft.draft)
       restoreQuotes(carriedDraft.quotes, carriedDraft.draft)
-
-      const carriedMessage = getExpressDraftCarriedMessage(carriedDraft.source)
-
-      if (carriedMessage) {
-        Taro.showToast({
-          title: carriedMessage,
-          icon: 'none'
-        })
-      }
       return
     }
 
