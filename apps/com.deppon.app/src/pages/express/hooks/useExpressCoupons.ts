@@ -79,7 +79,7 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote, contract
   }, [])
 
   const applyCouponCode = useCallback(
-    (couponCode: string, silent = false) => {
+    (couponCode: string) => {
       const current = latestDraft.current
       const code = couponCode.replace(/\s+/g, '').toUpperCase()
 
@@ -98,8 +98,6 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote, contract
 
       if (cancelMonthly) {
         Taro.showToast({ title: '已取消月结支付', icon: 'none' })
-      } else if (!silent) {
-        Taro.showToast({ title: code ? '优惠券已选择' : '已取消优惠券', icon: 'none' })
       }
     },
     [onInvalidateQuote, setDraft]
@@ -140,7 +138,7 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote, contract
 
             if (latestDraft.current.couponNumber) {
               autoCouponCode.current = ''
-              applyCouponCode('', true)
+              applyCouponCode('')
             }
 
             return
@@ -164,13 +162,13 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote, contract
 
             if (autoOwned && bestCoupon.code !== current.couponNumber) {
               autoCouponCode.current = bestCoupon.code
-              applyCouponCode(bestCoupon.code, true)
+              applyCouponCode(bestCoupon.code)
               return
             }
           }
 
           if (!availableCoupons.length && !unavailableCoupons.length && current.couponNumber) {
-            applyCouponCode('', true)
+            applyCouponCode('')
           }
         }
       )
@@ -183,7 +181,7 @@ export function useExpressCoupons({ draft, setDraft, onInvalidateQuote, contract
 
         if (latestDraft.current.couponNumber) {
           autoCouponCode.current = ''
-          applyCouponCode('', true)
+          applyCouponCode('')
         }
       }
     }

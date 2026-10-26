@@ -464,7 +464,7 @@
         "rawFontWeights": 0,
         "rawSpaces": 0,
         "usesTokens": true,
-        "lines": 46
+        "lines": 38
       },
       "src/pages/express/components/ExpressCouponSheet/index.scss": {
         "rawColors": 0,

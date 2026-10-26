@@ -31,14 +31,6 @@
   color: $dp-color-danger-accent;
   font-weight: $dp-font-weight-medium;
 }
-.express-coupon-row__hint {
-  display: flex;
-  padding-bottom: $dp-space-8;
-  color: $dp-color-text-subdued;
-  font-size: $dp-font-size-body;
-  line-height: $dp-line-height-36;
-  text-align: right;
-}
 .express-coupon-row__arrow {
   flex-shrink: 0;
   width: $dp-space-24;

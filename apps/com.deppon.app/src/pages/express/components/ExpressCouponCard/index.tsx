@@ -31,7 +31,7 @@ function getCouponSummary(controller: ExpressCouponController, couponNumber: str
     return `${controller.available.length}张待使用`
   }
 
-  return controller.loginRequired ? '登录后可选' : '暂无可用'
+  return controller.loginRequired ? '登录后可选' : '暂无可用优惠券'
 }
 
 function isCouponHighlighted(controller: ExpressCouponController, couponNumber: string) {
@@ -56,14 +56,6 @@ export function ExpressCouponCard({ controller, couponNumber }: ExpressCouponCar
   const highlighted = isCouponHighlighted(controller, couponNumber)
   // 已选券时优先展示优惠金额，匹配不到券时回退券摘要。
   const selectedCouponText = getSelectedCouponText(controller, couponNumber)
-  // 有可用券时提示补全信息；请求失败显示错误，无可用券时隐藏提示行。
-  const hintText = couponNumber
-    ? ''
-    : controller.status === 'error' && controller.message
-      ? controller.message
-      : controller.available.length > 0
-        ? '填写收寄信息和物品名称后点击使用'
-        : ''
 
   return (
     <View className='express-coupon-row'>
@@ -75,8 +67,6 @@ export function ExpressCouponCard({ controller, couponNumber }: ExpressCouponCar
         </Text>
         <Image className='express-coupon-row__arrow' mode='aspectFit' src={APP_IMAGE_ICONS.arrowRightGrey} />
       </AppPressable>
-
-      {hintText ? <Text className='express-coupon-row__hint'>{hintText}</Text> : null}
 
       <ExpressCouponSheet controller={controller} couponNumber={couponNumber} visible={visible} onClose={() => setVisible(false)} />
     </View>
